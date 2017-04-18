@@ -346,9 +346,12 @@ RCT_REMAP_METHOD(addLayer,addLayerById:(NSString*)mapId andDatasetId:(NSString*)
 RCT_REMAP_METHOD(removeLayerByName,removeLayerById:(NSString*)mapId andName:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Map* map = [JSObjManager getObjWithKey:mapId];
     Layers* layers = map.layers;
+    Layer* removingLayer = [layers getLayerWithName:name];
     BOOL isRemove = [layers removeWithName:name];
     if(isRemove){
-        resolve(@"remove successfully");
+        NSInteger layerKey = (NSInteger)removingLayer;
+        [JSObjManager addObj:removingLayer];
+        resolve(@{@"layerId":@(layerKey).stringValue});
     }else{
         reject(@"Map",@"remove Layer By Name failed!!!",nil);
     }
@@ -357,9 +360,12 @@ RCT_REMAP_METHOD(removeLayerByName,removeLayerById:(NSString*)mapId andName:(NSS
 RCT_REMAP_METHOD(removeLayerByIndex,removeLayerById:(NSString*)mapId andIndex:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Map* map = [JSObjManager getObjWithKey:mapId];
     Layers* layers = map.layers;
+    Layer* removingLayer = [layers getLayerAtIndex:index];
     BOOL isRemove = [layers removeAt:index];
     if(isRemove){
-        resolve(@"remove successfully");
+        NSInteger layerKey = (NSInteger)removingLayer;
+        [JSObjManager addObj:removingLayer];
+        resolve(@{@"layerId":@(layerKey).stringValue});
     }else{
         reject(@"Map",@"remove Layer By Index failed!!!",nil);
     }
@@ -370,8 +376,13 @@ RCT_REMAP_METHOD(contains,containsById:(NSString*)mapId andName:(NSString*)name 
     Layers* layers = map.layers;
     if(layers){
         int index = [layers indexOf:name];
-        NSNumber* nsIsContain = [NSNumber numberWithInt:index];
-        resolve(@{@"isContain":nsIsContain});
+        NSNumber* result = nil;
+        if (index ==-1) {
+            result = [NSNumber numberWithBool:false];
+        }else{
+            result = [NSNumber numberWithBool:true];
+        }
+        resolve(@{@"isContain":result});
     }else{
         reject(@"Map",@"remove Layer By Index failed!!!",nil);
     }
@@ -384,14 +395,14 @@ RCT_REMAP_METHOD(moveDown,moveDownById:(NSString*)mapId andName:(NSString*)name 
     int index = [layers indexOf:name];
     if(layers && index<=count-2 && index>=0){
         BOOL isMove = [layers moveTo:index desIndex:index+1];
-        NSNumber* nsIsMove = [NSNumber numberWithInt:isMove];
+        NSNumber* nsIsMove = [NSNumber numberWithBool:isMove];
         resolve(@{@"moved":nsIsMove});
     }else{
         reject(@"Map",@"move down By name failed!!!",nil);
     }
 }
 
-RCT_REMAP_METHOD(moveUp,moveUpById:(NSString*)mapId andName:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(i,moveUpById:(NSString*)mapId andName:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Map* map = [JSObjManager getObjWithKey:mapId];
     Layers* layers = map.layers;
     int count = [layers getCount];

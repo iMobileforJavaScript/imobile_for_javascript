@@ -458,7 +458,7 @@ export default class Map{
             if(typeof index === 'string'){
             var {layerId} = await M.removeLayerByName(this.mapId,index);
             }else if(typeof index === 'number'){
-            var {layerId} = await M.removeLayerByIndex(index);
+            var {layerId} = await M.removeLayerByIndex(this.mapId,index);
             }else{
                 throw new Error ('index must be number or string!');
             }
@@ -478,7 +478,7 @@ export default class Map{
      */
     async contains(name){
         try{
-            var {isContain} = await M.contains(name);
+            var {isContain} = await M.contains(this.mapId,name);
             return isContain;
         }catch(e){
             console.error(e);
@@ -493,7 +493,7 @@ export default class Map{
      */
     async moveDown(name){
         try{
-            var {moved} = await M.moveDown(name);
+            var {moved} = await M.moveDown(this.mapId,name);
             return moved;
         }catch(e){
             console.error(e);
@@ -508,7 +508,7 @@ export default class Map{
      */
     async moveUp(name){
         try{
-            var {moved} = await M.moveUp(name);
+            var {moved} = await M.moveUp(this.mapId,name);
             return moved;
         }catch(e){
             console.error(e);
