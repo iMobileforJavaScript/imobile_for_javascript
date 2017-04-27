@@ -24,6 +24,18 @@ export default class Theme {
             console.error(e);
         }
     }
+    
+    async makeThemeRange(themeParam) {
+        try {
+            var {themeId} = await T.makeThemeRange(themeParam.datasetVector.datasetVectorId, themeParam.rangeExpression, themeParam.rangeMode, themeParam.rangeParameter, themeParam.colorGradientType);
+            var theme = new Theme();
+            theme.themeId = themeId;
+            return theme;
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    
 }
 
 Theme.RangeMode = {
