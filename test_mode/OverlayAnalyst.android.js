@@ -70,7 +70,7 @@ export default class GeometryInfo extends Component {
                   this.map = await this.mapControl.getMap();
                   await this.map.setWorkspace(this.workspace);
 
-                  await this.map.addDataset(d3,true);
+                  // await this.map.addDataset(d3,true);
                   await this.map.refresh();
 
               } catch (e) {

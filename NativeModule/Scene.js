@@ -99,7 +99,7 @@ export default class Scene {
      */
     async pan(offsetLongitude,offsetLatitude){
         try{
-            await S.refresh(this.sceneId,offsetLongitude,offsetLatitude);
+            await S.pan(this.sceneId,offsetLongitude,offsetLatitude);
         }catch (e){
             console.error(e);
         }
@@ -112,7 +112,7 @@ export default class Scene {
      */
     async viewEntire(){
         try{
-            await S.viewEntire();
+            await S.viewEntire(this.sceneId);
         }catch (e){
             console.error(e);
         }
@@ -126,7 +126,7 @@ export default class Scene {
      */
     async zoom(ratio){
         try{
-            await S.zoom(ratio);
+            await S.zoom(this.sceneId,ratio);
         }catch (e){
             console.error(e);
         }
@@ -139,7 +139,7 @@ export default class Scene {
      */
     async close(){
         try{
-            await S.close();
+            await S.close(this.sceneId);
         }catch (e){
             console.error(e);
         }
@@ -152,7 +152,7 @@ export default class Scene {
      */
     async dispose(){
         try{
-            await S.dispose();
+            await S.dispose(this.sceneId);
         }catch (e){
             console.error(e);
         }

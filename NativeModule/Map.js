@@ -446,6 +446,25 @@ export default class Map{
             console.error(e);
         }
     }
+
+    /**
+     * 用于将一个数据集添加到此图层集合作为一个专题图层显示，即创建一个专题图层，并指定专题图层的专题图对象。
+     * @memberOf Map
+     * @param dataset - 要添加到图层的数据集。
+     * @param theme - 指定此专题图层的专题图对象。
+     * @param addToHead - 指定新创建图层是否放在图层集合的最上面一层。当设置为 false 时，则将此新创建图层放在最底层。
+     * @returns {Promise.<Layer>}
+     */
+    async addThemeLayer(dataset,theme,addToHead){
+        try{
+            var {layerId} = await M.addThemeLayer(this.mapId,dataset.datasetId,theme.themeId,addToHead);
+            var layer = new Layer();
+            layer.layerId = layerId;
+            return layer;
+        }catch(e){
+            console.error(e);
+        }
+    }
     
     /**
      * 用于把一个图层移除。

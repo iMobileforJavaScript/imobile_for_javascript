@@ -202,8 +202,8 @@ RCT_REMAP_METHOD(openDatasource,openDatasourceByKey:(NSString*)key jsonObject:(N
         if ([keyArr containsObject:@"webVisibleLayers"]) info.webVisibleLayers = [jsObj objectForKey:@"webVisibleLayers"];
         if ([keyArr containsObject:@"webExtendParam"]) info.webExtendParam = [jsObj objectForKey:@"webExtendParam"];
         if ([keyArr containsObject:@"webBBox"]){
-            Rectangle2D* rect2d = [JSObjManager getObjWithKey:[jsObj objectForKey:@"webExtendParam"]];
-            info.webBBox = [jsObj objectForKey:@"webExtendParam"];
+            Rectangle2D* rect2d = [JSObjManager getObjWithKey:[jsObj objectForKey:@"webBBox"]];
+            info.webBBox = [jsObj objectForKey:@"webBBox"];
         }
         Datasource* dataSource = [dataSources open:info];
         NSInteger nsDSource = (NSInteger)dataSource;

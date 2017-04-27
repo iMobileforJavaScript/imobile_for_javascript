@@ -26,7 +26,7 @@ export default class Track {
 
     /**
      * 创建轨迹数据集，创建出来的数据集为点数据集。
-     * @memberOf Track
+     * @memberOf Track0
      * @param {object} datasource - 轨迹数据集所属的数据源。
      * @param {string} name - 数据集的名称。
      * @returns {Promise.<Dataset>}

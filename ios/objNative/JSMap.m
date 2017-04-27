@@ -402,7 +402,7 @@ RCT_REMAP_METHOD(moveDown,moveDownById:(NSString*)mapId andName:(NSString*)name 
     }
 }
 
-RCT_REMAP_METHOD(i,moveUpById:(NSString*)mapId andName:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(moveUp,moveUpById:(NSString*)mapId andName:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Map* map = [JSObjManager getObjWithKey:mapId];
     Layers* layers = map.layers;
     int count = [layers getCount];
@@ -413,6 +413,21 @@ RCT_REMAP_METHOD(i,moveUpById:(NSString*)mapId andName:(NSString*)name resolver:
         resolve(@{@"moved":nsIsMove});
     }else{
         reject(@"Map",@"move down By name failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(addThemeLayer,addThemeLayerById:(NSString*)mapId datasetId:(NSString*)datasetId themeId:(NSString*)themeId toHead:(BOOL)isHead resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Map* map = [JSObjManager getObjWithKey:mapId];
+    Dataset* dataset = [JSObjManager getObjWithKey:datasetId];
+    Theme* theme = [JSObjManager getObjWithKey:themeId];
+    Layers* layers = map.layers;
+    if(layers){
+        Layer* themeLayer = [layers addDataset:dataset Theme:theme ToHead:isHead];
+        NSInteger themeLayerKey = (NSInteger)themeLayer;
+        [JSObjManager addObj:themeLayer];
+        resolve(@{@"layerId":@(themeLayerKey).stringValue});
+    }else{
+        reject(@"Map",@"add Theme Layer failed!!!",nil);
     }
 }
 /* 此接口未开出

@@ -75,6 +75,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSGeoLine(reactContext));
         modules.add(new JSGeoPoint(reactContext));
         modules.add(new JSGeoRegion(reactContext));
+        modules.add(new JSTheme(reactContext));
         modules.add(new JSTrack(reactContext));
         modules.add(new JSTrackingLayer(reactContext));
         modules.add(new JSBufferAnalystParameter(reactContext));

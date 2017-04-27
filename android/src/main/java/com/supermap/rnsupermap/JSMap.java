@@ -20,6 +20,7 @@ import com.supermap.mapping.Layers;
 import com.supermap.mapping.Map;
 import com.supermap.mapping.MapLoadedListener;
 import com.supermap.mapping.MapOperateListener;
+import com.supermap.mapping.Theme;
 import com.supermap.mapping.TrackingLayer;
 
 import java.util.Calendar;
@@ -446,6 +447,23 @@ public class JSMap extends ReactContextBaseJavaModule {
         }
     }
     
+    @ReactMethod
+    public void addThemeLayer(String mapId,String datasetId,String themeId,boolean addToHead,Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            Dataset dataset = JSDataset.getObjById(datasetId);
+            Theme theme = JSTheme.getObjFromList(themeId);
+            Layer layer = map.getLayers().add(dataset,theme,addToHead);
+            String layerId = JSLayer.registerId(layer);
+
+            WritableMap map1 = Arguments.createMap();
+            map1.putString("layerId",layerId);
+            promise.resolve(map1);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
     @ReactMethod
     public void getCenter(String mapId,String datasetId,Promise promise){
         try{
