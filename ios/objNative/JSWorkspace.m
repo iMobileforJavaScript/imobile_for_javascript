@@ -186,7 +186,7 @@ RCT_REMAP_METHOD(openDatasource,openDatasourceByKey:(NSString*)key jsonObject:(N
         if ([keyArr containsObject:@"engineType"]){
             NSNumber* num = [jsObj objectForKey:@"engineType"];
             long type = num.floatValue;
-            info.engineType = type;
+            info.engineType = (EngineType)type;
         }
         if ([keyArr containsObject:@"server"]){
             NSString* path = [jsObj objectForKey:@"server"];
@@ -234,12 +234,14 @@ RCT_REMAP_METHOD(openWMSDatasource,openDatasourceByKey:(NSString*)key andServer:
         NSNumber* nsTop = [webBox objectForKey:@"top"];
         double top = nsTop.doubleValue;
         
-        Rectangle2D* rect2D = [[Rectangle2D alloc]initWith:left bottom:bottom right:right top:left];
+        Rectangle2D* rect2D = [[Rectangle2D alloc]initWith:left bottom:bottom right:right top:top];
         info.webBBox = rect2D;
         info.webCoordinate = webCoordinate;
         
         Datasource* dataSource = [dataSources open:info];
-        resolve(@"open");
+        NSInteger dsKey = (NSInteger)dataSource;
+        [JSObjManager addObj:dataSource];
+        resolve(@{@"datasourceId":@(dsKey).stringValue});
     }else{
         reject(@"workspace",@"open LocalDatasource failed!",nil);
     }

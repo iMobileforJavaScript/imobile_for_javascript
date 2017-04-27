@@ -69,7 +69,7 @@ RCT_REMAP_METHOD(setStartPoint,setStartPointById:(NSString*)naviId withPointX:(d
     Map* map = [JSObjManager getObjWithKey:mapId];
     PrjCoordSys* prj = map.prjCoordSys;
     Point2D* point = [[Point2D alloc]initWithX:pointX Y:pointY];
-    Point2Ds* points = [[Point2Ds alloc]initWithPoint2DsArray:@[point]];
+    Point2Ds* points = [[Point2Ds alloc]initWithPoint2DsArray:[NSMutableArray arrayWithArray:@[point]]];
     BOOL isTranslate = [CoordSysTranslator inverse:points PrjCoordSys:prj];
     if(navi&&isTranslate){
         Point2D* translatedPoint = [points getItem:0];
@@ -85,7 +85,7 @@ RCT_REMAP_METHOD(setDestinationPoint,setDestinationPointById:(NSString*)naviId w
     Map* map = [JSObjManager getObjWithKey:mapId];
     PrjCoordSys* prj = map.prjCoordSys;
     Point2D* point = [[Point2D alloc]initWithX:pointX Y:pointY];
-    Point2Ds* points = [[Point2Ds alloc]initWithPoint2DsArray:@[point]];
+    Point2Ds* points = [[Point2Ds alloc]initWithPoint2DsArray:[NSMutableArray arrayWithArray:@[point]]];
     BOOL isTranslate = [CoordSysTranslator inverse:points PrjCoordSys:prj];
     if(navi&&isTranslate){
         Point2D* translatedPoint = [points getItem:0];

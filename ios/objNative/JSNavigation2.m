@@ -53,8 +53,12 @@ RCT_REMAP_METHOD(setStartPoint,setStartPointById:(NSString*)nav2Id xPoint:(doubl
     Map* map = [JSObjManager getObjWithKey:mapId];
     PrjCoordSys* prj = map.prjCoordSys;
     Point2D* point = [[Point2D alloc]initWithX:xPoint Y:yPoint];
+    Point2Ds* points = [[Point2Ds alloc]initWithPoint2DsArray:[NSMutableArray arrayWithArray:@[point]]];
+    [CoordSysTranslator inverse:points PrjCoordSys:prj];
+    /*
     Point2Ds* points = [[Point2Ds alloc]initWithPoint2DsArray:@[point]];
     BOOL isTranslate = [CoordSysTranslator inverse:points PrjCoordSys:prj];
+     */
     if (nav) {
         Point2D* translatedPoint = nil;
         if ([points getCount]==0) {
@@ -74,8 +78,12 @@ RCT_REMAP_METHOD(setDestinationPoint,setDestinationPointById:(NSString*)nav2Id x
     Map* map = [JSObjManager getObjWithKey:mapId];
     PrjCoordSys* prj = map.prjCoordSys;
     Point2D* point = [[Point2D alloc]initWithX:xPoint Y:yPoint];
+    /*
     Point2Ds* points = [[Point2Ds alloc]initWithPoint2DsArray:@[point]];
     BOOL isTranslate = [CoordSysTranslator inverse:points PrjCoordSys:prj];
+     */
+    Point2Ds* points = [[Point2Ds alloc]initWithPoint2DsArray:[NSMutableArray arrayWithArray:@[point]]];
+    [CoordSysTranslator inverse:points PrjCoordSys:prj];
     if (nav) {
         Point2D* translatedPoint = nil;
         if ([points getCount]==0) {
@@ -155,26 +163,29 @@ RCT_REMAP_METHOD(cleanPath,cleanPathById:(NSString*)nav2Id resolver:(RCTPromiseR
         reject(@"Nav2",@"cleanPath failed!!!",nil);
     }
 }
+/*
+RCT_REMAP_METHOD(pauseGuide,pauseGuideById:(NSString*)nav2Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Navigation2* nav = [JSObjManager getObjWithKey:nav2Id];
+    if (nav) {
+        [nav pauseGuide];
+        resolve(@"clean path");
+    }else{
+        reject(@"Nav2",@"cleanPath failed!!!",nil);
+    }
+}
+*/
 
-//RCT_REMAP_METHOD(pauseGuide,pauseGuideById:(NSString*)nav2Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-//    Navigation2* nav = [JSObjManager getObjWithKey:nav2Id];
-//    if (nav) {
-//        [nav pauseGuide];
-//        resolve(@"clean path");
-//    }else{
-//        reject(@"Nav2",@"cleanPath failed!!!",nil);
-//    }
-//}
-//
-//RCT_REMAP_METHOD(resumeGuide,resumeGuideById:(NSString*)nav2Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-//    Navigation2* nav = [JSObjManager getObjWithKey:nav2Id];
-//    if (nav) {
-//        [nav resumeGuide];
-//        resolve(@"clean path");
-//    }else{
-//        reject(@"Nav2",@"cleanPath failed!!!",nil);
-//    }
-//}
+/*
+RCT_REMAP_METHOD(resumeGuide,resumeGuideById:(NSString*)nav2Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Navigation2* nav = [JSObjManager getObjWithKey:nav2Id];
+    if (nav) {
+        [nav resumeGuide];
+        resolve(@"clean path");
+    }else{
+        reject(@"Nav2",@"cleanPath failed!!!",nil);
+    }
+}
+ */
 
 RCT_REMAP_METHOD(stopGuide,stopGuideById:(NSString*)nav2Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Navigation2* nav = [JSObjManager getObjWithKey:nav2Id];
@@ -208,15 +219,17 @@ RCT_REMAP_METHOD(enablePanOnGuide,enablePanOnGuideById:(NSString*)nav2Id andPan:
     }
 }
 
-//RCT_REMAP_METHOD(locateMap,locateMapById:(NSString*)nav2Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-//    Navigation2* nav = [JSObjManager getObjWithKey:nav2Id];
-//    if (nav) {
-//        [nav locateMap];
-//        resolve(@"setted");
-//    }else{
-//        reject(@"Nav2",@"set pan onGuide failed!!!",nil);
-//    }
-//}
+/*
+RCT_REMAP_METHOD(locateMap,locateMapById:(NSString*)nav2Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Navigation2* nav = [JSObjManager getObjWithKey:nav2Id];
+    if (nav) {
+        [nav locateMap];
+        resolve(@"setted");
+    }else{
+        reject(@"Nav2",@"set pan onGuide failed!!!",nil);
+    }
+}
+ */
 
 RCT_REMAP_METHOD(setIsAutoNavi,setIsAutoNaviById:(NSString*)nav2Id withIsAudo:(BOOL)isAudo resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Navigation2* nav = [JSObjManager getObjWithKey:nav2Id];
