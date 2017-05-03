@@ -29,6 +29,8 @@ import MapControl from './NativeModule/MapControl.js';
 import Maps from './NativeModule/Maps.js';
 import MapView from './NativeModule/MapView.js';
 import Navigation2 from './NativeModule/Navigation2.js';
+import OverlayAnalyst from './NativeModule/OverlayAnalyst.js';
+import OverlayAnalystParameter from './NativeModule/OverlayAnalystParameter.js';
 import Point from './NativeModule/Point.js';
 import Point2D from './NativeModule/Point2D.js';
 import PrjCoordSys from './NativeModule/PrjCoordSys.js';
@@ -98,6 +100,8 @@ export {
     Maps,
     MapView,
     Navigation2,
+    OverlayAnalyst,
+    OverlayAnalystParameter,
     Point,
     Point2D,
     PrjCoordSys,
