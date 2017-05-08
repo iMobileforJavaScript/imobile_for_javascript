@@ -3,9 +3,7 @@
  */
 import {NativeModules} from 'react-native';
 let CV = NativeModules.JSChartView;
-import Dataset from './Dataset.js';
-import Selection from './Selection.js';
-import LayerSetting from './LayerSetting.js';
+import ChartLegend from './ChartLegend.js';
 
 /**
  * @class Layer
@@ -26,148 +24,91 @@ export default class ChartView{
     }
     /**
      * 判断图层是否处于可编辑状态。
-     * @memberOf Layer
+     * @memberOf ChartView
      * @returns {Promise.<boolean>}
      */
     async getTitle(){
         try{
             var{title} = await CV.getTitle(this.chartviewId);
-            return isEditable;
+            return title;
         }catch(e){
             console.error(e);
         }
     }
 
     /**
-     * 返回图层的名称。图层的名称在图层所在的地图中唯一标识此图层。该标识不区分大小写。
-     * @memberOf Layer
-     * @param {index} index - 图层序号
+     * 获取统计图图例
+     * @memberOf ChartView
+     * @returns {Promise.<ChartLegend>}
+     */
+    async getLegend(){
+        try{
+            var {chartLegendId} = await CV.getLegend(this.chartviewId);
+            var chartLegend = new ChartLegend();
+            chartLegend.chartLegendId = chartLegendId;
+            return chartLegend;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 接入统计数据
+     * @memberOf ChartView
+     * @param {object}data - 统计数据
      * @returns {Promise.<void>}
      */
-    async getName(index){
+    async addChartData(data,timeTag){
         try{
-            var {layerName} = await L.getName(this.layerId,index);
-            return layerName;
+            if(arguments.length==2){
+            await CV.addChartDataWithTime(this.chartviewId,data,timeTag);
+            }else{
+            await CV.addChartData(this.chartviewId,data);
+            }
         }catch(e){
             console.error(e);
         }
     }
 
     /**
-     * 返回此图层对应的数据集对象。图层是对数据集的引用，因而，一个图层与一个数据集相对应。
-     * @memberOf Layer
-     * @returns {Promise.<Dataset>}
-     */
-    async getDataset(){
-        try{
-            var {datasetId} = await L.getDataset(this.layerId);
-            var dataset = new Dataset();
-            dataset.datasetId = datasetId;
-            return dataset;
-        }catch(e){
-            console.error(e);
-        }
-    }
-
-    /**
-     * 设置图层关联的数据集。 设置的数据集必须与当前地图属于同一工作空间，且数据集类型与原有数据集类型一致，否则会抛出异常。
-     * @memberOf Layer
-     * @param {object} dataset - 图层关联的数据集
+     * 移除统计数据。
+     * @memberOf ChartView
+     * @param {object} data - 统计数据
      * @returns {Promise.<void>}
      */
-    async setDataset(dataset){
+    async removeChartData(timeTag){
         try{
-            await L.setDataset(this.layerId,dataset.datasetId);
+            if(arguments.length ==1){
+            await CV.removeChartDataWithTimeTag(this.chartviewId,timeTag);
+            }else{
+            await CV.removeAllData(this.chartviewId);
+            }
         }catch(e){
             console.error(e);
         }
     }
 
     /**
-     * 返回此图层中的选择集对象。选择集是个集合，其中包含选择的图层中的一个或多个要素。在选择集中的要素才可以被编辑。注意选择集只适用于矢量数据集，栅格数据集和影像数据集没有选择集。
-     * @memberOf Layer
-     * @returns {Promise.<Selection>}
-     */
-    async getSelection(){
-        try{
-            var {selectionId,recordsetId} = await L.getSelection(this.layerId);
-            var selection = new Selection();
-            selection.selectionId = selectionId;
-            selection.recordsetId = recordsetId;
-            return selection;
-        }catch(e){
-            console.error(e);
-        }
-    }
-
-    /**
-     * 设置图层中对象是否可以选择。
-     * @memberOf Layer
-     * @param {boolean} b - 指定图层中对象是否可以选择。
+     * 销毁图表
+     * @memberOf ChartView
      * @returns {Promise.<void>}
      */
-    async setSelectable(b){
+    async dispose(){
         try{
-            await L.setSelectable(this.layerId,b);
-        }catch(e){
-            console.error(e);
-        }
-    }
-    
-    /**
-     * 获取此图层是否可见。true 表示此图层可见，false 表示图层不可见。当图层不可见时，其他所有的属性的设置将无效。
-     * @memberOf Layer
-     * @param {boolean} b - 指定图层是否可见。
-     * @returns {Promise.<boolean>}
-     */
-    async getVisible(b){
-        try{
-            var isVisible = await L.getVisible(this.layerId);
-            return isVisible;
+            await CV.dispose(this.chartviewId);
         }catch(e){
             console.error(e);
         }
     }
 
     /**
-     * 设置此图层是否可见。true 表示此图层可见，false 表示图层不可见。当图层不可见时，其他所有的属性的设置将无效。
-     * @memberOf Layer
-     * @param {boolean} b - 指定图层是否可见。
+     * 更新图表
+     * @memberOf ChartView
      * @returns {Promise.<void>}
      */
-    async setVisible(b){
+    async update(){
         try{
-            await L.setVisible(this.layerId,b);
-        }catch(e){
-            console.error(e);
-        }
-    }
-
-    /**
-     * 返回普通图层的风格设置。LayerSettingVector 类用来对矢量数据图层风格进行设置和修改。
-     * @memberOf Layer
-     * @returns {Promise.<LayerSetting>}
-     */
-    async getAdditionalSetting(){
-        try{
-            var {_layerSettingId_} = await L.getAdditionalSetting(this.layerId);
-            var layerSetting = new LayerSetting();
-            layerSetting._layerSettingId_ = _layerSettingId_;
-            return layerSetting;
-        }catch(e){
-            console.error(e);
-        }
-    }
-
-    /**
-     * 设置普通图层的风格。普通图层风格的设置对矢量数据图层、栅格数据图层以及影像数据图层是不相同的。LayerSettingVector类用来对矢量数据图层的风格进行设置和修改。
-     * @memberOf Layer
-     * @param {LayerSetting} layerSetting - 普通图层的风格设置.{@link LayerSetting}
-     * @returns {Promise.<void>}
-     */
-    async setAdditionalSetting(layerSetting){
-        try{
-            await L.setAdditionalSetting(this.layerId,layerSetting._layerSettingId_);
+            await CV.update(this.chartviewId);
         }catch(e){
             console.error(e);
         }

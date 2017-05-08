@@ -7,7 +7,7 @@
 //
 
 #import "JSCallOut.h"
-#import "SuperMap/CallOut.h"
+#import "SuperMap/Callout.h"
 #import "JSObjManager.h"
 
 @implementation JSCallOut
