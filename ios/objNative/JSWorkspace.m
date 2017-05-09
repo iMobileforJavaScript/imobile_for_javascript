@@ -13,6 +13,7 @@
 #import "SuperMap/DatasourceConnectionInfo.h"
 #import "SuperMap/Rectangle2D.h"
 #import "SuperMap/Maps.h"
+#import "SuperMap/Scenes.h"
 #import "JSWorkspaceConnectionInfo.h"
 #import "JSDatasourceConnectionInfo.h"
 #import "JSDatasources.h"
@@ -334,7 +335,19 @@ RCT_REMAP_METHOD(clearMap,clearMapByKey:(NSString*)key resolver:(RCTPromiseResol
     }
 }
 
+RCT_REMAP_METHOD(getSceneName,getSceneNameByKey:(NSString*)key index:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Workspace* workspace = [JSObjManager getObjWithKey:key];
+    Scenes* scenes = workspace.scenes;
+    if(scenes){
+        NSString* name = [scenes get:index];
+        resolve(@{@"name":name});
+    }else{
+        reject(@"workspace",@"get SceneName failed!!!",nil);
+    }
+}
+
 #pragma mark - ios
+/*
 RCT_REMAP_METHOD(dispose,disposeKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   
   Workspace* workspace = [JSObjManager getObjWithKey:key];
@@ -345,7 +358,5 @@ RCT_REMAP_METHOD(dispose,disposeKey:(NSString*)key resolver:(RCTPromiseResolveBl
     reject(@"workspace",@"save failed!!!",nil);
   }
 }
-
-
-
+ */
 @end
