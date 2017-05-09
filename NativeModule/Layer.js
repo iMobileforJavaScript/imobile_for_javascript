@@ -24,6 +24,19 @@ export default class Layer{
             console.error(e);
         }
     }
+    /**
+     * 判断图层是否处于可编辑状态。
+     * @memberOf Layer
+     * @returns {Promise.<boolean>}
+     */
+    async getEditable(){
+        try{
+            var{isEditable} = await L.getEditable(this.layerId);
+            return isEditable;
+        }catch(e){
+            console.error(e);
+        }
+    }
 
     /**
      * 返回图层的名称。图层的名称在图层所在的地图中唯一标识此图层。该标识不区分大小写。

@@ -166,7 +166,7 @@ RCT_REMAP_METHOD(getNavigation2,getNavigation2BymapControlId:(NSString*)Id resol
 
 RCT_REMAP_METHOD(getTraditionalNavi,getTraditionalNaviBymapControlId:(NSString*)Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     MapControl* mapControl = [JSObjManager getObjWithKey:Id];
-    Navigation2* navi = [mapControl getNavigation];
+    Navigation* navi = [mapControl getNavigation];
     if(navi){
         NSInteger key = (NSInteger)navi;
         [JSObjManager addObj:navi];
@@ -181,7 +181,7 @@ RCT_REMAP_METHOD(getCurrentGeometry,getCurrentGeometryById:(NSString*)Id resolve
   Geometry *geo = [mapControl getCurrentGeometry];
     if (geo) {
       GeometryType type = [geo getType];
-        NSString* typeStr = [NSNull null];
+        NSString* typeStr = nil;
         switch (type) {
             case GT_GEOPOINT:
                 typeStr = @"GeoPoint";

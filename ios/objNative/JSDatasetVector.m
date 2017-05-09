@@ -57,7 +57,7 @@ RCT_REMAP_METHOD(query,queryWithDatasetVectorId:(NSString*)datasetVectorId andQu
     if(record){
         NSInteger nsRecord = (NSInteger)record;
         [JSObjManager addObj:record];
-        int recordCount = record.recordCount;
+        int recordCount = (int)record.recordCount;
         NSNumber* nsCount = [NSNumber numberWithInt:recordCount];
         NSNumber* nsBatch = [NSNumber numberWithInt:batch];
         NSNumber* nsSize = [NSNumber numberWithInt:size];
@@ -142,6 +142,17 @@ RCT_REMAP_METHOD(toGeoJSON,toGeoJSONWithId:(NSString*)datasetVectorId formStartI
 RCT_REMAP_METHOD(fromGeoJSON,fromGeoJSONWithId:(NSString*)datasetVectorId andJSONString:(NSString*)JSONString resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     DatasetVector* datasetVector = [JSObjManager getObjWithKey:datasetVectorId];
     if(datasetVector){
+        BOOL isSuccess = [datasetVector fromGeoJSON:JSONString];
+        NSNumber* nsSuccess = [NSNumber numberWithBool:isSuccess];
+        resolve(@{@"done":nsSuccess});
+    }else{
+        reject(@"datasetVector",@"translate from geoJSON failed!!!",nil);
+    }
+}
+/*
+RCT_REMAP_METHOD(queryByFilter,queryByFilterWithId:(NSString*)datasetVectorId withAttributeFilter:(NSString*)attributeFilter resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    DatasetVector* datasetVector = [JSObjManager getObjWithKey:datasetVectorId];
+    if(datasetVector){
         BOOL* isSuccess = [datasetVector fromGeoJSON:JSONString];
         NSNumber* nsSuccess = [NSNumber numberWithBool:isSuccess];
         resolve(@{@"done":nsSuccess});
@@ -149,17 +160,7 @@ RCT_REMAP_METHOD(fromGeoJSON,fromGeoJSONWithId:(NSString*)datasetVectorId andJSO
         reject(@"datasetVector",@"translate from geoJSON failed!!!",nil);
     }
 }
-
-RCT_REMAP_METHOD(queryByFilter,queryByFilterWithId:(NSString*)datasetVectorId withAttributeFilter:(NSString*)attributeFilter resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    DatasetVector* datasetVector = [JSObjManager getObjWithKey:datasetVectorId];
-//    if(datasetVector){
-//        BOOL* isSuccess = [datasetVector fromGeoJSON:JSONString];
-//        NSNumber* nsSuccess = [NSNumber numberWithBool:isSuccess];
-//        resolve(@{@"done":nsSuccess});
-//    }else{
-//        reject(@"datasetVector",@"translate from geoJSON failed!!!",nil);
-//    }
-}
+ */
 
   /**
    @deprecated - 弃用

@@ -34,6 +34,7 @@ RCT_REMAP_METHOD(download,DDSId:(NSString*)DDSId fullURL:(NSString*)fullURL from
   }
 }
 
+
 RCT_REMAP_METHOD(downloadByName,DDSId:(NSString*)DDSId serviceName:(NSString*)serviceName datasourceName:(NSString*)datasourceName datasetName:(NSString*)datasetName fromIndex:(int)fromIndex toIndex:(int)toIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     DataDownloadService* DDS = [JSObjManager getObjWithKey:DDSId];
 //    [DDS download:<#(NSString *)#> serviceName:<#(NSString *)#> datasourceName:<#(NSString *)#> datasetName:<#(NSString *)#> fromIndex:<#(int)#> toIndex:<#(int)#>]

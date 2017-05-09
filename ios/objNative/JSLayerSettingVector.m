@@ -49,9 +49,8 @@ RCT_REMAP_METHOD(getType,getTypeById:(NSString*)LSVId resolver:(RCTPromiseResolv
     LayerSettingVector* LSV = [JSObjManager getObjWithKey:LSVId];
     if(LSV){
         LayerSettingType type = LSV.layerType;
-        NSInteger key = (NSInteger)LSV.geoStyle;
-        [JSObjManager addObj:LSV.geoStyle];
-        resolve(@{@"geoStyleId":@(key).stringValue});
+        NSNumber* typeNum = [NSNumber numberWithInteger:(NSInteger)type];
+        resolve(@{@"type":typeNum});
     }else{
         reject(@"layerSettingVector",@"get Type failed!!!",nil);
     }

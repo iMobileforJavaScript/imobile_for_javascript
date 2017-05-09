@@ -25,7 +25,7 @@
 }
 
 +(Rectangle2D*)dicToReactangle2D:(NSDictionary*)dic{
-    Rectangle2D* reactangle = [NSNull null];
+    Rectangle2D* reactangle = nil;
     NSNumber* nsLeft = [dic objectForKey:@"left"];
     double left = nsLeft.doubleValue;
     NSNumber* nsBottom = [dic objectForKey:@"bottom"];

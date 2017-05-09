@@ -16,7 +16,7 @@
 //注册为Native模块
 RCT_EXPORT_MODULE();
 
-RCT_REMAP_METHOD(setEditable,setEditableKey:(NSString*)key  editable:(BOOL)editable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setEditable,setEditableKey:(NSString*)key editable:(BOOL)editable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Layer* layer = [JSObjManager getObjWithKey:key];
   if(layer){
     layer.editable = editable;
@@ -25,6 +25,18 @@ RCT_REMAP_METHOD(setEditable,setEditableKey:(NSString*)key  editable:(BOOL)edita
     reject(@"Layer",@"set editable failed!",nil);
   }
 }
+
+RCT_REMAP_METHOD(getEditable,getEditableByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Layer* layer = [JSObjManager getObjWithKey:key];
+    if(layer){
+        BOOL isEditable = layer.editable;
+        NSNumber* nsBool = [NSNumber numberWithBool:isEditable];
+        resolve(@{@"isEditable":nsBool});
+    }else{
+        reject(@"Layer",@"get editable failed!",nil);
+    }
+}
+
 
 RCT_REMAP_METHOD(getName,getNameByKey:(NSString*)key andIndex:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Layer* layer = [JSObjManager getObjWithKey:key];
