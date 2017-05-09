@@ -9,6 +9,7 @@ import ChartView from './ChartView.js';
  */
 export default class PointDensityChart extends ChartView{
     constructor(){
+        super();
         Object.defineProperty(this,"pointDensityChartId",{
                               get:function(){
                                 return this.chartviewId

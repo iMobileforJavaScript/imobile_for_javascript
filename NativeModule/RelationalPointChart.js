@@ -9,6 +9,7 @@ import ChartView from './ChartView.js';
  */
 export default class RelationalPointChart extends ChartView{
     constructor(){
+        super();
         Object.defineProperty(this,"relationalPointChartId",{
                               get:function(){
                                 return this.chartviewId

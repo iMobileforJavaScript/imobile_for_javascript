@@ -9,6 +9,7 @@ import ChartView from './ChartView.js';
  */
 export default class PolymerChart extends ChartView{
     constructor(){
+        super();
         Object.defineProperty(this,"polymerChartId",{
                               get:function(){
                                 return this.chartviewId

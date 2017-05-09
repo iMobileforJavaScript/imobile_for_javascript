@@ -9,6 +9,7 @@ import ChartView from './ChartView.js';
  */
 export default class GridHotChart extends ChartView{
     constructor(){
+        super();
         Object.defineProperty(this,"gridHotChartId",{
                               get:function(){
                                 return this.chartviewId

@@ -9,6 +9,7 @@ import ChartView from './ChartView.js';
  */
 export default class InstrumentChart extends ChartView{
     constructor(){
+        super();
         Object.defineProperty(this,"instrumentChartId",{
                               get:function(){
                                 return this.chartviewId
