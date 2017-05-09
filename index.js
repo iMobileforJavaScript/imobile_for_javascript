@@ -51,6 +51,25 @@ import TraditionalNavi from './NativeModule/TraditionalNavi.js';
 import Workspace from './NativeModule/Workspace.js';
 import WorkspaceConnectionInfo from './NativeModule/WorkspaceConnectionInfo.js';
 
+import ChartData from './NativeModule/ChartData.js';
+import ChartView from './NativeModule/ChartView.js';
+import ChartPoint from './NativeModule/ChartPoint.js';
+import ChartLegend from './NativeModule/ChartLegend.js';
+import ColorScheme from './NativeModule/ColorScheme.js';
+import BarChart from './NativeModule/BarChart.js';
+import BarChartData from './NativeModule/BarChartData.js';
+import LineChart from './NativeModule/LineChart.js';
+import LineChartData from './NativeModule/LineChartData.js';
+import PieChart from './NativeModule/PieChart.js';
+import PieChartData from './NativeModule/PieChartData.js';
+import HotChart from './NativeModule/HotChart.js';
+import GridHotChart from './NativeModule/GridHotChart.js';
+import InstrumentChart from './NativeModule/InstrumentChart.js';
+import PointDensityChart from './NativeModule/PointDensityChart.js';
+import PolymerChart from './NativeModule/PolymerChart.js';
+import RelationalPointChart from './NativeModule/RelationalPointChart.js';
+
+
 import Utility from './NativeModule/utility/utility.js';
 
 import SMMapView from './NativeModule/components/SMMapViewUI.js';
@@ -65,8 +84,29 @@ export {
     SMLayerListView,
     SMLegendView,
     SMScaleView,
+    SMSceneView,
 
     Utility,
+    
+    //chart
+    ChartData,
+    ChartView,
+    ChartPoint,
+    ChartLegend,
+    ColorScheme,
+    BarChart,
+    BarChartData,
+    LineChart,
+    LineChartData,
+    PieChart,
+    PieChartData,
+    HotChart,
+    GridHotChart,
+    InstrumentChart,
+    PointDensityChart,
+    PolymerChart,
+    RelationalPointChart,
+    
 
     //Modules
     BufferAnalystGeometry,
