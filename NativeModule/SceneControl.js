@@ -1,4 +1,4 @@
-import {NativeModules} from 'react-native';
+import {NativeModules,Platform} from 'react-native';
 let SC = NativeModules.JSSceneControl;
 import Scene from './Scene';
 
@@ -14,6 +14,16 @@ export default class SceneControl {
             console.error(e);
         }
     }
+    
+    async initWithViewCtrl(tag){
+        try{
+            if(Platform.OS === 'ios'){
+            await SC.initWithViewCtrl(this.sceneControlId,tag);
+            }
+        }catch (e){
+            console.error(e);
+        }
+    }
 
     async setGestureDetector(handlers){
         try{
@@ -23,7 +33,9 @@ export default class SceneControl {
                 throw new Error("setGestureDetector need callback functions as first two argument!");
             }
             //差异化
+            
             if(Platform.OS === 'ios'){
+                /*
                 if(typeof handlers.longPressHandler === "function"){
                     nativeEvt.addListener("com.supermap.RN.JSMapcontrol.long_press_event",function (e) {
                         // longPressHandler && longPressHandler(e);
@@ -36,6 +48,7 @@ export default class SceneControl {
                         scrollHandler && scrollHandler(e);
                     });
                 }
+                 */
             }else{
                 if(typeof handlers.longPressHandler === "function"){
                     DeviceEventEmitter.addListener("com.supermap.RN.JSMapcontrol.long_press_event",function (e) {

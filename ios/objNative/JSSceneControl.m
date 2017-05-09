@@ -6,7 +6,7 @@
 //  Copyright © 2017年 Facebook. All rights reserved.
 //
 #import <React/UIView+React.h>
-
+#import <React/RCTUIManager.h>
 #import "JSSceneControl.h"
 #import "SuperMap/SceneControl.h"
 #import "JSObjManager.h"
@@ -29,13 +29,11 @@ RCT_REMAP_METHOD(getScene, getSceneByID:(NSString*)sceneControlId resolver:(RCTP
 
 RCT_REMAP_METHOD(initWithViewCtrl, initByID:(NSString*)sceneControlId reactTag:(NSNumber*)tag resolver:(RCTPromiseResolveBlock)resolve rejrcter:(RCTPromiseRejectBlock)reject){
     SceneControl* sceneCtr = [JSObjManager getObjWithKey:sceneControlId];
-    Scene* scene = sceneCtr.scene;
-    if (scene) {
-        NSInteger nsSceneKey = (NSInteger)scene;
-        [JSObjManager addObj:scene];
-        resolve(@{@"sceneId":@(nsSceneKey).stringValue});
-    }else{
-        reject(@"sceneControl",@"getScene failed",nil);
-    }
+    RCTUIManager *uiManager = self.bridge.uiManager;
+    dispatch_async(uiManager.methodQueue, ^{[uiManager addUIBlock:^(RCTUIManager* uiManger,NSDictionary<NSNumber*,UIView*>*viewRegistry){
+        UIView *view = viewRegistry[tag];
+        UIViewController *viewController = (UIViewController *)view.reactViewController;
+        [sceneCtr initSceneControl:viewController];
+    }];});
 }
 @end
