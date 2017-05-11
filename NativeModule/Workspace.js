@@ -98,9 +98,10 @@ export default class Workspace{
      * 根据定义好的工作空间连接信息对象，打开工作空间。
      * @memberOf Workspace
      * @param {object} workspaceConnectionInfo
+     * @param {string} passWord - 数据源密码（可选参数）
      * @returns {Promise.<void>}
      */
-    async open(workspaceConnectionInfo){
+    async open(workspaceConnectionInfo,passWord){
         try{
             var WorkspaceConnectionInfoModule = new WorkspaceConnectionInfo();
 
@@ -112,7 +113,9 @@ export default class Workspace{
                 console.log("工作空间类型：" + type);
                 await wci.setType(type);
                 await wci.setServer(workspaceConnectionInfo);
-
+                if(passWord){
+                   await wci.setPassWord(passWord);
+                }
                 var {isOpen} = await W.open(this.workspaceId,wci.workspaceConnectionInfoId)
                 return isOpen;
             }else{
@@ -204,11 +207,16 @@ export default class Workspace{
     /**
      * 保存工作空间
      * @memberOf Workspace
+     * @param {string} server - 另存url（可选参数）
      * @returns {boolean}
      */
-    async saveWorkspace(){
+    async saveWorkspace(server){
         try{
-            var {saved} = await W.saveWorkspace(this.workspaceId);
+            if(path){
+                var {saved} = await W.saveWorkspaceWithServer(this.workspaceId,server);
+            }else{
+                var {saved} = await W.saveWorkspace(this.workspaceId);
+            }
             return saved;
         }catch(e){
             console.error(e);

@@ -51,5 +51,19 @@ export default class WorkspaceConnectionInfo{
             console.error(e);
         }
     }
+    
+    /**
+     * 设置数据源密码
+     * @memberOf WorkspaceConnectionInfo
+     * @param path
+     * @returns {Promise.<void>}
+     */
+    async setPassWord(passWord){
+        try{
+            await WCI.setPassWord(this.workspaceConnectionInfoId,passWord);
+        }catch(e){
+            console.error(e);
+        }
+    }
 
 }

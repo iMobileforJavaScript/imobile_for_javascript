@@ -9,6 +9,7 @@
 #import "JSObjManager.h"
 #import "JSWorkspace.h"
 #import "SuperMap/Workspace.h"
+#import "SuperMap/WorkspaceConnectionInfo.h"
 #import "SuperMap/Datasources.h"
 #import "SuperMap/DatasourceConnectionInfo.h"
 #import "SuperMap/Rectangle2D.h"
@@ -246,6 +247,18 @@ RCT_REMAP_METHOD(openWMSDatasource,openDatasourceByKey:(NSString*)key andServer:
     }else{
         reject(@"workspace",@"open LocalDatasource failed!",nil);
     }
+}
+
+RCT_REMAP_METHOD(saveWorkspaceWithServer,saveWorkspaceByKey:(NSString*)key server:(NSString*)server resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Workspace* workspace = [JSObjManager getObjWithKey:key];
+    if(workspace){
+        WorkspaceConnectionInfo*info = workspace.connectionInfo;
+        info.server = server;
+        BOOL saved = [workspace save];
+        NSNumber* nsSaved = [NSNumber numberWithBool:saved];
+        resolve(@{@"saved":nsSaved});
+    }else
+        reject(@"workspace",@"save failed!!!",nil);
 }
 
 RCT_REMAP_METHOD(saveWorkspace,saveWorkspaceByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
