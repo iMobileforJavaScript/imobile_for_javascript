@@ -124,6 +124,19 @@ export default class Map{
             console.error(e);
         }
     }
+    
+    /**
+     * 关闭当前地图。
+     * @memberOf Map
+     * @returns {Promise.<void>}
+     */
+    async close(){
+        try{
+            await M.close(this.mapId);
+        }catch(e){
+            console.error(e);
+        }
+    }
 
     /**
      * 将地图中指定点的像素坐标转换为地图坐标。
@@ -213,14 +226,18 @@ export default class Map{
     }
 
     /**
-     * 将当前地图另存为指定名称的地图
+     * 将当前地图保存／另存为指定名称的地图
      * @memberOf Map
-     * @param {string} mapName 地图名称
+     * @param {string} mapName 地图名称（可选参数）
      * @returns {Promise.<Promise.saved>}
      */
-    async saveAs(mapName){
+    async save(mapName){
         try{
-            var {saved} = await M.saveAs(this.mapId,mapName);
+            if(typeof mapName === 'string'){
+                var {saved} = await M.saveAs(this.mapId,mapName);
+            }else{
+                var {saved} = await M.save(this.mapId);
+            }
             return saved;
         }catch(e){
             console.error(e);

@@ -51,7 +51,7 @@ export default class Workspace{
             console.error(e);
         }
     }
-
+    
     /**
      * 通过数据源链接信息打开数据源
      * @memberOf Workspace
@@ -59,7 +59,7 @@ export default class Workspace{
      * @param {object} datasourceConnectionInfo 数据源链接信息
      * @returns {Promise.<Datasource>}
      */
-    async openDatasourceConnectionInfo(datasourceConnectionInfo){
+ /*   async openDatasourceConnectionInfo(datasourceConnectionInfo){
         try {
             var {datasourceId} = await W.openDatasourceConnectionInfo(this.workspaceId,datasourceConnectionInfo.datasourceConnectionInfoId);
             var ds = new Ds();
@@ -68,7 +68,7 @@ export default class Workspace{
         }catch (e){
             console.error(e);
         }
-    }
+    } */
 
     /**
      * 通过序号或者名字（别名）获取数据源
@@ -195,6 +195,7 @@ export default class Workspace{
      * @param {object} webCoordinate
      * @returns {Promise.<void>}
      */
+    /*
     async openWMSDatasource(server,engineType,driver,version,visibleLayers,webBox,webCoordinate){
         try{
             await W.openWMSDatasource(this.workspaceId,server,engineType,driver,
@@ -202,7 +203,7 @@ export default class Workspace{
         }catch(e){
             console.error(e);
         }
-    }
+    } */
 
     /**
      * 保存工作空间

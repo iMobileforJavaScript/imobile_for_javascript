@@ -135,7 +135,17 @@ RCT_REMAP_METHOD(open,openKey:(NSString*)key mapName:(NSString*)mapName resolver
     }
      resolve(@"1");
   }else
-    reject(@"Map",@"getLayers:Map not exeist!!!",nil);
+    reject(@"Map",@"open:Map object do not exeist!!!",nil);
+}
+
+RCT_REMAP_METHOD(close,closeByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    Map* map = [JSObjManager getObjWithKey:key];
+    if(map){
+        [map close];
+        resolve(@"closed");
+    }else
+        reject(@"Map",@"close:Map not exeist!!!",nil);
 }
 
 RCT_REMAP_METHOD(pixelToMap,pixelToMapByKey:(NSString*)key andPointId:(NSString*)pointId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -218,6 +228,17 @@ RCT_REMAP_METHOD(saveAs,saveAsByKey:(NSString*)key andName:(NSString*)name resol
         resolve(@{@"saved":nsSaved});
     }else{
         reject(@"Map",@"saveAsName failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(save,saveByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Map* map = [JSObjManager getObjWithKey:key];
+    if(map){
+        BOOL saved = [map save];
+        NSNumber* nsSaved = [NSNumber numberWithBool:saved];
+        resolve(@{@"saved":nsSaved});
+    }else{
+        reject(@"Map",@"save failed!!!",nil);
     }
 }
 
