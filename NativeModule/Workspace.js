@@ -213,7 +213,7 @@ export default class Workspace{
      */
     async saveWorkspace(server){
         try{
-            if(path){
+            if(server){
                 var {saved} = await W.saveWorkspaceWithServer(this.workspaceId,server);
             }else{
                 var {saved} = await W.saveWorkspace(this.workspaceId);
