@@ -14,6 +14,7 @@
 		FF1CB7311EC001FC00562DCD /* JSPolymerChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1CB7301EC001FC00562DCD /* JSPolymerChart.m */; };
 		FF1CB7341EC0096100562DCD /* JSRelationalPointChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1CB7331EC0096100562DCD /* JSRelationalPointChart.m */; };
 		FF21004A1E7910E200E49464 /* JSCallOutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2100491E7910E200E49464 /* JSCallOutManager.m */; };
+		FF23718F1ECACBF800A86EEF /* JSMQTTClientSide.m in Sources */ = {isa = PBXBuildFile; fileRef = FF23718E1ECACBF800A86EEF /* JSMQTTClientSide.m */; };
 		FF263BB81EC547BA00A8374C /* JSAMQPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF263BB71EC547BA00A8374C /* JSAMQPManager.m */; };
 		FF263BBB1EC5586500A8374C /* JSAMQPSender.m in Sources */ = {isa = PBXBuildFile; fileRef = FF263BBA1EC5586500A8374C /* JSAMQPSender.m */; };
 		FF263BBE1EC55AE800A8374C /* JSAMQPRceciver.m in Sources */ = {isa = PBXBuildFile; fileRef = FF263BBD1EC55AE800A8374C /* JSAMQPRceciver.m */; };
@@ -116,6 +117,8 @@
 		FF1CB7331EC0096100562DCD /* JSRelationalPointChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSRelationalPointChart.m; path = objNative/JSRelationalPointChart.m; sourceTree = "<group>"; };
 		FF2100481E7910E200E49464 /* JSCallOutManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCallOutManager.h; path = objNative/JSCallOutManager.h; sourceTree = "<group>"; };
 		FF2100491E7910E200E49464 /* JSCallOutManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCallOutManager.m; path = objNative/JSCallOutManager.m; sourceTree = "<group>"; };
+		FF23718D1ECACBF800A86EEF /* JSMQTTClientSide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSMQTTClientSide.h; path = objNative/JSMQTTClientSide.h; sourceTree = "<group>"; };
+		FF23718E1ECACBF800A86EEF /* JSMQTTClientSide.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSMQTTClientSide.m; path = objNative/JSMQTTClientSide.m; sourceTree = "<group>"; };
 		FF263BB61EC547BA00A8374C /* JSAMQPManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAMQPManager.h; path = objNative/JSAMQPManager.h; sourceTree = "<group>"; };
 		FF263BB71EC547BA00A8374C /* JSAMQPManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAMQPManager.m; path = objNative/JSAMQPManager.m; sourceTree = "<group>"; };
 		FF263BB91EC5586500A8374C /* JSAMQPSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAMQPSender.h; path = objNative/JSAMQPSender.h; sourceTree = "<group>"; };
@@ -284,6 +287,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				FF23718D1ECACBF800A86EEF /* JSMQTTClientSide.h */,
+				FF23718E1ECACBF800A86EEF /* JSMQTTClientSide.m */,
 				FFDFED391EC9449100C39D87 /* JSSTOMPSender.h */,
 				FFDFED3A1EC9449100C39D87 /* JSSTOMPSender.m */,
 				FFDFED361EC93BB900C39D87 /* JSSTOMPReceiver.h */,
@@ -506,6 +511,7 @@
 				FFD1F0351E31E22200CACDC5 /* JSMapView.m in Sources */,
 				FF1405411EA8A56B000E0314 /* JSOverlayAnalystParameter.m in Sources */,
 				FFF203C91EBAB91400DA9A1F /* JSChartData.m in Sources */,
+				FF23718F1ECACBF800A86EEF /* JSMQTTClientSide.m in Sources */,
 				FFD1F02F1E31E22200CACDC5 /* JSLayerSetting.m in Sources */,
 				FFA114471EB0810D00650302 /* JSTheme.m in Sources */,
 				FFD1F03D1E31E22200CACDC5 /* JSRecordset.m in Sources */,

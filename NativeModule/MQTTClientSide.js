@@ -86,7 +86,8 @@ export default class MQTTClientSide{
      */
     async unsubscribe(topic){
         try{
-            await MTS.unsubscribe(this.MQTTClientSideId,topic);
+            var {unSubscribe} = await MTS.unsubscribe(this.MQTTClientSideId,topic);
+            return unSubscribe;
         }catch(e){
             console.error(e);
         }
@@ -113,6 +114,7 @@ export default class MQTTClientSide{
     async resume(){
         try{
             var{isResume} = await MTS.resume(this.MQTTClientSideId);
+            return isResume;
         }catch(e){
             console.error(e);
         }

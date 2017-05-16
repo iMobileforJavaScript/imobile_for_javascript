@@ -12,6 +12,7 @@
 #import "JSObjManager.h"
 @implementation JSSTOMPReceiver
 RCT_EXPORT_MODULE();
+/*
 RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         STOMPReceiver* receiver = [[STOMPReceiver alloc]init];
@@ -22,7 +23,7 @@ RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve
         reject(@"STOMPReceiver",@"create Obj expection",nil);
     }
 }
-
+*/
 RCT_REMAP_METHOD(receive,receiveById:(NSString*)receiverId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @try {

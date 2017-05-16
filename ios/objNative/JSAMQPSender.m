@@ -12,6 +12,7 @@
 #import "JSObjManager.h"
 @implementation JSAMQPSender
 RCT_EXPORT_MODULE();
+/*
 RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         AMQPSender* sender = [[AMQPSender alloc]init];
@@ -22,7 +23,7 @@ RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve
         reject(@"AMQPManager",@"create Obj expection",nil);
     }
 }
-
+*/
 RCT_REMAP_METHOD(sendMessage,sendMessageById:(NSString*)senderId exchange:(NSString*)exchange routingKey:(NSString*)routingKey message:(NSString*)message resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         AMQPSender* sender = [JSObjManager getObjWithKey:senderId];

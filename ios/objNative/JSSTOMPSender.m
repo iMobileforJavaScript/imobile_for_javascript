@@ -12,6 +12,7 @@
 #import "JSObjManager.h"
 @implementation JSSTOMPSender
 RCT_EXPORT_MODULE();
+/*
 RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         STOMPSender* sender = [[STOMPSender alloc]init];
@@ -22,7 +23,7 @@ RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve
         reject(@"STOMPSender",@"create Obj expection",nil);
     }
 }
-
+*/
 RCT_REMAP_METHOD(sendMessage,sendMessageById:(NSString*)senderId message:(NSString*)message resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         STOMPSender* sender = [JSObjManager getObjWithKey:senderId];

@@ -13,7 +13,7 @@ export default class STOMPSender{
      * @memberOf STOMPSender
      * @returns {Promise.<AMQPManager>}
      */
-    async createObj(){
+/*    async createObj(){
         try{
             var {_STOMPSenderId} = await SPS.createObj();
             var STOMPSenderObj = new STOMPSender();
@@ -23,6 +23,7 @@ export default class STOMPSender{
             console.error(e);
         }
     }
+ */
     /**
      * 发送消息。
      * @memberOf STOMPSender

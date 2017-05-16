@@ -13,6 +13,7 @@ export default class AMQPReceiver{
      * @memberOf AMQPManager
      * @returns {Promise.<AMQPManager>}
      */
+    /*
     async createObj(){
         try{
             var {_AMQPReceiverId} = await APR.createObj();
@@ -23,6 +24,7 @@ export default class AMQPReceiver{
             console.error(e);
         }
     }
+     */
 
     /**
      * 设置每个条目的标签

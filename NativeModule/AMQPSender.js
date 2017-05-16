@@ -13,7 +13,7 @@ export default class AMQPSender{
      * @memberOf AMQPManager
      * @returns {Promise.<AMQPManager>}
      */
-    async createObj(){
+/*    async createObj(){
         try{
             var {_AMQPSenderId} = await APS.createObj();
             var AMQPSenderObj = new AMQPSender();
@@ -23,6 +23,7 @@ export default class AMQPSender{
             console.error(e);
         }
     }
+ */
     /**
      * 创建一个接收端。
      * @memberOf AMQPManager

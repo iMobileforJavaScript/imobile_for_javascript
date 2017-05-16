@@ -13,7 +13,7 @@ export default class STOMPReceiver{
      * @memberOf STOMPReceiver
      * @returns {Promise.<AMQPManager>}
      */
-    async createObj(){
+/*    async createObj(){
         try{
             var {_STOMPReceiverId} = await SPR.createObj();
             var STOMPReceiverObj = new STOMPReceiver();
@@ -23,7 +23,7 @@ export default class STOMPReceiver{
             console.error(e);
         }
     }
-
+*/
     /**
      * 接收信息
      * @memberOf STOMPReceiver
