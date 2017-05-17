@@ -42,7 +42,7 @@ RCT_REMAP_METHOD(receive,receiveById:(NSString*)receiverId resolver:(RCTPromiseR
 RCT_REMAP_METHOD(dispose,disposeById:(NSString*)receiverId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         STOMPReceiver* receiver = [JSObjManager getObjWithKey:receiverId];
-        [JSObjManager removeObj:receiver];
+        [JSObjManager removeObj:receiverId];
         BOOL isDispose = [receiver dispose];
         NSNumber* num = [NSNumber numberWithBool:isDispose];
         resolve(@{@"isDispose":num});

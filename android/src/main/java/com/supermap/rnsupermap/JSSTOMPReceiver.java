@@ -1,5 +1,6 @@
 package com.supermap.rnsupermap;
 
+import android.os.Handler;
 import android.os.Message;
 
 import com.facebook.react.bridge.Arguments;
@@ -45,15 +46,31 @@ public class JSSTOMPReceiver extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void receiveMessage(String receiverId, Promise promise){
+    public void receive(String receiverId, final Promise promise){
         try{
-            android.os.Handler myHandler = new android.os.Handler();
-
             mReceiver = mReceiverList.get(receiverId);
+
+            final Handler myHandler = new Handler(){
+                @Override
+                public void handleMessage(Message msg){
+                    String message = (String) msg.obj;
+
+                    WritableMap map = Arguments.createMap();
+                    map.putString("message",message);
+                    promise.resolve(map);
+                }
+            };
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    String message = mReceiver.receive();
+                    String returnMessage = mReceiver.receive();
+                    if (returnMessage != null){
+                        Message msg = Message.obtain();
+                        msg.obj = returnMessage;
+                        myHandler.sendMessage(msg);
+                    }
+
                 }
             }).start();
         }catch (Exception e){

@@ -37,7 +37,7 @@ RCT_REMAP_METHOD(sendMessage,sendMessageById:(NSString*)senderId message:(NSStri
 RCT_REMAP_METHOD(dispose,disposeById:(NSString*)senderId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         STOMPSender* sender = [JSObjManager getObjWithKey:senderId];
-        [JSObjManager removeObj:sender];
+        [JSObjManager removeObj:senderId];
         [sender dispose];
         resolve(@"sent");
     } @catch (NSException *exception) {

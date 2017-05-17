@@ -1,5 +1,8 @@
 package com.supermap.rnsupermap;
 
+import android.os.Handler;
+import android.os.Message;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -7,6 +10,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.messagequeue.MQTTClient;
+import com.supermap.messagequeue.MQTTReturnMessage;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -86,14 +90,38 @@ public class JSMQTTClientSide extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void receiveMessage(String clientSideId,String topic,String message,Promise promise){
+    public void receiveMessage(String receiverId, final Promise promise){
         try{
-            mClient = mClientList.get(clientSideId);
-            boolean isSent = mClient.sendMessage(topic,message);
+            mClient = mClientList.get(receiverId);
 
-            WritableMap map = Arguments.createMap();
-            map.putBoolean("send",isSent);
-            promise.resolve(map);
+            final Handler myHandler = new Handler(){
+                @Override
+                public void handleMessage(Message msg){
+                    MQTTReturnMessage message = (MQTTReturnMessage) msg.obj;
+                    String content = message.getMessage();
+                    String topic = message.getTopic();
+
+                    WritableMap map1 = Arguments.createMap();
+                    WritableMap map = Arguments.createMap();
+                    map1.putString("message",content);
+                    map1.putString("topic",topic);
+                    map.putMap("message",map1);
+                    promise.resolve(map);
+                }
+            };
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    MQTTReturnMessage returnMessage = mClient.receiveMessage();
+                    if (returnMessage != null){
+                        Message msg = Message.obtain();
+                        msg.obj = returnMessage;
+                        myHandler.sendMessage(msg);
+                    }
+
+                }
+            }).start();
         }catch (Exception e){
             promise.reject(e);
         }

@@ -1,5 +1,6 @@
 import {NativeModules} from 'react-native';
 let DV = NativeModules.JSDatasetVector;
+import Dataset from './Dataset.js';
 import Recordset from  './Recordset.js';
 import QueryParameter from './QueryParameter.js';
 
@@ -7,7 +8,26 @@ import QueryParameter from './QueryParameter.js';
 /**
  * @class DatasetVector
  */
-export default class DatasetVector {
+export default class DatasetVector extends Dataset{
+    constructor(){
+        super();
+        Object.defineProperty(this,"datasetVectorId",{
+                              get:function(){
+                              return this.datasetId
+                              },
+                              set:function(datasetVectorId){
+                              this.datasetId = datasetVectorId;
+                              }
+                              })
+    }
+    /**
+     * 查询落在已知空间范围内的记录。
+     * @memberOf DatasetVector
+     * @deprecated - 弃用，所有recordset都使用json格式表达
+     * @param isEmptyRecordset
+     * @param cursorType
+     * @returns {Promise.<Recordset>}
+     */
     async queryInBuffer(rectangle2D, cursorType) {
         try {
             var {recordsetId} = await DV.queryInBuffer(this.datasetVectorId, rectangle2D.rectangle2DId, cursorType);
@@ -207,4 +227,33 @@ export default class DatasetVector {
             console.error(e);
         }
     }
+    
+    /**
+     * 通过查询语句获取所需几何对象ID集合
+     * @memberOf Dataset
+     * @returns {Promise.<Promise.Array>}
+     */
+    async getSMID(SQL){
+        try{
+            var {result} = await D.getSMID(this.datasetId,SQL);
+            return result;
+        }catch(e){
+            console.error(e);
+        }
+    }
+    
+    /**
+     * 通过查询语句获取所需几何对象内点集合
+     * @memberOf Dataset
+     * @returns {Promise.<Promise.Array>}
+     */
+    async getGeoInnerPoint(SQL){
+        try{
+            var {result} = await D.getGeoInnerPoint(this.datasetId,SQL);
+            return result;
+        }catch(e){
+            console.error(e);
+        }
+    }
+    
 }

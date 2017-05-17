@@ -9,6 +9,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.RNUtils.JsonUtil;
 import com.supermap.RNUtils.N_R_EventSender;
@@ -16,9 +17,11 @@ import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.Enum;
+import com.supermap.data.CursorType;
 import com.supermap.data.FieldInfos;
 import com.supermap.data.FieldType;
 import com.supermap.data.Geometry;
+import com.supermap.data.Point2D;
 import com.supermap.data.QueryListener;
 import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
@@ -331,6 +334,57 @@ public class JSDatasetVector extends ReactContextBaseJavaModule {
             datasetVector.queryByFilter(attributeFilter,geometry,count);
 
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getSMID(String dataVectorId, String SQL, Promise promise) {
+        try {
+            WritableArray arr = new WritableNativeArray();
+            DatasetVector datasetVector = getObjFromList(dataVectorId);
+            Recordset recordset = datasetVector.query(SQL,CursorType.STATIC);
+
+            int count = recordset.getRecordCount();
+            for (int num = 0;num<count;num++){
+                if (recordset.moveTo(num)){
+                    int SmID = (int)recordset.getFieldValue("SMID");
+                    arr.pushInt(SmID);
+                }
+            }
+            WritableMap map = Arguments.createMap();
+            map.putArray("result", arr);
+            promise.resolve(map);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getGeoInnerPoint(String dataVectorId, String SQL, Promise promise) {
+        try {
+
+            WritableArray arr = new WritableNativeArray();
+            DatasetVector datasetVector = getObjFromList(dataVectorId);
+            Recordset recordset = datasetVector.query(SQL,CursorType.STATIC);
+
+            int count = recordset.getRecordCount();
+            for (int num = 0;num<count;num++){
+                if (recordset.moveTo(num)){
+                    Geometry geo = recordset.getGeometry();
+                    Point2D point = geo.getInnerPoint();
+                    WritableArray pointArr = new WritableNativeArray();
+                    double x = point.getX();
+                    double y = point.getY();
+                    pointArr.pushDouble(x);
+                    pointArr.pushDouble(y);
+                    arr.pushArray(pointArr);
+                }
+            }
+            WritableMap map = Arguments.createMap();
+            map.putArray("result", arr);
+            promise.resolve(map);
         } catch (Exception e) {
             promise.reject(e);
         }

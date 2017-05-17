@@ -1,5 +1,6 @@
 package com.supermap.rnsupermap;
 
+import android.os.Handler;
 import android.os.Message;
 
 import com.facebook.react.bridge.Arguments;
@@ -15,8 +16,6 @@ import com.supermap.messagequeue.AMQPReturnMessage;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 
 /**
  * Created by Myself on 2017/5/16.
@@ -49,17 +48,35 @@ public class JSAMQPReceiver extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void receiveMessage(String receiverId, Promise promise){
+    public void receiveMessage(String receiverId, final Promise promise){
         try{
-            android.os.Handler myHandler = new android.os.Handler();
-
             mReceiver = mReceiverList.get(receiverId);
+
+            final Handler myHandler = new Handler(){
+                @Override
+                public void handleMessage(Message msg){
+                    AMQPReturnMessage message = (AMQPReturnMessage) msg.obj;
+                    String content = message.getMessage();
+                    String queue = message.getQueue();
+
+                    WritableMap map1 = Arguments.createMap();
+                    WritableMap map = Arguments.createMap();
+                    map1.putString("message",content);
+                    map1.putString("queue",queue);
+                    map.putMap("message",map1);
+                    promise.resolve(map);
+                }
+            };
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     AMQPReturnMessage returnMessage = mReceiver.receiveMessage();
-                    Message msg = Message.obtain();
-                    msg.obj = returnMessage;
+                    if (returnMessage != null){
+                        Message msg = Message.obtain();
+                        msg.obj = returnMessage;
+                        myHandler.sendMessage(msg);
+                    }
 
                 }
             }).start();
