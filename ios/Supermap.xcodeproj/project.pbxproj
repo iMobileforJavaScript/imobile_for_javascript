@@ -17,8 +17,9 @@
 		FF23718F1ECACBF800A86EEF /* JSMQTTClientSide.m in Sources */ = {isa = PBXBuildFile; fileRef = FF23718E1ECACBF800A86EEF /* JSMQTTClientSide.m */; };
 		FF263BB81EC547BA00A8374C /* JSAMQPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF263BB71EC547BA00A8374C /* JSAMQPManager.m */; };
 		FF263BBB1EC5586500A8374C /* JSAMQPSender.m in Sources */ = {isa = PBXBuildFile; fileRef = FF263BBA1EC5586500A8374C /* JSAMQPSender.m */; };
-		FF263BBE1EC55AE800A8374C /* JSAMQPRceciver.m in Sources */ = {isa = PBXBuildFile; fileRef = FF263BBD1EC55AE800A8374C /* JSAMQPRceciver.m */; };
 		FF47894A1E8A4AAB00E0DA44 /* JSSystemUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4789491E8A4AAB00E0DA44 /* JSSystemUtil.m */; };
+		FF4A44CA1ECC1DB2003E4FE4 /* JSBufferAnalystParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4A44C91ECC1DB2003E4FE4 /* JSBufferAnalystParameter.m */; };
+		FF4A44CD1ECC3672003E4FE4 /* JSAMQPReceiver.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4A44CC1ECC3672003E4FE4 /* JSAMQPReceiver.m */; };
 		FFA114051EAEDACD00650302 /* SceneViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA114041EAEDACD00650302 /* SceneViewManager.m */; };
 		FFA114471EB0810D00650302 /* JSTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA114461EB0810D00650302 /* JSTheme.m */; };
 		FFD1F0191E31E22200CACDC5 /* JSAdoptMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFBE1E31E22200CACDC5 /* JSAdoptMapView.m */; };
@@ -123,10 +124,12 @@
 		FF263BB71EC547BA00A8374C /* JSAMQPManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAMQPManager.m; path = objNative/JSAMQPManager.m; sourceTree = "<group>"; };
 		FF263BB91EC5586500A8374C /* JSAMQPSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAMQPSender.h; path = objNative/JSAMQPSender.h; sourceTree = "<group>"; };
 		FF263BBA1EC5586500A8374C /* JSAMQPSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAMQPSender.m; path = objNative/JSAMQPSender.m; sourceTree = "<group>"; };
-		FF263BBC1EC55AE800A8374C /* JSAMQPRceciver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAMQPRceciver.h; path = objNative/JSAMQPRceciver.h; sourceTree = "<group>"; };
-		FF263BBD1EC55AE800A8374C /* JSAMQPRceciver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAMQPRceciver.m; path = objNative/JSAMQPRceciver.m; sourceTree = "<group>"; };
 		FF4789481E8A4AAB00E0DA44 /* JSSystemUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSystemUtil.h; path = objNative/JSSystemUtil.h; sourceTree = "<group>"; };
 		FF4789491E8A4AAB00E0DA44 /* JSSystemUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSystemUtil.m; path = objNative/JSSystemUtil.m; sourceTree = "<group>"; };
+		FF4A44C81ECC1DB2003E4FE4 /* JSBufferAnalystParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBufferAnalystParameter.h; path = objNative/JSBufferAnalystParameter.h; sourceTree = "<group>"; };
+		FF4A44C91ECC1DB2003E4FE4 /* JSBufferAnalystParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBufferAnalystParameter.m; path = objNative/JSBufferAnalystParameter.m; sourceTree = "<group>"; };
+		FF4A44CB1ECC3672003E4FE4 /* JSAMQPReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAMQPReceiver.h; path = objNative/JSAMQPReceiver.h; sourceTree = "<group>"; };
+		FF4A44CC1ECC3672003E4FE4 /* JSAMQPReceiver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAMQPReceiver.m; path = objNative/JSAMQPReceiver.m; sourceTree = "<group>"; };
 		FFA114031EAEDACD00650302 /* SceneViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneViewManager.h; path = objNative/SceneViewManager.h; sourceTree = "<group>"; };
 		FFA114041EAEDACD00650302 /* SceneViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SceneViewManager.m; path = objNative/SceneViewManager.m; sourceTree = "<group>"; };
 		FFA114451EB0810D00650302 /* JSTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTheme.h; path = objNative/JSTheme.h; sourceTree = "<group>"; };
@@ -287,6 +290,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				FF4A44CB1ECC3672003E4FE4 /* JSAMQPReceiver.h */,
+				FF4A44CC1ECC3672003E4FE4 /* JSAMQPReceiver.m */,
 				FF23718D1ECACBF800A86EEF /* JSMQTTClientSide.h */,
 				FF23718E1ECACBF800A86EEF /* JSMQTTClientSide.m */,
 				FFDFED391EC9449100C39D87 /* JSSTOMPSender.h */,
@@ -295,8 +300,6 @@
 				FFDFED371EC93BB900C39D87 /* JSSTOMPReceiver.m */,
 				FFDFED331EC930C200C39D87 /* JSSTOMPManager.h */,
 				FFDFED341EC930C200C39D87 /* JSSTOMPManager.m */,
-				FF263BBC1EC55AE800A8374C /* JSAMQPRceciver.h */,
-				FF263BBD1EC55AE800A8374C /* JSAMQPRceciver.m */,
 				FF263BB91EC5586500A8374C /* JSAMQPSender.h */,
 				FF263BBA1EC5586500A8374C /* JSAMQPSender.m */,
 				FF263BB61EC547BA00A8374C /* JSAMQPManager.h */,
@@ -359,6 +362,8 @@
 				FFD1EFBE1E31E22200CACDC5 /* JSAdoptMapView.m */,
 				FFD1EFBF1E31E22200CACDC5 /* JSBufferAnalystGeometry.h */,
 				FFD1EFC01E31E22200CACDC5 /* JSBufferAnalystGeometry.m */,
+				FF4A44C81ECC1DB2003E4FE4 /* JSBufferAnalystParameter.h */,
+				FF4A44C91ECC1DB2003E4FE4 /* JSBufferAnalystParameter.m */,
 				FFD1EFC11E31E22200CACDC5 /* JSCallOut.h */,
 				FFD1EFC21E31E22200CACDC5 /* JSCallOut.m */,
 				FFD1EFC31E31E22200CACDC5 /* JSDataDownloadService.h */,
@@ -569,15 +574,16 @@
 				FFD1F0241E31E22200CACDC5 /* JSDataUploadService.m in Sources */,
 				FFD1F02C1E31E22200CACDC5 /* JSGeoStyle.m in Sources */,
 				FFDFED351EC930C200C39D87 /* JSSTOMPManager.m in Sources */,
+				FF4A44CA1ECC1DB2003E4FE4 /* JSBufferAnalystParameter.m in Sources */,
 				FF21004A1E7910E200E49464 /* JSCallOutManager.m in Sources */,
 				FFD50D661EA9F7BD00C5F209 /* JSSceneControl.m in Sources */,
 				FFF203E41EBC707000DA9A1F /* JSPieChartData.m in Sources */,
-				FF263BBE1EC55AE800A8374C /* JSAMQPRceciver.m in Sources */,
 				FFD1F03C1E31E22200CACDC5 /* JSQueryService.m in Sources */,
 				FFD1F02D1E31E22200CACDC5 /* JSLayer.m in Sources */,
 				FFD1F02E1E31E22200CACDC5 /* JSLayers.m in Sources */,
 				FFD1F0331E31E22200CACDC5 /* JSMapControl.m in Sources */,
 				FFD1F0401E31E22200CACDC5 /* JSServiceBase.m in Sources */,
+				FF4A44CD1ECC3672003E4FE4 /* JSAMQPReceiver.m in Sources */,
 				FFD1F01E1E31E22200CACDC5 /* JSDatasets.m in Sources */,
 				FFD1F0371E31E22200CACDC5 /* JSObjManager.m in Sources */,
 				FFF1A4D01EBD5E7900C21142 /* JSChartLegend.m in Sources */,

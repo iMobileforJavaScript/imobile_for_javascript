@@ -27,12 +27,12 @@ export default class AMQPReceiver{
      */
 
     /**
-     * 设置每个条目的标签
-     * @memberOf ChartView
+     * 接收信息
+     * @memberOf AMQPReceiver
      * @param {string}label - 条目标签
      * @returns {Promise.<void>}
      */
-    async receiveMessage(clientId,message){
+    async receiveMessage(){
         try{
             var {message} = await APR.receiveMessage(this.AMQPReceiverId);
             return message;

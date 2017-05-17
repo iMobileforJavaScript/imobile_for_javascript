@@ -1,29 +1,29 @@
 //
-//  JSAMQPRceciver.m
+//  JSAMQPReceiver.m
 //  Supermap
 //
-//  Created by 王子豪 on 2017/5/12.
+//  Created by 王子豪 on 2017/5/17.
 //  Copyright © 2017年 Facebook. All rights reserved.
 //
 
-#import "JSAMQPRceciver.h"
+#import "JSAMQPReceiver.h"
 
 #import "SuperMap/AMQPReceiver.h"
 #import "JSObjManager.h"
-@implementation JSAMQPRceciver
+@implementation JSAMQPReceiver
 RCT_EXPORT_MODULE();
 /*
-RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        AMQPReceiver* receiver = [[AMQPReceiver alloc]init];
-        NSInteger nsKey = (NSInteger)receiver;
-        [JSObjManager addObj:receiver];
-        resolve(@{@"_AMQPReceiverId":@(nsKey).stringValue});
-    } @catch (NSException *exception) {
-        reject(@"AMQPReceiver",@"create Obj expection",nil);
-    }
-}
-*/
+ RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+ @try {
+ AMQPReceiver* receiver = [[AMQPReceiver alloc]init];
+ NSInteger nsKey = (NSInteger)receiver;
+ [JSObjManager addObj:receiver];
+ resolve(@{@"_AMQPReceiverId":@(nsKey).stringValue});
+ } @catch (NSException *exception) {
+ reject(@"AMQPReceiver",@"create Obj expection",nil);
+ }
+ }
+ */
 RCT_REMAP_METHOD(receiveMessage,receiveMessageById:(NSString*)receiverId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @try {
