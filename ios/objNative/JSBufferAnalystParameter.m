@@ -83,4 +83,24 @@ RCT_REMAP_METHOD(getRightDistance,getRightDistanceById:(NSString*)paraId resolve
         reject(@"BufferAnalystParameter",@"get right Distance exception",nil);
     }
 }
+
+RCT_REMAP_METHOD(setRadiusUnit,setRadiusUnitById:(NSString*)paraId distance:(NSString*)distance resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BufferAnalystParameter* para = [JSObjManager getObjWithKey:paraId];
+//        para.bufferRadiusUnit = distance;
+        resolve(@"right Distance setted");
+    } @catch (NSException *exception) {
+        reject(@"BufferAnalystParameter",@"set right Distance exception",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getRadiusUnit,getRadiusUnitById:(NSString*)paraId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BufferAnalystParameter* para = [JSObjManager getObjWithKey:paraId];
+        NSString* distance = para.rightDistance;
+        resolve(@{@"rightDistance":distance});
+    } @catch (NSException *exception) {
+        reject(@"BufferAnalystParameter",@"get right Distance exception",nil);
+    }
+}
 @end

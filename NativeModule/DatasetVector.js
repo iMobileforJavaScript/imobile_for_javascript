@@ -8,8 +8,8 @@ import QueryParameter from './QueryParameter.js';
 /**
  * @class DatasetVector
  */
-export default class DatasetVector extends Dataset{
-    constructor(){
+export default class DatasetVector {
+   /* constructor(){
         super();
         Object.defineProperty(this,"datasetVectorId",{
                               get:function(){
@@ -19,7 +19,7 @@ export default class DatasetVector extends Dataset{
                               this.datasetId = datasetVectorId;
                               }
                               })
-    }
+    }*/
     /**
      * 查询落在已知空间范围内的记录。
      * @memberOf DatasetVector
