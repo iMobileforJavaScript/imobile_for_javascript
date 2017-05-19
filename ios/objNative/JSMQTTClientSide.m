@@ -13,6 +13,12 @@
 @implementation JSMQTTClientSide
 RCT_EXPORT_MODULE();
 
+//所有导出方法名
+- (NSArray<NSString *> *)supportedEvents
+{
+    return @[@"com.supermap.RN.JSMQTTClientSide.receive_message1",@"com.supermap.RN.JSMQTTClientSide.receive_message2",@"com.supermap.RN.JSMQTTClientSide.receive_message3",@"com.supermap.RN.JSMQTTClientSide.receive_message4",@"com.supermap.RN.JSMQTTClientSide.receive_message5"];
+}
+
  RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
      @try {
          MQTTClientSide* side = [[MQTTClientSide alloc]init];
@@ -46,18 +52,22 @@ RCT_REMAP_METHOD(sendMessage,sendMessageWithId:(NSString*)sideId topic:(NSString
     }
 }
 
-RCT_REMAP_METHOD(receiveMessage,receiveMessageWithId:(NSString*)sideId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(receiveMessage,receiveMessageWithId:(NSString*)sideId queueName:(NSString*)queueName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            @try {
-                MQTTClientSide* side = [JSObjManager getObjWithKey:sideId];
-                NSString* str1 = nil,* str2 = nil;
-                [side receiveMessage:&str1 message:&str2];
-                if (str1!=nil&&str2!=nil) {
-                    NSDictionary* dic = @{@"topic":str1,@"message":str2};
-                    resolve(@{@"message":dic});
+            while (1) {
+                @try {
+                    MQTTClientSide* side = [JSObjManager getObjWithKey:sideId];
+                    NSString* str1 = nil,* str2 = nil;
+                    [side receiveMessage:&str1 message:&str2];
+                    if (str1!=nil&&str2!=nil) {
+                        [self sendEventWithName:queueName body:@{@"topic":str1,@"message":str2}];
+//                    NSDictionary* dic = @{@"topic":str1,@"message":str2};
+//                    resolve(@{@"message":dic});
+                        [NSThread sleepForTimeInterval:3];
+                    }
+                } @catch (NSException *exception) {
+                    reject(@"STOMPReceiver",@"receive Message expection",nil);
                 }
-            } @catch (NSException *exception) {
-                reject(@"STOMPReceiver",@"receive Message expection",nil);
             }
         });
 }

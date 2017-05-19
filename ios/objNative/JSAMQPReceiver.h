@@ -7,7 +7,7 @@
 //
 
 #import <React/RCTBridgeModule.h>
-
-@interface JSAMQPReceiver : NSObject<RCTBridgeModule>
+#import <React/RCTEventEmitter.h>
+@interface JSAMQPReceiver : RCTEventEmitter<RCTBridgeModule>
 
 @end

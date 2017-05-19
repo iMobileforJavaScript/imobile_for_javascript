@@ -1,10 +1,10 @@
 /**
  * Created by will on 2016/7/5.
  */
-import {NativeModules} from 'react-native';
+import {NativeModules,DeviceEventEmitter,NativeEventEmitter,Platform} from 'react-native';
 let MTS = NativeModules.JSMQTTClientSide;
-import AMQPSender from './AMQPSender.js';
-import AMQPReceiver from './AMQPReceiver.js';
+
+const nativeEvt = new NativeEventEmitter(MTS);
 /**
  * @class Layer
  */
@@ -57,10 +57,32 @@ export default class MQTTClientSide{
      * @memberOf MQTTClientSide
      * @returns {Promise.<bool>}
      */
-    async receiveMessage(){
+    async receiveMessage(queueNum,loadingMessage){
         try{
-            var {message} = await MTS.receiveMessage(this.MQTTClientSideId);
-            return message;
+            switch(queueNum){
+                case 1 : var str = "com.supermap.RN.JSAMQPReceiver.receive_message1";
+                    break;
+                case 2 : var str = "com.supermap.RN.JSAMQPReceiver.receive_message2";
+                    break;
+                case 3 : var str = "com.supermap.RN.JSAMQPReceiver.receive_message3";
+                    break;
+                case 4 : var str = "com.supermap.RN.JSAMQPReceiver.receive_message4";
+                    break;
+                case 5 : var str = "com.supermap.RN.JSAMQPReceiver.receive_message5";
+                    break;
+                default : var str = "com.supermap.RN.JSAMQPReceiver.receive_message1";
+            }
+            //差异化处理
+            if(Platform.OS === 'ios'){
+                nativeEvt.addListener(str,function (e) {
+                                      if(typeof loadingMessage === 'function'){
+                                      loadingMessage(e.topic,e.message);
+                                      }else{
+                                      console.error("Please set a callback function to the first argument.");
+                                      }
+                                      });
+                await MTS.receiveMessage(this.MQTTClientSideId,str);
+            }
         }catch(e){
             console.error(e);
         }

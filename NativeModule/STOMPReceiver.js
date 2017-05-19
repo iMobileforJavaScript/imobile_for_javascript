@@ -1,9 +1,10 @@
 /**
  * Created by will on 2016/7/5.
  */
-import {NativeModules} from 'react-native';
+import {NativeModules,DeviceEventEmitter,NativeEventEmitter,Platform} from 'react-native';
 let SPR = NativeModules.JSSTOMPReceiver;
 
+const nativeEvt = new NativeEventEmitter(SPR);
 /**
  * @class STOMPReceiver
  */
@@ -29,10 +30,33 @@ export default class STOMPReceiver{
      * @memberOf STOMPReceiver
      * @returns {Promise.<void>}
      */
-    async receive(){
+    async receiveMessage(queueNum,loadingMessage){
         try{
-            var {message} = await SPR.receive(this.STOMPReceiverId);
-            return message;
+            switch(queueNum){
+                case 1 : var str = "com.supermap.RN.JSSTOMPReceiver.receive_message1";
+                    break;
+                case 2 : var str = "com.supermap.RN.JSSTOMPReceiver.receive_message2";
+                    break;
+                case 3 : var str = "com.supermap.RN.JSSTOMPReceiver.receive_message3";
+                    break;
+                case 4 : var str = "com.supermap.RN.JSSTOMPReceiver.receive_message4";
+                    break;
+                case 5 : var str = "com.supermap.RN.JSSTOMPReceiver.receive_message5";
+                    break;
+                default : var str = "com.supermap.RN.JSSTOMPReceiver.receive_message1";
+            }
+            
+            //差异化处理
+            if(Platform.OS === 'ios'){
+                nativeEvt.addListener(str,function (e) {
+                                      if(typeof loadingMessage === 'function'){
+                                      loadingMessage(e.message);
+                                      }else{
+                                      console.error("Please set a callback function to the first argument.");
+                                      }
+                                      });
+                await SPR.receiveMessage(this.STOMPReceiverId,str);
+            }
         }catch(e){
             console.error(e);
         }

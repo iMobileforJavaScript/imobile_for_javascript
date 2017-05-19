@@ -7,7 +7,7 @@
 //
 
 #import <React/RCTBridgeModule.h>
-
-@interface JSSTOMPReceiver : NSObject<RCTBridgeModule>
+#import <React/RCTEventEmitter.h>
+@interface JSSTOMPReceiver : RCTEventEmitter<RCTBridgeModule>
 
 @end
