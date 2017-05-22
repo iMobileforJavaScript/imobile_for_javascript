@@ -84,23 +84,45 @@ RCT_REMAP_METHOD(getRightDistance,getRightDistanceById:(NSString*)paraId resolve
     }
 }
 
-RCT_REMAP_METHOD(setRadiusUnit,setRadiusUnitById:(NSString*)paraId distance:(NSString*)distance resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setRadiusUnit,setRadiusUnitById:(NSString*)paraId radiusUnit:(int)radiusUnit resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BufferAnalystParameter* para = [JSObjManager getObjWithKey:paraId];
-//        para.bufferRadiusUnit = distance;
-        resolve(@"right Distance setted");
+        para.bufferRadiusUnit = radiusUnit;
+        resolve(@"RadiusUnit setted");
     } @catch (NSException *exception) {
-        reject(@"BufferAnalystParameter",@"set right Distance exception",nil);
+        reject(@"BufferAnalystParameter",@"set Radius Unit exception",nil);
     }
 }
 
 RCT_REMAP_METHOD(getRadiusUnit,getRadiusUnitById:(NSString*)paraId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BufferAnalystParameter* para = [JSObjManager getObjWithKey:paraId];
-        NSString* distance = para.rightDistance;
-        resolve(@{@"rightDistance":distance});
+        int unit = para.bufferRadiusUnit;
+        NSNumber* nsUnit = [NSNumber numberWithInt:unit];
+        resolve(@{@"radiusUnit":nsUnit});
     } @catch (NSException *exception) {
-        reject(@"BufferAnalystParameter",@"get right Distance exception",nil);
+        reject(@"BufferAnalystParameter",@"get Radius Unit exception",nil);
+    }
+}
+
+RCT_REMAP_METHOD(setSemicircleLineSegment,setSemicircleLineSegmentById:(NSString*)paraId segment:(int)segment resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BufferAnalystParameter* para = [JSObjManager getObjWithKey:paraId];
+        para.semicircleLineSegment = segment;
+        resolve(@"SemicircleLineSegment setted");
+    } @catch (NSException *exception) {
+        reject(@"BufferAnalystParameter",@"set Semicircle Line Segment exception",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getSemicircleLineSegment,getSemicircleLineSegmentById:(NSString*)paraId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BufferAnalystParameter* para = [JSObjManager getObjWithKey:paraId];
+        int segment = para.semicircleLineSegment;
+        NSNumber* nsSegment = [NSNumber numberWithInt:segment];
+        resolve(@{@"segment":nsSegment});
+    } @catch (NSException *exception) {
+        reject(@"BufferAnalystParameter",@"get Semicircle Line Segment exception",nil);
     }
 }
 @end

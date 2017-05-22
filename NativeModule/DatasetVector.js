@@ -235,7 +235,7 @@ export default class DatasetVector {
      */
     async getSMID(SQL){
         try{
-            var {result} = await D.getSMID(this.datasetId,SQL);
+            var {result} = await DV.getSMID(this.datasetVectorId,SQL);
             return result;
         }catch(e){
             console.error(e);
@@ -249,7 +249,7 @@ export default class DatasetVector {
      */
     async getGeoInnerPoint(SQL){
         try{
-            var {result} = await D.getGeoInnerPoint(this.datasetId,SQL);
+            var {result} = await DV.getGeoInnerPoint(this.datasetVectorId,SQL);
             return result;
         }catch(e){
             console.error(e);

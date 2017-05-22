@@ -6,6 +6,18 @@ export default class BufferAnalystParameter {
         ROUND:1,
         FLAT:2,
     }
+    
+    static RADIUSUNIT = {
+        MiliMeter:10,
+        CentiMeter:100,
+        DeciMeter:1000,
+        Meter:10000,
+        KiloMeter:10000000,
+        Yard:9144,
+        Inch:254,
+        Foot:3048,
+        Mile:16090000,
+    }
 
     async createObj(){
         try{
@@ -69,33 +81,35 @@ export default class BufferAnalystParameter {
         }
     }
     
-    async setRadiusUnit(distance){
+    async setRadiusUnit(radiusUnit){
         try{
-            await BAP.setRadiusUnit(this.bufferAnalystParameterId,distance);
+            await BAP.setRadiusUnit(this.bufferAnalystParameterId,radiusUnit);
         }catch (e){
             console.error(e);
         }
     }
     
-    async getRadiusUnit(distance){
+    async getRadiusUnit(){
         try{
-            await BAP.getRadiusUnit(this.bufferAnalystParameterId,distance);
+            var {radiusUnit} = await BAP.getRadiusUnit(this.bufferAnalystParameterId);
+            return radiusUnit;
         }catch (e){
             console.error(e);
         }
     }
     
-    async setSemicircleLineSegment(distance){
+    async setSemicircleLineSegment(segment){
         try{
-            await BAP.setSemicircleLineSegment(this.bufferAnalystParameterId,distance);
+            await BAP.setSemicircleLineSegment(this.bufferAnalystParameterId,segment);
         }catch (e){
             console.error(e);
         }
     }
     
-    async getSemicircleLineSegment(distance){
+    async getSemicircleLineSegment(){
         try{
-            await BAP.getSemicircleLineSegment(this.bufferAnalystParameterId,distance);
+            var {segment} = await BAP.getSemicircleLineSegment(this.bufferAnalystParameterId);
+            return segment;
         }catch (e){
             console.error(e);
         }
