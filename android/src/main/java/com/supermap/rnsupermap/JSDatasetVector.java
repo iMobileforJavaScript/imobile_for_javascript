@@ -362,6 +362,38 @@ public class JSDatasetVector extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void getFieldValue(String dataVectorId, String SQL, String fieldName, Promise promise) {
+        try {
+            WritableArray arr = new WritableNativeArray();
+            DatasetVector datasetVector = getObjFromList(dataVectorId);
+            Recordset recordset = datasetVector.query(SQL,CursorType.STATIC);
+
+            int count = recordset.getRecordCount();
+            for (int num = 0;num<count;num++){
+                if (recordset.moveTo(num)){
+                    Object fieldValue = (int)recordset.getFieldValue(fieldName);
+                    if (fieldValue instanceof Integer){
+                        arr.pushInt((Integer)fieldValue);
+                    }else if (fieldValue instanceof String){
+                        arr.pushString((String)fieldValue);
+                    }else if (fieldValue instanceof Double){
+                        arr.pushDouble((Double)fieldValue);
+                    }else if (fieldValue instanceof  Float){
+                        arr.pushDouble((Double)fieldValue);
+                    }else  if (fieldValue instanceof Boolean){
+                        arr.pushBoolean((Boolean)fieldValue);
+                    }
+                }
+            }
+            WritableMap map = Arguments.createMap();
+            map.putArray("result", arr);
+            promise.resolve(map);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void getGeoInnerPoint(String dataVectorId, String SQL, Promise promise) {
         try {
 

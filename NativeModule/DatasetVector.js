@@ -243,6 +243,20 @@ export default class DatasetVector {
     }
     
     /**
+     * 通过查询语句获取字段内容
+     * @memberOf Dataset
+     * @returns {Promise.<Promise.Array>}
+     */
+    async getFieldValue(SQL,fieldName){
+        try{
+            var {result} = await DV.getFieldValue(this.datasetVectorId,SQL,fieldName);
+            return result;
+        }catch(e){
+            console.error(e);
+        }
+    }
+    
+    /**
      * 通过查询语句获取所需几何对象内点集合
      * @memberOf Dataset
      * @returns {Promise.<Promise.Array>}
