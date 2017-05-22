@@ -50,6 +50,7 @@ RCT_REMAP_METHOD(receiveMessage,receiveById:(NSString*)receiverId queueName:(NSS
             }
         }
     });
+    resolve(@"done");
 }
 
 RCT_REMAP_METHOD(dispose,disposeById:(NSString*)receiverId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

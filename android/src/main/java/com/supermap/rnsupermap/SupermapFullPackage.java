@@ -78,6 +78,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSTheme(reactContext));
         modules.add(new JSTrack(reactContext));
         modules.add(new JSTrackingLayer(reactContext));
+        modules.add(new JSBufferAnalyst(reactContext));
         modules.add(new JSBufferAnalystParameter(reactContext));
         modules.add(new JSBufferAnalystGeometry(reactContext));
         modules.add(new JSDatasetVectorInfo(reactContext));

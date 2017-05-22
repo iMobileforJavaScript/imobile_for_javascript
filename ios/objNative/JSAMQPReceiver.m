@@ -52,5 +52,6 @@ RCT_REMAP_METHOD(receiveMessage,receiveMessageById:(NSString*)receiverId queueNa
             }
         }
     });
+    resolve(@"done");
 }
 @end

@@ -44,6 +44,7 @@ public class SupermapPackage implements ReactPackage {
         modules.add(new JSGeoRegion(reactContext));
         modules.add(new JSTrackingLayer(reactContext));
         modules.add(new JSBufferAnalystParameter(reactContext));
+        modules.add(new JSBufferAnalyst(reactContext));
         modules.add(new JSBufferAnalystGeometry(reactContext));
         modules.add(new JSDatasetVectorInfo(reactContext));
 

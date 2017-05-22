@@ -70,6 +70,7 @@ RCT_REMAP_METHOD(receiveMessage,receiveMessageWithId:(NSString*)sideId queueName
                 }
             }
         });
+    resolve(@"done");
 }
 
 RCT_REMAP_METHOD(subscribe,subscribeWithId:(NSString*)sideId topic:(NSString*)topicName qos:(int)qos resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
