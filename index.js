@@ -1,5 +1,6 @@
+import BufferAnalyst from './NativeModule/BufferAnalyst.js';
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js';
-//import BufferAnalystParameter from './NativeModule/BufferAnalystParameter.js';
+import BufferAnalystParameter from './NativeModule/BufferAnalystParameter.js';
 import CallOut from './NativeModule/CallOut.js'
 import CursorType from './NativeModule/CursorType.js';
 import DataDownloadService from './NativeModule/DataDownloadService.js';
@@ -124,8 +125,9 @@ export {
     
 
     //Modules
+    BufferAnalyst,
     BufferAnalystGeometry,
-//    BufferAnalystParameter,
+    BufferAnalystParameter,
     CallOut,
     CursorType,
     DataDownloadService,
