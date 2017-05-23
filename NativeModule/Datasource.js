@@ -126,7 +126,7 @@ export default class Datasource{
      * @param {Datasource.DatasourceEncrytionType} datasourceEncrytionType
      * @returns {Promise.<Promise.changed>} 新密码使用的加密类型
      */
-    async changepassword(oldPassword,newPassword,datasourceEncrytionType){
+   /* async changepassword(oldPassword,newPassword,datasourceEncrytionType){
         try{
             if(!oldPassword || !newPassword) throw new Error("Datasource.js:原始密码和新密码不能为空。");
             var {changed} = await D.changepassword(this.datasourceId,oldPassword,newPassword, datasourceEncrytionType | 0);
@@ -134,7 +134,7 @@ export default class Datasource{
         }catch(e){
             console.error(e);
         }
-    }
+    } */
 
     /**
      * 返回数据源的投影信息。

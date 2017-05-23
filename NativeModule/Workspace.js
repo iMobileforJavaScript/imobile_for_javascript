@@ -51,7 +51,7 @@ export default class Workspace{
             console.error(e);
         }
     }
-
+    
     /**
      * 通过数据源链接信息打开数据源
      * @memberOf Workspace
@@ -59,7 +59,7 @@ export default class Workspace{
      * @param {object} datasourceConnectionInfo 数据源链接信息
      * @returns {Promise.<Datasource>}
      */
-    async openDatasourceConnectionInfo(datasourceConnectionInfo){
+ /*   async openDatasourceConnectionInfo(datasourceConnectionInfo){
         try {
             var {datasourceId} = await W.openDatasourceConnectionInfo(this.workspaceId,datasourceConnectionInfo.datasourceConnectionInfoId);
             var ds = new Ds();
@@ -68,7 +68,7 @@ export default class Workspace{
         }catch (e){
             console.error(e);
         }
-    }
+    } */
 
     /**
      * 通过序号或者名字（别名）获取数据源
@@ -98,9 +98,10 @@ export default class Workspace{
      * 根据定义好的工作空间连接信息对象，打开工作空间。
      * @memberOf Workspace
      * @param {object} workspaceConnectionInfo
+     * @param {string} passWord - 数据源密码（可选参数）
      * @returns {Promise.<void>}
      */
-    async open(workspaceConnectionInfo){
+    async open(workspaceConnectionInfo,passWord){
         try{
             var WorkspaceConnectionInfoModule = new WorkspaceConnectionInfo();
 
@@ -112,7 +113,9 @@ export default class Workspace{
                 console.log("工作空间类型：" + type);
                 await wci.setType(type);
                 await wci.setServer(workspaceConnectionInfo);
-
+                if(passWord){
+                   await wci.setPassWord(passWord);
+                }
                 var {isOpen} = await W.open(this.workspaceId,wci.workspaceConnectionInfoId)
                 return isOpen;
             }else{
@@ -192,6 +195,7 @@ export default class Workspace{
      * @param {object} webCoordinate
      * @returns {Promise.<void>}
      */
+    /*
     async openWMSDatasource(server,engineType,driver,version,visibleLayers,webBox,webCoordinate){
         try{
             await W.openWMSDatasource(this.workspaceId,server,engineType,driver,
@@ -199,16 +203,21 @@ export default class Workspace{
         }catch(e){
             console.error(e);
         }
-    }
+    } */
 
     /**
      * 保存工作空间
      * @memberOf Workspace
+     * @param {string} server - 另存url（可选参数）
      * @returns {boolean}
      */
-    async saveWorkspace(){
+    async saveWorkspace(server){
         try{
-            var {saved} = await W.saveWorkspace(this.workspaceId);
+            if(server){
+                var {saved} = await W.saveWorkspaceWithServer(this.workspaceId,server);
+            }else{
+                var {saved} = await W.saveWorkspace(this.workspaceId);
+            }
             return saved;
         }catch(e){
             console.error(e);

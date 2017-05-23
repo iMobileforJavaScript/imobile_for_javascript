@@ -9,6 +9,7 @@
 #import "JSObjManager.h"
 #import "JSWorkspace.h"
 #import "SuperMap/Workspace.h"
+#import "SuperMap/WorkspaceConnectionInfo.h"
 #import "SuperMap/Datasources.h"
 #import "SuperMap/DatasourceConnectionInfo.h"
 #import "SuperMap/Rectangle2D.h"
@@ -42,9 +43,9 @@ RCT_REMAP_METHOD(createObj,resolver:(RCTPromiseResolveBlock)resolve rejecter:(RC
 RCT_REMAP_METHOD(destroyObj,destroyJSObjKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Workspace* workspace = [JSObjManager getObjWithKey:key];
   if(workspace){
+    [JSObjManager removeObj:key];
     [workspace close];
     [workspace dispose];
-    [JSObjManager removeObj:key];
     resolve(@"1");
   }else{
     reject(@"workspace",@"destroy obj failed!!!",nil);
@@ -64,6 +65,7 @@ RCT_REMAP_METHOD(getDatasources,getDatasourcesKey:(NSString*)key resolver:(RCTPr
 }
 
 #pragma mark - 原datasources类方法
+/*
 RCT_REMAP_METHOD(openDatasourceConnectionInfo, openDatasourceConnectionInfoByKey:(NSString*)key datasourceConnectionInfo:(NSString*)info resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Workspace* workspace = [JSObjManager getObjWithKey:key];
   DatasourceConnectionInfo* infoObj = [JSObjManager getObjWithKey:info];
@@ -76,7 +78,7 @@ RCT_REMAP_METHOD(openDatasourceConnectionInfo, openDatasourceConnectionInfoByKey
       reject(@"workspace",@"open DatasourceConnectionInfo failed!!!",nil);
   }
 }
-
+*/
 RCT_REMAP_METHOD(getDatasource, getDatasourceByKey:(NSString*)key andIndex:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Workspace* workspace = [JSObjManager getObjWithKey:key];
     if(workspace){
@@ -195,7 +197,7 @@ RCT_REMAP_METHOD(openDatasource,openDatasourceByKey:(NSString*)key jsonObject:(N
         }
         if ([keyArr containsObject:@"driver"]) info.driver = [jsObj objectForKey:@"driver"];
         if ([keyArr containsObject:@"user"]) info.user = [jsObj objectForKey:@"user"];
-        if ([keyArr containsObject:@"readOnly"]) info.readOnly = [jsObj objectForKey:@"readOnly"];
+        if ([keyArr containsObject:@"readOnly"]) info.readOnly = ((NSNumber*)[jsObj objectForKey:@"readOnly"]).boolValue;
         if ([keyArr containsObject:@"password"]) info.password = [jsObj objectForKey:@"password"];
         if ([keyArr containsObject:@"webCoordinate"]) info.webCoordinate = [jsObj objectForKey:@"webCoordinate"];
         if ([keyArr containsObject:@"webVersion"]) info.webVersion = [jsObj objectForKey:@"webVersion"];
@@ -204,7 +206,7 @@ RCT_REMAP_METHOD(openDatasource,openDatasourceByKey:(NSString*)key jsonObject:(N
         if ([keyArr containsObject:@"webExtendParam"]) info.webExtendParam = [jsObj objectForKey:@"webExtendParam"];
         if ([keyArr containsObject:@"webBBox"]){
             Rectangle2D* rect2d = [JSObjManager getObjWithKey:[jsObj objectForKey:@"webBBox"]];
-            info.webBBox = [jsObj objectForKey:@"webBBox"];
+            info.webBBox = rect2d;
         }
         Datasource* dataSource = [dataSources open:info];
         NSInteger nsDSource = (NSInteger)dataSource;
@@ -214,7 +216,7 @@ RCT_REMAP_METHOD(openDatasource,openDatasourceByKey:(NSString*)key jsonObject:(N
         reject(@"workspace",@"open LocalDatasource failed!",nil);
     }
 }
-
+/*
 RCT_REMAP_METHOD(openWMSDatasource,openDatasourceByKey:(NSString*)key andServer:(NSString*)server andEngineType:(int)type andDriverStr:(NSString*)driver andVersionStr:(NSString*)version andVisableLayers:(NSString*)vLayers andWebBox:(NSDictionary*)webBox andWebCoordinate:(NSString*)webCoordinate resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Workspace* workspace = [JSObjManager getObjWithKey:key];
     Datasources* dataSources = workspace.datasources;
@@ -247,6 +249,18 @@ RCT_REMAP_METHOD(openWMSDatasource,openDatasourceByKey:(NSString*)key andServer:
         reject(@"workspace",@"open LocalDatasource failed!",nil);
     }
 }
+*/
+RCT_REMAP_METHOD(saveWorkspaceWithServer,saveWorkspaceByKey:(NSString*)key server:(NSString*)server resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Workspace* workspace = [JSObjManager getObjWithKey:key];
+    if(workspace){
+        WorkspaceConnectionInfo*info = workspace.connectionInfo;
+        info.server = server;
+        BOOL saved = [workspace save];
+        NSNumber* nsSaved = [NSNumber numberWithBool:saved];
+        resolve(@{@"saved":nsSaved});
+    }else
+        reject(@"workspace",@"save failed!!!",nil);
+}
 
 RCT_REMAP_METHOD(saveWorkspace,saveWorkspaceByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Workspace* workspace = [JSObjManager getObjWithKey:key];
@@ -261,7 +275,9 @@ RCT_REMAP_METHOD(saveWorkspace,saveWorkspaceByKey:(NSString*)key resolver:(RCTPr
 RCT_REMAP_METHOD(closeWorkspace,closeWorkspaceByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Workspace* workspace = [JSObjManager getObjWithKey:key];
   if(workspace){
-    [workspace close];
+      [workspace close];
+      [JSObjManager removeObj:key];
+      [workspace dispose];
       NSNumber* nsClosed = [NSNumber numberWithBool:TRUE];
     resolve(@{@"closed":nsClosed});
   }else{

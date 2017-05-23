@@ -28,7 +28,7 @@ RCT_REMAP_METHOD(copyDataset,copyDatasetByKey:(NSString*)key withSrcDSId:(NSStri
         reject(@"dataSource",@"copy Dataset failed",nil);
     }
 }
-
+/*
 RCT_REMAP_METHOD(changepassword,changepasswordByKey:(NSString*)key withOldPassword:(NSString*)old withNewPassword:(NSString*)new withType:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Datasource* datasource = [JSObjManager getObjWithKey:key];
     BOOL changed = [datasource changePassword:old nwePasswd:new type:type];
@@ -38,7 +38,7 @@ RCT_REMAP_METHOD(changepassword,changepasswordByKey:(NSString*)key withOldPasswo
     }else{
         reject(@"dataSource",@"copy Dataset failed",nil);
     }
-}
+}*/
 
 #pragma mark - 属性获取方法
 

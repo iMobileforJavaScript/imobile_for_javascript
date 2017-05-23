@@ -259,7 +259,21 @@ public class JSMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
-    
+
+    @ReactMethod
+    public void save(String mapId,Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            boolean saved = map.save();
+
+            WritableMap wMap = Arguments.createMap();
+            wMap.putBoolean("saved",saved);
+            promise.resolve(wMap);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
     @ReactMethod
     public void saveAs(String mapId,String mapName,Promise promise){
         try{

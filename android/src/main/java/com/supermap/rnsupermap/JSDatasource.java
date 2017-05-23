@@ -141,7 +141,7 @@ public class JSDatasource extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
-
+/*
     @ReactMethod
     public void changepassword(String datasourceId,String oldPassword,String newPassword,int datasourceEncrytionType,Promise promise){
         try {
@@ -156,7 +156,7 @@ public class JSDatasource extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
-
+*/
     @ReactMethod
     public void getPrjCoordSys(String datasourceId,Promise promise){
         try {

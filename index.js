@@ -1,5 +1,6 @@
+import BufferAnalyst from './NativeModule/BufferAnalyst.js';
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js';
-//import BufferAnalystParameter from './NativeModule/BufferAnalystParameter.js';
+import BufferAnalystParameter from './NativeModule/BufferAnalystParameter.js';
 import CallOut from './NativeModule/CallOut.js'
 import CursorType from './NativeModule/CursorType.js';
 import DataDownloadService from './NativeModule/DataDownloadService.js';
@@ -69,6 +70,13 @@ import PointDensityChart from './NativeModule/PointDensityChart.js';
 import PolymerChart from './NativeModule/PolymerChart.js';
 import RelationalPointChart from './NativeModule/RelationalPointChart.js';
 
+import AMQPManager from './NativeModule/AMQPManager.js';
+import AMQPReceiver from './NativeModule/AMQPReceiver.js';
+import AMQPSender from './NativeModule/AMQPSender.js';
+import STOMPManager from './NativeModule/STOMPManager.js';
+import STOMPReceiver from './NativeModule/STOMPReceiver.js';
+import STOMPSender from './NativeModule/STOMPSender.js';
+import MQTTClientSide from './NativeModule/MQTTClientSide.js';
 
 import Utility from './NativeModule/utility/utility.js';
 
@@ -87,6 +95,14 @@ export {
     SMSceneView,
 
     Utility,
+    
+    AMQPManager,
+    AMQPReceiver,
+    AMQPSender,
+    STOMPManager,
+    STOMPReceiver,
+    STOMPSender,
+    MQTTClientSide,
     
     //chart
     ChartData,
@@ -109,8 +125,9 @@ export {
     
 
     //Modules
+    BufferAnalyst,
     BufferAnalystGeometry,
-//    BufferAnalystParameter,
+    BufferAnalystParameter,
     CallOut,
     CursorType,
     DataDownloadService,

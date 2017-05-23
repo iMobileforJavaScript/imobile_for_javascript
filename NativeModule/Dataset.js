@@ -137,6 +137,7 @@ export default class Dataset{
             console.error(e);
         }
     }
+    
 }
 
 Dataset.TYPE = {

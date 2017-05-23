@@ -108,4 +108,5 @@ RCT_REMAP_METHOD(getEncodeType,getEncodeTypeByKey:(NSString*)key resolver:(RCTPr
         reject(@"dataset",@"get encodeType failed",nil);
     }
 }
+
 @end

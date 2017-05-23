@@ -78,9 +78,18 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSTheme(reactContext));
         modules.add(new JSTrack(reactContext));
         modules.add(new JSTrackingLayer(reactContext));
+        modules.add(new JSBufferAnalyst(reactContext));
         modules.add(new JSBufferAnalystParameter(reactContext));
         modules.add(new JSBufferAnalystGeometry(reactContext));
         modules.add(new JSDatasetVectorInfo(reactContext));
+
+        modules.add(new JSAMQPManager(reactContext));
+        modules.add(new JSAMQPSender(reactContext));
+        modules.add(new JSAMQPReceiver(reactContext));
+        modules.add(new JSSTOMPManager(reactContext));
+        modules.add(new JSSTOMPSender(reactContext));
+        modules.add(new JSSTOMPReceiver(reactContext));
+        modules.add(new JSMQTTClientSide(reactContext));
 
         return modules;
     }

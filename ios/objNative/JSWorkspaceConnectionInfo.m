@@ -59,7 +59,7 @@ RCT_REMAP_METHOD(setName,setNameKey:(NSString*)key name:(NSString*)name  resolve
     reject(@"WorkSpaceInfo",@"set name failed!!!",nil);
 }
 
-RCT_REMAP_METHOD(getPassword,getPasswordKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getPassWord,getPassWordByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   WorkspaceConnectionInfo* info = [JSObjManager getObjWithKey:key];
   if(info){
     resolve(info.password);
@@ -67,7 +67,7 @@ RCT_REMAP_METHOD(getPassword,getPasswordKey:(NSString*)key resolver:(RCTPromiseR
     reject(@"WorkSpaceInfo",@"workSpaceInfo not exeist!!!",nil);
 }
 
-RCT_REMAP_METHOD(setPassword,setPasswordKey:(NSString*)key  password:(NSString*)password resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setPassWord,setPassWordByKey:(NSString*)key password:(NSString*)password resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   WorkspaceConnectionInfo* info = [JSObjManager getObjWithKey:key];
   if(info){
     info.password = password;

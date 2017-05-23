@@ -9,6 +9,7 @@
 #import "JSDatasetVector.h"
 #import "SuperMap/DatasetVector.h"
 #import "SuperMap/Rectangle2D.h"
+#import "SuperMap/Geometry.h"
 #import "SuperMap/Point2D.h"
 #import "SuperMap/Recordset.h"
 #import "JSObjManager.h"
@@ -183,4 +184,50 @@ RCT_REMAP_METHOD(queryByFilter,queryByFilterWithId:(NSString*)datasetVectorId wi
       reject(@"datasetVector",@"quary failed!!!",nil);
     }
   }
+
+RCT_REMAP_METHOD(getSMID, getSMIDById:(NSString*)dsVectorId SQL:(NSString*)SQL resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSMutableArray* smArr = [[NSMutableArray alloc]initWithCapacity:20];
+        
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        Recordset* recordSet = [dsVector queryWithFilter:SQL Type:STATIC];
+        
+        NSInteger count = recordSet.recordCount;
+        for (NSInteger num = 0; num<count; num++) {
+            if ([recordSet moveTo:num]) {
+                int SmID = (int)[recordSet getFieldValueWithString:@"SMID"];
+                NSNumber* num = [NSNumber numberWithInt:SmID];
+                [smArr addObject:num];
+            }
+        }
+        resolve(@{@"result":(NSArray*)smArr});
+    } @catch (NSException *exception) {
+        reject(@"datasetVector",@"getSMID failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getGeoInnerPoint, getGeoInnerPointById:(NSString*)dsVectorId SQL:(NSString*)SQL resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSMutableArray* Arr = [[NSMutableArray alloc]initWithCapacity:20];
+        
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        Recordset* recordSet = [dsVector queryWithFilter:SQL Type:STATIC];
+        
+        NSInteger count = recordSet.recordCount;
+        for (NSInteger num = 0; num<count; num++) {
+            if ([recordSet moveTo:num]) {
+                Geometry* geo = recordSet.geometry;
+                Point2D* point = [geo getInnerPoint];
+                
+                NSNumber* xNum = [NSNumber numberWithDouble:point.x];
+                NSNumber* yNum = [NSNumber numberWithDouble:point.y];
+                NSArray* pointArr = @[xNum,yNum];
+                [Arr addObject:pointArr];
+            }
+        }
+        resolve(@{@"result":(NSArray*)Arr});
+    } @catch (NSException *exception) {
+        reject(@"datasetVector",@"get Geo Inner Point failed!!!",nil);
+    }
+}
 @end

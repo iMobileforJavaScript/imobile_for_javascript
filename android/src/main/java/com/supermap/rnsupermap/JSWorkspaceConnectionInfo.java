@@ -182,7 +182,7 @@ public class JSWorkspaceConnectionInfo extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setPassword(String id,String value) {
+    public void setPassWord(String id,String value) {
         try {
             mWorkspaceConnectionInfo = mObjLise.get(id);
             if (mWorkspaceConnectionInfo != null){

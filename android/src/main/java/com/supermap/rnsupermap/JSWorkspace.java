@@ -202,7 +202,7 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
-
+/*
     @ReactMethod
     public void openDatasourceConnectionInfo(String workspaceId,String datasrouceConnectionInfoId,Promise promise){
         try {
@@ -222,7 +222,7 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
-
+*/
     @ReactMethod
     public void getDatasource(String workspaceId,int index,Promise promise){
         try{
@@ -252,7 +252,7 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
-
+/*
     @ReactMethod
     public void openWMSDatasource(String workspaceId, String server, int engineType, String driver,
                                   String version, String visibleLayers, ReadableMap webBox,String webCoordinate,Promise promise){
@@ -278,6 +278,21 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
 
+    }
+*/
+    @ReactMethod
+    public void saveWorkspaceWithServer(String workspaceId,String server,Promise promise){
+        try{
+            Workspace workspace = getObjById(workspaceId);
+            WorkspaceConnectionInfo info = workspace.getConnectionInfo();
+            info.setServer(server);
+            boolean saved = workspace.save();
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("saved",saved);
+            promise.resolve(map);
+        }catch(Exception e) {
+            promise.reject(e);
+        }
     }
 
     @ReactMethod
