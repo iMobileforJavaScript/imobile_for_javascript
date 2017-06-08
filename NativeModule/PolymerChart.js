@@ -54,9 +54,9 @@ export default class PolymerChart extends ChartView{
      * @memberOf PolymerChart
      * @returns {Promise.<void>}
      */
-    async getpolymerizationType(){
+    async getPolymerizationType(){
         try{
-            var {type} = await PC.getpolymerizationType(this.polymerChartId);
+            var {type} = await PC.getPolymerizationType(this.polymerChartId);
             return type;
         }catch(e){
             console.error(e);
@@ -77,7 +77,7 @@ export default class PolymerChart extends ChartView{
     }
     
     /**
-     * 获取未展开聚合点暗色
+     * 获取未展开聚合点暗色(该方法只支持iOS)
      * @memberOf PolymerChart
      * @returns {Promise.<void>}
      */
@@ -104,7 +104,7 @@ export default class PolymerChart extends ChartView{
     }
     
     /**
-     * 获取展开聚合点亮色
+     * 获取展开聚合点亮色(该方法只支持iOS)
      * @memberOf PolymerChart
      * @returns {Promise.<void>}
      */

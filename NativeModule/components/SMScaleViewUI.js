@@ -13,7 +13,7 @@ class SMScaleView extends React.Component{
 
     render(){
         var props = {...this.props};
-        return <RCTLegendView {...props} ref="LegendView"></RCTLegendView>
+        return <RCTScaleView {...props} ref="ScaleView"></RCTScaleView>
     }
 }
 

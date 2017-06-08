@@ -10,7 +10,7 @@ import ChartLegend from './ChartLegend.js';
  */
 export default class ChartView{
     /**
-     * 设置图标标题
+     * 设置标题
      * @memberOf ChartView
      * @param {string}Title - 图表标题
      * @returns {Promise.<void>}
@@ -23,7 +23,7 @@ export default class ChartView{
         }
     }
     /**
-     * 判断图层是否处于可编辑状态。
+     * 获取标题
      * @memberOf ChartView
      * @returns {Promise.<boolean>}
      */

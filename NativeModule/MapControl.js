@@ -855,6 +855,33 @@ export default class MapControl{
             console.error(e);
         }
     }
+    
+    /**
+     * 添加标绘库。
+     * @memberOf MapControl
+     * @returns {Promise.<int>}
+     */
+    async addPlotLibrary(url){
+        try{
+            var libId = await MC.addPlotLibrary(this.mapControlId,url);
+            return libId;
+        }catch (e){
+            console.error(e);
+        }
+    }
+    
+    /**
+     * 设置标绘图案。
+     * @memberOf MapControl
+     * @returns {Promise.<int>}
+     */
+    async setPlotSymbol(libId,symbolCode){
+        try{
+            await MC.setPlotSymbol(this.mapControlId,libId,symbolCode);
+        }catch (e){
+            console.error(e);
+        }
+    }
 }
 
 MapControl.ACTION = {

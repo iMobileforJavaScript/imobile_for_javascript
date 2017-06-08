@@ -49,7 +49,11 @@ export default class BufferAnalystParameter {
 
     async setLeftDistance(distance){
         try{
-            await BAP.setLeftDistance(this.bufferAnalystParameterId,distance);
+            if(typeof distance == 'number'){
+                await BAP.setLeftDistance(this.bufferAnalystParameterId,distance);
+            }else{
+                await BAP.setLeftDistanceByStr(this.bufferAnalystParameterId,distance);
+            }
         }catch (e){
             console.error(e);
         }
@@ -66,7 +70,11 @@ export default class BufferAnalystParameter {
 
     async setRightDistance(distance){
         try{
-            await BAP.setRightDistance(this.bufferAnalystParameterId,distance);
+            if(typeof distance == 'number'){
+                await BAP.setRightDistance(this.bufferAnalystParameterId,distance);
+            }else{
+                await BAP.setRightDistanceByStr(this.bufferAnalystParameterId,distance);
+            }
         }catch (e){
             console.error(e);
         }

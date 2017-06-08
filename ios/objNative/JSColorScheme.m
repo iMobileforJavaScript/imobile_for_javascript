@@ -9,6 +9,7 @@
 #import "JSColorScheme.h"
 
 #import "SuperMap/ChartView.h"
+#import "SuperMap/Color.h"
 #import "JSObjManager.h"
 @implementation JSColorScheme
 RCT_EXPORT_MODULE();
@@ -51,7 +52,13 @@ RCT_REMAP_METHOD(getColors,getColorsById:(NSString*)schemeId resolver:(RCTPromis
     @try {
         ColorScheme* colorScheme = [JSObjManager getObjWithKey:schemeId];
         NSArray* colorArr = colorScheme.colors;
-        resolve(@{@"colors":colorArr});
+        NSMutableArray* numArr = [[NSMutableArray alloc]initWithCapacity:10];
+        for (int i =0; i<colorArr.count; i++) {
+            Color* color = colorArr[i];
+            NSNumber* nsColorNum = [NSNumber numberWithInt:color.rgb];
+            [numArr addObject:nsColorNum];
+        }
+        resolve(@{@"colors":numArr});
     } @catch (NSException *exception) {
         reject(@"colorScheme",@"get Colors expection",nil);
     }

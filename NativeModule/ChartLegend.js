@@ -22,7 +22,7 @@ export default class ChartLegend{
         }
     }
     /**
-     * 获取图例竖直或者水平显示。
+     * 获取图例竖直或者水平显示。（该方法只支持iOS端）
      * @memberOf ChartLegend
      * @returns {Promise.<bool>}
      */
@@ -50,7 +50,7 @@ export default class ChartLegend{
     }
     
     /**
-     * 获取图例位置。
+     * 获取图例位置。（该方法只支持iOS端）
      * @memberOf ChartLegend
      * @param {string}label - 条目标签
      * @returns {Promise.<void>}

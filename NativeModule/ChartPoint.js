@@ -18,7 +18,7 @@ export default class ChartPoint{
         try{
             if(arguments.length==3){
                 var {_chartpointId} = await CP.createObj(weight,x,y);
-            }else if(arguments.length==3){
+            }else if(arguments.length==2){
                 var {_chartpointId} = await CP.createObjByPoint(weight,x.point2DId);
             }else{
                 console('arguments number should be 3 or 2');
