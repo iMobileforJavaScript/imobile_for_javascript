@@ -109,9 +109,9 @@ public class JSOverlayAnalystParameter extends ReactContextBaseJavaModule {
     public void setOperationRetainedFields(String overlayAnalystParameterId, ReadableArray fields, Promise promise){
         try{
             OverlayAnalystParameter overlayAnalystParameter = getObjFromList(overlayAnalystParameterId);
-
-            String [] array = {};
-            for(int i = 0; i < fields.size(); i++){
+            int size = fields.size();
+            String [] array = new String[size];
+            for(int i = 0; i < size; i++){
                 array[i] = fields.getString(i);
             }
             overlayAnalystParameter.setOperationRetainedFields(array);

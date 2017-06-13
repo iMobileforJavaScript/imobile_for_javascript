@@ -130,6 +130,19 @@ public class JSLayer extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void isSelectable(String layerId,Promise promise){
+        try{
+            Layer layer = mLayerList.get(layerId);
+            boolean selectable = layer.isSelectable();
+
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("selectable",selectable);
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
 
     @ReactMethod
     public void getVisible(String layerId,Promise promise){

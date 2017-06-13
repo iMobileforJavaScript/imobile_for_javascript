@@ -99,6 +99,18 @@ public class JSBufferAnalystParameter extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void setLeftDistanceByStr(String bufferAnalystParameterId,String distance,Promise promise){
+        try{
+            BufferAnalystParameter bufferAnalystParameter = getObjFromList(bufferAnalystParameterId);
+            bufferAnalystParameter.setLeftDistance(distance);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void getLeftDistance(String bufferAnalystParameterId,Promise promise){
         try{
             BufferAnalystParameter bufferAnalystParameter = getObjFromList(bufferAnalystParameterId);
@@ -119,6 +131,18 @@ public class JSBufferAnalystParameter extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setRightDistance(String bufferAnalystParameterId,double distance,Promise promise){
+        try{
+            BufferAnalystParameter bufferAnalystParameter = getObjFromList(bufferAnalystParameterId);
+            bufferAnalystParameter.setRightDistance(distance);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setRightDistanceByStr(String bufferAnalystParameterId,String distance,Promise promise){
         try{
             BufferAnalystParameter bufferAnalystParameter = getObjFromList(bufferAnalystParameterId);
             bufferAnalystParameter.setRightDistance(distance);

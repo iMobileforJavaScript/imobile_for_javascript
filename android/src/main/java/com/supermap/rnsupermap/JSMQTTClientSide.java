@@ -25,7 +25,9 @@ public class JSMQTTClientSide extends ReactContextBaseJavaModule {
     public static Map<String,MQTTClient> mClientList=new HashMap<String,MQTTClient>();
     MQTTClient mClient;
 
-    public JSMQTTClientSide(ReactApplicationContext context){super(context);}
+    public JSMQTTClientSide(ReactApplicationContext context){
+        super(context);
+    }
 
     public static String registerId(MQTTClient client){
         if(!mClientList.isEmpty()) {
