@@ -94,6 +94,17 @@ RCT_REMAP_METHOD(setSelectable,setSelectableByKey:(NSString*)layerId boolBit:(BO
     }
 }
 
+RCT_REMAP_METHOD(isSelectable,isSelectableByKey:(NSString*)layerId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Layer* layer = [JSObjManager getObjWithKey:layerId];
+    if(layer){
+        BOOL selectable = layer.selectable;
+        NSNumber* nsSelectable = [NSNumber numberWithBool:selectable];
+        resolve(@{@"selectable":nsSelectable});
+    }else{
+        reject(@"Layer",@"set selectable failed!",nil);
+    }
+}
+
 RCT_REMAP_METHOD(getVisible,getVisibleByKey:(NSString*)layerId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Layer* layer = [JSObjManager getObjWithKey:layerId];
     if(layer){
