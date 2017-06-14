@@ -132,7 +132,7 @@ public class JSDatasource extends ReactContextBaseJavaModule {
             m_datasource = m_DatasourceList.get(datasourceId);
             Dataset dataset = JSDataset.getObjById(datasetId);
             Dataset desDataset = m_datasource.copyDataset(dataset,desDatasetName,(EncodeType) Enum.parse(EncodeType.class,encodeType));
-            String datasetId1 = JSDataset.registerId(dataset);
+            String datasetId1 = JSDataset.registerId(desDataset);
 
             WritableMap map = Arguments.createMap();
             map.putString("datasetId",datasetId1);

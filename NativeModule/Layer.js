@@ -6,6 +6,7 @@ let L = NativeModules.JSLayer;
 import Dataset from './Dataset.js';
 import Selection from './Selection.js';
 import LayerSetting from './LayerSetting.js';
+import LayerSettingVector from './LayerSettingVector.js';
 
 /**
  * @class Layer
@@ -165,9 +166,16 @@ export default class Layer{
      */
     async getAdditionalSetting(){
         try{
-            var {_layerSettingId_} = await L.getAdditionalSetting(this.layerId);
-            var layerSetting = new LayerSetting();
-            layerSetting._layerSettingId_ = _layerSettingId_;
+            var layerSetting;
+            var {_layerSettingId_,type} = await L.getAdditionalSetting(this.layerId);
+            if(type===0){
+            layerSetting = new LayerSettingVector();
+            layerSetting._layerSettingVectorId_ = _layerSettingId_;
+            }else if(type===1){
+            //image
+            }else{
+            //grid
+            }
             return layerSetting;
         }catch(e){
             console.error(e);

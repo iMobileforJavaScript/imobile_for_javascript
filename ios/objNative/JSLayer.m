@@ -9,6 +9,8 @@
 #import "JSLayer.h"
 #import "JSObjManager.h"
 #import "SuperMap/LayerSettingVector.h"
+#import "SuperMap/LayerSettingImage.h"
+#import "SuperMap/LayerSettingGrid.h"
 #import "SuperMap/Datasource.h"
 #import "SuperMap/Layer.h"
 
@@ -128,11 +130,19 @@ RCT_REMAP_METHOD(setVisible,setVisibleByKey:(NSString*)layerId boolBit:(BOOL)boo
 
 RCT_REMAP_METHOD(getAdditionalSetting,getAdditionalSettingByKey:(NSString*)layerId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Layer* layer = [JSObjManager getObjWithKey:layerId];
+    NSNumber* typeNum;
     if(layer){
         id<LayerSetting> layerSetting = layer.layerSetting;
         NSInteger nsLayerSetting = (NSInteger)layerSetting;
         [JSObjManager addObj:layerSetting];
-        resolve(@{@"_layerSettingId_":@(nsLayerSetting).stringValue});
+        if ([layerSetting isKindOfClass:[LayerSettingVector class]]) {
+            typeNum = [NSNumber numberWithInt:0];
+        }else if ([layerSetting isKindOfClass:[LayerSettingImage class]]){
+            typeNum = [NSNumber numberWithInt:1];
+        }else{
+            typeNum = [NSNumber numberWithInt:2];
+        }
+        resolve(@{@"_layerSettingId_":@(nsLayerSetting).stringValue,@"type":typeNum});
     }else{
         reject(@"Layer",@"get Additional Setting failed!",nil);
     }
