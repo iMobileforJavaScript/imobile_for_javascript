@@ -295,7 +295,9 @@ public class JSMap extends ReactContextBaseJavaModule {
             Rectangle2D rectangle2D = map.getBounds();
             
             WritableMap wMap = JsonUtil.rectangleToJson(rectangle2D);
-            promise.resolve(wMap);
+            WritableMap map1 = Arguments.createMap();
+            map1.putMap("bound",wMap);
+            promise.resolve(map1);
         }catch (Exception e){
             promise.reject(e);
         }
@@ -308,14 +310,16 @@ public class JSMap extends ReactContextBaseJavaModule {
             Rectangle2D rectangle2D = map.getViewBounds();
             
             WritableMap wMap = JsonUtil.rectangleToJson(rectangle2D);
-            promise.resolve(wMap);
+            WritableMap map1 = Arguments.createMap();
+            map1.putMap("bound",wMap);
+            promise.resolve(map1);
         }catch (Exception e){
             promise.reject(e);
         }
     }
     
     @ReactMethod
-    public void setViewBound(String mapId, ReadableMap readableMap,Promise promise){
+    public void setViewBounds(String mapId, ReadableMap readableMap,Promise promise){
         try{
             Map map = mapList.get(mapId);
             Rectangle2D rectangle2D = JsonUtil.jsonToRectangle(readableMap);
@@ -496,7 +500,7 @@ public class JSMap extends ReactContextBaseJavaModule {
     }
     
     @ReactMethod
-    public void removeLayerByName(String mapId,String datasetId,String layerName,Promise promise){
+    public void removeLayerByName(String mapId,String layerName,Promise promise){
         try{
             Map map = mapList.get(mapId);
             String layerId = JSLayer.registerId(map.getLayers().get(layerName));
@@ -511,7 +515,7 @@ public class JSMap extends ReactContextBaseJavaModule {
     }
     
     @ReactMethod
-    public void removeLayerByIndex(String mapId,String datasetId,int index,Promise promise){
+    public void removeLayerByIndex(String mapId,int index,Promise promise){
         try{
             Map map = mapList.get(mapId);
             String layerId = JSLayer.registerId(map.getLayers().get(index));

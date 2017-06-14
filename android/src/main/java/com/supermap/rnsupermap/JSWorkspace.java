@@ -315,7 +315,9 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
             Workspace workspace = getObjById(workspaceId);
 
             DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-            info.setServer(android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + filePath);
+            String path = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + filePath;
+//            info.setServer(android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + filePath);
+            info.setServer(path);
             info.setEngineType((EngineType) Enum.parse(EngineType.class,engineType));
             Datasource datasource = workspace.getDatasources().create(info);
 

@@ -58,6 +58,19 @@ public class JSLayer extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void getEditable(String layerId,Promise promise){
+        try{
+            mLayer = mLayerList.get(layerId);
+            boolean isEditable = mLayer.isEditable();
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("isEditable",isEditable);
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void getName(String layerId,Promise promise){
         try{
             mLayer = mLayerList.get(layerId);

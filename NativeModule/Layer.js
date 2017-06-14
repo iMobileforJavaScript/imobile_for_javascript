@@ -120,7 +120,7 @@ export default class Layer{
      * @param {void}
      * @returns {Promise.<boolean>}
      */
-    async isSelectable(b){
+    async isSelectable(){
         try{
             var{selectable} = await L.isSelectable(this.layerId);
             return selectable;
@@ -135,7 +135,7 @@ export default class Layer{
      * @param {boolean} b - 指定图层是否可见。
      * @returns {Promise.<boolean>}
      */
-    async getVisible(b){
+    async getVisible(){
         try{
             var isVisible = await L.getVisible(this.layerId);
             return isVisible;

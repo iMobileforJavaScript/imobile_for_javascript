@@ -46,7 +46,7 @@ public class JsonUtil {
         centerMap.putDouble("y" , y);
 
         WritableMap wMap = Arguments.createMap();
-        wMap.putMap("centerMap",centerMap);
+        wMap.putMap("center",centerMap);
         wMap.putDouble("top",top);
         wMap.putDouble("bottom",bottom);
         wMap.putDouble("left",left);
@@ -63,12 +63,21 @@ public class JsonUtil {
      * @throws Exception
      */
     public static Rectangle2D jsonToRectangle(ReadableMap readableMap) throws Exception{
+        Rectangle2D r;
+        double left = readableMap.getDouble("left");
+        double bottom = readableMap.getDouble("bottom");
+        if (readableMap.hasKey("top") && readableMap.hasKey("right")) {
             double top = readableMap.getDouble("top");
-            double left = readableMap.getDouble("left");
-            double bottom = readableMap.getDouble("bottom");
             double right = readableMap.getDouble("right");
 
-        Rectangle2D r = new Rectangle2D(left,bottom,right,top);
+            r = new Rectangle2D(left, bottom, right, top);
+        }else {
+            double width = readableMap.getDouble("width");
+            double height = readableMap.getDouble("height");
+            Point2D leftBottom = new Point2D(left,bottom);
+
+            r = new Rectangle2D(leftBottom,width,height);
+        }
         return r;
     }
 

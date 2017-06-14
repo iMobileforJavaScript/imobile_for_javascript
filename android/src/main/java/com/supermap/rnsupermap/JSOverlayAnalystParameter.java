@@ -145,10 +145,12 @@ public class JSOverlayAnalystParameter extends ReactContextBaseJavaModule {
     public void setSourceRetainedFields(String overlayAnalystParameterId, ReadableArray fields, Promise promise){
         try{
             OverlayAnalystParameter overlayAnalystParameter = getObjFromList(overlayAnalystParameterId);
+            int count = fields.size();
+            String [] array = new String[count];
+            for(int i = 0; i < count; i++){
+                String value = fields.getString(i);
+                array[i] = value;
 
-            String [] array = {};
-            for(int i = 0; i < fields.size(); i++){
-                array[i] = fields.getString(i);
             }
             overlayAnalystParameter.setSourceRetainedFields(array);
 
