@@ -44,7 +44,17 @@ RCT_REMAP_METHOD(getEndType,getEndTypeById:(NSString*)paraId resolver:(RCTPromis
     }
 }
 
-RCT_REMAP_METHOD(setLeftDistance,setLeftDistanceById:(NSString*)paraId distance:(NSString*)distance resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setLeftDistance,setLeftDistanceById:(NSString*)paraId distance:(double)distance resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BufferAnalystParameter* para = [JSObjManager getObjWithKey:paraId];
+        para.leftDistance = [NSString stringWithFormat:@"%f",distance];
+        resolve(@"left Distance setted");
+    } @catch (NSException *exception) {
+        reject(@"BufferAnalystParameter",@"set left Distance exception",nil);
+    }
+}
+
+RCT_REMAP_METHOD(setLeftDistanceByStr,setLeftDistanceByStringAndId:(NSString*)paraId distance:(NSString*)distance resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BufferAnalystParameter* para = [JSObjManager getObjWithKey:paraId];
         para.leftDistance = distance;
@@ -64,13 +74,23 @@ RCT_REMAP_METHOD(getLeftDistance,getLeftDistanceById:(NSString*)paraId resolver:
     }
 }
 
-RCT_REMAP_METHOD(setRightDistance,setRightDistanceById:(NSString*)paraId distance:(NSString*)distance resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setRightDistance,setRightDistanceById:(NSString*)paraId distance:(double)distance resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BufferAnalystParameter* para = [JSObjManager getObjWithKey:paraId];
-        para.rightDistance = distance;
+        para.rightDistance = [NSString stringWithFormat:@"%f",distance];
         resolve(@"right Distance setted");
     } @catch (NSException *exception) {
         reject(@"BufferAnalystParameter",@"set right Distance exception",nil);
+    }
+}
+
+RCT_REMAP_METHOD(setRightDistanceByStr,setRightDistanceByStrAndId:(NSString*)paraId distance:(NSString*)distance resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BufferAnalystParameter* para = [JSObjManager getObjWithKey:paraId];
+        para.rightDistance = distance;
+        resolve(@"left Distance setted");
+    } @catch (NSException *exception) {
+        reject(@"BufferAnalystParameter",@"set left Distance exception",nil);
     }
 }
 

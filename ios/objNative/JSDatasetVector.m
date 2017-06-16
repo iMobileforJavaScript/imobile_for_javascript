@@ -206,6 +206,28 @@ RCT_REMAP_METHOD(getSMID, getSMIDById:(NSString*)dsVectorId SQL:(NSString*)SQL r
     }
 }
 
+RCT_REMAP_METHOD(getFieldValue, getFieldValueById:(NSString*)dsVectorId SQL:(NSString*)SQL fieldName:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSMutableArray* smArr = [[NSMutableArray alloc]initWithCapacity:20];
+        
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        Recordset* recordSet = [dsVector queryWithFilter:SQL Type:STATIC];
+        
+        NSInteger count = recordSet.recordCount;
+        for (NSInteger num = 0; num<count; num++) {
+            if ([recordSet moveTo:num]) {
+                id fieldValue = [recordSet getFieldValueWithString:name];
+                if ([fieldValue isKindOfClass:[NSString class]] || [fieldValue isKindOfClass:[NSNumber class]]) {
+                    [smArr addObject:fieldValue];
+                }
+            }
+        }
+        resolve(@{@"result":(NSArray*)smArr});
+    } @catch (NSException *exception) {
+        reject(@"datasetVector",@"getfieldValue failed!!!",nil);
+    }
+}
+
 RCT_REMAP_METHOD(getGeoInnerPoint, getGeoInnerPointById:(NSString*)dsVectorId SQL:(NSString*)SQL resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         NSMutableArray* Arr = [[NSMutableArray alloc]initWithCapacity:20];

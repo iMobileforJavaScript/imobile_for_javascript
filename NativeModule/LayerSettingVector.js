@@ -1,11 +1,23 @@
 import {NativeModules} from 'react-native';
 let LSV = NativeModules.JSLayerSettingVector;
 import GeoStyle from './GeoStyle.js';
+import LayerSetting from './LayerSetting.js';
 
 /**
  * @class LayerSettingVector
  */
-export default class LayerSettingVector {
+export default class LayerSettingVector extends LayerSetting{
+    constructor(){
+        super();
+        Object.defineProperty(this,"_layerSettingVectorId_",{
+                              get:function(){
+                              return this._layerSettingId_
+                              },
+                              set:function(_layerSettingVectorId_){
+                              this._layerSettingId_ = _layerSettingVectorId_;
+                              }
+                              })
+    }
     /**
      * 创建一个LayerSettingVector实例
      * @memberOf LayerSettingVector

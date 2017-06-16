@@ -10,6 +10,8 @@ import com.supermap.data.Dataset;
 import com.supermap.data.Recordset;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSetting;
+import com.supermap.mapping.LayerSettingImage;
+import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Selection;
 
 import java.util.Calendar;
@@ -52,6 +54,19 @@ public class JSLayer extends ReactContextBaseJavaModule {
             mLayer = mLayerList.get(layerId);
             mLayer.setEditable(editable);
             promise.resolve(true);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getEditable(String layerId,Promise promise){
+        try{
+            mLayer = mLayerList.get(layerId);
+            boolean isEditable = mLayer.isEditable();
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("isEditable",isEditable);
+            promise.resolve(map);
         }catch(Exception e){
             promise.reject(e);
         }
@@ -130,6 +145,19 @@ public class JSLayer extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void isSelectable(String layerId,Promise promise){
+        try{
+            Layer layer = mLayerList.get(layerId);
+            boolean selectable = layer.isSelectable();
+
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("selectable",selectable);
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
 
     @ReactMethod
     public void getVisible(String layerId,Promise promise){
@@ -160,12 +188,20 @@ public class JSLayer extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getAdditionalSetting(String layerId,Promise promise){
         try{
+            int typeNum;
             Layer layer = mLayerList.get(layerId);
             LayerSetting layerSetting = layer.getAdditionalSetting();
             String layerSettingId = JSLayerSetting.registerId(layerSetting);
-
+            if (layerSetting instanceof LayerSettingVector){
+                typeNum = 0;
+            }else if (layerSetting instanceof LayerSettingImage){
+                typeNum = 1;
+            }else {
+                typeNum = 2;
+            }
             WritableMap map = Arguments.createMap();
             map.putString("_layerSettingId_",layerSettingId);
+            map.putInt("type",typeNum);
             promise.resolve(map);
         }catch(Exception e){
             promise.reject(e);

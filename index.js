@@ -70,6 +70,7 @@ import PointDensityChart from './NativeModule/PointDensityChart.js';
 import PolymerChart from './NativeModule/PolymerChart.js';
 import RelationalPointChart from './NativeModule/RelationalPointChart.js';
 
+import LogTest from './NativeModule/LogTest.js';
 import AMQPManager from './NativeModule/AMQPManager.js';
 import AMQPReceiver from './NativeModule/AMQPReceiver.js';
 import AMQPSender from './NativeModule/AMQPSender.js';
@@ -84,15 +85,18 @@ import SMMapView from './NativeModule/components/SMMapViewUI.js';
 import SMLayerListView from './NativeModule/components/SMLayerListViewUI.js';
 import SMLegendView from './NativeModule/components/SMLegendViewUI.js';
 import SMScaleView from './NativeModule/components/SMScaleViewUI.js';
-import SMSceneView from './NativeModule/components/SMSceneViewUI.js'
+import SMSceneView from './NativeModule/components/SMSceneViewUI.js';
+import SMPlotView from './NativeModule/components/SMPlotViewUI.js';
 
 export {
+    LogTest,
     //Components
     SMMapView,
     SMLayerListView,
     SMLegendView,
     SMScaleView,
     SMSceneView,
+    SMPlotView,
 
     Utility,
     

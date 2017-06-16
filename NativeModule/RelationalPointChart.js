@@ -49,7 +49,7 @@ export default class RelationalPointChart extends ChartView{
     }
     
     /**
-     * 获取是否开启动画效果
+     * 获取是否开启动画效果(该方法只适用于iOS端)
      * @memberOf RelationalPointChart
      * @returns {Promise.<void>}
      */
@@ -80,7 +80,7 @@ export default class RelationalPointChart extends ChartView{
      * @memberOf RelationalPointChart
      * @returns {Promise.<void>}
      */
-    async getAnimationImage(){
+/*    async getAnimationImage(){
         try{
             var {url} = await RPC.getAnimationImage(this.relationalPointChartId);
             return url;
@@ -88,7 +88,7 @@ export default class RelationalPointChart extends ChartView{
             console.error(e);
         }
     }
-    
+*/
     /**
      * 设置刻度调色板
      * @memberOf RelationalPointChart

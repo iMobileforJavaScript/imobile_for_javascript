@@ -65,13 +65,14 @@ export default class Map{
     }
 
     /**
-     * 用于把一个数据集添加到此地图作为一个普通图层显示，即创建一个普通图层。
+     * 用于把一个数据集添加到此地图作为一个普通图层显示，即创建一个普通图层。(@deprecated)
      * @memberOf Map
      * @param {object} dataset
      * @param {boolean} addToHead
      * @returns {Promise.<void>}
      */
     async addDataset(dataset,addToHead){
+        console.warn("Map.js:addDataset() function has been deprecated. If you want to add Layer , please call the addLayer() function");
         try{
             await M.addDataset(this.mapId,dataset.datasetId,addToHead);
         }catch(e){

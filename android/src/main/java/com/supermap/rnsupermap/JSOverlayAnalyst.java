@@ -102,6 +102,24 @@ public class JSOverlayAnalyst extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void intersect(String datasetVectorId, String intersectDatasetVectorId,
+                         String resultDatasetVectorId, String overlayAnalystParameterId, Promise promise){
+        try{
+            DatasetVector dataset = JSDatasetVector.getObjFromList(datasetVectorId);
+            DatasetVector intersectDataset = JSDatasetVector.getObjFromList(intersectDatasetVectorId);
+            DatasetVector resultDataset = JSDatasetVector.getObjFromList(resultDatasetVectorId);
+            OverlayAnalystParameter overlayAnalystParameter = JSOverlayAnalystParameter.getObjFromList(overlayAnalystParameterId);
+            boolean identified = OverlayAnalyst.intersect(dataset,intersectDataset,resultDataset,overlayAnalystParameter);
+
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("intersected",identified);
+            promise.resolve(map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void union(String datasetId, String unionDatasetId,
                          String resultDatasetId, String overlayAnalystParameterId, Promise promise){
         try{

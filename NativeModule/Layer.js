@@ -6,6 +6,7 @@ let L = NativeModules.JSLayer;
 import Dataset from './Dataset.js';
 import Selection from './Selection.js';
 import LayerSetting from './LayerSetting.js';
+import LayerSettingVector from './LayerSettingVector.js';
 
 /**
  * @class Layer
@@ -115,12 +116,27 @@ export default class Layer{
     }
     
     /**
+     * 返回图层中对象是否可以选择
+     * @memberOf Layer
+     * @param {void}
+     * @returns {Promise.<boolean>}
+     */
+    async isSelectable(){
+        try{
+            var{selectable} = await L.isSelectable(this.layerId);
+            return selectable;
+        }catch(e){
+            console.error(e);
+        }
+    }
+    
+    /**
      * 获取此图层是否可见。true 表示此图层可见，false 表示图层不可见。当图层不可见时，其他所有的属性的设置将无效。
      * @memberOf Layer
      * @param {boolean} b - 指定图层是否可见。
      * @returns {Promise.<boolean>}
      */
-    async getVisible(b){
+    async getVisible(){
         try{
             var isVisible = await L.getVisible(this.layerId);
             return isVisible;
@@ -150,9 +166,16 @@ export default class Layer{
      */
     async getAdditionalSetting(){
         try{
-            var {_layerSettingId_} = await L.getAdditionalSetting(this.layerId);
-            var layerSetting = new LayerSetting();
-            layerSetting._layerSettingId_ = _layerSettingId_;
+            var layerSetting;
+            var {_layerSettingId_,type} = await L.getAdditionalSetting(this.layerId);
+            if(type===0){
+            layerSetting = new LayerSettingVector();
+            layerSetting._layerSettingVectorId_ = _layerSettingId_;
+            }else if(type===1){
+            //image
+            }else{
+            //grid
+            }
             return layerSetting;
         }catch(e){
             console.error(e);

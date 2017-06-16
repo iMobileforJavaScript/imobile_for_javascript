@@ -344,4 +344,28 @@ RCT_REMAP_METHOD(setRefreshListener,setRefreshListenerById:(NSString*)Id resolve
         reject(@"mapControl",@"setRefreshListener failed!!!",nil);
     }
 }
+    
+    RCT_REMAP_METHOD(addPlotLibrary,addPlotLibraryById:(NSString*)Id url:(NSString*)url resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+        MapControl* mapControl = [JSObjManager getObjWithKey:Id];
+        if (mapControl) {
+            dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+            dispatch_async(queue,^(void){
+//                int libId = [mapControl addPlotLibrary: [NSHomeDirectory() stringByAppendingFormat:@"/Library/Caches/%@",@"TY.plot"]];
+                int libId = [mapControl addPlotLibrary:url];
+                NSNumber* num = [NSNumber numberWithInt:libId];
+                resolve(num);
+            });
+        }else{
+            reject(@"mapControl",@"add PlotLibrary failed!!!",nil);
+        }
+    }
+    
+    RCT_REMAP_METHOD(setPlotSymbol,setPlotSymbolById:(NSString*)Id libId:(int)libId symbolCode:(int)symbolCode resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+        MapControl* mapControl = [JSObjManager getObjWithKey:Id];
+        if (mapControl) {
+            [mapControl setPlotSymbol:libId symbolCode:symbolCode];
+        }else{
+            reject(@"mapControl",@"add PlotLibrary failed!!!",nil);
+        }
+    }
 @end

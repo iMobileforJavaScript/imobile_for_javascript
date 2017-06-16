@@ -31,6 +31,7 @@ public class JSQueryService extends ReactContextBaseJavaModule {
     @Override
     public String getName() {
         return REACT_CLASS;
+
     }
 
     public static String registerId(QueryService obj) {

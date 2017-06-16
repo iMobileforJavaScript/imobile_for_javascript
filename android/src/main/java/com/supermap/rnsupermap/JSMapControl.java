@@ -1,5 +1,6 @@
 package com.supermap.rnsupermap;
 
+import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
@@ -121,6 +122,10 @@ public class JSMapControl extends ReactContextBaseJavaModule {
         String id=Long.toString(calendar.getTimeInMillis());
         mapControlList.put(id,mapControl);
         return id;
+    }
+
+    public static MapControl getObjFromList(String id){
+        return mapControlList.get(id);
     }
 
     @ReactMethod
@@ -895,6 +900,35 @@ public class JSMapControl extends ReactContextBaseJavaModule {
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void addPlotLibrary(final String mapControlId, final String url, final Promise promise){
+        try {
+            Handler plotHandler = new Handler();
+            plotHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mMapControl = mapControlList.get(mapControlId);
+                    int libId = (int)mMapControl.addPlotLibrary(url);
+                    promise.resolve(libId);
+                }
+            });
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setPlotSymbol(String mapControlId, int libId, int symbolCode, Promise promise){
+        try {
+            mMapControl = mapControlList.get(mapControlId);
+            mMapControl.setPlotSymbol(libId,symbolCode);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+
         }
     }
 

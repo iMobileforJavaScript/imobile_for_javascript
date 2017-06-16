@@ -187,6 +187,7 @@ RCT_REMAP_METHOD(getCenter,getCenterByKey:(NSString*)key resolver:(RCTPromiseRes
     Map* map = [JSObjManager getObjWithKey:key];
     if(map){
         Point2D* point = map.center;
+        [JSObjManager addObj:point];
         double x = point.x;
         NSNumber* nsX = [NSNumber numberWithDouble:x];
         double y = point.y;

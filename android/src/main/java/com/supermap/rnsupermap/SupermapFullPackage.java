@@ -91,6 +91,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSSTOMPReceiver(reactContext));
         modules.add(new JSMQTTClientSide(reactContext));
 
+        modules.add(new LogModule(reactContext));
         return modules;
     }
 }
