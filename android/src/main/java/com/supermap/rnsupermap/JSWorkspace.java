@@ -163,7 +163,7 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
             String server = jsonObject.getString("server");
 
             DatasourceConnectionInfo dsInfo = new DatasourceConnectionInfo();
-            dsInfo.setServer(sdcard + server);
+            dsInfo.setServer(server);
             dsInfo.setEngineType(engineType);
 
             if(jsonObject.hasKey("driver")){
