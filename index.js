@@ -87,6 +87,8 @@ import SMLegendView from './NativeModule/components/SMLegendViewUI.js';
 import SMScaleView from './NativeModule/components/SMScaleViewUI.js';
 import SMSceneView from './NativeModule/components/SMSceneViewUI.js';
 import SMPlotView from './NativeModule/components/SMPlotViewUI.js';
+import SMSearchView from './NativeModule/components/SMSearchViewUI.js';
+import SMWorkSpaceManagerView from './NativeModule/components/SMWorkSpaceManagerViewUI.js';
 
 export {
     LogTest,
@@ -97,6 +99,8 @@ export {
     SMScaleView,
     SMSceneView,
     SMPlotView,
+    SMSearchView,
+    SMWorkSpaceManagerView,
 
     Utility,
     
