@@ -13,6 +13,7 @@ import DSCreateScreen from './SMCreateDSView';
 import DSListScreen from './SMOuterListView';
 
 var navigation = StackNavigator({
+                                  Map: {screen: MapScreem},
                                   Home: { screen: HomeScreen },
                                   SaveAs: { screen: SaveAsScreen },
                                   DSAndMap: {screen: DSAndMapCtrlScreen},
