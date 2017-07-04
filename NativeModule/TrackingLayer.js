@@ -6,7 +6,7 @@ let TL = NativeModules.JSTrackingLayer;
  */
 export default class TrackingLayer {
     /**
-     * 添加几何数据
+     * 向当前跟踪图层中添加一个几何对象，并给出该几何对象的标签信息。
      * @memberOf TrackingLayer
      * @param {object} geometry - 矢量对象
      * @param {string} tag - 矢量对象的标签名称
@@ -15,7 +15,6 @@ export default class TrackingLayer {
     async add(geometry,tag){
         try{
             var id = geometry.geometryId;
-            console.log('id:'+id);
             await TL.add(this.trackingLayerId,id,tag);
         }catch (e){
             console.error(e);
@@ -23,7 +22,7 @@ export default class TrackingLayer {
     }
 
     /**
-     * 清除追踪层的集合对象
+     * 清空此跟踪图层中的所有几何对象。
      * @returns {Promise.<void>}
      */
     async clear(){

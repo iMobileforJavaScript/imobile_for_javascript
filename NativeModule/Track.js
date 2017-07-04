@@ -43,7 +43,7 @@ export default class Track {
     }
 
     /**
-     * 获取是否用户自定义定位点。
+     * 获取是否用户自定义定位点。(该方法只支持android设备)
      * @memberOf Track
      * @returns {Promise.<Promise.customLocation>}
      */
@@ -93,10 +93,18 @@ export default class Track {
      */
     async getMatchDatasets(){
         try{
-            var {datasetsId} = await T.getMatchDatasets(this._trackId_);
-            var datasets = new Datasets();
-            datasets.datasetsId = datasetsId;
-            return datasets;
+            var {idArr} = await T.getMatchDatasets(this._trackId_);
+            if(idArr === false){
+                return false;
+            }
+            
+            var objArr = [];
+            for(var i=0; i<idArr.length; i++) {
+                var dataset = new Dataset();
+                dataset.datasetId = idArr[i];
+                objArr.push(dataset);
+            }
+            return objArr;
         }catch (e){
             console.error(e);
         }
@@ -117,7 +125,7 @@ export default class Track {
     }
 
     /**
-     * 获取当前是否使用速度和方位角模式
+     * 获取当前是否使用速度和方位角模式。(该方法只支持android设备)
      * @memberOf Track
      * @returns {Promise.<Promise.isSpeedDirectionEnable>}
      */
@@ -131,7 +139,7 @@ export default class Track {
     }
 
     /**
-     * 设置是否用户自定义定位点，默认为true。
+     * 设置是否用户自定义定位点，默认为true。(该方法只支持android设备)
      * @memberOf Track
      * @param {boolean} bCustomLocation - 是否用户自定义定位点。
      * @returns {Promise.<void>}
@@ -147,7 +155,7 @@ export default class Track {
     /**
      * 设置轨迹数据集，用户使用轨迹功能时，要先使用创建轨迹数据集的方法创建数据集，然后调用该方法设置轨迹数据集。
      * @memberOf Track
-     * @param {object} dataset - 轨迹数据集。
+     * @param {object} datasetVector - 轨迹数据集。
      * @returns {Promise.<void>}
      */
     async setDataset(dataset){
@@ -174,6 +182,7 @@ export default class Track {
 
     /**
      * 设置GPSData数据，只有将setCustomLocation(boolean bCustomLocation)参数设置为true时，该接口才起作用。
+     *(该方法只支持android设备)
      * @memberOf Track
      * @param {object} jsonGpsData - 用户设置的gpsdata。
      * @returns {Promise.<void>}
@@ -189,11 +198,12 @@ export default class Track {
     /**
      * 设置匹配线数据集集合，为轨迹抓路功能使用，该数据集集合应为线数据集集合。
      * @memberOf Track
-     * @param {object} datsets - 设置匹配线数据集集合。
+     * @param {Array} datsets - 设置匹配线数据集集合。
      * @returns {Promise.<void>}
      */
     async setMatchDatasets(datsets){
         try{
+            //to do
             await T.setMatchDatasets(track._trackId_,datsets.datasetId);
         }catch (e){
             console.error(e);
@@ -202,6 +212,7 @@ export default class Track {
 
     /**
      * 设置速度和方位角模式，支持转弯、高速、低速场景下记录轨迹点的稀疏和加密
+     *(该方法只支持android设备)
      * @memberOf Track
      * @param {number} speedDirectionEnable - 距离间隔。
      * @returns {Promise.<void>}
@@ -217,7 +228,7 @@ export default class Track {
     /**
      * 设置时间间隔，单位为秒，时间间隔值必须大于20秒，否则设置时间间隔失败。
      * @memberOf Track
-     * @param timeInterval - 时间间隔。
+     * @param {number} timeInterval - 时间间隔。
      * @returns {Promise.<void>}
      */
     async setTimeInterval(timeInterval){
