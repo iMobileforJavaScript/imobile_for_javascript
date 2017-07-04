@@ -50,7 +50,7 @@ argument in the function setServer() of WorkspaceConnection object in the next s
 import {
   Workspace,
     SMMapView,
-} from 'imobile_for_javascript';
+} from 'imobile_for_reactnative';
 
 class XXX extends Component {
 
