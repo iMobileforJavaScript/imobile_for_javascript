@@ -1,12 +1,12 @@
-# imobile_for_javascript
+# imobile_for_ReactNative
 
 ## Getting started
 
-`$ npm install imobile_for_javascript --save`
+`$ npm install imobile_for_reactnative --save`
 
 ### Mostly automatic installation
 
-`$ react-native link imobile_for_javascript`
+`$ react-native link imobile_for_reactnative`
 
 ### Manual installation
 
@@ -16,7 +16,7 @@
 Supermap SDK base on RN for IOS is coming soon...
 
 1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2. Go to `node_modules` ➜ `imobile_for_javascript` and add `Supermap.xcodeproj`
+2. Go to `node_modules` ➜ `imobile_for_reactnative` and add `Supermap.xcodeproj`
 3. In XCode, in the project navigator, select your project. Add `libSupermap.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
 4. Run your project (`Cmd+R`)<
 
@@ -50,7 +50,7 @@ argument in the function setServer() of WorkspaceConnection object in the next s
 import {
   Workspace,
     SMMapView,
-} from 'imobile_for_javascript';
+} from 'imobile_for_reactnative';
 
 class XXX extends Component {
 
