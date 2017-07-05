@@ -89,13 +89,13 @@ import SMSceneView from './NativeModule/components/SMSceneViewUI.js';
 import SMPlotView from './NativeModule/components/SMPlotViewUI.js';
 import SMSearchView from './NativeModule/components/SMSearchViewUI.js';
 
-
+/*
 import SMManagerHomeScreen from './NativeModule/components/SMWSpaceCtrlHomeView.js';
 import SMManagerSaveAsScreen from './NativeModule/components/SMSaveAsView.js';
 import SMManagerDSAndMapCtrlScreen from './NativeModule/components/SMDSourceAndMapCtrlView.js';
 import SMManagerDSCreateScreen from './NativeModule/components/SMCreateDSView.js';
 import SMManagerDSListScreen from './NativeModule/components/SMOuterListView.js';
-
+*/
 export {
     LogTest,
     //Components
@@ -107,11 +107,11 @@ export {
     SMPlotView,
     SMSearchView,
     
-    SMManagerHomeScreen,
-    SMManagerSaveAsScreen,
-    SMManagerDSAndMapCtrlScreen,
-    SMManagerDSCreateScreen,
-    SMManagerDSListScreen,
+    //SMManagerHomeScreen,
+    //SMManagerSaveAsScreen,
+    //SMManagerDSAndMapCtrlScreen,
+    //SMManagerDSCreateScreen,
+    //SMManagerDSListScreen,
 
     Utility,
     

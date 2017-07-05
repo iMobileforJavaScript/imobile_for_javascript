@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Workspace.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Workspace.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Created by will on 2016/6/17.
+ */
+import { NativeModules } from 'react-native';
+let W = NativeModules.JSWorkspace;
+import DS from './Datasources.js';
+import Ds from './Datasource.js';
+import Maps from './Maps.js';
+import Map from './Map.js';
+import WorkspaceConnectionInfo from './WorkspaceConnectionInfo';
+import Datasource from './Datasource';
+
+/**
+ * @class Workspace
+ * @property {number} DEFAULT - 默认SMWU类型。
+ * @property {number} SMWU - SMWU工作空间，文件型工作空间。
+ * @property {number} SXWU - SXWU工作空间。
+ * @property {number} UDB - 数据库类型。
+ */
+export default class Workspace{
+    /**
+     * 创建一个原生层workspace实例
+     * @memberOf Workspace
+     * @returns {Promise.&lt;Workspace>}
+     */
+    async createObj(){
+        try{
+            var {workspaceId} = await W.createObj();
+            var workspace = new Workspace();
+            workspace.workspaceId = workspaceId;
+            return workspace;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 获得数据源集合
+     * @memberOf Workspace
+     * @deprecated Workspace.js:getDatasources() function has been deprecated. If you want to get datasource , please call the getDatasource() function
+     * @returns {Promise.&lt;Datasources>}
+     */
+    async getDatasources(){
+        try {
+            var {datasourcesId} = await W.getDatasources(this.workspaceId);
+            console.debug("datasourcesId:"+datasourcesId);
+            var ds = new DS();
+            ds.datasourcesId = datasourcesId;
+            return ds;
+        }catch (e){
+            console.error(e);
+        }
+    }
+    
+    /**
+     * 通过序号或者名字（别名）获取数据源
+     * @memberOf Worksapce
+     * @param {number | string} index|name - 既可以是序号，也可以是数据源名称
+     * @returns {Promise.&lt;Datasource>}
+     */
+    async getDatasource(index){
+        try{
+            var datasource = new Ds();
+            if(typeof index != 'string'){
+                //get datasource through index.
+                var {datasourceId} = await W.getDatasource(this.workspaceId,index);
+            }else{
+                //get datasource through datasource name(Alias).
+                var {datasourceId} = await W.getDatasourceByName(this.workspaceId,index);
+            }
+            datasource.datasourceId = datasourceId;
+
+            return datasource;
+        }catch (e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 根据定义好的工作空间连接信息对象，打开工作空间。
+     * @memberOf Workspace
+     * @param {object} workspaceConnectionInfo
+     * @param {string} passWord - 数据源密码（可选参数）
+     * @returns {Promise.&lt;void>}
+     */
+    async open(workspaceConnectionInfo,passWord){
+        try{
+            var WorkspaceConnectionInfoModule = new WorkspaceConnectionInfo();
+
+            if(typeof workspaceConnectionInfo === 'string'){
+                var wci = await WorkspaceConnectionInfoModule.createJSObj();
+                var str = workspaceConnectionInfo.split('.').pop();
+                console.log("工作空间类型字符串：" + str);
+                var type = this.workspaceType(str);
+                console.log("工作空间类型：" + type);
+                await wci.setType(type);
+                await wci.setServer(workspaceConnectionInfo);
+                if(passWord){
+                   await wci.setPassWord(passWord);
+                }
+                var {isOpen} = await W.open(this.workspaceId,wci.workspaceConnectionInfoId)
+                return isOpen;
+            }else{
+                var {isOpen} = await W.open(this.workspaceId,workspaceConnectionInfo.workspaceConnectionInfoId);
+                console.log('workspace open connectionInfo:'+isOpen);
+                return isOpen;
+            }
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 获取工作空间下的Maps对象
+     * @memberOf Worksapce
+     * @deprecated Maps类已不推荐使用
+     * @returns {Promise.&lt;Maps>}
+     */
+    async getMaps(){
+        try{
+            var {mapsId} = await W.getMaps(this.workspaceId);
+            var maps = new Maps();
+            maps.mapsId = mapsId;
+            return maps;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 根据地图序号获得地图名称
+     * @memberOf Workspace
+     * @param {number} mapIndex 地图序号
+     * @returns {string}
+     */
+    async getMapName(mapIndex){
+        try{
+            var {mapName} = await W.getMapName(this.workspaceId,mapIndex);
+            return mapName;
+        }catch(e){
+            console.error(e);
+        }
+    }
+    
+    /**
+     * 打开数据源 jsonObject 获取网络数据源
+     * @memberOf Workspace
+     * @param {object} jsonObject {engineType:&lt;number>引擎类型 ,server:&lt;sring>文件／服务器路径 ,driver:&lt;string>驱动名称（可选参数）}
+     * @returns {Promise.&lt;Datasource>}
+     */
+    
+    async openDatasource(jsonObject){
+        try{
+            if(jsonObject.webBBox){
+                var rect = jsonObject.webBBox;
+                if(typeof rect != 'string') jsonObject.webBBox = rect.rectangle2DId;
+            }
+            var {datasourceId} = await W.openDatasource(this.workspaceId,jsonObject);
+            var datasource = new Datasource();
+            datasource.datasourceId = datasourceId;
+            return datasource;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 保存工作空间
+     * @memberOf Workspace
+     * @param {string} server - 另存url（可选参数）
+     * @returns {boolean}
+     */
+    async saveWorkspace(server){
+        try{
+            if(server){
+                var {saved} = await W.saveWorkspaceWithServer(this.workspaceId,server);
+            }else{
+                var {saved} = await W.saveWorkspace(this.workspaceId);
+            }
+            return saved;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 关闭工作空间
+     * @memberOf Workspace
+     * @returns {boolean}
+     */
+    async closeWorkspace(){
+        try{
+            var {closed} = await W.closeWorkspace(this.workspaceId);
+            return closed;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 创建数据集
+     * @memberOf Workspace
+     * @param {string} filePath 指定创建数据集路径
+     * @param {number} engineType 数据集引擎类型
+     * @returns {Promise.&lt;Datasource>}
+     */
+    async createDatasource(filePath,engineType){
+        try{
+            var {datasourceId} = await W.createDatasource(this.workspaceId,filePath,engineType);
+            var datasource = new Ds();
+            datasource.datasourceId = datasourceId;
+            return datasource;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 关闭指定名称的数据集
+     * @memberOf Workspace
+     * @param {string} datasourceName 数据集名称
+     * @returns {Promise.&lt;boolean>}
+     */
+    async closeDatasource(datasourceName){
+        try{
+            var {closed} = await W.closeDatasource(this.workspaceId,datasourceName);
+
+            return closed;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+
+    /**
+     * 关闭所有数据集
+     * @memberOf Workspace
+     * @returns {Promise.&lt;boolean>}
+     */
+    async closeAllDatasource(){
+        try{
+            await W.closeAllDatasource(this.workspaceId);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 移除地图
+     * @memberOf Workspace
+     * @param {string} mapName 地图名称
+     * @returns {boolean}
+     */
+    async removeMap(mapName){
+        try{
+            var {removed} = await W.removeMap(this.workspaceId,mapName);
+            return removed;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 清空所有地图
+     * @memberOf Workspace
+     * @returns {boolean}
+     */
+    async clearMap(){
+        try{
+            await W.clearMap(this.workspaceId);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 根据场景序号获取场景名称
+     * @memberOf Workspace
+     * @param {number} index 场景序号
+     * @returns {boolean}
+     */
+    async getSceneName(index){
+        try{
+            var {name} = await W.getSceneName(this.workspaceId,index);
+            return name;
+        }catch(e){
+            console.error(e);
+        }
+    }
+}
+
+Workspace.SMWU = 9;
+Workspace.SXWU = 8;
+Workspace.SMW = 5;
+Workspace.SXW = 4;
+Workspace.UDB = 219;
+Workspace.DEFAULT = 1;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#LONGPRESS_EVENT">LONGPRESS_EVENT</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Jul 03 2017 17:06:05 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

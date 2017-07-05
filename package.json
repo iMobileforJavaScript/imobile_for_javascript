@@ -1,7 +1,7 @@
 {
-  "name": "imobile_for_javascript",
-  "version": "1.1.21",
-  "description": "iMobile for JavaScript，是SuperMap iMobile推出的一款基于React-Native框架的移动应用开发工具。基于该开发工具，用户可以使用JavaScript开发语言，开发出在Android和IOS操作系统下运行的原生移动GIS应用，入门门槛低，一次开发，处处运行。",
+  "name": "imobile_for_reactnative",
+  "version": "1.0.1",
+  "description": "iMobile for ReactNative，是SuperMap iMobile推出的一款基于React-Native框架的移动应用开发工具。基于该开发工具，用户可以使用JavaScript开发语言，开发出在Android和IOS操作系统下运行的原生移动GIS应用，入门门槛低，一次开发，处处运行。",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,17 +9,18 @@
   "keywords": [
     "react-native",
     "supermap",
-    "imobile_for_javascript",
+    "imobile_for_reactnative",
     "map",
     "GIS"
   ],
   "author": "Supermap",
   "license": "ISC",
   "peerDependencies": {
-    "react-native": "^0.31.0"
+    "react-native": "^0.44.3",
+    "react-navigation": "^5.0.3"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:fatbone008/imobile_for_javascript.git"
+    "url": "git+ssh://git@github.com:iMobileforJavaScript/imobile_for_javascript.git"
   }
 }
