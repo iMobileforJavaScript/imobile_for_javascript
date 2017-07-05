@@ -1,6 +1,11 @@
-# imobile_for_ReactNative
+# imobile_for_reactnative
+
+iMobile for ReactNative, 是SuperMap iMobile推出的一款基于React-Native框架的移动应用开发工具，基于该开发工具,用户可以
+使用JavaScript开发语言，开发出在Android和iOS操作系统下运行的原声移动GIS应用,入门门槛低，一次开发，处处运行。
 
 ## Getting started
+
+iMobile for ReactNative is based on ReactNative.Please ensure that you have initialized the RN project before executing the following command and that it is already under the project path.
 
 `$ npm install imobile_for_reactnative --save`
 
@@ -15,10 +20,10 @@
 
 Supermap SDK base on RN for IOS is coming soon...
 
-1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2. Go to `node_modules` ➜ `imobile_for_reactnative` and add `Supermap.xcodeproj`
-3. In XCode, in the project navigator, select your project. Add `libSupermap.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-4. Run your project (`Cmd+R`)<
+1. In XCode, in the project navigator, click `General` ➜ `Linked Frameworks and Libraries`,add Frameworks and c++ library required by iMobile.
+2. Add SuperMap.framework and MessageQueue.framework.
+3. Add bundle file and license.
+4. Write and run your project (`Cmd+R`).
 
 #### Android
 

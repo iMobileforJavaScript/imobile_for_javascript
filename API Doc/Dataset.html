@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: Dataset</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: Dataset</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>Dataset</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    <h4 class="name" id="Dataset"><span class="type-signature"></span>new Dataset<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    所有数据集类型（如矢量数据集，栅格数据集等）的基类。提供各数据集共有的方法和事件。
+   数据集一般为存储在一起的相关数据的集合；根据数据类型的不同，分为矢量数据集和栅格数据集和影像数据集，以及为了处理特定问题而设计的如拓扑数据集，网络数据集等。数据集是 GIS 数据组织的最小单位。其中矢量数据集是由同种类型空间要素组成的集合，所以也可以称为要素集。根据要素的空间特征的不同，矢量数据集又分为点数据集，线数据集，面数据集等，各矢量数据集是空间特征和性质相同而组织在一起的数据的集合。而栅格数据集由像元阵列组成，在表现要素上比矢量数据集欠缺，但是可以很好的表现空间现象的位置关系。光栅数据集包括影像数据集和栅格数据集。
+ 
+   在 SuperMap 中有十八种类型的数据集，但目前版本支持的数据集主要有点数据集，线数据集，面数据集，文本数据集，纯属性表数据集和影像数据集。
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.TABULAR</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">纯属性数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.POINT</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">点数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.LINE</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">线数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.REGION</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">多边形数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.TEXT</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">文本数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.IMAGE</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">影像数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.CAD</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">复合数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.NETWORK</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">网络数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.NETWORK3D</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">三维网络数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.NdfVector</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">-</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.GRID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">栅格数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.WMS</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">WMS数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.WCS</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">WCS数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.WFS</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">WFS数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.POINT3D</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">三维点数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.LINE3D</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">三维线数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.REGION3D</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">三维面数据集。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>TYPE.DEM</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">-</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Dataset.js.html">Dataset.js</a>, <a href="Dataset.js.html#line10">line 10</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getDatasource"><span class="type-signature">(static) </span>getDatasource<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="Datasource.html">Datasource</a>>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    返回此数据集对象所属数据源对象。
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Dataset.js.html">Dataset.js</a>, <a href="Dataset.js.html#line117">line 117</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="Datasource.html">Datasource</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getEncodeType"><span class="type-signature">(static) </span>getEncodeType<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Promise.type>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    返回此数据集数据存储时的编码方式。对数据集采用压缩编码方式，可以减少数据存储所占用的空间，降低数据传输时的网络负载和服务器的负载。矢量数据集支持的编码方式有Byte，Int16，Int24，Int32，SGL，LZW，DCT，也可以指定为不使用编码方式。光栅数据支持的编码方式有DCT，SGL，LZW 或不使用编码方式。具体请参见EncodeType类型。
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Dataset.js.html">Dataset.js</a>, <a href="Dataset.js.html#line133">line 133</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Promise.type></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getFieldValue"><span class="type-signature">(static) </span>getFieldValue<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Promise.Array>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    通过查询语句获取字段内容
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="DatasetVector.js.html">DatasetVector.js</a>, <a href="DatasetVector.js.html#line239">line 239</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Promise.Array></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getGeoInnerPoint"><span class="type-signature">(static) </span>getGeoInnerPoint<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Promise.Array>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    通过查询语句获取所需几何对象内点集合
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="DatasetVector.js.html">DatasetVector.js</a>, <a href="DatasetVector.js.html#line253">line 253</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Promise.Array></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getPrjCoordSys"><span class="type-signature">(static) </span>getPrjCoordSys<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;PrjCoordSys>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    返回数据集的投影信息。
+当该数据集的投影采用其所在数据源的投影时，该方法返回 null。
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Dataset.js.html">Dataset.js</a>, <a href="Dataset.js.html#line59">line 59</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;PrjCoordSys></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getSMID"><span class="type-signature">(static) </span>getSMID<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Promise.Array>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    通过查询语句获取所需几何对象ID集合
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="DatasetVector.js.html">DatasetVector.js</a>, <a href="DatasetVector.js.html#line225">line 225</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Promise.Array></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getType"><span class="type-signature">(static) </span>getType<span class="signature">()</span><span class="type-signature"> &rarr; {Dataset.Type}</span></h4>
+
+    
+
+
+
+<div class="description">
+    返回此数据集的类型。目前版本支持的数据集类型包括纯属性表数据集、点数据集、线数据集、面数据集、文本数据集和影像数据集（DatasetImage）。
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Dataset.js.html">Dataset.js</a>, <a href="Dataset.js.html#line103">line 103</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Dataset.Type</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".isopen"><span class="type-signature">(static) </span>isopen<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+
+    
+
+
+
+<div class="description">
+    判断此数据集是否已经打开。在数据源连接了数据，即数据源被打开之后，数据集默认是不打开数据集的，如果要对数据集的数据进行修改或其他操作，数据集必须是打开的，否则无法进行操作。可以通过该方法来判定数据集是否已被打开。
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Dataset.js.html">Dataset.js</a>, <a href="Dataset.js.html#line89">line 89</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - 如果此数据集已经被打开，返回 true；否则返回 false。
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".openDataset"><span class="type-signature">(static) </span>openDataset<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+
+    
+
+
+
+<div class="description">
+    用于打开数据集，准备对数据集进行操作。在数据源连接了数据，即数据源被打开之后，数据集默认是不打开的，如果要对数据集的数据进行修改或其他操作，数据集必须是打开的，否则无法进行操作。可以先使用 isOpen 方法来判断一下数据集是否已经被打开。
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Dataset.js.html">Dataset.js</a>, <a href="Dataset.js.html#line75">line 75</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".toDatasetVector"><span class="type-signature">(static) </span>toDatasetVector<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="DatasetVector.html">DatasetVector</a>>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    转换成DatasetVector对象
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Dataset.js.html">Dataset.js</a>, <a href="Dataset.js.html#line42">line 42</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="DatasetVector.html">DatasetVector</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#LONGPRESS_EVENT">LONGPRESS_EVENT</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Jul 03 2017 17:06:05 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

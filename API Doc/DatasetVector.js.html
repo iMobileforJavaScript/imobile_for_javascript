@@ -1,11 +1,32 @@
-/*********************************************************************************
- Copyright © SuperMap. All rights reserved.
- Author: will
- E-mail: pridehao@gmail.com
- Description:数据集类
- 
- **********************************************************************************/
-import {NativeModules} from 'react-native';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: DatasetVector.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: DatasetVector.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {NativeModules} from 'react-native';
 let DV = NativeModules.JSDatasetVector;
 import Dataset from './Dataset.js';
 import Recordset from  './Recordset.js';
@@ -14,27 +35,15 @@ import QueryParameter from './QueryParameter.js';
 
 /**
  * @class DatasetVector
- * @description 矢量数据集类。用于对矢量数据集进行描述，并对之进行相应的管理和操作。对矢量数据集的操作主要包括数据查询、修改、删除、建立索引等。
  */
 export default class DatasetVector {
-   /* constructor(){
-        super();
-        Object.defineProperty(this,"datasetVectorId",{
-                              get:function(){
-                              return this.datasetId
-                              },
-                              set:function(datasetVectorId){
-                              this.datasetId = datasetVectorId;
-                              }
-                              })
-    }*/
     /**
      * 查询落在已知空间范围内的记录。
      * @memberOf DatasetVector
-     * @deprecated - 已弃用（所有recordset都使用json格式表达），此接口将在数个版本内移除，请慎用。
+     * @deprecated - 弃用，所有recordset都使用json格式表达
      * @param isEmptyRecordset
      * @param cursorType
-     * @returns {Promise.<Recordset>}
+     * @returns {Promise.&lt;Recordset>}
      */
     async queryInBuffer(rectangle2D, cursorType) {
         try {
@@ -50,10 +59,10 @@ export default class DatasetVector {
     /**
      * 根据给定的参数来返回空的记录集或者返回包括所有记录的记录集对象。
      * @memberOf DatasetVector
-     * @deprecated - 已弃用（所有recordset都使用json格式表达），此接口将在数个版本内移除，请慎用。
-     * @param {boolean} isEmptyRecordset
-     * @param {number} cursorType
-     * @returns {Promise.<Recordset>}
+     * @deprecated - 弃用，所有recordset都使用json格式表达
+     * @param isEmptyRecordset
+     * @param cursorType
+     * @returns {Promise.&lt;Recordset>}
      */
     async getRecordset(isEmptyRecordset, cursorType) {
         try {
@@ -78,25 +87,25 @@ export default class DatasetVector {
             var qp = await QueryParameterFac.createObj();
 
             if (!queryParameter
-            // && (queryParameter.attributeFilter || queryParameter.groupBy ||
+            // &amp;&amp; (queryParameter.attributeFilter || queryParameter.groupBy ||
             //         queryParameter.hasGeometry || queryParameter.resultFields || queryParameter.orderBy ||
             //         queryParameter.spatialQueryMode)
             ) {
                 qp.queryParameterId = "0";
             } else {
-                queryParameter.attributeFilter && await qp.setAttributeFilter(queryParameter.attributeFilter);
+                queryParameter.attributeFilter &amp;&amp; await qp.setAttributeFilter(queryParameter.attributeFilter);
 
-                queryParameter.groupBy && await qp.setGroupBy(queryParameter.groupBy);
+                queryParameter.groupBy &amp;&amp; await qp.setGroupBy(queryParameter.groupBy);
 
-                queryParameter.hasGeometry && await qp.setHasGeometry(queryParameter.hasGeometry);
+                queryParameter.hasGeometry &amp;&amp; await qp.setHasGeometry(queryParameter.hasGeometry);
 
-                queryParameter.resultFields && await qp.setResultFields(queryParameter.resultFields);
+                queryParameter.resultFields &amp;&amp; await qp.setResultFields(queryParameter.resultFields);
 
-                queryParameter.orderBy && await qp.setOrderBy(queryParameter.orderBy);
+                queryParameter.orderBy &amp;&amp; await qp.setOrderBy(queryParameter.orderBy);
 
-                queryParameter.spatialQueryObject && await qp.setSpatialQueryObject(queryParameter.spatialQueryObject);
+                queryParameter.spatialQueryObject &amp;&amp; await qp.setSpatialQueryObject(queryParameter.spatialQueryObject);
 
-                queryParameter.spatialQueryMode && await qp.setSpatialQueryMode(queryParameter.spatialQueryMode);
+                queryParameter.spatialQueryMode &amp;&amp; await qp.setSpatialQueryMode(queryParameter.spatialQueryMode);
 
                 if (queryParameter.size) qp.size = queryParameter.size;
                 if (queryParameter.batch) qp.batch = queryParameter.batch;
@@ -115,7 +124,7 @@ export default class DatasetVector {
      *根据给定的空间索引类型来为矢量数据集创建空间索引。
      * @memberOf DatasetVector
      * @param {DatasetVector.SpatialIndeType} spatialIndexType - 指定的需要创建空间索引的类型
-     * @returns {Promise.<boolean>}
+     * @returns {Promise.&lt;Promise.boolean>}
      */
     async buildSpatialIndex(spatialIndexType) {
         try {
@@ -129,7 +138,7 @@ export default class DatasetVector {
     /**
      * 删除空间索引
      * @memberOf DatasetVector
-     * @returns {Promise.<boolean>}
+     * @returns {Promise.&lt;Promise.dropped>}
      */
     async dropSpatialIndex() {
         try {
@@ -143,7 +152,7 @@ export default class DatasetVector {
     /**
      * 返回当前的空间索引类型
      * @memberOf DatasetVector
-     * @returns {Promise.<DatasetVector.SpatialIndeType>}
+     * @returns {Promise.&lt;Promise.DatasetVector.SpatialIndeType>}
      */
     async getSpatialIndexType() {
         try {
@@ -157,7 +166,7 @@ export default class DatasetVector {
     /**
      * 计算数据集的空间范围
      * @memberOf DatasetVector
-     * @returns {Promise.<object>}
+     * @returns {Promise.&lt;Promise.object>}
      */
     async computeBounds() {
         try {
@@ -175,7 +184,7 @@ export default class DatasetVector {
      * @param {boolean} hasAttributte - 是否包含属性值
      * @param {number} startID - 起始SmID
      * @param {number} endID - 结束SmID
-     * @returns {Promise.<string>}
+     * @returns {Promise.&lt;string>}
      */
     async toGeoJSON(hasAttributte, startID, endID) {
         try {
@@ -192,7 +201,7 @@ export default class DatasetVector {
      *仅支持点、线、面和CAD数据集，转换点、线、面对象.hasAtrributte为true时，结果中包含属性值;hasAtrribute为false时，只有几何对象。
      * @memberOf DatasetVector
      * @param {string} geoJson - json字符串
-     * @returns {Promise.<boolean>}
+     * @returns {Promise.&lt;Promise.boolean>}
      */
     async fromGeoJSON(geoJson) {
         try {
@@ -210,7 +219,7 @@ export default class DatasetVector {
      * @param {object} geoRegion - 查询的区域
      * @param count - 返回的查询结果个数
      * @param {function} callback - 返回结果的处理函数,回调参数callback(e){},e为Recordset的geoJson格式对象的数组
-     * @returns {Promise.<void>}
+     * @returns {Promise.&lt;null>}
      */
     async queryByFilter(attributeFilter,geoRegion,count,callback) {
         try {
@@ -239,7 +248,7 @@ export default class DatasetVector {
     /**
      * 通过查询语句获取所需几何对象ID集合
      * @memberOf Dataset
-     * @returns {Promise.<Array>}
+     * @returns {Promise.&lt;Promise.Array>}
      */
     async getSMID(SQL){
         try{
@@ -253,7 +262,7 @@ export default class DatasetVector {
     /**
      * 通过查询语句获取字段内容
      * @memberOf Dataset
-     * @returns {Promise.<Array>}
+     * @returns {Promise.&lt;Promise.Array>}
      */
     async getFieldValue(SQL,fieldName){
         try{
@@ -267,7 +276,7 @@ export default class DatasetVector {
     /**
      * 通过查询语句获取所需几何对象内点集合
      * @memberOf Dataset
-     * @returns {Promise.<Array>}
+     * @returns {Promise.&lt;Promise.Array>}
      */
     async getGeoInnerPoint(SQL){
         try{
@@ -279,3 +288,26 @@ export default class DatasetVector {
     }
     
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#LONGPRESS_EVENT">LONGPRESS_EVENT</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Jul 03 2017 17:06:05 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

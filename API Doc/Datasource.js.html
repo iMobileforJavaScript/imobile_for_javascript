@@ -1,10 +1,34 @@
-/*********************************************************************************
- Copyright © SuperMap. All rights reserved.
- Author: will
- E-mail: pridehao@gmail.com
- Description:数据源类
- 
- **********************************************************************************/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Datasource.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Datasource.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Created by will on 2016/6/17.
+ */
 import {NativeModules} from 'react-native';
 let D = NativeModules.JSDatasource;
 import Datasets from './Datasets';
@@ -14,7 +38,6 @@ import PrjCoordSys from './PrjCoordSys.js';
 
 /**
  * @class Datasource
- * @description 该类管理投影信息、数据源与数据库的连接信息和对其中的数据集的相关操作，如通过已有数据集复制生成新的数据集等。
  * @property {number} EncodeType - 数据集存储时的压缩编码方式 NONE | BYTE | INT16 | INT24 | INT32 | LZW | SGL | DCT
  * @property {number} DatasourceEncrytionType - 数据集存储时的压缩编码方式 DEFAULT | AES
  */
@@ -23,8 +46,8 @@ export default class Datasource{
     /**
      * 获取数据集集合
      * @memberOf Datasource
-     * @deprecated - 已弃用，Datasets类不建议使用，后续版本即将移除此接口
-     * @returns {Promise.<Datasets>}
+     * @deprecated - 已弃用Datasets类
+     * @returns {Promise.&lt;Datasets>}
      */
     async getDatasets(){
         console.warn("Datasource.js:getDatasets() function has been deprecated. If you want to get dataset , please call the getDataset() function");
@@ -43,7 +66,7 @@ export default class Datasource{
      * 指定名称或序号来获取数据集
      * @memberOf Datasource
      * @param {number | string} index|name - 既可以是序号，也可以是数据集名称
-     * @returns {Promise.<Dataset>}
+     * @returns {Promise.&lt;Dataset>}
      */
     async getDataset(arg){
         try{
@@ -66,7 +89,7 @@ export default class Datasource{
      * 检测所供名称是否可用于新建数据集
      * @memberOf Datasource
      * @param {string} name - 待检测名称
-     * @returns {Promise.<string>}
+     * @returns {Promise.&lt;string>}
      */
     async getAvailableDatasetName(name){
         try{
@@ -83,7 +106,7 @@ export default class Datasource{
      * @param {object | string} datasetVectorInfo|datasetName - 数据集矢量信息对象
      * @param {number} datasetType - {@link Dataset}
      * @param {number} encodeType - 数据集存储时的压缩编码方式 NONE | BYTE | INT16 | INT24 | INT32 | LZW | SGL | DCT
-     * @returns {Promise.<DatasetVector>}
+     * @returns {Promise.&lt;DatasetVector>}
      */
     async createDatasetVector(nameOrInfoObj,datasetType,encodeType){
         try{
@@ -110,7 +133,7 @@ export default class Datasource{
      * @param {object} srcDataset - 要复制的源数据集。
      * @param {string} desDatasetName - 目标数据集的名称。
      * @param {Datasource.EncodeType}encodeType - 数据集的编码方式。
-     * @returns {Promise.<Dataset>}
+     * @returns {Promise.&lt;Dataset>}
      */
     async copyDataset(srcDataset,desDatasetName,encodeType){
         try{
@@ -124,27 +147,9 @@ export default class Datasource{
     }
 
     /**
-     * 修改当前数据源的密码
-     * @memberOf Datasource
-     * @param {number} oldPassword - 原始密码,不能为null
-     * @param {number} newPassword - 新密码,不能为null
-     * @param {Datasource.DatasourceEncrytionType} datasourceEncrytionType
-     * @returns {Promise.<Promise.changed>} 新密码使用的加密类型
-     */
-   /* async changepassword(oldPassword,newPassword,datasourceEncrytionType){
-        try{
-            if(!oldPassword || !newPassword) throw new Error("Datasource.js:原始密码和新密码不能为空。");
-            var {changed} = await D.changepassword(this.datasourceId,oldPassword,newPassword, datasourceEncrytionType | 0);
-            return changed;
-        }catch(e){
-            console.error(e);
-        }
-    } */
-
-    /**
      * 返回数据源的投影信息。
      * @memberOf Datasource
-     * @returns {Promise.<PrjCoordSys>}
+     * @returns {Promise.&lt;PrjCoordSys>}
      */
     async getPrjCoordSys(){
         try{
@@ -161,7 +166,7 @@ export default class Datasource{
      * 检查当前数据源中是否包含指定名称的数据集。
      * @memberOf Datasource
      * @param {string} datasetName - 数据集名称
-     * @returns {Promise.<boolean>}
+     * @returns {boolean}
      */
     async containDataset(datasetName){
         try{
@@ -176,7 +181,7 @@ export default class Datasource{
      * 用于删除指定名称的数据集。
      * @memberOf Datasource
      * @param {string} datasetName - 数据集名称
-     * @returns {Promise.<boolean>}
+     * @returns {boolean}
      */
     async deleteDataset(datasetName){
         try{
@@ -190,7 +195,7 @@ export default class Datasource{
     /**
      * 返回数据集集合中数据集的个数。
      * @memberOf Datasource
-     * @returns {Promise.<number>}
+     * @returns {number}
      */
     async getDatasetCount(){
         try{
@@ -217,3 +222,26 @@ Datasource.DatasourceEncrytionType = {
     DEFAULT:0,
     AES:1
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#LONGPRESS_EVENT">LONGPRESS_EVENT</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Jul 03 2017 17:06:05 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
