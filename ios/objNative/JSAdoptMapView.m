@@ -366,6 +366,8 @@ RCT_REMAP_METHOD(removePlotLibrary,removePlotLibraryById:(NSString*)Id libId:(in
     @try {
         MapControl* mapControl = [JSObjManager getObjWithKey:Id];
         [mapControl removePlotLibrary:libId];
+        NSNumber* num = [NSNumber numberWithBool:true];
+        resolve(num);
     } @catch (NSException *exception) {
         reject(@"MapControl",@"removePlotLibrary() failed.",nil);
     }
@@ -375,6 +377,8 @@ RCT_REMAP_METHOD(setPlotSymbol,setPlotSymbolById:(NSString*)Id libId:(int)libId 
     @try {
         MapControl* mapControl = [JSObjManager getObjWithKey:Id];
         [mapControl setPlotSymbol:libId symbolCode:symbolCode];
+        NSNumber* num = [NSNumber numberWithBool:true];
+        resolve(num);
     } @catch (NSException *exception) {
         reject(@"MapControl",@"setPlotSymbol() failed.",nil);
     }

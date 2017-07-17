@@ -877,7 +877,7 @@ export default class MapControl{
      */
     async removePlotLibrary(libId){
         try{
-            await MC.removePlotLibrary(this.mapControlId,libId);
+            var isRemove = await MC.removePlotLibrary(this.mapControlId,libId);
         }catch (e){
             console.error(e);
         }
@@ -890,7 +890,7 @@ export default class MapControl{
      */
     async setPlotSymbol(libId,symbolCode){
         try{
-            await MC.setPlotSymbol(this.mapControlId,libId,symbolCode);
+            var isSet = await MC.setPlotSymbol(this.mapControlId,libId,symbolCode);
         }catch (e){
             console.error(e);
         }

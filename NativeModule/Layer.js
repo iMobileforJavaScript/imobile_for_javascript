@@ -1,6 +1,9 @@
-/**
- * Created by will on 2016/7/5.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let L = NativeModules.JSLayer;
 import Dataset from './Dataset.js';
@@ -10,12 +13,13 @@ import LayerSettingVector from './LayerSettingVector.js';
 
 /**
  * @class Layer
+ * @description (该类的实例不可被创建,只可以通过在 Map 类中的 addLayer 方法来创建)该类提供了图层显示和控制等的便于地图管理的一系列方法。当数据集被加载到地图窗口中显示的时，就形成了一个图层，因此图层是数据集的可视化显示。一个图层是对一个数据集的引用或参考。通过对可视化的图层的编辑，可以对 相应的数据集的要素进行编辑。一个图层或多个图层叠加显示则形成了地图。图层分为普通图层和专题图层，矢量的普通图层中所有要素采用相同的渲染风格，栅格图层采用颜色表来显示其像元；而专题图层则采用指定类型的专题图风格来渲染其中的 要素或像元。
  */
 export default class Layer{
     /**
      * 设置图层是否处于可编辑状态。该方法控制是否对图层所引用的数据进行修改。
      * @memberOf Layer
-     * @param {boolean}editable - 图层是否处于可编辑状态。
+     * @param {boolean} editable
      * @returns {Promise.<void>}
      */
     async setEditable(editable){
@@ -42,12 +46,11 @@ export default class Layer{
     /**
      * 返回图层的名称。图层的名称在图层所在的地图中唯一标识此图层。该标识不区分大小写。
      * @memberOf Layer
-     * @param {index} index - 图层序号
      * @returns {Promise.<void>}
      */
-    async getName(index){
+    async getName(){
         try{
-            var {layerName} = await L.getName(this.layerId,index);
+            var {layerName} = await L.getName(this.layerId);
             return layerName;
         }catch(e){
             console.error(e);
@@ -71,7 +74,7 @@ export default class Layer{
     }
 
     /**
-     * 设置图层关联的数据集。 设置的数据集必须与当前地图属于同一工作空间，且数据集类型与原有数据集类型一致，否则会抛出异常。
+     * 设置图层关联的数据集。 设置的数据集必须与当前地图属于同一工作空间，且数据集类型与原有数据集类型一致，否则会抛出异常(该方法暂不支持iOS设备)。
      * @memberOf Layer
      * @param {object} dataset - 图层关联的数据集
      * @returns {Promise.<void>}
@@ -104,7 +107,7 @@ export default class Layer{
     /**
      * 设置图层中对象是否可以选择。
      * @memberOf Layer
-     * @param {boolean} b - 指定图层中对象是否可以选择。
+     * @param {boolean} b
      * @returns {Promise.<void>}
      */
     async setSelectable(b){
@@ -133,7 +136,6 @@ export default class Layer{
     /**
      * 获取此图层是否可见。true 表示此图层可见，false 表示图层不可见。当图层不可见时，其他所有的属性的设置将无效。
      * @memberOf Layer
-     * @param {boolean} b - 指定图层是否可见。
      * @returns {Promise.<boolean>}
      */
     async getVisible(){
@@ -148,7 +150,7 @@ export default class Layer{
     /**
      * 设置此图层是否可见。true 表示此图层可见，false 表示图层不可见。当图层不可见时，其他所有的属性的设置将无效。
      * @memberOf Layer
-     * @param {boolean} b - 指定图层是否可见。
+     * @param {boolean} b
      * @returns {Promise.<void>}
      */
     async setVisible(b){
