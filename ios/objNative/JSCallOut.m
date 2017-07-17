@@ -8,6 +8,7 @@
 
 #import "JSCallOut.h"
 #import "SuperMap/Callout.h"
+#import "SuperMap/Point2D.h"
 #import "JSObjManager.h"
 
 @implementation JSCallOut
@@ -22,43 +23,104 @@
 
 RCT_EXPORT_MODULE();
 
-RCT_REMAP_METHOD(createObj,mapViewId:(NSString*)mapViewId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    id mapView = [JSObjManager getObjWithKey:mapViewId];
-    
+RCT_REMAP_METHOD(createObj,createObjWithMapControlId:(NSString*)mapControlId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl * mapCtrl = [JSObjManager getObjWithKey:mapControlId];
+        Callout *callout = [[Callout alloc]initWithMapControl:mapCtrl];
+        NSInteger key = (NSInteger)callout;
+        [JSObjManager addObj:callout];
+        resolve(@{@"_SMCalloutId":@(key).stringValue});
+    } @catch (NSException *exception) {
+        reject(@"Callout",@"create callout failed.",nil);
+    }
 }
 
-RCT_REMAP_METHOD(createObjByMapCtrl,mapControlId:(NSString*)mapControlId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-  MapControl * mapCtrl = [JSObjManager getObjWithKey:mapControlId];
-  Callout *callout = [[Callout alloc]initWithMapControl:mapCtrl];
-  if(callout){
-    callout.height = 50;
-    callout.width = 50;
-    NSInteger key = (NSInteger)callout;
-    [JSObjManager addObj:callout];
-    resolve(@{@"callOutId":@(key).stringValue});
-  }else{
-    reject(@"callOut",@"create callout failed!!!",nil);
-  }
+RCT_REMAP_METHOD(createObjWithStyle,createObjWithMapControlId:(NSString*)mapControlId colorArr:(NSArray*)arr type:(int)typeNum resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl * mapCtrl = [JSObjManager getObjWithKey:mapControlId];
+        NSNumber* red = arr[0];
+        NSNumber* green = arr[1];
+        NSNumber* blue = arr[2];
+        NSNumber* alpha = arr[3];
+        UIColor *color = [UIColor colorWithRed:red.doubleValue/255 green:green.doubleValue/255 blue:blue.doubleValue/255 alpha:alpha.doubleValue];
+        Callout *callout = [[Callout alloc]initWithMapControl:mapCtrl BackgroundColor:color Alignment:typeNum];
+        NSInteger key = (NSInteger)callout;
+        [JSObjManager addObj:callout];
+        resolve(@{@"_SMCalloutId":@(key).stringValue});
+    } @catch (NSException *exception) {
+        reject(@"Callout",@"create callout failed.",nil);
+    }
+}
+
+RCT_REMAP_METHOD(showAtPoint2d,showByCalloutId:(NSString*)calloutId point2dId:(NSString*)point2dId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 2), ^{
+            Callout * callout = [JSObjManager getObjWithKey:calloutId];
+            Point2D *point2d = [JSObjManager getObjWithKey:point2dId];
+            [callout showAt:point2d];
+        });
+    } @catch (NSException *exception) {
+        reject(@"Callout",@"show at point2d failed.",nil);
+    }
+}
+
+RCT_REMAP_METHOD(showAtXY,showByCalloutId:(NSString*)calloutId x:(double)x y:(double)y resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            Callout * callout = [JSObjManager getObjWithKey:calloutId];
+            Point2D *point2d = [[Point2D alloc]initWithX:x Y:y];
+            [callout showAt:point2d];
+        });
+    } @catch (NSException *exception) {
+        reject(@"Callout",@"show at xy failed.",nil);
+    }
+}
+
+RCT_REMAP_METHOD(updataByPoint2d,updataByCalloutId:(NSString*)calloutId point2dId:(NSString*)point2dId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            Callout * callout = [JSObjManager getObjWithKey:calloutId];
+            Point2D *point2d = [JSObjManager getObjWithKey:point2dId];
+            CGPoint point = CGPointMake(point2d.x, point2d.y);
+            [callout updateFrame:point];
+        });
+    } @catch (NSException *exception) {
+        reject(@"Callout",@"updata at point2d failed.",nil);
+    }
+}
+
+RCT_REMAP_METHOD(updataByXY,updataByCalloutId:(NSString*)calloutId x:(double)x y:(double)y resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            Callout * callout = [JSObjManager getObjWithKey:calloutId];
+            CGPoint point = CGPointMake(x, y);
+            [callout updateFrame:point];
+        });
+    } @catch (NSException *exception) {
+        reject(@"Callout",@"updata at xy failed.",nil);
+    }
 }
 
 RCT_REMAP_METHOD(setHeight,setHeightBycalloutId:(NSString*)calloutId height:(double)height resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    Callout * callout = [JSObjManager getObjWithKey:calloutId];
-  if (callout) {
-    callout.height = (CGFloat)height;
-    resolve(@"1");
-  }else{
-    reject(@"callOut",@"set height failed!!!",nil);
-  }
+    @try {
+        Callout * callout = [JSObjManager getObjWithKey:calloutId];
+        callout.height = (CGFloat)height;
+        NSNumber* trueNum = [NSNumber numberWithBool:true];
+        resolve(trueNum);
+    } @catch (NSException *exception) {
+        reject(@"Callout",@"set height failed.",nil);
+    }
 }
 
 RCT_REMAP_METHOD(setWidth,setWidthBycalloutId:(NSString*)calloutId width:(double)width resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    Callout * callout = [JSObjManager getObjWithKey:calloutId];
-  if (callout) {
-    callout.width = (CGFloat)width;
-    resolve(@"1");
-  }else{
-    reject(@"callOut",@"set width failed!!!",nil);
-  }
+    @try {
+        Callout * callout = [JSObjManager getObjWithKey:calloutId];
+        callout.width = (CGFloat)width;
+        NSNumber* trueNum = [NSNumber numberWithBool:true];
+        resolve(trueNum);
+    } @catch (NSException *exception) {
+        reject(@"Callout",@"set width failed.",nil);
+    }
 }
 
 RCT_REMAP_METHOD(addImage,addImageBycalloutId:(NSString*)calloutId name:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

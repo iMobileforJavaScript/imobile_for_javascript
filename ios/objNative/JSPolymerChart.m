@@ -7,7 +7,6 @@
 //
 
 #import "JSPolymerChart.h"
-
 #import "SuperMap/PolymerChart.h"
 #import "SuperMap/Color.h"
 #import "JSObjManager.h"
