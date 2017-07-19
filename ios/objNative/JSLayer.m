@@ -62,7 +62,7 @@ RCT_REMAP_METHOD(getDataset,getDatasetByKey:(NSString*)key resolver:(RCTPromiseR
 
 RCT_REMAP_METHOD(setDataset,setDatasetByKey:(NSString*)key andDatasetId:(NSString*)datasetId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        NSException* exception = [NSException exceptionWithName:@"com.supermap.exception" reason:@"该方法暂不支持iOS设备。" userInfo:nil];
+        NSException* exception = [NSException exceptionWithName:@"com.supermap.exception" reason:@"setDataset方法暂不支持iOS设备。" userInfo:nil];
         @throw exception;
         /*
         Layer* layer = [JSObjManager getObjWithKey:key];

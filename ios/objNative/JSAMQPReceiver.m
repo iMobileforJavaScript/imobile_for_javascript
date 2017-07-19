@@ -19,19 +19,6 @@ RCT_EXPORT_MODULE();
     return @[@"com.supermap.RN.JSAMQPReceiver.receive_message1",@"com.supermap.RN.JSAMQPReceiver.receive_message2",@"com.supermap.RN.JSAMQPReceiver.receive_message3",@"com.supermap.RN.JSAMQPReceiver.receive_message4",@"com.supermap.RN.JSAMQPReceiver.receive_message5"];
 }
 
-/*
- RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
- @try {
- AMQPReceiver* receiver = [[AMQPReceiver alloc]init];
- NSInteger nsKey = (NSInteger)receiver;
- [JSObjManager addObj:receiver];
- resolve(@{@"_AMQPReceiverId":@(nsKey).stringValue});
- } @catch (NSException *exception) {
- reject(@"AMQPReceiver",@"create Obj expection",nil);
- }
- }
- */
-
 RCT_REMAP_METHOD(receiveMessage,receiveMessageById:(NSString*)receiverId queueName:(NSString*)queueName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         while (1) {

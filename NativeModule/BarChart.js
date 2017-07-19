@@ -1,12 +1,16 @@
-/**
- * Created by will on 2016/7/5.
- */
-import {NativeModules} from 'react-native';
-let BC = NativeModules.JSBarChart;
-import ChartView from './ChartView.js';
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 
+import {NativeModules} from 'react-native';
+import ChartView from './ChartView.js';
+let BC = NativeModules.JSBarChart;
 /**
- * @class Layer
+ * @class BarChart
+ * @description 柱状图类
  */
 export default class BarChart extends ChartView{
     constructor(){
@@ -21,7 +25,7 @@ export default class BarChart extends ChartView{
                               })
     }
     /**
-     * 设置/获取数值是否按照X轴分布
+     * 设置数值是否按照X轴分布
      * @memberOf BarChart
      * @param {boolean} b
      * @returns {Promise.<void>}
@@ -34,8 +38,8 @@ export default class BarChart extends ChartView{
         }
     }
     /**
-     * 判断图层是否处于可编辑状态。
-     * @memberOf ChartView
+     * 判断数值是否按照X轴分布
+     * @memberOf BarChart
      * @returns {Promise.<boolean>}
      */
     async isValueAlongXAxis(){
@@ -49,9 +53,9 @@ export default class BarChart extends ChartView{
 
     /**
      * 设置X坐标轴显示标签
-     * @memberOf ChartView
+     * @memberOf BarChart
      * @param {object} xAxisLables - 数据数组
-     * @returns {Promise.<ChartLegend>}
+     * @returns {Promise.<void>}
      */
     async setXAxisLables(xAxisLables){
         try{
@@ -64,7 +68,7 @@ export default class BarChart extends ChartView{
     /**
      * 获取X坐标轴显示标签
      * @memberOf ChartView
-     * @returns {Promise.<object>}
+     * @returns {Promise.<Arr>}
      */
     async getXAxisLables(){
         try{
@@ -92,7 +96,7 @@ export default class BarChart extends ChartView{
     /**
      * 获取X坐标轴标题。
      * @memberOf ChartView
-     * @returns {Promise.<void>}
+     * @returns {Promise.<string>}
      */
     async getXAxisTitle(){
         try{
@@ -120,7 +124,7 @@ export default class BarChart extends ChartView{
     /**
      * 获取Y坐标轴标题。
      * @memberOf ChartView
-     * @returns {Promise.<void>}
+     * @returns {Promise.<string>}
      */
     async getYAxisTitle(){
         try{
@@ -147,6 +151,7 @@ export default class BarChart extends ChartView{
     /**
      * 设置选中的对象ID
      * @memberOf ChartView
+     * @param {number} geoId
      * @returns {Promise.<void>}
      */
     async setSelectedGeometryID(geoId){
