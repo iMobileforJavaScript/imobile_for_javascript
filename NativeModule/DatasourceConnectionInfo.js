@@ -1,6 +1,9 @@
-/**
- * Created by will on 2016/6/17.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let DCI = NativeModules.JSDatasourceConnectionInfo;
 

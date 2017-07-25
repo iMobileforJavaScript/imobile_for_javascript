@@ -1,6 +1,9 @@
-/**
- * Created by will on 2016/6/17.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: will
+ E-mail: pridehao@gmail.com
+ Description: 该类作为辅助类，不对外开放，后期可能考虑移除。
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let D = NativeModules.JSDatasets;
 import Dataset from './Dataset.js';

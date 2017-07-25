@@ -46,7 +46,7 @@ export default class DataDownloadService extends ServiceBase{
      */
     async download(fullUrl,fromIndex,toIndex){
         try{
-            await DDS.download(dataDownloadService._dataDownloadServiceId_,fullUrl,fromIndex,toIndex);
+            await DDS.download(this._dataDownloadServiceId_,fullUrl,fromIndex,toIndex);
         }catch(e){
             console.error(e);
         }
@@ -64,7 +64,7 @@ export default class DataDownloadService extends ServiceBase{
      */
     async downloadByName(serviceName,datasourceName,datasetName,fromIndex,toIndex){
         try{
-            await DDS.downloadByName(dataDownloadService._dataDownloadServiceId_,
+            await DDS.downloadByName(this._dataDownloadServiceId_,
                 serviceName,datasourceName,datasetName,fromIndex,toIndex);
         }catch(e){
             console.error(e);
@@ -79,7 +79,7 @@ export default class DataDownloadService extends ServiceBase{
      */
     async downloadAll(fullUrl){
         try{
-            await DDS.downloadAll(dataDownloadService._dataDownloadServiceId_,fullUrl);
+            await DDS.downloadAll(this._dataDownloadServiceId_,fullUrl);
         }catch(e){
             console.error(e);
         }
@@ -95,7 +95,7 @@ export default class DataDownloadService extends ServiceBase{
      */
     async downloadAllByName(serviceName,datasourceName,datasetName){
         try{
-            await DDS.downloadAllByName(dataDownloadService._dataDownloadServiceId_,
+            await DDS.downloadAllByName(this._dataDownloadServiceId_,
                 serviceName,datasourceName,datasetName);
         }catch(e){
             console.error(e);
@@ -111,7 +111,7 @@ export default class DataDownloadService extends ServiceBase{
      */
     async downloadDataset(urlDatset,datasource){
         try{
-            await DDS.downloadDataset(dataDownloadService._dataDownloadServiceId_,
+            await DDS.downloadDataset(this._dataDownloadServiceId_,
                 urlDatset,datasource.datasourceId);
         }catch(e){
             console.error(e);
@@ -127,7 +127,7 @@ export default class DataDownloadService extends ServiceBase{
      */
     async updateDataset(urlDatset,dataset){
         try{
-            await DDS.updateDataset(dataDownloadService._dataDownloadServiceId_,
+            await DDS.updateDataset(this._dataDownloadServiceId_,
                 urlDatset,dataset.datasetId);
         }catch(e){
             console.error(e);
