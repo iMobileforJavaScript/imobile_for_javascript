@@ -66,16 +66,16 @@ RCT_CUSTOM_VIEW_PROPERTY(chartDatas, NSArray, BarChart){
     }
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(layerIndexWithMapCtrl, NSArray, BarChart){
-    @try {
+//RCT_CUSTOM_VIEW_PROPERTY(layerIndexWithMapCtrl, NSArray, BarChart){
+//    @try {
 //        NSArray* arr = json ? [RCTConvert NSArray:json] :nil;
 //        NSNumber* index = arr[0];
 //        NSString* mapCtrlId = arr[1];
 //        MapControl* mapCtrl = [JSObjManager getObjWithKey:mapCtrlId];
 //        Map* map = mapCtrl.map;
 //        [[map.layers getLayerAtIndex:index.intValue] addChart:view];
-    } @catch (NSException *exception) {
-        NSLog(@"imoble_for_reactnative got exception,info:%@",exception);
-    }
-}
+//    } @catch (NSException *exception) {
+//        NSLog(@"imoble_for_reactnative got exception,info:%@",exception);
+//    }
+//}
 @end

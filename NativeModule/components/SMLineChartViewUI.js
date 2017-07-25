@@ -16,7 +16,7 @@ class SMLineChartView extends React.Component{
         axisLableSize:React.PropTypes.number,
         xAxisTitle:React.PropTypes.string,
         yAxisTitle:React.PropTypes.string,
-        allowsUserInteraction:React.PropTypes.boolean,
+        allowsUserInteraction:React.PropTypes.bool,
         hightLightColor:React.PropTypes.array,
         geoId:React.PropTypes.number,
         chartDatas:React.PropTypes.array,

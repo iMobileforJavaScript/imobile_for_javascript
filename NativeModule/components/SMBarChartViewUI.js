@@ -12,7 +12,7 @@ class SMBarChartView extends React.Component{
     static propTypes = {
         title:React.PropTypes.string,
         textSize:React.PropTypes.number,
-        isValueAlongXAxis:React.PropTypes.boolean,
+        isValueAlongXAxis:React.PropTypes.bool,
         axisTitleSize:React.PropTypes.number,
         axisLableSize:React.PropTypes.number,
         xAxisTitle:React.PropTypes.string,
