@@ -2,7 +2,6 @@
  Copyright © SuperMap. All rights reserved.
  Author: will
  E-mail: pridehao@gmail.com
- Description:数据集类
  
  **********************************************************************************/
 import {NativeModules} from 'react-native';

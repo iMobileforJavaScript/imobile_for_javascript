@@ -95,7 +95,7 @@ RCT_REMAP_METHOD(getMap,geMapKey:(NSString*)key resolver:(RCTPromiseResolveBlock
     NSInteger key = (NSInteger)map;
     resolve(@{@"mapId":@(key).stringValue});
   }else
-    reject(@"MapControl",@"getMap:mapcontrol not exeist!!!",nil);
+    reject(@"MapControl",@"getMap() failed.",nil);
 }
 
 RCT_REMAP_METHOD(setAction,mapControlId:(NSString*)Id actionType:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -104,7 +104,7 @@ RCT_REMAP_METHOD(setAction,mapControlId:(NSString*)Id actionType:(int)type resol
         mapControl.action = type;
         resolve(@"1");
     }else{
-        reject(@"mapControl",@"setAction failed!!!",nil);
+        reject(@"MapControl",@"setAction() failed.",nil);
     }
 }
 
@@ -114,7 +114,7 @@ RCT_REMAP_METHOD(submit,submitByKey:(NSString*)key resolver:(RCTPromiseResolveBl
         [mapControl submit];
         resolve(@"submit successful");
     }else{
-        reject(@"mapControl",@"submit failed!!!",nil);
+        reject(@"MapControl",@"submit() failed.",nil);
     }
 }
 
@@ -125,7 +125,7 @@ RCT_REMAP_METHOD(setGestureDetector,setGestureDetectorById:(NSString*)mapControl
         NSNumber* nsTrue = [NSNumber numberWithBool:TRUE];
         resolve(nsTrue);
     }else{
-        reject(@"mapControl",@"set GestureDetector failed!!!",nil);
+        reject(@"MapControl",@"setGestureDetector() failed.",nil);
     }
 }
 
@@ -136,7 +136,7 @@ RCT_REMAP_METHOD(deleteGestureDetector,deleteGestureDetectorById:(NSString*)mapC
         NSNumber* nsTrue = [NSNumber numberWithBool:TRUE];
         resolve(nsTrue);
     }else{
-        reject(@"mapControl",@"delete GestureDetector failed!!!",nil);
+        reject(@"MapControl",@"deleteGestureDetector() failed.",nil);
     }
 }
 
@@ -148,7 +148,7 @@ RCT_REMAP_METHOD(setMapParamChangedListener,setMapParamChangedListenerByKey:(NSS
         NSNumber* nsTrue = [NSNumber numberWithBool:TRUE];
         resolve(nsTrue);
     }else{
-        reject(@"mapControl",@"set MapParamChangedListener failed!!!",nil);
+        reject(@"MapControl",@"setMapParamChangedListener() failed.",nil);
     }
 }
 
@@ -160,7 +160,7 @@ RCT_REMAP_METHOD(getNavigation2,getNavigation2BymapControlId:(NSString*)Id resol
     [JSObjManager addObj:navi2];
     resolve(@{@"navigation2Id":@(key).stringValue});
   }else{
-    reject(@"mapControl",@"get navi2 failed!!!",nil);
+    reject(@"MapControl",@"getNavigation2() failed.",nil);
   }
 }
 
@@ -172,7 +172,7 @@ RCT_REMAP_METHOD(getTraditionalNavi,getTraditionalNaviBymapControlId:(NSString*)
         [JSObjManager addObj:navi];
         resolve(@{@"traditionalNaviId":@(key).stringValue});
     }else{
-        reject(@"mapControl",@"get traditionalNavi failed!!!",nil);
+        reject(@"MapControl",@"getTraditionalNavi() failed.",nil);
     }
 }
 
@@ -200,7 +200,7 @@ RCT_REMAP_METHOD(getCurrentGeometry,getCurrentGeometryById:(NSString*)Id resolve
       [JSObjManager addObj:geo];
       resolve(@{@"geometryId":@(key).stringValue,@"geoType":typeStr});
     }else{
-        reject(@"mapControl",@"getCurrentGeometry failed!!!",nil);
+        reject(@"MapControl",@"getCurrentGeometry() failed.",nil);
     }
 }
 
@@ -211,7 +211,7 @@ RCT_REMAP_METHOD(getAction,getActionById:(NSString*)Id resolver:(RCTPromiseResol
         NSNumber* nsAction = [NSNumber numberWithInt:action];
         resolve(@{@"actionType":nsAction});
     }else{
-        reject(@"mapControl",@"get Action failed!!!",nil);
+        reject(@"MapControl",@"getAction() failed.",nil);
     }
 }
 
@@ -222,7 +222,7 @@ RCT_REMAP_METHOD(redo,redoById:(NSString*)Id resolver:(RCTPromiseResolveBlock)re
         NSNumber* nsTrue = [NSNumber numberWithBool:YES];
         resolve(@{@"redone":nsTrue});
     }else{
-        reject(@"mapControl",@"redo failed!!!",nil);
+        reject(@"MapControl",@"redo() failed.",nil);
     }
 }
 
@@ -233,7 +233,7 @@ RCT_REMAP_METHOD(undo,undoById:(NSString*)Id resolver:(RCTPromiseResolveBlock)re
         NSNumber* nsTrue = [NSNumber numberWithBool:YES];
         resolve(@{@"undone":nsTrue});
     }else{
-        reject(@"mapControl",@"undo failed!!!",nil);
+        reject(@"MapControl",@"undo() failed.",nil);
     }
 }
 
@@ -244,7 +244,7 @@ RCT_REMAP_METHOD(cancel,cancelById:(NSString*)Id resolver:(RCTPromiseResolveBloc
         NSNumber* nsTrue = [NSNumber numberWithBool:YES];
         resolve(@{@"canceled":nsTrue});
     }else{
-        reject(@"mapControl",@"canceled failed!!!",nil);
+        reject(@"MapControl",@"cancel() failed.",nil);
     }
 }
 
@@ -255,7 +255,7 @@ RCT_REMAP_METHOD(deleteCurrentGeometry,deleteCurrentGeometryById:(NSString*)Id r
         NSNumber* nsTrue = [NSNumber numberWithBool:YES];
         resolve(@{@"deleted":nsTrue});
     }else{
-        reject(@"mapControl",@"deleteCurrentGeometry failed!!!",nil);
+        reject(@"MapControl",@"deleteCurrentGeometry() failed.",nil);
     }
 }
  /*
@@ -266,7 +266,7 @@ RCT_REMAP_METHOD(getEditLayer,getEditLayerById:(NSString*)Id resolver:(RCTPromis
         NSNumber* nsTrue = [NSNumber numberWithBool:YES];
         resolve(@{@"deleted":nsTrue});
     }else{
-        reject(@"mapControl",@"deleteCurrentGeometry failed!!!",nil);
+        reject(@"MapControl",@"getEditLayer() failed.",nil);
     }
 }
   */
@@ -278,7 +278,7 @@ RCT_REMAP_METHOD(addGeometryAddedListener,addGeometryAddedListenerById:(NSString
         NSNumber* nsTrue = [NSNumber numberWithBool:YES];
         resolve(nsTrue);
     }else{
-        reject(@"mapControl",@"add GeometryAddedListener failed!!!",nil);
+        reject(@"MapControl",@"addGeometryAddedListener() failed.",nil);
     }
 }
 
@@ -289,7 +289,7 @@ RCT_REMAP_METHOD(removeGeometryAddedListener,removeGeometryAddedListenerById:(NS
         NSNumber* nsTrue = [NSNumber numberWithBool:YES];
         resolve(nsTrue);
     }else{
-        reject(@"mapControl",@"add GeometryAddedListener failed!!!",nil);
+        reject(@"MapControl",@"removeGeometryAddedListener() failed.",nil);
     }
 } */
 
@@ -300,7 +300,7 @@ RCT_REMAP_METHOD(addGeometrySelectedListener,addGeometrySelectedListenerById:(NS
         NSNumber* nsTrue = [NSNumber numberWithBool:YES];
         resolve(nsTrue);
     }else{
-        reject(@"mapControl",@"add GeometryAddedListener failed!!!",nil);
+        reject(@"MapControl",@"addGeometrySelectedListener() failed.",nil);
     }
 }
 
@@ -311,7 +311,7 @@ RCT_REMAP_METHOD(removeGeometrySelectedListener,removeGeometrySelectedListenerBy
         NSNumber* nsTrue = [NSNumber numberWithBool:YES];
         resolve(nsTrue);
     }else{
-        reject(@"mapControl",@"add GeometryAddedListener failed!!!",nil);
+        reject(@"MapControl",@"removeGeometrySelectedListener() failed.",nil);
     }
 }
 
@@ -322,7 +322,7 @@ RCT_REMAP_METHOD(addMeasureListener,addMeasureListenerById:(NSString*)Id resolve
         NSNumber* nsTrue = [NSNumber numberWithBool:YES];
         resolve(nsTrue);
     }else{
-        reject(@"mapControl",@"add MeasureListener failed!!!",nil);
+        reject(@"MapControl",@"addMeasureListener() failed.",nil);
     }
 }
 
@@ -333,7 +333,7 @@ RCT_REMAP_METHOD(removeMeasureListener,removeMeasureListenerById:(NSString*)Id r
         NSNumber* nsTrue = [NSNumber numberWithBool:YES];
         resolve(nsTrue);
     }else{
-        reject(@"mapControl",@"add MeasureListener failed!!!",nil);
+        reject(@"MapControl",@"removeMeasureListener() failed.",nil);
     }
 }
 
@@ -341,31 +341,46 @@ RCT_REMAP_METHOD(setRefreshListener,setRefreshListenerById:(NSString*)Id resolve
     if (Id) {
         resolve(@"1");
     }else{
-        reject(@"mapControl",@"setRefreshListener failed!!!",nil);
+        reject(@"MapControl",@"setRefreshListener() failed.",nil);
+    }
+}
+
+RCT_REMAP_METHOD(addPlotLibrary,addPlotLibraryById:(NSString*)Id url:(NSString*)url resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [JSObjManager getObjWithKey:Id];
+        int libId = [mapControl addPlotLibrary:url];
+        dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        dispatch_async(queue,^(void){
+            /*
+             int libId = [mapControl addPlotLibrary: [NSHomeDirectory() stringByAppendingFormat:@"/Library/Caches/%@",@"TY.plot"]];
+             */
+            NSNumber* num = [NSNumber numberWithInt:libId];
+            resolve(num);
+        });
+    } @catch (NSException *exception) {
+        reject(@"MapControl",@"addPlotLibrary() failed.",nil);
+    }
+}
+
+RCT_REMAP_METHOD(removePlotLibrary,removePlotLibraryById:(NSString*)Id libId:(int)libId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [JSObjManager getObjWithKey:Id];
+        [mapControl removePlotLibrary:libId];
+        NSNumber* num = [NSNumber numberWithBool:true];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"MapControl",@"removePlotLibrary() failed.",nil);
     }
 }
     
-    RCT_REMAP_METHOD(addPlotLibrary,addPlotLibraryById:(NSString*)Id url:(NSString*)url resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setPlotSymbol,setPlotSymbolById:(NSString*)Id libId:(int)libId symbolCode:(int)symbolCode resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
         MapControl* mapControl = [JSObjManager getObjWithKey:Id];
-        if (mapControl) {
-            dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-            dispatch_async(queue,^(void){
-//                int libId = [mapControl addPlotLibrary: [NSHomeDirectory() stringByAppendingFormat:@"/Library/Caches/%@",@"TY.plot"]];
-                int libId = [mapControl addPlotLibrary:url];
-                NSNumber* num = [NSNumber numberWithInt:libId];
-                resolve(num);
-            });
-        }else{
-            reject(@"mapControl",@"add PlotLibrary failed!!!",nil);
-        }
+        [mapControl setPlotSymbol:libId symbolCode:symbolCode];
+        NSNumber* num = [NSNumber numberWithBool:true];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"MapControl",@"setPlotSymbol() failed.",nil);
     }
-    
-    RCT_REMAP_METHOD(setPlotSymbol,setPlotSymbolById:(NSString*)Id libId:(int)libId symbolCode:(int)symbolCode resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-        MapControl* mapControl = [JSObjManager getObjWithKey:Id];
-        if (mapControl) {
-            [mapControl setPlotSymbol:libId symbolCode:symbolCode];
-        }else{
-            reject(@"mapControl",@"add PlotLibrary failed!!!",nil);
-        }
-    }
+}
 @end

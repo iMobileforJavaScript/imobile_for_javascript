@@ -871,13 +871,26 @@ export default class MapControl{
     }
     
     /**
+     * 添加标绘库。
+     * @memberOf MapControl
+     * @returns {Promise.<void>}
+     */
+    async removePlotLibrary(libId){
+        try{
+            var isRemove = await MC.removePlotLibrary(this.mapControlId,libId);
+        }catch (e){
+            console.error(e);
+        }
+    }
+    
+    /**
      * 设置标绘图案。
      * @memberOf MapControl
      * @returns {Promise.<int>}
      */
     async setPlotSymbol(libId,symbolCode){
         try{
-            await MC.setPlotSymbol(this.mapControlId,libId,symbolCode);
+            var isSet = await MC.setPlotSymbol(this.mapControlId,libId,symbolCode);
         }catch (e){
             console.error(e);
         }

@@ -123,7 +123,7 @@ export default class Datasource{
         }
     }
 
-    /**
+    /*
      * 修改当前数据源的密码
      * @memberOf Datasource
      * @param {number} oldPassword - 原始密码,不能为null

@@ -1,7 +1,7 @@
 import BufferAnalyst from './NativeModule/BufferAnalyst.js';
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js';
 import BufferAnalystParameter from './NativeModule/BufferAnalystParameter.js';
-import CallOut from './NativeModule/CallOut.js'
+import Callout from './NativeModule/CallOut.js'
 import CursorType from './NativeModule/CursorType.js';
 import DataDownloadService from './NativeModule/DataDownloadService.js';
 import Dataset from './NativeModule/Dataset.js';
@@ -57,15 +57,12 @@ import ChartView from './NativeModule/ChartView.js';
 import ChartPoint from './NativeModule/ChartPoint.js';
 import ChartLegend from './NativeModule/ChartLegend.js';
 import ColorScheme from './NativeModule/ColorScheme.js';
-import BarChart from './NativeModule/BarChart.js';
 import BarChartData from './NativeModule/BarChartData.js';
-import LineChart from './NativeModule/LineChart.js';
+import BarChartDataItem from './NativeModule/BarChartDataItem.js';
 import LineChartData from './NativeModule/LineChartData.js';
-import PieChart from './NativeModule/PieChart.js';
 import PieChartData from './NativeModule/PieChartData.js';
 import HotChart from './NativeModule/HotChart.js';
 import GridHotChart from './NativeModule/GridHotChart.js';
-import InstrumentChart from './NativeModule/InstrumentChart.js';
 import PointDensityChart from './NativeModule/PointDensityChart.js';
 import PolymerChart from './NativeModule/PolymerChart.js';
 import RelationalPointChart from './NativeModule/RelationalPointChart.js';
@@ -88,6 +85,10 @@ import SMScaleView from './NativeModule/components/SMScaleViewUI.js';
 import SMSceneView from './NativeModule/components/SMSceneViewUI.js';
 import SMPlotView from './NativeModule/components/SMPlotViewUI.js';
 import SMSearchView from './NativeModule/components/SMSearchViewUI.js';
+import SMBarChartView from './NativeModule/components/SMBarChartViewUI.js';
+import SMLineChartView from './NativeModule/components/SMLineChartViewUI.js';
+import SMPieChartView from './NativeModule/components/SMPieChartViewUI.js';
+import SMInstrumentChartView from './NativeModule/components/SMInstrumentChartViewUI.js';
 
 /*
 import SMManagerHomeScreen from './NativeModule/components/SMWSpaceCtrlHomeView.js';
@@ -124,20 +125,21 @@ export {
     MQTTClientSide,
     
     //chart
+    SMBarChartView,
+    SMLineChartView,
+    SMPieChartView,
+    SMInstrumentChartView,
     ChartData,
     ChartView,
     ChartPoint,
     ChartLegend,
     ColorScheme,
-    BarChart,
     BarChartData,
-    LineChart,
+    BarChartDataItem,
     LineChartData,
-    PieChart,
     PieChartData,
     HotChart,
     GridHotChart,
-    InstrumentChart,
     PointDensityChart,
     PolymerChart,
     RelationalPointChart,
@@ -147,7 +149,7 @@ export {
     BufferAnalyst,
     BufferAnalystGeometry,
     BufferAnalystParameter,
-    CallOut,
+    Callout,
     CursorType,
     DataDownloadService,
     Dataset,

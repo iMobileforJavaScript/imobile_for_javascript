@@ -72,13 +72,13 @@ var THUMB_URLS11 = ['中国',
                                        
   _renderRow: function(rowData: string, sectionID: number, rowID: number) {
     //var rowHash = Math.abs(hashCode(rowData));
-    var imgSource = THUMB_URLS[rowID];
+    var imgSource = this.props.imageSource ? this.props.imageSource[rowID] : THUMB_URLS[rowID];
     return (
       <TouchableHighlight onPress={() => this._pressRow(rowID)}>
         <View>
           <View style={styles.row}>
             <Text style={styles.text}>
-            {THUMB_URLS11[rowID]}
+            {this.props.titleName ? this.props.titleName[rowID] : THUMB_URLS11[rowID]}
             </Text>
             <View style={styles.description}>
               <Image style={styles.thumb} source={imgSource} />
@@ -94,10 +94,13 @@ var THUMB_URLS11 = ['中国',
   },
     
   _genRows: function(pressData: {[key: number]: boolean}): Array<string> {
-    var dataBlob = [];
-    for (var ii = 0; ii < 12; ii++) {
-      var pressedText = pressData[ii] ? ' (pressed)' : '';
-      dataBlob.push('超长文本，这是一个超长文本长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长' + ii + pressedText +'!');
+    var dataBlob = this.props.data ? this.props.data : [];
+    if(dataBlob.length<=0){
+        //var dataBlob = [];
+        for (var ii = 0; ii < 12; ii++) {
+          var pressedText = pressData[ii] ? ' (pressed)' : '';
+          dataBlob.push('超长文本支持' + ii + pressedText +'!');
+        }
     }
     return dataBlob;
   },

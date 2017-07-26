@@ -19,27 +19,38 @@ RCT_REMAP_METHOD(createObj,createObjWithName:(NSString*)name values:(NSArray*)va
         NSInteger dataKey = (NSInteger)chartBarData;
         resolve(@{@"_barchartdataId":@(dataKey).stringValue});
     } @catch (NSException *exception) {
-        reject(@"BarChartData",@"createObj get expection",nil);
+        reject(@"BarChartData",@"createObj() get expection",nil);
     }
 }
 
 RCT_REMAP_METHOD(setValues,setValuesById:(NSString*)barChartDataId values:(NSArray*)values resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+        NSMutableArray* valuesArr = [[NSMutableArray alloc]initWithCapacity:5];
+        for (NSString*id in values) {
+            ChartBarDataItem* item = [JSObjManager getObjWithKey:id];
+            [valuesArr addObject:item];
+        }
         ChartBarData* chartBarData = [JSObjManager getObjWithKey:barChartDataId];
-        chartBarData.values = [NSMutableArray arrayWithArray:values];
-        resolve(@"values setted");
+        chartBarData.values = valuesArr;
+        resolve([NSNumber numberWithBool:true]);
     } @catch (NSException *exception) {
-        reject(@"BarChartData",@"set Values get expection",nil);
+        reject(@"BarChartData",@"setValues() get expection",nil);
     }
 }
 
 RCT_REMAP_METHOD(getValues,getValuesById:(NSString*)barChartDataId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+        NSMutableArray* idArr = [[NSMutableArray alloc]initWithCapacity:10];
         ChartBarData* chartBarData = [JSObjManager getObjWithKey:barChartDataId];
         NSArray* arr = chartBarData.values;
-        resolve(@{@"values":arr});
+        for (ChartBarDataItem* object in arr) {
+            NSInteger dsVectorKey = (NSInteger)object;
+            [JSObjManager addObj:object];
+            [idArr addObject:@(dsVectorKey).stringValue];
+        }
+        resolve(@{@"values":(NSArray*)idArr});
     } @catch (NSException *exception) {
-        reject(@"BarChartData",@"set Values get expection",nil);
+        reject(@"BarChartData",@"getValues() get expection",nil);
     }
 }
 

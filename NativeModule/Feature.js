@@ -15,22 +15,7 @@ export default class Feature {
      * @returns {Promise.<Feature>}
      */
     async createObj(fieldNames,fieldValues,geometry){
-        if(typeof fieldNames !== 'array' || typeof fieldValues !== 'array'){
-            console.error('Feature:Array type is required for fieldNames and fieldValues arguments.');
-        }
         try{
-            for(var fieldName in fieldNames){
-                if(typeof fieldNames[fieldName] !== 'string'){
-                    console.error('Feature:fieldNames must be an Array of String type.');
-                }
-            }
-
-            for(var fieldValue in fieldValues){
-                if(typeof fieldValues[fieldValue] !== 'string'){
-                    console.error('Feature:fieldValues must be an Array of String type.');
-                }
-            }
-
             var {_featureId_} = await F.createObj(fieldNames,fieldValues,geometry.geometryId);
             var feature = new Feature();
             feature._featureId_ = _featureId_;

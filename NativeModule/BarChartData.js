@@ -1,11 +1,15 @@
-/**
- * Created by will on 2016/7/5.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let BCD = NativeModules.JSBarChartData;
 import ChartData from './ChartData.js';
+import BarChartDataItem from './BarChartDataItem.js'
 /**
- * @class Layer
+ * @class BarChartData
  */
 export default class BarChartData extends ChartData{
     constructor(){
@@ -40,28 +44,39 @@ export default class BarChartData extends ChartData{
         }
     }
     /**
-     *  设置图饼子项的值
+     *  设置图柱子项的值
      * @memberOf BarChartData
-     * @param {int}value - 图饼子项的值
+     * @param {array}values - 图饼子项值的集合
      * @returns {Promise.<void>}
      */
     async setValues(values){
         try{
-            await BCD.setValues(this.barChartDataId,values);
+            var idArr = [];
+            for(variable in values){
+                var id = variable._SMBarChartDataItemId;
+                idArr.push(id);
+            }
+            await BCD.setValues(this.barChartDataId,idArr);
         }catch(e){
             console.error(e);
         }
     }
 
     /**
-     * 获取图饼子项的值
+     * 获取图柱子项的值
      * @memberOf BarChartData
-     * @returns {Promise.<number>}
+     * @returns {Promise.<array>}
      */
     async getValues(){
         try{
+            var objArr = [];
             var {values} = await BCD.getValues(this.barChartDataId);
-            return values;
+            for(variable in values){
+                var barChartDataItem = new BarChartDataItem();
+                barChartDataItem._SMBarChartDataItemId = variable;
+                objArr.push(barChartDataItem);
+            }
+            return objArr;
         }catch(e){
             console.error(e);
         }

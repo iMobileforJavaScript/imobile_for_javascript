@@ -1,36 +1,25 @@
-/**
- * Created by will on 2016/7/5.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
+
 import {NativeModules,DeviceEventEmitter,NativeEventEmitter,Platform} from 'react-native';
 let APR = NativeModules.JSAMQPReceiver;
 
 const nativeEvt = new NativeEventEmitter(APR);
 /**
- * @class Layer
+ * @class AMQPReceiver
+ * @description AMQP消息接收类(该类不能创建实例，需通过AMQPManager.newReceiver()创建实例)。
  */
 export default class AMQPReceiver{
-    /**
-     * 创建一个AMQPManager对象
-     * @memberOf AMQPManager
-     * @returns {Promise.<AMQPManager>}
-     */
-    /*
-    async createObj(){
-        try{
-            var {_AMQPReceiverId} = await APR.createObj();
-            var AMQPReceiverObj = new AMQPReceiver();
-            AMQPReceiverObj.AMQPReceiverId = _AMQPReceiverId;
-            return AMQPReceiverObj;
-        }catch(e){
-            console.error(e);
-        }
-    }
-     */
 
     /**
      * 接收信息
      * @memberOf AMQPReceiver
-     * @param {string}label - 条目标签
+     * @param {string} queueNum - 消息队列序号（1-5，默认为1）。
+     * @param {function} loadingMessage - 回调方法，用于处理接收到信息。
      * @returns {Promise.<void>}
      */
     async receiveMessage(queueNum,loadingMessage){
