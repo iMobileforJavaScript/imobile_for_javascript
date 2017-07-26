@@ -28,21 +28,21 @@ RCT_REMAP_METHOD(setColors,setColorsById:(NSString*)schemeId colors:(NSArray*)co
     @try {
         NSMutableArray* colorsArr = [NSMutableArray arrayWithCapacity:5];
         for (NSArray* arr in colors) {
-            float alpha = 1.0f;
+            int alpha = 1;
             if (arr.count<3 || arr.count>=5) {
                 reject(@"colorScheme",@"each RGB arr should have 3 or 4 arguments!",nil);
             }else if (arr.count ==4){
-                alpha = ((NSNumber*)arr[3]).floatValue;
+                alpha = ((NSNumber*)arr[3]).intValue;
             }
-            float red = ((NSNumber*)arr[0]).floatValue;
-            float green = ((NSNumber*)arr[1]).floatValue;
-            float blue = ((NSNumber*)arr[2]).floatValue;
-            UIColor* color = [UIColor colorWithRed:red/255 green:green/255 blue:blue/255 alpha:alpha];
+            int red = ((NSNumber*)arr[0]).intValue;
+            int green = ((NSNumber*)arr[1]).intValue;
+            int blue = ((NSNumber*)arr[2]).intValue;
+            Color* color = [[Color alloc]initWithR:red G:green B:blue A:alpha];
             [colorsArr addObject:color];
         }
         ColorScheme* colorScheme = [JSObjManager getObjWithKey:schemeId];
         colorScheme.colors = colorsArr;
-        resolve(@"colorScheme setted");
+        resolve([NSNumber numberWithBool:true]);
     } @catch (NSException *exception) {
         reject(@"colorScheme",@"create Obj expection",nil);
     }
