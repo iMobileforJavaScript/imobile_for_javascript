@@ -1,6 +1,6 @@
 import {NativeModules} from 'react-native';
 let SS = NativeModules.JSQueryService;
-
+import ServiceBase from './ServiceBase.js';
 /**
  * @class QueryService
  * @param QueryMode.SqlQuery -  查询模式：SQL查询
@@ -10,8 +10,19 @@ let SS = NativeModules.JSQueryService;
  * @param QueryMode.BoundsQuery - 范围查询：范围查询
  *
  */
-export default class QueryService {
-
+export default class QueryService extends ServiceBase{
+    constructor(){
+        super();
+        //同步子类Id和父类Id
+        Object.defineProperty(this,"_queryServiceId_",{
+                              get:function () {
+                              return this._serviceBaseID_
+                              },
+                              set:function (_queryServiceId_) {
+                              this._serviceBaseID_ = _queryServiceId_;
+                              }
+                              })
+    }
     /**
      * 根据查询路径创建一个QueryService对象
      * @param url
