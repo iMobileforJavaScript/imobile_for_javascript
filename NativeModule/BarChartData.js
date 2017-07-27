@@ -33,9 +33,14 @@ export default class BarChartData extends ChartData{
      * @param {int}geoId - ID
      * @returns {Promise.<void>}
      */
-    async createObj(itemName,values,label,color,geoId){
+    async createObj(itemName,values){
         try{
-            var {_barchartdataId} = await BCD.createObj(itemName,values,label,color,geoId);
+            var idArr = [];
+            for(variable in values){
+                var id = variable._SMBarChartDataItemId;
+                idArr.push(id);
+            }
+            var {_barchartdataId} = await BCD.createObj(itemName,idArr);
             var barChartData = new BarChartData();
             barChartData.barChartDataId = _barchartdataId;
             return barChartData;

@@ -14,7 +14,12 @@
 RCT_EXPORT_MODULE();
 RCT_REMAP_METHOD(createObj,createObjWithName:(NSString*)name values:(NSArray*)values resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ChartBarData* chartBarData = [[ChartBarData alloc]initWithItemName:name values:values];
+        NSMutableArray* arr = [NSMutableArray arrayWithCapacity:10];
+        for (NSString* valueId in values) {
+            ChartBarDataItem* item = [JSObjManager getObjWithKey:valueId];
+            [arr addObject:item];
+        }
+        ChartBarData* chartBarData = [[ChartBarData alloc]initWithItemName:name values:(NSArray*)arr];
         [JSObjManager addObj:chartBarData];
         NSInteger dataKey = (NSInteger)chartBarData;
         resolve(@{@"_barchartdataId":@(dataKey).stringValue});
