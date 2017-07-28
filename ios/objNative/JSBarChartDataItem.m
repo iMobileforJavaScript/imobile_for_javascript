@@ -17,7 +17,7 @@ RCT_REMAP_METHOD(createObj,createObjWithValue:(double)value colorArr:(NSArray*)c
         NSNumber* red = colorArr[0];
         NSNumber* green = colorArr[1];
         NSNumber* blue = colorArr[2];
-        NSNumber* alpha = [NSNumber numberWithFloat:1.0f];
+        NSNumber* alpha = [NSNumber numberWithFloat:100];
         if (colorArr.count>3) {
             alpha = colorArr[3];
         }
