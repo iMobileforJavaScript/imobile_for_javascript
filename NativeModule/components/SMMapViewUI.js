@@ -50,7 +50,7 @@ class SMMapView extends React.Component{
         console.log("has onGetInstance:"+event.nativeEvent.mapViewId);
 
         this.mapView = new MapView();
-        this.mapView.mapViewId = event.nativeEvent.mapViewId;
+        this.mapView._SMMapViewId = event.nativeEvent.mapViewId;
         this.props.onGetInstance(this.mapView);
 
         (async function () {

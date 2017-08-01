@@ -1,3 +1,9 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let OAP = NativeModules.JSOverlayAnalystParameter;
 
@@ -16,7 +22,7 @@ export default class OverlayAnalystParameter {
         try{
             var {overlayAnalystParameterId} = await OAP.createObj();
             var overlayAnalystParameter = new OverlayAnalystParameter();
-            overlayAnalystParameter.overlayAnalystParameterId = overlayAnalystParameterId;
+            overlayAnalystParameter._SMOverlayAnalystParameterId = overlayAnalystParameterId;
             return overlayAnalystParameter;
         }catch(e){
             console.error(e);
@@ -31,7 +37,7 @@ export default class OverlayAnalystParameter {
      */
     async setTolerance(rate){
         try{
-            await OAP.setTolerance(this.overlayAnalystParameterId,rate);
+            await OAP.setTolerance(this._SMOverlayAnalystParameterId,rate);
         }catch(e){
             console.error(e);
         }
@@ -44,7 +50,7 @@ export default class OverlayAnalystParameter {
      */
     async getTolerance(){
         try{
-            var {tolerance} = await OAP.getTolerance(this.overlayAnalystParameterId);
+            var {tolerance} = await OAP.getTolerance(this._SMOverlayAnalystParameterId);
             return tolerance;
         }catch(e){
             console.error(e);
@@ -58,7 +64,7 @@ export default class OverlayAnalystParameter {
      */
     async getOperationRetainedFields(){
         try{
-            var {fields} = await OAP.getOperationRetainedFields(this.overlayAnalystParameterId);
+            var {fields} = await OAP.getOperationRetainedFields(this._SMOverlayAnalystParameterId);
             return fields;
         }catch(e){
             console.error(e);
@@ -73,7 +79,7 @@ export default class OverlayAnalystParameter {
      */
     async setOperationRetainedFields(fields){
         try{
-            await OAP.setOperationRetainedFields(this.overlayAnalystParameterId,fields);
+            await OAP.setOperationRetainedFields(this._SMOverlayAnalystParameterId,fields);
         }catch(e){
             console.error(e);
         }
@@ -86,7 +92,7 @@ export default class OverlayAnalystParameter {
      */
     async getSourceRetainedFields(){
         try{
-            var {fields} = await OAP.getSourceRetainedFields(this.overlayAnalystParameterId);
+            var {fields} = await OAP.getSourceRetainedFields(this._SMOverlayAnalystParameterId);
             return fields;
         }catch(e){
             console.error(e);
@@ -101,7 +107,7 @@ export default class OverlayAnalystParameter {
      */
     async setSourceRetainedFields(fields){
         try{
-            await OAP.setSourceRetainedFields(this.overlayAnalystParameterId,fields);
+            await OAP.setSourceRetainedFields(this._SMOverlayAnalystParameterId,fields);
         }catch(e){
             console.error(e);
         }

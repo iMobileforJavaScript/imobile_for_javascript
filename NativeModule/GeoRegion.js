@@ -4,17 +4,17 @@ import Geometry from './Geometry.js';
 
 /**
  * @class GeoRegion
+ * @description 面几何对象类。
  */
 export default class GeoRegion extends Geometry{
     constructor(){
         super();
-        //同步子类Id和父类Id
-        Object.defineProperty(this,"geoRegionId",{
+        Object.defineProperty(this,"_SMGeoRegionId",{
             get:function () {
-                return this.geometryId
+                return this._SMGeometryId
             },
-            set:function (geoRegionId) {
-                this.geometryId = geoRegionId;
+            set:function (_SMGeoRegionId) {
+                this._SMGeometryId = _SMGeoRegionId;
             }
         });
     }

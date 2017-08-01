@@ -1,3 +1,9 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let R = NativeModules.JSRecordset;
 import Geometry from './Geometry.js';
@@ -10,7 +16,7 @@ import Dataset from './Dataset';
 export default class Recordset {
     async getRecordCount(){
         try{
-            var {recordCount} = await R.getRecordCount(this.recordsetId);
+            var {recordCount} = await R.getRecordCount(this._SMRecordsetId);
             return recordCount;
         }catch (e){
             console.error(e);
@@ -19,7 +25,7 @@ export default class Recordset {
 
     async dispose(){
         try{
-            await R.dispose(this.recordsetId);
+            await R.dispose(this._SMRecordsetId);
         }catch (e){
             console.error(e);
         }
@@ -27,9 +33,9 @@ export default class Recordset {
 
     async getGeometry(){
         try{
-            var {geometryId} = await R.getGeometry(this.recordsetId);
+            var {geometryId} = await R.getGeometry(this._SMRecordsetId);
             var geometry = new Geometry();
-            geometry.geometryId = geometryId;
+            geometry._SMGeometryId = geometryId;
             return geometry;
         }catch (e){
             console.error(e);
@@ -38,7 +44,7 @@ export default class Recordset {
 
     async isEOF(){
         try{
-            var isEOF = await R.isEOF(this.recordsetId);
+            var isEOF = await R.isEOF(this._SMRecordsetId);
             return isEOF;
         }catch (e){
             console.error(e);
@@ -47,9 +53,9 @@ export default class Recordset {
 
     async getDataset(){
         try{
-            var {datasetId} = await R.getDataset(this.recordsetId);
+            var {datasetId} = await R.getDataset(this._SMRecordsetId);
             var dataset = new Dataset();
-            dataset.datasetId = datasetId;
+            dataset._SMDatasetId = datasetId;
             return dataset;
         }catch (e){
             console.error(e);
@@ -58,7 +64,7 @@ export default class Recordset {
 
     async addNew(geometry){
         try{
-            await R.addNew(this.recordsetId,geometry.geometryId);
+            await R.addNew(this._SMRecordsetId,geometry._SMGeometryId);
         }catch (e){
             console.error(e);
         }
@@ -66,7 +72,7 @@ export default class Recordset {
 
     async moveNext(){
         try{
-            await R.moveNext(this.recordsetId);
+            await R.moveNext(this._SMRecordsetId);
         }catch (e){
             console.error(e);
         }
@@ -74,7 +80,7 @@ export default class Recordset {
 
     async update(){
         try{
-            await R.update(this.recordsetId);
+            await R.update(this._SMRecordsetId);
         }catch (e){
             console.error(e);
         }

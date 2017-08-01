@@ -1,35 +1,67 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: will
+ E-mail: pridehao@gmail.com
+
+ **********************************************************************************/
+
 import {NativeModules} from 'react-native';
 let T = NativeModules.JSTheme;
 
+/**
+ * @class Theme
+ * @description 专题图类，该类是所有专题图的基类。
+ */
 export default class Theme {
 
+    /**
+     * 创建标签专题图。
+     * @memberOf Theme
+     * @param {Object} themeParam 
+     * @description 参数对象:{datasetVector:<DatasetVector>,rangeExpression:<string>分段字段表达式,rangeMode:<number>分段模式,rangeParameter:<number>分段参数,colorGradientType:<number>颜色渐变模式}
+     * @returns {Promise.<Theme>}
+     */
     async makeThemeLabel(themeParam) {
         try {
-            var {themeId} = await T.makeThemeLabel(themeParam.datasetVector.datasetVectorId, themeParam.rangeExpression, themeParam.rangeMode, themeParam.rangeParameter, themeParam.colorGradientType);
+            var {themeId} = await T.makeThemeLabel(themeParam.datasetVector._SMDatasetVectorId, themeParam.rangeExpression, themeParam.rangeMode, themeParam.rangeParameter, themeParam.colorGradientType);
             var theme = new Theme();
-            theme.themeId = themeId;
+            theme._SMThemeId = themeId;
             return theme;
         } catch (e) {
             console.error(e);
         }
     }
 
+    /**
+     * 生成默认的单值专题图。
+     * @memberOf Theme
+     * @param {Object} themeParam 
+     * @description 参数对象:{datasetVector:<DatasetVector>,uniqueExpression:<string>单值专题图字段表达式,colorGradientType:<number>颜色渐变模式}
+     * @returns {Promise.<AMQPManager>}
+     */
     async makeThemeUnique(themeParam) {
         try {
-            var {themeId} = await T.makeThemeUnique(themeParam.datasetVector.datasetVectorId, themeParam.uniqueExpression, themeParam.colorGradientType);
+            var {themeId} = await T.makeThemeUnique(themeParam.datasetVector._SMDatasetVectorId, themeParam.uniqueExpression, themeParam.colorGradientType);
             var theme = new Theme();
-            theme.themeId = themeId;
+            theme._SMThemeId = themeId;
             return theme;
         } catch (e) {
             console.error(e);
         }
     }
     
+    /**
+     * 生成默认的分段专题图。
+     * @memberOf Theme
+     * @param {Object} themeParam
+     * @description 参数对象:{datasetVector:<DatasetVector>,rangeExpression:<string>分段字段表达式,rangeMode:<number>分段模式,rangeParameter:<number>分段参数,colorGradientType:<number>颜色渐变模式}
+     * @returns {Promise.<Theme>}
+     */
     async makeThemeRange(themeParam) {
         try {
-            var {themeId} = await T.makeThemeRange(themeParam.datasetVector.datasetVectorId, themeParam.rangeExpression, themeParam.rangeMode, themeParam.rangeParameter, themeParam.colorGradientType);
+            var {themeId} = await T.makeThemeRange(themeParam.datasetVector._SMDatasetVectorId, themeParam.rangeExpression, themeParam.rangeMode, themeParam.rangeParameter, themeParam.colorGradientType);
             var theme = new Theme();
-            theme.themeId = themeId;
+            theme._SMThemeId = themeId;
             return theme;
         } catch (e) {
             console.error(e);

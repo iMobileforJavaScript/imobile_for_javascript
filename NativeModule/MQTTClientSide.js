@@ -1,12 +1,16 @@
-/**
- * Created by will on 2016/7/5.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules,DeviceEventEmitter,NativeEventEmitter,Platform} from 'react-native';
 let MTS = NativeModules.JSMQTTClientSide;
 
 const nativeEvt = new NativeEventEmitter(MTS);
 /**
- * @class Layer
+ * @class MQTTClientSide
+ * @description MQTT连接客户端类。
  */
 export default class MQTTClientSide{
     /**
@@ -27,7 +31,11 @@ export default class MQTTClientSide{
     /**
      * 创建连接。
      * @memberOf MQTTClientSide
-     * @returns {Promise.<AMQPReceiver>}
+     * @param {string} URI - 服务地址
+     * @param {string} userName - 账户
+     * @param {string} passWord - 密码
+     * @param {string} clientId - 客户端ID
+     * @returns {Promise.<boolean>}
      */
     async create(URI,userName,passWord,clientId){
         try{
@@ -39,9 +47,11 @@ export default class MQTTClientSide{
     }
 
     /**
-     * 创建一个发送端
+     * 向topic主题发送消息。
      * @memberOf MQTTClientSide
-     * @returns {Promise.<AMQPSender>}
+     * @param {string} topic - 主题名称
+     * @param {string} message - 消息
+     * @returns {Promise.<boolean>}
      */
     async sendMessage(topic,message){
         try{
@@ -55,6 +65,8 @@ export default class MQTTClientSide{
     /**
      * 接收消息
      * @memberOf MQTTClientSide
+     * @param {number} queueNum - 队列序号（1-5,默认为1）
+     * @param {function} loadingMessage - loadingMessage (e){}(e.topic 订阅主题；e.messgae 收到的消息)
      * @returns {Promise.<bool>}
      */
     async receiveMessage(queueNum,loadingMessage){
@@ -91,7 +103,9 @@ export default class MQTTClientSide{
     /**
      * 订阅某一主题
      * @memberOf MQTTClientSide
-     * @returns {Promise.<bool>}
+     * @param {string} topicName - 订阅主题
+     * @param {number} qos - 传输质量
+     * @returns {Promise.<void>}
      */
     async subscribe(topicName,qos){
         try{
@@ -104,6 +118,7 @@ export default class MQTTClientSide{
     /**
      * 取消某一主题的订阅
      * @memberOf MQTTClientSide
+     * @param {string} topicName - 订阅主题
      * @returns {Promise.<bool>}
      */
     async unsubscribe(topic){
@@ -118,7 +133,7 @@ export default class MQTTClientSide{
     /**
      * 挂起
      * @memberOf MQTTClientSide
-     * @returns {Promise.<bool>}
+     * @returns {Promise.<void>}
      */
     async suspend(){
         try{
@@ -145,7 +160,7 @@ export default class MQTTClientSide{
     /**
      * 取消连接，并销毁对象
      * @memberOf MQTTClientSide
-     * @returns {Promise.<bool>}
+     * @returns {Promise.<void>}
      */
     async dispose(){
         try{

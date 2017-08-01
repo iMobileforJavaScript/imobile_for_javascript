@@ -1,11 +1,16 @@
-/**
- * Created by will on 2016/7/13.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ Description:该类已经被废弃，计划下个大版本进行移除
+ **********************************************************************************/
 import { NativeModules } from 'react-native';
 let P = NativeModules.JSPoint;
 
 /**
- * @class Point - 像素点类。用于标示移动设备屏幕的像素点。
+ * @class Point
+ * @deprecated
+ * @description 像素点类。用于标示移动设备屏幕的像素点。（该类已经被废弃，计划下个大版本进行移除）
  */
 export default class Point{
     /**
@@ -18,7 +23,7 @@ export default class Point{
         try{
             var {pointId} = await P.createObj(x,y);
             var point = new Point();
-            point.pointId = pointId;
+            point._SMPointId = pointId;
             return point;
         }catch (e){
             console.error(e);

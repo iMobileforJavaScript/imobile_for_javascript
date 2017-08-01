@@ -10,7 +10,7 @@ let APS = NativeModules.JSAMQPSender;
 
 /**
  * @class AMQPSender
- * @description AMQP 消息发送类。(该类不能创建实例，需通过AMQPManager.newSender()创建实例)。
+ * @description AMQP 消息发送类。(该类不能创建实例，需通过AMQPManager.newSender()创建实例)。（暂不支持android设备）
  */
 export default class AMQPSender{
 
@@ -24,7 +24,7 @@ export default class AMQPSender{
      */
     async sendMessage(exchange,routingKey,message){
         try{
-            await APS.sendMessage(this.AMQPSenderId,exchange,routingKey,message);
+            await APS.sendMessage(this._SMAMQPSenderId,exchange,routingKey,message);
         }catch(e){
             console.error(e);
         }

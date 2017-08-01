@@ -11,7 +11,7 @@ let APR = NativeModules.JSAMQPReceiver;
 const nativeEvt = new NativeEventEmitter(APR);
 /**
  * @class AMQPReceiver
- * @description AMQP消息接收类(该类不能创建实例，需通过AMQPManager.newReceiver()创建实例)。
+ * @description AMQP消息接收类(该类不能创建实例，需通过AMQPManager.newReceiver()创建实例)。（暂不支持安卓设备）
  */
 export default class AMQPReceiver{
 
@@ -46,7 +46,7 @@ export default class AMQPReceiver{
                                       console.error("Please set a callback function to the first argument.");
                                       }
                                       });
-                await APR.receiveMessage(this.AMQPReceiverId,str);
+                await APR.receiveMessage(this._SMAMQPReceiverId,str);
             }
         }catch(e){
             console.error(e);

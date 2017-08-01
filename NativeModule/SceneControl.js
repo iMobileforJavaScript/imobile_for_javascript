@@ -1,8 +1,24 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules,Platform} from 'react-native';
 let SC = NativeModules.JSSceneControl;
 import Scene from './Scene';
 
+/**
+ * @class SceneControl
+ * @description 三维场景控件。
+ */
 export default class SceneControl {
+    
+    /**
+     * 获取场景对象。
+     * @memberOf SceneControl
+     * @returns {Promise.<Scene>}
+     */
     async getScene(){
         try{
             var {sceneId} = await SC.getScene(this.sceneControlId);

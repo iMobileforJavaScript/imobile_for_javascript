@@ -54,7 +54,7 @@ export default class GeometryInfo extends Component {
                     await this.map.refresh();
 
                     this.setState({
-                        mapControl: this.mapControl,
+                        mapId: this.mapControl.mapControlId,
                     });
                 } catch (e) {
                     console.error(e);

@@ -1,3 +1,9 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let SQP = NativeModules.JSServiceQueryParameter;
 import Rectangle2D from './Rectangle2D.js';
@@ -5,9 +11,9 @@ import Geometry from './Geometry.js';
 
 /**
  * @class ServiceQueryParameter
- * QueryOptionType.ATTRIBUTE - 查询结果中只有属性。
- * QueryOptionType.ATTRIBUTEANDGEOMETRY - 查询结果中包含属性和几何对象。
- * QueryOptionType.GEOMETR - 查询结果中只有几何对象。
+ * @property {number} QueryOptionType.ATTRIBUTE - 查询结果中只有属性。
+ * @property {number} QueryOptionType.ATTRIBUTEANDGEOMETRY - 查询结果中包含属性和几何对象。
+ * @property {number} QueryOptionType.GEOMETR - 查询结果中只有几何对象。
  */
 export default class ServiceQueryParameter {
 
@@ -20,7 +26,7 @@ export default class ServiceQueryParameter {
         try{
             var {_serviceQueryParameterId_} = await SQP.createObj();
             var serviceQueryParameter = new ServiceQueryParameter();
-            serviceQueryParameter._serviceQueryParameterId_ = _serviceQueryParameterId_;
+            serviceQueryParameter._SMServiceQueryParameterId = _serviceQueryParameterId_;
             return serviceQueryParameter;
         }catch (e){
             console.error(e);
@@ -35,7 +41,7 @@ export default class ServiceQueryParameter {
      */
     async setQueryBounds(rectangle2D){
         try{
-            await SQP.setQueryBounds(this._serviceQueryParameterId_, rectangle2D.rectangle2DId);
+            await SQP.setQueryBounds(this._SMServiceQueryParameterId, rectangle2D._SMRectangle2DId);
         }catch (e){
             console.error(e);
         }
@@ -48,9 +54,9 @@ export default class ServiceQueryParameter {
      */
     async getQueryBounds(){
         try{
-            var {rectangle2DId} = await SQP.getQueryBounds(this._serviceQueryParameterId_);
+            var {rectangle2DId} = await SQP.getQueryBounds(this._SMServiceQueryParameterId);
             var rectangle2D = new Rectangle2D();
-            rectangle2D.rectangle2DId = rectangle2DId;
+            rectangle2D._SMRectangle2DId = rectangle2DId;
             return rectangle2D;
         }catch (e){
             console.error(e);
@@ -65,7 +71,7 @@ export default class ServiceQueryParameter {
      */
     async setQueryDistance(distance){
         try{
-            await SQP.setQueryDistance(this._serviceQueryParameterId_, distance);
+            await SQP.setQueryDistance(this._SMServiceQueryParameterId, distance);
         }catch (e){
             console.error(e);
         }
@@ -78,7 +84,7 @@ export default class ServiceQueryParameter {
      */
     async getQueryDistance(){
         try{
-            var distance = await SQP.getQueryDistance(this._serviceQueryParameterId_);
+            var distance = await SQP.getQueryDistance(this._SMServiceQueryParameterId);
             return distance;
         }catch (e){
             console.error(e);
@@ -92,9 +98,9 @@ export default class ServiceQueryParameter {
      */
     async getQueryGeometry(){
         try{
-            var {geometryId} = await SQP.getQueryGeometry(this._serviceQueryParameterId_);
+            var {geometryId} = await SQP.getQueryGeometry(this._SMServiceQueryParameterId);
             var geometry = new Geometry();
-            geometry.geometryId = geometryId;
+            geometry._SMGeometryId = geometryId;
             return geometry;
         }catch (e){
             console.error(e);
@@ -109,7 +115,7 @@ export default class ServiceQueryParameter {
      */
     async setQueryGeometry(geometry){
         try{
-            await SQP.setQueryGeometry(this._serviceQueryParameterId_, geometry.geometryId);
+            await SQP.setQueryGeometry(this._SMServiceQueryParameterId, geometry._SMGeometryId);
         }catch (e){
             console.error(e);
         }
@@ -122,7 +128,7 @@ export default class ServiceQueryParameter {
      */
     async getQueryLayerName(){
         try{
-            var name = await SQP.getQueryLayerName(this._serviceQueryParameterId_);
+            var name = await SQP.getQueryLayerName(this._SMServiceQueryParameterId);
             return name;
         }catch (e){
             console.error(e);
@@ -137,7 +143,7 @@ export default class ServiceQueryParameter {
      */
     async setQueryLayerName(queryLayerName){
         try{
-            await SQP.setQueryLayerName(this._serviceQueryParameterId_, queryLayerName);
+            await SQP.setQueryLayerName(this._SMServiceQueryParameterId, queryLayerName);
         }catch (e){
             console.error(e);
         }
@@ -150,7 +156,7 @@ export default class ServiceQueryParameter {
      */
     async getQueryMapName(){
         try{
-            var name = await SQP.getQueryMapName(this._serviceQueryParameterId_);
+            var name = await SQP.getQueryMapName(this._SMServiceQueryParameterId);
             return name;
         }catch (e){
             console.error(e);
@@ -165,7 +171,7 @@ export default class ServiceQueryParameter {
      */
     async setQueryMapName(mapName){
         try{
-            await SQP.setQueryMapName(this._serviceQueryParameterId_, mapName);
+            await SQP.setQueryMapName(this._SMServiceQueryParameterId, mapName);
         }catch (e){
             console.error(e);
         }
@@ -178,7 +184,7 @@ export default class ServiceQueryParameter {
      */
     async getQueryOption(){
         try{
-            var optionName = await SQP.getQueryOption(this._serviceQueryParameterId_);
+            var optionName = await SQP.getQueryOption(this._SMServiceQueryParameterId);
             return optionName;
         }catch (e){
             console.error(e);
@@ -193,7 +199,7 @@ export default class ServiceQueryParameter {
      */
     async setQueryOption(queryOptionType){
         try{
-            await SQP.setQueryOption(this._serviceQueryParameterId_, queryOptionType);
+            await SQP.setQueryOption(this._SMServiceQueryParameterId, queryOptionType);
         }catch (e){
             console.error(e);
         }
@@ -206,7 +212,7 @@ export default class ServiceQueryParameter {
      */
     async getExpectRecordCount(){
         try{
-            var count = await SQP.getExpectRecordCount(this._serviceQueryParameterId_);
+            var count = await SQP.getExpectRecordCount(this._SMServiceQueryParameterId);
             return count;
         }catch (e){
             console.error(e);
@@ -221,7 +227,7 @@ export default class ServiceQueryParameter {
      */
     async setExpectRecordCount(count){
         try{
-            await SQP.setExpectRecordCount(this._serviceQueryParameterId_, count);
+            await SQP.setExpectRecordCount(this._SMServiceQueryParameterId, count);
         }catch (e){
             console.error(e);
         }
@@ -234,7 +240,7 @@ export default class ServiceQueryParameter {
      */
     async getQueryServiceName(){
         try{
-            var serviceName = await SQP.getQueryServiceName(this._serviceQueryParameterId_);
+            var serviceName = await SQP.getQueryServiceName(this._SMServiceQueryParameterId);
             return serviceName;
         }catch (e){
             console.error(e);
@@ -249,7 +255,7 @@ export default class ServiceQueryParameter {
      */
     async setQueryServiceName(name){
         try{
-            await SQP.setQueryServiceName(this._serviceQueryParameterId_, name);
+            await SQP.setQueryServiceName(this._SMServiceQueryParameterId, name);
         }catch (e){
             console.error(e);
         }
@@ -262,7 +268,7 @@ export default class ServiceQueryParameter {
      */
     async toJson(){
         try{
-            var jsonString = await SQP.toJson(this._serviceQueryParameterId_);
+            var jsonString = await SQP.toJson(this._SMServiceQueryParameterId);
             var jsonOBj = JSON.parse(jsonString);
             return jsonOBj;
         }catch (e){

@@ -1,6 +1,9 @@
-/**
- * Created by will on 2016/6/17.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import { NativeModules,DeviceEventEmitter,NativeEventEmitter,Platform } from 'react-native';
 let M = NativeModules.JSMap;
 import Layer from './Layer.js';
@@ -13,6 +16,7 @@ const nativeEvt = new NativeEventEmitter(M);
 
 /**
  * @class Map
+ * @description 地图类，负责地图显示环境的管理。
  */
 export default class Map{
 
@@ -24,7 +28,7 @@ export default class Map{
      */
     async setWorkspace(workspace){
         try{
-            await M.setWorkspace(this.mapId,workspace.workspaceId);
+            await M.setWorkspace(this._SMMapId,workspace._SMWorkspaceId);
         }catch(e){
             console.error(e);
         }
@@ -37,7 +41,7 @@ export default class Map{
      */
     async refresh(){
         try{
-            await M.refresh(this.mapId);
+            await M.refresh(this._SMMapId);
         }catch(e){
             console.error(e);
         }
@@ -53,11 +57,11 @@ export default class Map{
         try{
             var layer = new Layer();
             if(typeof layerIndex == "string"){
-                var {layerId} = await M.getLayerByName(this.mapId,layerIndex);
+                var {layerId} = await M.getLayerByName(this._SMMapId,layerIndex);
             }else{
-                var {layerId} = await M.getLayer(this.mapId,layerIndex);
+                var {layerId} = await M.getLayer(this._SMMapId,layerIndex);
             }
-            layer.layerId = layerId;
+            layer._SMLayerId = layerId;
             return layer;
         }catch(e){
             console.error(e);
@@ -74,7 +78,7 @@ export default class Map{
     async addDataset(dataset,addToHead){
         console.warn("Map.js:addDataset() function has been deprecated. If you want to add Layer , please call the addLayer() function");
         try{
-            await M.addDataset(this.mapId,dataset.datasetId,addToHead);
+            await M.addDataset(this._SMMapId,dataset._SMDatasetId,addToHead);
         }catch(e){
             console.error(e);
         }
@@ -89,9 +93,9 @@ export default class Map{
     async getLayers(){
         console.warn("Map.js:getLayers() function has been deprecated. If you want to get Layer , please call the getLayer() function");
         try{
-            var {layersId} = await M.getLayers(this.mapId);
+            var {layersId} = await M.getLayers(this._SMMapId);
             var layers = new Layers();
-            layers.layersId = layersId;
+            layers._SMLayersId = layersId;
             return layers;
         }catch(e){
             console.error(e);
@@ -105,7 +109,7 @@ export default class Map{
      */
     async getLayersCount(){
         try{
-            var {count} = await M.getLayersCount(this.mapId);
+            var {count} = await M.getLayersCount(this._SMMapId);
             return count;
         }catch(e){
             console.error(e);
@@ -120,7 +124,7 @@ export default class Map{
      */
     async open(mapName){
         try{
-            await M.open(this.mapId,mapName);
+            await M.open(this._SMMapId,mapName);
         }catch(e){
             console.error(e);
         }
@@ -133,7 +137,7 @@ export default class Map{
      */
     async close(){
         try{
-            await M.close(this.mapId);
+            await M.close(this._SMMapId);
         }catch(e){
             console.error(e);
         }
@@ -147,9 +151,9 @@ export default class Map{
      */
     async pixelToMap(point){
         try{
-            var {point2DId,x,y} = await M.pixelToMap(this.mapId,point.pointId);
+            var {point2DId,x,y} = await M.pixelToMap(this._SMMapId,point._SMPointId);
             var point2D = new Point2D();
-            point2D.point2DId = point2DId;
+            point2D._SMPoint2DId = point2DId;
             point2D.x = x;
             point2D.y = y;
             return point2D;
@@ -166,9 +170,9 @@ export default class Map{
      */
     async mapToPixel(point2D){
         try{
-            var {pointId,x,y} = await M.mapToPixel(this.mapId,point2D.point2DId);
+            var {pointId,x,y} = await M.mapToPixel(this._SMMapId,point2D._SMPoint2DId);
             var point = new Point();
-            point.pointId = pointId;
+            point._SMPointId = pointId;
             point.x = x;
             point.y = y;
             return point;
@@ -185,9 +189,9 @@ export default class Map{
      */
     async getCenter(){
         try{
-            var {point2DId,x,y} = await M.getCenter(this.mapId);
+            var {point2DId,x,y} = await M.getCenter(this._SMMapId);
             var point2D = new Point2D();
-            point2D.point2DId = point2DId;
+            point2D._SMPoint2DId = point2DId;
             point2D.x = x;
             point2D.y = y;
             return point2D;
@@ -204,7 +208,7 @@ export default class Map{
      */
     async setCenter(point2D){
         try{
-            await M.setCenter(this.mapId,point2D.point2DId);
+            await M.setCenter(this._SMMapId,point2D._SMPoint2DId);
         }catch(e){
             console.error(e);
         }
@@ -217,9 +221,9 @@ export default class Map{
      */
     async getTrackingLayer(){
         try{
-            var {trackingLayerId} = await M.getTrackingLayer(this.mapId);
+            var {trackingLayerId} = await M.getTrackingLayer(this._SMMapId);
             var trackingLayer = new TrackingLayer();
-            trackingLayer.trackingLayerId = trackingLayerId;
+            trackingLayer._SMTrackingLayerId = trackingLayerId;
             return trackingLayer;
         }catch(e){
             console.error(e);
@@ -235,9 +239,9 @@ export default class Map{
     async save(mapName){
         try{
             if(typeof mapName === 'string'){
-                var {saved} = await M.saveAs(this.mapId,mapName);
+                var {saved} = await M.saveAs(this._SMMapId,mapName);
             }else{
-                var {saved} = await M.save(this.mapId);
+                var {saved} = await M.save(this._SMMapId);
             }
             return saved;
         }catch(e){
@@ -252,7 +256,7 @@ export default class Map{
      */
     async getBounds(){
         try{
-            var {bound} = await M.getBounds(this.mapId);
+            var {bound} = await M.getBounds(this._SMMapId);
             return bound;
         }catch(e){
             console.error(e);
@@ -266,7 +270,7 @@ export default class Map{
      */
     async getViewBounds(){
         try{
-            var {bound} = await M.getViewBounds(this.mapId);
+            var {bound} = await M.getViewBounds(this._SMMapId);
             return bound;
         }catch(e){
             console.error(e);
@@ -281,7 +285,7 @@ export default class Map{
      */
     async setViewBounds(bounds){
         try{
-            await M.setViewBounds(this.mapId,bounds);
+            await M.setViewBounds(this._SMMapId,bounds);
         }catch(e){
             console.error(e);
         }
@@ -295,7 +299,7 @@ export default class Map{
      */
     async isDynamicProjection(){
         try{
-            var {is} = await M.isDynamicProjection(this.mapId);
+            var {is} = await M.isDynamicProjection(this._SMMapId);
             return is;
         }catch(e){
             console.error(e);
@@ -310,7 +314,7 @@ export default class Map{
      */
     async setDynamicProjection(value){
         try{
-            await M.setDynamicProjection(this.mapId,value);
+            await M.setDynamicProjection(this._SMMapId,value);
         }catch(e){
             console.error(e);
         }
@@ -324,7 +328,7 @@ export default class Map{
      */
     async setMapLoadedListener(onMapLoaded){
         try{
-            var success = await M.setMapLoadedListener(this.mapId);
+            var success = await M.setMapLoadedListener(this._SMMapId);
 
             if(!success) return ;
             //差异化处理
@@ -360,7 +364,7 @@ export default class Map{
      */
     async setMapOperateListener(events){
         try{
-            var success = await M.setMapOperateListener(this.mapId);
+            var success = await M.setMapOperateListener(this._SMMapId);
 
             if(!success) return ;
             //差异化处理
@@ -413,7 +417,7 @@ export default class Map{
      */
     async pan(offsetX,offsetY){
         try{
-            await M.pan(this.mapId,offsetX,offsetY);
+            await M.pan(this._SMMapId,offsetX,offsetY);
         }catch(e){
             console.error(e);
         }
@@ -426,7 +430,7 @@ export default class Map{
      */
     async viewEntire(){
         try{
-            await M.viewEntire(this.mapId);
+            await M.viewEntire(this._SMMapId);
         }catch(e){
             console.error(e);
         }
@@ -441,7 +445,7 @@ export default class Map{
     async zoom(ratio){
         try{
             if(ratio < 0) throw new Error("Ratio can`t be nagative.");
-            await M.zoom(this.mapId,ratio);
+            await M.zoom(this._SMMapId,ratio);
         }catch(e){
             console.error(e);
         }
@@ -456,9 +460,9 @@ export default class Map{
      */
     async addLayer(dataset,addToHead){
         try{
-            var {layerId} = await M.addLayer(this.mapId,dataset.datasetId,addToHead);
+            var {layerId} = await M.addLayer(this._SMMapId,dataset._SMDatasetId,addToHead);
             var layer = new Layer();
-            layer.layerId = layerId;
+            layer._SMLayerId = layerId;
             return layer;
         }catch(e){
             console.error(e);
@@ -475,9 +479,9 @@ export default class Map{
      */
     async addThemeLayer(dataset,theme,addToHead){
         try{
-            var {layerId} = await M.addThemeLayer(this.mapId,dataset.datasetId,theme.themeId,addToHead);
+            var {layerId} = await M.addThemeLayer(this._SMMapId,dataset._SMDatasetId,theme._SMThemeId,addToHead);
             var layer = new Layer();
-            layer.layerId = layerId;
+            layer._SMLayerId = layerId;
             return layer;
         }catch(e){
             console.error(e);
@@ -493,14 +497,14 @@ export default class Map{
     async removeLayer(index){
         try{
             if(typeof index === 'string'){
-            var {layerId} = await M.removeLayerByName(this.mapId,index);
+            var {layerId} = await M.removeLayerByName(this._SMMapId,index);
             }else if(typeof index === 'number'){
-            var {layerId} = await M.removeLayerByIndex(this.mapId,index);
+            var {layerId} = await M.removeLayerByIndex(this._SMMapId,index);
             }else{
                 throw new Error ('index must be number or string!');
             }
             var layer = new Layer();
-            layer.layerId = layerId;
+            layer._SMLayerId = layerId;
             return layer;
         }catch(e){
             console.error(e);
@@ -515,7 +519,7 @@ export default class Map{
      */
     async contains(name){
         try{
-            var {isContain} = await M.contains(this.mapId,name);
+            var {isContain} = await M.contains(this._SMMapId,name);
             return isContain;
         }catch(e){
             console.error(e);
@@ -530,7 +534,7 @@ export default class Map{
      */
     async moveDown(name){
         try{
-            var {moved} = await M.moveDown(this.mapId,name);
+            var {moved} = await M.moveDown(this._SMMapId,name);
             return moved;
         }catch(e){
             console.error(e);
@@ -538,14 +542,14 @@ export default class Map{
     }
     
     /**
-     * 图层下移一层（图层的索引从 0 开始，从顶层开始依次编号）。
+     * 图层上移一层（图层的索引从 0 开始，从顶层开始依次编号）。
      * @memberOf Map
      * @param name - 图层的名字。
      * @returns {Promise.<bool>}
      */
     async moveUp(name){
         try{
-            var {moved} = await M.moveUp(this.mapId,name);
+            var {moved} = await M.moveUp(this._SMMapId,name);
             return moved;
         }catch(e){
             console.error(e);

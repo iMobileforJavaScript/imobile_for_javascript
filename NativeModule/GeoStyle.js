@@ -1,8 +1,15 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ ref:Size2d
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let G = NativeModules.JSGeoStyle;
 
 /**
  * @class GeoStyle
+ * @description 几何风格类。用于定义点状符号、线状符号、填充符号及其相关设置。对于文本对象只能设置文本风格，不能设置几何风格。
  */
 export default class GeoStyle {
     /**
@@ -13,7 +20,7 @@ export default class GeoStyle {
     async createObj(){
         var {geoStyleId} =await G.createObj();
         var geoStyle = new GeoStyle();
-        geoStyle.geoStyleId = geoStyleId;
+        geoStyle._SMGeoStyleId = geoStyleId;
         return geoStyle;
     }catch(e){
         console.log(e);
@@ -29,7 +36,7 @@ export default class GeoStyle {
      */
     async setLineColor(r,g,b){
         try{
-            await G.setLineColor(this.geoStyleId,r,g,b);
+            await G.setLineColor(this._SMGeoStyleId,r,g,b);
         }catch (e){
             console.error(e);
         }
@@ -44,7 +51,7 @@ export default class GeoStyle {
      */
     async setLineSymbolID(symbolId){
         try{
-            await G.setLineSymbolID(this.geoStyleId,symbolId);
+            await G.setLineSymbolID(this._SMGeoStyleId,symbolId);
         }catch (e){
             console.error(e);
         }
@@ -58,7 +65,7 @@ export default class GeoStyle {
      */
     async setLineWidth(lineWidth){
         try{
-            await G.setLineWidth(this.geoStyleId,lineWidth);
+            await G.setLineWidth(this._SMGeoStyleId,lineWidth);
         }catch (e){
             console.error(e);
         }
@@ -73,7 +80,7 @@ export default class GeoStyle {
      */
     async setMarkerSymbolID(markerSymbolId){
         try{
-            await G.setMarkerSymbolID(this.geoStyleId,markerSymbolId);
+            await G.setMarkerSymbolID(this._SMGeoStyleId,markerSymbolId);
         }catch (e){
             console.error(e);
         }
@@ -87,7 +94,7 @@ export default class GeoStyle {
      */
     async setMarkerSize(size2D){
         try{
-            await G.setMarkerSize(this.geoStyleId,size2D.size2DId);
+            await G.setMarkerSize(this._SMGeoStyleId,size2D._SMSize2DId);
         }catch (e){
             console.error(e);
         }
@@ -103,7 +110,7 @@ export default class GeoStyle {
      */
     async setFillForeColor(r,g,b){
         try{
-            await G.setFillForeColor(this.geoStyleId,r,g,b);
+            await G.setFillForeColor(this._SMGeoStyleId,r,g,b);
         }catch (e){
             console.error(e);
         }
@@ -117,7 +124,7 @@ export default class GeoStyle {
      */
     async setFillOpaqueRate(rate){
         try{
-            await G.setFillOpaqueRate(this.geoStyleId,rate)
+            await G.setFillOpaqueRate(this._SMGeoStyleId,rate)
         }catch (e){
             console.error(e);
         }

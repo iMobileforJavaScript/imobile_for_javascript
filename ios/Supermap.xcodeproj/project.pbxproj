@@ -78,7 +78,6 @@
 		FFDFED351EC930C200C39D87 /* JSSTOMPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDFED341EC930C200C39D87 /* JSSTOMPManager.m */; };
 		FFDFED381EC93BB900C39D87 /* JSSTOMPReceiver.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDFED371EC93BB900C39D87 /* JSSTOMPReceiver.m */; };
 		FFDFED3B1EC9449100C39D87 /* JSSTOMPSender.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDFED3A1EC9449100C39D87 /* JSSTOMPSender.m */; };
-		FFE609781E6FAB9E00ACB6DE /* JSLegend.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE609771E6FAB9E00ACB6DE /* JSLegend.m */; };
 		FFE622A41F26E12A00B9BF32 /* JSLineChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE622A31F26E12A00B9BF32 /* JSLineChartViewManager.m */; };
 		FFE622A71F26F44500B9BF32 /* JSInstrumentChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE622A61F26F44500B9BF32 /* JSInstrumentChartViewManager.m */; };
 		FFEFAA421EB9B3790002AE4C /* JSChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFEFAA411EB9B3790002AE4C /* JSChartView.m */; };
@@ -91,7 +90,6 @@
 		FFF203E41EBC707000DA9A1F /* JSPieChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF203E31EBC707000DA9A1F /* JSPieChartData.m */; };
 		FFF203E71EBC7AEA00DA9A1F /* JSLineChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF203E61EBC7AEA00DA9A1F /* JSLineChartData.m */; };
 		FFF203EA1EBC99F600DA9A1F /* JSChartPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF203E91EBC99F600DA9A1F /* JSChartPoint.m */; };
-		FFFA24831E6E878A0064CA76 /* JSScaleView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFA24821E6E878A0064CA76 /* JSScaleView.m */; };
 		FFFC46C41F20339300F5DDA4 /* JSBarChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFC46C31F20339300F5DDA4 /* JSBarChartViewManager.m */; };
 /* End PBXBuildFile section */
 
@@ -251,8 +249,6 @@
 		FFDFED371EC93BB900C39D87 /* JSSTOMPReceiver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSTOMPReceiver.m; path = objNative/JSSTOMPReceiver.m; sourceTree = "<group>"; };
 		FFDFED391EC9449100C39D87 /* JSSTOMPSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSTOMPSender.h; path = objNative/JSSTOMPSender.h; sourceTree = "<group>"; };
 		FFDFED3A1EC9449100C39D87 /* JSSTOMPSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSTOMPSender.m; path = objNative/JSSTOMPSender.m; sourceTree = "<group>"; };
-		FFE609761E6FAB9E00ACB6DE /* JSLegend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLegend.h; path = objNative/JSLegend.h; sourceTree = "<group>"; };
-		FFE609771E6FAB9E00ACB6DE /* JSLegend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLegend.m; path = objNative/JSLegend.m; sourceTree = "<group>"; };
 		FFE622A21F26E12A00B9BF32 /* JSLineChartViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLineChartViewManager.h; path = objNative/JSLineChartViewManager.h; sourceTree = "<group>"; };
 		FFE622A31F26E12A00B9BF32 /* JSLineChartViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLineChartViewManager.m; path = objNative/JSLineChartViewManager.m; sourceTree = "<group>"; };
 		FFE622A51F26F44500B9BF32 /* JSInstrumentChartViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSInstrumentChartViewManager.h; path = objNative/JSInstrumentChartViewManager.h; sourceTree = "<group>"; };
@@ -277,8 +273,6 @@
 		FFF203E61EBC7AEA00DA9A1F /* JSLineChartData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLineChartData.m; path = objNative/JSLineChartData.m; sourceTree = "<group>"; };
 		FFF203E81EBC99F600DA9A1F /* JSChartPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSChartPoint.h; path = objNative/JSChartPoint.h; sourceTree = "<group>"; };
 		FFF203E91EBC99F600DA9A1F /* JSChartPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSChartPoint.m; path = objNative/JSChartPoint.m; sourceTree = "<group>"; };
-		FFFA24811E6E878A0064CA76 /* JSScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSScaleView.h; path = objNative/JSScaleView.h; sourceTree = "<group>"; };
-		FFFA24821E6E878A0064CA76 /* JSScaleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSScaleView.m; path = objNative/JSScaleView.m; sourceTree = "<group>"; };
 		FFFC46C21F20339300F5DDA4 /* JSBarChartViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBarChartViewManager.h; path = objNative/JSBarChartViewManager.h; sourceTree = "<group>"; };
 		FFFC46C31F20339300F5DDA4 /* JSBarChartViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBarChartViewManager.m; path = objNative/JSBarChartViewManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -377,10 +371,6 @@
 				FF1405401EA8A56B000E0314 /* JSOverlayAnalystParameter.m */,
 				FF4789481E8A4AAB00E0DA44 /* JSSystemUtil.h */,
 				FF4789491E8A4AAB00E0DA44 /* JSSystemUtil.m */,
-				FFE609761E6FAB9E00ACB6DE /* JSLegend.h */,
-				FFE609771E6FAB9E00ACB6DE /* JSLegend.m */,
-				FFFA24811E6E878A0064CA76 /* JSScaleView.h */,
-				FFFA24821E6E878A0064CA76 /* JSScaleView.m */,
 				FFD1EFBD1E31E22200CACDC5 /* JSAdoptMapView.h */,
 				FFD1EFBE1E31E22200CACDC5 /* JSAdoptMapView.m */,
 				FF63620F1ECECAD900E9F6F3 /* JSBufferAnalyst.h */,
@@ -568,7 +558,6 @@
 				FF0583831ED65F590095978A /* JSLegendViewManager.m in Sources */,
 				FFD1F03A1E31E22200CACDC5 /* JSPrjCoordSys.m in Sources */,
 				FFD1F03F1E31E22200CACDC5 /* JSSelection.m in Sources */,
-				FFE609781E6FAB9E00ACB6DE /* JSLegend.m in Sources */,
 				FFD1F0381E31E22200CACDC5 /* JSPoint.m in Sources */,
 				FFD1F02B1E31E22200CACDC5 /* JSGeoRegion.m in Sources */,
 				FFEFAA421EB9B3790002AE4C /* JSChartView.m in Sources */,
@@ -580,7 +569,6 @@
 				FFF1A4D61EBDA5A400C21142 /* JSColorScheme.m in Sources */,
 				FFD1F01A1E31E22200CACDC5 /* JSBufferAnalystGeometry.m in Sources */,
 				FFF203E11EBC5CC800DA9A1F /* JSBarChartData.m in Sources */,
-				FFFA24831E6E878A0064CA76 /* JSScaleView.m in Sources */,
 				FF0583861ED6741F0095978A /* JSLayerManager.m in Sources */,
 				FF5367F71ED3C6330093535D /* JSScaleViewManager.m in Sources */,
 				FF47894A1E8A4AAB00E0DA44 /* JSSystemUtil.m in Sources */,

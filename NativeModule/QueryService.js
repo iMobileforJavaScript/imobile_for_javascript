@@ -1,3 +1,9 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let SS = NativeModules.JSQueryService;
 import ServiceBase from './ServiceBase.js';
@@ -14,12 +20,12 @@ export default class QueryService extends ServiceBase{
     constructor(){
         super();
         //同步子类Id和父类Id
-        Object.defineProperty(this,"_queryServiceId_",{
+        Object.defineProperty(this,"_SMQueryServiceId",{
                               get:function () {
-                              return this._serviceBaseID_
+                              return this._SMServiceBaseId
                               },
-                              set:function (_queryServiceId_) {
-                              this._serviceBaseID_ = _queryServiceId_;
+                              set:function (_SMQueryServiceId) {
+                              this._SMServiceBaseId = _SMQueryServiceId;
                               }
                               })
     }
@@ -32,7 +38,7 @@ export default class QueryService extends ServiceBase{
         try {
             var {_queryServiceId_} = await SS.createObj(url);
             var queryService = new QueryService();
-            queryService._queryServiceId_ = _queryServiceId_;
+            queryService._SMQueryServiceId = _queryServiceId_;
             return queryService;
         } catch (e) {
             console.error(e);
@@ -47,8 +53,8 @@ export default class QueryService extends ServiceBase{
      */
     async query(serviceQueryParameter, mode) {
         try {
-            await SS.query(this._queryServiceId_,
-                serviceQueryParameter._serviceQueryParameterId_, mode);
+            await SS.query(this._SMQueryServiceId,
+                serviceQueryParameter._SMServiceQueryParameterId, mode);
             return queryService;
         } catch (e) {
             console.error(e);
@@ -64,8 +70,8 @@ export default class QueryService extends ServiceBase{
      */
     async queryByUrl(url, serviceQueryParameter, mode) {
         try {
-            await SS.queryByUrl(this._queryServiceId_, url,
-                serviceQueryParameter._serviceQueryParameterId_, mode);
+            await SS.queryByUrl(this._SMQueryServiceId, url,
+                serviceQueryParameter._SMServiceQueryParameterId, mode);
             return queryService;
         } catch (e) {
             console.error(e);

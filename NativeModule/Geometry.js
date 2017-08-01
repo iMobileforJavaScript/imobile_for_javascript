@@ -4,10 +4,8 @@ import Point2D from './Point2D.js';
 
 /**
  * @class Geometry
- * 所有具体几何类型（GeoPoint, GeoLine, GeoRegion 等）的基类，提供了基本的几何类型的方法。
-
+ * @description 所有具体几何类型（GeoPoint, GeoLine, GeoRegion 等）的基类，提供了基本的几何类型的方法。
  该类用于表示地理实体的空间特征，并提供相关的处理方法。根据地理实体的空间特征不同，分别用点（GeoPoint），线(GeoLine)，面(GeoRegion)等加以描述。当该类的子类的对象实例被 dispose 后，再调用该类的方法会抛出 ObjectDisposedException。
-
  用户自己创建的 Geometry 对象，例如 GeoPoint、GeoLine、GeoRegion 等对象，在执行完系列操作后，需要对其进行释放。
  */
 export default class Geometry {
@@ -18,9 +16,9 @@ export default class Geometry {
      */
     async getInnerPoint(){
         try{
-            var {point2DId} = await G.getInnerPoint(this.geometryId);
+            var {point2DId} = await G.getInnerPoint(this._SMGeometryId);
             var point2D = new Point2D();
-            point2D.point2DId = point2DId;
+            point2D._SMPoint2DId = point2DId;
             return point2D;
         }catch (e){
             console.error(e);
@@ -35,8 +33,8 @@ export default class Geometry {
      */
     async setStyle(geoStyle){
         try{
-            var id = this.geometryId || this.geoPointId;
-            await G.setStyle(id,geoStyle.geoStyleId);
+            var id = this._SMGeometryId || this._SMGeoPointId;
+            await G.setStyle(id,geoStyle._SMGeoStyleId);
         }catch (e){
             console.error(e);
         }

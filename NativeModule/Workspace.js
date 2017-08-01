@@ -1,6 +1,9 @@
-/**
- * Created by will on 2016/6/17.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import { NativeModules } from 'react-native';
 let W = NativeModules.JSWorkspace;
 import DS from './Datasources.js';
@@ -12,6 +15,7 @@ import Datasource from './Datasource';
 
 /**
  * @class Workspace
+ * @description 工作空间是用户的工作环境，主要完成数据的组织和管理，包括打开、关闭、创建、保存工作空间文件（SXW,SMW,SXWU,SMWU,DEFAULT）。工作空间 Workspace 是 SuperMap 中的一个重要的概念，工作空间存储了一个工程项目（同一个事务过程）中所有的数据源，地图的组织关系，工作空间通过其中的数据源集合对象 Datasources ，地图集合对象 Maps 来管理其下的数据源，地图。
  * @property {number} DEFAULT - 默认SMWU类型。
  * @property {number} SMWU - SMWU工作空间，文件型工作空间。
  * @property {number} SXWU - SXWU工作空间。
@@ -19,7 +23,7 @@ import Datasource from './Datasource';
  */
 export default class Workspace{
     /**
-     * 创建一个原生层workspace实例
+     * 创建workspace实例
      * @memberOf Workspace
      * @returns {Promise.<Workspace>}
      */
@@ -27,7 +31,7 @@ export default class Workspace{
         try{
             var {workspaceId} = await W.createObj();
             var workspace = new Workspace();
-            workspace.workspaceId = workspaceId;
+            workspace._SMWorkspaceId = workspaceId;
             return workspace;
         }catch(e){
             console.error(e);
@@ -42,17 +46,17 @@ export default class Workspace{
      */
     async getDatasources(){
         try {
-            var {datasourcesId} = await W.getDatasources(this.workspaceId);
+            var {datasourcesId} = await W.getDatasources(this._SMWorkspaceId);
             console.debug("datasourcesId:"+datasourcesId);
             var ds = new DS();
-            ds.datasourcesId = datasourcesId;
+            ds._SMDatasourcesId = datasourcesId;
             return ds;
         }catch (e){
             console.error(e);
         }
     }
     
-    /**
+    /*
      * 通过数据源链接信息打开数据源
      * @memberOf Workspace
      * @deprecated 可直接通过{@link Workspace.openDatasource}方法传参数，不在需要构建datasourceConnectionInfo对象。
@@ -81,12 +85,12 @@ export default class Workspace{
             var datasource = new Ds();
             if(typeof index != 'string'){
                 //get datasource through index.
-                var {datasourceId} = await W.getDatasource(this.workspaceId,index);
+                var {datasourceId} = await W.getDatasource(this._SMWorkspaceId,index);
             }else{
                 //get datasource through datasource name(Alias).
-                var {datasourceId} = await W.getDatasourceByName(this.workspaceId,index);
+                var {datasourceId} = await W.getDatasourceByName(this._SMWorkspaceId,index);
             }
-            datasource.datasourceId = datasourceId;
+            datasource._SMDatasourceId = datasourceId;
 
             return datasource;
         }catch (e){
@@ -116,10 +120,10 @@ export default class Workspace{
                 if(passWord){
                    await wci.setPassWord(passWord);
                 }
-                var {isOpen} = await W.open(this.workspaceId,wci.workspaceConnectionInfoId)
+                var {isOpen} = await W.open(this._SMWorkspaceId,wci._SMWorkspaceConnectionInfoId)
                 return isOpen;
             }else{
-                var {isOpen} = await W.open(this.workspaceId,workspaceConnectionInfo.workspaceConnectionInfoId);
+                var {isOpen} = await W.open(this._SMWorkspaceId,workspaceConnectionInfo._SMWorkspaceConnectionInfoId);
                 console.log('workspace open connectionInfo:'+isOpen);
                 return isOpen;
             }
@@ -137,9 +141,9 @@ export default class Workspace{
      */
     async getMaps(){
         try{
-            var {mapsId} = await W.getMaps(this.workspaceId);
+            var {mapsId} = await W.getMaps(this._SMWorkspaceId);
             var maps = new Maps();
-            maps.mapsId = mapsId;
+            maps._SMMapsId = mapsId;
             return maps;
         }catch(e){
             console.error(e);
@@ -154,7 +158,7 @@ export default class Workspace{
      */
     async getMapName(mapIndex){
         try{
-            var {mapName} = await W.getMapName(this.workspaceId,mapIndex);
+            var {mapName} = await W.getMapName(this._SMWorkspaceId,mapIndex);
             return mapName;
         }catch(e){
             console.error(e);
@@ -172,18 +176,18 @@ export default class Workspace{
         try{
             if(jsonObject.webBBox){
                 var rect = jsonObject.webBBox;
-                if(typeof rect != 'string') jsonObject.webBBox = rect.rectangle2DId;
+                if(typeof rect != 'string') jsonObject.webBBox = rect._SMRectangle2DId;
             }
-            var {datasourceId} = await W.openDatasource(this.workspaceId,jsonObject);
+            var {datasourceId} = await W.openDatasource(this._SMWorkspaceId,jsonObject);
             var datasource = new Datasource();
-            datasource.datasourceId = datasourceId;
+            datasource._SMDatasourceId = datasourceId;
             return datasource;
         }catch(e){
             console.error(e);
         }
     }
 
-    /**
+    /*
      * 打开WMS协议类型数据源
      * @memberOf Workspace
      * @param {string} server
@@ -198,7 +202,7 @@ export default class Workspace{
     /*
     async openWMSDatasource(server,engineType,driver,version,visibleLayers,webBox,webCoordinate){
         try{
-            await W.openWMSDatasource(this.workspaceId,server,engineType,driver,
+            await W.openWMSDatasource(this._SMWorkspaceId,server,engineType,driver,
                 version,visibleLayers,webBox,webCoordinate);
         }catch(e){
             console.error(e);
@@ -214,9 +218,9 @@ export default class Workspace{
     async saveWorkspace(server){
         try{
             if(server){
-                var {saved} = await W.saveWorkspaceWithServer(this.workspaceId,server);
+                var {saved} = await W.saveWorkspaceWithServer(this._SMWorkspaceId,server);
             }else{
-                var {saved} = await W.saveWorkspace(this.workspaceId);
+                var {saved} = await W.saveWorkspace(this._SMWorkspaceId);
             }
             return saved;
         }catch(e){
@@ -231,7 +235,7 @@ export default class Workspace{
      */
     async closeWorkspace(){
         try{
-            var {closed} = await W.closeWorkspace(this.workspaceId);
+            var {closed} = await W.closeWorkspace(this._SMWorkspaceId);
             return closed;
         }catch(e){
             console.error(e);
@@ -247,9 +251,9 @@ export default class Workspace{
      */
     async createDatasource(filePath,engineType){
         try{
-            var {datasourceId} = await W.createDatasource(this.workspaceId,filePath,engineType);
+            var {datasourceId} = await W.createDatasource(this._SMWorkspaceId,filePath,engineType);
             var datasource = new Ds();
-            datasource.datasourceId = datasourceId;
+            datasource._SMDatasourceId = datasourceId;
             return datasource;
         }catch(e){
             console.error(e);
@@ -264,7 +268,7 @@ export default class Workspace{
      */
     async closeDatasource(datasourceName){
         try{
-            var {closed} = await W.closeDatasource(this.workspaceId,datasourceName);
+            var {closed} = await W.closeDatasource(this._SMWorkspaceId,datasourceName);
 
             return closed;
         }catch(e){
@@ -279,7 +283,7 @@ export default class Workspace{
      */
     async closeAllDatasource(){
         try{
-            await W.closeAllDatasource(this.workspaceId);
+            await W.closeAllDatasource(this._SMWorkspaceId);
         }catch(e){
             console.error(e);
         }
@@ -293,7 +297,7 @@ export default class Workspace{
      */
     async removeMap(mapName){
         try{
-            var {removed} = await W.removeMap(this.workspaceId,mapName);
+            var {removed} = await W.removeMap(this._SMWorkspaceId,mapName);
             return removed;
         }catch(e){
             console.error(e);
@@ -306,7 +310,7 @@ export default class Workspace{
      */
     async clearMap(){
         try{
-            await W.clearMap(this.workspaceId);
+            await W.clearMap(this._SMWorkspaceId);
         }catch(e){
             console.error(e);
         }
@@ -314,7 +318,7 @@ export default class Workspace{
 
     async getSceneName(index){
         try{
-            var {name} = await W.getSceneName(this.workspaceId,index);
+            var {name} = await W.getSceneName(this._SMWorkspaceId,index);
             return name;
         }catch(e){
             console.error(e);

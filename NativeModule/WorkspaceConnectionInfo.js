@@ -1,11 +1,15 @@
-/**
- * Created by will on 2016/5/17.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 var {NativeModules}=require('react-native');
 let WCI=NativeModules.JSWorkspaceConnectionInfo;
 
 /**
  * @class WorkspaceConnectionInfo
+ * @description 工作空间连接信息类。
  */
 export default class WorkspaceConnectionInfo{
     /**
@@ -17,7 +21,7 @@ export default class WorkspaceConnectionInfo{
         try{
             var {ID}=await WCI.createJSObj();
             var workspaceConnectionInfo = new WorkspaceConnectionInfo();
-            workspaceConnectionInfo.workspaceConnectionInfoId = ID;
+            workspaceConnectionInfo._SMWorkspaceConnectionInfoId = ID;
             return workspaceConnectionInfo;
         }catch(e){
             console.error(e);
@@ -32,7 +36,7 @@ export default class WorkspaceConnectionInfo{
      */
     async setType(type){
         try{
-            await WCI.setType(this.workspaceConnectionInfoId,type);
+            await WCI.setType(this._SMWorkspaceConnectionInfoId,type);
         }catch(e){
             console.error(e);
         }
@@ -46,7 +50,7 @@ export default class WorkspaceConnectionInfo{
      */
     async setServer(path){
         try{
-            await WCI.setServer(this.workspaceConnectionInfoId,path);
+            await WCI.setServer(this._SMWorkspaceConnectionInfoId,path);
         }catch(e){
             console.error(e);
         }
@@ -60,7 +64,7 @@ export default class WorkspaceConnectionInfo{
      */
     async setPassWord(passWord){
         try{
-            await WCI.setPassWord(this.workspaceConnectionInfoId,passWord);
+            await WCI.setPassWord(this._SMWorkspaceConnectionInfoId,passWord);
         }catch(e){
             console.error(e);
         }
