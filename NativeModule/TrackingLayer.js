@@ -1,8 +1,15 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let TL = NativeModules.JSTrackingLayer;
 
 /**
  * @class TrackingLayer
+ * @description 跟踪图层类。
  */
 export default class TrackingLayer {
     /**
@@ -14,8 +21,8 @@ export default class TrackingLayer {
      */
     async add(geometry,tag){
         try{
-            var id = geometry.geometryId;
-            await TL.add(this.trackingLayerId,id,tag);
+            var id = geometry._SMGeometryId;
+            await TL.add(this._SMTrackingLayerId,id,tag);
         }catch (e){
             console.error(e);
         }
@@ -27,7 +34,7 @@ export default class TrackingLayer {
      */
     async clear(){
         try{
-            await TL.clear(this.trackingLayerId);
+            await TL.clear(this._SMTrackingLayerId);
         }catch (e){
             console.error(e);
         }

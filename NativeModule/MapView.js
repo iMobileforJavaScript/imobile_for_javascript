@@ -1,6 +1,9 @@
-/**
- * Created by will on 2016/6/17.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ Description: iOS中该类只是一个概念虚类，实际功能由mapControl完成。
+ **********************************************************************************/
 import { NativeModules,Platform } from 'react-native';
 let MV = NativeModules.JSMapView;
 import MapControl from './MapControl.js';
@@ -8,6 +11,7 @@ import Point2D from './Point2D.js';
 
 /**
  * @class MapView
+ * @description 地图显示控件容器类。
  */
 export default class JSMapView{
     static NAVIGATION_STARTPOINT = "startpoint";
@@ -20,9 +24,9 @@ export default class JSMapView{
      */
     async getMapControl(){
         try{
-            var {mapControlId} =await MV.getMapControl(this.mapViewId);
+            var {mapControlId} =await MV.getMapControl(this._SMMapViewId);
             var mapControl = new MapControl();
-            mapControl.mapControlId = mapControlId;
+            mapControl._SMMapControlId = mapControlId;
             return mapControl;
         }catch (e){
             console.error(e);
@@ -38,9 +42,9 @@ export default class JSMapView{
      */
     async addPoint(point2D,pointName){
         try{
-            var {eth_point2DId} = await MV.addPoint(this.mapViewId,point2D.point2DId,pointName);
+            var {eth_point2DId} = await MV.addPoint(this._SMMapViewId,point2D._SMPoint2DId,pointName);
             var point2D = new Point2D();
-            point2D.point2DId = eth_point2DId;
+            point2D._SMPoint2DId = eth_point2DId;
             return point2D;
         }catch (e){
             console.error(e);
@@ -54,7 +58,7 @@ export default class JSMapView{
      */
     async refresh(){
         try{
-            await MV.refresh(this.mapViewId);
+            await MV.refresh(this._SMMapViewId);
         }catch(e){
             console.error(e);
         }
@@ -69,7 +73,7 @@ export default class JSMapView{
      */
     async addCallOut(callOut,pointName){
         try{
-            await MV.addCallOut(this.mapViewId,callOut.callOutId,pointName);
+            await MV.addCallOut(this._SMMapViewId,callOut._SMCallOutId,pointName);
         }catch(e){
             console.error(e);
         }
@@ -82,7 +86,7 @@ export default class JSMapView{
      */
     async showCallOut(){
         try{
-            await MV.showCallOut(this.mapViewId);
+            await MV.showCallOut(this._SMMapViewId);
         }catch(e){
             console.error(e);
         }

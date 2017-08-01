@@ -5,12 +5,10 @@ import Callout from './NativeModule/CallOut.js'
 import CursorType from './NativeModule/CursorType.js';
 import DataDownloadService from './NativeModule/DataDownloadService.js';
 import Dataset from './NativeModule/Dataset.js';
-import Datasets from './NativeModule/Datasets.js';
 import DatasetVector from './NativeModule/DatasetVector.js';
 import DatasetVectorInfo from './NativeModule/DatasetVectorInfo.js';
 import Datasource from './NativeModule/Datasource.js';
 import DatasourceConnectionInfo from './NativeModule/DatasourceConnectionInfo.js';
-import Datasources from './NativeModule/Datasources.js';
 import DataUploadService from './NativeModule/DataUploadService.js';
 import GeoLine from './NativeModule/GeoLine.js';
 import Geometry from './NativeModule/Geometry.js';
@@ -20,16 +18,13 @@ import GeoStyle from './NativeModule/GeoStyle.js';
 import Feature from './NativeModule/Feature.js';
 import FeatureSet from './NativeModule/FeatureSet.js';
 import Layer from './NativeModule/Layer.js';
-import Layers from './NativeModule/Layers.js';
 import LayerSetting from './NativeModule/LayerSetting.js';
 import LayerSettingVector from './NativeModule/LayerSettingVector.js';
-import Legend from './NativeModule/Legend.js';
 import LocationManager from './NativeModule/LayerSetting.js';
 import Map from './NativeModule/Map.js';
 import MapControl from './NativeModule/MapControl.js';
-import Maps from './NativeModule/Maps.js';
 import MapView from './NativeModule/MapView.js';
-import Navigation2 from './NativeModule/Navigation2.js';
+import Navigation2 from './NativeModule/IndustryNavi.js';
 import OverlayAnalyst from './NativeModule/OverlayAnalyst.js';
 import OverlayAnalystParameter from './NativeModule/OverlayAnalystParameter.js';
 import Point from './NativeModule/Point.js';
@@ -37,9 +32,7 @@ import Point2D from './NativeModule/Point2D.js';
 import PrjCoordSys from './NativeModule/PrjCoordSys.js';
 import QueryParameter from './NativeModule/QueryParameter.js';
 import QueryService from './NativeModule/QueryService.js';
-import Recordset from './NativeModule/Recordset.js';
 import Rectangle2D from './NativeModule/Rectangle2D.js';
-import ScaleView from './NativeModule/ScaleView.js';
 import Scene from './NativeModule/Scene.js';
 import SceneControl from './NativeModule/SceneControl.js';
 import Selection from './NativeModule/Selection.js';
@@ -67,7 +60,6 @@ import PointDensityChart from './NativeModule/PointDensityChart.js';
 import PolymerChart from './NativeModule/PolymerChart.js';
 import RelationalPointChart from './NativeModule/RelationalPointChart.js';
 
-import LogTest from './NativeModule/LogTest.js';
 import AMQPManager from './NativeModule/AMQPManager.js';
 import AMQPReceiver from './NativeModule/AMQPReceiver.js';
 import AMQPSender from './NativeModule/AMQPSender.js';
@@ -97,9 +89,14 @@ import SMManagerDSAndMapCtrlScreen from './NativeModule/components/SMDSourceAndM
 import SMManagerDSCreateScreen from './NativeModule/components/SMCreateDSView.js';
 import SMManagerDSListScreen from './NativeModule/components/SMOuterListView.js';
 */
+/*
+import Datasets from './NativeModule/Datasets.js';
+import Datasources from './NativeModule/Datasources.js';
+import Layers from './NativeModule/Layers.js';
+import Maps from './NativeModule/Maps.js';
+import Recordset from './NativeModule/Recordset.js';
+*/
 export {
-    LogTest,
-    //Components
     SMMapView,
     SMLayerListView,
     SMLegendView,
@@ -108,12 +105,14 @@ export {
     SMPlotView,
     SMSearchView,
     
-    //SMManagerHomeScreen,
-    //SMManagerSaveAsScreen,
-    //SMManagerDSAndMapCtrlScreen,
-    //SMManagerDSCreateScreen,
-    //SMManagerDSListScreen,
-
+    /*
+    SMManagerHomeScreen,
+    SMManagerSaveAsScreen,
+    SMManagerDSAndMapCtrlScreen,
+    SMManagerDSCreateScreen,
+    SMManagerDSListScreen,
+     */
+    
     Utility,
     
     AMQPManager,
@@ -124,7 +123,6 @@ export {
     STOMPSender,
     MQTTClientSide,
     
-    //chart
     SMBarChartView,
     SMLineChartView,
     SMPieChartView,
@@ -145,7 +143,6 @@ export {
     RelationalPointChart,
     
 
-    //Modules
     BufferAnalyst,
     BufferAnalystGeometry,
     BufferAnalystParameter,
@@ -153,12 +150,10 @@ export {
     CursorType,
     DataDownloadService,
     Dataset,
-    Datasets,
     DatasetVector,
     DatasetVectorInfo,
     Datasource,
     DatasourceConnectionInfo,
-    Datasources,
     DataUploadService,
     Feature,
     FeatureSet,
@@ -168,14 +163,11 @@ export {
     GeoRegion,
     GeoStyle,
     Layer,
-    Layers,
     LayerSetting,
     LayerSettingVector,
-    Legend,
     LocationManager,
     Map,
     MapControl,
-    Maps,
     MapView,
     Navigation2,
     OverlayAnalyst,
@@ -185,9 +177,7 @@ export {
     PrjCoordSys,
     QueryParameter,
     QueryService,
-    Recordset,
     Rectangle2D,
-    ScaleView,
     Selection,
     ServiceBase,
     ServiceQueryParameter,
@@ -195,5 +185,13 @@ export {
     Track,
     TrackingLayer,
     Workspace,
-    WorkspaceConnectionInfo
+    WorkspaceConnectionInfo,
+    
+    /*
+    Datasets,
+    Datasources,
+    Layers,
+    Maps,
+    Recordset,
+     */
 };

@@ -2,7 +2,7 @@
  Copyright © SuperMap. All rights reserved.
  Author: will
  E-mail: pridehao@gmail.com
- 
+ ref:PrjCoordSys
  **********************************************************************************/
 import {NativeModules} from 'react-native';
 let D = NativeModules.JSDataset;
@@ -43,9 +43,9 @@ export default class Dataset{
      */
     async toDatasetVector(){
         try{
-            var {datasetVectorId} = await D.toDatasetVector(this.datasetId);
+            var {datasetVectorId} = await D.toDatasetVector(this._SMDatasetId);
             var datasetVector = new DatasetVector();
-            datasetVector.datasetVectorId = datasetVectorId;
+            datasetVector._SMDatasetVectorId = datasetVectorId;
             return datasetVector;
         }catch(e){
             console.error(e);
@@ -60,9 +60,9 @@ export default class Dataset{
      */
     async getPrjCoordSys(){
         try{
-            var {prjCoordSysId} = await D.getPrjCoordSys(this.datasetId);
+            var {prjCoordSysId} = await D.getPrjCoordSys(this._SMDatasetId);
             var prjCoordSys = new PrjCoordSys();
-            prjCoordSys.prjCoordSysId = prjCoordSysId;
+            prjCoordSys._SMPrjCoordSysId = prjCoordSysId;
             return prjCoordSys;
         }catch(e){
             console.error(e);
@@ -76,7 +76,7 @@ export default class Dataset{
      */
     async openDataset(){
         try{
-            var {opened} = await D.openDataset(this.datasetId);
+            var {opened} = await D.openDataset(this._SMDatasetId);
             return opened;
         }catch(e){
             console.error(e);
@@ -90,7 +90,7 @@ export default class Dataset{
      */
     async isopen(){
         try{
-            var {opened} = await D.isopen(this.datasetId);
+            var {opened} = await D.isopen(this._SMDatasetId);
             return opened;
         }catch(e){
             console.error(e);
@@ -104,7 +104,7 @@ export default class Dataset{
      */
     async getType(){
         try{
-            var {type} = await D.getType(this.datasetId);
+            var {type} = await D.getType(this._SMDatasetId);
             return type;
         }catch(e){
             console.error(e);
@@ -118,9 +118,9 @@ export default class Dataset{
      */
     async getDatasource(){
         try{
-            var {datasourceId} = await D.getDatasource(this.datasetId);
+            var {datasourceId} = await D.getDatasource(this._SMDatasetId);
             var datasource = new Datasource();
-            datasource.datasourceId = datasourceId;
+            datasource._SMDatasourceId = datasourceId;
             return datasource;
         }catch(e){
             console.error(e);
@@ -134,7 +134,7 @@ export default class Dataset{
      */
     async getEncodeType(){
         try{
-            var {type} = await D.getEncodeType(this.datasetId);
+            var {type} = await D.getEncodeType(this._SMDatasetId);
             return type;
         }catch(e){
             console.error(e);

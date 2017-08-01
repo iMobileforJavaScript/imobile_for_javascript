@@ -1,6 +1,12 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let SS = NativeModules.JSQueryService;
-
+import ServiceBase from './ServiceBase.js';
 /**
  * @class QueryService
  * @param QueryMode.SqlQuery -  查询模式：SQL查询
@@ -10,8 +16,19 @@ let SS = NativeModules.JSQueryService;
  * @param QueryMode.BoundsQuery - 范围查询：范围查询
  *
  */
-export default class QueryService {
-
+export default class QueryService extends ServiceBase{
+    constructor(){
+        super();
+        //同步子类Id和父类Id
+        Object.defineProperty(this,"_SMQueryServiceId",{
+                              get:function () {
+                              return this._SMServiceBaseId
+                              },
+                              set:function (_SMQueryServiceId) {
+                              this._SMServiceBaseId = _SMQueryServiceId;
+                              }
+                              })
+    }
     /**
      * 根据查询路径创建一个QueryService对象
      * @param url
@@ -21,7 +38,7 @@ export default class QueryService {
         try {
             var {_queryServiceId_} = await SS.createObj(url);
             var queryService = new QueryService();
-            queryService._queryServiceId_ = _queryServiceId_;
+            queryService._SMQueryServiceId = _queryServiceId_;
             return queryService;
         } catch (e) {
             console.error(e);
@@ -36,8 +53,8 @@ export default class QueryService {
      */
     async query(serviceQueryParameter, mode) {
         try {
-            await SS.query(this._queryServiceId_,
-                serviceQueryParameter._serviceQueryParameterId_, mode);
+            await SS.query(this._SMQueryServiceId,
+                serviceQueryParameter._SMServiceQueryParameterId, mode);
             return queryService;
         } catch (e) {
             console.error(e);
@@ -53,8 +70,8 @@ export default class QueryService {
      */
     async queryByUrl(url, serviceQueryParameter, mode) {
         try {
-            await SS.queryByUrl(this._queryServiceId_, url,
-                serviceQueryParameter._serviceQueryParameterId_, mode);
+            await SS.queryByUrl(this._SMQueryServiceId, url,
+                serviceQueryParameter._SMServiceQueryParameterId, mode);
             return queryService;
         } catch (e) {
             console.error(e);

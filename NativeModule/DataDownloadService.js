@@ -1,20 +1,27 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ ref:ServiceBase
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let DDS = NativeModules.JSDataDownloadService;
 import ServiceBase from './ServiceBase.js';
 
 /**
  * @class DataDownloadService
+ * @description 数据下载类，用于从iServer服务器上下载数据到本地。
  */
 export default class DataDownloadService extends ServiceBase{
+    
     constructor(){
         super();
-        //同步子类Id和父类Id
-        Object.defineProperty(this,"_dataDownloadServiceId_",{
+        Object.defineProperty(this,"_SMDataDownloadServiceId",{
             get:function () {
-                return this._serviceBaseID_
+                return this._SMServiceBaseId
             },
-            set:function (_dataDownloadServiceId_) {
-                this._serviceBaseID_ = _dataDownloadServiceId_;
+            set:function (_SMDataDownloadServiceId) {
+                this._SMServiceBaseId = _SMDataDownloadServiceId;
             }
         })
     }
@@ -29,7 +36,7 @@ export default class DataDownloadService extends ServiceBase{
         try{
             var {_dataDownloadServiceId_} = await DDS.createObj(url);
             var dataDownloadService = new DataDownloadService();
-            dataDownloadService._dataDownloadServiceId_ = _dataDownloadServiceId_;
+            dataDownloadService._SMDataDownloadServiceId = _dataDownloadServiceId_;
             return dataDownloadService;
         }catch(e){
             console.error(e);
@@ -46,7 +53,7 @@ export default class DataDownloadService extends ServiceBase{
      */
     async download(fullUrl,fromIndex,toIndex){
         try{
-            await DDS.download(this._dataDownloadServiceId_,fullUrl,fromIndex,toIndex);
+            await DDS.download(this._SMDataDownloadServiceId,fullUrl,fromIndex,toIndex);
         }catch(e){
             console.error(e);
         }
@@ -64,7 +71,7 @@ export default class DataDownloadService extends ServiceBase{
      */
     async downloadByName(serviceName,datasourceName,datasetName,fromIndex,toIndex){
         try{
-            await DDS.downloadByName(this._dataDownloadServiceId_,
+            await DDS.downloadByName(this._SMDataDownloadServiceId,
                 serviceName,datasourceName,datasetName,fromIndex,toIndex);
         }catch(e){
             console.error(e);
@@ -79,7 +86,7 @@ export default class DataDownloadService extends ServiceBase{
      */
     async downloadAll(fullUrl){
         try{
-            await DDS.downloadAll(this._dataDownloadServiceId_,fullUrl);
+            await DDS.downloadAll(this._SMDataDownloadServiceId,fullUrl);
         }catch(e){
             console.error(e);
         }
@@ -95,7 +102,7 @@ export default class DataDownloadService extends ServiceBase{
      */
     async downloadAllByName(serviceName,datasourceName,datasetName){
         try{
-            await DDS.downloadAllByName(this._dataDownloadServiceId_,
+            await DDS.downloadAllByName(this._SMDataDownloadServiceId,
                 serviceName,datasourceName,datasetName);
         }catch(e){
             console.error(e);
@@ -111,7 +118,7 @@ export default class DataDownloadService extends ServiceBase{
      */
     async downloadDataset(urlDatset,datasource){
         try{
-            await DDS.downloadDataset(this._dataDownloadServiceId_,
+            await DDS.downloadDataset(this._SMDataDownloadServiceId,
                 urlDatset,datasource.datasourceId);
         }catch(e){
             console.error(e);
@@ -127,7 +134,7 @@ export default class DataDownloadService extends ServiceBase{
      */
     async updateDataset(urlDatset,dataset){
         try{
-            await DDS.updateDataset(this._dataDownloadServiceId_,
+            await DDS.updateDataset(this._SMDataDownloadServiceId,
                 urlDatset,dataset.datasetId);
         }catch(e){
             console.error(e);

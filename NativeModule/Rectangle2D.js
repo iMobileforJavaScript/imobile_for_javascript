@@ -1,15 +1,22 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let R = NativeModules.JSRectangle2D;
 import Point2D from './Point2D.js';
 
 /**
  * @class Rectangle2D
+ * @description 矩形类。
  */
 export default class Rectangle2D {
     /**
      * 创建一个Rectangle2D矩形实例
      * @memberOf Rectangle2D
-     * @param {object} point2D - 左上点，可选
+     * @param {object} point2D - 左下点，可选
      * @param {object} point2D - 右上点，可选
      * @returns {Promise.<*>}
      */
@@ -31,7 +38,7 @@ export default class Rectangle2D {
 
     returnObj(rectangle2DId){
         var rectangle2D = new Rectangle2D();
-        rectangle2D.rectangle2DId = rectangle2DId;
+        rectangle2D._SMRectangle2DId = rectangle2DId;
         return rectangle2D;
     }
 }

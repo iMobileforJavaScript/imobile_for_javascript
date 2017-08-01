@@ -18,10 +18,10 @@ export default class Datasources{
     async open(datasourceConnectionInfo){
         this._drepecated();
         try{
-            var {datasourceId} = await D.open(this.datasourcesId,datasourceConnectionInfo.datasourceConnectionInfoId);
+            var {datasourceId} = await D.open(this._SMDatasourcesId,datasourceConnectionInfo._SMDatasourceConnectionInfoId);
             console.log("datasourceId:"+datasourceId);
             var datasource = new Datasource();
-            datasource.datasourceId = datasourceId;
+            datasource._SMDatasourceId = datasourceId;
 
             return datasource;
         }catch(e){
@@ -34,11 +34,11 @@ export default class Datasources{
         try{
             var datasource = new Datasource();
             if(typeof index != 'string'){
-                var {datasourceId} = await D.get(this.datasourcesId,index);
+                var {datasourceId} = await D.get(this._SMDatasourcesId,index);
             }else{
-                var {datasourceId} = await D.getByName(this.datasourcesId,index);
+                var {datasourceId} = await D.getByName(this._SMDatasourcesId,index);
             }
-            datasource.datasourceId = datasourceId;
+            datasource._SMDatasourceId = datasourceId;
 
             return datasource;
         }catch(e){

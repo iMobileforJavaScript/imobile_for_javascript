@@ -33,9 +33,14 @@ export default class BarChartData extends ChartData{
      * @param {int}geoId - ID
      * @returns {Promise.<void>}
      */
-    async createObj(itemName,values,label,color,geoId){
+    async createObj(itemName,values){
         try{
-            var {_barchartdataId} = await BCD.createObj(itemName,values,label,color,geoId);
+            var idArr = [];
+            for(var i =0;i<values.length-1;i++){
+                var id = values[i]._SMBarChartDataItemId;
+                idArr.push(id);
+            }
+            var {_barchartdataId} = await BCD.createObj(itemName,idArr);
             var barChartData = new BarChartData();
             barChartData.barChartDataId = _barchartdataId;
             return barChartData;
@@ -52,8 +57,8 @@ export default class BarChartData extends ChartData{
     async setValues(values){
         try{
             var idArr = [];
-            for(variable in values){
-                var id = variable._SMBarChartDataItemId;
+            for(var i =0;i<values.length-1;i++){
+                var id = values[i]._SMBarChartDataItemId;
                 idArr.push(id);
             }
             await BCD.setValues(this.barChartDataId,idArr);
@@ -71,9 +76,9 @@ export default class BarChartData extends ChartData{
         try{
             var objArr = [];
             var {values} = await BCD.getValues(this.barChartDataId);
-            for(variable in values){
+            for(var i =0;i<values.length-1;i++){
                 var barChartDataItem = new BarChartDataItem();
-                barChartDataItem._SMBarChartDataItemId = variable;
+                barChartDataItem._SMBarChartDataItemId = values[i];
                 objArr.push(barChartDataItem);
             }
             return objArr;

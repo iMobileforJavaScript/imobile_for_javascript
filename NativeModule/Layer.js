@@ -24,7 +24,7 @@ export default class Layer{
      */
     async setEditable(editable){
         try{
-            await L.setEditable(this.layerId,editable);
+            await L.setEditable(this._SMLayerId,editable);
         }catch(e){
             console.error(e);
         }
@@ -36,7 +36,7 @@ export default class Layer{
      */
     async getEditable(){
         try{
-            var{isEditable} = await L.getEditable(this.layerId);
+            var{isEditable} = await L.getEditable(this._SMLayerId);
             return isEditable;
         }catch(e){
             console.error(e);
@@ -50,7 +50,7 @@ export default class Layer{
      */
     async getName(){
         try{
-            var {layerName} = await L.getName(this.layerId);
+            var {layerName} = await L.getName(this._SMLayerId);
             return layerName;
         }catch(e){
             console.error(e);
@@ -64,9 +64,9 @@ export default class Layer{
      */
     async getDataset(){
         try{
-            var {datasetId} = await L.getDataset(this.layerId);
+            var {datasetId} = await L.getDataset(this._SMLayerId);
             var dataset = new Dataset();
-            dataset.datasetId = datasetId;
+            dataset._SMDatasetId = datasetId;
             return dataset;
         }catch(e){
             console.error(e);
@@ -81,7 +81,7 @@ export default class Layer{
      */
     async setDataset(dataset){
         try{
-            await L.setDataset(this.layerId,dataset.datasetId);
+            await L.setDataset(this._SMLayerId,dataset._SMDatasetId);
         }catch(e){
             console.error(e);
         }
@@ -94,10 +94,10 @@ export default class Layer{
      */
     async getSelection(){
         try{
-            var {selectionId,recordsetId} = await L.getSelection(this.layerId);
+            var {selectionId,recordsetId} = await L.getSelection(this._SMLayerId);
             var selection = new Selection();
-            selection.selectionId = selectionId;
-            selection.recordsetId = recordsetId;
+            selection._SMSelectionId = selectionId;
+            selection._SMRecordsetId = recordsetId;
             return selection;
         }catch(e){
             console.error(e);
@@ -112,7 +112,7 @@ export default class Layer{
      */
     async setSelectable(b){
         try{
-            await L.setSelectable(this.layerId,b);
+            await L.setSelectable(this._SMLayerId,b);
         }catch(e){
             console.error(e);
         }
@@ -126,7 +126,7 @@ export default class Layer{
      */
     async isSelectable(){
         try{
-            var{selectable} = await L.isSelectable(this.layerId);
+            var{selectable} = await L.isSelectable(this._SMLayerId);
             return selectable;
         }catch(e){
             console.error(e);
@@ -140,7 +140,7 @@ export default class Layer{
      */
     async getVisible(){
         try{
-            var isVisible = await L.getVisible(this.layerId);
+            var isVisible = await L.getVisible(this._SMLayerId);
             return isVisible;
         }catch(e){
             console.error(e);
@@ -155,7 +155,7 @@ export default class Layer{
      */
     async setVisible(b){
         try{
-            await L.setVisible(this.layerId,b);
+            await L.setVisible(this._SMLayerId,b);
         }catch(e){
             console.error(e);
         }
@@ -169,10 +169,10 @@ export default class Layer{
     async getAdditionalSetting(){
         try{
             var layerSetting;
-            var {_layerSettingId_,type} = await L.getAdditionalSetting(this.layerId);
+            var {_layerSettingId_,type} = await L.getAdditionalSetting(this._SMLayerId);
             if(type===0){
             layerSetting = new LayerSettingVector();
-            layerSetting._layerSettingVectorId_ = _layerSettingId_;
+            layerSetting._SMLayerSettingVectorId = _layerSettingId_;
             }else if(type===1){
             //image
             }else{
@@ -192,7 +192,7 @@ export default class Layer{
      */
     async setAdditionalSetting(layerSetting){
         try{
-            await L.setAdditionalSetting(this.layerId,layerSetting._layerSettingId_);
+            await L.setAdditionalSetting(this._SMLayerId,layerSetting._SMLayerSettingId);
         }catch(e){
             console.error(e);
         }

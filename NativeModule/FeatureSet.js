@@ -1,19 +1,27 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let FS = NativeModules.JSFeatureSet;
 import Geometry from './Geometry.js';
 
 /**
  * @class FeatureSet
+ * @description 要素资源集合类。
  */
 export default class FeatureSet {
     /**
-     * 物理性删除指定要素集中的所有要素，即把要素从设备的物理存储介质上删除，无法恢复。
+     * 删除要素
+     * @description 物理性删除指定要素集中的所有要素，即把要素从设备的物理存储介质上删除，无法恢复。
      * @memberOf FeatureSet
      * @returns {Promise.<void>}
      */
     async deleteAll(){
         try{
-            await FS.deleteAll(this._featureSetId_);
+            await FS.deleteAll(this._SMFeatureSetId);
         }catch (e){
             console.error(e);
         }
@@ -26,7 +34,7 @@ export default class FeatureSet {
      */
     async delete(){
         try{
-            await FS.delete(this._featureSetId_);
+            await FS.delete(this._SMFeatureSetId);
         }catch (e){
             console.error(e);
         }
@@ -39,7 +47,7 @@ export default class FeatureSet {
      */
     async getFeatureCount(){
         try{
-            var count = await FS.getFeatureCount(this._featureSetId_);
+            var count = await FS.getFeatureCount(this._SMFeatureSetId);
             return count;
         }catch (e){
             console.error(e);
@@ -54,7 +62,7 @@ export default class FeatureSet {
      */
     async getFieldValue(fieldName){
         try{
-            var value = await FS.getFieldValue(this._featureSetId_,fieldName);
+            var value = await FS.getFieldValue(this._SMFeatureSetId,fieldName);
             return value;
         }catch (e){
             console.error(e);
@@ -68,9 +76,9 @@ export default class FeatureSet {
      */
     async getGeometry(){
         try{
-            var {geometryId} = await FS.getGeometry(this._featureSetId_);
+            var {geometryId} = await FS.getGeometry(this._SMFeatureSetId);
             var geometry = new Geometry();
-            geometry.geometryId = geometryId;
+            geometry._SMGeometryId = geometryId;
             return geometry;
         }catch (e){
             console.error(e);
@@ -84,7 +92,7 @@ export default class FeatureSet {
      */
     async isReadOnly(){
         try{
-            await FS.isReadOnly(this._featureSetId_);
+            await FS.isReadOnly(this._SMFeatureSetId);
         }catch (e){
             console.error(e);
         }
@@ -97,7 +105,7 @@ export default class FeatureSet {
      */
     async moveFirst(){
         try{
-            await FS.moveFirst(this._featureSetId_);
+            await FS.moveFirst(this._SMFeatureSetId);
         }catch (e){
             console.error(e);
         }
@@ -110,7 +118,7 @@ export default class FeatureSet {
      */
     async moveLast(){
         try{
-            await FS.moveLast(this._featureSetId_);
+            await FS.moveLast(this._SMFeatureSetId);
         }catch (e){
             console.error(e);
         }
@@ -123,7 +131,7 @@ export default class FeatureSet {
      */
     async moveNext(){
         try{
-            await FS.moveNext(this._featureSetId_);
+            await FS.moveNext(this._SMFeatureSetId);
         }catch (e){
             console.error(e);
         }
@@ -136,7 +144,7 @@ export default class FeatureSet {
      */
     async movePrev(){
         try{
-            await FS.movePrev(this._featureSetId_);
+            await FS.movePrev(this._SMFeatureSetId);
         }catch (e){
             console.error(e);
         }

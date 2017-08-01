@@ -1,3 +1,9 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules,DeviceEventEmitter,NativeEventEmitter,Platform} from 'react-native';
 let TN = NativeModules.JSNavigation;
 import GeoLine from './GeoLine';
@@ -5,6 +11,7 @@ import GeoLine from './GeoLine';
 const nativeEvt = new NativeEventEmitter(TN);
 /**
  * @class TraditionalNavi
+ * @description 导航类，导航类提供路径分析和引导功能。(该类对象只能通过mapControl类下方法获取)
  */
 export default class TraditionalNavi {
     /**
@@ -15,7 +22,7 @@ export default class TraditionalNavi {
      */
     async connectNaviData(dataPath){
         try{
-            var {success} = await TN.connectNaviData(this.traditionalNaviId,dataPath);
+            var {success} = await TN.connectNaviData(this._SMTraditionalNaviId,dataPath);
             return success;
         }catch (e){
             console.log(e);
@@ -31,7 +38,7 @@ export default class TraditionalNavi {
      */
     async routeAnalyst(mode){
         try{
-            var {result} = await TN.routeAnalyst(this.traditionalNaviId,mode);
+            var {result} = await TN.routeAnalyst(this._SMTraditionalNaviId,mode);
             return result;
         }catch (e){
             console.log(e);
@@ -48,7 +55,7 @@ export default class TraditionalNavi {
      */
     async setStartPoint(x,y,map){
         try{
-            await TN.setStartPoint(this.traditionalNaviId,x,y,map.mapId);
+            await TN.setStartPoint(this._SMTraditionalNaviId,x,y,map._SMMapId);
         }catch (e){
             console.log(e);
         }
@@ -64,7 +71,7 @@ export default class TraditionalNavi {
      */
     async setDestinationPoint(x,y,map){
         try{
-            await TN.setDestinationPoint(this.traditionalNaviId,x,y,map.mapId);
+            await TN.setDestinationPoint(this._SMTraditionalNaviId,x,y,map._SMMapId);
         }catch (e){
             console.log(e);
         }
@@ -79,7 +86,7 @@ export default class TraditionalNavi {
      */
     async startGuide(status){
         try{
-            var {guiding} = await TN.startGuide(this.traditionalNaviId,status);
+            var {guiding} = await TN.startGuide(this._SMTraditionalNaviId,status);
             return guiding;
         }catch (e){
             console.log(e);
@@ -95,7 +102,7 @@ export default class TraditionalNavi {
      */
     async addWayPoint(x,y){
         try{
-            var {added} = await TN.addWayPoint(this.traditionalNaviId,x,y);
+            var {added} = await TN.addWayPoint(this._SMTraditionalNaviId,x,y);
             return added;
         }catch (e){
             console.log(e);
@@ -109,7 +116,7 @@ export default class TraditionalNavi {
      */
     async stopGuide(){
         try{
-            var {stopped} = await TN.stopGuide(this.traditionalNaviId);
+            var {stopped} = await TN.stopGuide(this._SMTraditionalNaviId);
             return stopped;
         }catch (e){
             console.log(e);
@@ -124,7 +131,7 @@ export default class TraditionalNavi {
      */
     async setSpeechParam(speech){
         try{
-            var {speak} = await TN.setSpeechParam(this.traditionalNaviId,speech);
+            var {speak} = await TN.setSpeechParam(this._SMTraditionalNaviId,speech);
             return speak;
         }catch (e){
             console.log(e);
@@ -139,7 +146,7 @@ export default class TraditionalNavi {
      */
     async setGPSData(gpsData){
         try{
-            await TN.setGPSData(this.traditionalNaviId,gpsData);
+            await TN.setGPSData(this._SMTraditionalNaviId,gpsData);
         }catch (e){
             console.log(e);
         }
@@ -152,7 +159,7 @@ export default class TraditionalNavi {
      */
     async locateMap(){
         try{
-            await TN.locateMap(this.traditionalNaviId);
+            await TN.locateMap(this._SMTraditionalNaviId);
         }catch (e){
             console.log(e);
         }
@@ -165,7 +172,7 @@ export default class TraditionalNavi {
      */
     async isGuiding(){
         try{
-            var {guiding} = await TN.isGuiding(this.traditionalNaviId);
+            var {guiding} = await TN.isGuiding(this._SMTraditionalNaviId);
             return guiding;
         }catch (e){
             console.log(e);
@@ -180,7 +187,7 @@ export default class TraditionalNavi {
      */
     async getTimeToDestination(speed){
         try{
-            var {time} = await TN.getTimeToDestination(this.traditionalNaviId,speed);
+            var {time} = await TN.getTimeToDestination(this._SMTraditionalNaviId,speed);
             return time;
         }catch (e){
             console.log(e);
@@ -195,9 +202,9 @@ export default class TraditionalNavi {
      */
     async getRoute(){
         try{
-            var {geoLineId} = await TN.getRoute(this.traditionalNaviId);
+            var {geoLineId} = await TN.getRoute(this._SMTraditionalNaviId);
             var geoLine = new GeoLine();
-            geoLine.geoLineId = geoLineId;
+            geoLine._SMGeoLineId = geoLineId;
 
             return geoLine;
         }catch (e){
@@ -213,7 +220,7 @@ export default class TraditionalNavi {
      */
     async enablePanOnGuide(bPan){
      try{
-            await TN.enablePanOnGuide(this.traditionalNaviId,bPan);
+            await TN.enablePanOnGuide(this._SMTraditionalNaviId,bPan);
         }catch (e){
             console.log(e);
         }
@@ -226,7 +233,7 @@ export default class TraditionalNavi {
      */
     async cleanPath(){
         try{
-            await TN.cleanPath(this.traditionalNaviId);
+            await TN.cleanPath(this._SMTraditionalNaviId);
         }catch (e){
             console.log(e);
         }
@@ -238,14 +245,14 @@ export default class TraditionalNavi {
      */
     async getNaviPath() {
         try {
-            var {naviPath} = await TN.getNaviPath(this.traditionalNaviId);
+            var {naviPath} = await TN.getNaviPath(this._SMTraditionalNaviId);
             return naviPath;
         } catch (e) {
             console.log(e);
         }
     }
 
-    /**
+    /*
      * 设置导航信息变化监听器。
      * @param callback - 导航信息变化监听器回调函数。
      * 用法：await industryNavi.setDistanceChangeListener(
@@ -273,7 +280,7 @@ export default class TraditionalNavi {
      */
     async addNaviInfoListener(events){
         try{
-            var success = await TN.addNaviInfoListener(this.navigation2Id);
+            var success = await TN.addNaviInfoListener(this._SMTraditionalNaviId);
             if(success){
                 //差异化
                 if(Platform.OS === 'ios'){

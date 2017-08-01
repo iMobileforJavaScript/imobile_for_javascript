@@ -1,9 +1,15 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let OA = NativeModules.JSOverlayAnalyst;
 
 /**
  * @Class OverlayAnalyst
- * 叠加分析类（静态类）
+ * @description 叠加分析类（静态类）
  * 该类用于对输入的两个数据集或记录集之间进行各种叠加分析运算，如裁剪（clip）、擦除（erase）、合并（union）、同一（identity）、对称差（xOR）和更新（update）。
  */
 export default class OverlayAnalyst {
@@ -18,8 +24,8 @@ export default class OverlayAnalyst {
      */
     async clip(datasetVector,clipDatasetVector,resultDatasetVector,paramter){
         try{
-            var {clipped} = await OA.clip(datasetVector.datasetVectorId,clipDatasetVector.datasetVectorId,
-                resultDatasetVector.datasetVectorId,paramter.overlayAnalystParameterId);
+            var {clipped} = await OA.clip(datasetVector._SMDatasetVectorId,clipDatasetVector._SMDatasetVectorId,
+                resultDatasetVector._SMDatasetVectorId,paramter._SMOverlayAnalystParameterId);
             return clipped;
         }catch(e){
             console.error(e);
@@ -37,8 +43,8 @@ export default class OverlayAnalyst {
      */
     async erase(datasetVector,eraseDatasetVector,resultDatasetVector,paramter){
         try{
-            var {erased} = await OA.erase(datasetVector.datasetVectorId,eraseDatasetVector.datasetVectorId,
-                resultDatasetVector.datasetVectorId,paramter.overlayAnalystParameterId);
+            var {erased} = await OA.erase(datasetVector._SMDatasetVectorId,eraseDatasetVector._SMDatasetVectorId,
+                resultDatasetVector._SMDatasetVectorId,paramter._SMOverlayAnalystParameterId);
             return erased;
         }catch(e){
             console.error(e);
@@ -56,8 +62,8 @@ export default class OverlayAnalyst {
      */
     async identity(datasetVector,identityDatasetVector,resultDatasetVector,paramter){
         try{
-            var {identified} = await OA.identity(datasetVector.datasetVectorId,identityDatasetVector.datasetVectorId,
-                resultDatasetVector.datasetVectorId,paramter.overlayAnalystParameterId);
+            var {identified} = await OA.identity(datasetVector._SMDatasetVectorId,identityDatasetVector._SMDatasetVectorId,
+                resultDatasetVector._SMDatasetVectorId,paramter._SMOverlayAnalystParameterId);
             return identified;
         }catch(e){
             console.error(e);
@@ -75,8 +81,8 @@ export default class OverlayAnalyst {
      */
     async intersect(datasetVector,intersectDatasetVector,resultDatasetVector,paramter){
         try{
-            var {intersected} = await OA.intersect(datasetVector.datasetVectorId,intersectDatasetVector.datasetVectorId,
-                resultDatasetVector.datasetVectorId,paramter.overlayAnalystParameterId);
+            var {intersected} = await OA.intersect(datasetVector._SMDatasetVectorId,intersectDatasetVector._SMDatasetVectorId,
+                resultDatasetVector._SMDatasetVectorId,paramter._SMOverlayAnalystParameterId);
             return intersected;
         }catch(e){
             console.error(e);
@@ -94,8 +100,8 @@ export default class OverlayAnalyst {
      */
     async union(datasetVector,unionDatasetVector,resultDatasetVector,paramter){
         try{
-            var {unioned} = await OA.union(datasetVector.datasetVectorId,unionDatasetVector.datasetVectorId,
-                resultDatasetVector.datasetVectorId,paramter.overlayAnalystParameterId);
+            var {unioned} = await OA.union(datasetVector._SMDatasetVectorId,unionDatasetVector._SMDatasetVectorId,
+                resultDatasetVector._SMDatasetVectorId,paramter._SMOverlayAnalystParameterId);
             return unioned;
         }catch(e){
             console.error(e);
@@ -115,8 +121,8 @@ export default class OverlayAnalyst {
      */
     async update(datasetVector,updateDatasetVector,resultDatasetVector,paramter){
         try{
-            var {updated} = await OA.update(datasetVector.datasetVectorId,updateDatasetVector.datasetVectorId,
-                resultDatasetVector.datasetVectorId,paramter.overlayAnalystParameterId);
+            var {updated} = await OA.update(datasetVector._SMDatasetVectorId,updateDatasetVector._SMDatasetVectorId,
+                resultDatasetVector._SMDatasetVectorId,paramter._SMOverlayAnalystParameterId);
             return updated;
         }catch(e){
             console.error(e);
@@ -136,8 +142,8 @@ export default class OverlayAnalyst {
      */
     async xOR(datasetVector,xORDatasetVector,resultDatasetVector,paramter){
         try{
-            var {finished} = await OA.xOR(datasetVector.datasetVectorId,xORDatasetVector.datasetVectorId,
-                resultDatasetVector.datasetVectorId,paramter.overlayAnalystParameterId);
+            var {finished} = await OA.xOR(datasetVector._SMDatasetVectorId,xORDatasetVector._SMDatasetVectorId,
+                resultDatasetVector._SMDatasetVectorId,paramter._SMOverlayAnalystParameterId);
             return finished;
         }catch(e){
             console.error(e);

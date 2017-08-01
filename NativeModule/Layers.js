@@ -1,6 +1,9 @@
-/**
- * Created by will on 2016/6/17.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let L = NativeModules.JSLayers;
 import Layer from './Layer.js';
@@ -20,7 +23,7 @@ export default class Layers{
     async add(dataset,b){
         this._drepecated();
         try{
-            await L.add(this.layersId,dataset.datasetId,b);
+            await L.add(this._SMLayersId,dataset._SMDatasetId,b);
         }catch (e){
             console.error(e);
         }
@@ -37,11 +40,11 @@ export default class Layers{
         try{
             var layer = new Layer();
             if(typeof index == "string"){
-                var {layerId} = await L.getByName(this.layersId,index);
+                var {layerId} = await L.getByName(this._SMLayersId,index);
             }else{
-                var {layerId} = await L.get(this.layersId,index);
+                var {layerId} = await L.get(this._SMLayersId,index);
             }
-            layer.layerId = layerId;
+            layer._SMLayerId = layerId;
             return layer;
         }catch(e){
             console.error(e);
@@ -56,7 +59,7 @@ export default class Layers{
     async getCount(){
         this._drepecated();
         try{
-            var {count} = await L.getCount(this.layersId);
+            var {count} = await L.getCount(this._SMLayersId);
             return count;
         }catch(e){
             console.error(e);

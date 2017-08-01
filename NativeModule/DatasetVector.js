@@ -3,7 +3,7 @@
  Author: will
  E-mail: pridehao@gmail.com
  Description:数据集类
- 
+ ref:rectangle2D
  **********************************************************************************/
 import {NativeModules} from 'react-native';
 let DV = NativeModules.JSDatasetVector;
@@ -28,17 +28,18 @@ export default class DatasetVector {
                               }
                               })
     }*/
+    
     /**
      * 查询落在已知空间范围内的记录。
      * @memberOf DatasetVector
      * @deprecated - 已弃用（所有recordset都使用json格式表达），此接口将在数个版本内移除，请慎用。
-     * @param isEmptyRecordset
-     * @param cursorType
+     * @param {Rectangle2D} rectangle2D
+     * @param {number} cursorType
      * @returns {Promise.<Recordset>}
      */
     async queryInBuffer(rectangle2D, cursorType) {
         try {
-            var {recordsetId} = await DV.queryInBuffer(this.datasetVectorId, rectangle2D.rectangle2DId, cursorType);
+            var {recordsetId} = await DV.queryInBuffer(this._SMDatasetVectorId, rectangle2D._SMRectangle2DId, cursorType);
             var recordset = new Recordset();
             recordset.recordsetId = recordsetId;
             return recordset;
@@ -57,7 +58,7 @@ export default class DatasetVector {
      */
     async getRecordset(isEmptyRecordset, cursorType) {
         try {
-            var {recordsetId} =await DV.getRecordset(this.datasetVectorId, isEmptyRecordset, cursorType);
+            var {recordsetId} =await DV.getRecordset(this._SMDatasetVectorId, isEmptyRecordset, cursorType);
             var recordset = new Recordset();
             recordset.recordsetId = recordsetId;
             return recordset;
@@ -103,7 +104,7 @@ export default class DatasetVector {
             }
 
 
-            var result = await DV.query(this.datasetVectorId, qp.queryParameterId,
+            var result = await DV.query(this._SMDatasetVectorId, qp._SMQueryParameterId,
                 qp.size, qp.batch);
             return result;
         } catch (e) {
@@ -119,7 +120,7 @@ export default class DatasetVector {
      */
     async buildSpatialIndex(spatialIndexType) {
         try {
-            var {built} =await DV.buildSpatialIndex(this.datasetVectorId, spatialIndexType);
+            var {built} =await DV.buildSpatialIndex(this._SMDatasetVectorId, spatialIndexType);
             return built;
         } catch (e) {
             console.error(e);
@@ -133,7 +134,7 @@ export default class DatasetVector {
      */
     async dropSpatialIndex() {
         try {
-            var {dropped} =await DV.dropSpatialIndex(this.datasetVectorId);
+            var {dropped} =await DV.dropSpatialIndex(this._SMDatasetVectorId);
             return dropped;
         } catch (e) {
             console.error(e);
@@ -147,7 +148,7 @@ export default class DatasetVector {
      */
     async getSpatialIndexType() {
         try {
-            var {type} =await DV.getSpatialIndexType(this.datasetVectorId);
+            var {type} =await DV.getSpatialIndexType(this._SMDatasetVectorId);
             return type;
         } catch (e) {
             console.error(e);
@@ -161,7 +162,7 @@ export default class DatasetVector {
      */
     async computeBounds() {
         try {
-            var {bounds} =await DV.computeBounds(this.datasetVectorId);
+            var {bounds} =await DV.computeBounds(this._SMDatasetVectorId);
             return bounds;
         } catch (e) {
             console.error(e);
@@ -179,7 +180,7 @@ export default class DatasetVector {
      */
     async toGeoJSON(hasAttributte, startID, endID) {
         try {
-            var {geoJSON} =await DV.toGeoJSON(this.datasetVectorId);
+            var {geoJSON} =await DV.toGeoJSON(this._SMDatasetVectorId);
             var json = JSON.parse(geoJSON);
             return geoJSON;
         } catch (e) {
@@ -196,7 +197,7 @@ export default class DatasetVector {
      */
     async fromGeoJSON(geoJson) {
         try {
-            var {done} =await DV.fromGeoJSON(this.datasetVectorId,geoJson);
+            var {done} =await DV.fromGeoJSON(this._SMDatasetVectorId,geoJson);
             return done;
         } catch (e) {
             console.error(e);
@@ -214,7 +215,7 @@ export default class DatasetVector {
      */
     async queryByFilter(attributeFilter,geoRegion,count,callback) {
         try {
-            var success = await DV.queryByFilter(this.datasetVectorId,attributeFilter,geoRegion.geometryId,count);
+            var success = await DV.queryByFilter(this._SMDatasetVectorId,attributeFilter,geoRegion.geometryId,count);
             if(!success) return null;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSDatasetVector.query_by_filter', function(e) {
@@ -239,11 +240,12 @@ export default class DatasetVector {
     /**
      * 通过查询语句获取所需几何对象ID集合
      * @memberOf Dataset
+     * @param {string} SQL - 查询语句
      * @returns {Promise.<Array>}
      */
     async getSMID(SQL){
         try{
-            var {result} = await DV.getSMID(this.datasetVectorId,SQL);
+            var {result} = await DV.getSMID(this._SMDatasetVectorId,SQL);
             return result;
         }catch(e){
             console.error(e);
@@ -253,11 +255,13 @@ export default class DatasetVector {
     /**
      * 通过查询语句获取字段内容
      * @memberOf Dataset
+     * @param {string} SQL - 查询语句
+     * @param {string} fieldName - 字段名
      * @returns {Promise.<Array>}
      */
     async getFieldValue(SQL,fieldName){
         try{
-            var {result} = await DV.getFieldValue(this.datasetVectorId,SQL,fieldName);
+            var {result} = await DV.getFieldValue(this._SMDatasetVectorId,SQL,fieldName);
             return result;
         }catch(e){
             console.error(e);
@@ -267,11 +271,12 @@ export default class DatasetVector {
     /**
      * 通过查询语句获取所需几何对象内点集合
      * @memberOf Dataset
+     * @param {string} SQL - 查询语句
      * @returns {Promise.<Array>}
      */
     async getGeoInnerPoint(SQL){
         try{
-            var {result} = await DV.getGeoInnerPoint(this.datasetVectorId,SQL);
+            var {result} = await DV.getGeoInnerPoint(this._SMDatasetVectorId,SQL);
             return result;
         }catch(e){
             console.error(e);

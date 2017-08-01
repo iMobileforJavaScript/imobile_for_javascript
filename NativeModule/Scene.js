@@ -1,8 +1,15 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let S = NativeModules.JSScene;
 import Workspace from './Workspace';
 /**
  * @class Scene
+ * @description 三维场景类。
  */
 export default class Scene {
     /**
@@ -13,7 +20,7 @@ export default class Scene {
      */
     async setWorkspace(workspace){
         try{
-            await S.setWorkspace(this.sceneId,workspace.workspaceId);
+            await S.setWorkspace(this._SMSceneId,workspace._SMWorkspaceId);
         }catch (e){
             console.error(e);
         }
@@ -26,9 +33,9 @@ export default class Scene {
      */
     async getWorkspace(){
         try{
-            var {workspaceId} = await S.setWorkspace(this.sceneId);
+            var {workspaceId} = await S.setWorkspace(this._SMSceneId);
             var workspace = new Workspace();
-            workspace.workspaceId = workspaceId;
+            workspace._SMWorkspaceId = workspaceId;
 
             return workspace;
         }catch (e){
@@ -47,13 +54,13 @@ export default class Scene {
     async open(){
         try{
             if(arguments.length == 1){
-                var {opened} = await S.open(this.sceneId,arguments[0]);
+                var {opened} = await S.open(this._SMSceneId,arguments[0]);
                 return opened;
             }else if(arguments.length == 2){
-                var {opened} = await S.open2(this.sceneId,arguments[0],arguments[1]);
+                var {opened} = await S.open2(this._SMSceneId,arguments[0],arguments[1]);
                 return opened;
             }else if(arguments.length == 3){
-                var {opened} = await S.open3(this.sceneId,arguments[0],arguments[1],arguments[2]);
+                var {opened} = await S.open3(this._SMSceneId,arguments[0],arguments[1],arguments[2]);
                 return opened;
             }else{
                 throw new Error("Scene opened Error: Please input 1-3 arguments.read the specification please")
@@ -71,7 +78,7 @@ export default class Scene {
      */
     async ensureVisible(visibleBounds){
         try{
-            await S.ensureVisible(this.sceneId,visibleBounds);
+            await S.ensureVisible(this._SMSceneId,visibleBounds);
         }catch (e){
             console.error(e);
         }
@@ -84,7 +91,7 @@ export default class Scene {
      */
     async refresh(){
         try{
-            await S.refresh(this.sceneId);
+            await S.refresh(this._SMSceneId);
         }catch (e){
             console.error(e);
         }
@@ -99,7 +106,7 @@ export default class Scene {
      */
     async pan(offsetLongitude,offsetLatitude){
         try{
-            await S.pan(this.sceneId,offsetLongitude,offsetLatitude);
+            await S.pan(this._SMSceneId,offsetLongitude,offsetLatitude);
         }catch (e){
             console.error(e);
         }
@@ -112,7 +119,7 @@ export default class Scene {
      */
     async viewEntire(){
         try{
-            await S.viewEntire(this.sceneId);
+            await S.viewEntire(this._SMSceneId);
         }catch (e){
             console.error(e);
         }
@@ -126,7 +133,7 @@ export default class Scene {
      */
     async zoom(ratio){
         try{
-            await S.zoom(this.sceneId,ratio);
+            await S.zoom(this._SMSceneId,ratio);
         }catch (e){
             console.error(e);
         }
@@ -139,7 +146,7 @@ export default class Scene {
      */
     async close(){
         try{
-            await S.close(this.sceneId);
+            await S.close(this._SMSceneId);
         }catch (e){
             console.error(e);
         }
@@ -152,7 +159,7 @@ export default class Scene {
      */
     async dispose(){
         try{
-            await S.dispose(this.sceneId);
+            await S.dispose(this._SMSceneId);
         }catch (e){
             console.error(e);
         }

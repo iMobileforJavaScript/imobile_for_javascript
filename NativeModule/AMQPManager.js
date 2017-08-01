@@ -13,12 +13,12 @@ let APM = NativeModules.JSAMQPManager;
 /**
  * @class AMQPManager
  * @description AMQP 管理类。
-   负责队列，交换机，接收端，发送端的创建，以及绑定。使用前需要连接服务器。
+   负责队列，交换机，接收端，发送端的创建，以及绑定。使用前需要连接服务器。（暂不支持android设备）
  */
 export default class AMQPManager{
     
     /**
-     * 创建一个AMQPManager对象
+     * 创建一个AMQPManager对象。
      * @memberOf AMQPManager
      * @returns {Promise.<AMQPManager>}
      */
@@ -26,7 +26,7 @@ export default class AMQPManager{
         try{
             var {_AMQPManagerId} = await APM.createObj();
             var AMQPManagerObj = new AMQPManager();
-            AMQPManagerObj.AMQPManagerId = _AMQPManagerId;
+            AMQPManagerObj._SMAMQPManagerId = _AMQPManagerId;
             return AMQPManagerObj;
         }catch(e){
             console.error(e);
@@ -40,9 +40,9 @@ export default class AMQPManager{
      */
     async newReceiver(queueName){
         try{
-            var {AMQPReceiverId} = await APM.newReceiver(this.AMQPManagerId,queueName);
+            var {AMQPReceiverId} = await APM.newReceiver(this._SMAMQPManagerId,queueName);
             var newAPR = new AMQPReceiver();
-            newAPR.AMQPReceiverId = AMQPReceiverId;
+            newAPR._SMAMQPReceiverId = AMQPReceiverId;
             return newAPR;
         }catch(e){
             console.error(e);
@@ -56,9 +56,9 @@ export default class AMQPManager{
      */
     async newSender(){
         try{
-            var {AMQPSenderId} = await APM.newSender(this.AMQPManagerId);
+            var {AMQPSenderId} = await APM.newSender(this._SMAMQPManagerId);
             var newAPS = new AMQPSender();
-            newAPS.AMQPSenderId = AMQPSenderId;
+            newAPS._SMAMQPSenderId = AMQPSenderId;
             return newAPS;
         }catch(e){
             console.error(e);
@@ -77,7 +77,7 @@ export default class AMQPManager{
      */
     async connection(paramObj){
         try{
-            var {isConnection} = await APM.connection(this.AMQPManagerId,paramObj);
+            var {isConnection} = await APM.connection(this._SMAMQPManagerId,paramObj);
             return isConnection;
         }catch(e){
             console.error(e);
@@ -87,11 +87,11 @@ export default class AMQPManager{
     /**
      * 断开链接
      * @memberOf AMQPManager
-     * @returns {Promise.<bool>}
+     * @returns {Promise.<void>}
      */
     async disconnection(){
         try{
-            await APM.disconnection(this.AMQPManagerId);
+            await APM.disconnection(this._SMAMQPManagerId);
         }catch(e){
             console.error(e);
         }

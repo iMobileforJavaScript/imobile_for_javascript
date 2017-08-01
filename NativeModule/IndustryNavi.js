@@ -1,13 +1,17 @@
-/**
- * Created by will on 2016/7/12.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules,DeviceEventEmitter} from 'react-native';
 let N = NativeModules.JSNavigation2;
 import Dataset from './Dataset.js';
 import GeoLine from './GeoLine';
 
 /**
- * @class Navigation2 - 行业导航类，提供基于拓扑路网的路径分析与导引。
+ * @class Navigation2 
+ * @description 行业导航类，提供基于拓扑路网的路径分析与导引。
  */
 export default class Navigation2{
     /**
@@ -18,7 +22,7 @@ export default class Navigation2{
      */
     async setPathVisible(visible){
         try{
-            await N.setPathVisible(this.navigation2Id,visible);
+            await N.setPathVisible(this._SMNavigation2Id,visible);
         }catch (e){
             console.error(e);
         }
@@ -32,7 +36,7 @@ export default class Navigation2{
      */
     async setNetworkDataset(datasetVector){
             try{
-                await N.setNetworkDataset(this.navigation2Id,datasetVector.datasetVectorId);
+                await N.setNetworkDataset(this._SMNavigation2Id,datasetVector._SMDatasetVectorId);
             }catch (e){
                 console.error(e);
             }
@@ -46,7 +50,7 @@ export default class Navigation2{
      */
     async loadModel(path){
         try{
-            await N.loadModel(this.navigation2Id,path);
+            await N.loadModel(this._SMNavigation2Id,path);
         }catch(e){
             console.error(e);
         }
@@ -62,7 +66,7 @@ export default class Navigation2{
      */
     async setStartPoint(x,y,map){
         try{
-            await N.setStartPoint(this.navigation2Id,x,y,map.mapId);
+            await N.setStartPoint(this._SMNavigation2Id,x,y,map._SMMapId);
         }catch(e){
             console.error(e);
         }
@@ -78,7 +82,7 @@ export default class Navigation2{
      */
     async setDestinationPoint(x,y,map){
         try{
-            await N.setDestinationPoint(this.navigation2Id,x,y,map.mapId);
+            await N.setDestinationPoint(this._SMNavigation2Id,x,y,map._SMMapId);
         }catch(e){
             console.error(e);
         }
@@ -91,7 +95,7 @@ export default class Navigation2{
      */
     async routeAnalyst(){
         try{
-            var {finished} = await N.routeAnalyst(this.navigation2Id);
+            var {finished} = await N.routeAnalyst(this._SMNavigation2Id);
             return finished;
         }catch(e){
             console.error(e);
@@ -106,7 +110,7 @@ export default class Navigation2{
      */
     async startGuide(guideMode){
         try{
-            var {isGuiding} = await N.startGuide(this.navigation2Id,guideMode);
+            var {isGuiding} = await N.startGuide(this._SMNavigation2Id,guideMode);
             return isGuiding;
         }catch(e){
             console.error(e);
@@ -122,7 +126,7 @@ export default class Navigation2{
      */
     async setTurnDataset(value){
         try{
-            await N.setTurnDataset(this.navigation2Id,value.datasetVectorId);
+            await N.setTurnDataset(this._SMNavigation2Id,value._SMDatasetVectorId);
         }catch(e){
             console.error(e);
         }
@@ -136,7 +140,7 @@ export default class Navigation2{
      */
     async setAltimetricPointDataset(value){
         try{
-            await N.setAltimetricPointDataset(this.navigation2Id,value.datasetVectorId);
+            await N.setAltimetricPointDataset(this._SMNavigation2Id,value._SMDatasetVectorId);
         }catch(e){
             console.error(e);
         }
@@ -149,9 +153,9 @@ export default class Navigation2{
      */
     async getRoute(){
         try{
-            var {geoLineId} = await N.getRoute(this.navigation2Id);
+            var {geoLineId} = await N.getRoute(this._SMNavigation2Id);
             var geoLine = new GeoLine();
-            geoLine.geoLineId = geoLineId;
+            geoLine._SMGeoLineId = geoLineId;
             return geoLine;
         }catch(e){
             console.error(e);
@@ -165,7 +169,7 @@ export default class Navigation2{
      */
     async cleanPath(){
         try{
-            await N.cleanPath(this.navigation2Id);
+            await N.cleanPath(this._SMNavigation2Id);
         }catch(e){
             console.error(e);
         }
@@ -178,7 +182,7 @@ export default class Navigation2{
      */
     async pauseGuide(){
         try{
-            await N.pauseGuide(this.navigation2Id);
+            await N.pauseGuide(this._SMNavigation2Id);
         }catch(e){
             console.error(e);
         }
@@ -191,7 +195,7 @@ export default class Navigation2{
      */
     async resumeGuide(){
         try{
-            await N.resumeGuide(this.navigation2Id);
+            await N.resumeGuide(this._SMNavigation2Id);
         }catch(e){
             console.error(e);
         }
@@ -204,7 +208,7 @@ export default class Navigation2{
      */
     async stopGuide(){
         try{
-            var {stoped} = await N.stopGuide(this.navigation2Id);
+            var {stoped} = await N.stopGuide(this._SMNavigation2Id);
             return stoped
         }catch(e){
             console.error(e);
@@ -218,7 +222,7 @@ export default class Navigation2{
      */
     async isGuiding(){
         try{
-            var {yes} = await N.isGuiding(this.navigation2Id);
+            var {yes} = await N.isGuiding(this._SMNavigation2Id);
             return yes
         }catch(e){
             console.error(e);
@@ -233,7 +237,7 @@ export default class Navigation2{
      */
     async enablePanOnGuide(pan){
         try{
-            await N.enablePanOnGuide(this.navigation2Id,pan);
+            await N.enablePanOnGuide(this._SMNavigation2Id,pan);
         }catch(e){
             console.error(e);
         }
@@ -246,7 +250,7 @@ export default class Navigation2{
      */
     async locateMap(){
         try{
-            await N.locateMap(this.navigation2Id);
+            await N.locateMap(this._SMNavigation2Id);
         }catch(e){
             console.error(e);
         }
@@ -260,7 +264,7 @@ export default class Navigation2{
      */
     async setIsAutoNavi(isAutoNavi){
         try{
-            await N.setIsAutoNavi(this.navigation2Id,isAutoNavi);
+            await N.setIsAutoNavi(this._SMNavigation2Id,isAutoNavi);
         }catch(e){
             console.error(e);
         }
@@ -274,7 +278,7 @@ export default class Navigation2{
      */
     async setGPSData(newGps){
         try{
-            await N.setGPSData(this.navigation2Id,newGps);
+            await N.setGPSData(this._SMNavigation2Id,newGps);
         }catch(e){
             console.error(e);
         }
@@ -288,7 +292,7 @@ export default class Navigation2{
      */
     async setSpeedField(value){
         try{
-            await N.setSpeedField(this.navigation2Id,value);
+            await N.setSpeedField(this._SMNavigation2Id,value);
         }catch(e){
             console.error(e);
         }
@@ -301,7 +305,7 @@ export default class Navigation2{
      */
     async getBarrierPoints(){
         try{
-            var {barrierPoints} = await N.getBarrierPoints(this.navigation2Id);
+            var {barrierPoints} = await N.getBarrierPoints(this._SMNavigation2Id);
             return barrierPoints;
         }catch(e){
             console.error(e);
@@ -316,7 +320,7 @@ export default class Navigation2{
      */
     async setBarrierPoints(barrierPoints){
         try{
-            await N.setBarrierPoints(this.navigation2Id,barrierPoints);
+            await N.setBarrierPoints(this._SMNavigation2Id,barrierPoints);
         }catch(e){
             console.error(e);
         }
@@ -330,7 +334,7 @@ export default class Navigation2{
      */
     async setBarrierNodes(value){
         try{
-            await N.setBarrierNodes(this.navigation2Id,value);
+            await N.setBarrierNodes(this._SMNavigation2Id,value);
         }catch(e){
             console.error(e);
         }
@@ -344,7 +348,7 @@ export default class Navigation2{
      */
     async setBarrierEdges(value){
         try{
-            await N.setBarrierEdges(this.navigation2Id,value);
+            await N.setBarrierEdges(this._SMNavigation2Id,value);
         }catch(e){
             console.error(e);
         }
@@ -357,7 +361,7 @@ export default class Navigation2{
      */
     async getBarrierEdges(){
         try{
-            var {barrierEdges} = await N.getBarrierEdges(this.navigation2Id);
+            var {barrierEdges} = await N.getBarrierEdges(this._SMNavigation2Id);
             return barrierEdges;
         }catch(e){
             console.error(e);
@@ -367,12 +371,12 @@ export default class Navigation2{
     /**
      * 设置离终点的距离变化监听器。
      * @param events - 离终点的距离变化监听器回调函数对象。
-     * 用法：await industryNavi.setDistanceChangeListener({distanceChange:(e) => {console.log(e.distance}})
+     * @description 用法：await industryNavi.setDistanceChangeListener({distanceChange:(e) => {console.log(e.distance}})
      * @returns {Promise}
      */
     async setDistanceChangeListener(events){
         try{
-            var success = await N.setDistanceChangeListener(this.navigation2Id);
+            var success = await N.setDistanceChangeListener(this._SMNavigation2Id);
             if(success){
                 typeof events.distanceChange !== 'function'  ||
                 DeviceEventEmitter.addListener("com.supermap.RN.JSNavigation2.distance_change",function (e) {
@@ -388,7 +392,7 @@ export default class Navigation2{
     /**
      * 设置导航信息变化监听器
      * @param callback - 导航信息变化监听器回调函数。
-     * 用法：await industryNavi.setDistanceChangeListener(
+     * @description 用法：await industryNavi.setDistanceChangeListener(
      *      {
      *          startNavi:(e) => {console.log("start")},
      *          naviInfoUpdate:(e) => {console.log(e.curRoadName + e.direction ....)},
@@ -413,7 +417,7 @@ export default class Navigation2{
      */
     async addNaviInfoListener(events){
         try{
-            var success = await N.addNaviInfoListener(this.navigation2Id);
+            var success = await N.addNaviInfoListener(this._SMNavigation2Id);
             if(success){
                 typeof events.startNavi !== 'function'  ||
                 DeviceEventEmitter.addListener("com.supermap.RN.JSNavigation2.start_navi",function (e) {

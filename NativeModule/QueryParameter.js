@@ -1,13 +1,19 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let QP = NativeModules.JSQueryParameter;
 const NAME_QUERYPARAMETER = "QueryParameter";
 
 /**
- * @class QueryParameter - 查询参数类。
- *
- * 用于描述一个条件查询的限制条件，如所包含的 SQL 语句，游标方式等。
- *
- * 条件查询，是查询满足一定条件的所有要素的记录，其查询得到的结果是记录集。查询参数类是用来设置条件查询的查询条件从而得到记录集。SQL 查询，又称属性查询，即通过构建包含属性字段、运算符号和数值的 SQL 条件语句来选择记录，从而得到记录集。
+ * @class QueryParameter 
+ * @description 查询参数类。
+  用于描述一个条件查询的限制条件，如所包含的 SQL 语句，游标方式等。
+  条件查询，是查询满足一定条件的所有要素的记录，其查询得到的结果是记录集。查询参数类是用来设置条件查询的查询条件从而得到记录集。
+  SQL查询，又称属性查询，即通过构建包含属性字段、运算符号和数值的 SQL 条件语句来选择记录，从而得到记录集。
  */
 export default class QueryParameter {
     /**
@@ -35,7 +41,7 @@ export default class QueryParameter {
         try{
             var {queryParameterId} = await QP.createObj();
             var queryParameter = new QueryParameter();
-            queryParameter.queryParameterId = queryParameterId;
+            queryParameter._SMQueryParameterId = queryParameterId;
             //Return records in batches. by default, 20 records
             //first batch would be return(initial with "1")
             queryParameter.size = 10;
@@ -55,7 +61,7 @@ export default class QueryParameter {
     async setAttributeFilter (attributeFilter){
         try{
             typeof attributeFilter == "string" &&
-                await QP.setAttributeFilter(this.queryParameterId,attributeFilter);
+                await QP.setAttributeFilter(this._SMQueryParameterId,attributeFilter);
         }catch (e){
             console.error(e);
         }
@@ -70,7 +76,7 @@ export default class QueryParameter {
     async setGroupBy(groups){
         try{
             if(testArray(groups)){
-                await QP.setGroupBy(this.queryParameterId,groups);
+                await QP.setGroupBy(this._SMQueryParameterId,groups);
             }
         }catch (e){
             console.error(e);
@@ -85,7 +91,7 @@ export default class QueryParameter {
      */
     async setHasGeometry(has){
         try{
-            await QP.setHasGeometry(this.queryParameterId,has);
+            await QP.setHasGeometry(this._SMQueryParameterId,has);
         }catch (e){
             console.error(e);
         }
@@ -100,7 +106,7 @@ export default class QueryParameter {
     async setResultFields(fields){
         try{
             if(testArray(fields)){
-                await QP.setResultFields(this.queryParameterId,fields);
+                await QP.setResultFields(this._SMQueryParameterId,fields);
             }
         }catch (e){
             console.error(e);
@@ -116,7 +122,7 @@ export default class QueryParameter {
     async setOrderBy(fields){
         try{
             if(testArray(fields)){
-                await QP.setOrderBy(this.queryParameterId,fields);
+                await QP.setOrderBy(this._SMQueryParameterId,fields);
             }
         }catch (e){
             console.error(e);
@@ -131,7 +137,7 @@ export default class QueryParameter {
      */
     async setSpatialQueryObject(geometry){
         try{
-            await QP.setSpatialQueryObject(this.queryParameterId,geometry.geometryId);
+            await QP.setSpatialQueryObject(this._SMQueryParameterId,geometry._SMGeometryId);
         }catch (e){
             console.error(e);
         }
@@ -146,7 +152,7 @@ export default class QueryParameter {
     async setSpatialQueryMode(mode){
         try{
             console.log("QueryParameter:" + mode);
-            typeof mode == "number" && await QP.setSpatialQueryMode(this.queryParameterId,mode);
+            typeof mode == "number" && await QP.setSpatialQueryMode(this._SMQueryParameterId,mode);
         }catch (e){
             console.error(e);
         }

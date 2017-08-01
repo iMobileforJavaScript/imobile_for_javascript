@@ -1,21 +1,27 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let DUS = NativeModules.JSDataUploadService;
 import ServiceBase from './ServiceBase.js';
 
 /**
  * @class DataUploadService
+ * @description 数据上传类，用于将本地数据上传到iServer服务器。
  */
 export default class DataUploadService extends ServiceBase{
 
     constructor(){
         super();
-        //同步子类Id和父类Id
-        Object.defineProperty(this,"_dataUploadServiceId_",{
+        Object.defineProperty(this,"_SMDataUploadServiceId",{
             get:function () {
-                return this._serviceBaseID_
+                return this._SMServiceBaseId
             },
-            set:function (_dataUploadServiceId_) {
-                this._serviceBaseID_ = _dataUploadServiceId_;
+            set:function (_SMDataUploadServiceId) {
+                this._SMServiceBaseId = _SMDataUploadServiceId;
             }
         })
     }
@@ -30,7 +36,7 @@ export default class DataUploadService extends ServiceBase{
         try{
             var {_dataUploadServiceId_} = await DUS.createObj(url);
             var datauploadService = new DataUploadService();
-            datauploadService._dataUploadServiceId_ = _dataUploadServiceId_;
+            datauploadService._SMDataUploadServiceId = _dataUploadServiceId_;
             return datauploadService;
         }catch(e){
             console.error(e);
@@ -47,7 +53,7 @@ export default class DataUploadService extends ServiceBase{
      */
     async addDataset(fullUrl,datasetName,datasetType){
         try{
-            await DUS.addDataset(this._dataUploadServiceId_,fullUrl,datasetName,datasetType);
+            await DUS.addDataset(this._SMDataUploadServiceId,fullUrl,datasetName,datasetType);
         }catch(e){
             console.error(e);
         }
@@ -65,7 +71,7 @@ export default class DataUploadService extends ServiceBase{
      */
     async cloneDataset(serviceName,datasourceName,destDatasetName,srcDatasourceName,srcDatasetName){
         try{
-            await DUS.cloneDataset(this._dataUploadServiceId_,serviceName,
+            await DUS.cloneDataset(this._SMDataUploadServiceId,serviceName,
                 datasourceName,destDatasetName,srcDatasourceName,srcDatasetName);
         }catch(e){
             console.error(e);
@@ -81,7 +87,7 @@ export default class DataUploadService extends ServiceBase{
      */
     async addFeature(fullUrl,feature){
         try{
-            await DUS.addFeature(this._dataUploadServiceId_,fullUrl,feature._featureId_);
+            await DUS.addFeature(this._SMDataUploadServiceId,fullUrl,feature._SMFeatureId);
         }catch(e){
             console.error(e);
         }
@@ -98,8 +104,8 @@ export default class DataUploadService extends ServiceBase{
      */
     async addFeatureByName(serviceName,datasourceName,datasetName,feature){
         try{
-            await DUS.addFeatureByName(this._dataUploadServiceId_,serviceName,datasourceName,
-                datasetName,feature._featureId_);
+            await DUS.addFeatureByName(this._SMDataUploadServiceId,serviceName,datasourceName,
+                datasetName,feature._SMFeatureId);
         }catch(e){
             console.error(e);
         }
@@ -114,7 +120,7 @@ export default class DataUploadService extends ServiceBase{
      */
     async deleteFeature(fullUrl,featureIDs){
         try{
-            await DUS.deleteFeature(this._dataUploadServiceId_,fullUrl,featureIDs);
+            await DUS.deleteFeature(this._SMDataUploadServiceId,fullUrl,featureIDs);
         }catch(e){
             console.error(e);
         }
@@ -131,7 +137,7 @@ export default class DataUploadService extends ServiceBase{
      */
     async deleteFeatureByName(serviceName,datasourceName,datasetName,featureIDs){
         try{
-            await DUS.deleteFeatureByName(this._dataUploadServiceId_,serviceName,
+            await DUS.deleteFeatureByName(this._SMDataUploadServiceId,serviceName,
                 datasourceName,datasetName,featureIDs);
         }catch(e){
             console.error(e);
@@ -148,7 +154,7 @@ export default class DataUploadService extends ServiceBase{
      */
     async modifyFeature(fullUrl,featureID,feature){
         try{
-            await DUS.modifyFeature(this._dataUploadServiceId_,fullUrl,featureID,feature._featureId_);
+            await DUS.modifyFeature(this._SMDataUploadServiceId,fullUrl,featureID,feature._SMFeatureId);
         }catch(e){
             console.error(e);
         }
@@ -166,15 +172,16 @@ export default class DataUploadService extends ServiceBase{
      */
     async modifyFeatureByName(serviceName,datasourceName,datasetName,featureID,feature){
         try{
-            await DUS.modifyFeatureByName(this._dataUploadServiceId_,serviceName,
-                datasourceName,datasetName,featureID,feature._featureId_);
+            await DUS.modifyFeatureByName(this._SMDataUploadServiceId,serviceName,
+                datasourceName,datasetName,featureID,feature._SMFeatureId);
         }catch(e){
             console.error(e);
         }
     }
 
     /**
-     * 将本地数据集中修改、删除、新增的数据提交到服务器上对应的数据集中。提交时要求本地和服务器上都存在该数据集及其对应的属性数据集（属性数据集用于记录被修改和被删除的记录）。 同时本地数据集的版本不得高于服务器上的版本（即本地的Max[SmUserID]不大于服务器上的Max[SMID]），否则不能提交，需要先进行更新。目前数据集的类型支持点、线、面数据集。 如果提交失败，将调用ResponseCallback中的requestFaild（）方法；如果成功，将调用requestSuccess()方法。
+     * 提交
+     * @description 将本地数据集中修改、删除、新增的数据提交到服务器上对应的数据集中。提交时要求本地和服务器上都存在该数据集及其对应的属性数据集（属性数据集用于记录被修改和被删除的记录）。 同时本地数据集的版本不得高于服务器上的版本（即本地的Max[SmUserID]不大于服务器上的Max[SMID]），否则不能提交，需要先进行更新。目前数据集的类型支持点、线、面数据集。 如果提交失败，将调用ResponseCallback中的requestFaild（）方法；如果成功，将调用requestSuccess()方法。
      * @memberOf DataUploadService
      * @param {string} urlDataset  - dataset在服务器上的地址。
      * @param {objecg} dataset - 本地数据集，可以使点、线、面数据集。
@@ -182,7 +189,7 @@ export default class DataUploadService extends ServiceBase{
      */
     async commitDataset(urlDataset,dataset){
         try{
-            await DUS.commitDataset(this._dataUploadServiceId_,fullUrl,dataset.datasetId);
+            await DUS.commitDataset(this._SMDataUploadServiceId,fullUrl,dataset._SMDatasetId);
         }catch(e){
             console.error(e);
         }
@@ -196,7 +203,7 @@ export default class DataUploadService extends ServiceBase{
      */
     async deleteDataset(fullUrl){
         try{
-            await DUS.deleteDataset(this._dataUploadServiceId_,fullUrl);
+            await DUS.deleteDataset(this._SMDataUploadServiceId,fullUrl);
         }catch(e){
             console.error(e);
         }
@@ -212,7 +219,7 @@ export default class DataUploadService extends ServiceBase{
      */
     async deleteDatasetByName(serviceName,datasourceName,datasetName){
         try{
-            await DUS.deleteDatasetByName(this._dataUploadServiceId_,serviceName,datasourceName,datasetName);
+            await DUS.deleteDatasetByName(this._SMDataUploadServiceId,serviceName,datasourceName,datasetName);
         }catch(e){
             console.error(e);
         }

@@ -1,6 +1,9 @@
-/**
- * Created by will on 2016/6/17.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 const LONGPRESS_EVENT = "com.supermap.RN.JSMapcontrol.long_press_event";
 
 import { NativeModules,DeviceEventEmitter,NativeEventEmitter,Platform } from 'react-native';
@@ -36,9 +39,9 @@ export default class MapControl{
      */
     async getMap(){
         try{
-            var {mapId} =await MC.getMap(this.mapControlId);
+            var {mapId} =await MC.getMap(this._SMMapControlId);
             var map = new Map();
-            map.mapId = mapId;
+            map._SMMapId = mapId;
             return map;
         }catch(e){
             console.error(e);
@@ -53,7 +56,7 @@ export default class MapControl{
      */
     async setAction(actionType){
         try{
-            await MC.setAction(this.mapControlId,actionType);
+            await MC.setAction(this._SMMapControlId,actionType);
         }catch(e){
             console.error(e);
         }
@@ -66,7 +69,7 @@ export default class MapControl{
      */
     async submit(){
         try{
-            var submited = await MC.submit(this.mapControlId);
+            var submited = await MC.submit(this._SMMapControlId);
             return submited;
         }catch (e){
             console.error(e);
@@ -100,7 +103,7 @@ export default class MapControl{
      */
     async removeActionChangedListener(actionChange){
         try{
-            await MC.removeActionChangedListener(this.mapControlId);
+            await MC.removeActionChangedListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -115,7 +118,7 @@ export default class MapControl{
     async setGestureDetector(handlers){
         try{
             if(handlers){
-                await MC.setGestureDetector(this.mapControlId);
+                await MC.setGestureDetector(this._SMMapControlId);
             }else{
                 throw new Error("setGestureDetector need callback functions as first two argument!");
             }
@@ -155,7 +158,7 @@ export default class MapControl{
 
     async deleteGestureDetector(){
         try{
-            await MC.deleteGestureDetector(this.mapControlId)
+            await MC.deleteGestureDetector(this._SMMapControlId)
         }catch (e){
             console.error(e);
         }
@@ -174,7 +177,7 @@ export default class MapControl{
             angleChanged = events.angleChanged;
             sizeChanged = events.sizeChanged;
 
-            var success = await MC.setMapParamChangedListener(this.mapControlId);
+            var success = await MC.setMapParamChangedListener(this._SMMapControlId);
             console.debug("Listening map parameters changed.");
 
             if(!success) return;
@@ -239,7 +242,7 @@ export default class MapControl{
      */
     async setRefreshListener(callback){
         try{
-            var success = await MC.setRefreshListener(this.mapControlId);
+            var success = await MC.setRefreshListener(this._SMMapControlId);
             console.log("MapControl:test result:",success);
             if(success){
                 DeviceEventEmitter.addListener("com.supermap.RN.JSMapcontrol.refresh_event",function (e) {
@@ -263,20 +266,20 @@ export default class MapControl{
      */
     async getCurrentGeometry(){
         try{
-            var {geometryId,geoType} = await MC.getCurrentGeometry(this.mapControlId);
+            var {geometryId,geoType} = await MC.getCurrentGeometry(this._SMMapControlId);
 
             if(geoType == "GeoPoint"){
                 var geoPoint = new GeoPoint();
-                geoPoint.geoPointId = geometryId;
+                geoPoint._SMGeoPointId = geometryId;
             }else if(geoType == "GeoRegion"){
                 var geoRegion = new GeoRegion();
-                geoRegion.geoRegionId = geometryId;
+                geoRegion._SMGeoRegionId = geometryId;
             }else if(geoType == "GeoLine"){
                 var geoLine = new GeoLine();
-                geoLine.geoLineId = geometryId;
+                geoLine._SMGeoLineId = geometryId;
             }else{
                 var geometry = new Geometry();
-                geometry.geometryId = geometryId;
+                geometry._SMGeometryId = geometryId;
             }
             return geoPoint || geoLine || geoRegion || geometry;
         }catch (e){
@@ -291,9 +294,9 @@ export default class MapControl{
      */
     async getIndustryNavi(){
         try{
-            var {navigation2Id} = await MC.getNavigation2(this.mapControlId);
+            var {navigation2Id} = await MC.getNavigation2(this._SMMapControlId);
             var navigation2 = new Navigation2();
-            navigation2.navigation2Id = navigation2Id;
+            navigation2._SMNavigation2Id = navigation2Id;
             return navigation2;
         }catch (e){
             console.error(e);
@@ -338,9 +341,9 @@ export default class MapControl{
      */
     async getTraditionalNavi(){
         try{
-            var {traditionalNaviId} = await MC.getTraditionalNavi(this.mapControlId);
+            var {traditionalNaviId} = await MC.getTraditionalNavi(this._SMMapControlId);
             var traditionalNavi= new TraditionalNavi();
-            traditionalNavi.traditionalNaviId = traditionalNaviId;
+            traditionalNavi._SMTraditionalNaviId = traditionalNaviId;
             return traditionalNavi;
         }catch (e){
             console.error(e);
@@ -354,7 +357,7 @@ export default class MapControl{
      */
     async getAction(){
         try{
-            var {actionType} = await MC.getAction(this.mapControlId);
+            var {actionType} = await MC.getAction(this._SMMapControlId);
             for( p in this.ACTION){
                 if(this.ACTION[p] === actionType){
                     console.log("MapControl.js:"+p);
@@ -375,7 +378,7 @@ export default class MapControl{
      */
     async redo(){
         try{
-            var {redone} = await MC.redo(this.mapControlId);
+            var {redone} = await MC.redo(this._SMMapControlId);
             return redone;
         }catch (e){
             console.error(e);
@@ -389,7 +392,7 @@ export default class MapControl{
      */
     async undo(){
         try{
-            var {undone} = await MC.undo(this.mapControlId);
+            var {undone} = await MC.undo(this._SMMapControlId);
             return undone;
         }catch (e){
             console.error(e);
@@ -403,7 +406,7 @@ export default class MapControl{
      */
     async cancel(){
         try{
-            var {canceled} = await MC.cancel(this.mapControlId);
+            var {canceled} = await MC.cancel(this._SMMapControlId);
             return canceled;
         }catch (e){
             console.error(e);
@@ -417,7 +420,7 @@ export default class MapControl{
      */
     async deleteCurrentGeometry(){
         try{
-            var {deleted} = await MC.deleteCurrentGeometry(this.mapControlId);
+            var {deleted} = await MC.deleteCurrentGeometry(this._SMMapControlId);
             return deleted;
         }catch (e){
             console.error(e);
@@ -431,9 +434,9 @@ export default class MapControl{
      */
     async getEditLayer(){
         try{
-            var {layerId} = await MC.getEditLayer(this.mapControlId);
+            var {layerId} = await MC.getEditLayer(this._SMMapControlId);
             var layer = new Layer();
-            layer.layerId = layerId;
+            layer._SMLayerId = layerId;
             return layer;
         }catch (e){
             console.error(e);
@@ -448,13 +451,13 @@ export default class MapControl{
      */
     async addGeometryDeletedListener(event){
         try{
-            var success = await MC.addGeometryDeletedListener(this.mapControlId);
+            var success = await MC.addGeometryDeletedListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapControl.geometry_deleted',function (e) {
                 if(typeof event.geometryDeleted === 'function'){
                     var layer = new Layer();
-                    layer.layerId = e.layerId;
+                    layer._SMLayerId = e.layerId;
                     e.layer = layer;
                     event.geometryDeleted(e);
                 }else{
@@ -474,7 +477,7 @@ export default class MapControl{
      */
     async removeGeometryDeletedListener(){
         try{
-            await MC. removeGeometryDeletedListener(this.mapControlId);
+            await MC. removeGeometryDeletedListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -488,13 +491,13 @@ export default class MapControl{
      */
     async addGeometryAddedListener(event){
         try{
-            var success = await MC.addGeometryAddedListener(this.mapControlId);
+            var success = await MC.addGeometryAddedListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.grometry_added',function (e) {
                 if(typeof event.geometryAdded === 'function'){
                     var layer = new Layer();
-                    layer.layerId = e.layerId;
+                    layer._SMLayerId = e.layerId;
                     e.layer = layer;
                     event.geometryAdded(e);
                 }else{
@@ -514,7 +517,7 @@ export default class MapControl{
      */
     async removeGeometryAddedListener(){
         try{
-            await MC. removeGeometryAddedListener(this.mapControlId);
+            await MC. removeGeometryAddedListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -528,13 +531,13 @@ export default class MapControl{
      */
     async addGeometryDeletingListener(event){
         try{
-            var success = await MC.addGeometryDeletingListener(this.mapControlId);
+            var success = await MC.addGeometryDeletingListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.geometry_deleting',function (e) {
                 if(typeof event.geometryDeleting === 'function'){
                     var layer = new Layer();
-                    layer.layerId = e.layerId;
+                    layer._SMLayerId = e.layerId;
                     e.layer = layer;
                     event.geometryDeleting(e);
                 }else{
@@ -554,7 +557,7 @@ export default class MapControl{
      */
     async removeGeometryDeletingListener(){
         try{
-            await MC. removeGeometryDeletingListener(this.mapControlId);
+            await MC. removeGeometryDeletingListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -568,13 +571,13 @@ export default class MapControl{
      */
     async addGeometryModifiedListener(event){
         try{
-            var success = await MC.addGeometryModifiedListener(this.mapControlId);
+            var success = await MC.addGeometryModifiedListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.geometry_modified',function (e) {
                 if(typeof event.geometryModified === 'function'){
                     var layer = new Layer();
-                    layer.layerId = e.layerId;
+                    layer._SMLayerId = e.layerId;
                     e.layer = layer;
                     event.geometryModified(e);
                 }else{
@@ -594,7 +597,7 @@ export default class MapControl{
      */
     async removeGeometryModifiedListener(){
         try{
-            await MC. removeGeometryModifiedListener(this.mapControlId);
+            await MC. removeGeometryModifiedListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -608,13 +611,13 @@ export default class MapControl{
      */
     async addGeometryModifyingListener(event){
         try{
-            var success = await MC.addGeometryModifyingListener(this.mapControlId);
+            var success = await MC.addGeometryModifyingListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.geometry_modifying',function (e) {
                 if(typeof event.geometryModifying === 'function'){
                     var layer = new Layer();
-                    layer.layerId = e.layerId;
+                    layer._SMLayerId = e.layerId;
                     e.layer = layer;
                     event.geometryModifying(e);
                 }else{
@@ -634,7 +637,7 @@ export default class MapControl{
      */
     async removeGeometryModifyingListener(){
         try{
-            await MC. removeGeometryModifyingListener(this.mapControlId);
+            await MC. removeGeometryModifyingListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -650,14 +653,14 @@ export default class MapControl{
      */
     async addGeometrySelectedListener(events){
         try{
-            var success = await MC.addGeometrySelectedListener(this.mapControlId);
+            var success = await MC.addGeometrySelectedListener(this._SMMapControlId);
             if(!success) return ;
             //差异化
             if(Platform.OS === 'ios'){
                 nativeEvt.addListener('com.supermap.RN.JSMapcontrol.geometry_selected',function (e) {
                         if(typeof events.geometrySelected === 'function'){
                             var layer = new Layer();
-                            layer.layerId = e.layerId;
+                            layer._SMLayerId = e.layerId;
                             e.layer = layer;
                             events.geometrySelected(e);
                         }else{
@@ -668,7 +671,7 @@ export default class MapControl{
                         if(typeof events.geometryMultiSelected === 'function'){
                             e.geometries.map(function (geometry) {
                                 var layer = new Layer();
-                                layer.layerId = geometry.layerId;
+                                layer._SMLayerId = geometry.layerId;
                                 geometry.layer = layer;
                             })
                             events.geometryMultiSelected(e);
@@ -680,7 +683,7 @@ export default class MapControl{
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.geometry_selected',function (e) {
                 if(typeof events.geometrySelected === 'function'){
                     var layer = new Layer();
-                    layer.layerId = e.layerId;
+                    layer._SMLayerId = e.layerId;
                     e.layer = layer;
                     events.geometrySelected(e);
                 }else{
@@ -691,7 +694,7 @@ export default class MapControl{
                 if(typeof events.geometryMultiSelected === 'function'){
                     e.geometries.map(function (geometry) {
                         var layer = new Layer();
-                        layer.layerId = geometry.layerId;
+                        layer._SMLayerId = geometry.layerId;
                         geometry.layer = layer;
                     })
                     events.geometryMultiSelected(e);
@@ -713,7 +716,7 @@ export default class MapControl{
      */
     async removeGeometrySelectedListener(){
         try{
-            await MC. removeGeometrySelectedListener(this.mapControlId);
+            await MC. removeGeometrySelectedListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -730,7 +733,7 @@ export default class MapControl{
      */
     async addMeasureListener(events){
         try{
-            var success = await MC.addGeometryModifyingListener(this.mapControlId);
+            var success = await MC.addGeometryModifyingListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.length_measured',function (e) {
@@ -767,7 +770,7 @@ export default class MapControl{
      */
     async removeMeasureListener(){
         try{
-            await MC. removeMeasureListener(this.mapControlId);
+            await MC. removeMeasureListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -781,7 +784,7 @@ export default class MapControl{
      */
     async addUndoStateChangeListener(event){
         try{
-            var success = await MC.addUndoStateChangeListener(this.mapControlId);
+            var success = await MC.addUndoStateChangeListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.undo_state_change',function (e) {
@@ -804,7 +807,7 @@ export default class MapControl{
      */
     async removeUndoStateChangeListener(){
         try{
-            await MC.removeUndoStateChangeListener(this.mapControlId);
+            await MC.removeUndoStateChangeListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -820,7 +823,7 @@ export default class MapControl{
      */
     async setEditStatusListener(events){
         try{
-            var success = await MC.setEditStatusListener(this.mapControlId);
+            var success = await MC.setEditStatusListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.add_node_enable',function (e) {
@@ -850,7 +853,7 @@ export default class MapControl{
      */
     async removeEditStatusListener(){
         try{
-            await MC.removeEditStatusListener(this.mapControlId);
+            await MC.removeEditStatusListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -863,7 +866,7 @@ export default class MapControl{
      */
     async addPlotLibrary(url){
         try{
-            var libId = await MC.addPlotLibrary(this.mapControlId,url);
+            var libId = await MC.addPlotLibrary(this._SMMapControlId,url);
             return libId;
         }catch (e){
             console.error(e);
@@ -877,7 +880,7 @@ export default class MapControl{
      */
     async removePlotLibrary(libId){
         try{
-            var isRemove = await MC.removePlotLibrary(this.mapControlId,libId);
+            var isRemove = await MC.removePlotLibrary(this._SMMapControlId,libId);
         }catch (e){
             console.error(e);
         }
@@ -890,7 +893,7 @@ export default class MapControl{
      */
     async setPlotSymbol(libId,symbolCode){
         try{
-            var isSet = await MC.setPlotSymbol(this.mapControlId,libId,symbolCode);
+            var isSet = await MC.setPlotSymbol(this._SMMapControlId,libId,symbolCode);
         }catch (e){
             console.error(e);
         }

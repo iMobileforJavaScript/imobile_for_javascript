@@ -1,20 +1,26 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let P = NativeModules.JSGeoPoint;
 import Geometry from './Geometry.js';
 
 /**
  * @class GeoPoint
+ * @description 点几何对象类。
  */
 export default class GeoPoint extends Geometry{
     constructor(){
         super();
-        //同步子类Id和父类Id
-        Object.defineProperty(this,"geoPointId",{
+        Object.defineProperty(this,"_SMGeoPointId",{
             get:function () {
-                return this.geometryId
+                return this._SMGeometryId
             },
-            set:function (geoPointId) {
-                this.geometryId = geoPointId;
+            set:function (_SMGeoPointId) {
+                this._SMGeometryId = _SMGeoPointId;
             }
         })
     }
@@ -31,12 +37,12 @@ export default class GeoPoint extends Geometry{
             if(typeof arguments[0] == 'number' && typeof arguments[1] == 'number'){
                 var {geoPointId} = await P.createObjByXY(arguments[0],arguments[1]);
                 var geoPoint = new GeoPoint();
-                geoPoint.geoPointId = geoPointId;
+                geoPoint._SMGeoPointId = geoPointId;
                 return geoPoint;
             }else{
                 var {geoPointId} = await P.createObj();
                 var geoPoint = new GeoPoint(geoPointId);
-                geoPoint.geoPointId = geoPointId;
+                geoPoint._SMGeoPointId = geoPointId;
                 return geoPoint;
             }
         }catch (e){
@@ -51,9 +57,8 @@ export default class GeoPoint extends Geometry{
      */
     async getX(){
         try {
-            var {coordsX} = await P.getX(this.geoPointId);
+            var {coordsX} = await P.getX(this._SMGeoPointId);
             return coordsX;
-            console.log("coordsX"+coordsX);
         }catch (e){
             console.error(e);
         }
@@ -66,7 +71,7 @@ export default class GeoPoint extends Geometry{
      */
     async getY(){
         try {
-            var {coordsY} = await P.getY(this.geoPointId);
+            var {coordsY} = await P.getY(this._SMGeoPointId);
             return coordsY;
         }catch (e){
             console.error(e);

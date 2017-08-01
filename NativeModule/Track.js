@@ -1,3 +1,9 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let T = NativeModules.JSTrack;
 import Dataset from './Dataset.js';
@@ -5,6 +11,7 @@ import Datasets from './Datasets.js';
 
 /**
  * @class Track
+ * @description 轨迹记录类。
  */
 export default class Track {
 
@@ -17,7 +24,7 @@ export default class Track {
         try{
             var {_trackId_} = await T.createObj();
             var track = new Track();
-            track._trackId_ = _trackId_;
+            track._SMTrackId = _trackId_;
             return track;
         }catch (e){
             console.error(e);
@@ -33,9 +40,9 @@ export default class Track {
      */
     async createDataset(datasource,name){
         try{
-            var {datasetId} = await T.createDataset(this._trackId_,datasourceId,name);
+            var {datasetId} = await T.createDataset(this._SMTrackId,datasource._SMDatasourceId,name);
             var dataset = new Dataset();
-            dataset.datasetId = datasetId;
+            dataset._SMDatasetId = datasetId;
             return dataset;
         }catch (e){
             console.error(e);
@@ -49,7 +56,7 @@ export default class Track {
      */
     async getCustomLocation(){
         try{
-            var {customLocation} = await T.getCustomLocation(track._trackId_);
+            var {customLocation} = await T.getCustomLocation(track._SMTrackId);
             return customLocation;
         }catch (e){
             console.error(e);
@@ -63,9 +70,9 @@ export default class Track {
      */
     async getDataset(){
         try{
-            var {datasetId} = await T.getDataset(this._trackId_);
+            var {datasetId} = await T.getDataset(this._SMTrackId);
             var dataset = new Dataset();
-            dataset.datasetId = datasetId;
+            dataset._SMDatasetId = datasetId;
             return dataset;
         }catch (e){
             console.error(e);
@@ -79,7 +86,7 @@ export default class Track {
      */
     async getDistanceInterval(){
         try{
-            var {distanceInterval} = await T.getDistanceInterval(track._trackId_);
+            var {distanceInterval} = await T.getDistanceInterval(track._SMTrackId);
             return distanceInterval;
         }catch (e){
             console.error(e);
@@ -93,7 +100,7 @@ export default class Track {
      */
     async getMatchDatasets(){
         try{
-            var {idArr} = await T.getMatchDatasets(this._trackId_);
+            var {idArr} = await T.getMatchDatasets(this._SMTrackId);
             if(idArr === false){
                 return false;
             }
@@ -101,7 +108,7 @@ export default class Track {
             var objArr = [];
             for(var i=0; i<idArr.length; i++) {
                 var dataset = new Dataset();
-                dataset.datasetId = idArr[i];
+                dataset._SMDatasetId = idArr[i];
                 objArr.push(dataset);
             }
             return objArr;
@@ -117,7 +124,7 @@ export default class Track {
      */
     async getTimeInterval(){
         try{
-            var {timeInterval} = await T.getTimeInterval(track._trackId_);
+            var {timeInterval} = await T.getTimeInterval(track._SMTrackId);
             return timeInterval;
         }catch (e){
             console.error(e);
@@ -131,7 +138,7 @@ export default class Track {
      */
     async isSpeedDirectionEnable(){
         try{
-            var {isSpeedDirectionEnable} = await T.isSpeedDirectionEnable(track._trackId_);
+            var {isSpeedDirectionEnable} = await T.isSpeedDirectionEnable(track._SMTrackId);
             return isSpeedDirectionEnable;
         }catch (e){
             console.error(e);
@@ -146,7 +153,7 @@ export default class Track {
      */
     async setCustomLocation(bCustomLocation){
         try{
-            await T.setCustomLocation(track._trackId_,bCustomLocation);
+            await T.setCustomLocation(track._SMTrackId,bCustomLocation);
         }catch (e){
             console.error(e);
         }
@@ -160,7 +167,7 @@ export default class Track {
      */
     async setDataset(dataset){
         try{
-            await T.setDataset(track._trackId_,dataset.datasetId);
+            await T.setDataset(track._SMTrackId,dataset._SMDatasetId);
         }catch (e){
             console.error(e);
         }
@@ -174,7 +181,7 @@ export default class Track {
      */
     async setDistanceInterval(interval){
         try{
-            await T.setDistanceInterval(track._trackId_,interval);
+            await T.setDistanceInterval(track._SMTrackId,interval);
         }catch (e){
             console.error(e);
         }
@@ -189,7 +196,7 @@ export default class Track {
      */
     async setGPSData(jsonGpsData){
         try{
-            await T.setGPSData(track._trackId_,jsonGpsData);
+            await T.setGPSData(track._SMTrackId,jsonGpsData);
         }catch (e){
             console.error(e);
         }
@@ -198,13 +205,14 @@ export default class Track {
     /**
      * 设置匹配线数据集集合，为轨迹抓路功能使用，该数据集集合应为线数据集集合。
      * @memberOf Track
+     * @deprecated
      * @param {Array} datsets - 设置匹配线数据集集合。
      * @returns {Promise.<void>}
      */
     async setMatchDatasets(datsets){
         try{
             //to do
-            await T.setMatchDatasets(track._trackId_,datsets.datasetId);
+            await T.setMatchDatasets(track._SMTrackId,datsets._SMDatasetsId);
         }catch (e){
             console.error(e);
         }
@@ -219,7 +227,7 @@ export default class Track {
      */
     async setSpeedDirectionEnable(speedDirectionEnable){
         try{
-            await T.setSpeedDirectionEnable(track._trackId_,speedDirectionEnable);
+            await T.setSpeedDirectionEnable(track._SMTrackId,speedDirectionEnable);
         }catch (e){
             console.error(e);
         }
@@ -233,7 +241,7 @@ export default class Track {
      */
     async setTimeInterval(timeInterval){
         try{
-            await T.setTimeInterval(track._trackId_,timeInterval);
+            await T.setTimeInterval(track._SMTrackId,timeInterval);
         }catch (e){
             console.error(e);
         }
@@ -246,7 +254,7 @@ export default class Track {
      */
     async startTrack(){
         try{
-            await T.startTrack(track._trackId_);
+            await T.startTrack(track._SMTrackId);
         }catch (e){
             console.error(e);
         }
@@ -259,7 +267,7 @@ export default class Track {
      */
     async stopTrack(){
         try{
-            await T.stopTrack(track._trackId_);
+            await T.stopTrack(track._SMTrackId);
         }catch (e){
             console.error(e);
         }

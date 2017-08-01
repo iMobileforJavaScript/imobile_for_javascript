@@ -10,22 +10,13 @@
 #import "JSObjManager.h"
 #import "SuperMap/BarChart.h"
 #import "SuperMap/ChartData.h"
-#import "SuperMap/MapControl.h"
-#import "SuperMap/Map.h"
-#import "SuperMap/Layers.h"
-#import "SuperMap/Layer.h"
-@interface JSBarChartViewManager()<ChartOnSelectedDelegate>
-
-@end
+//#import "SuperMap/MapControl.h"
+//#import "SuperMap/Map.h"
+//#import "SuperMap/Layers.h"
+//#import "SuperMap/Layer.h"
 
 @implementation JSBarChartViewManager
 RCT_EXPORT_MODULE(RCTBarChartView);
-
--(UIView*)view{
-    BarChart* chart = [[BarChart alloc]init];
-    chart.deleagate = self;
-    return chart;
-}
 
 RCT_EXPORT_VIEW_PROPERTY(title, NSString);
 RCT_EXPORT_VIEW_PROPERTY(textSize, float);
@@ -52,8 +43,7 @@ RCT_CUSTOM_VIEW_PROPERTY(hightLightColor, NSArray, BarChart){
     }
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(chartDatas, NSArray, BarChart){
-    @try {
+RCT_CUSTOM_VIEW_PROPERTY(data, NSArray, BarChart){
         NSArray* jsObjArr = json ? [RCTConvert NSArray:json] :nil;
         NSMutableArray* dataArr = [[NSMutableArray alloc]initWithCapacity:5];
         for (NSString*objId in jsObjArr) {
@@ -61,9 +51,7 @@ RCT_CUSTOM_VIEW_PROPERTY(chartDatas, NSArray, BarChart){
             [dataArr addObject:data];
         }
         [view addChartDatas:dataArr];
-    } @catch (NSException *exception) {
-        NSLog(@"imoble_for_reactnative got exception,info:%@",exception);
-    }
+    [view update];
 }
 
 //RCT_CUSTOM_VIEW_PROPERTY(layerIndexWithMapCtrl, NSArray, BarChart){
@@ -78,4 +66,9 @@ RCT_CUSTOM_VIEW_PROPERTY(chartDatas, NSArray, BarChart){
 //        NSLog(@"imoble_for_reactnative got exception,info:%@",exception);
 //    }
 //}
+
+-(UIView*)view{
+    BarChart* chart = [[BarChart alloc]init];
+    return chart;
+}
 @end

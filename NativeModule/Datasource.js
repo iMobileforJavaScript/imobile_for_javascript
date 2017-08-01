@@ -7,7 +7,7 @@
  **********************************************************************************/
 import {NativeModules} from 'react-native';
 let D = NativeModules.JSDatasource;
-import Datasets from './Datasets';
+import Datasets from './Datasets.js';
 import Dataset from './Dataset.js';
 import DatasetVector from './DatasetVector.js';
 import PrjCoordSys from './PrjCoordSys.js';
@@ -21,7 +21,7 @@ import PrjCoordSys from './PrjCoordSys.js';
 export default class Datasource{
 
     /**
-     * 获取数据集集合
+     * 获取数据集集合。
      * @memberOf Datasource
      * @deprecated - 已弃用，Datasets类不建议使用，后续版本即将移除此接口
      * @returns {Promise.<Datasets>}
@@ -29,9 +29,9 @@ export default class Datasource{
     async getDatasets(){
         console.warn("Datasource.js:getDatasets() function has been deprecated. If you want to get dataset , please call the getDataset() function");
         try{
-            var {datasetsId} = await D.getDatasets(this.datasourceId);
+            var {datasetsId} = await D.getDatasets(this._SMDatasourceId);
             var datasets = new Datasets();
-            datasets.datasetsId = datasetsId;
+            datasets._SMDatasetsId = datasetsId;
 
             return datasets;
         }catch(e){
@@ -40,7 +40,7 @@ export default class Datasource{
     }
 
     /**
-     * 指定名称或序号来获取数据集
+     * 指定名称或序号来获取数据集。
      * @memberOf Datasource
      * @param {number | string} index|name - 既可以是序号，也可以是数据集名称
      * @returns {Promise.<Dataset>}
@@ -49,12 +49,11 @@ export default class Datasource{
         try{
             var dataset = new Dataset();
             if(typeof arg != "string"){
-                var {datasetId} = await D.getDataset(this.datasourceId,arg);
+                var {datasetId} = await D.getDataset(this._SMDatasourceId,arg);
             }else{
-                var {datasetId} = await D.getDatasetByName(this.datasourceId,arg);
+                var {datasetId} = await D.getDatasetByName(this._SMDatasourceId,arg);
             }
-            dataset.datasetId = datasetId;
-            console.log("Datasource.js:----------------------datasetId:"+dataset.datasetId);
+            dataset._SMDatasetId = datasetId;
 
             return dataset;
         }catch(e){
@@ -63,14 +62,14 @@ export default class Datasource{
     }
 
     /**
-     * 检测所供名称是否可用于新建数据集
+     * 返回一个数据源中未被使用的数据集的名称。
      * @memberOf Datasource
      * @param {string} name - 待检测名称
      * @returns {Promise.<string>}
      */
     async getAvailableDatasetName(name){
         try{
-            var {datasetName} = await D.getAvailableDatasetName(this.datasourceId,name);
+            var {datasetName} = await D.getAvailableDatasetName(this._SMDatasourceId,name);
             return datasetName;
         }catch(e){
             console.error(e);
@@ -88,14 +87,14 @@ export default class Datasource{
     async createDatasetVector(nameOrInfoObj,datasetType,encodeType){
         try{
             if(arguments.length === 1){
-                var {datasetVectorId} = await D.createDatasetVector(this.datasourceId,nameOrInfoObj.datasetVectorInfoId);
+                var {datasetVectorId} = await D.createDatasetVector(this._SMDatasourceId,nameOrInfoObj.datasetVectorInfoId);
                 var datasetVector = new DatasetVector();
-                datasetVector.datasetVectorId = datasetVectorId;
+                datasetVector._SMDatasetVectorId = datasetVectorId;
                 return datasetVector;
             }else{
-                var {datasetVectorId} = await D.createDatasetVectorDirectly(this.datasourceId,nameOrInfoObj,datasetType,encodeType);
+                var {datasetVectorId} = await D.createDatasetVectorDirectly(this._SMDatasourceId,nameOrInfoObj,datasetType,encodeType);
                 var datasetVector = new DatasetVector();
-                datasetVector.datasetVectorId = datasetVectorId;
+                datasetVector._SMDatasetVector = datasetVectorId;
                 return datasetVector;
             }
         }catch(e){
@@ -114,7 +113,7 @@ export default class Datasource{
      */
     async copyDataset(srcDataset,desDatasetName,encodeType){
         try{
-            var {datasetId} = await D.copyDataset(this.datasourceId,srcDataset.datasetId,desDatasetName,encodeType | 0);
+            var {datasetId} = await D.copyDataset(this._SMDatasourceId,srcDataset._SMDatasetId,desDatasetName,encodeType | 0);
             var dataset = new Dataset();
             dataset.datasetId = datasetId;
             return dataset;
@@ -134,7 +133,7 @@ export default class Datasource{
    /* async changepassword(oldPassword,newPassword,datasourceEncrytionType){
         try{
             if(!oldPassword || !newPassword) throw new Error("Datasource.js:原始密码和新密码不能为空。");
-            var {changed} = await D.changepassword(this.datasourceId,oldPassword,newPassword, datasourceEncrytionType | 0);
+            var {changed} = await D.changepassword(this._SMDatasourceId,oldPassword,newPassword, datasourceEncrytionType | 0);
             return changed;
         }catch(e){
             console.error(e);
@@ -148,9 +147,9 @@ export default class Datasource{
      */
     async getPrjCoordSys(){
         try{
-            var {prjCoordSysId} = await D.getPrjCoordSys(this.datasourceId);
+            var {prjCoordSysId} = await D.getPrjCoordSys(this._SMDatasourceId);
             var prjCoordSys = new PrjCoordSys();
-            prjCoordSys.prjCoordSysId = prjCoordSysId;
+            prjCoordSys._SMPrjCoordSysId = prjCoordSysId;
             return prjCoordSys;
         }catch(e){
             console.error(e);
@@ -165,7 +164,7 @@ export default class Datasource{
      */
     async containDataset(datasetName){
         try{
-            var {contain} = await D.containDataset(this.datasourceId,datasetName);
+            var {contain} = await D.containDataset(this._SMDatasourceId,datasetName);
             return contain;
         }catch(e){
             console.error(e);
@@ -180,7 +179,7 @@ export default class Datasource{
      */
     async deleteDataset(datasetName){
         try{
-            var {deleted} = await D.deleteDataset(this.datasourceId,datasetName);
+            var {deleted} = await D.deleteDataset(this._SMDatasourceId,datasetName);
             return deleted;
         }catch(e){
             console.error(e);
@@ -194,7 +193,7 @@ export default class Datasource{
      */
     async getDatasetCount(){
         try{
-            var {count} = await D.getDatasetCount(this.datasourceId);
+            var {count} = await D.getDatasetCount(this._SMDatasourceId);
             return count;
         }catch(e){
             console.error(e);

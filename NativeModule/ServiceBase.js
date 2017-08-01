@@ -1,8 +1,15 @@
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let SB = NativeModules.JSServiceBase;
 
 /**
  * @class ServiceBase
+ * @description iServer 所有服务的基类。
  */
 export default class ServiceBase {
 
@@ -18,7 +25,7 @@ export default class ServiceBase {
      */
     async getUrl(){
         try{
-            var url = await SB.getUrl(this._serviceBaseId_);
+            var url = await SB.getUrl(this._SMServiceBaseId);
             return url;
         }catch(e){
             console.error(e);
@@ -33,7 +40,7 @@ export default class ServiceBase {
      */
     async setUrl(url){
         try{
-            await SB.setUrl(this._serviceBaseId_,url);
+            await SB.setUrl(this._SMServiceBaseId,url);
         }catch(e){
             console.error(e);
         }
@@ -47,7 +54,7 @@ export default class ServiceBase {
      */
     async setServerName(serverName){
         try{
-            await SB.setServerName(this._serviceBaseId_,serverName);
+            await SB.setServerName(this._SMServiceBaseId,serverName);
         }catch(e){
             console.error(e);
         }
