@@ -26,14 +26,18 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Created by will on 2016/5/17.
- */
+            <pre class="prettyprint source linenums"><code>/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 var {NativeModules}=require('react-native');
 let WCI=NativeModules.JSWorkspaceConnectionInfo;
 
 /**
  * @class WorkspaceConnectionInfo
+ * @description 工作空间连接信息类。
  */
 export default class WorkspaceConnectionInfo{
     /**
@@ -45,7 +49,7 @@ export default class WorkspaceConnectionInfo{
         try{
             var {ID}=await WCI.createJSObj();
             var workspaceConnectionInfo = new WorkspaceConnectionInfo();
-            workspaceConnectionInfo.workspaceConnectionInfoId = ID;
+            workspaceConnectionInfo._SMWorkspaceConnectionInfoId = ID;
             return workspaceConnectionInfo;
         }catch(e){
             console.error(e);
@@ -60,7 +64,7 @@ export default class WorkspaceConnectionInfo{
      */
     async setType(type){
         try{
-            await WCI.setType(this.workspaceConnectionInfoId,type);
+            await WCI.setType(this._SMWorkspaceConnectionInfoId,type);
         }catch(e){
             console.error(e);
         }
@@ -69,12 +73,12 @@ export default class WorkspaceConnectionInfo{
     /**
      * 设置数据源路径
      * @memberOf WorkspaceConnectionInfo
-     * @param {string} path
+     * @param path
      * @returns {Promise.&lt;void>}
      */
     async setServer(path){
         try{
-            await WCI.setServer(this.workspaceConnectionInfoId,path);
+            await WCI.setServer(this._SMWorkspaceConnectionInfoId,path);
         }catch(e){
             console.error(e);
         }
@@ -83,12 +87,12 @@ export default class WorkspaceConnectionInfo{
     /**
      * 设置数据源密码
      * @memberOf WorkspaceConnectionInfo
-     * @param {string} passWord
+     * @param path
      * @returns {Promise.&lt;void>}
      */
     async setPassWord(passWord){
         try{
-            await WCI.setPassWord(this.workspaceConnectionInfoId,passWord);
+            await WCI.setPassWord(this._SMWorkspaceConnectionInfoId,passWord);
         }catch(e){
             console.error(e);
         }
@@ -105,13 +109,13 @@ export default class WorkspaceConnectionInfo{
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#LONGPRESS_EVENT">LONGPRESS_EVENT</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferAnalyst.html">BufferAnalyst</a></li><li><a href="BufferAnalystParameter.html">BufferAnalystParameter</a></li><li><a href="DataDownloadService.html">DataDownloadService</a></li><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="DatasetVectorInfo.html">DatasetVectorInfo</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="DatasourceConnectionInfo.html">DatasourceConnectionInfo</a></li><li><a href="DataUploadService.html">DataUploadService</a></li><li><a href="Feature.html">Feature</a></li><li><a href="FeatureSet.html">FeatureSet</a></li><li><a href="GeoLine.html">GeoLine</a></li><li><a href="Geometry.html">Geometry</a></li><li><a href="GeoPoint.html">GeoPoint</a></li><li><a href="GeoRegion.html">GeoRegion</a></li><li><a href="GeoStyle.html">GeoStyle</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerSetting.html">LayerSetting</a></li><li><a href="LayerSettingVector.html">LayerSettingVector</a></li><li><a href="LocationManager.html">LocationManager</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Navigation2.html">Navigation2</a></li><li><a href="OverlayAnalyst.html">OverlayAnalyst</a></li><li><a href="OverlayAnalystParameter.html">OverlayAnalystParameter</a></li><li><a href="Point.html">Point</a></li><li><a href="Point2D.html">Point2D</a></li><li><a href="QueryParameter.html">QueryParameter</a></li><li><a href="QueryService.html">QueryService</a></li><li><a href="Rectangle2D.html">Rectangle2D</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Selection.html">Selection</a></li><li><a href="ServiceBase.html">ServiceBase</a></li><li><a href="ServiceQueryParameter.html">ServiceQueryParameter</a></li><li><a href="Size2D.html">Size2D</a></li><li><a href="Theme.html">Theme</a></li><li><a href="Track.html">Track</a></li><li><a href="TrackingLayer.html">TrackingLayer</a></li><li><a href="TraditionalNavi.html">TraditionalNavi</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Jul 03 2017 17:06:05 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Aug 01 2017 16:16:49 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>

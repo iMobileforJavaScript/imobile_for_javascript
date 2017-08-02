@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Layer.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Layer.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
+import {NativeModules} from 'react-native';
+let L = NativeModules.JSLayer;
+import Dataset from './Dataset.js';
+import Selection from './Selection.js';
+import LayerSetting from './LayerSetting.js';
+import LayerSettingVector from './LayerSettingVector.js';
+
+/**
+ * @class Layer
+ * @description (该类的实例不可被创建,只可以通过在 Map 类中的 addLayer 方法来创建)该类提供了图层显示和控制等的便于地图管理的一系列方法。当数据集被加载到地图窗口中显示的时，就形成了一个图层，因此图层是数据集的可视化显示。一个图层是对一个数据集的引用或参考。通过对可视化的图层的编辑，可以对 相应的数据集的要素进行编辑。一个图层或多个图层叠加显示则形成了地图。图层分为普通图层和专题图层，矢量的普通图层中所有要素采用相同的渲染风格，栅格图层采用颜色表来显示其像元；而专题图层则采用指定类型的专题图风格来渲染其中的 要素或像元。
+ */
+export default class Layer{
+    /**
+     * 设置图层是否处于可编辑状态。该方法控制是否对图层所引用的数据进行修改。
+     * @memberOf Layer
+     * @param {boolean} editable
+     * @returns {Promise.&lt;void>}
+     */
+    async setEditable(editable){
+        try{
+            await L.setEditable(this._SMLayerId,editable);
+        }catch(e){
+            console.error(e);
+        }
+    }
+    /**
+     * 判断图层是否处于可编辑状态。
+     * @memberOf Layer
+     * @returns {Promise.&lt;boolean>}
+     */
+    async getEditable(){
+        try{
+            var{isEditable} = await L.getEditable(this._SMLayerId);
+            return isEditable;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 返回图层的名称。图层的名称在图层所在的地图中唯一标识此图层。该标识不区分大小写。
+     * @memberOf Layer
+     * @returns {Promise.&lt;void>}
+     */
+    async getName(){
+        try{
+            var {layerName} = await L.getName(this._SMLayerId);
+            return layerName;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 返回此图层对应的数据集对象。图层是对数据集的引用，因而，一个图层与一个数据集相对应。
+     * @memberOf Layer
+     * @returns {Promise.&lt;Dataset>}
+     */
+    async getDataset(){
+        try{
+            var {datasetId} = await L.getDataset(this._SMLayerId);
+            var dataset = new Dataset();
+            dataset._SMDatasetId = datasetId;
+            return dataset;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 设置图层关联的数据集。 设置的数据集必须与当前地图属于同一工作空间，且数据集类型与原有数据集类型一致，否则会抛出异常(该方法暂不支持iOS设备)。
+     * @memberOf Layer
+     * @param {object} dataset - 图层关联的数据集
+     * @returns {Promise.&lt;void>}
+     */
+    async setDataset(dataset){
+        try{
+            await L.setDataset(this._SMLayerId,dataset._SMDatasetId);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 返回此图层中的选择集对象。选择集是个集合，其中包含选择的图层中的一个或多个要素。在选择集中的要素才可以被编辑。注意选择集只适用于矢量数据集，栅格数据集和影像数据集没有选择集。
+     * @memberOf Layer
+     * @returns {Promise.&lt;Selection>}
+     */
+    async getSelection(){
+        try{
+            var {selectionId,recordsetId} = await L.getSelection(this._SMLayerId);
+            var selection = new Selection();
+            selection._SMSelectionId = selectionId;
+            selection._SMRecordsetId = recordsetId;
+            return selection;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 设置图层中对象是否可以选择。
+     * @memberOf Layer
+     * @param {boolean} b
+     * @returns {Promise.&lt;void>}
+     */
+    async setSelectable(b){
+        try{
+            await L.setSelectable(this._SMLayerId,b);
+        }catch(e){
+            console.error(e);
+        }
+    }
+    
+    /**
+     * 返回图层中对象是否可以选择
+     * @memberOf Layer
+     * @param {void}
+     * @returns {Promise.&lt;boolean>}
+     */
+    async isSelectable(){
+        try{
+            var{selectable} = await L.isSelectable(this._SMLayerId);
+            return selectable;
+        }catch(e){
+            console.error(e);
+        }
+    }
+    
+    /**
+     * 获取此图层是否可见。true 表示此图层可见，false 表示图层不可见。当图层不可见时，其他所有的属性的设置将无效。
+     * @memberOf Layer
+     * @returns {Promise.&lt;boolean>}
+     */
+    async getVisible(){
+        try{
+            var isVisible = await L.getVisible(this._SMLayerId);
+            return isVisible;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 设置此图层是否可见。true 表示此图层可见，false 表示图层不可见。当图层不可见时，其他所有的属性的设置将无效。
+     * @memberOf Layer
+     * @param {boolean} b
+     * @returns {Promise.&lt;void>}
+     */
+    async setVisible(b){
+        try{
+            await L.setVisible(this._SMLayerId,b);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 返回普通图层的风格设置。LayerSettingVector 类用来对矢量数据图层风格进行设置和修改。
+     * @memberOf Layer
+     * @returns {Promise.&lt;LayerSetting>}
+     */
+    async getAdditionalSetting(){
+        try{
+            var layerSetting;
+            var {_layerSettingId_,type} = await L.getAdditionalSetting(this._SMLayerId);
+            if(type===0){
+            layerSetting = new LayerSettingVector();
+            layerSetting._SMLayerSettingVectorId = _layerSettingId_;
+            }else if(type===1){
+            //image
+            }else{
+            //grid
+            }
+            return layerSetting;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 设置普通图层的风格。普通图层风格的设置对矢量数据图层、栅格数据图层以及影像数据图层是不相同的。LayerSettingVector类用来对矢量数据图层的风格进行设置和修改。
+     * @memberOf Layer
+     * @param {LayerSetting} layerSetting - 普通图层的风格设置.{@link LayerSetting}
+     * @returns {Promise.&lt;void>}
+     */
+    async setAdditionalSetting(layerSetting){
+        try{
+            await L.setAdditionalSetting(this._SMLayerId,layerSetting._SMLayerSettingId);
+        }catch(e){
+            console.error(e);
+        }
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferAnalyst.html">BufferAnalyst</a></li><li><a href="BufferAnalystParameter.html">BufferAnalystParameter</a></li><li><a href="DataDownloadService.html">DataDownloadService</a></li><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="DatasetVectorInfo.html">DatasetVectorInfo</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="DatasourceConnectionInfo.html">DatasourceConnectionInfo</a></li><li><a href="DataUploadService.html">DataUploadService</a></li><li><a href="Feature.html">Feature</a></li><li><a href="FeatureSet.html">FeatureSet</a></li><li><a href="GeoLine.html">GeoLine</a></li><li><a href="Geometry.html">Geometry</a></li><li><a href="GeoPoint.html">GeoPoint</a></li><li><a href="GeoRegion.html">GeoRegion</a></li><li><a href="GeoStyle.html">GeoStyle</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerSetting.html">LayerSetting</a></li><li><a href="LayerSettingVector.html">LayerSettingVector</a></li><li><a href="LocationManager.html">LocationManager</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Navigation2.html">Navigation2</a></li><li><a href="OverlayAnalyst.html">OverlayAnalyst</a></li><li><a href="OverlayAnalystParameter.html">OverlayAnalystParameter</a></li><li><a href="Point.html">Point</a></li><li><a href="Point2D.html">Point2D</a></li><li><a href="QueryParameter.html">QueryParameter</a></li><li><a href="QueryService.html">QueryService</a></li><li><a href="Rectangle2D.html">Rectangle2D</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Selection.html">Selection</a></li><li><a href="ServiceBase.html">ServiceBase</a></li><li><a href="ServiceQueryParameter.html">ServiceQueryParameter</a></li><li><a href="Size2D.html">Size2D</a></li><li><a href="Theme.html">Theme</a></li><li><a href="Track.html">Track</a></li><li><a href="TrackingLayer.html">TrackingLayer</a></li><li><a href="TraditionalNavi.html">TraditionalNavi</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Aug 01 2017 16:16:49 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

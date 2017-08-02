@@ -146,7 +146,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line19">line 19</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line22">line 22</a>
     </li></ul></dd>
     
 
@@ -295,7 +295,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line81">line 81</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line84">line 84</a>
     </li></ul></dd>
     
 
@@ -326,7 +326,7 @@
 
     
 
-    <h4 class="name" id=".addGeometryAddedListener"><span class="type-signature">(static) </span>addGeometryAddedListener<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
+    <h4 class="name" id=".addGeometryAddedListener"><span class="type-signature">(static) </span>addGeometryAddedListener<span class="signature">(event)</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
 
     
 
@@ -342,6 +342,55 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">event:{geometryAdded: e => {...}} e:{layer:--, id:--,canceled:--} layer:操作的图层，操作对象id，操作结果canceled,ture为操作成功，否则为false.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -377,7 +426,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line487">line 487</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line493">line 493</a>
     </li></ul></dd>
     
 
@@ -433,7 +482,7 @@
 
 
 <div class="description">
-    添加对象删除完成监听器。
+    event:{geometryDeleted: e => {...}} e:{layer:--, id:--,canceled:--} layer:操作的图层，被删除对象id，删除结果canceled,ture为删除成功，否则为false.
 </div>
 
 
@@ -526,7 +575,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line448">line 448</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line453">line 453</a>
     </li></ul></dd>
     
 
@@ -575,7 +624,7 @@
 
     
 
-    <h4 class="name" id=".addGeometryDeletingListener"><span class="type-signature">(static) </span>addGeometryDeletingListener<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
+    <h4 class="name" id=".addGeometryDeletingListener"><span class="type-signature">(static) </span>addGeometryDeletingListener<span class="signature">(event)</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
 
     
 
@@ -593,6 +642,55 @@
 
 
 
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">event:{geometryDeleting: e => {...}} e:{layer:--, id:--,canceled:--} layer:操作的图层，操作对象id，操作结果canceled,ture为操作成功，否则为false.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
 
 
 
@@ -626,7 +724,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line526">line 526</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line533">line 533</a>
     </li></ul></dd>
     
 
@@ -675,7 +773,7 @@
 
     
 
-    <h4 class="name" id=".addGeometryModifiedListener"><span class="type-signature">(static) </span>addGeometryModifiedListener<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
+    <h4 class="name" id=".addGeometryModifiedListener"><span class="type-signature">(static) </span>addGeometryModifiedListener<span class="signature">(event)</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
 
     
 
@@ -693,6 +791,55 @@
 
 
 
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">event:{geometryModified: e => {...}} e:{layer:--, id:--,canceled:--} layer:操作的图层，操作对象id，操作结果canceled,ture为操作成功，否则为false.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
 
 
 
@@ -726,7 +873,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line565">line 565</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line573">line 573</a>
     </li></ul></dd>
     
 
@@ -775,7 +922,7 @@
 
     
 
-    <h4 class="name" id=".addGeometryModifyingListener"><span class="type-signature">(static) </span>addGeometryModifyingListener<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
+    <h4 class="name" id=".addGeometryModifyingListener"><span class="type-signature">(static) </span>addGeometryModifyingListener<span class="signature">(event)</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
 
     
 
@@ -791,6 +938,50 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -826,7 +1017,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line604">line 604</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line613">line 613</a>
     </li></ul></dd>
     
 
@@ -875,14 +1066,15 @@
 
     
 
-    <h4 class="name" id=".addGeometrySelectedListener"><span class="type-signature">(static) </span>addGeometrySelectedListener<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
+    <h4 class="name" id=".addGeometrySelectedListener"><span class="type-signature">(static) </span>addGeometrySelectedListener<span class="signature">(events)</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
 
     
 
 
 
 <div class="description">
-    添加对象修改前监听器
+    events:{geometrySelected: e => {...},geometryMultiSelected e => {...}}
+       geometrySelected 单个集合对象被选中事件的回调函数，参数e为获取结果 e:{layer:--, id:--} layer:操作的图层，操作对象id。geometryMultiSelected 多个集合对象被选中事件的回调函数，参数e为获取结果数组：e:{geometries:[layer:--,id:--]}
 </div>
 
 
@@ -891,6 +1083,50 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>events</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -926,7 +1162,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line643">line 643</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line655">line 655</a>
     </li></ul></dd>
     
 
@@ -975,14 +1211,17 @@
 
     
 
-    <h4 class="name" id=".addMeasureListener"><span class="type-signature">(static) </span>addMeasureListener<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
+    <h4 class="name" id=".addMeasureListener"><span class="type-signature">(static) </span>addMeasureListener<span class="signature">(events)</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
 
     
 
 
 
 <div class="description">
-    添加对象修改前监听器
+    events:{lengthMeasured: e => {...},areaMeasured: e => {...},e => {...},angleMeasured: e => {...}}
+lengthMeasured 长度量算结果。 e:{curResult:--, curPoint:{x:--,y--}
+areaMeasured 面积量算结果。 e:{curResult:--, curPoint:{x:--,y--}
+angleMeasured 测量角度结果 通过设置Action.MEASUREANGLE实现测量角度。  e:{curAngle:--, curPoint:{x:--,y--}
 </div>
 
 
@@ -991,6 +1230,50 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>events</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -1026,7 +1309,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line719">line 719</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line736">line 736</a>
     </li></ul></dd>
     
 
@@ -1126,7 +1409,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line850">line 850</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line871">line 871</a>
     </li></ul></dd>
     
 
@@ -1175,14 +1458,14 @@
 
     
 
-    <h4 class="name" id=".addUndoStateChangeListener"><span class="type-signature">(static) </span>addUndoStateChangeListener<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
+    <h4 class="name" id=".addUndoStateChangeListener"><span class="type-signature">(static) </span>addUndoStateChangeListener<span class="signature">(event)</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
 
     
 
 
 
 <div class="description">
-    设置Undo监听器。
+    event:{undoStateChange: e => {...}}  e:{canUndo:--,canRedo:--} 返回参数canUndo表示是否可取消，canRedo表示是否可重复
 </div>
 
 
@@ -1191,6 +1474,50 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -1226,7 +1553,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line769">line 769</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line788">line 788</a>
     </li></ul></dd>
     
 
@@ -1326,7 +1653,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line403">line 403</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line407">line 407</a>
     </li></ul></dd>
     
 
@@ -1426,7 +1753,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line417">line 417</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line421">line 421</a>
     </li></ul></dd>
     
 
@@ -1526,7 +1853,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line354">line 354</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line358">line 358</a>
     </li></ul></dd>
     
 
@@ -1575,7 +1902,7 @@
 
     
 
-    <h4 class="name" id=".getCurrentGeometry"><span class="type-signature">(static) </span>getCurrentGeometry<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;(GeoPoint|GeoLine|GeoRegion|Geometry)>}</span></h4>
+    <h4 class="name" id=".getCurrentGeometry"><span class="type-signature">(static) </span>getCurrentGeometry<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;(<a href="GeoPoint.html">GeoPoint</a>|<a href="GeoLine.html">GeoLine</a>|<a href="GeoRegion.html">GeoRegion</a>|<a href="Geometry.html">Geometry</a>)>}</span></h4>
 
     
 
@@ -1626,7 +1953,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line263">line 263</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line267">line 267</a>
     </li></ul></dd>
     
 
@@ -1660,7 +1987,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;(GeoPoint|GeoLine|GeoRegion|Geometry)></span>
+<span class="param-type">Promise.&lt;(<a href="GeoPoint.html">GeoPoint</a>|<a href="GeoLine.html">GeoLine</a>|<a href="GeoRegion.html">GeoRegion</a>|<a href="Geometry.html">Geometry</a>)></span>
 
 
     </dd>
@@ -1726,7 +2053,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line431">line 431</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line435">line 435</a>
     </li></ul></dd>
     
 
@@ -1775,7 +2102,7 @@
 
     
 
-    <h4 class="name" id=".getIndustryNavi"><span class="type-signature">(static) </span>getIndustryNavi<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Navigation2>}</span></h4>
+    <h4 class="name" id=".getIndustryNavi"><span class="type-signature">(static) </span>getIndustryNavi<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="Navigation2.html">Navigation2</a>>}</span></h4>
 
     
 
@@ -1826,7 +2153,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line291">line 291</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line295">line 295</a>
     </li></ul></dd>
     
 
@@ -1860,7 +2187,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;Navigation2></span>
+<span class="param-type">Promise.&lt;<a href="Navigation2.html">Navigation2</a>></span>
 
 
     </dd>
@@ -1926,7 +2253,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line37">line 37</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line40">line 40</a>
     </li></ul></dd>
     
 
@@ -1975,7 +2302,7 @@
 
     
 
-    <h4 class="name" id=".getTraditionalNavi"><span class="type-signature">(static) </span>getTraditionalNavi<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;TraditionalNavi>}</span></h4>
+    <h4 class="name" id=".getTraditionalNavi"><span class="type-signature">(static) </span>getTraditionalNavi<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="TraditionalNavi.html">TraditionalNavi</a>>}</span></h4>
 
     
 
@@ -2026,7 +2353,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line338">line 338</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line342">line 342</a>
     </li></ul></dd>
     
 
@@ -2060,7 +2387,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;TraditionalNavi></span>
+<span class="param-type">Promise.&lt;<a href="TraditionalNavi.html">TraditionalNavi</a>></span>
 
 
     </dd>
@@ -2126,7 +2453,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line375">line 375</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line379">line 379</a>
     </li></ul></dd>
     
 
@@ -2226,7 +2553,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line101">line 101</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line104">line 104</a>
     </li></ul></dd>
     
 
@@ -2326,7 +2653,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line837">line 837</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line858">line 858</a>
     </li></ul></dd>
     
 
@@ -2426,7 +2753,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line513">line 513</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line519">line 519</a>
     </li></ul></dd>
     
 
@@ -2526,7 +2853,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line474">line 474</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line479">line 479</a>
     </li></ul></dd>
     
 
@@ -2626,7 +2953,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line552">line 552</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line559">line 559</a>
     </li></ul></dd>
     
 
@@ -2726,7 +3053,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line591">line 591</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line599">line 599</a>
     </li></ul></dd>
     
 
@@ -2826,7 +3153,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line630">line 630</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line639">line 639</a>
     </li></ul></dd>
     
 
@@ -2926,7 +3253,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line706">line 706</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line718">line 718</a>
     </li></ul></dd>
     
 
@@ -3026,7 +3353,107 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line756">line 756</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line773">line 773</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;void></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".removePlotLibrary"><span class="type-signature">(static) </span>removePlotLibrary<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    添加标绘库。
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line885">line 885</a>
     </li></ul></dd>
     
 
@@ -3126,7 +3553,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line792">line 792</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line811">line 811</a>
     </li></ul></dd>
     
 
@@ -3275,7 +3702,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line54">line 54</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line57">line 57</a>
     </li></ul></dd>
     
 
@@ -3424,7 +3851,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line308">line 308</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line312">line 312</a>
     </li></ul></dd>
     
 
@@ -3459,6 +3886,152 @@
     <dd>
         
 <span class="param-type">Promise.&lt;void></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".setEditStatusListener"><span class="type-signature">(static) </span>setEditStatusListener<span class="signature">(events)</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    events:{addNodeEnable: e => {...},deleteNodeEnable: e => {...}}
+addNodeEnable: 添加节点有效。e:{isEnable:--}
+deleteNodeEnable: 删除节点有效。 e:{isEnable:--}
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>events</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line828">line 828</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;*></span>
 
 
     </dd>
@@ -3573,7 +4146,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line115">line 115</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line118">line 118</a>
     </li></ul></dd>
     
 
@@ -3629,7 +4202,7 @@
 
 
 <div class="description">
-    监听地图参数变化，分别由边界变化sizeChanged,比例尺变化scaleChanged,角度变化angleChanged,中心点变化boundsChanged(iOS目前只支持比例尺变化监听与中心点变化监听)。
+    events: {boundsChanged:fun(){},scaleChanged:fun(){},angleChanged:fun(){},sizeChanged:fun(){}}
 </div>
 
 
@@ -3676,7 +4249,7 @@
 
             
 
-            <td class="description last"></td>
+            <td class="description last">该对象有下面四个函数类型的属性分别处理四种监听事件</td>
         </tr>
 
     
@@ -3717,7 +4290,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line169">line 169</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line173">line 173</a>
     </li></ul></dd>
     
 
@@ -3799,7 +4372,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line864">line 864</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line898">line 898</a>
     </li></ul></dd>
     
 
@@ -3948,7 +4521,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line239">line 239</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line243">line 243</a>
     </li></ul></dd>
     
 
@@ -4048,7 +4621,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line67">line 67</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line70">line 70</a>
     </li></ul></dd>
     
 
@@ -4148,7 +4721,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line389">line 389</a>
+        <a href="MapControl.js.html">MapControl.js</a>, <a href="MapControl.js.html#line393">line 393</a>
     </li></ul></dd>
     
 
@@ -4208,13 +4781,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#LONGPRESS_EVENT">LONGPRESS_EVENT</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferAnalyst.html">BufferAnalyst</a></li><li><a href="BufferAnalystParameter.html">BufferAnalystParameter</a></li><li><a href="DataDownloadService.html">DataDownloadService</a></li><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="DatasetVectorInfo.html">DatasetVectorInfo</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="DatasourceConnectionInfo.html">DatasourceConnectionInfo</a></li><li><a href="DataUploadService.html">DataUploadService</a></li><li><a href="Feature.html">Feature</a></li><li><a href="FeatureSet.html">FeatureSet</a></li><li><a href="GeoLine.html">GeoLine</a></li><li><a href="Geometry.html">Geometry</a></li><li><a href="GeoPoint.html">GeoPoint</a></li><li><a href="GeoRegion.html">GeoRegion</a></li><li><a href="GeoStyle.html">GeoStyle</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerSetting.html">LayerSetting</a></li><li><a href="LayerSettingVector.html">LayerSettingVector</a></li><li><a href="LocationManager.html">LocationManager</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Navigation2.html">Navigation2</a></li><li><a href="OverlayAnalyst.html">OverlayAnalyst</a></li><li><a href="OverlayAnalystParameter.html">OverlayAnalystParameter</a></li><li><a href="Point.html">Point</a></li><li><a href="Point2D.html">Point2D</a></li><li><a href="QueryParameter.html">QueryParameter</a></li><li><a href="QueryService.html">QueryService</a></li><li><a href="Rectangle2D.html">Rectangle2D</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Selection.html">Selection</a></li><li><a href="ServiceBase.html">ServiceBase</a></li><li><a href="ServiceQueryParameter.html">ServiceQueryParameter</a></li><li><a href="Size2D.html">Size2D</a></li><li><a href="Theme.html">Theme</a></li><li><a href="Track.html">Track</a></li><li><a href="TrackingLayer.html">TrackingLayer</a></li><li><a href="TraditionalNavi.html">TraditionalNavi</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Jul 03 2017 17:06:05 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Aug 01 2017 16:16:50 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>

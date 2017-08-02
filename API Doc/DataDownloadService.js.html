@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: DataDownloadService.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: DataDownloadService.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ ref:ServiceBase
+ **********************************************************************************/
+import {NativeModules} from 'react-native';
+let DDS = NativeModules.JSDataDownloadService;
+import ServiceBase from './ServiceBase.js';
+
+/**
+ * @class DataDownloadService
+ * @description 数据下载类，用于从iServer服务器上下载数据到本地。
+ */
+export default class DataDownloadService extends ServiceBase{
+    
+    constructor(){
+        super();
+        Object.defineProperty(this,"_SMDataDownloadServiceId",{
+            get:function () {
+                return this._SMServiceBaseId
+            },
+            set:function (_SMDataDownloadServiceId) {
+                this._SMServiceBaseId = _SMDataDownloadServiceId;
+            }
+        })
+    }
+
+    /**
+     * 根据指定的url构造一个新的 DataDownloadService 对象。
+     * @memberOf DataDownloadService
+     * @param {string} url - 指定的url
+     * @returns {Promise.&lt;DataDownloadService>}
+     */
+    async createObj(url){
+        try{
+            var {_dataDownloadServiceId_} = await DDS.createObj(url);
+            var dataDownloadService = new DataDownloadService();
+            dataDownloadService._SMDataDownloadServiceId = _dataDownloadServiceId_;
+            return dataDownloadService;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 获取指定的数据服务地址下对象集合。
+     * @memberOf DataDownloadService
+     * @param {string} fullUrl - 数据服务的地址，如：http://127.0.0.1:8090/iserver/services/data-China400/rest/data/datasources/China400/datasets/City_R。
+     * @param {number} fromIndex - 起始下标。
+     * @param {number} toIndex - 结束下标。
+     * @returns {Promise.&lt;void>}
+     */
+    async download(fullUrl,fromIndex,toIndex){
+        try{
+            await DDS.download(this._SMDataDownloadServiceId,fullUrl,fromIndex,toIndex);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 从iServer服务器上下载对象集合。
+     * @memberOf DataDownloadService
+     * @param serviceName - 服务名称。
+     * @param datasourceName - 数据源名。
+     * @param datasetName - 数据集名。
+     * @param fromIndex - 起始下标。
+     * @param toIndex - 结束下标。
+     * @returns {Promise.&lt;void>}
+     */
+    async downloadByName(serviceName,datasourceName,datasetName,fromIndex,toIndex){
+        try{
+            await DDS.downloadByName(this._SMDataDownloadServiceId,
+                serviceName,datasourceName,datasetName,fromIndex,toIndex);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 获取指定的数据服务地址下所有对象集合。
+     * @memberOf DataDownloadService
+     * @param fullUrl - 数据服务的地址，如：http://127.0.0.1:8090/iserver/services/data-China400/rest/data/datasources/China400/datasets/City_R。
+     * @returns {Promise.&lt;void>}
+     */
+    async downloadAll(fullUrl){
+        try{
+            await DDS.downloadAll(this._SMDataDownloadServiceId,fullUrl);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 获取指定的数据服务地址、数据源名称、数据集名称下所有对象集合。
+     * @memberOf DataDownloadService
+     * @param serviceName - 服务名称。
+     * @param datasourceName - 数据源名。
+     * @param datasetName - 数据集名。
+     * @returns {Promise.&lt;void>}
+     */
+    async downloadAllByName(serviceName,datasourceName,datasetName){
+        try{
+            await DDS.downloadAllByName(this._SMDataDownloadServiceId,
+                serviceName,datasourceName,datasetName);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 从服务器上下载一个数据集（支持点、线、面数据集），且在本地数据源中不存在与被下载的数据集同名的数据集，同时会在本地和服务器上创建一个同步属性数据集， 用于记录所下载的数据集在本地被修改的情况。同步数据集的名称为被下载的数据集名加上后缀“_Table”。如果下载失败，将调用ResponseCallback中的requestFaild（）方法；如果成功，将调用requestSuccess()方法。
+     * @memberOf DataDownloadService
+     * @param urlDatset - dataset在服务器上的地址。
+     * @param datasource - 本地数据源。
+     * @returns {Promise.&lt;void>}
+     */
+    async downloadDataset(urlDatset,datasource){
+        try{
+            await DDS.downloadDataset(this._SMDataDownloadServiceId,
+                urlDatset,datasource.datasourceId);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     *从服务器上更新本地数据集（支持点、线、面数据集），且要求本地存在同步数据集，服务器上存在要下载的数据集及其同步属性数据集。 如果更新失败，将调用ResponseCallback中的requestFaild（）方法；如果成功，将调用requestSuccess()方法。
+     * @memberOf DataDownloadService
+     * @param urlDatset - 数据集在服务器上的地址。
+     * @param dataset - 本地数据集。
+     * @returns {Promise.&lt;void>}
+     */
+    async updateDataset(urlDatset,dataset){
+        try{
+            await DDS.updateDataset(this._SMDataDownloadServiceId,
+                urlDatset,dataset.datasetId);
+        }catch(e){
+            console.error(e);
+        }
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferAnalyst.html">BufferAnalyst</a></li><li><a href="BufferAnalystParameter.html">BufferAnalystParameter</a></li><li><a href="DataDownloadService.html">DataDownloadService</a></li><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="DatasetVectorInfo.html">DatasetVectorInfo</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="DatasourceConnectionInfo.html">DatasourceConnectionInfo</a></li><li><a href="DataUploadService.html">DataUploadService</a></li><li><a href="Feature.html">Feature</a></li><li><a href="FeatureSet.html">FeatureSet</a></li><li><a href="GeoLine.html">GeoLine</a></li><li><a href="Geometry.html">Geometry</a></li><li><a href="GeoPoint.html">GeoPoint</a></li><li><a href="GeoRegion.html">GeoRegion</a></li><li><a href="GeoStyle.html">GeoStyle</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerSetting.html">LayerSetting</a></li><li><a href="LayerSettingVector.html">LayerSettingVector</a></li><li><a href="LocationManager.html">LocationManager</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Navigation2.html">Navigation2</a></li><li><a href="OverlayAnalyst.html">OverlayAnalyst</a></li><li><a href="OverlayAnalystParameter.html">OverlayAnalystParameter</a></li><li><a href="Point.html">Point</a></li><li><a href="Point2D.html">Point2D</a></li><li><a href="QueryParameter.html">QueryParameter</a></li><li><a href="QueryService.html">QueryService</a></li><li><a href="Rectangle2D.html">Rectangle2D</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Selection.html">Selection</a></li><li><a href="ServiceBase.html">ServiceBase</a></li><li><a href="ServiceQueryParameter.html">ServiceQueryParameter</a></li><li><a href="Size2D.html">Size2D</a></li><li><a href="Theme.html">Theme</a></li><li><a href="Track.html">Track</a></li><li><a href="TrackingLayer.html">TrackingLayer</a></li><li><a href="TraditionalNavi.html">TraditionalNavi</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Aug 01 2017 16:16:49 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

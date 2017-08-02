@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: DataUploadService.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: DataUploadService.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
+import {NativeModules} from 'react-native';
+let DUS = NativeModules.JSDataUploadService;
+import ServiceBase from './ServiceBase.js';
+
+/**
+ * @class DataUploadService
+ * @description 数据上传类，用于将本地数据上传到iServer服务器。
+ */
+export default class DataUploadService extends ServiceBase{
+
+    constructor(){
+        super();
+        Object.defineProperty(this,"_SMDataUploadServiceId",{
+            get:function () {
+                return this._SMServiceBaseId
+            },
+            set:function (_SMDataUploadServiceId) {
+                this._SMServiceBaseId = _SMDataUploadServiceId;
+            }
+        })
+    }
+
+    /**
+     * 指定url地址创建一个DataUploadService实例
+     * @memberOf DataUploadService
+     * @param {string} url - 指定的url
+     * @returns {Promise.&lt;DataUploadService>}
+     */
+    async createObj(url){
+        try{
+            var {_dataUploadServiceId_} = await DUS.createObj(url);
+            var datauploadService = new DataUploadService();
+            datauploadService._SMDataUploadServiceId = _dataUploadServiceId_;
+            return datauploadService;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 根据指定的数据集名称和数据类型添加数据集。
+     * @memberOf DataUploadService
+     * @param {string} fullUrl - 服务名称。
+     * @param {string} datasetName - 数据集名。
+     * @param {Dataset.Type} datasetType - 数据类型。
+     * @returns {Promise.&lt;void>}
+     */
+    async addDataset(fullUrl,datasetName,datasetType){
+        try{
+            await DUS.addDataset(this._SMDataUploadServiceId,fullUrl,datasetName,datasetType);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 通过复制指定数据源中的指定数据集向服务中添加数据集。
+     * @memberOf DataUploadService
+     * @param {string} serviceName - 服务名称。
+     * @param {string} datasourceName - 数据源名。
+     * @param {string} destDatasetName - 目标数据集名。
+     * @param {string} srcDatasourceName - 源数据源名。
+     * @param {string} srcDatasetName - 源数据集名。
+     * @returns {Promise.&lt;void>}
+     */
+    async cloneDataset(serviceName,datasourceName,destDatasetName,srcDatasourceName,srcDatasetName){
+        try{
+            await DUS.cloneDataset(this._SMDataUploadServiceId,serviceName,
+                datasourceName,destDatasetName,srcDatasourceName,srcDatasetName);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 向指定的数据服务地址添加对象。
+     * @memberOf DataUploadService
+     * @param {string} fullUrl - 指定的数据服务地址，如：http://192.168.120.1:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Lakes。
+     * @param {object} feature - 待添加对象。
+     * @returns {Promise.&lt;void>}
+     */
+    async addFeature(fullUrl,feature){
+        try{
+            await DUS.addFeature(this._SMDataUploadServiceId,fullUrl,feature._SMFeatureId);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 向iServer服务器中添加对象。
+     * @memberOf DataUploadService
+     * @param {string} serviceName - 服务名称。
+     * @param {string} datasourceName - 数据源名。
+     * @param {string} datasetName - 数据集名。
+     * @param {object} feature - 添加对象。
+     * @returns {Promise.&lt;void>}
+     */
+    async addFeatureByName(serviceName,datasourceName,datasetName,feature){
+        try{
+            await DUS.addFeatureByName(this._SMDataUploadServiceId,serviceName,datasourceName,
+                datasetName,feature._SMFeatureId);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 根据指定的对象ID数组删除iServer服务器中的对象。
+     * @memberOf DataUploadService
+     * @param {string} fullUrl - 指定数据服务地址，如:http://192.168.120.1:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Lakes。
+     * @param {object} featureIDs - 对象ID数组。
+     * @returns {Promise.&lt;void>}
+     */
+    async deleteFeature(fullUrl,featureIDs){
+        try{
+            await DUS.deleteFeature(this._SMDataUploadServiceId,fullUrl,featureIDs);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 根据指定的对象ID数组删除iServer服务器中的对象。
+     * @memberOf DataUploadService
+     * @param {string} serviceName - 服务名称。
+     * @param {string} datasourceName - 数据源名。
+     * @param {string} datasetName - 数据集名。
+     * @param {array} featureIDs - 对象ID数组。
+     * @returns {Promise.&lt;void>}
+     */
+    async deleteFeatureByName(serviceName,datasourceName,datasetName,featureIDs){
+        try{
+            await DUS.deleteFeatureByName(this._SMDataUploadServiceId,serviceName,
+                datasourceName,datasetName,featureIDs);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 根据指定的ID修改对象。
+     * @memberOf DataUploadService
+     * @param {string} fullUrl - 要修改的对象地址，如：http://192.168.120.1:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Lakes。
+     * @param {number} featureID - 要修改的对象ID。
+     * @param {object} feature - 修改的值。
+     * @returns {Promise.&lt;void>}
+     */
+    async modifyFeature(fullUrl,featureID,feature){
+        try{
+            await DUS.modifyFeature(this._SMDataUploadServiceId,fullUrl,featureID,feature._SMFeatureId);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 根据指定的ID和数据名称修改对象。
+     * @memberOf DataUploadService
+     * @param {string} serviceName - 服务名称。
+     * @param {string} datasourceName - 数据源名。
+     * @param {string} datasetName - 数据集名。
+     * @param {number} featureID - 要修改的对象ID。
+     * @param {object} feature - 结果对象。
+     * @returns {Promise.&lt;void>}
+     */
+    async modifyFeatureByName(serviceName,datasourceName,datasetName,featureID,feature){
+        try{
+            await DUS.modifyFeatureByName(this._SMDataUploadServiceId,serviceName,
+                datasourceName,datasetName,featureID,feature._SMFeatureId);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 提交
+     * @description 将本地数据集中修改、删除、新增的数据提交到服务器上对应的数据集中。提交时要求本地和服务器上都存在该数据集及其对应的属性数据集（属性数据集用于记录被修改和被删除的记录）。 同时本地数据集的版本不得高于服务器上的版本（即本地的Max[SmUserID]不大于服务器上的Max[SMID]），否则不能提交，需要先进行更新。目前数据集的类型支持点、线、面数据集。 如果提交失败，将调用ResponseCallback中的requestFaild（）方法；如果成功，将调用requestSuccess()方法。
+     * @memberOf DataUploadService
+     * @param {string} urlDataset  - dataset在服务器上的地址。
+     * @param {objecg} dataset - 本地数据集，可以使点、线、面数据集。
+     * @returns {Promise.&lt;void>}
+     */
+    async commitDataset(urlDataset,dataset){
+        try{
+            await DUS.commitDataset(this._SMDataUploadServiceId,fullUrl,dataset._SMDatasetId);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 删除数据集
+     * @memberOf DataUploadService
+     * @param {string} fullUrl - 要删除的数据集地址，如：http://192.168.120.1:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Lakes。
+     * @returns {Promise.&lt;void>}
+     */
+    async deleteDataset(fullUrl){
+        try{
+            await DUS.deleteDataset(this._SMDataUploadServiceId,fullUrl);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 删除数据集。
+     * @memberOf DataUploadService
+     * @param {string} serviceName - 服务名称。
+     * @param {string} datasourceName - 数据源名。
+     * @param {string} datasetName - 源数据集名。
+     * @returns {Promise.&lt;void>}
+     */
+    async deleteDatasetByName(serviceName,datasourceName,datasetName){
+        try{
+            await DUS.deleteDatasetByName(this._SMDataUploadServiceId,serviceName,datasourceName,datasetName);
+        }catch(e){
+            console.error(e);
+        }
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferAnalyst.html">BufferAnalyst</a></li><li><a href="BufferAnalystParameter.html">BufferAnalystParameter</a></li><li><a href="DataDownloadService.html">DataDownloadService</a></li><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="DatasetVectorInfo.html">DatasetVectorInfo</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="DatasourceConnectionInfo.html">DatasourceConnectionInfo</a></li><li><a href="DataUploadService.html">DataUploadService</a></li><li><a href="Feature.html">Feature</a></li><li><a href="FeatureSet.html">FeatureSet</a></li><li><a href="GeoLine.html">GeoLine</a></li><li><a href="Geometry.html">Geometry</a></li><li><a href="GeoPoint.html">GeoPoint</a></li><li><a href="GeoRegion.html">GeoRegion</a></li><li><a href="GeoStyle.html">GeoStyle</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerSetting.html">LayerSetting</a></li><li><a href="LayerSettingVector.html">LayerSettingVector</a></li><li><a href="LocationManager.html">LocationManager</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Navigation2.html">Navigation2</a></li><li><a href="OverlayAnalyst.html">OverlayAnalyst</a></li><li><a href="OverlayAnalystParameter.html">OverlayAnalystParameter</a></li><li><a href="Point.html">Point</a></li><li><a href="Point2D.html">Point2D</a></li><li><a href="QueryParameter.html">QueryParameter</a></li><li><a href="QueryService.html">QueryService</a></li><li><a href="Rectangle2D.html">Rectangle2D</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Selection.html">Selection</a></li><li><a href="ServiceBase.html">ServiceBase</a></li><li><a href="ServiceQueryParameter.html">ServiceQueryParameter</a></li><li><a href="Size2D.html">Size2D</a></li><li><a href="Theme.html">Theme</a></li><li><a href="Track.html">Track</a></li><li><a href="TrackingLayer.html">TrackingLayer</a></li><li><a href="TraditionalNavi.html">TraditionalNavi</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Aug 01 2017 16:16:49 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

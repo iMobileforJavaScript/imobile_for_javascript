@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: GeoPoint.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: GeoPoint.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
+import {NativeModules} from 'react-native';
+let P = NativeModules.JSGeoPoint;
+import Geometry from './Geometry.js';
+
+/**
+ * @class GeoPoint
+ * @description 点几何对象类。
+ */
+export default class GeoPoint extends Geometry{
+    constructor(){
+        super();
+        Object.defineProperty(this,"_SMGeoPointId",{
+            get:function () {
+                return this._SMGeometryId
+            },
+            set:function (_SMGeoPointId) {
+                this._SMGeometryId = _SMGeoPointId;
+            }
+        })
+    }
+
+    /**
+     * 构造一个新的 GeoPoint 对象,x,y参数为可选参数，无参数时此几何点对象的坐标 X，Y 分别为-1.7976931348623157e+308。
+     * @memberOf GeoPoint
+     * @param {number} x - 指定点几何对象的 X 坐标值。
+     * @param {number} y - 指定点几何对象的 y 坐标值。
+     * @returns {Promise.&lt;GeoPoint>}
+     */
+    async createObj(){
+        try{
+            if(typeof arguments[0] == 'number' &amp;&amp; typeof arguments[1] == 'number'){
+                var {geoPointId} = await P.createObjByXY(arguments[0],arguments[1]);
+                var geoPoint = new GeoPoint();
+                geoPoint._SMGeoPointId = geoPointId;
+                return geoPoint;
+            }else{
+                var {geoPointId} = await P.createObj();
+                var geoPoint = new GeoPoint(geoPointId);
+                geoPoint._SMGeoPointId = geoPointId;
+                return geoPoint;
+            }
+        }catch (e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 返回此点几何对象的 X 坐标。使用无参构造函数构造的点对象的 X 坐标值为默认值。
+     * @memberOf GeoPoint
+     * @returns {Promise.&lt;Promise.number>}
+     */
+    async getX(){
+        try {
+            var {coordsX} = await P.getX(this._SMGeoPointId);
+            return coordsX;
+        }catch (e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 返回此点几何对象的 Y 坐标。使用无参构造函数构造的点对象的 Y 坐标值为默认值。
+     * @memberOf GeoPoint
+     * @returns {Promise.&lt;Promise.number>}
+     */
+    async getY(){
+        try {
+            var {coordsY} = await P.getY(this._SMGeoPointId);
+            return coordsY;
+        }catch (e){
+            console.error(e);
+        }
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferAnalyst.html">BufferAnalyst</a></li><li><a href="BufferAnalystParameter.html">BufferAnalystParameter</a></li><li><a href="DataDownloadService.html">DataDownloadService</a></li><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="DatasetVectorInfo.html">DatasetVectorInfo</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="DatasourceConnectionInfo.html">DatasourceConnectionInfo</a></li><li><a href="DataUploadService.html">DataUploadService</a></li><li><a href="Feature.html">Feature</a></li><li><a href="FeatureSet.html">FeatureSet</a></li><li><a href="GeoLine.html">GeoLine</a></li><li><a href="Geometry.html">Geometry</a></li><li><a href="GeoPoint.html">GeoPoint</a></li><li><a href="GeoRegion.html">GeoRegion</a></li><li><a href="GeoStyle.html">GeoStyle</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerSetting.html">LayerSetting</a></li><li><a href="LayerSettingVector.html">LayerSettingVector</a></li><li><a href="LocationManager.html">LocationManager</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Navigation2.html">Navigation2</a></li><li><a href="OverlayAnalyst.html">OverlayAnalyst</a></li><li><a href="OverlayAnalystParameter.html">OverlayAnalystParameter</a></li><li><a href="Point.html">Point</a></li><li><a href="Point2D.html">Point2D</a></li><li><a href="QueryParameter.html">QueryParameter</a></li><li><a href="QueryService.html">QueryService</a></li><li><a href="Rectangle2D.html">Rectangle2D</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Selection.html">Selection</a></li><li><a href="ServiceBase.html">ServiceBase</a></li><li><a href="ServiceQueryParameter.html">ServiceQueryParameter</a></li><li><a href="Size2D.html">Size2D</a></li><li><a href="Theme.html">Theme</a></li><li><a href="Track.html">Track</a></li><li><a href="TrackingLayer.html">TrackingLayer</a></li><li><a href="TraditionalNavi.html">TraditionalNavi</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Aug 01 2017 16:16:49 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

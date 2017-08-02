@@ -26,7 +26,14 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import {NativeModules} from 'react-native';
+            <pre class="prettyprint source linenums"><code>/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: will
+ E-mail: pridehao@gmail.com
+ Description:数据集类
+ ref:rectangle2D
+ **********************************************************************************/
+import {NativeModules} from 'react-native';
 let DV = NativeModules.JSDatasetVector;
 import Dataset from './Dataset.js';
 import Recordset from  './Recordset.js';
@@ -35,19 +42,32 @@ import QueryParameter from './QueryParameter.js';
 
 /**
  * @class DatasetVector
+ * @description 矢量数据集类。用于对矢量数据集进行描述，并对之进行相应的管理和操作。对矢量数据集的操作主要包括数据查询、修改、删除、建立索引等。
  */
 export default class DatasetVector {
+   /* constructor(){
+        super();
+        Object.defineProperty(this,"datasetVectorId",{
+                              get:function(){
+                              return this.datasetId
+                              },
+                              set:function(datasetVectorId){
+                              this.datasetId = datasetVectorId;
+                              }
+                              })
+    }*/
+    
     /**
      * 查询落在已知空间范围内的记录。
      * @memberOf DatasetVector
-     * @deprecated - 弃用，所有recordset都使用json格式表达
-     * @param isEmptyRecordset
-     * @param cursorType
+     * @deprecated - 已弃用（所有recordset都使用json格式表达），此接口将在数个版本内移除，请慎用。
+     * @param {Rectangle2D} rectangle2D
+     * @param {number} cursorType
      * @returns {Promise.&lt;Recordset>}
      */
     async queryInBuffer(rectangle2D, cursorType) {
         try {
-            var {recordsetId} = await DV.queryInBuffer(this.datasetVectorId, rectangle2D.rectangle2DId, cursorType);
+            var {recordsetId} = await DV.queryInBuffer(this._SMDatasetVectorId, rectangle2D._SMRectangle2DId, cursorType);
             var recordset = new Recordset();
             recordset.recordsetId = recordsetId;
             return recordset;
@@ -59,14 +79,14 @@ export default class DatasetVector {
     /**
      * 根据给定的参数来返回空的记录集或者返回包括所有记录的记录集对象。
      * @memberOf DatasetVector
-     * @deprecated - 弃用，所有recordset都使用json格式表达
-     * @param isEmptyRecordset
-     * @param cursorType
+     * @deprecated - 已弃用（所有recordset都使用json格式表达），此接口将在数个版本内移除，请慎用。
+     * @param {boolean} isEmptyRecordset
+     * @param {number} cursorType
      * @returns {Promise.&lt;Recordset>}
      */
     async getRecordset(isEmptyRecordset, cursorType) {
         try {
-            var {recordsetId} =await DV.getRecordset(this.datasetVectorId, isEmptyRecordset, cursorType);
+            var {recordsetId} =await DV.getRecordset(this._SMDatasetVectorId, isEmptyRecordset, cursorType);
             var recordset = new Recordset();
             recordset.recordsetId = recordsetId;
             return recordset;
@@ -112,7 +132,7 @@ export default class DatasetVector {
             }
 
 
-            var result = await DV.query(this.datasetVectorId, qp.queryParameterId,
+            var result = await DV.query(this._SMDatasetVectorId, qp._SMQueryParameterId,
                 qp.size, qp.batch);
             return result;
         } catch (e) {
@@ -124,11 +144,11 @@ export default class DatasetVector {
      *根据给定的空间索引类型来为矢量数据集创建空间索引。
      * @memberOf DatasetVector
      * @param {DatasetVector.SpatialIndeType} spatialIndexType - 指定的需要创建空间索引的类型
-     * @returns {Promise.&lt;Promise.boolean>}
+     * @returns {Promise.&lt;boolean>}
      */
     async buildSpatialIndex(spatialIndexType) {
         try {
-            var {built} =await DV.buildSpatialIndex(this.datasetVectorId, spatialIndexType);
+            var {built} =await DV.buildSpatialIndex(this._SMDatasetVectorId, spatialIndexType);
             return built;
         } catch (e) {
             console.error(e);
@@ -138,11 +158,11 @@ export default class DatasetVector {
     /**
      * 删除空间索引
      * @memberOf DatasetVector
-     * @returns {Promise.&lt;Promise.dropped>}
+     * @returns {Promise.&lt;boolean>}
      */
     async dropSpatialIndex() {
         try {
-            var {dropped} =await DV.dropSpatialIndex(this.datasetVectorId);
+            var {dropped} =await DV.dropSpatialIndex(this._SMDatasetVectorId);
             return dropped;
         } catch (e) {
             console.error(e);
@@ -152,11 +172,11 @@ export default class DatasetVector {
     /**
      * 返回当前的空间索引类型
      * @memberOf DatasetVector
-     * @returns {Promise.&lt;Promise.DatasetVector.SpatialIndeType>}
+     * @returns {Promise.&lt;DatasetVector.SpatialIndeType>}
      */
     async getSpatialIndexType() {
         try {
-            var {type} =await DV.getSpatialIndexType(this.datasetVectorId);
+            var {type} =await DV.getSpatialIndexType(this._SMDatasetVectorId);
             return type;
         } catch (e) {
             console.error(e);
@@ -166,11 +186,11 @@ export default class DatasetVector {
     /**
      * 计算数据集的空间范围
      * @memberOf DatasetVector
-     * @returns {Promise.&lt;Promise.object>}
+     * @returns {Promise.&lt;object>}
      */
     async computeBounds() {
         try {
-            var {bounds} =await DV.computeBounds(this.datasetVectorId);
+            var {bounds} =await DV.computeBounds(this._SMDatasetVectorId);
             return bounds;
         } catch (e) {
             console.error(e);
@@ -188,7 +208,7 @@ export default class DatasetVector {
      */
     async toGeoJSON(hasAttributte, startID, endID) {
         try {
-            var {geoJSON} =await DV.toGeoJSON(this.datasetVectorId);
+            var {geoJSON} =await DV.toGeoJSON(this._SMDatasetVectorId);
             var json = JSON.parse(geoJSON);
             return geoJSON;
         } catch (e) {
@@ -201,11 +221,11 @@ export default class DatasetVector {
      *仅支持点、线、面和CAD数据集，转换点、线、面对象.hasAtrributte为true时，结果中包含属性值;hasAtrribute为false时，只有几何对象。
      * @memberOf DatasetVector
      * @param {string} geoJson - json字符串
-     * @returns {Promise.&lt;Promise.boolean>}
+     * @returns {Promise.&lt;boolean>}
      */
     async fromGeoJSON(geoJson) {
         try {
-            var {done} =await DV.fromGeoJSON(this.datasetVectorId,geoJson);
+            var {done} =await DV.fromGeoJSON(this._SMDatasetVectorId,geoJson);
             return done;
         } catch (e) {
             console.error(e);
@@ -219,11 +239,11 @@ export default class DatasetVector {
      * @param {object} geoRegion - 查询的区域
      * @param count - 返回的查询结果个数
      * @param {function} callback - 返回结果的处理函数,回调参数callback(e){},e为Recordset的geoJson格式对象的数组
-     * @returns {Promise.&lt;null>}
+     * @returns {Promise.&lt;void>}
      */
     async queryByFilter(attributeFilter,geoRegion,count,callback) {
         try {
-            var success = await DV.queryByFilter(this.datasetVectorId,attributeFilter,geoRegion.geometryId,count);
+            var success = await DV.queryByFilter(this._SMDatasetVectorId,attributeFilter,geoRegion.geometryId,count);
             if(!success) return null;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSDatasetVector.query_by_filter', function(e) {
@@ -248,11 +268,12 @@ export default class DatasetVector {
     /**
      * 通过查询语句获取所需几何对象ID集合
      * @memberOf Dataset
-     * @returns {Promise.&lt;Promise.Array>}
+     * @param {string} SQL - 查询语句
+     * @returns {Promise.&lt;Array>}
      */
     async getSMID(SQL){
         try{
-            var {result} = await DV.getSMID(this.datasetVectorId,SQL);
+            var {result} = await DV.getSMID(this._SMDatasetVectorId,SQL);
             return result;
         }catch(e){
             console.error(e);
@@ -262,11 +283,13 @@ export default class DatasetVector {
     /**
      * 通过查询语句获取字段内容
      * @memberOf Dataset
-     * @returns {Promise.&lt;Promise.Array>}
+     * @param {string} SQL - 查询语句
+     * @param {string} fieldName - 字段名
+     * @returns {Promise.&lt;Array>}
      */
     async getFieldValue(SQL,fieldName){
         try{
-            var {result} = await DV.getFieldValue(this.datasetVectorId,SQL,fieldName);
+            var {result} = await DV.getFieldValue(this._SMDatasetVectorId,SQL,fieldName);
             return result;
         }catch(e){
             console.error(e);
@@ -276,11 +299,12 @@ export default class DatasetVector {
     /**
      * 通过查询语句获取所需几何对象内点集合
      * @memberOf Dataset
-     * @returns {Promise.&lt;Promise.Array>}
+     * @param {string} SQL - 查询语句
+     * @returns {Promise.&lt;Array>}
      */
     async getGeoInnerPoint(SQL){
         try{
-            var {result} = await DV.getGeoInnerPoint(this.datasetVectorId,SQL);
+            var {result} = await DV.getGeoInnerPoint(this._SMDatasetVectorId,SQL);
             return result;
         }catch(e){
             console.error(e);
@@ -298,13 +322,13 @@ export default class DatasetVector {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#LONGPRESS_EVENT">LONGPRESS_EVENT</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferAnalyst.html">BufferAnalyst</a></li><li><a href="BufferAnalystParameter.html">BufferAnalystParameter</a></li><li><a href="DataDownloadService.html">DataDownloadService</a></li><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="DatasetVectorInfo.html">DatasetVectorInfo</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="DatasourceConnectionInfo.html">DatasourceConnectionInfo</a></li><li><a href="DataUploadService.html">DataUploadService</a></li><li><a href="Feature.html">Feature</a></li><li><a href="FeatureSet.html">FeatureSet</a></li><li><a href="GeoLine.html">GeoLine</a></li><li><a href="Geometry.html">Geometry</a></li><li><a href="GeoPoint.html">GeoPoint</a></li><li><a href="GeoRegion.html">GeoRegion</a></li><li><a href="GeoStyle.html">GeoStyle</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerSetting.html">LayerSetting</a></li><li><a href="LayerSettingVector.html">LayerSettingVector</a></li><li><a href="LocationManager.html">LocationManager</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Navigation2.html">Navigation2</a></li><li><a href="OverlayAnalyst.html">OverlayAnalyst</a></li><li><a href="OverlayAnalystParameter.html">OverlayAnalystParameter</a></li><li><a href="Point.html">Point</a></li><li><a href="Point2D.html">Point2D</a></li><li><a href="QueryParameter.html">QueryParameter</a></li><li><a href="QueryService.html">QueryService</a></li><li><a href="Rectangle2D.html">Rectangle2D</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Selection.html">Selection</a></li><li><a href="ServiceBase.html">ServiceBase</a></li><li><a href="ServiceQueryParameter.html">ServiceQueryParameter</a></li><li><a href="Size2D.html">Size2D</a></li><li><a href="Theme.html">Theme</a></li><li><a href="Track.html">Track</a></li><li><a href="TrackingLayer.html">TrackingLayer</a></li><li><a href="TraditionalNavi.html">TraditionalNavi</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Jul 03 2017 17:06:05 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Aug 01 2017 16:16:49 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>

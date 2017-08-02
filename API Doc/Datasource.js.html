@@ -26,35 +26,40 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Created by will on 2016/6/17.
- */
+            <pre class="prettyprint source linenums"><code>/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: will
+ E-mail: pridehao@gmail.com
+ Description:数据源类
+ 
+ **********************************************************************************/
 import {NativeModules} from 'react-native';
 let D = NativeModules.JSDatasource;
-import Datasets from './Datasets';
+import Datasets from './Datasets.js';
 import Dataset from './Dataset.js';
 import DatasetVector from './DatasetVector.js';
 import PrjCoordSys from './PrjCoordSys.js';
 
 /**
  * @class Datasource
+ * @description 该类管理投影信息、数据源与数据库的连接信息和对其中的数据集的相关操作，如通过已有数据集复制生成新的数据集等。
  * @property {number} EncodeType - 数据集存储时的压缩编码方式 NONE | BYTE | INT16 | INT24 | INT32 | LZW | SGL | DCT
  * @property {number} DatasourceEncrytionType - 数据集存储时的压缩编码方式 DEFAULT | AES
  */
 export default class Datasource{
 
     /**
-     * 获取数据集集合
+     * 获取数据集集合。
      * @memberOf Datasource
-     * @deprecated - 已弃用Datasets类
+     * @deprecated - 已弃用，Datasets类不建议使用，后续版本即将移除此接口
      * @returns {Promise.&lt;Datasets>}
      */
     async getDatasets(){
         console.warn("Datasource.js:getDatasets() function has been deprecated. If you want to get dataset , please call the getDataset() function");
         try{
-            var {datasetsId} = await D.getDatasets(this.datasourceId);
+            var {datasetsId} = await D.getDatasets(this._SMDatasourceId);
             var datasets = new Datasets();
-            datasets.datasetsId = datasetsId;
+            datasets._SMDatasetsId = datasetsId;
 
             return datasets;
         }catch(e){
@@ -63,7 +68,7 @@ export default class Datasource{
     }
 
     /**
-     * 指定名称或序号来获取数据集
+     * 指定名称或序号来获取数据集。
      * @memberOf Datasource
      * @param {number | string} index|name - 既可以是序号，也可以是数据集名称
      * @returns {Promise.&lt;Dataset>}
@@ -72,12 +77,11 @@ export default class Datasource{
         try{
             var dataset = new Dataset();
             if(typeof arg != "string"){
-                var {datasetId} = await D.getDataset(this.datasourceId,arg);
+                var {datasetId} = await D.getDataset(this._SMDatasourceId,arg);
             }else{
-                var {datasetId} = await D.getDatasetByName(this.datasourceId,arg);
+                var {datasetId} = await D.getDatasetByName(this._SMDatasourceId,arg);
             }
-            dataset.datasetId = datasetId;
-            console.log("Datasource.js:----------------------datasetId:"+dataset.datasetId);
+            dataset._SMDatasetId = datasetId;
 
             return dataset;
         }catch(e){
@@ -86,14 +90,14 @@ export default class Datasource{
     }
 
     /**
-     * 检测所供名称是否可用于新建数据集
+     * 返回一个数据源中未被使用的数据集的名称。
      * @memberOf Datasource
      * @param {string} name - 待检测名称
      * @returns {Promise.&lt;string>}
      */
     async getAvailableDatasetName(name){
         try{
-            var {datasetName} = await D.getAvailableDatasetName(this.datasourceId,name);
+            var {datasetName} = await D.getAvailableDatasetName(this._SMDatasourceId,name);
             return datasetName;
         }catch(e){
             console.error(e);
@@ -111,14 +115,14 @@ export default class Datasource{
     async createDatasetVector(nameOrInfoObj,datasetType,encodeType){
         try{
             if(arguments.length === 1){
-                var {datasetVectorId} = await D.createDatasetVector(this.datasourceId,nameOrInfoObj.datasetVectorInfoId);
+                var {datasetVectorId} = await D.createDatasetVector(this._SMDatasourceId,nameOrInfoObj.datasetVectorInfoId);
                 var datasetVector = new DatasetVector();
-                datasetVector.datasetVectorId = datasetVectorId;
+                datasetVector._SMDatasetVectorId = datasetVectorId;
                 return datasetVector;
             }else{
-                var {datasetVectorId} = await D.createDatasetVectorDirectly(this.datasourceId,nameOrInfoObj,datasetType,encodeType);
+                var {datasetVectorId} = await D.createDatasetVectorDirectly(this._SMDatasourceId,nameOrInfoObj,datasetType,encodeType);
                 var datasetVector = new DatasetVector();
-                datasetVector.datasetVectorId = datasetVectorId;
+                datasetVector._SMDatasetVector = datasetVectorId;
                 return datasetVector;
             }
         }catch(e){
@@ -137,7 +141,7 @@ export default class Datasource{
      */
     async copyDataset(srcDataset,desDatasetName,encodeType){
         try{
-            var {datasetId} = await D.copyDataset(this.datasourceId,srcDataset.datasetId,desDatasetName,encodeType | 0);
+            var {datasetId} = await D.copyDataset(this._SMDatasourceId,srcDataset._SMDatasetId,desDatasetName,encodeType | 0);
             var dataset = new Dataset();
             dataset.datasetId = datasetId;
             return dataset;
@@ -146,6 +150,24 @@ export default class Datasource{
         }
     }
 
+    /*
+     * 修改当前数据源的密码
+     * @memberOf Datasource
+     * @param {number} oldPassword - 原始密码,不能为null
+     * @param {number} newPassword - 新密码,不能为null
+     * @param {Datasource.DatasourceEncrytionType} datasourceEncrytionType
+     * @returns {Promise.&lt;Promise.changed>} 新密码使用的加密类型
+     */
+   /* async changepassword(oldPassword,newPassword,datasourceEncrytionType){
+        try{
+            if(!oldPassword || !newPassword) throw new Error("Datasource.js:原始密码和新密码不能为空。");
+            var {changed} = await D.changepassword(this._SMDatasourceId,oldPassword,newPassword, datasourceEncrytionType | 0);
+            return changed;
+        }catch(e){
+            console.error(e);
+        }
+    } */
+
     /**
      * 返回数据源的投影信息。
      * @memberOf Datasource
@@ -153,9 +175,9 @@ export default class Datasource{
      */
     async getPrjCoordSys(){
         try{
-            var {prjCoordSysId} = await D.getPrjCoordSys(this.datasourceId);
+            var {prjCoordSysId} = await D.getPrjCoordSys(this._SMDatasourceId);
             var prjCoordSys = new PrjCoordSys();
-            prjCoordSys.prjCoordSysId = prjCoordSysId;
+            prjCoordSys._SMPrjCoordSysId = prjCoordSysId;
             return prjCoordSys;
         }catch(e){
             console.error(e);
@@ -166,11 +188,11 @@ export default class Datasource{
      * 检查当前数据源中是否包含指定名称的数据集。
      * @memberOf Datasource
      * @param {string} datasetName - 数据集名称
-     * @returns {boolean}
+     * @returns {Promise.&lt;boolean>}
      */
     async containDataset(datasetName){
         try{
-            var {contain} = await D.containDataset(this.datasourceId,datasetName);
+            var {contain} = await D.containDataset(this._SMDatasourceId,datasetName);
             return contain;
         }catch(e){
             console.error(e);
@@ -181,11 +203,11 @@ export default class Datasource{
      * 用于删除指定名称的数据集。
      * @memberOf Datasource
      * @param {string} datasetName - 数据集名称
-     * @returns {boolean}
+     * @returns {Promise.&lt;boolean>}
      */
     async deleteDataset(datasetName){
         try{
-            var {deleted} = await D.deleteDataset(this.datasourceId,datasetName);
+            var {deleted} = await D.deleteDataset(this._SMDatasourceId,datasetName);
             return deleted;
         }catch(e){
             console.error(e);
@@ -195,32 +217,16 @@ export default class Datasource{
     /**
      * 返回数据集集合中数据集的个数。
      * @memberOf Datasource
-     * @returns {number}
+     * @returns {Promise.&lt;number>}
      */
     async getDatasetCount(){
         try{
-            var {count} = await D.getDatasetCount(this.datasourceId);
+            var {count} = await D.getDatasetCount(this._SMDatasourceId);
             return count;
         }catch(e){
             console.error(e);
         }
     }
-}
-
-Datasource.EncodeType = {
-    NONE:0,
-    BYTE:1,
-    INT16:2,
-    INT24:3,
-    INT32:4,
-    DCT:8,
-    SGL:9,
-    LZW:11
-}
-
-Datasource.DatasourceEncrytionType = {
-    DEFAULT:0,
-    AES:1
 }
 </code></pre>
         </article>
@@ -232,13 +238,13 @@ Datasource.DatasourceEncrytionType = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#LONGPRESS_EVENT">LONGPRESS_EVENT</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferAnalyst.html">BufferAnalyst</a></li><li><a href="BufferAnalystParameter.html">BufferAnalystParameter</a></li><li><a href="DataDownloadService.html">DataDownloadService</a></li><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="DatasetVectorInfo.html">DatasetVectorInfo</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="DatasourceConnectionInfo.html">DatasourceConnectionInfo</a></li><li><a href="DataUploadService.html">DataUploadService</a></li><li><a href="Feature.html">Feature</a></li><li><a href="FeatureSet.html">FeatureSet</a></li><li><a href="GeoLine.html">GeoLine</a></li><li><a href="Geometry.html">Geometry</a></li><li><a href="GeoPoint.html">GeoPoint</a></li><li><a href="GeoRegion.html">GeoRegion</a></li><li><a href="GeoStyle.html">GeoStyle</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerSetting.html">LayerSetting</a></li><li><a href="LayerSettingVector.html">LayerSettingVector</a></li><li><a href="LocationManager.html">LocationManager</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Navigation2.html">Navigation2</a></li><li><a href="OverlayAnalyst.html">OverlayAnalyst</a></li><li><a href="OverlayAnalystParameter.html">OverlayAnalystParameter</a></li><li><a href="Point.html">Point</a></li><li><a href="Point2D.html">Point2D</a></li><li><a href="QueryParameter.html">QueryParameter</a></li><li><a href="QueryService.html">QueryService</a></li><li><a href="Rectangle2D.html">Rectangle2D</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Selection.html">Selection</a></li><li><a href="ServiceBase.html">ServiceBase</a></li><li><a href="ServiceQueryParameter.html">ServiceQueryParameter</a></li><li><a href="Size2D.html">Size2D</a></li><li><a href="Theme.html">Theme</a></li><li><a href="Track.html">Track</a></li><li><a href="TrackingLayer.html">TrackingLayer</a></li><li><a href="TraditionalNavi.html">TraditionalNavi</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Jul 03 2017 17:06:05 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Aug 01 2017 16:16:49 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>
