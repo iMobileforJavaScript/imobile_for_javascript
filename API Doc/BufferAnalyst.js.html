@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: BufferAnalyst.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: BufferAnalyst.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Wang zihao
+ E-mail: pridehao@gmail.com
+ ref:DatasetVector
+ **********************************************************************************/
+import {NativeModules} from 'react-native';
+let BA = NativeModules.JSBufferAnalyst;
+
+/**
+ * @class BufferAnalyst
+ * @description 缓冲区分析类。该类用于为点、线、面数据集（或记录集）创建缓冲区，包括单边缓冲区、多重缓冲区和线单边多重缓冲区。
+ **/
+export default class BufferAnalyst {
+    
+    /**
+     * 创建矢量数据集缓冲区
+     * @memberOf BufferAnalyst
+     * @param {Dataset} sourceDataSet - 源矢量数据集
+     * @param {Dataset} sourceDataSet - 用于存储缓冲区分析结果的数据集
+     * @param {BufferAnalystParameter} bufferAnalystParam - 缓冲区分析参数对象
+     * @param {boolean} isUnion - 是否合并缓冲区
+     * @param {boolean} isAttributeRetained - 是否保留进行缓冲区分析的对象的字段属性
+     * @returns {Promise.&lt;boolean>}
+     */
+    async createBuffer(sourceDataSet,resultDataSet,bufferAnalystParam,isUnion,isAttributeRetained){
+        try{
+            var {isCreate} = await BA.createBuffer(sourceDataSet._SMDatasetVectorId,resultDataSet._SMDatasetVectorId,bufferAnalystParam._SMBufferAnalystParameterId,isUnion,isAttributeRetained);
+            
+            return isCreate;
+        }catch (e){
+            console.error(e);
+        }
+    }
+    
+    /**
+     * 创建矢量数据集单边多重缓冲区
+     * @memberOf BufferAnalyst
+     * @param {Dataset} sourceDataSet - 源矢量数据集
+     * @param {Dataset} sourceDataSet - 用于存储缓冲区分析结果的数据集
+     * @param {array} arrBufferRadius - 指定的多重缓冲区半径列表
+     * @param {number} bufferRadiusUnit - 指定的缓冲区半径单位
+     * @param {number} semicircleSegment - 指定的弧短拟合数
+     * @param {boolean} isLeft - 是否生成左缓冲区
+     * @param {boolean} isUnion - 是否合并缓冲区
+     * @param {boolean} isAttributeRetained - 是否保留进行缓冲区分析的对象的字段属性
+     * @param {boolean} isRing - 是否生成环装缓冲区
+     * @returns {Promise.&lt;boolean>}
+     */
+    async createLineOneSideMultiBuffer(sourceDataSet,resultDataSet,arrBufferRadius,bufferRadiusUnit,semicircleSegment,isLeft,isUnion,isAttributeRetained,isRing){
+        try{
+            var {isCreate} = await BA.createLineOneSideMultiBuffer(sourceDataSet._SMDatasetVectorId,resultDataSet._SMDatasetVectorId,arrBufferRadius,bufferRadiusUnit,semicircleSegment,isLeft,isUnion,isAttributeRetained,isRing);
+            
+            return isCreate;
+        }catch (e){
+            console.error(e);
+        }
+    }
+    
+    /**
+     * 创建矢量数据集多重缓冲区
+     * @memberOf BufferAnalyst
+     * @param {Dataset} sourceDataSet - 源矢量数据集
+     * @param {Dataset} sourceDataSet - 用于存储缓冲区分析结果的数据集
+     * @param {array} arrBufferRadius - 指定的多重缓冲区半径列表
+     * @param {number} bufferRadiusUnit - 指定的缓冲区半径单位
+     * @param {number} semicircleSegment - 指定的弧短拟合数
+     * @param {boolean} isUnion - 是否合并缓冲区
+     * @param {boolean} isAttributeRetained - 是否保留进行缓冲区分析的对象的字段属性
+     * @param {boolean} isRing - 是否生成环装缓冲区
+     * @returns {Promise.&lt;boolean>}
+     */
+    async createMultiBuffer(sourceDataSet,resultDataSet,arrBufferRadius,bufferRadiusUnit,semicircleSegment,isUnion,isAttributeRetained,isRing){
+        try{
+            var {isCreate} = await BA.createMultiBuffer(sourceDataSet._SMDatasetVectorId,resultDataSet._SMDatasetVectorId,arrBufferRadius,bufferRadiusUnit,semicircleSegment,isUnion,isAttributeRetained,isRing);
+            
+            return isCreate;
+        }catch (e){
+            console.error(e);
+        }
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferAnalyst.html">BufferAnalyst</a></li><li><a href="BufferAnalystParameter.html">BufferAnalystParameter</a></li><li><a href="DataDownloadService.html">DataDownloadService</a></li><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="DatasetVectorInfo.html">DatasetVectorInfo</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="DatasourceConnectionInfo.html">DatasourceConnectionInfo</a></li><li><a href="DataUploadService.html">DataUploadService</a></li><li><a href="Feature.html">Feature</a></li><li><a href="FeatureSet.html">FeatureSet</a></li><li><a href="GeoLine.html">GeoLine</a></li><li><a href="Geometry.html">Geometry</a></li><li><a href="GeoPoint.html">GeoPoint</a></li><li><a href="GeoRegion.html">GeoRegion</a></li><li><a href="GeoStyle.html">GeoStyle</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerSetting.html">LayerSetting</a></li><li><a href="LayerSettingVector.html">LayerSettingVector</a></li><li><a href="LocationManager.html">LocationManager</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Navigation2.html">Navigation2</a></li><li><a href="OverlayAnalyst.html">OverlayAnalyst</a></li><li><a href="OverlayAnalystParameter.html">OverlayAnalystParameter</a></li><li><a href="Point.html">Point</a></li><li><a href="Point2D.html">Point2D</a></li><li><a href="QueryParameter.html">QueryParameter</a></li><li><a href="QueryService.html">QueryService</a></li><li><a href="Rectangle2D.html">Rectangle2D</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Selection.html">Selection</a></li><li><a href="ServiceBase.html">ServiceBase</a></li><li><a href="ServiceQueryParameter.html">ServiceQueryParameter</a></li><li><a href="Size2D.html">Size2D</a></li><li><a href="Theme.html">Theme</a></li><li><a href="Track.html">Track</a></li><li><a href="TrackingLayer.html">TrackingLayer</a></li><li><a href="TraditionalNavi.html">TraditionalNavi</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Aug 01 2017 16:16:49 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

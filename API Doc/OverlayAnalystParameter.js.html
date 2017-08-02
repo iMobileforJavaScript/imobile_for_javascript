@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: OverlayAnalystParameter.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: OverlayAnalystParameter.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
+import {NativeModules} from 'react-native';
+let OAP = NativeModules.JSOverlayAnalystParameter;
+
+/**
+ * @class OverlayAnalystParameter
+ * @description 叠加分析参数类。
+    该类主要提供进行叠加分析时，输出结果数据集的字段选择。在矢量叠加分析中，至少涉及到三个数据集，其中一个数据集的类型可以是点、线、面等，被称作输入数据集（在SuperMap GIS 中称作第一数据集）；另一个数据集是面数据集被称作叠加数据集（在SuperMap GIS 中称作第二数据集）；还有一个数据集就是叠加结果数据集 ，包含叠加后数据的几何信息和属性信息。叠加结果数据集中的属性信息来自于第一数据集和第二数据集的属性表，在进行叠加分析的时候，用户可以根据自己的需要在这两个数据集的属性表中选择需要保留的属性字段。
+ */
+export default class OverlayAnalystParameter {
+    /**
+     * 创建一个OverlayAnalystParameter对象
+     * @memberOf OverlayAnalystParameter
+     * @returns {Promise.&lt;object>}
+     */
+    async createObj(){
+        try{
+            var {overlayAnalystParameterId} = await OAP.createObj();
+            var overlayAnalystParameter = new OverlayAnalystParameter();
+            overlayAnalystParameter._SMOverlayAnalystParameterId = overlayAnalystParameterId;
+            return overlayAnalystParameter;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 设置叠加分析的容限值。
+     * @memberOf OverlayAnalystParameter
+     * @param {number} rate - 叠加分析的容限值。
+     * @returns {Promise.&lt;void>}
+     */
+    async setTolerance(rate){
+        try{
+            await OAP.setTolerance(this._SMOverlayAnalystParameterId,rate);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 返回叠加分析的容限值。
+     * @memberOf OverlayAnalystParameter
+     * @returns {Promise.&lt;void>}
+     */
+    async getTolerance(){
+        try{
+            var {tolerance} = await OAP.getTolerance(this._SMOverlayAnalystParameterId);
+            return tolerance;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 返回进行叠加分析的第二数据集或记录集中需要保留的字段名称集合。
+     * @memberOf OverlayAnalystParameter
+     * @returns {Promise.&lt;array&lt;string>>}
+     */
+    async getOperationRetainedFields(){
+        try{
+            var {fields} = await OAP.getOperationRetainedFields(this._SMOverlayAnalystParameterId);
+            return fields;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 设置进行叠加分析的第二数据集或记录集中需要保留的字段名称集合。
+     * @memberOf OverlayAnalystParameter
+     * @param fields - 进行叠加分析的第二数据集或记录集中需要保留的字段名称集合。
+     * @returns {Promise.&lt;void>}
+     */
+    async setOperationRetainedFields(fields){
+        try{
+            await OAP.setOperationRetainedFields(this._SMOverlayAnalystParameterId,fields);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 返回进行叠加分析的第一数据集或记录集中需要保留的字段名称集合。
+     * @memberOf OverlayAnalystParameter
+     * @returns {Promise.&lt;Promise.fields>}
+     */
+    async getSourceRetainedFields(){
+        try{
+            var {fields} = await OAP.getSourceRetainedFields(this._SMOverlayAnalystParameterId);
+            return fields;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 设置进行叠加分析的第二数据集或记录集中需要保留的字段名称集合。
+     * @memberOf OverlayAnalystParameter
+     * @param fields - 进行叠加分析的第二数据集或记录集中需要保留的字段名称集合。
+     * @returns {Promise.&lt;void>}
+     */
+    async setSourceRetainedFields(fields){
+        try{
+            await OAP.setSourceRetainedFields(this._SMOverlayAnalystParameterId,fields);
+        }catch(e){
+            console.error(e);
+        }
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferAnalyst.html">BufferAnalyst</a></li><li><a href="BufferAnalystParameter.html">BufferAnalystParameter</a></li><li><a href="DataDownloadService.html">DataDownloadService</a></li><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="DatasetVectorInfo.html">DatasetVectorInfo</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="DatasourceConnectionInfo.html">DatasourceConnectionInfo</a></li><li><a href="DataUploadService.html">DataUploadService</a></li><li><a href="Feature.html">Feature</a></li><li><a href="FeatureSet.html">FeatureSet</a></li><li><a href="GeoLine.html">GeoLine</a></li><li><a href="Geometry.html">Geometry</a></li><li><a href="GeoPoint.html">GeoPoint</a></li><li><a href="GeoRegion.html">GeoRegion</a></li><li><a href="GeoStyle.html">GeoStyle</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerSetting.html">LayerSetting</a></li><li><a href="LayerSettingVector.html">LayerSettingVector</a></li><li><a href="LocationManager.html">LocationManager</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Navigation2.html">Navigation2</a></li><li><a href="OverlayAnalyst.html">OverlayAnalyst</a></li><li><a href="OverlayAnalystParameter.html">OverlayAnalystParameter</a></li><li><a href="Point.html">Point</a></li><li><a href="Point2D.html">Point2D</a></li><li><a href="QueryParameter.html">QueryParameter</a></li><li><a href="QueryService.html">QueryService</a></li><li><a href="Rectangle2D.html">Rectangle2D</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Selection.html">Selection</a></li><li><a href="ServiceBase.html">ServiceBase</a></li><li><a href="ServiceQueryParameter.html">ServiceQueryParameter</a></li><li><a href="Size2D.html">Size2D</a></li><li><a href="Theme.html">Theme</a></li><li><a href="Track.html">Track</a></li><li><a href="TrackingLayer.html">TrackingLayer</a></li><li><a href="TraditionalNavi.html">TraditionalNavi</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Aug 01 2017 16:16:49 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

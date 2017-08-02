@@ -46,6 +46,10 @@
 
 
 
+<div class="description">
+    该类管理投影信息、数据源与数据库的连接信息和对其中的数据集的相关操作，如通过已有数据集复制生成新的数据集等。
+</div>
+
 
 
 
@@ -162,7 +166,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line11">line 11</a>
+        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line15">line 15</a>
     </li></ul></dd>
     
 
@@ -211,7 +215,7 @@
 
     
 
-    <h4 class="name" id=".containDataset"><span class="type-signature">(static) </span>containDataset<span class="signature">(datasetName)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    <h4 class="name" id=".containDataset"><span class="type-signature">(static) </span>containDataset<span class="signature">(datasetName)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
 
     
 
@@ -311,7 +315,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line143">line 143</a>
+        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line165">line 165</a>
     </li></ul></dd>
     
 
@@ -345,7 +349,7 @@
     </dt>
     <dd>
         
-<span class="param-type">boolean</span>
+<span class="param-type">Promise.&lt;boolean></span>
 
 
     </dd>
@@ -506,7 +510,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line110">line 110</a>
+        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line114">line 114</a>
     </li></ul></dd>
     
 
@@ -704,7 +708,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line83">line 83</a>
+        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line87">line 87</a>
     </li></ul></dd>
     
 
@@ -753,7 +757,7 @@
 
     
 
-    <h4 class="name" id=".deleteDataset"><span class="type-signature">(static) </span>deleteDataset<span class="signature">(datasetName)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    <h4 class="name" id=".deleteDataset"><span class="type-signature">(static) </span>deleteDataset<span class="signature">(datasetName)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
 
     
 
@@ -853,7 +857,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line158">line 158</a>
+        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line180">line 180</a>
     </li></ul></dd>
     
 
@@ -887,7 +891,7 @@
     </dt>
     <dd>
         
-<span class="param-type">boolean</span>
+<span class="param-type">Promise.&lt;boolean></span>
 
 
     </dd>
@@ -909,7 +913,7 @@
 
 
 <div class="description">
-    检测所供名称是否可用于新建数据集
+    返回一个数据源中未被使用的数据集的名称。
 </div>
 
 
@@ -1002,7 +1006,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line66">line 66</a>
+        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line70">line 70</a>
     </li></ul></dd>
     
 
@@ -1058,7 +1062,7 @@
 
 
 <div class="description">
-    指定名称或序号来获取数据集
+    指定名称或序号来获取数据集。
 </div>
 
 
@@ -1154,7 +1158,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line43">line 43</a>
+        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line48">line 48</a>
     </li></ul></dd>
     
 
@@ -1203,7 +1207,7 @@
 
     
 
-    <h4 class="name" id=".getDatasetCount"><span class="type-signature">(static) </span>getDatasetCount<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
+    <h4 class="name" id=".getDatasetCount"><span class="type-signature">(static) </span>getDatasetCount<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;number>}</span></h4>
 
     
 
@@ -1254,7 +1258,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line172">line 172</a>
+        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line194">line 194</a>
     </li></ul></dd>
     
 
@@ -1288,7 +1292,7 @@
     </dt>
     <dd>
         
-<span class="param-type">number</span>
+<span class="param-type">Promise.&lt;number></span>
 
 
     </dd>
@@ -1310,7 +1314,7 @@
 
 
 <div class="description">
-    获取数据集集合
+    获取数据集集合。
 </div>
 
 
@@ -1342,7 +1346,7 @@
     
 
     
-        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>- 已弃用Datasets类</li></ul></dd>
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>- 已弃用，Datasets类不建议使用，后续版本即将移除此接口</li></ul></dd>
     
 
     
@@ -1356,7 +1360,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line24">line 24</a>
+        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line29">line 29</a>
     </li></ul></dd>
     
 
@@ -1456,7 +1460,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line126">line 126</a>
+        <a href="Datasource.js.html">Datasource.js</a>, <a href="Datasource.js.html#line148">line 148</a>
     </li></ul></dd>
     
 
@@ -1516,13 +1520,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#LONGPRESS_EVENT">LONGPRESS_EVENT</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferAnalyst.html">BufferAnalyst</a></li><li><a href="BufferAnalystParameter.html">BufferAnalystParameter</a></li><li><a href="DataDownloadService.html">DataDownloadService</a></li><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="DatasetVectorInfo.html">DatasetVectorInfo</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="DatasourceConnectionInfo.html">DatasourceConnectionInfo</a></li><li><a href="DataUploadService.html">DataUploadService</a></li><li><a href="Feature.html">Feature</a></li><li><a href="FeatureSet.html">FeatureSet</a></li><li><a href="GeoLine.html">GeoLine</a></li><li><a href="Geometry.html">Geometry</a></li><li><a href="GeoPoint.html">GeoPoint</a></li><li><a href="GeoRegion.html">GeoRegion</a></li><li><a href="GeoStyle.html">GeoStyle</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerSetting.html">LayerSetting</a></li><li><a href="LayerSettingVector.html">LayerSettingVector</a></li><li><a href="LocationManager.html">LocationManager</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Navigation2.html">Navigation2</a></li><li><a href="OverlayAnalyst.html">OverlayAnalyst</a></li><li><a href="OverlayAnalystParameter.html">OverlayAnalystParameter</a></li><li><a href="Point.html">Point</a></li><li><a href="Point2D.html">Point2D</a></li><li><a href="QueryParameter.html">QueryParameter</a></li><li><a href="QueryService.html">QueryService</a></li><li><a href="Rectangle2D.html">Rectangle2D</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Selection.html">Selection</a></li><li><a href="ServiceBase.html">ServiceBase</a></li><li><a href="ServiceQueryParameter.html">ServiceQueryParameter</a></li><li><a href="Size2D.html">Size2D</a></li><li><a href="Theme.html">Theme</a></li><li><a href="Track.html">Track</a></li><li><a href="TrackingLayer.html">TrackingLayer</a></li><li><a href="TraditionalNavi.html">TraditionalNavi</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Jul 03 2017 17:06:05 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Aug 01 2017 16:16:50 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>

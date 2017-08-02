@@ -16,6 +16,7 @@ export default class DatasetVectorInfo {
 
     /**
      * 创建DatasetVectorInfo实例
+     * @memberOf DatasetVectorInfo
      * @param {string} name - 数据集的名称
      * @param {number} type - 数据集的类型
      * @returns {Promise.<DatasetVectorInfo>}

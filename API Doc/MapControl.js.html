@@ -26,9 +26,12 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Created by will on 2016/6/17.
- */
+            <pre class="prettyprint source linenums"><code>/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: Will
+ E-mail: pridehao@gmail.com
+ 
+ **********************************************************************************/
 const LONGPRESS_EVENT = "com.supermap.RN.JSMapcontrol.long_press_event";
 
 import { NativeModules,DeviceEventEmitter,NativeEventEmitter,Platform } from 'react-native';
@@ -64,9 +67,9 @@ export default class MapControl{
      */
     async getMap(){
         try{
-            var {mapId} =await MC.getMap(this.mapControlId);
+            var {mapId} =await MC.getMap(this._SMMapControlId);
             var map = new Map();
-            map.mapId = mapId;
+            map._SMMapId = mapId;
             return map;
         }catch(e){
             console.error(e);
@@ -81,7 +84,7 @@ export default class MapControl{
      */
     async setAction(actionType){
         try{
-            await MC.setAction(this.mapControlId,actionType);
+            await MC.setAction(this._SMMapControlId,actionType);
         }catch(e){
             console.error(e);
         }
@@ -94,7 +97,7 @@ export default class MapControl{
      */
     async submit(){
         try{
-            var submited = await MC.submit(this.mapControlId);
+            var submited = await MC.submit(this._SMMapControlId);
             return submited;
         }catch (e){
             console.error(e);
@@ -128,7 +131,7 @@ export default class MapControl{
      */
     async removeActionChangedListener(actionChange){
         try{
-            await MC.removeActionChangedListener(this.mapControlId);
+            await MC.removeActionChangedListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -143,7 +146,7 @@ export default class MapControl{
     async setGestureDetector(handlers){
         try{
             if(handlers){
-                await MC.setGestureDetector(this.mapControlId);
+                await MC.setGestureDetector(this._SMMapControlId);
             }else{
                 throw new Error("setGestureDetector need callback functions as first two argument!");
             }
@@ -183,7 +186,7 @@ export default class MapControl{
 
     async deleteGestureDetector(){
         try{
-            await MC.deleteGestureDetector(this.mapControlId)
+            await MC.deleteGestureDetector(this._SMMapControlId)
         }catch (e){
             console.error(e);
         }
@@ -192,7 +195,8 @@ export default class MapControl{
     /**
      *  监听地图参数变化，分别由边界变化sizeChanged,比例尺变化scaleChanged,角度变化angleChanged,中心点变化boundsChanged(iOS目前只支持比例尺变化监听与中心点变化监听)。
      * @memberOf MapControl
-     * @param events
+     * @param events 该对象有下面四个函数类型的属性分别处理四种监听事件
+     * @description events: {boundsChanged:fun(){},scaleChanged:fun(){},angleChanged:fun(){},sizeChanged:fun(){}}
      */
     async setMapParamChangedListener(events){
         try{
@@ -201,7 +205,7 @@ export default class MapControl{
             angleChanged = events.angleChanged;
             sizeChanged = events.sizeChanged;
 
-            var success = await MC.setMapParamChangedListener(this.mapControlId);
+            var success = await MC.setMapParamChangedListener(this._SMMapControlId);
             console.debug("Listening map parameters changed.");
 
             if(!success) return;
@@ -266,7 +270,7 @@ export default class MapControl{
      */
     async setRefreshListener(callback){
         try{
-            var success = await MC.setRefreshListener(this.mapControlId);
+            var success = await MC.setRefreshListener(this._SMMapControlId);
             console.log("MapControl:test result:",success);
             if(success){
                 DeviceEventEmitter.addListener("com.supermap.RN.JSMapcontrol.refresh_event",function (e) {
@@ -290,20 +294,20 @@ export default class MapControl{
      */
     async getCurrentGeometry(){
         try{
-            var {geometryId,geoType} = await MC.getCurrentGeometry(this.mapControlId);
+            var {geometryId,geoType} = await MC.getCurrentGeometry(this._SMMapControlId);
 
             if(geoType == "GeoPoint"){
                 var geoPoint = new GeoPoint();
-                geoPoint.geoPointId = geometryId;
+                geoPoint._SMGeoPointId = geometryId;
             }else if(geoType == "GeoRegion"){
                 var geoRegion = new GeoRegion();
-                geoRegion.geoRegionId = geometryId;
+                geoRegion._SMGeoRegionId = geometryId;
             }else if(geoType == "GeoLine"){
                 var geoLine = new GeoLine();
-                geoLine.geoLineId = geometryId;
+                geoLine._SMGeoLineId = geometryId;
             }else{
                 var geometry = new Geometry();
-                geometry.geometryId = geometryId;
+                geometry._SMGeometryId = geometryId;
             }
             return geoPoint || geoLine || geoRegion || geometry;
         }catch (e){
@@ -318,9 +322,9 @@ export default class MapControl{
      */
     async getIndustryNavi(){
         try{
-            var {navigation2Id} = await MC.getNavigation2(this.mapControlId);
+            var {navigation2Id} = await MC.getNavigation2(this._SMMapControlId);
             var navigation2 = new Navigation2();
-            navigation2.navigation2Id = navigation2Id;
+            navigation2._SMNavigation2Id = navigation2Id;
             return navigation2;
         }catch (e){
             console.error(e);
@@ -365,9 +369,9 @@ export default class MapControl{
      */
     async getTraditionalNavi(){
         try{
-            var {traditionalNaviId} = await MC.getTraditionalNavi(this.mapControlId);
+            var {traditionalNaviId} = await MC.getTraditionalNavi(this._SMMapControlId);
             var traditionalNavi= new TraditionalNavi();
-            traditionalNavi.traditionalNaviId = traditionalNaviId;
+            traditionalNavi._SMTraditionalNaviId = traditionalNaviId;
             return traditionalNavi;
         }catch (e){
             console.error(e);
@@ -381,7 +385,7 @@ export default class MapControl{
      */
     async getAction(){
         try{
-            var {actionType} = await MC.getAction(this.mapControlId);
+            var {actionType} = await MC.getAction(this._SMMapControlId);
             for( p in this.ACTION){
                 if(this.ACTION[p] === actionType){
                     console.log("MapControl.js:"+p);
@@ -402,7 +406,7 @@ export default class MapControl{
      */
     async redo(){
         try{
-            var {redone} = await MC.redo(this.mapControlId);
+            var {redone} = await MC.redo(this._SMMapControlId);
             return redone;
         }catch (e){
             console.error(e);
@@ -416,7 +420,7 @@ export default class MapControl{
      */
     async undo(){
         try{
-            var {undone} = await MC.undo(this.mapControlId);
+            var {undone} = await MC.undo(this._SMMapControlId);
             return undone;
         }catch (e){
             console.error(e);
@@ -430,7 +434,7 @@ export default class MapControl{
      */
     async cancel(){
         try{
-            var {canceled} = await MC.cancel(this.mapControlId);
+            var {canceled} = await MC.cancel(this._SMMapControlId);
             return canceled;
         }catch (e){
             console.error(e);
@@ -444,7 +448,7 @@ export default class MapControl{
      */
     async deleteCurrentGeometry(){
         try{
-            var {deleted} = await MC.deleteCurrentGeometry(this.mapControlId);
+            var {deleted} = await MC.deleteCurrentGeometry(this._SMMapControlId);
             return deleted;
         }catch (e){
             console.error(e);
@@ -458,9 +462,9 @@ export default class MapControl{
      */
     async getEditLayer(){
         try{
-            var {layerId} = await MC.getEditLayer(this.mapControlId);
+            var {layerId} = await MC.getEditLayer(this._SMMapControlId);
             var layer = new Layer();
-            layer.layerId = layerId;
+            layer._SMLayerId = layerId;
             return layer;
         }catch (e){
             console.error(e);
@@ -470,18 +474,19 @@ export default class MapControl{
     /**
      * 添加对象删除完成监听器。
      * @memberOf MapControl
-     * @param {object} event
+     * @param {object} event 
+     * @description event:{geometryDeleted: e => {...}} e:{layer:--, id:--,canceled:--} layer:操作的图层，被删除对象id，删除结果canceled,ture为删除成功，否则为false.
      * @returns {Promise.&lt;boolean>}
      */
     async addGeometryDeletedListener(event){
         try{
-            var success = await MC.addGeometryDeletedListener(this.mapControlId);
+            var success = await MC.addGeometryDeletedListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapControl.geometry_deleted',function (e) {
                 if(typeof event.geometryDeleted === 'function'){
                     var layer = new Layer();
-                    layer.layerId = e.layerId;
+                    layer._SMLayerId = e.layerId;
                     e.layer = layer;
                     event.geometryDeleted(e);
                 }else{
@@ -501,7 +506,7 @@ export default class MapControl{
      */
     async removeGeometryDeletedListener(){
         try{
-            await MC. removeGeometryDeletedListener(this.mapControlId);
+            await MC. removeGeometryDeletedListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -510,17 +515,18 @@ export default class MapControl{
     /**
      * 添加对象添加监听器
      * @memberOf MapControl
+     * @param {object} event - event:{geometryAdded: e => {...}} e:{layer:--, id:--,canceled:--} layer:操作的图层，操作对象id，操作结果canceled,ture为操作成功，否则为false.
      * @returns {Promise.&lt;*>}
      */
     async addGeometryAddedListener(event){
         try{
-            var success = await MC.addGeometryAddedListener(this.mapControlId);
+            var success = await MC.addGeometryAddedListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.grometry_added',function (e) {
                 if(typeof event.geometryAdded === 'function'){
                     var layer = new Layer();
-                    layer.layerId = e.layerId;
+                    layer._SMLayerId = e.layerId;
                     e.layer = layer;
                     event.geometryAdded(e);
                 }else{
@@ -540,7 +546,7 @@ export default class MapControl{
      */
     async removeGeometryAddedListener(){
         try{
-            await MC. removeGeometryAddedListener(this.mapControlId);
+            await MC. removeGeometryAddedListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -549,17 +555,18 @@ export default class MapControl{
     /**
      * 添加对象删除完成前监听器。
      * @memberOf MapControl
+     * @param {object} event - event:{geometryDeleting: e => {...}} e:{layer:--, id:--,canceled:--} layer:操作的图层，操作对象id，操作结果canceled,ture为操作成功，否则为false.
      * @returns {Promise.&lt;*>}
      */
     async addGeometryDeletingListener(event){
         try{
-            var success = await MC.addGeometryDeletingListener(this.mapControlId);
+            var success = await MC.addGeometryDeletingListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.geometry_deleting',function (e) {
                 if(typeof event.geometryDeleting === 'function'){
                     var layer = new Layer();
-                    layer.layerId = e.layerId;
+                    layer._SMLayerId = e.layerId;
                     e.layer = layer;
                     event.geometryDeleting(e);
                 }else{
@@ -579,7 +586,7 @@ export default class MapControl{
      */
     async removeGeometryDeletingListener(){
         try{
-            await MC. removeGeometryDeletingListener(this.mapControlId);
+            await MC. removeGeometryDeletingListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -588,17 +595,18 @@ export default class MapControl{
     /**
      * 添加对象修改完成监听器
      * @memberOf MapControl
+     * @param {object} event - event:{geometryModified: e => {...}} e:{layer:--, id:--,canceled:--} layer:操作的图层，操作对象id，操作结果canceled,ture为操作成功，否则为false.
      * @returns {Promise.&lt;*>}
      */
     async addGeometryModifiedListener(event){
         try{
-            var success = await MC.addGeometryModifiedListener(this.mapControlId);
+            var success = await MC.addGeometryModifiedListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.geometry_modified',function (e) {
                 if(typeof event.geometryModified === 'function'){
                     var layer = new Layer();
-                    layer.layerId = e.layerId;
+                    layer._SMLayerId = e.layerId;
                     e.layer = layer;
                     event.geometryModified(e);
                 }else{
@@ -618,7 +626,7 @@ export default class MapControl{
      */
     async removeGeometryModifiedListener(){
         try{
-            await MC. removeGeometryModifiedListener(this.mapControlId);
+            await MC. removeGeometryModifiedListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -627,17 +635,18 @@ export default class MapControl{
     /**
      * 添加对象修改前监听器
      * @memberOf MapControl
+     * @param event - event:{geometryModifying: e => {...}} e:{layer:--, id:--,canceled:--} layer:操作的图层，操作对象id，操作结果canceled,ture为操作成功，否则为false.
      * @returns {Promise.&lt;*>}
      */
     async addGeometryModifyingListener(event){
         try{
-            var success = await MC.addGeometryModifyingListener(this.mapControlId);
+            var success = await MC.addGeometryModifyingListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.geometry_modifying',function (e) {
                 if(typeof event.geometryModifying === 'function'){
                     var layer = new Layer();
-                    layer.layerId = e.layerId;
+                    layer._SMLayerId = e.layerId;
                     e.layer = layer;
                     event.geometryModifying(e);
                 }else{
@@ -657,7 +666,7 @@ export default class MapControl{
      */
     async removeGeometryModifyingListener(){
         try{
-            await MC. removeGeometryModifyingListener(this.mapControlId);
+            await MC. removeGeometryModifyingListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -666,18 +675,21 @@ export default class MapControl{
     /**
      * 添加对象修改前监听器
      * @memberOf MapControl
+     * @param events 
+     * @description events:{geometrySelected: e => {...},geometryMultiSelected e => {...}}
+       geometrySelected 单个集合对象被选中事件的回调函数，参数e为获取结果 e:{layer:--, id:--} layer:操作的图层，操作对象id。geometryMultiSelected 多个集合对象被选中事件的回调函数，参数e为获取结果数组：e:{geometries:[layer:--,id:--]}
      * @returns {Promise.&lt;*>}
      */
     async addGeometrySelectedListener(events){
         try{
-            var success = await MC.addGeometrySelectedListener(this.mapControlId);
+            var success = await MC.addGeometrySelectedListener(this._SMMapControlId);
             if(!success) return ;
             //差异化
             if(Platform.OS === 'ios'){
                 nativeEvt.addListener('com.supermap.RN.JSMapcontrol.geometry_selected',function (e) {
                         if(typeof events.geometrySelected === 'function'){
                             var layer = new Layer();
-                            layer.layerId = e.layerId;
+                            layer._SMLayerId = e.layerId;
                             e.layer = layer;
                             events.geometrySelected(e);
                         }else{
@@ -688,7 +700,7 @@ export default class MapControl{
                         if(typeof events.geometryMultiSelected === 'function'){
                             e.geometries.map(function (geometry) {
                                 var layer = new Layer();
-                                layer.layerId = geometry.layerId;
+                                layer._SMLayerId = geometry.layerId;
                                 geometry.layer = layer;
                             })
                             events.geometryMultiSelected(e);
@@ -700,7 +712,7 @@ export default class MapControl{
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.geometry_selected',function (e) {
                 if(typeof events.geometrySelected === 'function'){
                     var layer = new Layer();
-                    layer.layerId = e.layerId;
+                    layer._SMLayerId = e.layerId;
                     e.layer = layer;
                     events.geometrySelected(e);
                 }else{
@@ -711,7 +723,7 @@ export default class MapControl{
                 if(typeof events.geometryMultiSelected === 'function'){
                     e.geometries.map(function (geometry) {
                         var layer = new Layer();
-                        layer.layerId = geometry.layerId;
+                        layer._SMLayerId = geometry.layerId;
                         geometry.layer = layer;
                     })
                     events.geometryMultiSelected(e);
@@ -733,7 +745,7 @@ export default class MapControl{
      */
     async removeGeometrySelectedListener(){
         try{
-            await MC. removeGeometrySelectedListener(this.mapControlId);
+            await MC. removeGeometrySelectedListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -742,11 +754,16 @@ export default class MapControl{
     /**
      * 添加对象修改前监听器
      * @memberOf MapControl
+     * @param events 
+     * @description events:{lengthMeasured: e => {...},areaMeasured: e => {...},e => {...},angleMeasured: e => {...}}
+     * lengthMeasured 长度量算结果。 e:{curResult:--, curPoint:{x:--,y--}
+     * areaMeasured 面积量算结果。 e:{curResult:--, curPoint:{x:--,y--}
+     * angleMeasured 测量角度结果 通过设置Action.MEASUREANGLE实现测量角度。  e:{curAngle:--, curPoint:{x:--,y--}
      * @returns {Promise.&lt;*>}
      */
     async addMeasureListener(events){
         try{
-            var success = await MC.addGeometryModifyingListener(this.mapControlId);
+            var success = await MC.addGeometryModifyingListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.length_measured',function (e) {
@@ -783,7 +800,7 @@ export default class MapControl{
      */
     async removeMeasureListener(){
         try{
-            await MC. removeMeasureListener(this.mapControlId);
+            await MC. removeMeasureListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -792,11 +809,13 @@ export default class MapControl{
     /**
      * 设置Undo监听器。
      * @memberOf MapControl
+     * @param event 
+     * @description event:{undoStateChange: e => {...}}  e:{canUndo:--,canRedo:--} 返回参数canUndo表示是否可取消，canRedo表示是否可重复
      * @returns {Promise.&lt;*>}
      */
     async addUndoStateChangeListener(event){
         try{
-            var success = await MC.addUndoStateChangeListener(this.mapControlId);
+            var success = await MC.addUndoStateChangeListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.undo_state_change',function (e) {
@@ -819,7 +838,7 @@ export default class MapControl{
      */
     async removeUndoStateChangeListener(){
         try{
-            await MC.removeUndoStateChangeListener(this.mapControlId);
+            await MC.removeUndoStateChangeListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -828,13 +847,15 @@ export default class MapControl{
     /**
      * 设置编辑状态监听器。
      * @memberOf MapControl
+     * @param events 
+     * @description events:{addNodeEnable: e => {...},deleteNodeEnable: e => {...}}
      * addNodeEnable: 添加节点有效。e:{isEnable:--}
      * deleteNodeEnable: 删除节点有效。 e:{isEnable:--}
      * @returns {Promise.&lt;*>}
      */
     async setEditStatusListener(events){
         try{
-            var success = await MC.setEditStatusListener(this.mapControlId);
+            var success = await MC.setEditStatusListener(this._SMMapControlId);
             if(!success) return ;
 
             DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.add_node_enable',function (e) {
@@ -864,7 +885,7 @@ export default class MapControl{
      */
     async removeEditStatusListener(){
         try{
-            await MC.removeEditStatusListener(this.mapControlId);
+            await MC.removeEditStatusListener(this._SMMapControlId);
         }catch (e){
             console.error(e);
         }
@@ -877,8 +898,21 @@ export default class MapControl{
      */
     async addPlotLibrary(url){
         try{
-            var libId = await MC.addPlotLibrary(this.mapControlId,url);
+            var libId = await MC.addPlotLibrary(this._SMMapControlId,url);
             return libId;
+        }catch (e){
+            console.error(e);
+        }
+    }
+    
+    /**
+     * 添加标绘库。
+     * @memberOf MapControl
+     * @returns {Promise.&lt;void>}
+     */
+    async removePlotLibrary(libId){
+        try{
+            var isRemove = await MC.removePlotLibrary(this._SMMapControlId,libId);
         }catch (e){
             console.error(e);
         }
@@ -891,22 +925,11 @@ export default class MapControl{
      */
     async setPlotSymbol(libId,symbolCode){
         try{
-            await MC.setPlotSymbol(this.mapControlId,libId,symbolCode);
+            var isSet = await MC.setPlotSymbol(this._SMMapControlId,libId,symbolCode);
         }catch (e){
             console.error(e);
         }
     }
-}
-
-MapControl.ACTION = {
-    PAN:1,
-    VERTEXADD:55,
-    VERTEXDELETE:56,
-    SELECT:8,
-    VERTEXEDIT:54,
-    CREATEPOINT:16,
-    CREATEPOLYLINE:17,
-    CREATEPOLYGON:27,
 }
 </code></pre>
         </article>
@@ -918,13 +941,13 @@ MapControl.ACTION = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#LONGPRESS_EVENT">LONGPRESS_EVENT</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BufferAnalyst.html">BufferAnalyst</a></li><li><a href="BufferAnalystParameter.html">BufferAnalystParameter</a></li><li><a href="DataDownloadService.html">DataDownloadService</a></li><li><a href="Dataset.html">Dataset</a></li><li><a href="DatasetVector.html">DatasetVector</a></li><li><a href="DatasetVectorInfo.html">DatasetVectorInfo</a></li><li><a href="Datasource.html">Datasource</a></li><li><a href="DatasourceConnectionInfo.html">DatasourceConnectionInfo</a></li><li><a href="DataUploadService.html">DataUploadService</a></li><li><a href="Feature.html">Feature</a></li><li><a href="FeatureSet.html">FeatureSet</a></li><li><a href="GeoLine.html">GeoLine</a></li><li><a href="Geometry.html">Geometry</a></li><li><a href="GeoPoint.html">GeoPoint</a></li><li><a href="GeoRegion.html">GeoRegion</a></li><li><a href="GeoStyle.html">GeoStyle</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerSetting.html">LayerSetting</a></li><li><a href="LayerSettingVector.html">LayerSettingVector</a></li><li><a href="LocationManager.html">LocationManager</a></li><li><a href="Map.html">Map</a></li><li><a href="MapControl.html">MapControl</a></li><li><a href="MapView.html">MapView</a></li><li><a href="Navigation2.html">Navigation2</a></li><li><a href="OverlayAnalyst.html">OverlayAnalyst</a></li><li><a href="OverlayAnalystParameter.html">OverlayAnalystParameter</a></li><li><a href="Point.html">Point</a></li><li><a href="Point2D.html">Point2D</a></li><li><a href="QueryParameter.html">QueryParameter</a></li><li><a href="QueryService.html">QueryService</a></li><li><a href="Rectangle2D.html">Rectangle2D</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Selection.html">Selection</a></li><li><a href="ServiceBase.html">ServiceBase</a></li><li><a href="ServiceQueryParameter.html">ServiceQueryParameter</a></li><li><a href="Size2D.html">Size2D</a></li><li><a href="Theme.html">Theme</a></li><li><a href="Track.html">Track</a></li><li><a href="TrackingLayer.html">TrackingLayer</a></li><li><a href="TraditionalNavi.html">TraditionalNavi</a></li><li><a href="Workspace.html">Workspace</a></li><li><a href="WorkspaceConnectionInfo.html">WorkspaceConnectionInfo</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Jul 03 2017 17:06:05 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Aug 01 2017 16:16:49 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>
