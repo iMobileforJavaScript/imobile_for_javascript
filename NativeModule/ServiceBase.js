@@ -9,7 +9,7 @@ let SB = NativeModules.JSServiceBase;
 
 /**
  * @class ServiceBase
- * @description iServer 所有服务的基类。
+ * @description iServer 所有服务的基类(*请注意该类所有方法仅支持android端，iOS端请不要调用此方法)。
  */
 export default class ServiceBase {
 

@@ -50,8 +50,8 @@ public class JSFeature extends ReactContextBaseJavaModule {
     @ReactMethod
     public void createObj(ReadableArray fieldNames, ReadableArray fieldValues, String geomtryId, Promise promise){
         try{
-            String[] names = {};
-            String[] values = {};
+            String[] names = new String[fieldNames.size()];
+            String[] values = new String[fieldValues.size()];
             for(int i = 0; i < fieldNames.size(); i++){
                 names[i] = fieldNames.getString(i);
             }
@@ -62,7 +62,6 @@ public class JSFeature extends ReactContextBaseJavaModule {
             Geometry geometry = JSGeometry.getObjFromList(geomtryId);
             Feature feature = new Feature(names,values,geometry);
             String featureId = registerId(feature);
-
             WritableMap map = Arguments .createMap();
             map.putString("_featureId_",featureId);
             promise.resolve(map);
