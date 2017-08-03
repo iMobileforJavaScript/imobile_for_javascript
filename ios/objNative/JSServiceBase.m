@@ -11,4 +11,8 @@
 #import "JSObjManager.h"
 @implementation JSServiceBase
 RCT_EXPORT_MODULE();
+    
+RCT_REMAP_METHOD(getUrl, getUrlById:(NSString*)id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+}
 @end
