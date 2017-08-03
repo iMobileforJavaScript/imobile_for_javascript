@@ -12,9 +12,11 @@
 
 @implementation JSFeature
 RCT_EXPORT_MODULE();
-RCT_REMAP_METHOD(createObj,fieldNames:(NSMutableArray*)fieldNames fieldValues:(NSMutableArray*)fieldValues geometryId:(NSString*)geometryId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(createObj,fieldNames:(NSArray*)fieldNames fieldValues:(NSArray*)fieldValues geometryId:(NSString*)geometryId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Geometry* geo = [JSObjManager getObjWithKey:geometryId];
-  Feature* feature = [[Feature alloc]initWithFeature:fieldNames fieldValue:fieldValues geometry:geo];
+  NSMutableArray* names = [NSMutableArray arrayWithArray:fieldNames];
+  NSMutableArray* values = [NSMutableArray arrayWithArray:fieldValues];
+  Feature* feature = [[Feature alloc]initWithFeature:names fieldValue:values geometry:geo];
   if(feature){
     NSInteger key = (NSInteger)feature;
     [JSObjManager addObj:feature];
