@@ -8,6 +8,7 @@
 
 #import <React/RCTViewManager.h>
 #import <React/RCTConvert.h>
+#import "JSBarChart.h"
 @interface JSBarChartViewManager : RCTViewManager
 
 @end

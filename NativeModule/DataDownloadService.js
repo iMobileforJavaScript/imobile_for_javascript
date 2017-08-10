@@ -4,7 +4,7 @@
  E-mail: pridehao@gmail.com
  ref:ServiceBase
  **********************************************************************************/
-import {NativeModules} from 'react-native';
+import {NativeModules,Platform} from 'react-native';
 let DDS = NativeModules.JSDataDownloadService;
 import ServiceBase from './ServiceBase.js';
 
@@ -37,6 +37,9 @@ export default class DataDownloadService extends ServiceBase{
             var {_dataDownloadServiceId_} = await DDS.createObj(url);
             var dataDownloadService = new DataDownloadService();
             dataDownloadService._SMDataDownloadServiceId = _dataDownloadServiceId_;
+            if(Platform.OS === 'ios'){
+            dataDownloadService._SMDataDownloadServiceURL = url;
+            }
             return dataDownloadService;
         }catch(e){
             console.error(e);
@@ -71,8 +74,11 @@ export default class DataDownloadService extends ServiceBase{
      */
     async downloadByName(serviceName,datasourceName,datasetName,fromIndex,toIndex){
         try{
-            await DDS.downloadByName(this._SMDataDownloadServiceId,
-                serviceName,datasourceName,datasetName,fromIndex,toIndex);
+            if(Platform.OS === 'ios'){
+                await DDS.downloadByName(this._SMDataDownloadServiceId,this._SMDataDownloadServiceURL,serviceName,datasourceName,datasetName,fromIndex,toIndex);
+            }else{
+            await DDS.downloadByName(this._SMDataDownloadServiceId,serviceName,datasourceName,datasetName,fromIndex,toIndex);
+            }
         }catch(e){
             console.error(e);
         }
@@ -102,8 +108,11 @@ export default class DataDownloadService extends ServiceBase{
      */
     async downloadAllByName(serviceName,datasourceName,datasetName){
         try{
-            await DDS.downloadAllByName(this._SMDataDownloadServiceId,
-                serviceName,datasourceName,datasetName);
+            if(Platform.OS === 'ios'){
+                await DDS.downloadAllByName(this._SMDataDownloadServiceId,this._SMDataDownloadServiceURL,serviceName,datasourceName,datasetName);
+            }else{
+            await DDS.downloadAllByName(this._SMDataDownloadServiceId,serviceName,datasourceName,datasetName);
+            }
         }catch(e){
             console.error(e);
         }
