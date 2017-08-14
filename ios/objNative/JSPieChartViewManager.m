@@ -10,22 +10,19 @@
 #import "JSObjManager.h"
 #import "SuperMap/PieChart.h"
 #import "SuperMap/ChartData.h"
-@interface JSPieChartViewManager()<ChartOnSelectedDelegate>
 
-@end
 @implementation JSPieChartViewManager
 RCT_EXPORT_MODULE(RCTPieChartView);
 
 -(UIView*)view{
-    PieChart* chart = [[PieChart alloc]init];
-    chart.deleagate = self;
+    JSPieChart* chart = [[JSPieChart alloc]init];
     return chart;
 }
 
 RCT_EXPORT_VIEW_PROPERTY(title, NSString);
 RCT_EXPORT_VIEW_PROPERTY(textSize, float);
 RCT_EXPORT_VIEW_PROPERTY(radious, float);
-RCT_CUSTOM_VIEW_PROPERTY(center, NSArray, PieChart){
+RCT_CUSTOM_VIEW_PROPERTY(center, NSArray, JSPieChart){
     NSArray* arr = json?[RCTConvert NSArray:json]:nil;
     NSNumber* num0 = arr[0];
     NSNumber* num1 = arr[1];
@@ -33,11 +30,12 @@ RCT_CUSTOM_VIEW_PROPERTY(center, NSArray, PieChart){
     view.center = point;
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(geoId, int, PieChart){
-    [view setSelectedGeoID:json?[RCTConvert int:json]:0];
+RCT_CUSTOM_VIEW_PROPERTY(geoId, int, JSPieChart){
+    int GeoId = json?[RCTConvert int:json]:0;
+    view.geoId = GeoId;
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(textColor, NSArray, PieChart){
+RCT_CUSTOM_VIEW_PROPERTY(textColor, NSArray, JSPieChart){
     @try {
         NSArray* colorArr = json ? [RCTConvert NSArray:json] :nil;
         NSNumber* red = colorArr[0];
@@ -54,7 +52,7 @@ RCT_CUSTOM_VIEW_PROPERTY(textColor, NSArray, PieChart){
     }
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(chartDatas, NSArray, PieChart){
+RCT_CUSTOM_VIEW_PROPERTY(chartDatas, NSArray, JSPieChart){
     @try {
         NSArray* jsObjArr = json ? [RCTConvert NSArray:json] :nil;
         NSMutableArray* dataArr = [[NSMutableArray alloc]initWithCapacity:5];
@@ -62,7 +60,7 @@ RCT_CUSTOM_VIEW_PROPERTY(chartDatas, NSArray, PieChart){
             ChartPieData* data = [JSObjManager getObjWithKey:objId];
             [dataArr addObject:data];
         }
-        [view addChartDatas:dataArr];
+        view.chartDatas = dataArr;
     } @catch (NSException *exception) {
         NSLog(@"imoble_for_reactnative got exception,info:%@",exception);
     }
