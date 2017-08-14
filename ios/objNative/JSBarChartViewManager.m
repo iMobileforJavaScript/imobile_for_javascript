@@ -10,10 +10,6 @@
 #import "JSObjManager.h"
 #import "SuperMap/BarChart.h"
 #import "SuperMap/ChartData.h"
-//#import "SuperMap/MapControl.h"
-//#import "SuperMap/Map.h"
-//#import "SuperMap/Layers.h"
-//#import "SuperMap/Layer.h"
 
 @implementation JSBarChartViewManager
 RCT_EXPORT_MODULE(RCTBarChartView);

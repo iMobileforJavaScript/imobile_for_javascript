@@ -8,6 +8,7 @@
 
 #import <React/RCTViewManager.h>
 #import <React/RCTConvert.h>
+#import "JSLineChart.h"
 @interface JSLineChartViewManager : RCTViewManager
 
 @end

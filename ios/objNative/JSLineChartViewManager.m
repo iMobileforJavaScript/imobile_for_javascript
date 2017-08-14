@@ -10,15 +10,11 @@
 #import "JSObjManager.h"
 #import "SuperMap/LineChart.h"
 #import "SuperMap/ChartData.h"
-@interface JSLineChartViewManager()<ChartOnSelectedDelegate>
-
-@end
 
 @implementation JSLineChartViewManager
 RCT_EXPORT_MODULE(RCTLineChartView);
 -(UIView*)view{
-    LineChart* chart = [[LineChart alloc]init];
-    chart.deleagate = self;
+    JSLineChart* chart = [[JSLineChart alloc]init];
     return chart;
 }
 
@@ -30,7 +26,7 @@ RCT_EXPORT_VIEW_PROPERTY(xAxisTitle, NSString);
 RCT_EXPORT_VIEW_PROPERTY(yAxisTitle, NSString);
 RCT_EXPORT_VIEW_PROPERTY(allowsUserInteraction, BOOL);
 
-RCT_CUSTOM_VIEW_PROPERTY(hightLightColor, NSArray, LineChart){
+RCT_CUSTOM_VIEW_PROPERTY(hightLightColor, NSArray, JSLineChart){
     @try {
         NSArray* colorArr = json ? [RCTConvert NSArray:json] :nil;
         NSNumber* red = colorArr[0];
@@ -47,11 +43,12 @@ RCT_CUSTOM_VIEW_PROPERTY(hightLightColor, NSArray, LineChart){
     }
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(geoId, int, LineChart){
-    [view setSelectedGeoID:json?[RCTConvert int:json]:0];
+RCT_CUSTOM_VIEW_PROPERTY(geoId, int, JSLineChart){
+    int geoId = json?[RCTConvert int:json]:0;
+    view.geoId = geoId;
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(chartDatas, NSArray, LineChart){
+RCT_CUSTOM_VIEW_PROPERTY(chartDatas, NSArray, JSLineChart){
     @try {
         NSArray* jsObjArr = json ? [RCTConvert NSArray:json] :nil;
         NSMutableArray* dataArr = [[NSMutableArray alloc]initWithCapacity:5];
@@ -59,9 +56,10 @@ RCT_CUSTOM_VIEW_PROPERTY(chartDatas, NSArray, LineChart){
             ChartLineData* data = [JSObjManager getObjWithKey:objId];
             [dataArr addObject:data];
         }
-        [view addChartDatas:dataArr];
+        view.chartDatas = dataArr;
     } @catch (NSException *exception) {
         NSLog(@"imoble_for_reactnative got exception,info:%@",exception);
     }
 }
+
 @end

@@ -19,5 +19,6 @@
 @property(nonatomic,copy) NSString* yAxisTitle;
 @property(nonatomic,assign)BOOL allowsUserInteraction;
 @property(nonatomic,copy)UIColor* hightLightColor;
+@property(nonatomic,assign)int geoId;
 @property(nonatomic,copy)NSArray* chartDatas;
 @end
