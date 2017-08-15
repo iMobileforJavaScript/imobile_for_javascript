@@ -358,14 +358,39 @@ export default class MapControl{
     async getAction(){
         try{
             var {actionType} = await MC.getAction(this._SMMapControlId);
-            for( p in this.ACTION){
-                if(this.ACTION[p] === actionType){
-                    console.log("MapControl.js:"+p);
-                    return p;
-                }else{
-                    throw new Error("Unknown Type");
-                }
+            var actionStr = 'type';
+            switch (actionType){
+                case 0 : actionStr ='NONEACTION';
+                    break;
+                case 1 : actionStr ='PAN';
+                    break;
+                case 8 : actionStr = 'SELECT';
+                    break;
+                case 54 : actionStr = 'VERTEXEDIT';
+                    break;
+                case 55 : actionStr = 'VERTEXADD';
+                    break;
+                case 56 : actionStr = 'DELETENODE';
+                    break;
+                case 16 : actionStr = 'CREATEPOINT';
+                    break;
+                case 17 : actionStr = 'CREATEPOLYLINE';
+                    break;
+                case 27 : actionStr = 'CREATEPOLYGON';
+                    break;
+                case 1001 : actionStr = 'MEASURELENGTH';
+                    break;
+                case 1002 : actionStr = 'MEASUREAREA';
+                    break;
+                case 1003 : actionStr = 'MEASUREANGLE';
+                    break;
+                case 199 : actionStr = 'FREEDRAW';
+                    break;
+                case 3000 : actionStr = 'CREATEPLOT';
+                    break;
+                default : throw new Error("Unknown Action Type");
             }
+            return actionStr;
         }catch (e){
             console.error(e);
         }
@@ -898,15 +923,4 @@ export default class MapControl{
             console.error(e);
         }
     }
-}
-
-MapControl.ACTION = {
-    PAN:1,
-    VERTEXADD:55,
-    VERTEXDELETE:56,
-    SELECT:8,
-    VERTEXEDIT:54,
-    CREATEPOINT:16,
-    CREATEPOLYLINE:17,
-    CREATEPOLYGON:27,
 }
