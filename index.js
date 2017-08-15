@@ -1,3 +1,6 @@
+import { NativeModules } from 'react-native';
+let Action = NativeModules.JSAction;
+
 import BufferAnalyst from './NativeModule/BufferAnalyst.js';
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js';
 import BufferAnalystParameter from './NativeModule/BufferAnalystParameter.js';
@@ -142,7 +145,7 @@ export {
     PolymerChart,
     RelationalPointChart,
     
-
+    Action,
     BufferAnalyst,
     BufferAnalystGeometry,
     BufferAnalystParameter,

@@ -921,6 +921,18 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void removePlotLibrary(String mapControlId, long libId, Promise promise){
+        try {
+            mMapControl = mapControlList.get(mapControlId);
+            mMapControl.removePlotLibrary(libId);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+
+        }
+    }
+
+    @ReactMethod
     public void setPlotSymbol(String mapControlId, int libId, int symbolCode, Promise promise){
         try {
             mMapControl = mapControlList.get(mapControlId);

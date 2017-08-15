@@ -13,7 +13,7 @@
 #import "SuperMap/Point2D.h"
 @implementation JSAdoptMapView
 RCT_EXPORT_MODULE(JSMapControl);
-
+        
 - (NSArray<NSString *> *)supportedEvents
 {
     return @[@"Supermap.MapControl.MapParamChanged.BoundsChanged", @"Supermap.MapControl.MapParamChanged.ScaleChanged",
@@ -98,7 +98,7 @@ RCT_REMAP_METHOD(getMap,geMapKey:(NSString*)key resolver:(RCTPromiseResolveBlock
     reject(@"MapControl",@"getMap() failed.",nil);
 }
 
-RCT_REMAP_METHOD(setAction,mapControlId:(NSString*)Id actionType:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setAction,mapControlId:(NSString*)Id actionType:(Action)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     MapControl* mapControl = [JSObjManager getObjWithKey:Id];
     if (mapControl) {
         mapControl.action = type;
