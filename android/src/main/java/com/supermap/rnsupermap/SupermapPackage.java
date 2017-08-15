@@ -47,6 +47,7 @@ public class SupermapPackage implements ReactPackage {
         modules.add(new JSBufferAnalyst(reactContext));
         modules.add(new JSBufferAnalystGeometry(reactContext));
         modules.add(new JSDatasetVectorInfo(reactContext));
+        modules.add(new JSAction(reactContext));
         return modules;
     }
 

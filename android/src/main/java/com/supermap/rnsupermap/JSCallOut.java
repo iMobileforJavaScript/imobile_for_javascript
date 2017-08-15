@@ -24,7 +24,6 @@ public class JSCallOut extends ReactContextBaseJavaModule {
     CallOut m_CallOut;
     ViewGroup m_rootView;
     ImageView m_imageView;
-    CallOut m_callOut;
 
     public JSCallOut(ReactApplicationContext context) {
         super(context);

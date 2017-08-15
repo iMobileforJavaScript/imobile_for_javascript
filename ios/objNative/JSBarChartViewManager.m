@@ -10,10 +10,6 @@
 #import "JSObjManager.h"
 #import "SuperMap/BarChart.h"
 #import "SuperMap/ChartData.h"
-//#import "SuperMap/MapControl.h"
-//#import "SuperMap/Map.h"
-//#import "SuperMap/Layers.h"
-//#import "SuperMap/Layer.h"
 
 @implementation JSBarChartViewManager
 RCT_EXPORT_MODULE(RCTBarChartView);
@@ -26,7 +22,7 @@ RCT_EXPORT_VIEW_PROPERTY(axisLableSize, float);
 RCT_EXPORT_VIEW_PROPERTY(xAxisTitle, NSString);
 RCT_EXPORT_VIEW_PROPERTY(yAxisTitle, NSString);
 
-RCT_CUSTOM_VIEW_PROPERTY(hightLightColor, NSArray, BarChart){
+RCT_CUSTOM_VIEW_PROPERTY(hightLightColor, NSArray, JSBarChart){
     @try {
         NSArray* colorArr = json ? [RCTConvert NSArray:json] :nil;
         NSNumber* red = colorArr[0];
@@ -43,32 +39,37 @@ RCT_CUSTOM_VIEW_PROPERTY(hightLightColor, NSArray, BarChart){
     }
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(data, NSArray, BarChart){
-        NSArray* jsObjArr = json ? [RCTConvert NSArray:json] :nil;
-        NSMutableArray* dataArr = [[NSMutableArray alloc]initWithCapacity:5];
-        for (NSString*objId in jsObjArr) {
-            ChartBarData* data = [JSObjManager getObjWithKey:objId];
-            [dataArr addObject:data];
-        }
-        [view addChartDatas:dataArr];
-    [view update];
+RCT_CUSTOM_VIEW_PROPERTY(data, NSArray, JSBarChart){
+    NSArray* jsObjArr = json ? [RCTConvert NSArray:json] :nil;
+    NSMutableArray* dataArr = [[NSMutableArray alloc]initWithCapacity:5];
+    for (NSString*objId in jsObjArr) {
+        ChartBarData* data = [JSObjManager getObjWithKey:objId];
+        [dataArr addObject:data];
+    }
+    view.chartDatas = dataArr;
 }
 
-//RCT_CUSTOM_VIEW_PROPERTY(layerIndexWithMapCtrl, NSArray, BarChart){
-//    @try {
-//        NSArray* arr = json ? [RCTConvert NSArray:json] :nil;
-//        NSNumber* index = arr[0];
-//        NSString* mapCtrlId = arr[1];
-//        MapControl* mapCtrl = [JSObjManager getObjWithKey:mapCtrlId];
-//        Map* map = mapCtrl.map;
-//        [[map.layers getLayerAtIndex:index.intValue] addChart:view];
-//    } @catch (NSException *exception) {
-//        NSLog(@"imoble_for_reactnative got exception,info:%@",exception);
-//    }
-//}
+/*预留图层对接属性
+RCT_CUSTOM_VIEW_PROPERTY(layerIndexWithMapCtrl, NSArray, BarChart){
+    @try {
+        NSArray* arr = json ? [RCTConvert NSArray:json] :nil;
+        NSNumber* index = arr[0];
+        NSString* mapCtrlId = arr[1];
+        MapControl* mapCtrl = [JSObjManager getObjWithKey:mapCtrlId];
+        Map* map = mapCtrl.map;
+        [[map.layers getLayerAtIndex:index.intValue] addChart:view];
+    } @catch (NSException *exception) {
+        NSLog(@"imoble_for_reactnative got exception,info:%@",exception);
+    }
+}
+*/
 
 -(UIView*)view{
-    BarChart* chart = [[BarChart alloc]init];
+    JSBarChart* chart = [[JSBarChart alloc]init];
     return chart;
+}
+
+-(dispatch_queue_t)methodQueue{
+    return dispatch_get_main_queue();
 }
 @end

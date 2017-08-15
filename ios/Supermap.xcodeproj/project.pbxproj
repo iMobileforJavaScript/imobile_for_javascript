@@ -25,9 +25,14 @@
 		FF4A44CA1ECC1DB2003E4FE4 /* JSBufferAnalystParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4A44C91ECC1DB2003E4FE4 /* JSBufferAnalystParameter.m */; };
 		FF4A44CD1ECC3672003E4FE4 /* JSAMQPReceiver.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4A44CC1ECC3672003E4FE4 /* JSAMQPReceiver.m */; };
 		FF5367F71ED3C6330093535D /* JSScaleViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5367F61ED3C6330093535D /* JSScaleViewManager.m */; };
+		FF54E2A41F3C0D9D0007A188 /* JSBarChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FF54E2A31F3C0D9D0007A188 /* JSBarChart.m */; };
+		FF54E2C11F3C50FB0007A188 /* JSLineChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FF54E2C01F3C50FB0007A188 /* JSLineChart.m */; };
 		FF6362111ECECAD900E9F6F3 /* JSBufferAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6362101ECECAD900E9F6F3 /* JSBufferAnalyst.m */; };
 		FFA114051EAEDACD00650302 /* SceneViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA114041EAEDACD00650302 /* SceneViewManager.m */; };
 		FFA114471EB0810D00650302 /* JSTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA114461EB0810D00650302 /* JSTheme.m */; };
+		FFB06C471F41768900F9527F /* JSPieChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C461F41768900F9527F /* JSPieChart.m */; };
+		FFB06C4A1F42875000F9527F /* RCTConvert+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C491F42875000F9527F /* RCTConvert+Action.m */; };
+		FFB06C4D1F428C7900F9527F /* JSAction.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C4C1F428C7900F9527F /* JSAction.m */; };
 		FFD1F0191E31E22200CACDC5 /* JSAdoptMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFBE1E31E22200CACDC5 /* JSAdoptMapView.m */; };
 		FFD1F01A1E31E22200CACDC5 /* JSBufferAnalystGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFC01E31E22200CACDC5 /* JSBufferAnalystGeometry.m */; };
 		FFD1F01B1E31E22200CACDC5 /* JSCallOut.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFC21E31E22200CACDC5 /* JSCallOut.m */; };
@@ -143,12 +148,22 @@
 		FF4A44CC1ECC3672003E4FE4 /* JSAMQPReceiver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAMQPReceiver.m; path = objNative/JSAMQPReceiver.m; sourceTree = "<group>"; };
 		FF5367F51ED3C6330093535D /* JSScaleViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSScaleViewManager.h; path = objNative/JSScaleViewManager.h; sourceTree = "<group>"; };
 		FF5367F61ED3C6330093535D /* JSScaleViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSScaleViewManager.m; path = objNative/JSScaleViewManager.m; sourceTree = "<group>"; };
+		FF54E2A21F3C0D9D0007A188 /* JSBarChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBarChart.h; path = objNative/JSBarChart.h; sourceTree = "<group>"; };
+		FF54E2A31F3C0D9D0007A188 /* JSBarChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBarChart.m; path = objNative/JSBarChart.m; sourceTree = "<group>"; };
+		FF54E2BF1F3C50FB0007A188 /* JSLineChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLineChart.h; path = objNative/JSLineChart.h; sourceTree = "<group>"; };
+		FF54E2C01F3C50FB0007A188 /* JSLineChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLineChart.m; path = objNative/JSLineChart.m; sourceTree = "<group>"; };
 		FF63620F1ECECAD900E9F6F3 /* JSBufferAnalyst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBufferAnalyst.h; path = objNative/JSBufferAnalyst.h; sourceTree = "<group>"; };
 		FF6362101ECECAD900E9F6F3 /* JSBufferAnalyst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBufferAnalyst.m; path = objNative/JSBufferAnalyst.m; sourceTree = "<group>"; };
 		FFA114031EAEDACD00650302 /* SceneViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneViewManager.h; path = objNative/SceneViewManager.h; sourceTree = "<group>"; };
 		FFA114041EAEDACD00650302 /* SceneViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SceneViewManager.m; path = objNative/SceneViewManager.m; sourceTree = "<group>"; };
 		FFA114451EB0810D00650302 /* JSTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTheme.h; path = objNative/JSTheme.h; sourceTree = "<group>"; };
 		FFA114461EB0810D00650302 /* JSTheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTheme.m; path = objNative/JSTheme.m; sourceTree = "<group>"; };
+		FFB06C451F41768900F9527F /* JSPieChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPieChart.h; path = objNative/JSPieChart.h; sourceTree = "<group>"; };
+		FFB06C461F41768900F9527F /* JSPieChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPieChart.m; path = objNative/JSPieChart.m; sourceTree = "<group>"; };
+		FFB06C481F42875000F9527F /* RCTConvert+Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+Action.h"; path = "objNative/RCTConvert+Action.h"; sourceTree = "<group>"; };
+		FFB06C491F42875000F9527F /* RCTConvert+Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+Action.m"; path = "objNative/RCTConvert+Action.m"; sourceTree = "<group>"; };
+		FFB06C4B1F428C7900F9527F /* JSAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAction.h; path = objNative/JSAction.h; sourceTree = "<group>"; };
+		FFB06C4C1F428C7900F9527F /* JSAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAction.m; path = objNative/JSAction.m; sourceTree = "<group>"; };
 		FFD1EFBD1E31E22200CACDC5 /* JSAdoptMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAdoptMapView.h; path = objNative/JSAdoptMapView.h; sourceTree = "<group>"; };
 		FFD1EFBE1E31E22200CACDC5 /* JSAdoptMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAdoptMapView.m; path = objNative/JSAdoptMapView.m; sourceTree = "<group>"; };
 		FFD1EFBF1E31E22200CACDC5 /* JSBufferAnalystGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBufferAnalystGeometry.h; path = objNative/JSBufferAnalystGeometry.h; sourceTree = "<group>"; };
@@ -299,6 +314,10 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				FFB06C4B1F428C7900F9527F /* JSAction.h */,
+				FFB06C4C1F428C7900F9527F /* JSAction.m */,
+				FFB06C481F42875000F9527F /* RCTConvert+Action.h */,
+				FFB06C491F42875000F9527F /* RCTConvert+Action.m */,
 				FF0583841ED6741F0095978A /* JSLayerManager.h */,
 				FF0583851ED6741F0095978A /* JSLayerManager.m */,
 				FF0583811ED65F590095978A /* JSLegendViewManager.h */,
@@ -343,16 +362,22 @@
 				FFF203E31EBC707000DA9A1F /* JSPieChartData.m */,
 				FF28BFAA1F1EF2520024AA02 /* JSPieChartViewManager.h */,
 				FF28BFAB1F1EF2520024AA02 /* JSPieChartViewManager.m */,
+				FFB06C451F41768900F9527F /* JSPieChart.h */,
+				FFB06C461F41768900F9527F /* JSPieChart.m */,
 				FFF203E51EBC7AEA00DA9A1F /* JSLineChartData.h */,
 				FFF203E61EBC7AEA00DA9A1F /* JSLineChartData.m */,
 				FFE622A21F26E12A00B9BF32 /* JSLineChartViewManager.h */,
 				FFE622A31F26E12A00B9BF32 /* JSLineChartViewManager.m */,
+				FF54E2BF1F3C50FB0007A188 /* JSLineChart.h */,
+				FF54E2C01F3C50FB0007A188 /* JSLineChart.m */,
 				FFF203DF1EBC5CC800DA9A1F /* JSBarChartData.h */,
 				FFF203E01EBC5CC800DA9A1F /* JSBarChartData.m */,
 				FF4216131F25CF5400F9CCFE /* JSBarChartDataItem.h */,
 				FF4216141F25CF5400F9CCFE /* JSBarChartDataItem.m */,
 				FFFC46C21F20339300F5DDA4 /* JSBarChartViewManager.h */,
 				FFFC46C31F20339300F5DDA4 /* JSBarChartViewManager.m */,
+				FF54E2A21F3C0D9D0007A188 /* JSBarChart.h */,
+				FF54E2A31F3C0D9D0007A188 /* JSBarChart.m */,
 				FFF203C71EBAB91400DA9A1F /* JSChartData.h */,
 				FFF203C81EBAB91400DA9A1F /* JSChartData.m */,
 				FFEFAA401EB9B3790002AE4C /* JSChartView.h */,
@@ -529,6 +554,7 @@
 			files = (
 				FFE622A71F26F44500B9BF32 /* JSInstrumentChartViewManager.m in Sources */,
 				FFFC46C41F20339300F5DDA4 /* JSBarChartViewManager.m in Sources */,
+				FFB06C471F41768900F9527F /* JSPieChart.m in Sources */,
 				FFD1F0451E31E22200CACDC5 /* JSWorkspace.m in Sources */,
 				FF3308F51F1C99E700712398 /* JSTimeLine.m in Sources */,
 				FFD1F0351E31E22200CACDC5 /* JSMapView.m in Sources */,
@@ -563,6 +589,7 @@
 				FFEFAA421EB9B3790002AE4C /* JSChartView.m in Sources */,
 				FF1405261EA839A7000E0314 /* JSOverlayAnalyst.m in Sources */,
 				FFDFED3B1EC9449100C39D87 /* JSSTOMPSender.m in Sources */,
+				FFB06C4D1F428C7900F9527F /* JSAction.m in Sources */,
 				FFD1F0441E31E22200CACDC5 /* JSTrackingLayer.m in Sources */,
 				FFD1F0391E31E22200CACDC5 /* JSPoint2D.m in Sources */,
 				FFD1F0461E31E22200CACDC5 /* JSWorkspaceConnectionInfo.m in Sources */,
@@ -591,6 +618,7 @@
 				FFD1F02C1E31E22200CACDC5 /* JSGeoStyle.m in Sources */,
 				FF6362111ECECAD900E9F6F3 /* JSBufferAnalyst.m in Sources */,
 				FF4216151F25CF5400F9CCFE /* JSBarChartDataItem.m in Sources */,
+				FFB06C4A1F42875000F9527F /* RCTConvert+Action.m in Sources */,
 				FFDFED351EC930C200C39D87 /* JSSTOMPManager.m in Sources */,
 				FF4A44CA1ECC1DB2003E4FE4 /* JSBufferAnalystParameter.m in Sources */,
 				FFD50D661EA9F7BD00C5F209 /* JSSceneControl.m in Sources */,
@@ -602,11 +630,13 @@
 				FFD1F0401E31E22200CACDC5 /* JSServiceBase.m in Sources */,
 				FF4A44CD1ECC3672003E4FE4 /* JSAMQPReceiver.m in Sources */,
 				FFE622A41F26E12A00B9BF32 /* JSLineChartViewManager.m in Sources */,
+				FF54E2C11F3C50FB0007A188 /* JSLineChart.m in Sources */,
 				FFD1F01E1E31E22200CACDC5 /* JSDatasets.m in Sources */,
 				FFD1F0371E31E22200CACDC5 /* JSObjManager.m in Sources */,
 				FFF1A4D01EBD5E7900C21142 /* JSChartLegend.m in Sources */,
 				FFD1F0221E31E22200CACDC5 /* JSDatasourceConnectionInfo.m in Sources */,
 				FFD1F0321E31E22200CACDC5 /* JSMap.m in Sources */,
+				FF54E2A41F3C0D9D0007A188 /* JSBarChart.m in Sources */,
 				FFF203E71EBC7AEA00DA9A1F /* JSLineChartData.m in Sources */,
 				FFD50D571EA9E67E00C5F209 /* JSScene.m in Sources */,
 				FFA114051EAEDACD00650302 /* SceneViewManager.m in Sources */,

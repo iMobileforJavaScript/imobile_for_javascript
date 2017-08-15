@@ -35,9 +35,15 @@ RCT_REMAP_METHOD(download,DDSId:(NSString*)DDSId fullURL:(NSString*)fullURL from
 }
 
 
-RCT_REMAP_METHOD(downloadByName,DDSId:(NSString*)DDSId serviceName:(NSString*)serviceName datasourceName:(NSString*)datasourceName datasetName:(NSString*)datasetName fromIndex:(int)fromIndex toIndex:(int)toIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    DataDownloadService* DDS = [JSObjManager getObjWithKey:DDSId];
-//    [DDS download:<#(NSString *)#> serviceName:<#(NSString *)#> datasourceName:<#(NSString *)#> datasetName:<#(NSString *)#> fromIndex:<#(int)#> toIndex:<#(int)#>]
+RCT_REMAP_METHOD(downloadByName,DDSId:(NSString*)DDSId URL:(NSString*)url serviceName:(NSString*)serviceName datasourceName:(NSString*)datasourceName datasetName:(NSString*)datasetName fromIndex:(int)fromIndex toIndex:(int)toIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        DataDownloadService* DDS = [JSObjManager getObjWithKey:DDSId];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [DDS download:url serviceName:serviceName datasourceName:datasourceName datasetName:datasetName fromIndex:fromIndex toIndex:toIndex];
+        });
+    } @catch (NSException *exception) {
+        reject(@"dataDownloadService",@"download failed!!!",nil);
+    }
 }
 
 RCT_REMAP_METHOD(downloadAll,DDSId:(NSString*)DDSId URL:(NSString*)URL resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -50,8 +56,15 @@ RCT_REMAP_METHOD(downloadAll,DDSId:(NSString*)DDSId URL:(NSString*)URL resolver:
     }
 }
 
-RCT_REMAP_METHOD(downloadAllByName,DDSId:(NSString*)DDSId serviceName:(NSString*)serviceName datasourceName:(NSString*)datasourceName datasetName:(NSString*)datasetName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-  ////url
+RCT_REMAP_METHOD(downloadAllByName,DDSId:(NSString*)DDSId URL:(NSString*)url serviceName:(NSString*)serviceName datasourceName:(NSString*)datasourceName datasetName:(NSString*)datasetName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        DataDownloadService* DDS = [JSObjManager getObjWithKey:DDSId];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [DDS downloadAll:url serviceName:serviceName dsName:datasourceName datasetName:datasetName];
+        });
+    } @catch (NSException *exception) {
+        reject(@"dataDownloadService",@"download failed!!!",nil);
+    }
 }
 
 RCT_REMAP_METHOD(downloadDataset,DDSId:(NSString*)DDSId urlDatset:(NSString*)urlDatset datasourceId:(NSString*)datasourceId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
