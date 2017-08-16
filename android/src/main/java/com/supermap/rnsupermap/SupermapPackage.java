@@ -50,6 +50,8 @@ public class SupermapPackage implements ReactPackage {
         modules.add(new JSAction(reactContext));
         modules.add(new JSBufferEndType(reactContext));
         modules.add(new JSRadiusUnit(reactContext));
+        modules.add(new JSEncodeType(reactContext));
+        modules.add(new JSDatasetType(reactContext));
         return modules;
     }
 

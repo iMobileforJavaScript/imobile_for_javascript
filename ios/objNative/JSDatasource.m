@@ -16,7 +16,7 @@
 //注册为Native模块
 RCT_EXPORT_MODULE();
 
-RCT_REMAP_METHOD(copyDataset,copyDatasetByKey:(NSString*)key withSrcDSId:(NSString*)DSId withDesDSName:(NSString*)name withEncodeType:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(copyDataset,copyDatasetByKey:(NSString*)key withSrcDSId:(NSString*)DSId withDesDSName:(NSString*)name withEncodeType:(EncodeType)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Datasource* datasource = [JSObjManager getObjWithKey:key];
     Dataset* srcDataset = [JSObjManager getObjWithKey:DSId];
     Dataset* dataset = [datasource copyDataset:srcDataset desDatasetName:name encodeType:type];
@@ -157,7 +157,7 @@ RCT_REMAP_METHOD(createDatasetVector,createDatasetVectorByKey:(NSString*)key and
     }
 }
 
-RCT_REMAP_METHOD(createDatasetVectorDirectly,createDatasetVectorDirectlyByKey:(NSString*)key withName:(NSString*)name withDatasetType:(int)dsType withEncodeType:(int)eType resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(createDatasetVectorDirectly,createDatasetVectorDirectlyByKey:(NSString*)key withName:(NSString*)name withDatasetType:(DatasetType)dsType withEncodeType:(int)eType resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Datasource* datasource = [JSObjManager getObjWithKey:key];
     Datasets* datasets = datasource.datasets;
     DatasetVectorInfo* info = [[DatasetVectorInfo alloc]initWithName:name datasetType:dsType];

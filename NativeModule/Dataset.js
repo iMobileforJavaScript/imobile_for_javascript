@@ -105,7 +105,53 @@ export default class Dataset{
     async getType(){
         try{
             var {type} = await D.getType(this._SMDatasetId);
-            return type;
+            var typeStr = 'type';
+            switch (type){
+                case 0 : typeStr = 'TABULAR';
+                    break;
+                case 1 : typeStr = 'POINT';
+                    break;
+                case 3 : typeStr = 'LINE';
+                    break;
+                case 4 : typeStr = 'Network';
+                    break;
+                case 5 : typeStr = 'REGION';
+                    break;
+                case 7 : typeStr = 'TEXT';
+                    break;
+                case 81 : typeStr = 'IMAGE';
+                    break;
+                case 83 : typeStr = 'Grid';
+                    break;
+                case 84 : typeStr = 'DEM';
+                    break;
+                case 84 : typeStr = 'DEM';
+                    break;
+                case 86 : typeStr = 'WMS';
+                    break;
+                case 87 : typeStr = 'WCS';
+                    break;
+                case 88 : typeStr = 'MBImage';
+                    break;
+                case 101 : typeStr = 'PointZ';
+                    break;
+                case 103 : typeStr = 'LineZ';
+                    break;
+                case 105 : typeStr = 'RegionZ';
+                    break;
+                case 106 : typeStr = 'VECTORMODEL';
+                    break;
+                case 139 : typeStr = 'TIN';
+                    break;
+                case 149 : typeStr = 'CAD';
+                    break;
+                case 151 : typeStr = 'WFS';
+                    break;
+                case 205 : typeStr = 'NETWORK3D';
+                    break;
+                default : throw new Error("Unknown Dataset Type");
+            }
+            return typeStr;
         }catch(e){
             console.error(e);
         }
@@ -135,7 +181,27 @@ export default class Dataset{
     async getEncodeType(){
         try{
             var {type} = await D.getEncodeType(this._SMDatasetId);
-            return type;
+            var typeStr = 'type';
+            switch (type) {
+                case 0 : typeStr = 'NONE';
+                    break;
+                case 1 : typeStr = 'BYTE';
+                    break;
+                case 2 : typeStr = 'INT16';
+                    break;
+                case 3 : typeStr = 'INT24';
+                    break;
+                case 4 : typeStr = 'INT32';
+                    break;
+                case 8 : typeStr = 'DCT';
+                    break;
+                case 9 : typeStr = 'SGL';
+                    break;
+                case 11 : typeStr = 'LZW';
+                    break;
+                default : throw new Error("Unknown Encode Type");
+            }
+            return typeStr;
         }catch(e){
             console.error(e);
         }
