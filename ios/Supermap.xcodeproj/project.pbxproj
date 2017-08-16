@@ -33,6 +33,10 @@
 		FFB06C471F41768900F9527F /* JSPieChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C461F41768900F9527F /* JSPieChart.m */; };
 		FFB06C4A1F42875000F9527F /* RCTConvert+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C491F42875000F9527F /* RCTConvert+Action.m */; };
 		FFB06C4D1F428C7900F9527F /* JSAction.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C4C1F428C7900F9527F /* JSAction.m */; };
+		FFB06C741F43C9F200F9527F /* RCTConvert+BufferEndType.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C731F43C9F200F9527F /* RCTConvert+BufferEndType.m */; };
+		FFB06C771F43CABD00F9527F /* JSBufferEndType.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C761F43CABD00F9527F /* JSBufferEndType.m */; };
+		FFB06C7A1F43D17B00F9527F /* RCTConvert+RadiusUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C791F43D17B00F9527F /* RCTConvert+RadiusUnit.m */; };
+		FFB06C7D1F43D3CF00F9527F /* JSRadiusUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C7C1F43D3CF00F9527F /* JSRadiusUnit.m */; };
 		FFD1F0191E31E22200CACDC5 /* JSAdoptMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFBE1E31E22200CACDC5 /* JSAdoptMapView.m */; };
 		FFD1F01A1E31E22200CACDC5 /* JSBufferAnalystGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFC01E31E22200CACDC5 /* JSBufferAnalystGeometry.m */; };
 		FFD1F01B1E31E22200CACDC5 /* JSCallOut.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFC21E31E22200CACDC5 /* JSCallOut.m */; };
@@ -164,6 +168,14 @@
 		FFB06C491F42875000F9527F /* RCTConvert+Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+Action.m"; path = "objNative/RCTConvert+Action.m"; sourceTree = "<group>"; };
 		FFB06C4B1F428C7900F9527F /* JSAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAction.h; path = objNative/JSAction.h; sourceTree = "<group>"; };
 		FFB06C4C1F428C7900F9527F /* JSAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAction.m; path = objNative/JSAction.m; sourceTree = "<group>"; };
+		FFB06C721F43C9F200F9527F /* RCTConvert+BufferEndType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+BufferEndType.h"; path = "objNative/RCTConvert+BufferEndType.h"; sourceTree = "<group>"; };
+		FFB06C731F43C9F200F9527F /* RCTConvert+BufferEndType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+BufferEndType.m"; path = "objNative/RCTConvert+BufferEndType.m"; sourceTree = "<group>"; };
+		FFB06C751F43CABD00F9527F /* JSBufferEndType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBufferEndType.h; path = objNative/JSBufferEndType.h; sourceTree = "<group>"; };
+		FFB06C761F43CABD00F9527F /* JSBufferEndType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBufferEndType.m; path = objNative/JSBufferEndType.m; sourceTree = "<group>"; };
+		FFB06C781F43D17B00F9527F /* RCTConvert+RadiusUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+RadiusUnit.h"; path = "objNative/RCTConvert+RadiusUnit.h"; sourceTree = "<group>"; };
+		FFB06C791F43D17B00F9527F /* RCTConvert+RadiusUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+RadiusUnit.m"; path = "objNative/RCTConvert+RadiusUnit.m"; sourceTree = "<group>"; };
+		FFB06C7B1F43D3CF00F9527F /* JSRadiusUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSRadiusUnit.h; path = objNative/JSRadiusUnit.h; sourceTree = "<group>"; };
+		FFB06C7C1F43D3CF00F9527F /* JSRadiusUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSRadiusUnit.m; path = objNative/JSRadiusUnit.m; sourceTree = "<group>"; };
 		FFD1EFBD1E31E22200CACDC5 /* JSAdoptMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAdoptMapView.h; path = objNative/JSAdoptMapView.h; sourceTree = "<group>"; };
 		FFD1EFBE1E31E22200CACDC5 /* JSAdoptMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAdoptMapView.m; path = objNative/JSAdoptMapView.m; sourceTree = "<group>"; };
 		FFD1EFBF1E31E22200CACDC5 /* JSBufferAnalystGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBufferAnalystGeometry.h; path = objNative/JSBufferAnalystGeometry.h; sourceTree = "<group>"; };
@@ -314,6 +326,14 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				FFB06C7B1F43D3CF00F9527F /* JSRadiusUnit.h */,
+				FFB06C7C1F43D3CF00F9527F /* JSRadiusUnit.m */,
+				FFB06C781F43D17B00F9527F /* RCTConvert+RadiusUnit.h */,
+				FFB06C791F43D17B00F9527F /* RCTConvert+RadiusUnit.m */,
+				FFB06C751F43CABD00F9527F /* JSBufferEndType.h */,
+				FFB06C761F43CABD00F9527F /* JSBufferEndType.m */,
+				FFB06C721F43C9F200F9527F /* RCTConvert+BufferEndType.h */,
+				FFB06C731F43C9F200F9527F /* RCTConvert+BufferEndType.m */,
 				FFB06C4B1F428C7900F9527F /* JSAction.h */,
 				FFB06C4C1F428C7900F9527F /* JSAction.m */,
 				FFB06C481F42875000F9527F /* RCTConvert+Action.h */,
@@ -571,6 +591,7 @@
 				FFD1F0341E31E22200CACDC5 /* JSMaps.m in Sources */,
 				FF1CB7311EC001FC00562DCD /* JSPolymerChart.m in Sources */,
 				FFF1A4D31EBDA38E00C21142 /* JSHotChart.m in Sources */,
+				FFB06C7A1F43D17B00F9527F /* RCTConvert+RadiusUnit.m in Sources */,
 				FFD1F01D1E31E22200CACDC5 /* JSDataset.m in Sources */,
 				FF1B90321E78C92400CE2481 /* JSNavigation.m in Sources */,
 				FFD1F0411E31E22200CACDC5 /* JSServiceQueryParameter.m in Sources */,
@@ -603,6 +624,7 @@
 				FF263BB81EC547BA00A8374C /* JSAMQPManager.m in Sources */,
 				FFD1F0281E31E22200CACDC5 /* JSGeoLine.m in Sources */,
 				FFD1F0361E31E22200CACDC5 /* JSNavigation2.m in Sources */,
+				FFB06C771F43CABD00F9527F /* JSBufferEndType.m in Sources */,
 				FFD1F03B1E31E22200CACDC5 /* JSQueryParameter.m in Sources */,
 				FFD1F01F1E31E22200CACDC5 /* JSDatasetVector.m in Sources */,
 				FFD1F03E1E31E22200CACDC5 /* JSRectangle2D.m in Sources */,
@@ -621,6 +643,7 @@
 				FFB06C4A1F42875000F9527F /* RCTConvert+Action.m in Sources */,
 				FFDFED351EC930C200C39D87 /* JSSTOMPManager.m in Sources */,
 				FF4A44CA1ECC1DB2003E4FE4 /* JSBufferAnalystParameter.m in Sources */,
+				FFB06C741F43C9F200F9527F /* RCTConvert+BufferEndType.m in Sources */,
 				FFD50D661EA9F7BD00C5F209 /* JSSceneControl.m in Sources */,
 				FFF203E41EBC707000DA9A1F /* JSPieChartData.m in Sources */,
 				FFD1F03C1E31E22200CACDC5 /* JSQueryService.m in Sources */,
@@ -631,6 +654,7 @@
 				FF4A44CD1ECC3672003E4FE4 /* JSAMQPReceiver.m in Sources */,
 				FFE622A41F26E12A00B9BF32 /* JSLineChartViewManager.m in Sources */,
 				FF54E2C11F3C50FB0007A188 /* JSLineChart.m in Sources */,
+				FFB06C7D1F43D3CF00F9527F /* JSRadiusUnit.m in Sources */,
 				FFD1F01E1E31E22200CACDC5 /* JSDatasets.m in Sources */,
 				FFD1F0371E31E22200CACDC5 /* JSObjManager.m in Sources */,
 				FFF1A4D01EBD5E7900C21142 /* JSChartLegend.m in Sources */,

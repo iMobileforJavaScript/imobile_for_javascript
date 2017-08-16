@@ -23,7 +23,7 @@ RCT_REMAP_METHOD(createObj,createObjWithResolver:(RCTPromiseResolveBlock)resolve
     }
 }
 
-RCT_REMAP_METHOD(setEndType,setEndTypeById:(NSString*)paraId endType:(int)endType resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setEndType,setEndTypeById:(NSString*)paraId endType:(BufferEndType)endType resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BufferAnalystParameter* para = [JSObjManager getObjWithKey:paraId];
         para.bufferEndType = endType;
@@ -104,7 +104,7 @@ RCT_REMAP_METHOD(getRightDistance,getRightDistanceById:(NSString*)paraId resolve
     }
 }
 
-RCT_REMAP_METHOD(setRadiusUnit,setRadiusUnitById:(NSString*)paraId radiusUnit:(int)radiusUnit resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setRadiusUnit,setRadiusUnitById:(NSString*)paraId radiusUnit:(BufferRadiusUnit)radiusUnit resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BufferAnalystParameter* para = [JSObjManager getObjWithKey:paraId];
         para.bufferRadiusUnit = radiusUnit;
