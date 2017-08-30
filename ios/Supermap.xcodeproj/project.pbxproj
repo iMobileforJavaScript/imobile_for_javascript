@@ -15,6 +15,7 @@
 		FF1CB72E1EC000A600562DCD /* JSPointDensityChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1CB72D1EC000A600562DCD /* JSPointDensityChart.m */; };
 		FF1CB7311EC001FC00562DCD /* JSPolymerChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1CB7301EC001FC00562DCD /* JSPolymerChart.m */; };
 		FF1CB7341EC0096100562DCD /* JSRelationalPointChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1CB7331EC0096100562DCD /* JSRelationalPointChart.m */; };
+		FF1FC4B91F53FD23004791DC /* JSSceneView.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1FC4B81F53FD23004791DC /* JSSceneView.m */; };
 		FF23718F1ECACBF800A86EEF /* JSMQTTClientSide.m in Sources */ = {isa = PBXBuildFile; fileRef = FF23718E1ECACBF800A86EEF /* JSMQTTClientSide.m */; };
 		FF263BB81EC547BA00A8374C /* JSAMQPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF263BB71EC547BA00A8374C /* JSAMQPManager.m */; };
 		FF263BBB1EC5586500A8374C /* JSAMQPSender.m in Sources */ = {isa = PBXBuildFile; fileRef = FF263BBA1EC5586500A8374C /* JSAMQPSender.m */; };
@@ -136,6 +137,8 @@
 		FF1CB7301EC001FC00562DCD /* JSPolymerChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPolymerChart.m; path = objNative/JSPolymerChart.m; sourceTree = "<group>"; };
 		FF1CB7321EC0096100562DCD /* JSRelationalPointChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSRelationalPointChart.h; path = objNative/JSRelationalPointChart.h; sourceTree = "<group>"; };
 		FF1CB7331EC0096100562DCD /* JSRelationalPointChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSRelationalPointChart.m; path = objNative/JSRelationalPointChart.m; sourceTree = "<group>"; };
+		FF1FC4B71F53FD23004791DC /* JSSceneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSceneView.h; path = objNative/JSSceneView.h; sourceTree = "<group>"; };
+		FF1FC4B81F53FD23004791DC /* JSSceneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSceneView.m; path = objNative/JSSceneView.m; sourceTree = "<group>"; };
 		FF23718D1ECACBF800A86EEF /* JSMQTTClientSide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSMQTTClientSide.h; path = objNative/JSMQTTClientSide.h; sourceTree = "<group>"; };
 		FF23718E1ECACBF800A86EEF /* JSMQTTClientSide.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSMQTTClientSide.m; path = objNative/JSMQTTClientSide.m; sourceTree = "<group>"; };
 		FF263BB61EC547BA00A8374C /* JSAMQPManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAMQPManager.h; path = objNative/JSAMQPManager.h; sourceTree = "<group>"; };
@@ -426,6 +429,8 @@
 				FFA114461EB0810D00650302 /* JSTheme.m */,
 				FFD50D641EA9F7BD00C5F209 /* JSSceneControl.h */,
 				FFD50D651EA9F7BD00C5F209 /* JSSceneControl.m */,
+				FF1FC4B71F53FD23004791DC /* JSSceneView.h */,
+				FF1FC4B81F53FD23004791DC /* JSSceneView.m */,
 				FFA114031EAEDACD00650302 /* SceneViewManager.h */,
 				FFA114041EAEDACD00650302 /* SceneViewManager.m */,
 				FFD50D551EA9E67E00C5F209 /* JSScene.h */,
@@ -644,6 +649,7 @@
 				FF5367F71ED3C6330093535D /* JSScaleViewManager.m in Sources */,
 				FF47894A1E8A4AAB00E0DA44 /* JSSystemUtil.m in Sources */,
 				FFD1F0261E31E22200CACDC5 /* JSFeature.m in Sources */,
+				FF1FC4B91F53FD23004791DC /* JSSceneView.m in Sources */,
 				FF263BB81EC547BA00A8374C /* JSAMQPManager.m in Sources */,
 				FFD1F0281E31E22200CACDC5 /* JSGeoLine.m in Sources */,
 				FFD1F0361E31E22200CACDC5 /* JSNavigation2.m in Sources */,

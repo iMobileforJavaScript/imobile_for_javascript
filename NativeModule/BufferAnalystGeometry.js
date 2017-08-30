@@ -25,8 +25,7 @@ export default class BufferAnalystGeometry {
      */
     static async createBuffer(geometry,bufferAnalystParameter,prjCoordSys){
         try{
-            var {geoRegionId} = await BAG.createBuffer(this._SMBufferAnalystGeometryId,
-                geometry._SMGeometryId,bufferAnalystParameter._SMBufferAnalystParameterId,prjCoordSys._SMPrjCoordSysId);
+            var {geoRegionId} = await BAG.createBuffer(geometry._SMGeometryId,bufferAnalystParameter._SMBufferAnalystParameterId,prjCoordSys._SMPrjCoordSysId);
             var geoRegion = new GeoRegion();
             geoRegion._SMGeoRegionId = geoRegionId;
 //            console.log("geoRegion.geometryId:"+geoRegion.geometryId);

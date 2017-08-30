@@ -13,17 +13,17 @@
 @implementation JSBufferAnalystGeometry
 RCT_EXPORT_MODULE();
 
-RCT_REMAP_METHOD(createBuffer,bufferGeoKey:(NSString*)key geometryId:(NSString*)geoId bufferAnalystParaId:(NSString*)paraId projCoorSys:(NSString*)projSys resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    Geometry* sourceGeo = [JSObjManager getObjWithKey:geoId];
-    BufferAnalystParameter* para = [JSObjManager getObjWithKey:paraId];
-    PrjCoordSys* coorSys = [JSObjManager getObjWithKey:projSys];
-    GeoRegion* region = [BufferAnalystGeometry CreateBufferSourceGeometry:sourceGeo BufferParam:para prjCoordSys:coorSys];
-  if (region) {
-    NSInteger regionKey = (NSInteger)region;
-    [JSObjManager addObj:region];
-    resolve(@{@"geoRegionId":@(regionKey).stringValue});
-  }else{
-    reject(@"bufferAnalystGeo",@"bufferAnalyst failed",nil);
-  }
+RCT_REMAP_METHOD(createBuffer,geometryId:(NSString*)geoId bufferAnalystParaId:(NSString*)paraId projCoorSys:(NSString*)projSys resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Geometry* sourceGeo = [JSObjManager getObjWithKey:geoId];
+        BufferAnalystParameter* para = [JSObjManager getObjWithKey:paraId];
+        PrjCoordSys* coorSys = [JSObjManager getObjWithKey:projSys];
+        GeoRegion* region = [BufferAnalystGeometry CreateBufferSourceGeometry:sourceGeo BufferParam:para prjCoordSys:coorSys];
+        NSInteger regionKey = (NSInteger)region;
+        [JSObjManager addObj:region];
+        resolve(@{@"geoRegionId":@(regionKey).stringValue});
+    } @catch (NSException *exception) {
+        reject(@"bufferAnalystGeo",@"bufferAnalyst failed",nil);
+    }
 }
 @end
