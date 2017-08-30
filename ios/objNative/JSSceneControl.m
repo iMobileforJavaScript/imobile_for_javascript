@@ -9,6 +9,7 @@
 #import <React/RCTUIManager.h>
 #import "JSSceneControl.h"
 #import "SuperMap/SceneControl.h"
+#import "JSSceneView.h"
 #import "JSObjManager.h"
 
 @implementation JSSceneControl
@@ -16,7 +17,8 @@
 RCT_EXPORT_MODULE();
 
 RCT_REMAP_METHOD(getScene, getSceneByID:(NSString*)sceneControlId resolver:(RCTPromiseResolveBlock)resolve rejrcter:(RCTPromiseRejectBlock)reject){
-    SceneControl* sceneCtr = [JSObjManager getObjWithKey:sceneControlId];
+    JSSceneView* sceneView = [JSObjManager getObjWithKey:sceneControlId];
+    SceneControl* sceneCtr = sceneView.sceneCtrl;
     Scene* scene = sceneCtr.scene;
     if (scene) {
         NSInteger nsSceneKey = (NSInteger)scene;
@@ -27,13 +29,13 @@ RCT_REMAP_METHOD(getScene, getSceneByID:(NSString*)sceneControlId resolver:(RCTP
     }
 }
 
-RCT_REMAP_METHOD(initWithViewCtrl, initByID:(NSString*)sceneControlId reactTag:(NSNumber*)tag resolver:(RCTPromiseResolveBlock)resolve rejrcter:(RCTPromiseRejectBlock)reject){
-    SceneControl* sceneCtr = [JSObjManager getObjWithKey:sceneControlId];
-    RCTUIManager *uiManager = self.bridge.uiManager;
-    dispatch_async(uiManager.methodQueue, ^{[uiManager addUIBlock:^(RCTUIManager* uiManger,NSDictionary<NSNumber*,UIView*>*viewRegistry){
-        UIView *view = viewRegistry[tag];
-        UIViewController *viewController = (UIViewController *)view.reactViewController;
-        [sceneCtr initSceneControl:viewController];
-    }];});
-}
+//RCT_REMAP_METHOD(initWithViewCtrl, initByID:(NSString*)sceneControlId reactTag:(NSNumber*)tag resolver:(RCTPromiseResolveBlock)resolve rejrcter:(RCTPromiseRejectBlock)reject){
+//    SceneControl* sceneCtr = [JSObjManager getObjWithKey:sceneControlId];
+//    RCTUIManager *uiManager = self.bridge.uiManager;
+//    dispatch_async(uiManager.methodQueue, ^{[uiManager addUIBlock:^(RCTUIManager* uiManger,NSDictionary<NSNumber*,UIView*>*viewRegistry){
+//        UIView *view = viewRegistry[tag];
+//        UIViewController *viewController = (UIViewController *)view.reactViewController;
+//        [sceneCtr initSceneControl:viewController];
+//    }];});
+//}
 @end

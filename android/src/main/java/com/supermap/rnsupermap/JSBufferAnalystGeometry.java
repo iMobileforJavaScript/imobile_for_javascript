@@ -48,14 +48,12 @@ public class JSBufferAnalystGeometry extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void createBuffer(String bufferAnalystGeometryId, String geometryId,
-                             String bufferAnalystParamId, String prjCoordSysId, Promise promise){
+    public void createBuffer(String geometryId, String bufferAnalystParamId, String prjCoordSysId, Promise promise){
         try{
             BufferAnalystParameter bufferAnalystParameter = JSBufferAnalystParameter.getObjFromList(bufferAnalystParamId);
-            BufferAnalystGeometry bufferAnalystGeometry = getObjFromList(bufferAnalystGeometryId);
             Geometry geometry = JSGeometry.getObjFromList(geometryId);
             PrjCoordSys prjCoordSys = JSPrjCoordSys.getObjFromList(prjCoordSysId);
-            GeoRegion geoRegion = bufferAnalystGeometry.createBuffer(geometry,bufferAnalystParameter,prjCoordSys);
+            GeoRegion geoRegion = BufferAnalystGeometry.createBuffer(geometry,bufferAnalystParameter,prjCoordSys);
             String geoRegionId = JSGeoRegion.registerId(geoRegion);
 
             WritableMap map = Arguments.createMap();

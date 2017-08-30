@@ -82,7 +82,17 @@ export default class LayerSettingVector extends LayerSetting{
         try{
             
             var {type} = await LSV.getType(this._SMLayerSettingVectorId);
-            return type;
+            var typeStr = 'type';
+            switch (type){
+                case 0 : typeStr = 'VECTOR';
+                    break;
+                case 1 : typeStr = 'RASTER';
+                    break;
+                case 2 : typeStr = 'GRID';
+                    break;
+                default : throw new Error("Unknown LayerSetting Type");
+            }
+            return typeStr;
         }catch (e){
             console.error(e);
         }

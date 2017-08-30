@@ -7,6 +7,7 @@
 //
 
 #import "SceneViewManager.h"
+#import "JSSceneView.h"
 #import "JSObjManager.h"
 
 #import <React/RCTEventDispatcher.h>
@@ -17,13 +18,13 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTWebView.h>
 
-@interface SceneControl(ReactSceneCategory)
+@interface JSSceneView(ReactSceneCategory)
 
 @property (nonatomic, strong) SceneViewManager *sceneViewManger;
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 @end
 
-@implementation SceneControl (ReactSceneCategory)
+@implementation JSSceneView (ReactSceneCategory)
 
 
 -(void)setSceneViewManger:(SceneViewManager *)sceneViewManger{
@@ -58,14 +59,18 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 }
 - (UIView *)view
 {
-    
-    SceneControl* sceneControl = [[SceneControl alloc]init];
-    sceneControl.sceneViewManger = self;
+    JSSceneView* sceneView = [[JSSceneView alloc]init];
+//    SceneControl* sceneControl = [[SceneControl alloc]init];
+    sceneView.sceneViewManger = self;
 //    sceneControl.tracked3DDelegate = self;
 //    sceneControl.tracking3DDelegate = self;
 //    sceneControl.sceneControlDelegate = self;
-    [JSObjManager addObj:sceneControl];
+    [JSObjManager addObj:sceneView];
     
-    return sceneControl;
+    return sceneView;
+}
+
+-(dispatch_queue_t)methodQueue{
+    return dispatch_get_main_queue();
 }
 @end

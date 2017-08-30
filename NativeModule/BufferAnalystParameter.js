@@ -68,7 +68,15 @@ export default class BufferAnalystParameter {
     async getEndType(){
         try{
             var {EndType} = await BAP.getEndType(this._SMBufferAnalystParameterId);
-            return EndType;
+            var endTypeStr = 'type';
+            switch(EndType){
+                case 1 : endTypeStr = 'ROUND';
+                    break;
+                case 2 : endTypeStr = 'FLAT';
+                    break;
+                default : throw new Error("Unknown EndType Type");
+            }
+            return endTypeStr;
         }catch (e){
             console.error(e);
         }
@@ -160,7 +168,29 @@ export default class BufferAnalystParameter {
     async getRadiusUnit(){
         try{
             var {radiusUnit} = await BAP.getRadiusUnit(this._SMBufferAnalystParameterId);
-            return radiusUnit;
+            var radiusUnitStr = 'type';
+            switch(EndType){
+                case 10 : radiusUnitStr = 'MiliMeter';
+                    break;
+                case 100 : radiusUnitStr = 'CentiMeter';
+                    break;
+                case 1000 : radiusUnitStr = 'DeciMeter';
+                    break;
+                case 10000 : radiusUnitStr = 'Meter';
+                    break;
+                case 10000000 : radiusUnitStr = 'KiloMeter';
+                    break;
+                case 9144 : radiusUnitStr = 'Yard';
+                    break;
+                case 254 : radiusUnitStr = 'Inch';
+                    break;
+                case 3048 : radiusUnitStr = 'Foot';
+                    break;
+                case 16090000 : radiusUnitStr = 'Mile';
+                    break;
+                default : throw new Error("Unknown EndType Type");
+            }
+            return radiusUnitStr;
         }catch (e){
             console.error(e);
         }

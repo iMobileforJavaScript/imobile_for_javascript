@@ -1,5 +1,9 @@
 import { NativeModules } from 'react-native';
 let Action = NativeModules.JSAction;
+let BufferEndType = NativeModules.JSBufferEndType;
+let RadiusUnit = NativeModules.JSRadiusUnit;
+let EncodeType = NativeModules.JSEncodeType;
+let DatasetType = NativeModules.JSDatasetType;
 
 import BufferAnalyst from './NativeModule/BufferAnalyst.js';
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js';
@@ -146,6 +150,11 @@ export {
     RelationalPointChart,
     
     Action,
+    BufferEndType,
+    RadiusUnit,
+    EncodeType,
+    DatasetType,
+    
     BufferAnalyst,
     BufferAnalystGeometry,
     BufferAnalystParameter,
