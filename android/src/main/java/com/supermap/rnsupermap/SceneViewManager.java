@@ -38,7 +38,6 @@ public class SceneViewManager extends SimpleViewManager<SceneControl> {
 //
 //            }
 //        });
-
         n_r_eventSender.putString("sceneControlId",sceneControlId);
         return mSceneControl;
     }
