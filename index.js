@@ -88,14 +88,9 @@ import SMBarChartView from './NativeModule/components/SMBarChartViewUI.js';
 import SMLineChartView from './NativeModule/components/SMLineChartViewUI.js';
 import SMPieChartView from './NativeModule/components/SMPieChartViewUI.js';
 import SMInstrumentChartView from './NativeModule/components/SMInstrumentChartViewUI.js';
+import SMWorkspaceManagerView from './NativeModule/components/SMWorkspaceManagerComponent.js';
 
-/*
-import SMManagerHomeScreen from './NativeModule/components/SMWSpaceCtrlHomeView.js';
-import SMManagerSaveAsScreen from './NativeModule/components/SMSaveAsView.js';
-import SMManagerDSAndMapCtrlScreen from './NativeModule/components/SMDSourceAndMapCtrlView.js';
-import SMManagerDSCreateScreen from './NativeModule/components/SMCreateDSView.js';
-import SMManagerDSListScreen from './NativeModule/components/SMOuterListView.js';
-*/
+
 /*
 import Datasets from './NativeModule/Datasets.js';
 import Datasources from './NativeModule/Datasources.js';
@@ -111,14 +106,7 @@ export {
     SMSceneView,
     SMPlotView,
     SMSearchView,
-    
-    /*
-    SMManagerHomeScreen,
-    SMManagerSaveAsScreen,
-    SMManagerDSAndMapCtrlScreen,
-    SMManagerDSCreateScreen,
-    SMManagerDSListScreen,
-     */
+    SMWorkspaceManagerView,
     
     Utility,
     
