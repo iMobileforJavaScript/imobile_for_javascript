@@ -23,6 +23,10 @@ let password ='';
 let passwordConfirm ='';
 
 export default class WorkspaceSaveAsPage extends Component{  
+  constructor(props){
+    super(props);
+    // this._saveAs = this._saveAs.bind(this);
+  }
 
   _nameChanged = (newText)=>{
     name = newText;
@@ -38,11 +42,24 @@ export default class WorkspaceSaveAsPage extends Component{
 
   _saveAs = ()=>{
     if(name.length>0 && password.length>0 && password===passwordConfirm){
-      console.log('save As success');
-      var workSpaceId = '112233Test';
-      this.props.callBack(workSpaceId);
+      var homeDirectory;
+      var workspace = this.props.workspace;
+      var oldFilePath = this.props.filePath;
+      var oldFileName = this.props.fileName;
+      var isContain = oldFilePath.indexOf(oldFileName);
+      if(isContain>=0){
+        homeDirectory = oldFilePath.slice(0,isContain); 
+      }
+      var newFileName = name +'.smwu';
+      var newFilePath = homeDirectory + newFileName;
+
+      (async function ( ) {
+        var isSaveAs = await workspace.saveWorkspace(newFilePath);
+        console.log('save As :'+isSaveAs);//--------------------无法进行密码保存-------------------!
+        this.props.callBack(isSaveAs);
+      }).bind(this)()
     }else{
-      console.log('save failed!');
+      console.log('save failed, please check your save as name and password!');
     }
   }
 

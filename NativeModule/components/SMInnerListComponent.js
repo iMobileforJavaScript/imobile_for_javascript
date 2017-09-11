@@ -28,7 +28,7 @@ export default class InnerListComponent extends Component {
 
 //分割线组件
   _separator=()=>{
-    return <View style={{height:1 / PixelRatio.get(),backgroundColor: '#bbbbbb',marginLeft: 15,}}/>
+    return <View style={{height:1 / PixelRatio.get(),backgroundColor: '#bbbbbb',marginLeft: 60,}}/>
   }
 
   render() {
@@ -53,11 +53,11 @@ const styles = StyleSheet.create({
     height:40,
     marginTop:5,
     marginBottom:5,
-    marginLeft:25,
+    marginLeft:70,
     backgroundColor:'white',
   },
   itemText: {
-    marginLeft:25,
+    marginLeft:10,
     lineHeight:50,
   }
 });

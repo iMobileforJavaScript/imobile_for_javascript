@@ -20,7 +20,7 @@ export default class OuterListItem extends Component {
   constructor(props){
     super(props);
     this.state={highLight:false,
-                data:[{key:'_SM001',text:'aaa',image:require('../resource/line.png')},{key:'_SM002',text:'bbb',image:require('../resource/star.png')},{key:'_SM003',text:'bbb',image:require('../resource/star.png')}],
+                data:[{key:'_SMDset001',text:'aaa',image:require('../resource/line.png')},{key:'_SMDset002',text:'bbb',image:require('../resource/star.png')},{key:'_SMDset003',text:'bbb',image:require('../resource/star.png')}],
                 };
   }
 
@@ -49,6 +49,8 @@ const styles = StyleSheet.create({
   },
   touchableSubView: {
     backgroundColor: 'transparent',
+    display: 'flex',
+    flexDirection: 'row',
   },
   touchableContainer: {
     display: 'flex',
@@ -67,7 +69,7 @@ const styles = StyleSheet.create({
     backgroundColor:'transparent',
   },
   itemText: {
-    marginLeft:25,
+    marginLeft:10,
     lineHeight:50,
     backgroundColor:'transparent',
   }
