@@ -30,13 +30,14 @@ export default class OuterListItem extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <TouchableHighlight style={styles.touchableContainer} onPress={this._onPress} underlayColor={'white'} activeOpacity={0.1}>
+        <TouchableHighlight style={styles.touchableContainer} onPress={this._onPress} underlayColor={'rgba(34,26,38,0.1)'}>
           <View style={styles.touchableSubView}>
             <Image style={styles.itemImage} source={this.props.Image}/>
             <Text style={styles.itemText}>{this.props.Text}</Text>
           </View>
         </TouchableHighlight>
-        {this.state.highLight && <InnerListComponent data={this.state.data}/>}
+        {/*this.state.highLight && <InnerListComponent data={this.state.data}/>*/}
+        {this.state.highLight && <InnerListComponent index={this.props.Index} workspace={this.props.workspace}/>}
       </View>
     );
   }
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
     backgroundColor:'transparent',
   },
   itemImage: {
-    width:40,
+    width:35,
     height:40,
     marginTop:5,
     marginBottom:5,

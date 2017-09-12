@@ -96,6 +96,20 @@ export default class Dataset{
             console.error(e);
         }
     }
+    
+    /**
+     * 获取数据集名称。
+     * @memberOf Dataset
+     * @returns {string}
+     */
+    async getName(){
+        try{
+            var {name} = await D.getName(this._SMDatasetId);
+            return name;
+        }catch(e){
+            console.error(e);
+        }
+    }
 
     /**
      * 返回此数据集的类型。目前版本支持的数据集类型包括纯属性表数据集、点数据集、线数据集、面数据集、文本数据集和影像数据集（DatasetImage）。

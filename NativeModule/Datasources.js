@@ -16,7 +16,7 @@ export default class Datasources{
      * @returns {Promise.<Datasource>}
      */
     async open(datasourceConnectionInfo){
-        this._drepecated();
+        //this._drepecated();
         try{
             var {datasourceId} = await D.open(this._SMDatasourcesId,datasourceConnectionInfo._SMDatasourceConnectionInfoId);
             console.log("datasourceId:"+datasourceId);
@@ -30,7 +30,7 @@ export default class Datasources{
     }
 
     async get(index){
-        this._drepecated();
+        //this._drepecated();
         try{
             var datasource = new Datasource();
             if(typeof index != 'string'){
@@ -41,6 +41,24 @@ export default class Datasources{
             datasource._SMDatasourceId = datasourceId;
 
             return datasource;
+        }catch(e){
+            console.error(e);
+        }
+    }
+    
+    async getCount(){
+        try{
+            var {count} = await D.getCount(this._SMDatasourcesId);
+            return count;
+        }catch(e){
+            console.error(e);
+        }
+    }
+    
+    async getAlias(index){
+        try{
+            var {alias} = await D.getAlias(this._SMDatasourcesId,index);
+            return alias;
         }catch(e){
             console.error(e);
         }

@@ -17,12 +17,45 @@ import {
   PixelRatio,
 } from 'react-native';
 
+//imobile类引入
+import workspaceModule from '../Workspace.js';
+import dataSources from '../Datasources.js';
+import dataSource from '../Datasource.js';
+import dataSet from '../Dataset.js';
+
 export default class InnerListComponent extends Component {
+  constructor(props){
+    super(props);
+    var dataArr = [];
+    var index = props.index;
+    var workspace = props.workspace;
+    (async function ( ) {
+      var dataSources = await workspace.getDatasources();
+      var dataSource = await dataSources.get(index);
+      var dSetCount = await dataSource.getDatasetCount();
+      for(var i=0;i<=dSetCount-1;i++){
+        var dataset = await dataSource.getDataset(i);
+        var name = await dataset.getName();
+        var dataItem = {key:'_SMDset'+i,Text:name,Image:require('../resource/datasetList.png')};
+        dataArr.push(dataItem);
+      }
+
+      this.state = {
+        data: dataArr,
+      };
+      this.forceUpdate();//强制渲染方法--应尽量不使用此方法，考虑优化
+    }).bind(this)();
+
+    this.state = {
+      data: false,
+    };
+  }
+
 //item渲染方法
   _renderItem=({item})=>(
     <View style={styles.itemContainer}>
-      <Image style={styles.itemImage} source={item.image}/>
-      <Text style={styles.itemText}>{item.text}</Text>
+      <Image style={styles.itemImage} source={item.Image}/>
+      <Text style={styles.itemText}>{item.Text}</Text>
     </View>
   );
 
@@ -33,7 +66,7 @@ export default class InnerListComponent extends Component {
 
   render() {
     return (
-      <FlatList data={this.props.data}
+      <FlatList data={this.state.data}
                 renderItem={this._renderItem}
                 ItemSeparatorComponent={this._separator}/>
     );
@@ -49,12 +82,12 @@ const styles = StyleSheet.create({
     height: 50,
   },
   itemImage: {
-    width:40,
+    width:35,
     height:40,
     marginTop:5,
     marginBottom:5,
     marginLeft:70,
-    backgroundColor:'white',
+    backgroundColor:'transparent',
   },
   itemText: {
     marginLeft:10,

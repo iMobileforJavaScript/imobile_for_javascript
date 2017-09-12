@@ -8,6 +8,7 @@
 
 #import "JSDatasources.h"
 #import "SuperMap/Datasources.h"
+#import "SuperMap/Datasource.h"
 #import "JSObjManager.h"
 
 @implementation JSDatasources
@@ -39,7 +40,7 @@ RCT_REMAP_METHOD(get,userKey:(NSString*)key index:(NSInteger)index resolver:(RCT
     [JSObjManager addObj:gettingDS];
     resolve(@{@"datasourceId":@(DSkey).stringValue});
   }else{
-    reject(@"datasource",@"get Datasource failed",nil);
+    reject(@"datasources",@"get Datasource failed",nil);
   }
 }
 
@@ -51,9 +52,29 @@ RCT_REMAP_METHOD(getByName,userKey:(NSString*)key alias:(NSString*)alias resolve
     [JSObjManager addObj:gettingDS];
     resolve(@{@"datasourceId":@(DSkey).stringValue});
   }else{
-    reject(@"datasource",@"get Datasource by alias failed",nil);
+    reject(@"datasources",@"get Datasource by alias failed",nil);
   }
 }
 
+RCT_REMAP_METHOD(getCount,getCountByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Datasources* datasources = [JSObjManager getObjWithKey:key];
+        NSInteger count = datasources.count;
+        NSNumber* countNum = [NSNumber numberWithInteger:count];
+        resolve(@{@"count":countNum});
+    } @catch (NSException *exception) {
+        reject(@"datasources",@"get count failed",nil);
+    }
+}
 
+RCT_REMAP_METHOD(getAlias,getAliasByKey:(NSString*)key index:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Datasources* datasources = [JSObjManager getObjWithKey:key];
+        Datasource* datasource = [datasources get:index];
+        NSString* alias = datasource.alias;
+        resolve(@{@"alias":alias});
+    } @catch (NSException *exception) {
+        reject(@"datasources",@"get alias failed",nil);
+    }
+}
 @end

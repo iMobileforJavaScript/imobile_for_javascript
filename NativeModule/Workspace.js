@@ -39,7 +39,7 @@ export default class Workspace{
     }
 
     /**
-     * 获得数据源集合
+     * 获得数据源集合(内部方法，不开放接口)
      * @memberOf Workspace
      * @deprecated Workspace.js:getDatasources() function has been deprecated. If you want to get datasource , please call the getDatasource() function
      * @returns {Promise.<Datasources>}

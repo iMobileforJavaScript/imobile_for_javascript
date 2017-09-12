@@ -18,20 +18,41 @@ import {
   TouchableHighlight
 } from 'react-native';
 
+//imobile类引入
+import workspaceModule from '../Workspace.js';
+import dataSources from '../Datasources.js';
+//子组件倒入
 import OuterListItem from './SMOuterListItem.js';
 
 export default class OuterListComponent extends Component {
   constructor(props){
     super(props);
     //数据获取
-    
+    var dataArr = [];
+    var workspace = props.workspace;
+    (async function ( ) {
+      var dataSources = await workspace.getDatasources();
+      var count = await dataSources.getCount();
+      for (var i=0; i<=count-1;i++){
+        var dsName = await dataSources.getAlias(i);
+        var dataItem = {key:'_SMDs'+i,Text:dsName,Image:require('../resource/DsList.png'),Index:i};
+        dataArr.push(dataItem);
+      }
+
+      this.state = {
+        data: dataArr,
+      };
+
+      this.forceUpdate();//强制渲染方法--应尽量不使用此方法，考虑优化
+    }).bind(this)();
+
     this.state = {
-      data: [{key:'_SMDs001',Text:'aaa',image:require('../resource/star.png')},{key:'_SMDs002',Text:'bbb',image:require('../resource/star.png')},{key:'_SMDs003',Text:'bbb',image:require('../resource/star.png')}],
+      data: false,
     };
   }
 //item渲染方法
   _renderItem=({item})=>(
-    <OuterListItem style={{backgroundColor:'white'}} Image={item.image} Text={item.Text}/>
+    <OuterListItem Image={item.Image} Text={item.Text} Index={item.Index} workspace={this.props.workspace}/>
   );
 
 //分割线组件

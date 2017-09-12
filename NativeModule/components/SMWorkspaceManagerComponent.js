@@ -145,6 +145,10 @@ export default class WorkspaceManagerComponent extends Component {
     });
   }
 
+  _toMapList =()=>{
+    console.log('go to map list');
+  }
+
   _toMainPage = ()=>{
     var scrollText;
     var open = this.state.coreData.workspaceOpen;
@@ -181,9 +185,9 @@ export default class WorkspaceManagerComponent extends Component {
         clickPageTwoBtnOne={this._wsSaveBtnPress} clickPageTwoBtnTwo={this._toSaveAsPage}
         clickPageTwoBtnThree={this._wsCloseBtnPress} pageOneText={this.state.scrollPage.text}/>}
         {this.state.wsSaveAsPage.display && <WorkspaceSaveAsPage workspace={this.state.coreData.workspace} filePath={this.state.coreData.filePath} fileName={this.state.coreData.fileName} clickBtnTwo={this._toMainPage} callBack={this._workSpaceIdCallback}/>}
-        {this.state.dmInfoPage.display && <DsMapInfo clickPageOneBtn={this._toDsList} clickPageTwoBtnOne={this._toDsCreatePage}/>}
+        {this.state.dmInfoPage.display && <DsMapInfo clickPageOneBtn={this._toDsList} clickPageTwoBtnOne={this._toDsCreatePage} clickMapInfoBtn={this._toMapList}/>}
         {this.state.dsCreatePage.display && <DsCreatePage/>}
-        {this.state.dsListPage.display && <DsListComponent/>}
+        {this.state.dsListPage.display && <DsListComponent workspace={this.state.coreData.workspace}/>}
       </View>
     );
   }

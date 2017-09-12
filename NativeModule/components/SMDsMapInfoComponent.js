@@ -22,7 +22,7 @@ export default class DsMapInfoComponent extends Component {
       <View style={[styles.container,{backgroundColor:this.props.backgroundColor}]}>
         <ScrollPage pageOneText={'数据源'} pageTwoButtonOneText={'新建数据源'} pageTwoButtonTwoText={'打开数据源'} pageTwoButtonThreeText={'关闭数据源'}
         pageOneImageOne={require('../resource/datasource.png')} clickPageOneBtn={this.props.clickPageOneBtn} clickPageTwoBtnOne={this.props.clickPageTwoBtnOne}/>
-        <ScrollPageOneBtn imageOne={require('../resource/map.png')} text={'地图'} imageTwo={require('../resource/arrow.png')}/>
+        <ScrollPageOneBtn imageOne={require('../resource/map.png')} text={'地图'} imageTwo={require('../resource/arrow.png') } clickButton={this.props.clickMapInfoBtn}/>
       </View>
       <View style={styles.separator}/>
       </View>
