@@ -24,4 +24,14 @@ RCT_REMAP_METHOD(get,getNameKey:(NSString*)key  index:(int)index resolver:(RCTPr
     reject(@"Maps",@"get:Maps not exeist!!!",nil);
 }
 
+RCT_REMAP_METHOD(getCount,getCountByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Maps* maps = [JSObjManager getObjWithKey:key];
+    if(maps){
+        NSInteger count = maps.count;
+        NSNumber* countNum = [NSNumber numberWithInteger:count];
+        resolve(@{@"count":countNum});
+    }else
+        reject(@"Maps",@"get count failed",nil);
+}
+
 @end

@@ -25,6 +25,7 @@ import OuterListComponent from './SMOuterListComponent.js';
 import DsMapInfo from './SMDsMapInfoComponent.js';
 import DsCreatePage from './SMDsCreatePage.js';
 import DsListComponent from './SMOuterListComponent.js';
+import MapListComponent from './SMMapListComponent.js';
 
 
 export default class WorkspaceManagerComponent extends Component {
@@ -40,6 +41,7 @@ export default class WorkspaceManagerComponent extends Component {
                   dmInfoPage:{display:false},
                   dsCreatePage:{display:false},
                   dsListPage:{display:false},
+                  mapListPage:{display:false},
                 };
 
     var workspaceM = new workspaceModule();
@@ -67,6 +69,7 @@ export default class WorkspaceManagerComponent extends Component {
       dmInfoPage:{display:true},
       dsCreatePage:{display:false},
       dsListPage:{display:false},
+      mapListPage:{display:false},
     });
   }
 
@@ -96,6 +99,7 @@ export default class WorkspaceManagerComponent extends Component {
       dmInfoPage:{display:false},
       dsCreatePage:{display:false},
       dsListPage:{display:false},
+      mapListPage:{display:false},
     });
   }
 
@@ -118,6 +122,7 @@ export default class WorkspaceManagerComponent extends Component {
       dmInfoPage:{display:false},
       dsCreatePage:{display:false},
       dsListPage:{display:false},
+      mapListPage:{display:false},
     });
   }).bind(this)();
   }
@@ -130,6 +135,7 @@ export default class WorkspaceManagerComponent extends Component {
       dmInfoPage:{display:false},
       dsCreatePage:{display:true},
       dsListPage:{display:false},
+      mapListPage:{display:false},
     });
   }
 
@@ -142,11 +148,20 @@ export default class WorkspaceManagerComponent extends Component {
       dmInfoPage:{display:false},
       dsCreatePage:{display:false},
       dsListPage:{display:true},
+      mapListPage:{display:false},
     });
   }
 
   _toMapList =()=>{
-    console.log('go to map list');
+    this.setState({
+      title:{display:true,text:'地图',backBtnDisplay:true,clickBtn:this._toWsInfoPage},
+      scrollPage:{display:false},
+      wsSaveAsPage:{display:false},
+      dmInfoPage:{display:false},
+      dsCreatePage:{display:false},
+      dsListPage:{display:false},
+      mapListPage:{display:true},
+    });
   }
 
   _toMainPage = ()=>{
@@ -164,6 +179,7 @@ export default class WorkspaceManagerComponent extends Component {
       dmInfoPage:{display:false},
       dsCreatePage:{display:false},
       dsListPage:{display:false},
+      mapListPage:{display:false},
     });
   }
 
@@ -188,6 +204,7 @@ export default class WorkspaceManagerComponent extends Component {
         {this.state.dmInfoPage.display && <DsMapInfo clickPageOneBtn={this._toDsList} clickPageTwoBtnOne={this._toDsCreatePage} clickMapInfoBtn={this._toMapList}/>}
         {this.state.dsCreatePage.display && <DsCreatePage/>}
         {this.state.dsListPage.display && <DsListComponent workspace={this.state.coreData.workspace}/>}
+        {this.state.mapListPage.display && <MapListComponent workspace={this.state.coreData.workspace}/>}
       </View>
     );
   }
