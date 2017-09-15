@@ -6,7 +6,11 @@
  
  **********************************************************************************/
 let React = require('react');
-let {requireNativeComponent,View}=require('react-native');
+let {
+    requireNativeComponent,
+    View,
+    ViewPropTypes,
+}=require('react-native');
 
 class SMLineChartView extends React.Component{
     static propTypes = {
@@ -20,7 +24,7 @@ class SMLineChartView extends React.Component{
         hightLightColor:React.PropTypes.array,
         geoId:React.PropTypes.number,
         chartDatas:React.PropTypes.array,
-        ...View.propTypes,
+        ...ViewPropTypes,
     };
 
 

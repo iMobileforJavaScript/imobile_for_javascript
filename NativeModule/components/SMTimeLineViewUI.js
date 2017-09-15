@@ -2,12 +2,16 @@
  * Created by will on 2016/9/7.
  */
 let React = require('react');
-let {requireNativeComponent,View}=require('react-native');
+let {
+    requireNativeComponent,
+    View,
+    ViewPropTypes,
+}=require('react-native');
 
 class SMTimeLineView extends React.Component{
     static propTypes = {
         mapId:React.PropTypes.string,
-        ...View.propTypes,
+        ...ViewPropTypes,
     };
 
     _refresh = (event) => {

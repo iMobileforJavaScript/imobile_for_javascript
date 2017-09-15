@@ -8,7 +8,8 @@ let {
         StyleSheet,
         Image,
         NativeModules,
-        PixelRatio  /*像素转换工具*/
+        PixelRatio,  /*像素转换工具*/
+        ViewPropTypes,
     }=require('react-native');
 let resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource'); /*解析静态图片工具*/
 import MapView from '../MapView.js';
@@ -139,7 +140,7 @@ class SMMapView extends React.Component{
         onGetInstance:React.PropTypes.func,
         callouts:React.PropTypes.array,
         addCalloutByLongPress:React.PropTypes.bool,
-        ...View.propTypes,
+        ...ViewPropTypes,
     };
 
     static defaultProps = {

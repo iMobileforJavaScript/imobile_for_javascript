@@ -6,6 +6,7 @@ let {
     requireNativeComponent,
     View,
     StyleSheet,
+    ViewPropTypes,
 }=require('react-native');
 import SceneControl from './../SceneControl';
 
@@ -26,7 +27,7 @@ class SMSceneView extends React.Component{
 
     static propTypes = {
         onGetScene:React.PropTypes.func,
-        ...View.propTypes,
+        ...ViewPropTypes,
     };
 
     render(){

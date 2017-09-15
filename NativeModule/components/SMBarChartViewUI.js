@@ -1,6 +1,10 @@
 
 let React = require('react');
-let {requireNativeComponent,View}=require('react-native');
+let {
+    requireNativeComponent,
+    View,
+    ViewPropTypes,
+}=require('react-native');
 
 class SMBarChartView extends React.Component{
     static propTypes = {
@@ -13,7 +17,7 @@ class SMBarChartView extends React.Component{
         xAxisTitle:React.PropTypes.string,
         yAxisTitle:React.PropTypes.string,
         hightLightColor:React.PropTypes.array,
-        ...View.propTypes,
+        ...ViewPropTypes,
     };
     
     

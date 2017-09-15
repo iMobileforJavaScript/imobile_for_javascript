@@ -6,7 +6,11 @@
  
  **********************************************************************************/
 let React = require('react');
-let {requireNativeComponent,View}=require('react-native');
+let {
+    requireNativeComponent,
+    View,
+    ViewPropTypes,
+}=require('react-native');
 
 class SMInstrumentChartView extends React.Component{
     static propTypes = {
@@ -18,7 +22,7 @@ class SMInstrumentChartView extends React.Component{
         endAngle:React.PropTypes.number,
         backgroundColor:React.PropTypes.array,
         gradient:React.PropTypes.string,
-        ...View.propTypes,
+        ...ViewPropTypes,
     };
 
 

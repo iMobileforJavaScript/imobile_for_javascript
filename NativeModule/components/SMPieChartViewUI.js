@@ -6,7 +6,11 @@
  
  **********************************************************************************/
 let React = require('react');
-let {requireNativeComponent,View}=require('react-native');
+let {
+    requireNativeComponent,
+    View,
+    ViewPropTypes,
+}=require('react-native');
 
 class SMPieChartView extends React.Component{
     static propTypes = {
@@ -17,7 +21,7 @@ class SMPieChartView extends React.Component{
         geoId:React.PropTypes.number,
         textColor:React.PropTypes.array,
         chartDatas:React.PropTypes.array,
-        ...View.propTypes,
+        ...ViewPropTypes,
     };
 
 
