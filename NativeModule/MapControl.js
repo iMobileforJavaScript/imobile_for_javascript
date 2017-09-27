@@ -130,10 +130,34 @@ export default class MapControl{
                                                    handlers.longPressHandler(e);
                                                    });
                 }
+
+                if(typeof handlers.singleTapHandler === "function"){
+                    nativeEvt.addListener("com.supermap.RN.JSMapcontrol.single_tap_event",function (e) {
+                                                   handlers.singleTapHandler(e);
+                                                   });
+                }
+
+                if(typeof handlers.doubleTapHandler === "function"){
+                    nativeEvt.addListener("com.supermap.RN.JSMapcontrol.double_tap_event",function (e) {
+                                                   handlers.doubleTapHandler(e);
+                                                   });
+                }
+
+                if(typeof handlers.touchBeganHandler === "function"){
+                    nativeEvt.addListener('com.supermap.RN.JSMapcontrol.touch_began_event',function (e) {
+                                                    handlers.touchBeganHandler(e);
+                                                   });
+                }
+
+                if(typeof handlers.touchEndHandler === "function"){
+                    nativeEvt.addListener('com.supermap.RN.JSMapcontrol.touch_end_event',function (e) {
+                                                    handlers.touchEndHandler(e);
+                                                   });
+                }
                 
                 if(typeof handlers.scrollHandler === "function"){
                     nativeEvt.addListener('com.supermap.RN.JSMapcontrol.scroll_event',function (e) {
-                                                   scrollHandler && scrollHandler(e);
+                                                    handlers.scrollHandler(e);
                                                    });
                 }
             }else{
@@ -143,10 +167,34 @@ export default class MapControl{
                                                    handlers.longPressHandler(e);
                                                    });
                 }
+
+                if(typeof handlers.singleTapHandler === "function"){
+                    DeviceEventEmitter.addListener("com.supermap.RN.JSMapcontrol.single_tap_event",function (e) {
+                                                   handlers.singleTapHandler(e);
+                                                   });
+                }
+
+                if(typeof handlers.doubleTapHandler === "function"){
+                    DeviceEventEmitter.addListener("com.supermap.RN.JSMapcontrol.double_tap_event",function (e) {
+                                                   handlers.doubleTapHandler(e);
+                                                   });
+                }
+
+                if(typeof handlers.touchBeganHandler === "function"){
+                    DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.touch_began_event',function (e) {
+                                                    handlers.touchBeganHandler(e);
+                                                   });
+                }
+
+                if(typeof handlers.touchEndHandler === "function"){
+                    DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.touch_end_event',function (e) {
+                                                    handlers.touchEndHandler(e);
+                                                   });
+                }
                 
                 if(typeof handlers.scrollHandler === "function"){
                     DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.scroll_event',function (e) {
-                                                   scrollHandler && scrollHandler(e);
+                                                    handlers.scrollHandler(e);
                                                    });
                 }
             }
