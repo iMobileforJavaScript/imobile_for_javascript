@@ -77,10 +77,11 @@ export default class MapControl{
     }
 
     /**
-     * 监听编辑行为的变更事件
+     * 监听编辑行为的变更事件(deprecated)
      * @memberOf MapControl
      * @param {function} actionChange 编辑行为变更函数，回调事件参数：e:newAction,e:oldAction
      */
+    /*
     async addActionChangedListener(actionChange){
         try{
             DeviceEventEmitter.addListener('ActionChange', function(e) {
@@ -95,12 +96,15 @@ export default class MapControl{
             console.error(e);
         }
     }
+    */
+    
 
     /**
-     * 移除动作变更监听器。
+     * 移除动作变更监听器。(deprecated)
      * @memberOf MapControl
      * @returns {Promise.<void>}
      */
+    /*
     async removeActionChangedListener(actionChange){
         try{
             await MC.removeActionChangedListener(this._SMMapControlId);
@@ -108,9 +112,10 @@ export default class MapControl{
             console.error(e);
         }
     }
+    */
 
     /**
-     * 监听导航事件
+     * 手势监听
      * @memberOf MapControl
      * @param {object} events - 传入一个对象作为参数，该对象可以包含两个属性：longPressHandler和scrollHandler。两个属性的值均为function类型，分部作为长按与滚动监听事件的处理函数。
      * @returns {Promise.<void>}
@@ -204,6 +209,11 @@ export default class MapControl{
         }
     }
 
+    /**
+     * 移除手势监听
+     * @memberOf MapControl
+     * @returns {Promise.<void>}
+     */
     async deleteGestureDetector(){
         try{
             await MC.deleteGestureDetector(this._SMMapControlId)
@@ -283,11 +293,12 @@ export default class MapControl{
     }
 
     /**
-     * 地图刷新监听器
+     * 地图刷新监听器(deprecated)
      * @memberOf MapControl
      * @param {function} callback - 刷新处理回调函数
      * @returns {Promise.<void>}
      */
+    /*
     async setRefreshListener(callback){
         try{
             var success = await MC.setRefreshListener(this._SMMapControlId);
@@ -306,6 +317,7 @@ export default class MapControl{
             console.error(e);
         }
     }
+    */
 
     /**
      * 获得当前Geometry几何对象
@@ -352,11 +364,12 @@ export default class MapControl{
     }
 
     /**
-     * 设置横竖屏切换监听器。
+     * 设置横竖屏切换监听器。（deprecated）
      * @memberOf MapControl
      * @param {object} events - 传入一个对象作为参数，该对象可以包含两个属性：toHorizontalScreen和toVerticalScreen。两个属性的值均为function类型，分部作为横屏与竖屏监听事件的处理函数。
      * @returns {Promise.<void>}
      */
+    /*
     async  setConfigurationChangedListener(events){
         try{
             var success = await MC. setConfigurationChangedListener();
@@ -381,6 +394,7 @@ export default class MapControl{
             console.error(e);
         }
     }
+    */
 
     /**
      * 获得传统导航控件
@@ -517,11 +531,12 @@ export default class MapControl{
     }
 
     /**
-     * 添加对象删除完成监听器。
+     * 添加对象删除完成监听器。(deprecated)
      * @memberOf MapControl
      * @param {object} event - event:{geometryDeleted: e => {...}} e:{layer:--, id:--,canceled:--} layer:操作的图层，被删除对象id，删除结果canceled,ture为删除成功，否则为false.
      * @returns {Promise.<boolean>}
      */
+    /*
     async addGeometryDeletedListener(event){
         try{
             var success = await MC.addGeometryDeletedListener(this._SMMapControlId);
@@ -542,12 +557,14 @@ export default class MapControl{
             console.error(e);
         }
     }
+    */
 
     /**
-     * 移除对象删除完成监听器
+     * 移除对象删除完成监听器(deprecated)
      * @memberOf MapControl
      * @returns {Promise.<void>}
      */
+    /*
     async removeGeometryDeletedListener(){
         try{
             await MC. removeGeometryDeletedListener(this._SMMapControlId);
@@ -555,6 +572,7 @@ export default class MapControl{
             console.error(e);
         }
     }
+    */
 
     /**
      * 添加对象添加监听器
@@ -597,11 +615,12 @@ export default class MapControl{
     }
 
     /**
-     * 添加对象删除完成前监听器。
+     * 添加对象删除完成前监听器。(deprecated)
      * @memberOf MapControl
      * @param {object} event - event:{geometryDeleting: e => {...}} e:{layer:--, id:--,canceled:--} layer:操作的图层，操作对象id，操作结果canceled,ture为操作成功，否则为false.
      * @returns {Promise.<*>}
      */
+    /*
     async addGeometryDeletingListener(event){
         try{
             var success = await MC.addGeometryDeletingListener(this._SMMapControlId);
@@ -622,12 +641,14 @@ export default class MapControl{
             console.error(e);
         }
     }
+    */
 
     /**
-     * 移除对象删除完成前监听器。
+     * 移除对象删除完成前监听器。(deprecated)
      * @memberOf MapControl
      * @returns {Promise.<void>}
      */
+    /*
     async removeGeometryDeletingListener(){
         try{
             await MC. removeGeometryDeletingListener(this._SMMapControlId);
@@ -635,13 +656,15 @@ export default class MapControl{
             console.error(e);
         }
     }
+    */
 
     /**
-     * 添加对象修改完成监听器
+     * 添加对象修改完成监听器(deprecated)
      * @memberOf MapControl
      * @param {object} event - event:{geometryModified: e => {...}} e:{layer:--, id:--,canceled:--} layer:操作的图层，操作对象id，操作结果canceled,ture为操作成功，否则为false.
      * @returns {Promise.<*>}
      */
+    /*
     async addGeometryModifiedListener(event){
         try{
             var success = await MC.addGeometryModifiedListener(this._SMMapControlId);
@@ -662,12 +685,14 @@ export default class MapControl{
             console.error(e);
         }
     }
+    */
 
     /**
-     * 移除对象删除完成前监听器。
+     * 移除对象删除完成前监听器。(deprecated)
      * @memberOf MapControl
      * @returns {Promise.<void>}
      */
+    /*
     async removeGeometryModifiedListener(){
         try{
             await MC. removeGeometryModifiedListener(this._SMMapControlId);
@@ -675,13 +700,15 @@ export default class MapControl{
             console.error(e);
         }
     }
+    */
 
     /**
-     * 添加对象修改前监听器
+     * 添加对象修改前监听器(deprecated)
      * @memberOf MapControl
      * @param event - event:{geometryModifying: e => {...}} e:{layer:--, id:--,canceled:--} layer:操作的图层，操作对象id，操作结果canceled,ture为操作成功，否则为false.
      * @returns {Promise.<*>}
      */
+    /*
     async addGeometryModifyingListener(event){
         try{
             var success = await MC.addGeometryModifyingListener(this._SMMapControlId);
@@ -702,12 +729,14 @@ export default class MapControl{
             console.error(e);
         }
     }
+    */
 
     /**
-     * 移除对象修改完成监听器。
+     * 移除对象修改完成监听器。(deprecated)
      * @memberOf MapControl
      * @returns {Promise.<void>}
      */
+    /*
     async removeGeometryModifyingListener(){
         try{
             await MC. removeGeometryModifyingListener(this._SMMapControlId);
@@ -715,6 +744,7 @@ export default class MapControl{
             console.error(e);
         }
     }
+    */
 
     /**
      * 添加对象修改前监听器
@@ -806,30 +836,42 @@ export default class MapControl{
      */
     async addMeasureListener(events){
         try{
-            var success = await MC.addGeometryModifyingListener(this._SMMapControlId);
+            var success = await MC.addMeasureListener(this._SMMapControlId);
             if(!success) return ;
-
-            DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.length_measured',function (e) {
+            if(Platform.OS === 'ios'){
                 if(typeof events.lengthMeasured === 'function'){
-                    events.lengthMeasured(e);
-                }else{
-                    console.error("Please set a callback to the first argument.");
+                    nativeEvt.addListener('com.supermap.RN.JSMapcontrol.length_measured',function (e) {
+                        events.lengthMeasured(e);
+                    });
                 }
-            });
-            DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.area_measured',function (e) {
                 if(typeof events.areaMeasured === 'function'){
-                    events.areaMeasured(e);
-                }else{
-                    console.error("Please set a callback to the first argument.");
+                    nativeEvt.addListener('com.supermap.RN.JSMapcontrol.area_measured',function (e) {                 
+                        events.areaMeasured(e);
+                    });
                 }
-            });
-            DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.angle_measured',function (e) {
+                if(typeof events.angleMeasured === 'function'){   
+                    nativeEvt.addListener('com.supermap.RN.JSMapcontrol.angle_measured',function (e) {
+                        events.angleMeasured(e);                
+                    });
+                }
+            }else{
+                if(typeof events.lengthMeasured === 'function'){
+                    DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.length_measured',function (e) {
+                        events.lengthMeasured(e);
+                    });
+                }
+                if(typeof events.areaMeasured === 'function'){
+                    DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.area_measured',function (e) {
+                        events.areaMeasured(e);
+                    });
+                }
                 if(typeof events.angleMeasured === 'function'){
-                    events.angleMeasured(e);
-                }else{
-                    console.error("Please set a callback to the first argument.");
+                    DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.angle_measured',function (e) {
+                        events.angleMeasured(e);
+                    });
                 }
-            });
+            }
+
             return success;
         }catch (e){
             console.error(e);
@@ -850,11 +892,12 @@ export default class MapControl{
     }
 
     /**
-     * 设置Undo监听器。
+     * 设置Undo监听器。(deprecated)
      * @memberOf MapControl
      * @param event - event:{undoStateChange: e => {...}}  e:{canUndo:--,canRedo:--} 返回参数canUndo表示是否可取消，canRedo表示是否可重复
      * @returns {Promise.<*>}
      */
+    /*
     async addUndoStateChangeListener(event){
         try{
             var success = await MC.addUndoStateChangeListener(this._SMMapControlId);
@@ -872,12 +915,14 @@ export default class MapControl{
             console.error(e);
         }
     }
+    */
 
     /**
-     * 移除Undo监听器。
+     * 移除Undo监听器。(deprecated)
      * @memberOf MapControl
      * @returns {Promise.<void>}
      */
+    /*
     async removeUndoStateChangeListener(){
         try{
             await MC.removeUndoStateChangeListener(this._SMMapControlId);
@@ -885,6 +930,7 @@ export default class MapControl{
             console.error(e);
         }
     }
+    */
 
     /**
      * 设置编辑状态监听器。
