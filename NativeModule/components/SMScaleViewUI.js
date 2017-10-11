@@ -1,13 +1,17 @@
  /**
  * Created by will on 2016/10/8.
  */
-let React = require('react');
-let {requireNativeComponent,View}=require('react-native');
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import {
+    requireNativeComponent,
+    ViewPropTypes,
+} from 'react-native';
 
-class SMScaleView extends React.Component{
+class SMScaleView extends Component{
     static propTypes = {
-        mapId:React.PropTypes.string,
-        ...View.propTypes,
+        mapId:PropTypes.string,
+        ...ViewPropTypes,
     };
 
 

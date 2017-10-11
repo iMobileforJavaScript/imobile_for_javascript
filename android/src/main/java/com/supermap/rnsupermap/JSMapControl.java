@@ -72,6 +72,10 @@ public class JSMapControl extends ReactContextBaseJavaModule {
 
     private static final String LONGPRESS_EVENT = "com.supermap.RN.JSMapcontrol.long_press_event";
     private static final String SCROLL_EVENT = "com.supermap.RN.JSMapcontrol.scroll_event";
+    private static final String TOUCH_BEGAN_EVENT = "com.supermap.RN.JSMapcontrol.touch_began_event";
+    private static final String TOUCH_END_EVENT = "com.supermap.RN.JSMapcontrol.touch_end_event";
+    private static final String SINGLE_TAP_EVENT = "com.supermap.RN.JSMapcontrol.single_tap_event";
+    private static final String DOUBLE_TAP_EVENT = "com.supermap.RN.JSMapcontrol.double_tap_event";
 
     private static final String ACTION_CHANGE = "com.supermap.RN.JSMapControl.action_change";
     private static final String GEOMETRYDELETED = "com.supermap.RN.JSMapControl.geometry_deleted";
@@ -191,7 +195,50 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setGestureDetector(String mapControlId, final Promise promise){
         try{
-            mGestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener(){
+            mGestureDetector = new GestureDetector(mReactContext,new GestureDetector.SimpleOnGestureListener(){
+
+                public boolean onScroll(MotionEvent e1, MotionEvent e2,
+                                        float distanceX, float distanceY){
+                    WritableMap mapE1 = Arguments.createMap();
+                    mapE1.putInt("x",(int)e1.getX());
+                    mapE1.putInt("y",(int)e1.getY());
+
+                    WritableMap mapE2 = Arguments.createMap();
+                    mapE2.putInt("x",(int)e2.getX());
+                    mapE2.putInt("y",(int)e2.getY());
+
+                    WritableMap map = Arguments.createMap();
+                    map.putMap("start",mapE1);
+                    map.putMap("end",mapE2);
+                    map.putDouble("dx",distanceX);
+                    map.putDouble("dy",distanceY);
+
+
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(SCROLL_EVENT,map);
+                    return false;
+                }
+
+                public boolean onDown(MotionEvent event){
+                    WritableMap map = Arguments.createMap();
+                    map.putInt("x",(int)event.getX());
+                    map.putInt("y",(int)event.getY());
+
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(TOUCH_BEGAN_EVENT,map);
+                    return  false;
+                }
+
+                public boolean onSingleTapUp(MotionEvent e){
+                    WritableMap map =Arguments.createMap();
+                    map.putInt("x",(int)e.getX());
+                    map.putInt("y",(int)e.getY());
+
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(TOUCH_END_EVENT,map);
+                    return false;
+                }
+
                 public void onLongPress(MotionEvent event){
                     WritableMap map = Arguments.createMap();
                     map.putInt("x",(int)event.getX());
@@ -201,10 +248,23 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                             .emit(LONGPRESS_EVENT,map);
                 }
 
-                public boolean onScroll(MotionEvent e1, MotionEvent e2,
-                                        float distanceX, float distanceY){
+                public boolean onSingleTapConfirmed(MotionEvent e){
+                    WritableMap map =Arguments.createMap();
+                    map.putInt("x",(int)e.getX());
+                    map.putInt("y",(int)e.getY());
+
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(SCROLL_EVENT,null);
+                            .emit(SINGLE_TAP_EVENT,map);
+                    return false;
+                }
+
+                public boolean onDoubleTap(MotionEvent e){
+                    WritableMap map =Arguments.createMap();
+                    map.putInt("x",(int)e.getX());
+                    map.putInt("y",(int)e.getY());
+
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(DOUBLE_TAP_EVENT,map);
                     return false;
                 }
             });

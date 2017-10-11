@@ -13,7 +13,7 @@ let M = NativeModules.JSMaps;
  */
 export default class　Maps{
     /**
-     * 根据序号返回地图
+     * 根据序号返回地图名称
      * @memberOf Maps
      * @param {number} index - 地图序号
      * @returns {Promise.<*>}
@@ -26,4 +26,19 @@ export default class　Maps{
             console.error(e);
         }
     }
+    
+    /**
+     * 获取地图数目
+     * @memberOf Maps
+     * @returns {Promise.<number>}
+     */
+    async getCount(){
+        try{
+            var {count} = await M.getCount(this._SMMapsId);
+            return count;
+        }catch(e){
+            console.error(e);
+        }
+    }
+    
 }

@@ -5,20 +5,24 @@
  Description:仪表盘。
  
  **********************************************************************************/
-let React = require('react');
-let {requireNativeComponent,View}=require('react-native');
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import {
+    requireNativeComponent,
+    ViewPropTypes,
+} from 'react-native';
 
-class SMInstrumentChartView extends React.Component{
+class SMInstrumentChartView extends Component{
     static propTypes = {
-        isShowCurValue:React.PropTypes.bool,
-        minValue:React.PropTypes.number,
-        maxValue:React.PropTypes.number,
-        splitCount:React.PropTypes.number,
-        startAngle:React.PropTypes.number,
-        endAngle:React.PropTypes.number,
-        backgroundColor:React.PropTypes.array,
-        gradient:React.PropTypes.string,
-        ...View.propTypes,
+        isShowCurValue:PropTypes.bool,
+        minValue:PropTypes.number,
+        maxValue:PropTypes.number,
+        splitCount:PropTypes.number,
+        startAngle:PropTypes.number,
+        endAngle:PropTypes.number,
+        backgroundColor:PropTypes.array,
+        gradient:PropTypes.string,
+        ...ViewPropTypes,
     };
 
 

@@ -5,19 +5,23 @@
  Description:饼状图。
  
  **********************************************************************************/
-let React = require('react');
-let {requireNativeComponent,View}=require('react-native');
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import {
+    requireNativeComponent,
+    ViewPropTypes,
+} from 'react-native';
 
-class SMPieChartView extends React.Component{
+class SMPieChartView extends Component{
     static propTypes = {
-        title:React.PropTypes.string,
-        textSize:React.PropTypes.number,
-        radious:React.PropTypes.number,
-        center:React.PropTypes.array,
-        geoId:React.PropTypes.number,
-        textColor:React.PropTypes.array,
-        chartDatas:React.PropTypes.array,
-        ...View.propTypes,
+        title:PropTypes.string,
+        textSize:PropTypes.number,
+        radious:PropTypes.number,
+        center:PropTypes.array,
+        geoId:PropTypes.number,
+        textColor:PropTypes.array,
+        chartDatas:PropTypes.array,
+        ...ViewPropTypes,
     };
 
 

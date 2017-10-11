@@ -1,20 +1,21 @@
 /**
  * Created by will on 2016/6/15.
  */
-let React = require('react');
-let {
-        requireNativeComponent,
-        View,
-        StyleSheet,
-        Image,
-        NativeModules,
-        PixelRatio  /*像素转换工具*/
-    }=require('react-native');
-let resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource'); /*解析静态图片工具*/
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import {
+    requireNativeComponent,
+    View,
+    StyleSheet,
+    Image,
+    NativeModules,
+    PixelRatio,  /*像素转换工具*/
+    ViewPropTypes,
+} from 'react-native';
 import MapView from '../MapView.js';
 import Point2D from '../Point2D.js';
 import Point from '../Point.js';
-
+let resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource'); /*解析静态图片工具*/
 let MC = NativeModules.JSMapControl;
 let MV = NativeModules.JSMapView;
 /**
@@ -24,7 +25,7 @@ let MV = NativeModules.JSMapView;
 const STARTPOINT = require('./../resource/startpoint.png');
 const DESTPOINT = require('./../resource/destpoint.png');
 
-class SMMapView extends React.Component{
+class SMMapView extends Component{
     state = {
         startPoint:{},
         callouts:[],
@@ -136,10 +137,10 @@ class SMMapView extends React.Component{
     }
 
     static propTypes = {
-        onGetInstance:React.PropTypes.func,
-        callouts:React.PropTypes.array,
-        addCalloutByLongPress:React.PropTypes.bool,
-        ...View.propTypes,
+        onGetInstance:PropTypes.func,
+        callouts:PropTypes.array,
+        addCalloutByLongPress:PropTypes.bool,
+        ...ViewPropTypes,
     };
 
     static defaultProps = {

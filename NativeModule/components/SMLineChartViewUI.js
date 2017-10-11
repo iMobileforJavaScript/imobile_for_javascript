@@ -5,22 +5,26 @@
  Description:折线图。
  
  **********************************************************************************/
-let React = require('react');
-let {requireNativeComponent,View}=require('react-native');
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import {
+    requireNativeComponent,
+    ViewPropTypes,
+} from 'react-native';
 
-class SMLineChartView extends React.Component{
+class SMLineChartView extends Component{
     static propTypes = {
-        title:React.PropTypes.string,
-        textSize:React.PropTypes.number,
-        axisTitleSize:React.PropTypes.number,
-        axisLableSize:React.PropTypes.number,
-        xAxisTitle:React.PropTypes.string,
-        yAxisTitle:React.PropTypes.string,
-        allowsUserInteraction:React.PropTypes.bool,
-        hightLightColor:React.PropTypes.array,
-        geoId:React.PropTypes.number,
-        chartDatas:React.PropTypes.array,
-        ...View.propTypes,
+        title:PropTypes.string,
+        textSize:PropTypes.number,
+        axisTitleSize:PropTypes.number,
+        axisLableSize:PropTypes.number,
+        xAxisTitle:PropTypes.string,
+        yAxisTitle:PropTypes.string,
+        allowsUserInteraction:PropTypes.bool,
+        hightLightColor:PropTypes.array,
+        geoId:PropTypes.number,
+        chartDatas:PropTypes.array,
+        ...ViewPropTypes,
     };
 
 

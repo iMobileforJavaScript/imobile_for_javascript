@@ -11,16 +11,25 @@
 #import "SuperMap/Geometry.h"
 #import "SuperMap/Layer.h"
 #import "SuperMap/Point2D.h"
+#import "SuperMap/Action.h"
 @implementation JSAdoptMapView
 RCT_EXPORT_MODULE(JSMapControl);
         
 - (NSArray<NSString *> *)supportedEvents
 {
-    return @[@"Supermap.MapControl.MapParamChanged.BoundsChanged", @"Supermap.MapControl.MapParamChanged.ScaleChanged",
-        @"com.supermap.RN.JSMapcontrol.scroll_event",
-        @"com.supermap.RN.JSMapcontrol.long_press_event",
-        @"com.supermap.RN.JSMapcontrol.geometry_selected",
-        @"com.supermap.RN.JSMapcontrol.geometry_multi_selected"];
+    return @[@"Supermap.MapControl.MapParamChanged.BoundsChanged",
+             @"Supermap.MapControl.MapParamChanged.ScaleChanged",
+             @"com.supermap.RN.JSMapcontrol.scroll_event",
+             @"com.supermap.RN.JSMapcontrol.single_tap_event",
+             @"com.supermap.RN.JSMapcontrol.double_tap_event",
+             @"com.supermap.RN.JSMapcontrol.touch_began_event",
+             @"com.supermap.RN.JSMapcontrol.touch_end_event",
+             @"com.supermap.RN.JSMapcontrol.long_press_event",
+             @"com.supermap.RN.JSMapcontrol.length_measured",
+             @"com.supermap.RN.JSMapcontrol.area_measured",
+             @"com.supermap.RN.JSMapcontrol.angle_measured",
+             @"com.supermap.RN.JSMapcontrol.geometry_selected",
+             @"com.supermap.RN.JSMapcontrol.geometry_multi_selected"];
 }
 
 -(void) boundsChanged:(Point2D*) newMapCenter{
@@ -41,12 +50,6 @@ RCT_EXPORT_MODULE(JSMapControl);
                               }];
 }
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-    
-    [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.scroll_event"
-                       body:@{@"body":@"listener undefine"
-                              }];
-}
 
 - (void)longpress:(CGPoint)pressedPos{
     CGFloat x = pressedPos.x;
@@ -56,6 +59,57 @@ RCT_EXPORT_MODULE(JSMapControl);
     [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.long_press_event"
                        body:@{@"x":nsX,
                               @"y":nsY
+                              }];
+}
+
+- (void)onDoubleTap:(CGPoint)onDoubleTapPos{
+    CGFloat x = onDoubleTapPos.x;
+    CGFloat y = onDoubleTapPos.y;
+    NSNumber* nsX = [NSNumber numberWithFloat:x];
+    NSNumber* nsY = [NSNumber numberWithFloat:y];
+    [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.double_tap_event"
+                       body:@{@"x":nsX,
+                              @"y":nsY
+                              }];
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    UITouch *touch = [touches anyObject];   //视图中的所有对象
+    CGPoint point = [touch locationInView:[touch view]]; //返回触摸点在视图中的当前坐标
+    CGFloat x = point.x;
+    CGFloat y = point.y;
+    NSNumber* nsX = [NSNumber numberWithFloat:x];
+    NSNumber* nsY = [NSNumber numberWithFloat:y];
+    [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.touch_began_event"
+                       body:@{@"x":nsX,
+                              @"y":nsY
+                              }];
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+    UITouch *touch = [touches anyObject];   //视图中的所有对象
+    CGPoint point = [touch locationInView:[touch view]]; //返回触摸点在视图中的当前坐标
+    CGFloat x = point.x;
+    CGFloat y = point.y;
+    NSNumber* nsX = [NSNumber numberWithFloat:x];
+    NSNumber* nsY = [NSNumber numberWithFloat:y];
+    
+    [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.touch_end_event"
+                       body:@{@"x":nsX,
+                              @"y":nsY
+                              }];
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
+    UITouch *touch1 = [touches anyObject];
+    CGPoint startPoint = [touch1 locationInView:[touch1 view]];
+    CGFloat x = startPoint.x;
+    CGFloat y = startPoint.y;
+    NSNumber* nsX = [NSNumber numberWithFloat:x];
+    NSNumber* nsY = [NSNumber numberWithFloat:y];
+
+    [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.scroll_event"
+                       body:@{@"local":@{@"x":nsX,@"y":nsY}
                               }];
 }
 
@@ -80,12 +134,40 @@ RCT_EXPORT_MODULE(JSMapControl);
     }
     [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.geometry_multi_selected" body:@{@"geometries":(NSArray*)layersIdAndIds}];
 }
-/*此处对应三种回调
+
 -(double)getMeasureResult:(double)result lastPoint:(Point2D*)lastPoint{
-    [self sendEventWithName:@"" body:@{@"":@""}];
+    NSNumber *nsResult = [NSNumber numberWithDouble:result];
+    double x = lastPoint.x;
+    double y = lastPoint.y;
+    NSNumber* nsX = [NSNumber numberWithDouble:x];
+    NSNumber* nsY = [NSNumber numberWithDouble:y];
+    
+    MapControl*mapCtrl = [JSObjManager getObjWithKey:@"com.supermap.mapControl"];
+    Action action = mapCtrl.action;
+    if(action == MEASURELENGTH){
+        [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.length_measured"
+                           body:@{@"curResult":nsResult,
+                                  @"curPoint":@{@"x":nsX,@"y":nsY}
+                                  }];
+    }
+    
+    if(action == MEASUREAREA){
+        [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.area_measured"
+                           body:@{@"curResult":nsResult,
+                                  @"curPoint":@{@"x":nsX,@"y":nsY}
+                                  }];
+    }
+    
+    if(action == MEASUREANGLE){
+        [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.angle_measured"
+                           body:@{@"curAngle":nsResult,
+                                  @"curPoint":@{@"x":nsX,@"y":nsY}
+                                  }];
+    }
+    
     return result;
 }
-*/
+
 
 RCT_REMAP_METHOD(getMap,geMapKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   MapControl* mapcontrol = [JSObjManager getObjWithKey:key];

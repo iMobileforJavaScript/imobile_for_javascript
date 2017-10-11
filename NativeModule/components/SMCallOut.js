@@ -2,7 +2,10 @@
  * Created by will on 2016/7/27.
  */
 let React = require('react');
-let {requireNativeComponent,View}=require('react-native');
+let {requireNativeComponent,
+    View,
+    ViewPropTypes,
+}=require('react-native');
 
 class SMCallOut extends React.Component{
     constructor(){
@@ -16,7 +19,7 @@ class SMCallOut extends React.Component{
 
     static propTypes = {
         viewId:React.PropTypes.number,
-        ...View.propTypes,
+        ...ViewPropTypes,
     };
 
     _onChange = (event) => {

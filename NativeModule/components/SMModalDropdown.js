@@ -10,10 +10,9 @@
  **********************************************************************************/
 
 'use strict';
-
+import PropTypes from 'prop-types';
 import React, {
-  Component,
-  PropTypes,
+  Component
 } from 'react';
 
 import {

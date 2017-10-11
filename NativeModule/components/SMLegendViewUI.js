@@ -1,13 +1,17 @@
 /**
  * Created by will on 2016/9/7.
  */
-let React = require('react');
-let {requireNativeComponent,View}=require('react-native');
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import {
+    requireNativeComponent,
+    ViewPropTypes,
+} from 'react-native';
 
-class SMLegendView extends React.Component{
+class SMLegendView extends Component{
     static propTypes = {
-        mapId:React.PropTypes.string,
-        ...View.propTypes,
+        mapId:PropTypes.string,
+        ...ViewPropTypes,
     };
 
     _refresh = (event) => {

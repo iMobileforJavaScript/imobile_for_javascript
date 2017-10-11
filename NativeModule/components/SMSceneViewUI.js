@@ -1,15 +1,17 @@
 /**
  * Created by will on 2017/3/22.
  */
-let React = require('react');
-let {
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import {
     requireNativeComponent,
     View,
     StyleSheet,
-}=require('react-native');
+    ViewPropTypes,
+} from 'react-native';
 import SceneControl from './../SceneControl';
 
-class SMSceneView extends React.Component{
+class SMSceneView extends Component{
 
     _onChange = (event) => {
         if(!this.props.onGetScene){
@@ -25,8 +27,8 @@ class SMSceneView extends React.Component{
     };
 
     static propTypes = {
-        onGetScene:React.PropTypes.func,
-        ...View.propTypes,
+        onGetScene:PropTypes.func,
+        ...ViewPropTypes,
     };
 
     render(){
