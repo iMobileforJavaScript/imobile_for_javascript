@@ -1,22 +1,21 @@
-
-let React = require('react');
-let {
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import {
     requireNativeComponent,
-    View,
     ViewPropTypes,
-}=require('react-native');
+} from 'react-native';
 
-class SMBarChartView extends React.Component{
+class SMBarChartView extends Component{
     static propTypes = {
-        data:React.PropTypes.array,
-        title:React.PropTypes.string,
-        textSize:React.PropTypes.number,
-        isValueAlongXAxis:React.PropTypes.bool,
-        axisTitleSize:React.PropTypes.number,
-        axisLableSize:React.PropTypes.number,
-        xAxisTitle:React.PropTypes.string,
-        yAxisTitle:React.PropTypes.string,
-        hightLightColor:React.PropTypes.array,
+        data:PropTypes.array,
+        title:PropTypes.string,
+        textSize:PropTypes.number,
+        isValueAlongXAxis:PropTypes.bool,
+        axisTitleSize:PropTypes.number,
+        axisLableSize:PropTypes.number,
+        xAxisTitle:PropTypes.string,
+        yAxisTitle:PropTypes.string,
+        hightLightColor:PropTypes.array,
         ...ViewPropTypes,
     };
     

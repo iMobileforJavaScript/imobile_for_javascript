@@ -1,17 +1,18 @@
 /**
  * Created by will on 2016/9/22.
  */
-let React = require('react');
-let {
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import {
     requireNativeComponent,
     View,
     ViewPropTypes,
-}=require('react-native');
+} from 'react-native';
 
-class SMLayerListView extends React.Component{
+class SMLayerListView extends Component{
 
     static propTypes = {
-        bindMapId:React.PropTypes.string,
+        bindMapId:PropTypes.string,
         ...ViewPropTypes,
     };
 
