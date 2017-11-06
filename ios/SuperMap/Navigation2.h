@@ -13,7 +13,7 @@
 @class GeoStyle;
 @class GeoLine;
 @class Point2D,GPSData;
-@class DatasetVector;
+@class DatasetVector,NaviStep;
 @protocol navigation2ChangedDelegate;
 @protocol Encryption;
 
@@ -45,24 +45,11 @@
  */
 @property (nonatomic,strong) UIImage *turnBackImage;
 
-/**@brief 路径信息显示栏的透明度
- @param  roadInfoAlpha路径信息显示栏的透明度（0～255） 
- */
-@property (nonatomic,assign) int roadInfoAlpha;
-
-/**@brief 转向信息显示栏的透明度
- @param  turnInfoAlpha转向信息显示栏的透明度（0～255）
- */
-@property (nonatomic,assign) int turnInfoAlpha;
 
 /*
  加密回调
  */
 @property(nonatomic,assign)id<Encryption> encryptionDelegate;
-
-@property (nonatomic) CGRect roadInfoFrame;
-
-@property (nonatomic) CGRect turnInfoFrame;
 
 /**@brief 设置导航引导图层小车图片宽度
  @param  carWidth用户指定的图片宽度（默认为40px）。
@@ -94,6 +81,11 @@
  @return  路径分析成功返回1，路径分析失败返回0，起点周围无道路返回-1，终点周围无道路返回-2。
  */
 -(BOOL)routeAnalyst;
+
+/**
+ *获取导航路径详情
+ */
+-(NSArray*)getNaviPath;
 
 ///获得路径分析线路 。
 -(GeoLine *)getRoute;
@@ -188,8 +180,9 @@
  */
 -(void)setIsAutoNavi:(BOOL)bAuto;
 
--(void)setIsTurnInfoVisible:(BOOL)bVisible;
--(void)setIsRoadInfoVisible:(BOOL)bVisible;
+/**@brief 设置隐藏导航信息
+ */
+-(void)setNaviInfoVisible:(BOOL)bVisible;
 
 /**
  * 设置引导路径的样式

@@ -36,7 +36,7 @@ export default class BarChartData extends ChartData{
     async createObj(itemName,values){
         try{
             var idArr = [];
-            for(var i =0;i<values.length-1;i++){
+            for(var i =0;i<=values.length-1;i++){
                 var id = values[i]._SMBarChartDataItemId;
                 idArr.push(id);
             }

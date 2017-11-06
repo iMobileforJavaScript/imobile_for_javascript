@@ -38,4 +38,5 @@ typedef enum{
 
 //更新图例，更改属性后需要更新
 -(void)update;
+
 @end

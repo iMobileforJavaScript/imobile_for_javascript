@@ -27,7 +27,7 @@ export default class GridHotChart extends ChartView{
      */
     async createObj(mapControl){
         try{
-            var {gridHotChartId} = await GHC.createObj(mapControl.mapControlId);
+            var {gridHotChartId} = await GHC.createObj(mapControl._SMMapControlId);
             var gridHotchart = new GridHotChart();
             gridHotchart.gridHotChartId = gridHotChartId;
             return gridHotchart;

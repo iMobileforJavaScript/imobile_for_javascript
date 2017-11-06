@@ -14,11 +14,21 @@
 RCT_EXPORT_MODULE();
 RCT_REMAP_METHOD(createObj,createObjByMapControl:(NSString*)mapControlId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        MapControl* mapControl = [JSObjManager getObjWithKey:mapControlId];
-        GridHotChart* gridHotChart = [[GridHotChart alloc]initWithMapControl:mapControl];
-        NSInteger nsHotKey = (NSInteger)gridHotChart;
-        [JSObjManager addObj:gridHotChart];
-        resolve(@{@"gridHotChartId":@(nsHotKey).stringValue});
+        if([NSThread isMainThread]){
+            MapControl* mapControl = [JSObjManager getObjWithKey:mapControlId];
+            GridHotChart* gridHotChart = [[GridHotChart alloc]initWithMapControl:mapControl];
+            NSInteger nsHotKey = (NSInteger)gridHotChart;
+            [JSObjManager addObj:gridHotChart];
+            resolve(@{@"gridHotChartId":@(nsHotKey).stringValue});
+        }else{
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                MapControl* mapControl = [JSObjManager getObjWithKey:mapControlId];
+                GridHotChart* gridHotChart = [[GridHotChart alloc]initWithMapControl:mapControl];
+                NSInteger nsHotKey = (NSInteger)gridHotChart;
+                [JSObjManager addObj:gridHotChart];
+                resolve(@{@"gridHotChartId":@(nsHotKey).stringValue});
+            });
+        }
     } @catch (NSException *exception) {
         reject(@"GridHotChart",@"create Obj expection",nil);
     }

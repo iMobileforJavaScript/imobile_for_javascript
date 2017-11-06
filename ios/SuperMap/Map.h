@@ -7,8 +7,10 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CGGeometry.h>
+#import "CoordSysTransMethod.h"
+
 @class Workspace,GeoStyle,Legend,LayerManager;
-@class Point2D,Rectangle2D,PrjCoordSys;
+@class Point2D,Rectangle2D,PrjCoordSys,CoordSysTransParameter;
 @class Layers,TrackingLayer,MapControl,ScreenLayer;
 
 
@@ -143,7 +145,7 @@ typedef enum{
  *
  * @return ScreenLayer
  */
-@property(strong,nonatomic,readonly) ScreenLayer* screeanLayer;
+@property(strong,nonatomic,readonly) ScreenLayer* screenLayer;
 /**@brief  获取或设置地图的投影坐标系统。
  <p>   投影坐标系类请参见 <PrjCoordSys>。
  @return 地图的投影坐标系统。
@@ -212,6 +214,15 @@ typedef enum{
  */
 @property(nonatomic)MapColorMode mapColorMode;
 
+/**
+ * 设置,获取地图动态投影时所使用的投影算法，在不同椭球体时需要设置。默认值为：MTH_GEOCENTRIC_TRANSLATION
+ */
+@property(nonatomic)CoordSysTransMethod dynamicPrjTransMethond;
+
+/**
+ * 设置,获取地图动态投影时所使用的参数，默认7个参数全为0
+ */
+@property(nonatomic,strong)CoordSysTransParameter* dynamicPrjTransParameter;
 
 #pragma Mark functions
 

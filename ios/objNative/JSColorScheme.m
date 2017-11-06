@@ -28,7 +28,7 @@ RCT_REMAP_METHOD(setColors,setColorsById:(NSString*)schemeId colors:(NSArray*)co
     @try {
         NSMutableArray* colorsArr = [NSMutableArray arrayWithCapacity:5];
         for (NSArray* arr in colors) {
-            int alpha = 1;
+            int alpha = 100;
             if (arr.count<3 || arr.count>=5) {
                 reject(@"colorScheme",@"each RGB arr should have 3 or 4 arguments!",nil);
             }else if (arr.count ==4){
@@ -37,7 +37,8 @@ RCT_REMAP_METHOD(setColors,setColorsById:(NSString*)schemeId colors:(NSArray*)co
             int red = ((NSNumber*)arr[0]).intValue;
             int green = ((NSNumber*)arr[1]).intValue;
             int blue = ((NSNumber*)arr[2]).intValue;
-            Color* color = [[Color alloc]initWithR:red G:green B:blue A:alpha];
+            Color* color = [[Color alloc]initWithR:red G:green B:blue];
+//            Color* color = [[Color alloc]initWithR:red G:green B:blue A:alpha];
             [colorsArr addObject:color];
         }
         ColorScheme* colorScheme = [JSObjManager getObjWithKey:schemeId];

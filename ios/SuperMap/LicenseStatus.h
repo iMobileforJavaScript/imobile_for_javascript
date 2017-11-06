@@ -52,6 +52,12 @@
  * @return
  */
 @property(nonatomic,assign,readonly)BOOL isLicenseExsit;
+
+/**
+ * 许可是否激活
+ * @return
+ */
+@property(nonatomic,readonly)BOOL isActivated;
 /**
  * 获取设备终端序列号
  * @return

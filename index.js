@@ -61,7 +61,7 @@ import BarChartData from './NativeModule/BarChartData.js';
 import BarChartDataItem from './NativeModule/BarChartDataItem.js';
 import LineChartData from './NativeModule/LineChartData.js';
 import PieChartData from './NativeModule/PieChartData.js';
-import HotChart from './NativeModule/HotChart.js';
+// import HotChart from './NativeModule/HotChart.js';
 import GridHotChart from './NativeModule/GridHotChart.js';
 import PointDensityChart from './NativeModule/PointDensityChart.js';
 import PolymerChart from './NativeModule/PolymerChart.js';
@@ -131,7 +131,7 @@ export {
     BarChartDataItem,
     LineChartData,
     PieChartData,
-    HotChart,
+    // HotChart,
     GridHotChart,
     PointDensityChart,
     PolymerChart,

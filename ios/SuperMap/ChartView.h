@@ -18,20 +18,23 @@
 @property(nonatomic,strong)NSString* title;
 @property(nonatomic)float textSize;
 
-//实时数据更新隔时间，默认未开启。当设置值大于等于1秒时 开启,设置0关闭
+//实时数据更新隔时间，默认未开启。当设置值大于等于0.5秒时 开启,设置0关闭
 @property(nonatomic)float updataInterval;
 
 //染时空数据 跳时时间的百分比
 @property(nonatomic)float playTimePercent;
+@property(nonatomic)int playIndex;
 
 //渲染时空数据,时间间隔 单位秒，默认2s
 @property(nonatomic)float playInterval;
-
+//是否循环播放,默认off
+@property(nonatomic)BOOL isLoopPlay;
 //图例
 @property(nonatomic,strong,readonly)ChartLegend* legend;
 
 //数据接入
 -(void)addChartDataset:(NSArray*)chartDatas timeTag:(NSString*)timeTag;
+-(void)insertChartDataset:(NSArray*)chartDatas timeTag:(NSString*)timeTag atIndex:(int)idx;
 -(void)removeChartDataWith:(NSString*)timeTag;
 //接入实时数据，浅拷贝
 -(void)addChartDatas:(NSArray*)chartDatas;
@@ -57,5 +60,7 @@
 @property(nonatomic,strong)NSArray* segmentValue;
 //设置每个分段标签，可以不设置,类型NSString
 @property(nonatomic,strong)NSArray* segmentLable;
+//设置每个分段符号，类型UIImage
+@property(nonatomic,strong)NSArray* symbols;
 @end
 

@@ -9,14 +9,17 @@
 #define SM_iMobile_SuperMap_h
 
 #import "Data.h"
+#import "iServer.h"
+#ifndef _NO2D_
 #import "Mapping.h"
 #import "Analyst.h"
-#import "iServer.h"
 #import "Navi.h"
-#ifndef _NO3D_
-#import "Realspace.h"
-#endif
 #import "DataConversion.h"
 #import "Track.h"
 #import "MDataCollector.h"
+#endif
+#ifndef _NO3D_
+#import "Realspace.h"
+#endif
+
 #endif

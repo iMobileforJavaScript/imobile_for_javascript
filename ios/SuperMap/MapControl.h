@@ -17,10 +17,12 @@
 @class Layer,Point2D;
 @class Color;
 @class DynamicView,SnapSetting;
+@class DatasourceConnectionInfo;
 @protocol TouchableViewDelegate;
 @protocol MapEditDelegate;
 @protocol MapMeasureDelegate;
 @protocol GeometrySelectedDelegate;
+
 
 /** 地图控件类。
  <p> 该类是用于为地图的显示提供界面的，同时为地图与数据的互操作提供了途径。
@@ -91,11 +93,6 @@
  */
 @property(nonatomic,retain)Color* strokeFillColor;
 
-/**
- * @brief 绘制对象填充透明度。
- * @return 绘制对象填充透明度。
- */
-@property(nonatomic)int alpa;
 
 /**
  * @brief 绘制对象节点大小。
@@ -126,9 +123,11 @@
 /**@brief 获取或设置一个布尔值指定当前地图是否启用放大镜功能，默认不启动。。
  */
 @property (assign,nonatomic) BOOL isMagnifierEnabled;
+@property (assign,nonatomic) int magnifierRadius;
 
 //mapControl frame 跟随横竖屏变化
 @property(nonatomic,assign)CGRect rect;
+
 
 /**
  * 设置,获取 地图控件的捕捉设置
@@ -230,7 +229,7 @@
  * @param image 需要被绘制的位图
  * @return
  */
--(BOOL)outputMap:(CGImageRef)image;
+-(CGImageRef)outputMap:(CGRect)rect;
 
 /**
  * 选择事件
@@ -291,6 +290,7 @@
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)longpress:(CGPoint)pressedPos;
 - (void)onDoubleTap:(CGPoint)onDoubleTapPos;
+- (void)onSingleTap:(CGPoint)onDoubleTapPos;
 @end
 
 ///地图编辑用户回调。
@@ -312,7 +312,7 @@
  * @param  result 地图量算结果,单位米。
  * @param lastPoint 量算时绘制的最后一个点 。
  */
--(double)getMeasureResult:(double)result lastPoint:(Point2D*)lastPoint;
+-(void)getMeasureResult:(double)result lastPoint:(Point2D*)lastPoint;
 -(void)measureState;
 @end
 
@@ -330,3 +330,5 @@
 //框选回调 数据类 [layer,[id1,id2]]; 组成的列表
 -(void)geometryMultiSelected:(NSArray*)layersAndIds;
 @end
+
+

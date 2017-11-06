@@ -30,7 +30,7 @@
  */
 @property(nonatomic,assign)id<Navigation3ChangedDelegate> navigation3ChangedDelegate;
 
-///导航结束回调。
+//导航回调
 @property(nonatomic,assign)id<NaviListener> navDelegate;
 
 /**

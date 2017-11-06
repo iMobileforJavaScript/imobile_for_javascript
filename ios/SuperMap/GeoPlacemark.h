@@ -15,6 +15,7 @@
 {
     Geometry *_geometry;
     TextStyle *_nameStyle;
+    BOOL _isGeometryChanged;
 }
 
 @property (nonatomic, copy) NSString *name;

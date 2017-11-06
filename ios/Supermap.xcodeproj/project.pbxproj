@@ -786,9 +786,11 @@
 					"$(SRCROOT)",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Supermap;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "arm64 armv7s";
 			};
 			name = Debug;
 		};
@@ -803,9 +805,11 @@
 					"$(SRCROOT)",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Supermap;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "arm64 armv7s";
 			};
 			name = Release;
 		};

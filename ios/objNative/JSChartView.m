@@ -9,7 +9,10 @@
 #import "JSChartView.h"
 #import "SuperMap/ChartView.h"
 #import "SuperMap/ChartLegend.h"
+#import "SuperMap/ChartPoint.h"
 #import "JSObjManager.h"
+
+#import "SuperMap/GridHotChart.h"
 @implementation JSChartView
 RCT_EXPORT_MODULE();
 
@@ -56,9 +59,14 @@ RCT_REMAP_METHOD(addChartDataWithTime, addChartDataById:(NSString*)chartviewId d
 }
 
 RCT_REMAP_METHOD(addChartData, addChartDataById:(NSString*)chartviewId datas:(NSArray*)datas resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    ChartView* chartview = [JSObjManager getObjWithKey:chartviewId];
+    GridHotChart* chartview = [JSObjManager getObjWithKey:chartviewId];
+    NSMutableArray* arr = [NSMutableArray arrayWithCapacity:10];
     if (chartview) {
-        [chartview addChartDatas:datas];
+        for(int i =0;i<=datas.count-1;i++){
+            ChartPoint* point = [JSObjManager getObjWithKey:[datas[i] objectForKey:@"chartPointId"]];
+            [arr addObject:point];
+        }
+        [chartview addChartDatas:arr];
         resolve(@"data added");
     }else{
         reject(@"chartview",@"add ChartData failed",nil);
