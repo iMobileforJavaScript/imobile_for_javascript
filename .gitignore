@@ -1,6 +1,4 @@
 
 .DS_Store
-ios/.DS_Store
-ios/iPhoneOS.sdk/SuperMap.framework
-ios/iPhoneSimulator.sdk/MessageQueue.framework
-ios/iPhoneSimulator.sdk/SuperMap.framework
+ios/iPhoneOS.sdk
+ios/iPhoneSimulator.sdk
