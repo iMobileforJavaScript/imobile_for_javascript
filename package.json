@@ -1,7 +1,7 @@
 
 {
   "name": "imobile_for_reactnative",
-  "version": "1.1.3",
+  "version": "1.2.0",
   "description": "iMobile for ReactNative，是SuperMap iMobile推出的一款基于React-Native框架的移动应用开发工具。基于该开发工具，用户可以使用JavaScript开发语言，开发出在Android和IOS操作系统下运行的原生移动GIS应用，入门门槛低，一次开发，处处运行。",
   "main": "index.js",
   "scripts": {
