@@ -13,7 +13,7 @@
 #import "PixelToGlobeMode.h"
 #import "MultiViewportMode.h"
 
-@class Layer3D,Layer3Ds,FlyManager,Workspace,TerrainLayers,TrackingLayer3D,GeoPoint3D,GlobalImage;
+@class Layer3D,Layer3Ds,FlyManager,Workspace,TerrainLayers,TrackingLayer3D,GeoPoint3D,GlobalImage, LookAt;
 
 /** 三维场景类。
  <p>三维场景的主体是一个模拟地球的三维球体（以半径为6378137 米的球体来模拟地球），该球体具有地理参考，球体上的点采用经纬度进行定位，并且可以通过三维场景提供的球体上的经纬网格，方便地浏览；同时，使用全球的遥感影像图作为背景覆盖在球体表面，增强三维球体模拟的逼真性；除此之外，三维场景还模拟了地球所处的环境，包括：宇宙的星空，地球的大气环境，地球表面的雾环境等。三维场景还提供了相机的设置，相机可以用来控制对球体的观测角度、方位和观测范围，从而以不同的视角呈现球体的不同部位。
@@ -39,8 +39,11 @@
 /// 返回当前场景的相机。
 @property(nonatomic)Camera camera;
 
-/// 返回当前场景的相机。
+/// 返回当前场景的第一人称相机。
 @property(nonatomic)Camera firstPersonCamera;
+
+/// 返回或设置当前场景的lookat相机
+@property (nonatomic, strong) LookAt *lookAt;
 
  /// 返回三维场景的飞行管理对象。
 @property(nonatomic,readonly)FlyManager *flyManager;
@@ -96,6 +99,13 @@
  */
 - (BOOL)openSceneWithUrl:(NSString *)url Name:(NSString *)sceneName Password:(NSString *)password;
 
+/**@brief 通过Online数据私有服务打开三维场景(需登陆后使用)。
+ @param  url Online数据私有服务的URL(如：http://118.186.246.138:8091/iserver/services/realspace-Scene/rest/realspace)。
+ @param  sceneName 指定的三维场景名称。
+ @param  completionHandler 打开三维场景之后的回调, ture表示打开成功, false表示打开失败。
+ */
+- (void)openPrivateSceneWithUrl:(NSString *)url name:(NSString *)sceneName completionHandler:(void(^)(BOOL isOpen))completionHandler;
+
 /**@brief 飞行到指定的三维点几何对象。
  @param  point3D 指定的三维点几何对象。
  */
@@ -128,6 +138,12 @@
 
  ///平移
 - (void)panWithOffsetLongitude:(double)offsetLongitude offsetLatitude:(double)offsetLatitude;
+
+ ///根据给定的角度值，对三维场景进行倾斜，从而从不同角度观察三维场景中的对象
+- (void)pitch:(double)ratio;
+
+ ///将三维场景绕视点进行一定角度的旋转
+- (void)rollEye:(double)ratio;
 
  ///停止相机惯性
 - (void)stopCameraInteria;

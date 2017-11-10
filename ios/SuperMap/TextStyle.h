@@ -242,4 +242,18 @@
 	 * @return 表示此文本风格类对象的字符串。
 	 */
 -(NSString*)toString;
+
+/** 返回文本字体的比例。  默认值为 1。
+ *
+ *
+ * @return 文本字体的比例。
+ */
+- (double)getFontScale;
+
+/** 设置文本字体的比例。
+ *
+ * @param value 文本字体的比例。
+ */
+- (void)setFontScale:(double)value;
+
 @end

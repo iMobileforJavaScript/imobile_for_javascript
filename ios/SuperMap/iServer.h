@@ -12,6 +12,7 @@
 #import "DataUploadService.h"
 #import "Feature.h"
 #import "FeatureSet.h"
+#import "OnlineService.h"
 #import "QueryMode.h"
 #import "QueryOption.h"
 #import "QueryParameter.h"

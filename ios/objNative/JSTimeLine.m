@@ -251,10 +251,10 @@ RCT_REMAP_METHOD(getStopPlayImage,getStopPlayImageById:(NSString*)Id resolver:(R
 
 RCT_REMAP_METHOD(setHorizontal,setHorizontalById:(NSString*)Id boolean:(BOOL)boolean resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        TimeLine* timeLine = [JSObjManager getObjWithKey:Id];
-        timeLine.isHorizontal =boolean;
-        NSNumber* num = [NSNumber numberWithBool:true];
-        resolve(num);
+//        TimeLine* timeLine = [JSObjManager getObjWithKey:Id];
+//        timeLine.isHorizontal =boolean;
+//        NSNumber* num = [NSNumber numberWithBool:true];
+//        resolve(num);
     } @catch (NSException *exception) {
         reject(@"TimeLine",@"setHorizontal() expection.",nil);
     }
@@ -262,10 +262,10 @@ RCT_REMAP_METHOD(setHorizontal,setHorizontalById:(NSString*)Id boolean:(BOOL)boo
 
 RCT_REMAP_METHOD(isHorizontal,isHorizontalById:(NSString*)Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        TimeLine* timeLine = [JSObjManager getObjWithKey:Id];
-        BOOL boolean = timeLine.isHorizontal;
-        NSNumber* num = [NSNumber numberWithBool:boolean];
-        resolve(@{@"bool":num});
+//        TimeLine* timeLine = [JSObjManager getObjWithKey:Id];
+//        BOOL boolean = timeLine.isHorizontal;
+//        NSNumber* num = [NSNumber numberWithBool:boolean];
+//        resolve(@{@"bool":num});
     } @catch (NSException *exception) {
         reject(@"TimeLine",@"isHorizontal() expection.",nil);
     }

@@ -119,6 +119,27 @@ typedef enum {
      * 公共边构面
      */
     CREATE_POSITIONAL_REGION = 210,
+    
+    /**
+     * 面被线分割（手绘式）
+     */
+    SPLIT_BY_DRAWLINE = 215,
+    
+    /**
+     * 手绘岛洞面（手绘式）
+     */
+    DRAWREGION_HOLLOW_REGION = 216,
+    
+    /**
+     * 面被面擦除(手绘式)
+     */
+     DRAWREGION_ERASE_REGION = 217,
+    
+    /**
+     * 面被面分割(手绘式)
+     */
+    SPLIT_BY_DRAWREGION = 218,
+
     /**
      * 平移对象
      */

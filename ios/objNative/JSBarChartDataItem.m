@@ -14,14 +14,19 @@
 RCT_EXPORT_MODULE();
 RCT_REMAP_METHOD(createObj,createObjWithValue:(double)value colorArr:(NSArray*)colorArr labelString:(NSString*)labelString id:(int)id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        NSNumber* red = colorArr[0];
-        NSNumber* green = colorArr[1];
-        NSNumber* blue = colorArr[2];
-        NSNumber* alpha = [NSNumber numberWithFloat:100];
+        value = value/15000;
+        NSNumber* redNum = colorArr[0];
+        float red = redNum.longValue/255.0;
+        NSNumber* greenNum = colorArr[1];
+        float green = greenNum.longValue/255.0;
+        NSNumber* blueNum = colorArr[2];
+        float blue = blueNum.longValue/255.0;
+        NSNumber* alphaNum = [NSNumber numberWithFloat:1];
         if (colorArr.count>3) {
-            alpha = colorArr[3];
+            alphaNum = colorArr[3];
         }
-        UIColor* color = [UIColor colorWithRed:red.intValue/255 green:green.intValue/255 blue:blue.intValue/255 alpha:alpha.floatValue];
+        float alpha = alphaNum.floatValue;
+        UIColor* color = [UIColor colorWithRed:red green:green blue:blue alpha:alpha];
         ChartBarDataItem* chartBarDataItem = [[ChartBarDataItem alloc]initWithValue:[NSNumber numberWithDouble:value] color:color lable:labelString ID:id];
         [JSObjManager addObj:chartBarDataItem];
         NSInteger dataKey = (NSInteger)chartBarDataItem;

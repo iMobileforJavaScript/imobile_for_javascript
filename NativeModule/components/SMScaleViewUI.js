@@ -10,7 +10,7 @@ import {
 
 class SMScaleView extends Component{
     static propTypes = {
-        mapId:PropTypes.string,
+        mapControlId:PropTypes.string,
         ...ViewPropTypes,
     };
 

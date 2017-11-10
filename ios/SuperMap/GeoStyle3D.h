@@ -8,10 +8,11 @@
 #import <Foundation/Foundation.h>
 #import "Color.h"
 #import "AltitudeMode3D.h"
-
+#import <UIKit/UIKit.h>
 /**三维场景中的几何对象风格类
  <p>该类主要用于设置三维场景中几何对象的显示风格
  */
+
 @interface GeoStyle3D : NSObject
 
 /// 三维场景中的几何对象的高度模式
@@ -30,6 +31,8 @@
 @property(nonatomic)double markerSize;
 ///点图标缩放比例
 @property (nonatomic, assign) double markerScale;
+//点图标锚点
+@property (nonatomic, assign) CGPoint markerAncherPoint;
 /// 点图标
 @property(nonatomic) NSString* markerFile;
 /// 填充前景色

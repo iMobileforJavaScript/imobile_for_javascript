@@ -18,32 +18,40 @@
     
     if (self.title) {
          _barChart.title = self.title;
+        [_barChart update];
     }
    
     if (self.textSize) {
         _barChart.textSize = self.textSize;
+        [_barChart update];
     }
     
     _barChart.isValueAlongXAxis = self.isValueAlongXAxis;
+    [_barChart update];
     
     if (self.axisLableSize) {
         _barChart.axisLableSize = self.axisLableSize;
+        [_barChart update];
     }
     
     if (self.axisTitleSize) {
         _barChart.axisTitleSize = self.axisTitleSize;
+        [_barChart update];
     }
     
     if (self.xAxisTitle) {
         _barChart.xAxisTitle = self.xAxisTitle;
+        [_barChart update];
     }
     
     if (self.yAxisTitle) {
         _barChart.yAxisTitle = self.yAxisTitle;
+        [_barChart update];
     }
     
     if (self.hightLightColor) {
         _barChart.hightLightColor = self.hightLightColor;
+        [_barChart update];
     }
     
     if (self.chartDatas) {

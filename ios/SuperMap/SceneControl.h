@@ -9,8 +9,13 @@
 #import "Action3D.h"
 #import "Point3D.h"
 
+
 @protocol SceneControlTouchDelegate,Tracking3DDelegate,Tracked3DDelegate,PointInputDelegate;
-@class Scene,Tracking3DEvent,Tracked3DEvent;
+@class Scene,Tracking3DEvent,Tracked3DEvent
+#ifndef _NO2D_
+,Navigation3D
+#endif
+;
 /// 三维场景控件。
 @interface SceneControl : UIView {
     id<SceneControlTouchDelegate> _sceneControlDelegate;
@@ -37,7 +42,10 @@
 
 ///返回三维场景控件中的场景对象。
 @property(nonatomic,readonly)Scene *scene;
-
+#ifndef _NO2D_
+//三维导航
+@property(nonatomic,readonly)Navigation3D *navi3D;
+#endif
 ///返回或设置三维场景操作状态。
 @property(nonatomic)Action3D action3D;
 

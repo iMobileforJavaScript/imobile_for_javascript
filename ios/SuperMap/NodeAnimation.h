@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "NodeAnimationPlayMode.h"
-#import "Point3D.h"
+//#import "Point3D.h"
 
 @class Geometry3D;
 @protocol NodeAnimationDelegate;
@@ -28,7 +28,7 @@
 @property (nonatomic, assign) double timePosition;
 
 /* 获取节点动画的位置 */
-@property (nonatomic, readonly, assign) Point3D position;
+//@property (nonatomic, readonly, assign) Point3D position;
 
 /* 获取前进方向角, 水平方向上与正北方向的夹角 */
 @property (nonatomic, readonly, assign) double direction;

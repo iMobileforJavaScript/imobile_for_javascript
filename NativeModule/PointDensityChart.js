@@ -27,7 +27,7 @@ export default class PointDensityChart extends ChartView{
      */
     async createObj(mapControl){
         try{
-            var {pointDensityChartId} = await PDC.createObj(mapControl.mapControlId);
+            var {pointDensityChartId} = await PDC.createObj(mapControl._SMMapControlId);
             var pointDensityChart = new PointDensityChart();
             pointDensityChart.pointDensityChartId = pointDensityChartId;
             return pointDensityChart;

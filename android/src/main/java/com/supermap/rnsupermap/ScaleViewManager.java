@@ -4,6 +4,7 @@ import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.supermap.mapping.Map;
+import com.supermap.mapping.MapControl;
 import com.supermap.mapping.ScaleView;
 
 /**
@@ -23,10 +24,11 @@ public class ScaleViewManager extends SimpleViewManager<ScaleView> {
         return scaleView;
     }
 
-    @ReactProp(name="mapId")
-    public void setMapId(ScaleView view, String mapId){
-        Map map = JSMap.getObjFromList(mapId);
-
+    @ReactProp(name="mapControlId")
+    public void setMapControlId(ScaleView view, String mapCtrId){
+        MapControl mapCtr = JSMapControl.getObjFromList(mapCtrId);
+        Map map = mapCtr.getMap();
         view.setMapView(map.getMapView());
+
     }
 }

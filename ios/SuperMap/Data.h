@@ -78,7 +78,7 @@
 #import "Rectangle2D.h"
 #import "Size2D.h"
 #import "SpatialQueryMode.h"
-#import "SpatialRelationType.h"
+//#import "SpatialRelationType.h"
 #import "StatisticMode.h"
 #import "Symbol.h"
 #import "SymbolFillLibrary.h"

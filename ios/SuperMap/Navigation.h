@@ -28,7 +28,7 @@
  加密回调
  */
 @property(nonatomic,assign)id<Encryption> encryptionDelegate;
-///导航结束时回调。
+///导航回调
 @property(nonatomic,assign)id<NaviListener> navDelegate;
 
 /**
@@ -171,7 +171,7 @@
 /**
  *获取导航路径详情
  */
--(NSArray*)getNavPath;
+-(NSArray*)getNaviPath;
 
 /**
  * 设置模拟导航速度(单位m/s)

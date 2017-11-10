@@ -92,4 +92,9 @@
 */
 - (id)fieldValueOfSelectedObjectWithIndex:(NSInteger)index;
 
+/*
+** 获取最后一个选中的对象的所有属性
+*/
+- (NSArray *)allFieldValuesOfLastSelectedObject;
+
 @end

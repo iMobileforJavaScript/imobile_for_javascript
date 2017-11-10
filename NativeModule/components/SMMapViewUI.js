@@ -1,6 +1,10 @@
-/**
- * Created by will on 2016/6/15.
- */
+/*********************************************************************************
+ Copyright © SuperMap. All rights reserved.
+ Author: will Chen (Created on 2016/6/15)
+ E-mail: pridehao@gmail.com
+ Description:地图主控件
+ 
+ **********************************************************************************/
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {

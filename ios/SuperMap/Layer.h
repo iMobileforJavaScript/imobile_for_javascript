@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "ThemeType.h"
 @class Map,Layers,Selection,Dataset,Theme,GeoRegion,m_selfEventHandle,Point2D,QueryParameter;
-@class ChartBase;
+@class ChartView;
 @protocol LayerSetting;
 @protocol LayerStateDelegate;
 /**  图层类。
@@ -131,8 +131,8 @@
     */
 -(void)setSelection:(Selection *)selection;
 
-//添加图表对象
--(void)addChart:(ChartBase*)chart;
+//添加图表对象(饼图，折线，柱状图，仪表图)
+-(void)addChart:(ChartView*)chart;
 /**
  *  @brief  设置显示过滤条件，可以使图层中的一些要素显示，而另一些要素不显示，以便重点分析感兴趣的要素，而过滤掉其他要素。
 

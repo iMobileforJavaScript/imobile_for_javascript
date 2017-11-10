@@ -3,17 +3,16 @@
  */
 
 'use strict';
-var ReactNative =require('react-native');
-var React = require('react');
-var {
-    AppRegistry,
+import PropTypes from 'prop-types';
+import React,{Component} from 'react';
+import {
     Image,
-    ListView,
-    TouchableHighlight,
-    StyleSheet,
-    Text,
     View,
-} = ReactNative;
+    Text,
+    TouchableHighlight,
+    FlatList,
+    StyleSheet,
+} from 'react-native';
 
 var THUMB_URLS = [
                   [10,require('./../plotImage/10.png')],
@@ -41,6 +40,33 @@ var THUMB_URLS = [
                   [1009,require('./../plotImage/1009.png')],
                   ];
 
+class SMPlotView extends Component{
+  constructor(props){
+    super(props);
+    this.state={
+
+    };
+  }
+
+  _renderItem=({item})=>(
+    <OuterListItem Image={item.Image} Text={item.Text} Index={item.Index} workspace={this.props.workspace}/>
+  );
+
+  _separator=()=>{
+    return <View style={{height:1 / PixelRatio.get(),backgroundColor: '#bbbbbb',marginLeft: 15,}}/>
+  }
+
+  render() {
+    return (
+      <FlatList data={}
+                renderItem={}
+                ItemSeparatorComponent={this._separator}/>
+    );
+  }
+
+}
+
+/*
 var SMPlotView =React.createClass({
                                 getInitialState: function() {
                                 var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
@@ -122,3 +148,4 @@ var styles =StyleSheet.create({
                               },
                               });
 module.exports = SMPlotView;
+*/

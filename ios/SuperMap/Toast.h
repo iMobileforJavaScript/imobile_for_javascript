@@ -16,5 +16,6 @@
 +(void)show:(NSString*)message pos:(NSString*)pos;
 +(void)show:(NSString*)title message:(NSString*)message pos:(NSString*)pos duration:(float)duration;
 +(void)showIndicatorView;
++(void)showIndicatorViewWith:(UIColor*)color;
 +(void)hideIndicatorView;
 @end

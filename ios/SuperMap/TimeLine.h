@@ -11,8 +11,9 @@
 @class ChartView;
 @interface TimeLine : NSObject
 
+
 -(id)initWithHostView:(UIView*)hostView;
-//滑块大小
+//滑块大小,默认25
 @property(nonatomic)float sliderSize;
 //滑块风格
 @property(nonatomic,strong)UIImage* sliderImage;
@@ -22,7 +23,7 @@
 //时间线颜色
 @property(nonatomic,strong)UIColor* timeLineColor;
 
-//滑块标签字体大小
+//滑块标签字体大小,默认8
 @property(nonatomic)float sliderTextSize;
 //滑块标签颜色
 @property(nonatomic,strong)UIColor* sliderTextColor;
@@ -36,10 +37,6 @@
 @property(nonatomic,strong)UIImage* playImage;
 //暂停按钮风格
 @property(nonatomic,strong)UIImage* pausePlayImage;
-
-//是否水平放置
-@property(nonatomic)BOOL isHorizontal;
-
 
 //添加关联图表
 -(void)addChart:(ChartView*)chart;

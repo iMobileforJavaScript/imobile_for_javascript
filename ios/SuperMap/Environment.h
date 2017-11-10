@@ -117,6 +117,10 @@ extern const double minEqualZeroPrecision ;
  */
 @interface Environment : NSObject
 
+/**
+ * 设置外挂字体路径
+ */
++(void)setFontsPath:(NSString*)fontsPath;
 /// 设置许可激活回调。
 +(void)setLicenseDelegate:(id<LicenseActivationDelegate>)delegate;
 
@@ -150,6 +154,21 @@ extern const double minEqualZeroPrecision ;
 +(BOOL)activateDevice;
 
 /**
+ * 验证许可码，用于手动输入和在线注册
+ * @param licCode
+ * @return
+ */
++(LicenseStatus*)verifyLicenseCode:(NSString*)licCode;
+/**
+ * 放置许可文件存放路径
+ * @param path
+ */
++(void)setLicensePath:(NSString*)path;
+
+//0:DEVICEID 1:UUID
++(void)setLicenseType:(int)type;
++(int)getLicenseType;
+/**
  * 获取许可状态
  * @return 返回当前的许可状态
  */
@@ -157,7 +176,6 @@ extern const double minEqualZeroPrecision ;
 +(NSString *)getVersion;
 +(BOOL)isOpenGLMode;
 +(void)setOpenGLMode:(BOOL)bOpenGLMode;
-+(void)setMainScreenScale:(double)scale;
 +(double)mainScreenScale;
 
 +(void)setPrintWMSLog:(BOOL)bPrintWMSLog;

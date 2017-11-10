@@ -157,4 +157,22 @@ typedef enum{
  */
 -(void)setPassword:(NSString*)passwd type:(DatasourceEncryptionType)type;
 
+/**
+ * 设置代理服务器地址和端口
+ * @param address
+ * @param port
+ */
+-(void)setProxy:(NSString*) address port:(NSString*)port;
+
+/**
+ * 获取代理服务器地址
+ * @return
+ */
+-(NSString*)getProxyAddress;
+
+/**
+ * 获取代理服务器端口
+ * @return
+ */
+-(NSString*)getProxyPort;
 @end

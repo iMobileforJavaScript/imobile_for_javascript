@@ -27,6 +27,11 @@ import OuterListItem from './SMOuterListItem.js';
 export default class OuterListComponent extends Component {
   constructor(props){
     super(props);
+
+    this.state = {
+      data: false,
+    };
+
     //数据获取
     var dataArr = [];
     var workspace = props.workspace;
@@ -39,16 +44,17 @@ export default class OuterListComponent extends Component {
         dataArr.push(dataItem);
       }
 
-      this.state = {
+      this.setState({
         data: dataArr,
-      };
+      });
+      // this.state = {
+      //   data: dataArr,
+      // };
 
       this.forceUpdate();//强制渲染方法--应尽量不使用此方法，考虑优化
     }).bind(this)();
 
-    this.state = {
-      data: false,
-    };
+ 
   }
 //item渲染方法
   _renderItem=({item})=>(

@@ -1,0 +1,5 @@
+
+.DS_Store
+ios/iPhoneOS.sdk
+ios/iPhoneSimulator.sdk
+ios/MessageQueue.sdk

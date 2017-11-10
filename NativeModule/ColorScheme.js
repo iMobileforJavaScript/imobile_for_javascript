@@ -76,4 +76,32 @@ export default class ColorScheme{
             console.error(e);
         }
     }
+
+
+    /**
+     * 设置分段标签
+     * @memberOf ColorScheme
+     * @returns {Promise.<void>}
+     */
+    async setSegmentLable(value){
+        try{
+            await CS.setSegmentLable(this.colorSchemeId,value);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 获取分段标签
+     * @memberOf ColorScheme
+     * @returns {Promise.<void>}
+     */
+    async getSegmentLable(){
+        try{
+            var {segmentLable} = await CS.getSegmentLable(this.colorSchemeId);
+            return segmentLable;
+        }catch(e){
+            console.error(e);
+        }
+    }
 }

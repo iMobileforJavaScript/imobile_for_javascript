@@ -10,7 +10,7 @@ import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MapView;
 import com.supermap.mapping.imChart.ChartView;
 import com.supermap.mapping.imChart.ColorScheme;
-import com.supermap.mapping.imChart.HotChart;
+import com.supermap.mapping.imChart.HeatMap;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -28,15 +28,15 @@ public class JSHotChart extends JSChartView {
         super(context);
         m_context = context;
     }
-    public static HotChart getObjFromList(String id){
-        return (HotChart) m_ChartViewList.get(id);
+    public static HeatMap getObjFromList(String id){
+        return (HeatMap) m_ChartViewList.get(id);
     }
     @Override
     public String getName(){
         return MODULE_NAME;
     }
 
-    public static String registerId(HotChart obj) {
+    public static String registerId(HeatMap obj) {
         for (Map.Entry entry : m_ChartViewList.entrySet()) {
             if (obj.equals(entry.getValue())) {
                 return (String) entry.getKey();
@@ -55,7 +55,7 @@ public class JSHotChart extends JSChartView {
             MapControl mapCtr = JSMapControl.getObjFromList(mapCtrId);
             com.supermap.mapping.Map map = mapCtr.getMap();
             MapView mapView = map.getMapView();
-            HotChart hotChart = new HotChart(m_context,mapView);
+            HeatMap hotChart = new HeatMap(m_context,mapView);
             String hotChartId = registerId(hotChart);
 
             WritableMap writeMap = Arguments.createMap();
@@ -69,7 +69,7 @@ public class JSHotChart extends JSChartView {
     @ReactMethod
     public void setColorScheme(String hotChartId, String schemeId, Promise promise){
         try{
-            HotChart hotChart = getObjFromList(hotChartId);
+            HeatMap hotChart = getObjFromList(hotChartId);
             ColorScheme colorScheme = JSColorScheme.getObjFromList(schemeId);
             hotChart.setColorScheme(colorScheme);
 

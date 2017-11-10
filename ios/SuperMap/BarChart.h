@@ -7,7 +7,6 @@
 //
 
 #import "ChartView.h"
-#import "ChartAxis.h"
 
 @protocol ChartOnSelectedDelegate;
 
