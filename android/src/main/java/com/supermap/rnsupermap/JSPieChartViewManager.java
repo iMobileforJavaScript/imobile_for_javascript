@@ -2,13 +2,13 @@ package com.supermap.rnsupermap;
 
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.supermap.charts.PieChartView;
+import com.supermap.mapping.imChart.PieChart;
 
 /**
  * Created by Myself on 2017/7/25.
  */
 
-public class JSPieChartViewManager extends SimpleViewManager<PieChartView> {
+public class JSPieChartViewManager extends SimpleViewManager<PieChart> {
     private static final String REACT_CLASS = "RCTPieChartView";
     ThemedReactContext m_ThemeReactContext;
 
@@ -16,8 +16,8 @@ public class JSPieChartViewManager extends SimpleViewManager<PieChartView> {
     public String getName(){return REACT_CLASS;}
 
     @Override
-    public PieChartView createViewInstance(ThemedReactContext reactContext){
-        PieChartView chartView = new PieChartView(reactContext);
+    public PieChart createViewInstance(ThemedReactContext reactContext){
+        PieChart chartView = new PieChart(reactContext);
         return chartView;
     }
 }

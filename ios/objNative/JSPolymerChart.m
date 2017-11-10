@@ -14,11 +14,21 @@
 RCT_EXPORT_MODULE();
 RCT_REMAP_METHOD(createObj,createObjByMapControl:(NSString*)mapControlId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        MapControl* mapControl = [JSObjManager getObjWithKey:mapControlId];
-        PolymerChart* polymerChart = [[PolymerChart alloc]initWithMapControl:mapControl];
-        NSInteger nsKey = (NSInteger)polymerChart;
-        [JSObjManager addObj:polymerChart];
-        resolve(@{@"polymerChartId":@(nsKey).stringValue});
+        if([NSThread isMainThread]){
+            MapControl* mapControl = [JSObjManager getObjWithKey:mapControlId];
+            PolymerChart* polymerChart = [[PolymerChart alloc]initWithMapControl:mapControl];
+            NSInteger nsKey = (NSInteger)polymerChart;
+            [JSObjManager addObj:polymerChart];
+            resolve(@{@"polymerChartId":@(nsKey).stringValue});
+        }else{
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                MapControl* mapControl = [JSObjManager getObjWithKey:mapControlId];
+                PolymerChart* polymerChart = [[PolymerChart alloc]initWithMapControl:mapControl];
+                NSInteger nsKey = (NSInteger)polymerChart;
+                [JSObjManager addObj:polymerChart];
+                resolve(@{@"polymerChartId":@(nsKey).stringValue});
+            });
+        }
     } @catch (NSException *exception) {
         reject(@"PolymerChart",@"create Obj expection",nil);
     }

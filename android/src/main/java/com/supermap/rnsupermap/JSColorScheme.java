@@ -66,11 +66,10 @@ public class JSColorScheme extends ReactContextBaseJavaModule {
             Color [] array = new Color[length];
             for (int i = 0; i<length;i++){
                 ReadableArray arr = colorArr.getArray(i);
-                int alpha = arr.getInt(0);
-                int red = arr.getInt(1);
-                int green = arr.getInt(2);
-                int blue = arr.getInt(3);
-                Color color = new Color(red,green,blue,alpha);
+                int red = arr.getInt(0);
+                int green = arr.getInt(1);
+                int blue = arr.getInt(2);
+                Color color = new Color(red,green,blue);
                 array[i] = color;
             }
             ColorScheme colorScheme = getObjFromList(id);

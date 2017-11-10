@@ -5,6 +5,8 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.mapping.imChart.ChartLegend;
 import com.supermap.mapping.imChart.ChartPoint;
@@ -101,11 +103,20 @@ public class JSChartView extends ReactContextBaseJavaModule{
     }
 
     @ReactMethod
-    public void addChartData(String id, ArrayList<ChartPoint> data, Promise promise){
+    public void addChartData(String id, ReadableArray data, Promise promise){
         try {
+            ArrayList<ChartPoint> resultData = new ArrayList();
             ChartView chartView = getObjFromList(id);
-            chartView.addChartDatas(data);
-
+            if(chartView !=null){
+                for(int i =0;i<=data.size()-1;i++){
+                    ReadableMap innerMap = data.getMap(i);
+                    String keyStr = innerMap.getString("chartPointId");
+                    ChartPoint point = JSChartPoint.getObjFromList(keyStr);
+                    resultData.add(point);
+                }
+            }
+            chartView.addChartDatas(resultData);
+            chartView.update();
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);

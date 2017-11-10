@@ -27,9 +27,9 @@ export default class PolymerChart extends ChartView{
      */
     async createObj(mapControl){
         try{
-            var {polymerChartId} = await PC.createObj(mapControl.mapControlId);
+            var {polymerChartId} = await PC.createObj(mapControl._SMMapControlId);
             var polymerChart = new PolymerChart();
-            instrumentChart.polymerChartId = polymerChartId;
+            polymerChart.polymerChartId = polymerChartId;
             return polymerChart;
         }catch(e){
             console.error(e);

@@ -15,7 +15,6 @@ import java.util.List;
  * Created by will on 2016/6/15.
  */
 public class SupermapFullPackage implements ReactPackage {
-    @Override
     public List<Class<? extends JavaScriptModule>> createJSModules() {
         return Collections.emptyList();
     }
@@ -95,6 +94,11 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSSTOMPSender(reactContext));
         modules.add(new JSSTOMPReceiver(reactContext));
         modules.add(new JSMQTTClientSide(reactContext));
+
+        modules.add(new JSChartView(reactContext));
+        modules.add(new JSGridHotChart(reactContext));
+        modules.add(new JSColorScheme(reactContext));
+        modules.add(new JSChartPoint(reactContext));
 
         modules.add(new LogModule(reactContext));
         return modules;

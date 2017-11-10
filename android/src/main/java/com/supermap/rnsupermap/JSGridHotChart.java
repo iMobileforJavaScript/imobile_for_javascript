@@ -13,6 +13,8 @@ import com.supermap.mapping.imChart.GridHotChart;
 
 import java.util.Calendar;
 import java.util.Map;
+import android.os.Handler;
+import android.os.Looper;
 
 /**
  * Created by Myself on 2017/6/1.
@@ -51,17 +53,27 @@ public class JSGridHotChart extends JSChartView {
     }
 
     @ReactMethod
-    public void createObj(String mapCtrId, Promise promise){
+    public void createObj(final String mapCtrId,final Promise promise){
         try{
-            MapControl mapCtr = JSMapControl.getObjFromList(mapCtrId);
-            com.supermap.mapping.Map map = mapCtr.getMap();
-            MapView mapView = map.getMapView();
-            GridHotChart hotChart = new GridHotChart(m_context,mapView);
-            String hotChartId = registerId(hotChart);
 
-            WritableMap writeMap = Arguments.createMap();
-            writeMap.putString("gridHotChartId",hotChartId);
-            promise.resolve(writeMap);
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    //已在主线程中，可以更新UI
+                    MapControl mapCtr = JSMapControl.getObjFromList(mapCtrId);
+                    com.supermap.mapping.Map map = mapCtr.getMap();
+                    MapView mapView = map.getMapView();
+                    MapControl map1 = mapView.getMapControl();
+                    GridHotChart hotChart = new GridHotChart(m_context,mapView);
+//                    hotChart = new GridHotChart(this,map.getMapView());
+                    String hotChartId = registerId(hotChart);
+
+                    WritableMap writeMap = Arguments.createMap();
+                    writeMap.putString("gridHotChartId",hotChartId);
+                    promise.resolve(writeMap);
+                }
+            });
         }catch (Exception e){
             promise.reject(e);
         }

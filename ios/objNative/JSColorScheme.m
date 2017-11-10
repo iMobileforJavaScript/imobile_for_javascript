@@ -84,4 +84,24 @@ RCT_REMAP_METHOD(getSegmentValue,getSegmentValueById:(NSString*)schemeId resolve
         reject(@"colorScheme",@"get SegmentValue expection",nil);
     }
 }
+
+RCT_REMAP_METHOD(setSegmentLable,setSegmentLableById:(NSString*)schemeId value:(NSArray*)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        ColorScheme* colorScheme = [JSObjManager getObjWithKey:schemeId];
+        colorScheme.segmentLable = value;
+        resolve(@"segmentLable setted");
+    } @catch (NSException *exception) {
+        reject(@"colorScheme",@"set segmentLable expection",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getSegmentLable,getSegmentLableById:(NSString*)schemeId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        ColorScheme* colorScheme = [JSObjManager getObjWithKey:schemeId];
+        NSArray* getSegmentLable = colorScheme.segmentLable;
+        resolve(@{@"segmentLable":getSegmentLable});
+    } @catch (NSException *exception) {
+        reject(@"colorScheme",@"get SegmentLable expection",nil);
+    }
+}
 @end

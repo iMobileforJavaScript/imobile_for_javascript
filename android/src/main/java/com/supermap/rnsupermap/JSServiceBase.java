@@ -95,6 +95,11 @@ public class JSServiceBase extends ReactContextBaseJavaModule {
             ServiceBase serviceBase = getObjFromList(serviceBaseId);
             serviceBase.setResponseCallback(new ResponseCallback() {
                 @Override
+                public void addFeatureSuccess(int var1) {
+                    //为解决编译问题暂时添加的空方法
+                }
+
+                @Override
                 public void requestFailed(String s) {
                     WritableMap map = Arguments.createMap();
                     map.putString("error",s);
