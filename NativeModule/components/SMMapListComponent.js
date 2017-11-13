@@ -44,10 +44,6 @@ export default class InnerListComponent extends Component {
       this.setState({
         data: dataArr,
       });
-      // this.state = {
-      //   data: dataArr,
-      // };
-      this.forceUpdate();//强制渲染方法--应尽量不使用此方法，考虑优化
     }).bind(this)();
 
  

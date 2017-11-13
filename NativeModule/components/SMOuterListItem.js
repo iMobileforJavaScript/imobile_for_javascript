@@ -20,7 +20,6 @@ export default class OuterListItem extends Component {
   constructor(props){
     super(props);
     this.state={highLight:false,
-                data:[{key:'_SMDset001',text:'aaa',image:require('../resource/line.png')},{key:'_SMDset002',text:'bbb',image:require('../resource/star.png')},{key:'_SMDset003',text:'bbb',image:require('../resource/star.png')}],
                 };
   }
 
@@ -36,7 +35,6 @@ export default class OuterListItem extends Component {
             <Text style={styles.itemText}>{this.props.Text}</Text>
           </View>
         </TouchableHighlight>
-        {/*this.state.highLight && <InnerListComponent data={this.state.data}/>*/}
         {this.state.highLight && <InnerListComponent index={this.props.Index} workspace={this.props.workspace}/>}
       </View>
     );

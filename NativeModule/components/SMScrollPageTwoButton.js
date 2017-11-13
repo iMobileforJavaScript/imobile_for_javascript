@@ -8,7 +8,6 @@
 
 import React, { Component } from 'react';
 import{ 
-  ScrollView,
   Image,
   Text,
   View,

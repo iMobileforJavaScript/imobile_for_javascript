@@ -8,14 +8,9 @@
 
 import React, { Component } from 'react';
 import {
-  StyleSheet,
-  Text,
   View,
-  Dimensions,
-  Image,
   FlatList,
   PixelRatio,
-  TouchableHighlight
 } from 'react-native';
 
 //imobile类引入
@@ -47,11 +42,6 @@ export default class OuterListComponent extends Component {
       this.setState({
         data: dataArr,
       });
-      // this.state = {
-      //   data: dataArr,
-      // };
-
-      this.forceUpdate();//强制渲染方法--应尽量不使用此方法，考虑优化
     }).bind(this)();
 
  

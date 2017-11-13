@@ -11,6 +11,7 @@ import {
   Text,
   View,
   Alert,
+  Platform,
 } from 'react-native';
 
 //imobile类引入
@@ -21,7 +22,6 @@ import util from '../utility/utility.js';
 import TitlePage from './SMTitlePage.js';
 import ScrollPage from './SMScrollPage.js';
 import WorkspaceSaveAsPage from './SMWorkspaceSaveAsPage.js';
-import OuterListComponent from './SMOuterListComponent.js';
 import DsMapInfo from './SMDsMapInfoComponent.js';
 import DsCreatePage from './SMDsCreatePage.js';
 import DsListComponent from './SMOuterListComponent.js';
@@ -47,7 +47,12 @@ export default class WorkspaceManagerComponent extends Component {
     var workspaceM = new workspaceModule();
     (async function () {
       //------------------------util只适用于iOS------------------------//!!
-      var filePath = await util.appendingHomeDirectory(props.path);
+      var filePath;
+      if(Platform.OS==='ios'){
+        filePath = await util.appendingHomeDirectory(props.path);
+      }else{
+        filePath = props.path;
+      }
       var workspace = await workspaceM.createObj();
       await workspace.open(filePath);     
       this.setState({

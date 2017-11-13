@@ -791,7 +791,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Supermap;
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = "arm64 armv7s armv7";
+				VALID_ARCHS = "arm64 armv7s";
 			};
 			name = Debug;
 		};
@@ -811,7 +811,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Supermap;
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = "arm64 armv7s armv7";
+				VALID_ARCHS = "arm64 armv7s";
 			};
 			name = Release;
 		};
