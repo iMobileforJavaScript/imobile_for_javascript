@@ -90,4 +90,33 @@ public class JSDatasources extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void getCount(String datasourcesId,Promise promise){
+        try{
+            Datasources datasources = m_DatasourceList.get(datasourcesId);
+            int count = datasources.getCount();
+            WritableMap map = Arguments.createMap();
+            map.putInt("count",count);
+
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getAlias(String datasourcesId,int index,Promise promise){
+        try{
+            Datasources datasources = m_DatasourceList.get(datasourcesId);
+            Datasource dataSoure = datasources.get(index);
+            String name = dataSoure.getAlias();
+            WritableMap map = Arguments.createMap();
+            map.putString("alias",name);
+
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
 }

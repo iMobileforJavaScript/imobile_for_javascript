@@ -109,7 +109,7 @@ RCT_REMAP_METHOD(getEncodeType,getEncodeTypeByKey:(NSString*)key resolver:(RCTPr
     }
 }
 
-RCT_REMAP_METHOD(getName,getNameByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(DSgetName,getNameByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Dataset* dataset = [JSObjManager getObjWithKey:key];
     NSString* name = dataset.name;
     if (name) {

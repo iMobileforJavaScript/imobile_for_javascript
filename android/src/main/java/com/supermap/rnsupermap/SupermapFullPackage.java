@@ -100,6 +100,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSColorScheme(reactContext));
         modules.add(new JSChartPoint(reactContext));
 
+        modules.add(new JSEnvironment(reactContext));
         modules.add(new LogModule(reactContext));
         return modules;
     }

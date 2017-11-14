@@ -138,7 +138,7 @@ public class JSPolymerChart extends JSChartView {
             promise.reject(e);
         }
     }
-    
+
     @ReactMethod
     public void setColorScheme(String chartId, String schemeId, Promise promise){
         try{

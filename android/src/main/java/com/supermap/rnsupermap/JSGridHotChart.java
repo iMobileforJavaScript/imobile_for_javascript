@@ -22,7 +22,6 @@ import android.os.Looper;
 
 public class JSGridHotChart extends JSChartView {
     private static final String MODULE_NAME = "JSGridHotChart";
-    JSGridHotChart m_GridHotChart;
     ReactApplicationContext m_context;
 
     public JSGridHotChart(ReactApplicationContext context){
@@ -66,7 +65,6 @@ public class JSGridHotChart extends JSChartView {
                     MapView mapView = map.getMapView();
                     MapControl map1 = mapView.getMapControl();
                     GridHotChart hotChart = new GridHotChart(m_context,mapView);
-//                    hotChart = new GridHotChart(this,map.getMapView());
                     String hotChartId = registerId(hotChart);
 
                     WritableMap writeMap = Arguments.createMap();

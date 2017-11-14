@@ -26,7 +26,8 @@ import DsMapInfo from './SMDsMapInfoComponent.js';
 import DsCreatePage from './SMDsCreatePage.js';
 import DsListComponent from './SMOuterListComponent.js';
 import MapListComponent from './SMMapListComponent.js';
-
+//android need
+import Environment from '../Environment.js';
 
 export default class WorkspaceManagerComponent extends Component {
   constructor(props){
@@ -52,6 +53,9 @@ export default class WorkspaceManagerComponent extends Component {
         filePath = await util.appendingHomeDirectory(props.path);
       }else{
         filePath = props.path;
+        var environmentModule = new Environment();
+        await environmentModule.setLicensePath('/SuperMap/license/');
+        await environmentModule.initialization();
       }
       var workspace = await workspaceM.createObj();
       await workspace.open(filePath);     

@@ -104,7 +104,7 @@ export default class Dataset{
      */
     async getName(){
         try{
-            var {name} = await D.getName(this._SMDatasetId);
+            var {name} = await D.DSgetName(this._SMDatasetId);
             return name;
         }catch(e){
             console.error(e);

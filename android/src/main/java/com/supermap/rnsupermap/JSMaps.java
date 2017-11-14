@@ -56,4 +56,18 @@ public class JSMaps extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void getCount(String mapsId,Promise promise){
+        try{
+            m_Maps = mMapList.get(mapsId);
+            int count = m_Maps.getCount();
+
+            WritableMap map = Arguments.createMap();
+            map.putInt("count",count);
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
 }
