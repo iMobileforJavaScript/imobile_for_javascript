@@ -12,6 +12,7 @@ import {
     TouchableHighlight,
     FlatList,
     StyleSheet,
+    Dimensions,
 } from 'react-native';
 
 var itemData = [
@@ -34,10 +35,10 @@ var itemData = [
   {key:'_SMPlot17',id:1003,imageSource:require('./../plotImage/1003.png')},
   {key:'_SMPlot18',id:1004,imageSource:require('./../plotImage/1004.png')},
   {key:'_SMPlot19',id:1005,imageSource:require('./../plotImage/1005.png')},
-  {key:'_SMPlot20',id:1006,imageSource:require('./../plotImage/1006.png')},
-  {key:'_SMPlot20',id:1007,imageSource:require('./../plotImage/1007.png')},
-  {key:'_SMPlot20',id:1008,imageSource:require('./../plotImage/1008.png')},
-  {key:'_SMPlot20',id:1009,imageSource:require('./../plotImage/1009.png')},
+  {key:'_SMPlot21',id:1006,imageSource:require('./../plotImage/1006.png')},
+  {key:'_SMPlot22',id:1007,imageSource:require('./../plotImage/1007.png')},
+  {key:'_SMPlot23',id:1008,imageSource:require('./../plotImage/1008.png')},
+  {key:'_SMPlot24',id:1009,imageSource:require('./../plotImage/1009.png')},
 ];
 export default class SMPlotView extends Component{
   constructor(props) {
@@ -45,36 +46,41 @@ export default class SMPlotView extends Component{
   }
 
   render() {
+    var num
     return (
       <View>
         <FlatList
           ref={(flatList)=>this._flatList = flatList}
           ItemSeparatorComponent={this._separator}
           renderItem={this._renderItem}
-          numColumns ={3}
-          columnWrapperStyle={{borderWidth:2,borderColor:'black',paddingLeft:20}}
-          //horizontal={true}
+          // numColumns ={Dimensions.get('window').width/45}
+          // columnWrapperStyle={{borderWidth:2,borderColor:'black',paddingLeft:20}}
+          horizontal={true}
           data={itemData}/>
       </View>
     );
   }
 
-  _renderItem = (item) => {
+  _renderItem = (Obj) => {
+    console.log(Obj.item.id);
     return (
-      <TouchableHighlight underlayColor="red" onPress={()=>this._buttonPress(item.id)}>
+      <TouchableHighlight underlayColor="red" onPress={()=>this._buttonPress(Obj.item.id)}>
         <View style={{justifyContent: 'center',padding: 5,margin: 3,width: 85,height: 85,backgroundColor: '#F6F6F6',alignItems: 'center',borderWidth: 1,borderRadius: 5,borderColor: '#CCC'}}>
-          <Image style={{width: 45,height: 45}} source={item.imageSource}/>
+          <Image style={{width: 45,height: 45}} source={Obj.item.imageSource}/>
           <Text style={{flex: 1,marginTop: 5,fontWeight: 'bold'}}>
-            {item.id}
+            {Obj.item.id}
           </Text>
         </View>
       </TouchableHighlight>
     );
 }
 
-_buttonPress = () => {
+_buttonPress = (id) => {
+  var libId = this.props.libId;
+  (async function () {
   await (this.props.mapCtr).setAction(3000);
-  await (this.props.mapCtr).setPlotSymbol(this.props.libId,id1);
+  await (this.props.mapCtr).setPlotSymbol(libId,id);
+  }).bind(this)();
 }
 
 _separator = () => {

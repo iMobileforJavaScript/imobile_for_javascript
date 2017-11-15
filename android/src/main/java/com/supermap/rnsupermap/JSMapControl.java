@@ -971,7 +971,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                 @Override
                 public void run() {
                     mMapControl = mapControlList.get(mapControlId);
-                    int libId = (int)mMapControl.addPlotLibrary(url);
+                    int libId = (int)mMapControl.addPlotLibrary(android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+url);
                     promise.resolve(libId);
                 }
             });

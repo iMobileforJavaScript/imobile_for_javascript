@@ -83,7 +83,7 @@ import SMLayerListView from './NativeModule/components/SMLayerListViewUI.js';
 import SMLegendView from './NativeModule/components/SMLegendViewUI.js';
 import SMScaleView from './NativeModule/components/SMScaleViewUI.js';
 import SMSceneView from './NativeModule/components/SMSceneViewUI.js';
-// import SMPlotView from './NativeModule/components/SMPlotViewUI.js';
+import SMPlotView from './NativeModule/components/SMPlotViewUI.js';
 // import SMSearchView from './NativeModule/components/SMSearchViewUI.js';
 import SMBarChartView from './NativeModule/components/SMBarChartViewUI.js';
 import SMLineChartView from './NativeModule/components/SMLineChartViewUI.js';
@@ -105,7 +105,7 @@ export {
     SMLegendView,
     SMScaleView,
     SMSceneView,
-    // SMPlotView,
+    SMPlotView,
     // SMSearchView,
     SMWorkspaceManagerView,
     
