@@ -17,7 +17,7 @@ export default class GridHotChart extends ChartView{
                               set:function(gridHotChartId){
                               this.chartviewId = gridHotChartId;
                               }
-                              })
+                              });
     }
     /**
      * 构造方法

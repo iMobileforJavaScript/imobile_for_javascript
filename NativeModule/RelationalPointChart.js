@@ -76,19 +76,57 @@ export default class RelationalPointChart extends ChartView{
     }
     
     /**
-     * 获取动态效果Image
+     * 设置子关系点颜色
      * @memberOf RelationalPointChart
      * @returns {Promise.<void>}
      */
-/*    async getAnimationImage(){
+    async setChildRelationalPointColor(colorArr){
         try{
-            var {url} = await RPC.getAnimationImage(this.relationalPointChartId);
-            return url;
+            await RPC.setChildRelationalPointColor(this.relationalPointChartId,colorArr);
         }catch(e){
             console.error(e);
         }
     }
-*/
+
+    /**
+     * 设置关系线终点颜色
+     * @memberOf RelationalPointChart
+     * @returns {Promise.<void>}
+     */
+    async setEndPointColor(colorArr){
+        try{
+            await RPC.setEndPointColor(this.relationalPointChartId,colorArr);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 设置子关系点大小
+     * @memberOf RelationalPointChart
+     * @returns {Promise.<void>}
+     */
+    async setChildPointSize(size){
+        try{
+            await RPC.setChildPointSize(this.relationalPointChartId,size);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 设置线宽
+     * @memberOf RelationalPointChart
+     * @returns {Promise.<void>}
+     */
+    async setLineWidth(width){
+        try{
+            await RPC.setLineWidth(this.relationalPointChartId,width);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
     /**
      * 设置刻度调色板
      * @memberOf RelationalPointChart

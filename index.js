@@ -66,6 +66,7 @@ import GridHotChart from './NativeModule/GridHotChart.js';
 import PointDensityChart from './NativeModule/PointDensityChart.js';
 import PolymerChart from './NativeModule/PolymerChart.js';
 import RelationalPointChart from './NativeModule/RelationalPointChart.js';
+import RelationalChartPoint from './NativeModule/RelationalChartPoint.js';
 
 import AMQPManager from './NativeModule/AMQPManager.js';
 import AMQPReceiver from './NativeModule/AMQPReceiver.js';

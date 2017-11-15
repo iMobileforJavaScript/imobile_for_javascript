@@ -14,55 +14,72 @@ import {
     StyleSheet,
 } from 'react-native';
 
-var THUMB_URLS = [
-                  [10,require('./../plotImage/10.png')],
-                  [14,require('./../plotImage/14.png')],
-                  [56,require('./../plotImage/56.png')],
-                  [10100,require('./../plotImage/10100.png')],
-                  [30307,require('./../plotImage/30307.png')],
-                  [30308,require('./../plotImage/30308.png')],
-                  [30502,require('./../plotImage/30502.png')],
-                  [30709,require('./../plotImage/30709.png')],
-                  [40503,require('./../plotImage/40503.png')],
-                  [70100,require('./../plotImage/70100.png')],
-                  [80102,require('./../plotImage/80102.png')],
-                  [80106,require('./../plotImage/80106.png')],
-                  [80400,require('./../plotImage/80400.png')],
-                  [80201,require('./../plotImage/80201.png')],
-                  [1001,require('./../plotImage/1001.png')],
-                  [1002,require('./../plotImage/1002.png')],
-                  [1003,require('./../plotImage/1003.png')],
-                  [1004,require('./../plotImage/1004.png')],
-                  [1005,require('./../plotImage/1005.png')],
-                  [1006,require('./../plotImage/1006.png')],
-                  [1007,require('./../plotImage/1007.png')],
-                  [1008,require('./../plotImage/1008.png')],
-                  [1009,require('./../plotImage/1009.png')],
-                  ];
-
-class SMPlotView extends Component{
-  constructor(props){
+var itemData = [
+  {key:'_SMPlot1',id:10,imageSource:require('./../plotImage/10.png')},
+  {key:'_SMPlot2',id:14,imageSource:require('./../plotImage/14.png')},
+  {key:'_SMPlot3',id:56,imageSource:require('./../plotImage/56.png')},
+  {key:'_SMPlot4',id:10100,imageSource:require('./../plotImage/10100.png')},
+  {key:'_SMPlot5',id:30307,imageSource:require('./../plotImage/30307.png')},
+  {key:'_SMPlot6',id:30308,imageSource:require('./../plotImage/30308.png')},
+  {key:'_SMPlot7',id:30502,imageSource:require('./../plotImage/30502.png')},
+  {key:'_SMPlot8',id:30709,imageSource:require('./../plotImage/30709.png')},
+  {key:'_SMPlot9',id:40503,imageSource:require('./../plotImage/40503.png')},
+  {key:'_SMPlot10',id:70100,imageSource:require('./../plotImage/70100.png')},
+  {key:'_SMPlot11',id:80102,imageSource:require('./../plotImage/80102.png')},
+  {key:'_SMPlot12',id:80106,imageSource:require('./../plotImage/80106.png')},
+  {key:'_SMPlot13',id:80400,imageSource:require('./../plotImage/80400.png')},
+  {key:'_SMPlot14',id:80201,imageSource:require('./../plotImage/80201.png')},
+  {key:'_SMPlot15',id:1001,imageSource:require('./../plotImage/1001.png')},
+  {key:'_SMPlot16',id:1002,imageSource:require('./../plotImage/1002.png')},
+  {key:'_SMPlot17',id:1003,imageSource:require('./../plotImage/1003.png')},
+  {key:'_SMPlot18',id:1004,imageSource:require('./../plotImage/1004.png')},
+  {key:'_SMPlot19',id:1005,imageSource:require('./../plotImage/1005.png')},
+  {key:'_SMPlot20',id:1006,imageSource:require('./../plotImage/1006.png')},
+  {key:'_SMPlot20',id:1007,imageSource:require('./../plotImage/1007.png')},
+  {key:'_SMPlot20',id:1008,imageSource:require('./../plotImage/1008.png')},
+  {key:'_SMPlot20',id:1009,imageSource:require('./../plotImage/1009.png')},
+];
+export default class SMPlotView extends Component{
+  constructor(props) {
     super(props);
-    this.state={
-
-    };
-  }
-
-  _renderItem=({item})=>(
-    <OuterListItem Image={item.Image} Text={item.Text} Index={item.Index} workspace={this.props.workspace}/>
-  );
-
-  _separator=()=>{
-    return <View style={{height:1 / PixelRatio.get(),backgroundColor: '#bbbbbb',marginLeft: 15,}}/>
   }
 
   render() {
     return (
-      <FlatList data={}
-                renderItem={}
-                ItemSeparatorComponent={this._separator}/>
+      <View>
+        <FlatList
+          ref={(flatList)=>this._flatList = flatList}
+          ItemSeparatorComponent={this._separator}
+          renderItem={this._renderItem}
+          numColumns ={3}
+          columnWrapperStyle={{borderWidth:2,borderColor:'black',paddingLeft:20}}
+          //horizontal={true}
+          data={itemData}/>
+      </View>
     );
   }
+
+  _renderItem = (item) => {
+    return (
+      <TouchableHighlight underlayColor="red" onPress={()=>this._buttonPress(item.id)}>
+        <View style={{justifyContent: 'center',padding: 5,margin: 3,width: 85,height: 85,backgroundColor: '#F6F6F6',alignItems: 'center',borderWidth: 1,borderRadius: 5,borderColor: '#CCC'}}>
+          <Image style={{width: 45,height: 45}} source={item.imageSource}/>
+          <Text style={{flex: 1,marginTop: 5,fontWeight: 'bold'}}>
+            {item.id}
+          </Text>
+        </View>
+      </TouchableHighlight>
+    );
+}
+
+_buttonPress = () => {
+  await (this.props.mapCtr).setAction(3000);
+  await (this.props.mapCtr).setPlotSymbol(this.props.libId,id1);
+}
+
+_separator = () => {
+  return <View style={{height:2,backgroundColor:'black'}}/>;
+}
 
 }
 

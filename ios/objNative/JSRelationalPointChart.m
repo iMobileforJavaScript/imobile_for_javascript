@@ -11,6 +11,7 @@
 #import "SuperMap/RelationalPointChart.h"
 #import "SuperMap/Color.h"
 #import "JSObjManager.h"
+#import "NativeUtil.h"
 @implementation JSRelationalPointChart
 RCT_EXPORT_MODULE();
 RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -55,18 +56,49 @@ RCT_REMAP_METHOD(setAnimationImage,setAnimationImageById:(NSString*)chartId URL:
         reject(@"RelationalPointChart",@"set imaage expection",nil);
     }
 }
-/*
-RCT_REMAP_METHOD(getAnimationImage,getAnimationImageById:(NSString*)chartId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+
+RCT_REMAP_METHOD(setChildRelationalPointColor,setChildRelationalPointColorById:(NSString*)chartId colorArr:(NSArray*)arr resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         RelationalPointChart* relationalPointChart = [JSObjManager getObjWithKey:chartId];
-        UIImage* image = relationalPointChart.animationImage;
-        NSNumber* nsAnimation = [NSNumber numberWithBool:isAnimation];
-        resolve(@{@"isAnimation":nsAnimation});
+        Color* color = [NativeUtil smColorTransFromArr:arr];
+        relationalPointChart.childRelationalPointColor = color;
+        resolve([NSNumber numberWithBool:true]);
     } @catch (NSException *exception) {
-        reject(@"RelationalPointChart",@"get Animation expection",nil);
+        reject(@"RelationalPointChart",@"set ChildRelationalPoint Color expection",nil);
     }
 }
- */
+
+RCT_REMAP_METHOD(setEndPointColor,setEndPointColorById:(NSString*)chartId colorArr:(NSArray*)arr resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        RelationalPointChart* relationalPointChart = [JSObjManager getObjWithKey:chartId];
+        Color* color = [NativeUtil smColorTransFromArr:arr];
+        relationalPointChart.endPointColor = color;
+        resolve([NSNumber numberWithBool:true]);
+    } @catch (NSException *exception) {
+        reject(@"RelationalPointChart",@"set EndPoint Color expection",nil);
+    }
+}
+
+RCT_REMAP_METHOD(setChildPointSize,setChildPointSizeById:(NSString*)chartId size:(float)size resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        RelationalPointChart* relationalPointChart = [JSObjManager getObjWithKey:chartId];
+        relationalPointChart.childPointSize = size;
+        resolve([NSNumber numberWithBool:true]);
+    } @catch (NSException *exception) {
+        reject(@"RelationalPointChart",@"set ChildPoint Size expection",nil);
+    }
+}
+
+RCT_REMAP_METHOD(setLineWidth,setLineWidthById:(NSString*)chartId width:(float)width resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        RelationalPointChart* relationalPointChart = [JSObjManager getObjWithKey:chartId];
+        relationalPointChart.lineWidth = width;
+        resolve([NSNumber numberWithBool:true]);
+    } @catch (NSException *exception) {
+        reject(@"RelationalPointChart",@"set Line Width expection",nil);
+    }
+}
+
 RCT_REMAP_METHOD(setColorScheme,setColorSchemeById:(NSString*)chartId colorScheme:(NSString*)colorSchemeId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         RelationalPointChart* relationalPointChart = [JSObjManager getObjWithKey:chartId];
