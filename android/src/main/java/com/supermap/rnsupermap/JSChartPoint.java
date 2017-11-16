@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class JSChartPoint extends ReactContextBaseJavaModule {
     private static final String MODULE_NAME = "JSChartPoint";
-    private static Map<String,ChartPoint> m_ChartPointList = new HashMap<String, ChartPoint>();
+    protected static Map<String,ChartPoint> m_ChartPointList = new HashMap<String, ChartPoint>();
 
     ChartPoint m_ChartPoint;
     public JSChartPoint(ReactApplicationContext context){super(context);}

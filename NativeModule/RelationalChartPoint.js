@@ -11,16 +11,40 @@ import ChartPoint from './ChartPoint.js';
 export default class RelationalChartPoint extends ChartPoint {
     constructor(){
         super();
-        Object.defineProperty(this,'_SMRelationalChartPointId',{
-            get:function(){
-                return this.chartPointId
-            },
-            set:function(_SMRelationalChartPointId){
-                this.chartPointId = _SMRelationalChartPointId;
-            }
-        });
+        Object.defineProperty(this,"_SMRelationalChartPointId",{
+                              get:function(){
+                                return this.chartPointId
+                              },
+                              set:function(_SMRelationalChartPointId){
+                              this.chartPointId = _SMRelationalChartPointId;
+                              }
+                              });
     }
 
+        /**
+     * 创建一个ChartPoint对象
+     * @memberOf ChartData
+     * @param {object}para - para {}
+     * @returns {Promise.<ChartPoint>}
+     */
+    async createObj(weight,x,y){
+        try{
+            if(arguments.length==3){
+                var {_chartpointId} = await RCP.createObj(weight,x,y);
+            }else if(arguments.length==2){
+                var {_chartpointId} = await RCP.createObjByPoint(weight,x.point2DId);
+            }else{
+                console('arguments number should be 3 or 2');
+                return;
+            }
+            var chartPoint = new RelationalChartPoint();
+            chartPoint._SMRelationalChartPointId = _chartpointId;
+            return chartPoint;
+        }catch(e){
+            console.error(e);
+        }
+    }
+   
     /**
      * 获取关系名称
      * @memberOf RelationalChartPoint
@@ -63,6 +87,20 @@ export default class RelationalChartPoint extends ChartPoint {
                 idArr.push(point._SMRelationalChartPointId);
             }
             await RCP.setRelationalPoints(this._SMRelationalChartPointId,idArr);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 添加关系点
+     * @memberOf RelationalChartPoint
+     * @param {Array} pointsArr
+     * @returns {Promise.<Void>}
+     */
+    async addRelationalPoint(point){
+        try{
+            await RCP.addRelationalPoint(this._SMRelationalChartPointId,point._SMRelationalChartPointId);
         }catch(e){
             console.error(e);
         }

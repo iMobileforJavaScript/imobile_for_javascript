@@ -17,18 +17,18 @@ export default class RelationalPointChart extends ChartView{
                               set:function(relationalPointChartId){
                               this.chartviewId = relationalPointChartId;
                               }
-                              })
+                              });
     }
     /**
      * 构造方法
      * @memberOf RelationalPointChart
      * @returns {Promise.<void>}
      */
-    async createObj(){
+    async createObj(mapControl){
         try{
-            var {relationalPointChartId} = await RPC.createObj();
+            var {relationalPointChartId} = await RPC.createObj(mapControl._SMMapControlId);
             var relationalPointChart = new RelationalPointChart();
-            relationalPointChartId.relationalPointChartId = relationalPointChartId;
+            relationalPointChart.relationalPointChartId = relationalPointChartId;
             return relationalPointChart;
         }catch(e){
             console.error(e);

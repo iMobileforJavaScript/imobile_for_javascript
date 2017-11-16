@@ -97,8 +97,12 @@ public class SupermapFullPackage implements ReactPackage {
 
         modules.add(new JSChartView(reactContext));
         modules.add(new JSGridHotChart(reactContext));
+        modules.add(new JSPolymerChart(reactContext));
+        modules.add(new JSPointDensityChart(reactContext));
+        modules.add(new JSRelationalPointChart(reactContext));
         modules.add(new JSColorScheme(reactContext));
         modules.add(new JSChartPoint(reactContext));
+        modules.add(new JSRelationalChartPoint(reactContext));
 
         modules.add(new JSEnvironment(reactContext));
         modules.add(new LogModule(reactContext));

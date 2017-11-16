@@ -6,8 +6,8 @@
 //  Copyright © 2017年 Facebook. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <React/RCTBridgeModule.h>
 
-@interface JSRelationalChartPoint : NSObject
+@interface JSRelationalChartPoint : NSObject<RCTBridgeModule>
 
 @end

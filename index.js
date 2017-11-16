@@ -137,6 +137,7 @@ export {
     PointDensityChart,
     PolymerChart,
     RelationalPointChart,
+    RelationalChartPoint,
     
     Action,
     BufferEndType,

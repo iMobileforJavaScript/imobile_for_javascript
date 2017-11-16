@@ -14,12 +14,23 @@
 #import "NativeUtil.h"
 @implementation JSRelationalPointChart
 RCT_EXPORT_MODULE();
-RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(createObj,createObjByMapControl:(NSString*)mapControlId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        RelationalPointChart* chart = [[RelationalPointChart alloc]init];
-        NSInteger nsKey = (NSInteger)chart;
-        [JSObjManager addObj:chart];
-        resolve(@{@"relationalPointChartId":@(nsKey).stringValue});
+        if([NSThread isMainThread]){
+            MapControl* mapControl = [JSObjManager getObjWithKey:mapControlId];
+            RelationalPointChart* chart = [[RelationalPointChart alloc]initWithMapControl:mapControl];
+            NSInteger nsKey = (NSInteger)chart;
+            [JSObjManager addObj:chart];
+            resolve(@{@"relationalPointChartId":@(nsKey).stringValue});
+        }else{
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                MapControl* mapControl = [JSObjManager getObjWithKey:mapControlId];
+                RelationalPointChart* chart = [[RelationalPointChart alloc]initWithMapControl:mapControl];
+                NSInteger nsKey = (NSInteger)chart;
+                [JSObjManager addObj:chart];
+                resolve(@{@"relationalPointChartId":@(nsKey).stringValue});
+            });
+        }
     } @catch (NSException *exception) {
         reject(@"RelationalPointChart",@"create Obj expection",nil);
     }
@@ -101,10 +112,19 @@ RCT_REMAP_METHOD(setLineWidth,setLineWidthById:(NSString*)chartId width:(float)w
 
 RCT_REMAP_METHOD(setColorScheme,setColorSchemeById:(NSString*)chartId colorScheme:(NSString*)colorSchemeId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        RelationalPointChart* relationalPointChart = [JSObjManager getObjWithKey:chartId];
-        ColorScheme* colorScheme = [JSObjManager getObjWithKey:colorSchemeId];
-        [relationalPointChart setColorScheme:colorScheme];
-        resolve(@"ColorScheme setted");
+        if([NSThread isMainThread]){
+            RelationalPointChart* relationalPointChart = [JSObjManager getObjWithKey:chartId];
+            ColorScheme* colorScheme = [JSObjManager getObjWithKey:colorSchemeId];
+            [relationalPointChart setColorScheme:colorScheme];
+            resolve(@"ColorScheme setted");
+        }else{
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                RelationalPointChart* relationalPointChart = [JSObjManager getObjWithKey:chartId];
+                ColorScheme* colorScheme = [JSObjManager getObjWithKey:colorSchemeId];
+                [relationalPointChart setColorScheme:colorScheme];
+                resolve(@"ColorScheme setted");
+            });
+        }
     } @catch (NSException *exception) {
         reject(@"RelationalPointChart",@"set ColorScheme expection",nil);
     }
