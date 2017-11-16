@@ -10,9 +10,7 @@ import React, { Component } from 'react';
 import{
   Text,
   View,
-  TextInput,
   StyleSheet,
-  Dimensions,
   TouchableHighlight 
 } from 'react-native'
 

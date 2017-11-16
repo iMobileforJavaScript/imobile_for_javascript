@@ -11,13 +11,10 @@
 import React, { Component } from 'react';
 import{ 
   ScrollView,
-  Image,
-  Text,
   View,
   StyleSheet,
   Dimensions,
   PixelRatio,
-  TouchableHighlight 
 } from 'react-native'
 
 import SMScrollPageTwoButton from './SMScrollPageTwoButton';

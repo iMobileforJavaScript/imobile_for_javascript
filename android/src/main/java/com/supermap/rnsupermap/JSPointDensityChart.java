@@ -1,5 +1,8 @@
 package com.supermap.rnsupermap;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -49,17 +52,24 @@ public class JSPointDensityChart extends JSChartView {
     }
 
     @ReactMethod
-    public void createObj(String mapCtrId, Promise promise){
+    public void createObj(final String mapCtrId,final Promise promise){
         try{
-            MapControl mapCtr = JSMapControl.getObjFromList(mapCtrId);
-            com.supermap.mapping.Map map = mapCtr.getMap();
-            MapView mapView = map.getMapView();
-            PointDensityChart pointDensityChart = new PointDensityChart(m_context,mapView);
-            String pointDensityChartId = registerId(pointDensityChart);
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    //已在主线程中，可以更新UI
+                    MapControl mapCtr = JSMapControl.getObjFromList(mapCtrId);
+                    com.supermap.mapping.Map map = mapCtr.getMap();
+                    MapView mapView = map.getMapView();
+                    PointDensityChart pointDensityChart = new PointDensityChart(m_context,mapView);
+                    String pointDensityChartId = registerId(pointDensityChart);
 
-            WritableMap writeMap = Arguments.createMap();
-            writeMap.putString("pointDensityChartId",pointDensityChartId);
-            promise.resolve(writeMap);
+                    WritableMap writeMap = Arguments.createMap();
+                    writeMap.putString("pointDensityChartId",pointDensityChartId);
+                    promise.resolve(writeMap);
+                }
+            });
         }catch (Exception e){
             promise.reject(e);
         }

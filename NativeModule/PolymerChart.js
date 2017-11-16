@@ -75,21 +75,7 @@ export default class PolymerChart extends ChartView{
             console.error(e);
         }
     }
-    
-    /**
-     * 获取未展开聚合点暗色(该方法只支持iOS)
-     * @memberOf PolymerChart
-     * @returns {Promise.<void>}
-     */
-    async getUnfoldColor(){
-        try{
-            var {colorObj} = await PC.getUnfoldColor(this.polymerChartId);
-            return colorObj;
-        }catch(e){
-            console.error(e);
-        }
-    }
-    
+        
     /**
      * 设置展开聚合点亮色
      * @memberOf PolymerChart
@@ -102,21 +88,7 @@ export default class PolymerChart extends ChartView{
             console.error(e);
         }
     }
-    
-    /**
-     * 获取展开聚合点亮色(该方法只支持iOS)
-     * @memberOf PolymerChart
-     * @returns {Promise.<void>}
-     */
-    async getFoldColor(){
-        try{
-            var {colorObj} = await PC.getFoldColor(this.polymerChartId);
-            return colorObj;
-        }catch(e){
-            console.error(e);
-        }
-    }
-    
+        
     /**
      * 设置刻度调色板
      * @memberOf PolymerChart

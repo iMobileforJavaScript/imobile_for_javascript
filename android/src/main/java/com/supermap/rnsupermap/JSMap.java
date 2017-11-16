@@ -483,7 +483,7 @@ public class JSMap extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getCenter(String mapId,String datasetId,Promise promise){
+    public void getCenter(String mapId,Promise promise){
         try{
             Map map = mapList.get(mapId);
             Point2D point2D = map.getCenter();

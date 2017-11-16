@@ -310,6 +310,20 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void closeWorkspace(String workspaceId,Promise promise){
+        try{
+            Workspace workspace = getObjById(workspaceId);
+
+            workspace.close();
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("closed",true);
+            promise.resolve(map);
+        }catch(Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void createDatasource(String workspaceId,String filePath,int engineType,Promise promise){
         try{
             Workspace workspace = getObjById(workspaceId);

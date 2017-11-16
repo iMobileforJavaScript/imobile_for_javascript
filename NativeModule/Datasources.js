@@ -65,7 +65,7 @@ export default class Datasources{
     }
 
     _drepecated(){
-        console.warn("Datasources.js:This class has been deprecated. " +
+        console.warn("Datasources.js:This is private class. " +
             "All its implements has been migrated to the Workspace class." +
             "Relevant modifications refer to the API documents please");
     }

@@ -70,21 +70,6 @@ RCT_REMAP_METHOD(setUnfoldColor,setUnfoldColorById:(NSString*)chartId colorDic:(
     }
 }
 
-RCT_REMAP_METHOD(getUnfoldColor,getUnfoldColorById:(NSString*)chartId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        PolymerChart* polymerChart = [JSObjManager getObjWithKey:chartId];
-        Color* color = polymerChart.unfoldColor;
-        NSNumber* red = [NSNumber numberWithInt:color.red];
-        NSNumber* green = [NSNumber numberWithInt:color.green];
-        NSNumber* blue = [NSNumber numberWithInt:color.blue];
-        NSNumber* alpha = [NSNumber numberWithInt:color.alpha];
-        NSDictionary* colorDic = @{@"red":red,@"green":green,@"blue":blue,@"alpha":alpha};
-        resolve(@{@"colorObj":colorDic});
-    } @catch (NSException *exception) {
-        reject(@"PolymerChart",@"get UnfoldColor expection",nil);
-    }
-}
-
 RCT_REMAP_METHOD(setFoldColor,setFoldColorById:(NSString*)chartId colorDic:(NSDictionary*)colorDic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         PolymerChart* polymerChart = [JSObjManager getObjWithKey:chartId];
@@ -97,21 +82,6 @@ RCT_REMAP_METHOD(setFoldColor,setFoldColorById:(NSString*)chartId colorDic:(NSDi
         resolve(@"foldColor setted");
     } @catch (NSException *exception) {
         reject(@"PolymerChart",@"set foldColor expection",nil);
-    }
-}
-
-RCT_REMAP_METHOD(getFoldColor,getFoldColorById:(NSString*)chartId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        PolymerChart* polymerChart = [JSObjManager getObjWithKey:chartId];
-        Color* color = polymerChart.foldColor;
-        NSNumber* red = [NSNumber numberWithInt:color.red];
-        NSNumber* green = [NSNumber numberWithInt:color.green];
-        NSNumber* blue = [NSNumber numberWithInt:color.blue];
-        NSNumber* alpha = [NSNumber numberWithInt:color.alpha];
-        NSDictionary* colorDic = @{@"red":red,@"green":green,@"blue":blue,@"alpha":alpha};
-        resolve(@{@"colorObj":colorDic});
-    } @catch (NSException *exception) {
-        reject(@"PolymerChart",@"get foldColor expection",nil);
     }
 }
 

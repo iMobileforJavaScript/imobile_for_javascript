@@ -154,4 +154,18 @@ public class JSDataset extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void DSgetName(String datasetId, Promise promise){
+        try{
+            Dataset dataset = m_DatasetList.get(datasetId);
+            String name = dataset.getName();
+
+            WritableMap map = Arguments.createMap();
+            map.putString("name",name);
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
 }

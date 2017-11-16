@@ -31,7 +31,7 @@ RCT_EXPORT_MODULE();
 
 RCT_REMAP_METHOD(createObj,resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Workspace* workspace = [[Workspace alloc]init];
-  NSLog(@"%@",NSHomeDirectory());
+  NSLog(@"__________________%@__________________",NSHomeDirectory());
   if(workspace){
      NSInteger key = (NSInteger)workspace;
     [JSObjManager addObj:workspace];

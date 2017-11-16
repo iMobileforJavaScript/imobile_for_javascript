@@ -3,12 +3,16 @@ package com.supermap.rnsupermap;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.data.Color;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MapView;
 import com.supermap.mapping.imChart.ColorScheme;
@@ -56,17 +60,24 @@ public class JSRelationalPointChart extends JSChartView {
     }
 
     @ReactMethod
-    public void createObj(String mapCtrId, Promise promise){
+    public void createObj(final String mapCtrId,final Promise promise){
         try{
-            MapControl mapCtr = JSMapControl.getObjFromList(mapCtrId);
-            com.supermap.mapping.Map map = mapCtr.getMap();
-            MapView mapView = map.getMapView();
-            RelationPointChart relationChart = new RelationPointChart(m_context,mapView);
-            String relationChartId = registerId(relationChart);
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    //已在主线程中，可以更新UI
+                    MapControl mapCtr = JSMapControl.getObjFromList(mapCtrId);
+                    com.supermap.mapping.Map map = mapCtr.getMap();
+                    MapView mapView = map.getMapView();
+                    RelationPointChart relationChart = new RelationPointChart(m_context,mapView);
+                    String relationChartId = registerId(relationChart);
 
-            WritableMap writeMap = Arguments.createMap();
-            writeMap.putString("RelationalPointChart",relationChartId);
-            promise.resolve(writeMap);
+                    WritableMap writeMap = Arguments.createMap();
+                    writeMap.putString("relationalPointChartId",relationChartId);
+                    promise.resolve(writeMap);
+                }
+            });
         }catch (Exception e){
             promise.reject(e);
         }
@@ -110,12 +121,63 @@ public class JSRelationalPointChart extends JSChartView {
     }
 
     @ReactMethod
-    public void setColorScheme(String chartId, String schemeId, Promise promise){
+    public void setColorScheme(String chartId,String schemeId,Promise promise){
         try{
             RelationPointChart relationPointChart = getObjFromList(chartId);
             ColorScheme colorScheme = JSColorScheme.getObjFromList(schemeId);
             relationPointChart.setColorScheme(colorScheme);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 
+    @ReactMethod
+    public void setChildPointSize(String chartId,float size,Promise promise){
+        try{
+            RelationPointChart relationPointChart = getObjFromList(chartId);
+            relationPointChart.setChildPointSize(size);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setLineWidth(String chartId,float width,Promise promise){
+        try{
+            RelationPointChart relationPointChart = getObjFromList(chartId);
+            relationPointChart.setLineWidth(width);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setEndPointColor(String chartId, ReadableArray colorArr, Promise promise){
+        try{
+            RelationPointChart relationPointChart = getObjFromList(chartId);
+            int red = colorArr.getInt(0);
+            int blue = colorArr.getInt(1);
+            int green = colorArr.getInt(2);
+            Color color = new Color(red,blue,green);
+            relationPointChart.setEndPointColor(color);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setChildRelationalPointColor(String chartId, ReadableArray colorArr, Promise promise){
+        try{
+            RelationPointChart relationPointChart = getObjFromList(chartId);
+            int red = colorArr.getInt(0);
+            int blue = colorArr.getInt(1);
+            int green = colorArr.getInt(2);
+            Color color = new Color(red,blue,green);
+            relationPointChart.setChildRelationalPointColor(color);
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);

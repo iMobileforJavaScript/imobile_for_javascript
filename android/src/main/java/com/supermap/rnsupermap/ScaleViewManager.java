@@ -1,10 +1,14 @@
 package com.supermap.rnsupermap;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.supermap.mapping.Map;
 import com.supermap.mapping.MapControl;
+import com.supermap.mapping.MapView;
 import com.supermap.mapping.ScaleView;
 
 /**
@@ -25,10 +29,10 @@ public class ScaleViewManager extends SimpleViewManager<ScaleView> {
     }
 
     @ReactProp(name="mapControlId")
-    public void setMapControlId(ScaleView view, String mapCtrId){
+    public void setMapControlId(final ScaleView view,final String mapCtrId){
         MapControl mapCtr = JSMapControl.getObjFromList(mapCtrId);
         Map map = mapCtr.getMap();
-        view.setMapView(map.getMapView());
-
+        MapView mapView = map.getMapView();
+        view.setMapView(mapView);
     }
 }

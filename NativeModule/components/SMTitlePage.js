@@ -8,7 +8,6 @@
 
 import React, { Component } from 'react';
 import {
-  AppRegistry,
   StyleSheet,
   Text,
   View,
@@ -18,10 +17,6 @@ import {
 } from 'react-native';
 
 export default class TitlePage extends Component {
-
-  _backBtnPress=()=>{
-    console.log('pressing back button');
-  }
 
   render() {
     return (

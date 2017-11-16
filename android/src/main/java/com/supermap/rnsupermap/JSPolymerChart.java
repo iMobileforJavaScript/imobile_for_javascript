@@ -1,5 +1,8 @@
 package com.supermap.rnsupermap;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -51,17 +54,26 @@ public class JSPolymerChart extends JSChartView {
     }
 
     @ReactMethod
-    public void createObj(String mapCtrId, Promise promise){
+    public void createObj(final String mapCtrId,final Promise promise){
         try{
-            MapControl mapCtr = JSMapControl.getObjFromList(mapCtrId);
-            com.supermap.mapping.Map map = mapCtr.getMap();
-            MapView mapView = map.getMapView();
-            PolymerChart polymerChart = new PolymerChart(m_context,mapView);
-            String polymerChartId = registerId(polymerChart);
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    //已在主线程中，可以更新UI
+                    MapControl mapCtr = JSMapControl.getObjFromList(mapCtrId);
+                    com.supermap.mapping.Map map = mapCtr.getMap();
+                    MapView mapView = map.getMapView();
+                    PolymerChart polymerChart = new PolymerChart(m_context,mapView);
+                    String polymerChartId = registerId(polymerChart);
 
-            WritableMap writeMap = Arguments.createMap();
-            writeMap.putString("polymerChartId",polymerChartId);
-            promise.resolve(writeMap);
+                    WritableMap writeMap = Arguments.createMap();
+                    writeMap.putString("polymerChartId",polymerChartId);
+                    promise.resolve(writeMap);
+                }
+            });
+
+
         }catch (Exception e){
             promise.reject(e);
         }
@@ -100,22 +112,9 @@ public class JSPolymerChart extends JSChartView {
             int red = colorObj.getInt("red");
             int green = colorObj.getInt("green");
             int blue = colorObj.getInt("blue");
-            int alpha = colorObj.getInt("alpha");
-            Color color = new Color(red,green,blue,alpha);
+            Color color = new Color(red,green,blue);
 
             polymerChart.setUnfoldColor(color);
-
-            promise.resolve(true);
-        }catch (Exception e){
-            promise.reject(e);
-        }
-    }
-
-    @ReactMethod
-    public void getUnfoldColor(String chartId, Promise promise){
-        try{
-            //PolymerChart polymerChart = getObjFromList(chartId);
-
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
@@ -133,17 +132,6 @@ public class JSPolymerChart extends JSChartView {
             Color color = new Color(red,green,blue,alpha);
 
             polymerChart.setFoldColor(color);
-
-            promise.resolve(true);
-        }catch (Exception e){
-            promise.reject(e);
-        }
-    }
-
-    @ReactMethod
-    public void getFoldColor(String chartId, Promise promise){
-        try{
-            //PolymerChart polymerChart = getObjFromList(chartId);
 
             promise.resolve(true);
         }catch (Exception e){
