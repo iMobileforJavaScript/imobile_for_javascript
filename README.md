@@ -25,8 +25,8 @@ iMobile for ReactNative is based on ReactNative.Please ensure that you have init
 
 #### Android
 
-3. Add license.
-4. Write and run your project (`^+R`).
+1. Add license.
+2. Write and run your project (`^+R`).
 
 ## Usage
 
