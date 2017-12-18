@@ -35,14 +35,14 @@ For this Example.After install the pack we offered,  You will easily make a proj
 1. Setup the liscense file into the path "./Supermap/licsence".
 2. Setup the Sample Data into a specified path that will be refer as a 
 argument in the function setServer() of WorkspaceConnection object in the next step;
-3. type the follow codes in an initiated React Native Project
+3. type the follow codes in an initiated React Native Project "App.js".
 
 ```javascript
 
 ...
 import {
   Workspace,
-    SMMapView,
+  SMMapView,
 } from 'imobile_for_reactnative';
 
 class XXX extends Component {
@@ -109,8 +109,6 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
 });
-
-AppRegistry.registerComponent('XXX', () => XXX);
 
 ```
   
