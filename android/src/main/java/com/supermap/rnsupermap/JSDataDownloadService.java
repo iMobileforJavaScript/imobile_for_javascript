@@ -1,5 +1,9 @@
 package com.supermap.rnsupermap;
 
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -57,11 +61,16 @@ public class JSDataDownloadService extends JSServiceBase {
     }
 
     @ReactMethod
-    public void download(String dataDownloadServiceId,String fullUrl,int fromIndex,int toIndex,Promise promise){
+    public void download(String dataDownloadServiceId,final String fullUrl,final int fromIndex,final int toIndex,Promise promise){
         try{
-            DataDownloadService dataDownloadService = getObjFromList(dataDownloadServiceId);
-            dataDownloadService.download(fullUrl,fromIndex,toIndex);
-
+            final DataDownloadService dataDownloadService = getObjFromList(dataDownloadServiceId);
+            Handler downLoadHandler = new Handler();
+            downLoadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    dataDownloadService.download(fullUrl,fromIndex,toIndex);
+                }
+            });
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
@@ -69,12 +78,16 @@ public class JSDataDownloadService extends JSServiceBase {
     }
 
     @ReactMethod
-    public void downloadByName(String dataDownloadServiceId,String serviceName,String datasourceName,
-            String datasetName,int fromIndex,int toIndex,Promise promise){
+    public void downloadByName(String dataDownloadServiceId,final String serviceName,final String datasourceName,final String datasetName,final int fromIndex,final int toIndex,Promise promise){
         try{
-            DataDownloadService dataDownloadService = getObjFromList(dataDownloadServiceId);
-            dataDownloadService.download(serviceName,datasourceName,datasetName,fromIndex,toIndex);
-
+            final DataDownloadService dataDownloadService = getObjFromList(dataDownloadServiceId);
+            Handler downLoadHandler = new Handler();
+            downLoadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    dataDownloadService.download(serviceName,datasourceName,datasetName,fromIndex,toIndex);
+                }
+            });
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
@@ -82,11 +95,16 @@ public class JSDataDownloadService extends JSServiceBase {
     }
 
     @ReactMethod
-    public void downloadAll(String dataDownloadServiceId,String fullUrl,Promise promise){
+    public void downloadAll(String dataDownloadServiceId,final String fullUrl,Promise promise){
         try{
-            DataDownloadService dataDownloadService = getObjFromList(dataDownloadServiceId);
-            dataDownloadService.downloadAll(fullUrl);
-
+            final DataDownloadService dataDownloadService = getObjFromList(dataDownloadServiceId);
+            Handler downLoadHandler = new Handler();
+            downLoadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    dataDownloadService.downloadAll(fullUrl);
+                }
+            });
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
@@ -94,12 +112,16 @@ public class JSDataDownloadService extends JSServiceBase {
     }
 
     @ReactMethod
-    public void downloadAllByName(String dataDownloadServiceId,String serviceName,String datasourceName,
-                               String datasetName,Promise promise){
+    public void downloadAllByName(String dataDownloadServiceId,final String serviceName,final String datasourceName,final String datasetName,Promise promise){
         try{
-            DataDownloadService dataDownloadService = getObjFromList(dataDownloadServiceId);
-            dataDownloadService.downloadAll(serviceName,datasourceName,datasetName);
-
+            final DataDownloadService dataDownloadService = getObjFromList(dataDownloadServiceId);
+            Handler downLoadHandler = new Handler();
+            downLoadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    dataDownloadService.downloadAll(serviceName,datasourceName,datasetName);
+                }
+            });
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
@@ -107,12 +129,17 @@ public class JSDataDownloadService extends JSServiceBase {
     }
 
     @ReactMethod
-    public void downloadDataset(String dataDownloadServiceId,String urlDatset,String datasourceId,Promise promise){
+    public void downloadDataset(String dataDownloadServiceId,final String urlDatset,String datasourceId,Promise promise){
         try{
-            DataDownloadService dataDownloadService = getObjFromList(dataDownloadServiceId);
-            Datasource datasource = JSDatasource.m_DatasourceList.get(datasourceId);
-            dataDownloadService.downloadDataset(urlDatset,datasource);
-
+            final DataDownloadService dataDownloadService = getObjFromList(dataDownloadServiceId);
+            final Datasource datasource = JSDatasource.m_DatasourceList.get(datasourceId);
+            Handler downLoadHandler = new Handler();
+            downLoadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    dataDownloadService.downloadDataset(urlDatset,datasource);
+                }
+            });
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
@@ -120,12 +147,17 @@ public class JSDataDownloadService extends JSServiceBase {
     }
 
     @ReactMethod
-    public void updateDataset(String dataDownloadServiceId,String urlDatset,String datasetId,Promise promise){
+    public void updateDataset(String dataDownloadServiceId,final String urlDatset,String datasetId,Promise promise){
         try{
-            DataDownloadService dataDownloadService = getObjFromList(dataDownloadServiceId);
-            Dataset dataset = JSDataset.getObjById(datasetId);
-            dataDownloadService.updateDataset(urlDatset,(DatasetVector)dataset);
-
+            final DataDownloadService dataDownloadService = getObjFromList(dataDownloadServiceId);
+            final Dataset dataset = JSDataset.getObjById(datasetId);
+            Handler downLoadHandler = new Handler();
+            downLoadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    dataDownloadService.updateDataset(urlDatset,(DatasetVector)dataset);
+                }
+            });
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);

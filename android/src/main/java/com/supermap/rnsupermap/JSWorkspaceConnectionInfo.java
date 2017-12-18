@@ -198,7 +198,7 @@ public class JSWorkspaceConnectionInfo extends ReactContextBaseJavaModule {
         try {
             mWorkspaceConnectionInfo = mObjLise.get(id);
             if (mWorkspaceConnectionInfo != null){
-                mWorkspaceConnectionInfo.setServer(android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+value);
+                mWorkspaceConnectionInfo.setServer(value);
             }else{
                 promise.reject("","WorkspaceConnectionInfo can`t be found.");
             }

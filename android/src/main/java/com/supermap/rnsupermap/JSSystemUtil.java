@@ -22,16 +22,17 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
         return REACT_CLASS;
     }
 
-    @ReactMethod
-    public void moveUp(String mapId,String name,Promise promise){
-        try{
-            String homeDirectory= android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+@ReactMethod
+public void getHomeDirectory(Promise promise){
+    try{
+        String homeDirectory= android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString();
 
-            WritableMap map = Arguments.createMap();
-            map.putString("homeDirectory",homeDirectory);
-        }catch (Exception e){
-            promise.reject(e);
-        }
+        WritableMap map = Arguments.createMap();
+        map.putString("homeDirectory",homeDirectory);
+        promise.resolve(map);
+    }catch (Exception e){
+        promise.reject(e);
     }
+}
 }
 
