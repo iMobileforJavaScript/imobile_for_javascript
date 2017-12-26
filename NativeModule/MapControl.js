@@ -826,7 +826,7 @@ export default class MapControl{
     }
 
     /**
-     * 添加对象修改前监听器
+     * 添加量算回调监听器
      * @memberOf MapControl
      * @param events - events:{lengthMeasured: e => {...},areaMeasured: e => {...},e => {...},angleMeasured: e => {...}}
      * lengthMeasured 长度量算结果。 e:{curResult:--, curPoint:{x:--,y--}
