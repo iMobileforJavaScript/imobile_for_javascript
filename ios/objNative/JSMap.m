@@ -351,6 +351,27 @@ RCT_REMAP_METHOD(zoom,zoomByKey:(NSString*)key andRatio:(double)ratio resolver:(
     }
 }
 
+RCT_REMAP_METHOD(getScale,getScaleByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Map* map = [JSObjManager getObjWithKey:key];
+    if(map){
+        double scale = map.scale;
+        NSNumber* nsScale = [NSNumber numberWithDouble:scale];
+        resolve(@{@"scale":nsScale});
+    }else{
+        reject(@"Map",@"zoom failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(setScale,map:(NSString*)key setScale:(double)scale resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Map* map = [JSObjManager getObjWithKey:key];
+    if(map){
+        map.scale = scale;
+        resolve([NSNumber numberWithBool:true]);
+    }else{
+        reject(@"Map",@"zoom failed!!!",nil);
+    }
+}
+
 RCT_REMAP_METHOD(addLayer,addLayerById:(NSString*)mapId andDatasetId:(NSString*)dsId andHead:(BOOL)head resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Map* map = [JSObjManager getObjWithKey:mapId];
     Dataset* dataset = [JSObjManager getObjWithKey:dsId];

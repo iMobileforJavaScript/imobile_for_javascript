@@ -433,6 +433,33 @@ public class JSMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void getScale(String mapId,Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            Double scale =  map.getScale();
+
+            WritableMap _map = Arguments.createMap();
+            _map.putDouble("scale",scale);
+
+            promise.resolve(_map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setScale(String mapId,double scale,Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            map.setScale(scale);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
     
     @ReactMethod
     public void getLayerByName(String mapId,String layerName,Promise promise){
