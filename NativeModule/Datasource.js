@@ -94,7 +94,7 @@ export default class Datasource{
             }else{
                 var {datasetVectorId} = await D.createDatasetVectorDirectly(this._SMDatasourceId,nameOrInfoObj,datasetType,encodeType);
                 var datasetVector = new DatasetVector();
-                datasetVector._SMDatasetVector = datasetVectorId;
+                datasetVector._SMDatasetVectorId = datasetVectorId;
                 return datasetVector;
             }
         }catch(e){

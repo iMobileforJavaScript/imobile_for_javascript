@@ -5,6 +5,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.supermap.analyst.BufferAnalyst;
@@ -59,7 +60,7 @@ public class JSBufferAnalyst extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void createLineOneSideMultiBuffer(String sourceDatasetId, String resultDatasetId,
-                                             WritableNativeArray arrBufferRadius, int bufferRadiusUnit, int semicircleSegment, Boolean isLeft, Boolean isUnion, Boolean isAttributeRetained,Boolean isRing, Promise promise){
+                                             ReadableArray arrBufferRadius, int bufferRadiusUnit, int semicircleSegment, Boolean isLeft, Boolean isUnion, Boolean isAttributeRetained, Boolean isRing, Promise promise){
         try{
             DatasetVector source = JSDatasetVector.getObjFromList(sourceDatasetId);
             DatasetVector result = JSDatasetVector.getObjFromList(resultDatasetId);
@@ -68,7 +69,7 @@ public class JSBufferAnalyst extends ReactContextBaseJavaModule {
             ArrayList listArr = arrBufferRadius.toArrayList();
             Object[] objArr = listArr.toArray();
             double[] doubleArr = new double[objArr.length];
-            for (int i = 0; i<objArr.length-1;i++){
+            for (int i = 0; i<=objArr.length-1;i++){
                 doubleArr[i] = (double)objArr[i];
             }
             Boolean isCreate = BufferAnalyst.createLineOneSideMultiBuffer(source,result,doubleArr,unit,semicircleSegment,isLeft,isUnion,isAttributeRetained,isRing);
@@ -83,7 +84,7 @@ public class JSBufferAnalyst extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void createMultiBuffer(String sourceDatasetId, String resultDatasetId,
-                                             WritableNativeArray arrBufferRadius, int bufferRadiusUnit, int semicircleSegment, Boolean isUnion, Boolean isAttributeRetained,Boolean isRing, Promise promise){
+                                  ReadableArray arrBufferRadius, int bufferRadiusUnit, int semicircleSegment, Boolean isUnion, Boolean isAttributeRetained,Boolean isRing, Promise promise){
         try{
             DatasetVector source = JSDatasetVector.getObjFromList(sourceDatasetId);
             DatasetVector result = JSDatasetVector.getObjFromList(resultDatasetId);
@@ -92,7 +93,7 @@ public class JSBufferAnalyst extends ReactContextBaseJavaModule {
             ArrayList listArr = arrBufferRadius.toArrayList();
             Object[] objArr = listArr.toArray();
             double[] doubleArr = new double[objArr.length];
-            for (int i = 0; i<objArr.length-1;i++){
+            for (int i = 0; i<=objArr.length-1;i++){
                 doubleArr[i] = (double)objArr[i];
             }
             Boolean isCreate = BufferAnalyst.createMultiBuffer(source,result,doubleArr,unit,semicircleSegment,isUnion,isAttributeRetained,isRing);
