@@ -19,7 +19,7 @@ public class SceneViewManager extends SimpleViewManager<SceneControl> {
 
     ThemedReactContext m_ThemedReactContext;
     SceneControl mSceneControl;
-    N_R_EventSender n_r_eventSender = new N_R_EventSender();
+    final N_R_EventSender n_r_eventSender = new N_R_EventSender();
 
     @Override
     public String getName(){
@@ -31,24 +31,23 @@ public class SceneViewManager extends SimpleViewManager<SceneControl> {
         Environment.initialization(reactContext.getBaseContext());
         m_ThemedReactContext = reactContext;
         mSceneControl = new SceneControl(m_ThemedReactContext);
-        String sceneControlId = JSSceneControl.registerId(mSceneControl);
-//        mSceneControl.sceneControlInitedComplete(new SceneControl.SceneControlInitedCallBackListenner() {
-//            @Override
-//            public void onSuccess(String s) {
-//
-//            }
-//        });
+        final String sceneControlId = JSSceneControl.registerId(mSceneControl);
         n_r_eventSender.putString("sceneControlId",sceneControlId);
         return mSceneControl;
     }
 
     @ReactProp(name="returnId")
-    public void returnId(SceneControl view, boolean b){
-        //向JS返回MapView的ID
-        m_ThemedReactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-                view.getId(),
-                "topChange",
-                n_r_eventSender.createSender()
-        );
+    public void returnId(final SceneControl view, boolean b){
+        //向JS返回MapView的ID（必须在scenecontrol初始化后返回，否则会提示getScene（）红屏）
+        view.sceneControlInitedComplete(new SceneControl.SceneControlInitedCallBackListenner() {
+            @Override
+            public void onSuccess(String s) {
+                m_ThemedReactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
+                        view.getId(),
+                        "topChange",
+                        n_r_eventSender.createSender()
+                );
+            }
+        });
     }
 }
