@@ -451,6 +451,35 @@ export default class Map{
         }
     }
 
+       /**
+     * 获取地图比例尺。
+     * @memberOf Map
+     * @returns {Promise.<number>} 
+     */
+    async getScale( ){
+        try{
+            let {scale} = await M.getScale(this._SMMapId);
+            return scale;
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+       /**
+     * 设置地图比例尺。
+     * @memberOf Map
+     * @param {double} scale - 缩放地图比例，此值不可以为负。
+     * @returns {Promise.<void>}
+     */
+    async setScale(scale){
+        try{
+            if(scale < 0) throw new Error("Scale can`t be nagative.");
+            await M.setScale(this._SMMapId,scale);
+        }catch(e){
+            console.error(e);
+        }
+    }
+
     /**
      * 用于把一个数据集添加到此图层集合作为一个普通图层显示，即创建一个普通图层。其风格由系统默认设置。
      * @memberOf Map

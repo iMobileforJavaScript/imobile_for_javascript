@@ -10,9 +10,12 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.RNUtils.JsonUtil;
+import com.supermap.data.CoordSysTranslator;
 import com.supermap.data.Dataset;
 import com.supermap.data.Point;
 import com.supermap.data.Point2D;
+import com.supermap.data.Point2Ds;
+import com.supermap.data.PrjCoordSys;
 import com.supermap.data.Rectangle2D;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Layer;
@@ -236,9 +239,13 @@ public class JSMap extends ReactContextBaseJavaModule {
     public void setCenter(String mapId,String point2DId,Promise promise){
         try{
             Map map = mapList.get(mapId);
+            PrjCoordSys sys = map.getPrjCoordSys();
             Point2D point2D = JSPoint2D.m_Point2DList.get(point2DId);
-            map.setCenter(point2D);
-            
+            Point2Ds arr2d = new Point2Ds();
+            arr2d.add(point2D);
+            CoordSysTranslator.forward(arr2d,sys);
+            map.setCenter(arr2d.getItem(0));
+            map.refresh();
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
@@ -428,6 +435,33 @@ public class JSMap extends ReactContextBaseJavaModule {
             Map map = mapList.get(mapId);
             map.zoom(ratio);
             
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getScale(String mapId,Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            Double scale =  map.getScale();
+
+            WritableMap _map = Arguments.createMap();
+            _map.putDouble("scale",scale);
+
+            promise.resolve(_map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setScale(String mapId,double scale,Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            map.setScale(scale);
+
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);

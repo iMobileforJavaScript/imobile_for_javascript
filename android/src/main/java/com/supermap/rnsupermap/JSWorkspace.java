@@ -171,6 +171,11 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
                 dsInfo.setDriver(driver);
             }
 
+            if(jsonObject.hasKey("alias")){
+                String alias = jsonObject.getString("alias");
+                dsInfo.setAlias(alias);
+            }
+
             Datasource ds = workspace.getDatasources().open(dsInfo);
             if(ds != null){
                 String datasourceId = JSDatasource.registerId(ds);

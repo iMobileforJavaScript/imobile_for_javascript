@@ -23,7 +23,7 @@ export default class SceneControl {
         try{
             var {sceneId} = await SC.getScene(this.sceneControlId);
             var scene = new Scene();
-            scene.sceneId = sceneId;
+            scene._SMSceneId = sceneId;
 
             return scene;
         }catch (e){
