@@ -81,7 +81,6 @@ public class JSSceneControl extends ReactContextBaseJavaModule {
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                             .emit(LONGPRESS_EVENT,map);
                 }
-
                 public boolean onScroll(MotionEvent e1, MotionEvent e2,
                                         float distanceX, float distanceY){
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)

@@ -43,8 +43,13 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSDataUploadService(reactContext));
         modules.add(new JSFeature(reactContext));
         modules.add(new JSFeatureSet(reactContext));
+        modules.add(new JSFeature3D(reactContext));
+        modules.add(new JSFeature3Ds(reactContext));
+        modules.add(new JSGeometry3D(reactContext));
         modules.add(new JSLayers(reactContext));
         modules.add(new JSLayer(reactContext));
+        modules.add(new JSLayer3D(reactContext));
+        modules.add(new JSLayer3Ds(reactContext));
         modules.add(new JSLayerSetting(reactContext));
         modules.add(new JSLayerSettingVector(reactContext));
         modules.add(new JSLocationManager(reactContext));

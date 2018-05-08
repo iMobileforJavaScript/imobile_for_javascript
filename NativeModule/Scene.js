@@ -7,6 +7,7 @@
 import {NativeModules} from 'react-native';
 let S = NativeModules.JSScene;
 import Workspace from './Workspace';
+import Layer3Ds from './Layer3Ds';
 /**
  * @class Scene
  * @description 三维场景类。
@@ -38,6 +39,23 @@ export default class Scene {
             workspace._SMWorkspaceId = workspaceId;
 
             return workspace;
+        }catch (e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 返回3D图层集合对象。
+     * @memberOf Scene
+     * @returns {Promise.<Workspace>}
+     */
+    async getLayer3Ds(){
+        try{
+            var {layer3dsId} = await S.getLayer3Ds(this._SMSceneId);
+            var layer3ds = new Layer3Ds();
+            layer3ds._SMLayer3DsId = layer3dsId;
+
+            return layer3ds;
         }catch (e){
             console.error(e);
         }

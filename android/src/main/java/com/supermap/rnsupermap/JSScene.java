@@ -10,6 +10,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.JsonUtil;
 import com.supermap.data.Rectangle2D;
 import com.supermap.data.Workspace;
+import com.supermap.realspace.Layer3Ds;
 import com.supermap.realspace.Scene;
 
 import java.util.Calendar;
@@ -125,6 +126,21 @@ public class JSScene extends ReactContextBaseJavaModule {
 
             WritableMap map = Arguments.createMap();
             map.putString("workspaceId",workspaceId);
+            promise.resolve(map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getLayer3Ds(String sceneControlId, Promise promise){
+        try{
+            m_Scene = getObjFromList(sceneControlId);
+            Layer3Ds layer3Ds = m_Scene.getLayers();
+            String layer3DId = JSLayer3Ds.registerId(layer3Ds);
+
+            WritableMap map = Arguments.createMap();
+            map.putString("layer3dsId",layer3DId);
             promise.resolve(map);
         }catch (Exception e){
             promise.reject(e);
