@@ -14,7 +14,7 @@ export default class Feature3Ds {
     /**
      * 获取三维要素。
      * @memberOf Feature3Ds
-     * @returns {Feature3D}
+     * @returns {Object}
      */
     async get(index) {
         try {
@@ -27,6 +27,22 @@ export default class Feature3Ds {
                 object = new Feature3Ds();
                 object._SMFeature3DsId = objectId;
             }
+            return object;
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    /**
+     * 根据给定的三维要素对象ID以及指定的查询选项，查找并返回三维要素对象。
+     * @memberOf Feature3Ds
+     * @returns {Feature3D}
+     */
+    async findFeature(index) {
+        try {
+            var {objectId} = await FS.findFeature(this._SMFeature3DsId, index);
+            var object = new Feature3D();
+            object._SMFeature3DId = objectId;
             return object;
         } catch (e) {
             console.error(e);

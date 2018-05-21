@@ -148,6 +148,21 @@ public class JSScene extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void flyToPoint(String sceneControlId,String point3DId , Promise promise){
+        try{
+            m_Scene = getObjFromList(sceneControlId);
+            Layer3Ds layer3Ds = m_Scene.getLayers();
+            String layer3DId = JSLayer3Ds.registerId(layer3Ds);
+
+            WritableMap map = Arguments.createMap();
+            map.putString("layer3dsId",layer3DId);
+            promise.resolve(map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void refresh(String sceneControlId, Promise promise){
         try{
             m_Scene = getObjFromList(sceneControlId);

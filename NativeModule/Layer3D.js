@@ -73,4 +73,31 @@ export default class Layer3D {
             console.error(e);
         }
     }
+
+    /**
+     * 设置指定OSGB模型ID队列的模型颜色。
+     * @memberOf Layer3D
+     * @returns {void}
+     */
+    async setObjectsColor(index, r, g, b, a) {
+        try {
+            await L.setObjectsColor(this._SMLayer3DId, index, r, g, b, a);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    /**
+     * 设置指定OSGB模型ID队列的模型是否可见。
+     * @memberOf Layer3D
+     * @returns {number}
+     */
+    async setObjectsVisible(index,visable) {
+        try {
+            var { lon } = await L.setObjectsVisible(this._SMLayer3DId,index,visable);
+            return lon;
+        } catch (e) {
+            console.error(e);
+        }
+    }
 }

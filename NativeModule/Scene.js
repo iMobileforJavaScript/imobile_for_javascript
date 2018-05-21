@@ -62,6 +62,32 @@ export default class Scene {
     }
 
     /**
+     * 飞到point3d位置。
+     * @memberOf Scene
+     * @returns {Promise.<Workspace>}
+     */
+    async flyToPoint(point){
+        try{
+            await S.flyToPoint(this._SMSceneId,point._SMPoint3DId);
+        }catch (e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 飞到指定相机位置。
+     * @memberOf Scene
+     * @returns {Promise.<Workspace>}
+     */
+    async flyToCamera(camera,altitude,isDirect){
+        try{
+            await S.flyToCamera(this._SMSceneId,camera._SMCameraId,altitude,isDirect);
+        }catch (e){
+            console.error(e);
+        }
+    }
+
+    /**
      * 根据提供的场景名称打开三维地图
      * @memberOf Scene
      * @param {string} [iserverUrl,] sceneName [,password] - 只有一个参数时： 场景名称。

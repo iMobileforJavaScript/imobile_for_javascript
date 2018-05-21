@@ -6,7 +6,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.data.Color;
 import com.supermap.realspace.Layer3D;
+import com.supermap.realspace.Layer3DOSGBFile;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -96,6 +98,29 @@ public class JSLayer3D extends ReactContextBaseJavaModule {
             WritableMap map = Arguments.createMap();
             map.putBoolean("isRelease",isRelease);
             promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setObjectsColor(String layer3DId,Integer index,Integer red,Integer green,Integer blue,Integer alpha,Promise promise){
+        try{
+            Layer3DOSGBFile mLayerOSGB =(Layer3DOSGBFile)JSLayer3D.mLayer3DList.get(layer3DId);
+            Color color = new Color(red,green,blue,alpha);
+            int[] x ={index};
+            mLayerOSGB.setObjectsColor(x,color);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setObjectsVisible(String layer3DId,Integer index,boolean visable,Promise promise){
+        try{
+            Layer3DOSGBFile mLayerOSGB =(Layer3DOSGBFile)JSLayer3D.mLayer3DList.get(layer3DId);
+            int[] x ={index};
+            mLayerOSGB.setObjectsVisible(x,visable);
         }catch(Exception e){
             promise.reject(e);
         }

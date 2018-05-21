@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.realspace.Feature3D;
+import com.supermap.realspace.Feature3DSearchOption;
 import com.supermap.realspace.Feature3Ds;
 
 import java.util.Calendar;
@@ -62,6 +63,18 @@ public class JSFeature3Ds extends ReactContextBaseJavaModule {
             map.putString("objectId",id);
             map.putString("type",type);
             promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void findFeature(String feature3DsId,Integer index,Promise promise){
+        try{
+            mFeature3Ds = mFeature3DsList.get(feature3DsId);
+            Feature3D feature = mFeature3Ds.findFeature(index,Feature3DSearchOption.ALLFEATURES);
+            
+//            promise.resolve(map);
         }catch(Exception e){
             promise.reject(e);
         }
