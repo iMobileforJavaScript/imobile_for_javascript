@@ -101,10 +101,10 @@ export default class Scene {
                 var {opened} = await S.open(this._SMSceneId,arguments[0]);
                 return opened;
             }else if(arguments.length == 2){
-                var {opened} = await S.open2(this._SMSceneId,arguments[0],arguments[1]);
+                var {opened} = await S.open1(this._SMSceneId,arguments[0],arguments[1]);
                 return opened;
             }else if(arguments.length == 3){
-                var {opened} = await S.open3(this._SMSceneId,arguments[0],arguments[1],arguments[2]);
+                var {opened} = await S.open2(this._SMSceneId,arguments[0],arguments[1],arguments[2]);
                 return opened;
             }else{
                 throw new Error("Scene opened Error: Please input 1-3 arguments.read the specification please")

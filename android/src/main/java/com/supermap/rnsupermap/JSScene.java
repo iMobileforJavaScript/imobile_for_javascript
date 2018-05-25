@@ -8,8 +8,10 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.JsonUtil;
+import com.supermap.data.Point3D;
 import com.supermap.data.Rectangle2D;
 import com.supermap.data.Workspace;
+import com.supermap.realspace.Camera;
 import com.supermap.realspace.Layer3Ds;
 import com.supermap.realspace.Scene;
 
@@ -151,12 +153,19 @@ public class JSScene extends ReactContextBaseJavaModule {
     public void flyToPoint(String sceneControlId,String point3DId , Promise promise){
         try{
             m_Scene = getObjFromList(sceneControlId);
-            Layer3Ds layer3Ds = m_Scene.getLayers();
-            String layer3DId = JSLayer3Ds.registerId(layer3Ds);
+            Point3D point = JSPoint3D.getObjFromList(point3DId);
+            m_Scene.flyToPoint(point);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 
-            WritableMap map = Arguments.createMap();
-            map.putString("layer3dsId",layer3DId);
-            promise.resolve(map);
+    @ReactMethod
+    public void flyToCamera(String sceneControlId,String cameraId ,int alt,boolean isDir, Promise promise){
+        try{
+            m_Scene = getObjFromList(sceneControlId);
+            Camera camera = JSCamera.getObjFromList(cameraId);
+            m_Scene.flyToCamera(camera,alt,isDir);
         }catch (Exception e){
             promise.reject(e);
         }

@@ -38,15 +38,21 @@ public class JSCamera extends ReactContextBaseJavaModule{
         return id;
     }
 
+    public static Camera getObjFromList(String id) {
+        return mCameraList.get(id);
+    }
+
     @Override
     public String getName(){
         return REACT_CLASS;
     }
 
     @ReactMethod
-    public void createObj(double lon,double lat,double alt,Promise promise){
+    public void createObj(double lon,double lat,double alt,double heading,double tilt,Promise promise){
         try{
             Camera camrea = new Camera(lon,lat,alt);
+            camrea.setHeading(heading);
+            camrea.setTilt(tilt);
             String cameraId = JSCamera.registerId(camrea);
             WritableMap map = Arguments.createMap();
             map.putString("cameraId",cameraId);

@@ -15,9 +15,9 @@ export default class Camera {
      * @memberOf Camera
      * @returns {Camera}
      */
-    async createObj(lon, lat, alt) {
+    async createObj(lon, lat, alt, heading, tilt) {
         try {
-            var { cameraId } = await C.createObj(lon, lat, alt);
+            var { cameraId } = await C.createObj(lon, lat, alt, heading, tilt);
             var camera = new Camera();
             camera._SMCameraId = cameraId;
             return camera;

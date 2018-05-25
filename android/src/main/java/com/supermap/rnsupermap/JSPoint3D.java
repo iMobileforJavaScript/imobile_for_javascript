@@ -38,6 +38,10 @@ public class JSPoint3D extends ReactContextBaseJavaModule{
         return id;
     }
 
+    public static Point3D getObjFromList(String id) {
+        return mPoint3DList.get(id);
+    }
+
     @Override
     public String getName(){
         return REACT_CLASS;
