@@ -76,6 +76,15 @@ import STOMPReceiver from './NativeModule/STOMPReceiver.js';
 import STOMPSender from './NativeModule/STOMPSender.js';
 import MQTTClientSide from './NativeModule/MQTTClientSide.js';
 
+import Layer3Ds from './NativeModule/Layer3Ds';
+import Layer3D from './NativeModule/Layer3D';
+import Feature3D from './NativeModule/Feature3D';
+import Feature3Ds from './NativeModule/Feature3Ds';
+import Geometry3D from './NativeModule/Geometry3D';
+import Point3D from './NativeModule/Point3D';
+import Camera from './NativeModule/Camera';
+import Layer3DOSGBFile from './NativeModule/Layer3DOSGBFile';
+
 import Utility from './NativeModule/utility/utility.js';
 
 import SMMapView from './NativeModule/components/SMMapViewUI.js';
@@ -110,6 +119,15 @@ export {
     SMWorkspaceManagerView,
     
     Utility,
+
+    Layer3Ds,
+    Layer3D,
+    Feature3D,
+    Feature3Ds,
+    Geometry3D,
+    Point3D,
+    Camera,
+    Layer3DOSGBFile,
     
     AMQPManager,
     AMQPReceiver,

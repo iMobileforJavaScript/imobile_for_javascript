@@ -27,6 +27,7 @@ export default class SceneControl {
 
             return scene;
         }catch (e){
+            
             console.error(e);
         }
     }

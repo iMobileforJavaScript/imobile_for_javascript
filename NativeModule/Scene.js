@@ -7,6 +7,7 @@
 import {NativeModules} from 'react-native';
 let S = NativeModules.JSScene;
 import Workspace from './Workspace';
+import Layer3Ds from './Layer3Ds';
 /**
  * @class Scene
  * @description 三维场景类。
@@ -44,6 +45,49 @@ export default class Scene {
     }
 
     /**
+     * 返回3D图层集合对象。
+     * @memberOf Scene
+     * @returns {Promise.<Workspace>}
+     */
+    async getLayer3Ds(){
+        try{
+            var {layer3dsId} = await S.getLayer3Ds(this._SMSceneId);
+            var layer3ds = new Layer3Ds();
+            layer3ds._SMLayer3DsId = layer3dsId;
+
+            return layer3ds;
+        }catch (e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 飞到point3d位置。
+     * @memberOf Scene
+     * @returns {Promise.<Workspace>}
+     */
+    async flyToPoint(point){
+        try{
+            await S.flyToPoint(this._SMSceneId,point._SMPoint3DId);
+        }catch (e){
+            console.error(e);
+        }
+    }
+
+    /**
+     * 飞到指定相机位置。
+     * @memberOf Scene
+     * @returns {Promise.<Workspace>}
+     */
+    async flyToCamera(camera,altitude,isDirect){
+        try{
+            await S.flyToCamera(this._SMSceneId,camera._SMCameraId,altitude,isDirect);
+        }catch (e){
+            console.error(e);
+        }
+    }
+
+    /**
      * 根据提供的场景名称打开三维地图
      * @memberOf Scene
      * @param {string} [iserverUrl,] sceneName [,password] - 只有一个参数时： 场景名称。
@@ -57,10 +101,10 @@ export default class Scene {
                 var {opened} = await S.open(this._SMSceneId,arguments[0]);
                 return opened;
             }else if(arguments.length == 2){
-                var {opened} = await S.open2(this._SMSceneId,arguments[0],arguments[1]);
+                var {opened} = await S.open1(this._SMSceneId,arguments[0],arguments[1]);
                 return opened;
             }else if(arguments.length == 3){
-                var {opened} = await S.open3(this._SMSceneId,arguments[0],arguments[1],arguments[2]);
+                var {opened} = await S.open2(this._SMSceneId,arguments[0],arguments[1],arguments[2]);
                 return opened;
             }else{
                 throw new Error("Scene opened Error: Please input 1-3 arguments.read the specification please")

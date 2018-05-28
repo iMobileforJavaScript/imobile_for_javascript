@@ -33,6 +33,7 @@ public class SupermapFullPackage implements ReactPackage {
             ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new JSCallOut(reactContext));
+        modules.add(new JSCamera(reactContext));
         modules.add(new JSDataset(reactContext));
         modules.add(new JSDatasets(reactContext));
         modules.add(new JSDatasource(reactContext));
@@ -43,8 +44,14 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSDataUploadService(reactContext));
         modules.add(new JSFeature(reactContext));
         modules.add(new JSFeatureSet(reactContext));
+        modules.add(new JSFeature3D(reactContext));
+        modules.add(new JSFeature3Ds(reactContext));
+        modules.add(new JSGeometry3D(reactContext));
         modules.add(new JSLayers(reactContext));
         modules.add(new JSLayer(reactContext));
+        modules.add(new JSLayer3D(reactContext));
+        modules.add(new JSLayer3Ds(reactContext));
+        modules.add(new JSLayer3DOSGBFile(reactContext));
         modules.add(new JSLayerSetting(reactContext));
         modules.add(new JSLayerSettingVector(reactContext));
         modules.add(new JSLocationManager(reactContext));
@@ -60,6 +67,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSOverlayAnalystParameter(reactContext));
         modules.add(new JSPoint(reactContext));
         modules.add(new JSPoint2D(reactContext));
+        modules.add(new JSPoint3D(reactContext));
         modules.add(new JSQueryParameter(reactContext));
         modules.add(new JSRectangle2D(reactContext));
         modules.add(new JSRecordset(reactContext));

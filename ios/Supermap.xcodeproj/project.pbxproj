@@ -106,6 +106,7 @@
 		FFF203E41EBC707000DA9A1F /* JSPieChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF203E31EBC707000DA9A1F /* JSPieChartData.m */; };
 		FFF203E71EBC7AEA00DA9A1F /* JSLineChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF203E61EBC7AEA00DA9A1F /* JSLineChartData.m */; };
 		FFF203EA1EBC99F600DA9A1F /* JSChartPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF203E91EBC99F600DA9A1F /* JSChartPoint.m */; };
+		FFF803EF209D423900FA57AA /* JSLayer3Ds.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF803EE209D423900FA57AA /* JSLayer3Ds.m */; };
 		FFFC46C41F20339300F5DDA4 /* JSBarChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFC46C31F20339300F5DDA4 /* JSBarChartViewManager.m */; };
 /* End PBXBuildFile section */
 
@@ -321,6 +322,8 @@
 		FFF203E61EBC7AEA00DA9A1F /* JSLineChartData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLineChartData.m; path = objNative/JSLineChartData.m; sourceTree = "<group>"; };
 		FFF203E81EBC99F600DA9A1F /* JSChartPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSChartPoint.h; path = objNative/JSChartPoint.h; sourceTree = "<group>"; };
 		FFF203E91EBC99F600DA9A1F /* JSChartPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSChartPoint.m; path = objNative/JSChartPoint.m; sourceTree = "<group>"; };
+		FFF803ED209D423900FA57AA /* JSLayer3Ds.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSLayer3Ds.h; path = objNative/JSLayer3Ds.h; sourceTree = "<group>"; };
+		FFF803EE209D423900FA57AA /* JSLayer3Ds.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSLayer3Ds.m; path = objNative/JSLayer3Ds.m; sourceTree = "<group>"; };
 		FFFC46C21F20339300F5DDA4 /* JSBarChartViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBarChartViewManager.h; path = objNative/JSBarChartViewManager.h; sourceTree = "<group>"; };
 		FFFC46C31F20339300F5DDA4 /* JSBarChartViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBarChartViewManager.m; path = objNative/JSBarChartViewManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -429,6 +432,8 @@
 				FF3308F41F1C99E700712398 /* JSTimeLine.m */,
 				FFD50D551EA9E67E00C5F209 /* JSScene.h */,
 				FFD50D561EA9E67E00C5F209 /* JSScene.m */,
+				FFF803ED209D423900FA57AA /* JSLayer3Ds.h */,
+				FFF803EE209D423900FA57AA /* JSLayer3Ds.m */,
 				FFD50D641EA9F7BD00C5F209 /* JSSceneControl.h */,
 				FFD50D651EA9F7BD00C5F209 /* JSSceneControl.m */,
 				FF1FC4B71F53FD23004791DC /* JSSceneView.h */,
@@ -640,6 +645,7 @@
 				FFD1F0201E31E22200CACDC5 /* JSDatasetVectorInfo.m in Sources */,
 				FFD1F0211E31E22200CACDC5 /* JSDatasource.m in Sources */,
 				FF0583831ED65F590095978A /* JSLegendViewManager.m in Sources */,
+				FFF803EF209D423900FA57AA /* JSLayer3Ds.m in Sources */,
 				FFD1F03A1E31E22200CACDC5 /* JSPrjCoordSys.m in Sources */,
 				FFD1F03F1E31E22200CACDC5 /* JSSelection.m in Sources */,
 				FFD1F0381E31E22200CACDC5 /* JSPoint.m in Sources */,
