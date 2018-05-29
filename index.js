@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-let Action = NativeModules.JSAction;
+let Action = NativeModules.JSAction;//this is action 5.29
 let BufferEndType = NativeModules.JSBufferEndType;
 let RadiusUnit = NativeModules.JSRadiusUnit;
 let EncodeType = NativeModules.JSEncodeType;
