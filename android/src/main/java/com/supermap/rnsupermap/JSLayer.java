@@ -9,6 +9,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.supermap.data.Dataset;
 import com.supermap.data.Recordset;
 import com.supermap.mapping.Layer;
+import com.supermap.mapping.LayerGroup;
 import com.supermap.mapping.LayerSetting;
 import com.supermap.mapping.LayerSettingImage;
 import com.supermap.mapping.LayerSettingVector;
@@ -46,6 +47,11 @@ public class JSLayer extends ReactContextBaseJavaModule {
     @Override
     public String getName(){
         return REACT_CLASS;
+    }
+
+    public static Layer getLayer(String layerId) {
+        Layer layer = mLayerList.get(layerId);
+        return layer;
     }
 
     @ReactMethod
@@ -186,11 +192,40 @@ public class JSLayer extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void isSnapable(String layerId,Promise promise){
+        try{
+            Layer layer = mLayerList.get(layerId);
+            boolean isSnapable = layer.isSnapable();
+
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("isSnapable",isSnapable);
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setSnapable(String layerId,boolean b,Promise promise){
+        try{
+            Layer layer = mLayerList.get(layerId);
+            layer.setSnapable(b);
+
+            promise.resolve(true);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void getAdditionalSetting(String layerId,Promise promise){
         try{
             int typeNum;
             Layer layer = mLayerList.get(layerId);
+            System.out.println("========getAdditionalSetting========");
             LayerSetting layerSetting = layer.getAdditionalSetting();
+            System.out.println("========getAdditionalSetting=====layerSetting===");
+            System.out.println("============layerSetting Type===" + layerSetting);
             String layerSettingId = JSLayerSetting.registerId(layerSetting);
             if (layerSetting instanceof LayerSettingVector){
                 typeNum = 0;
@@ -220,4 +255,34 @@ public class JSLayer extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void getParentGroup(String layerId,Promise promise){
+        try{
+            Layer layer = mLayerList.get(layerId);
+            LayerGroup layerGroup = layer.getParentGroup();
+            String layerGroupId = JSLayer.registerId(layerGroup);
+
+            WritableMap map = Arguments.createMap();
+            map.putString("layerGroupId", layerGroupId);
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+//    @ReactMethod
+//    public void ungroup(String layerGroupId,Promise promise){
+//        try{
+//            LayerGroup layer = mLayerList.get(layerGroupId);
+//            LayerGroup layerGroup = layer.getParentGroup();
+//            String layerGroupId = JSLayer.registerId(layerGroup);
+//
+//            WritableMap map = Arguments.createMap();
+//            map.putString("layerGroupId", layerGroupId);
+//            promise.resolve(map);
+//        }catch(Exception e){
+//            promise.reject(e);
+//        }
+//    }
 }

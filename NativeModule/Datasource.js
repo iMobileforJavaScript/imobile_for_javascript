@@ -19,6 +19,16 @@ import PrjCoordSys from './PrjCoordSys.js';
  * @property {number} DatasourceEncrytionType - 数据集存储时的压缩编码方式 DEFAULT | AES
  */
 export default class Datasource{
+    
+    async getAlias() {
+        try {
+          var { alias } = await D.getAlias(this._SMDatasourceId);
+  
+          return alias;
+        } catch(e){
+          console.error(e);
+        }
+    }
 
     /**
      * 获取数据集集合。

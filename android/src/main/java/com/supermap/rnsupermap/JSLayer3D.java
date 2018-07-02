@@ -46,6 +46,20 @@ public class JSLayer3D extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void getName(String layer3DId,Promise promise) {
+        try{
+            mLayer3D = mLayer3DList.get(layer3DId);
+            String layer3DName = mLayer3D.getName();
+
+            WritableMap map = Arguments.createMap();
+            map.putString("layer3DName",layer3DName);
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void updateData(String layer3DId,Promise promise){
         try{
         //android 端无此接口
@@ -97,6 +111,19 @@ public class JSLayer3D extends ReactContextBaseJavaModule {
             boolean isRelease = mLayer3D.isReleaseWhenInvisible();
             WritableMap map = Arguments.createMap();
             map.putBoolean("isRelease",isRelease);
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getObjectsColorCount(String layer3DId, Promise promise){
+        try{
+            Layer3DOSGBFile mLayerOSGB =(Layer3DOSGBFile)JSLayer3D.mLayer3DList.get(layer3DId);
+            Integer count = mLayerOSGB.getObjectsColorCount();
+            WritableMap map = Arguments.createMap();
+            map.putInt("count",count);
             promise.resolve(map);
         }catch(Exception e){
             promise.reject(e);

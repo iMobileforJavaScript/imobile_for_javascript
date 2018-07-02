@@ -6,19 +6,25 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.RNUtils.JsonUtil;
 import com.supermap.data.CoordSysTranslator;
 import com.supermap.data.Dataset;
+import com.supermap.data.DatasetType;
+import com.supermap.data.Enum;
 import com.supermap.data.Point;
 import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.Rectangle2D;
 import com.supermap.data.Workspace;
+import com.supermap.mapping.Action;
 import com.supermap.mapping.Layer;
+import com.supermap.mapping.LayerGroup;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.Map;
 import com.supermap.mapping.MapLoadedListener;
@@ -152,6 +158,21 @@ public class JSMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void getLayerByName(String mapId,String layerName,Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            Layer layer = map.getLayers().get(layerName);
+            String layerId = JSLayer.registerId(layer);
+
+            WritableMap map1 = Arguments.createMap();
+            map1.putString("layerId",layerId);
+            promise.resolve(map1);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
     
     @ReactMethod
     public void addDataset(String mapId,String datasetId,boolean addToHead,Promise promise){
@@ -193,6 +214,96 @@ public class JSMap extends ReactContextBaseJavaModule {
             
             promise.resolve(map);
         }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取根据类型分组的图层
+     * @param mapId
+     * @param promise
+     */
+    @ReactMethod
+    public void getLayersWithType(String mapId,Promise promise){
+        try{
+            m_Map = mapList.get(mapId);
+            Layers layers = m_Map.getLayers();
+            int count = layers.getCount();
+            WritableMap typesMap = Arguments.createMap();
+            HashMap temp = new HashMap(); // ReadableArray 无法更新，用词此代替
+
+            for (int i = 0; i < count; i++) {
+                Layer layer = layers.get(i);
+                Dataset dataset = layer.getDataset();
+                String datasetType = dataset.getType().toString();
+                int type = Enum.getValueByName(DatasetType.class, datasetType);
+
+                if (temp.get(type) == null || temp.get(type) == "") {
+                    WritableArray arr = Arguments.createArray();
+                    String layerId = JSLayer.registerId(layer);
+                    WritableMap wMap = new Arguments().createMap();
+                    wMap.putString("id", layerId);
+                    wMap.putInt("type", type);
+                    wMap.putInt("index", i);
+                    wMap.putString("name", dataset.getName());
+                    arr.pushMap(wMap);
+                    temp.put(type, arr);
+                } else {
+                    WritableArray arr = (WritableArray) temp.get(type);
+                    String layerId = JSLayer.registerId(layer);
+
+                    WritableMap wMap = new Arguments().createMap();
+                    wMap.putString("id", layerId);
+                    wMap.putInt("type", type);
+                    wMap.putInt("index", i);
+                    wMap.putString("name", dataset.getName());
+                    arr.pushMap(wMap);
+                }
+            }
+
+            for (Object key : temp.keySet()) {
+                WritableArray arr = (WritableArray) temp.get(key);
+                typesMap.putArray(key.toString(), arr);
+            }
+
+            promise.resolve(typesMap);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据类型查找图层
+     * @param mapId
+     * @param type
+     * @param promise
+     */
+    @ReactMethod
+    public void getLayersByType(String mapId, int type, Promise promise){
+        try{
+            m_Map = mapList.get(mapId);
+            Layers layers = m_Map.getLayers();
+            int count = layers.getCount();
+            WritableArray arr = Arguments.createArray();
+            for (int i = 0; i < count; i++) {
+                Layer layer = layers.get(i);
+                Dataset dataset = layer.getDataset();
+                String datasetType = dataset.getType().toString();
+                int intType = Enum.getValueByName(DatasetType.class, datasetType);
+                if (intType == type) {
+                    String layerId = JSLayer.registerId(layer);
+
+                    WritableMap wMap = new Arguments().createMap();
+                    wMap.putString("id", layerId);
+                    wMap.putInt("type", type);
+                    wMap.putInt("index", i);
+                    wMap.putString("name", dataset.getName());
+                    arr.pushMap(wMap);
+                }
+            }
+
+            promise.resolve(arr);
+        }catch (Exception e){
             promise.reject(e);
         }
     }
@@ -467,22 +578,7 @@ public class JSMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
-    
-    @ReactMethod
-    public void getLayerByName(String mapId,String layerName,Promise promise){
-        try{
-            Map map = mapList.get(mapId);
-            Layer layer = map.getLayers().get(layerName);
-            String layerId = JSLayer.registerId(layer);
-            
-            WritableMap map1 = Arguments.createMap();
-            map1.putString("layerId",layerId);
-            promise.resolve(map1);
-        }catch (Exception e){
-            promise.reject(e);
-        }
-    }
-    
+
     @ReactMethod
     public void addLayer(String mapId,String datasetId,boolean addToHead,Promise promise){
         try{
@@ -564,11 +660,33 @@ public class JSMap extends ReactContextBaseJavaModule {
     }
     
     @ReactMethod
-    public void contains(String mapId,String datasetId,String name,Promise promise){
+    public void contains(String mapId,String name,Promise promise){
         try{
             Map map = mapList.get(mapId);
             Boolean isContain = map.getLayers().contains(name);
             
+            WritableMap map1 = Arguments.createMap();
+            map1.putBoolean("isContain",isContain);
+            promise.resolve(map1);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void containsCaption(String mapId, String caption, String datasourceName, Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            int count = map.getLayers().getCount();
+            Boolean isContain = false;
+
+            for(int i = 0; i < count; i++) {
+                String layerCaption = map.getLayers().get(i).getCaption();
+                if (layerCaption.indexOf(caption + "@" + datasourceName) >= 0) {
+                    isContain = true;
+                }
+            }
+
             WritableMap map1 = Arguments.createMap();
             map1.putBoolean("isContain",isContain);
             promise.resolve(map1);
@@ -606,4 +724,47 @@ public class JSMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+/*****************************************LayerGroup***********************************************/
+
+    @ReactMethod
+    public void addLayerGroup(String mapId, String datasetId, String groupName, Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            LayerGroup layerGroup = map.getLayers().addGroup(groupName);
+            Dataset dataset = JSDataset.getObjById(datasetId);
+            Layer layer = map.getLayers().add(dataset, true);
+            map.getLayers().insertGroup(0, groupName);
+            layerGroup.add(layer);
+            String layerId = JSLayer.registerId(layerGroup);
+
+            WritableMap map1 = Arguments.createMap();
+            map1.putString("layerGroupId",layerId);
+            promise.resolve(map1);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+//    @ReactMethod
+//    public void addLayerToGroup(String mapId, String layerId, String groupName, Promise promise){
+//        try{
+//            Map map = mapList.get(mapId);
+//            LayerGroup layerGroup = map.getLayers().addGroup(groupName);
+//            for (int i = 0; i < datasetIds.length; i++) {
+//                Dataset dataset = JSDataset.getObjById(datasetIds[i]);
+//                Layer layer = map.getLayers().add(dataset, true);
+//                map.getLayers().insertGroup(i, groupName);
+//                layerGroup.add(layer);
+//            }
+//            String layerId = JSLayer.registerId(layerGroup);
+//
+//            WritableMap map1 = Arguments.createMap();
+//            map1.putString("layerGroupId",layerId);
+//            promise.resolve(map1);
+//        }catch (Exception e){
+//            promise.reject(e);
+//        }
+//    }
+
 }

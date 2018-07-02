@@ -5,11 +5,16 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.data.Dataset;
+import com.supermap.data.Enum;
+import com.supermap.data.DatasetType;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Layers;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -99,5 +104,4 @@ public class JSLayers extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
-
 }

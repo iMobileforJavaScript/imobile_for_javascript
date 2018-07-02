@@ -13,16 +13,22 @@ import Point from '../Point';
 import SystemUtil from '../SystemUtil';
 
 exports.Point2Map = async function (map,x, y) {
-    var pointFac = new Point();
-    var point = await pointFac.createObj(x,y);
-    var mapPoint = await map.pixelToMap(point);
+    let pointFac = new Point();
+    let point = await pointFac.createObj(x,y);
+    let mapPoint = await map.pixelToMap(point);
 
     return mapPoint;
 }
 
 exports.appendingHomeDirectory = async function (path) {
-    var util = new SystemUtil();
-    var homeDirectory = await util.getHomeDirectory();
-    var newPath = homeDirectory + path;
+    let util = new SystemUtil();
+    let homeDirectory = await util.getHomeDirectory();
+    let newPath = homeDirectory + path;
     return newPath;
+}
+
+exports.getDirectoryContent = async function (path) {
+  let util = new SystemUtil();
+  let directories = await util.getDirectoryContent(path);
+  return directories;
 }

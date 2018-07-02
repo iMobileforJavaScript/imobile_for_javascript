@@ -58,7 +58,7 @@ export default class Map{
             var layer = new Layer();
             if(typeof layerIndex == "string"){
                 var {layerId} = await M.getLayerByName(this._SMMapId,layerIndex);
-            }else{
+          }else{
                 var {layerId} = await M.getLayer(this._SMMapId,layerIndex);
             }
             layer._SMLayerId = layerId;
@@ -67,6 +67,34 @@ export default class Map{
             console.error(e);
         }
     }
+  
+  /**
+   * 获取根据类型分组的图层
+   * @returns {Promise}
+   */
+  async getLayersWithType() {
+    try {
+      let layers =  await M.getLayersWithType(this._SMMapId);
+      
+      return layers
+    } catch(e) {
+      console.error(e);
+    }
+  }
+  
+  /**
+   * 根据类型查找图层
+   * @returns {Promise}
+   */
+  async getLayersByType(type) {
+    try {
+      let layers =  await M.getLayersByType(this._SMMapId, type);
+      
+      return layers
+    } catch(e) {
+      console.error(e);
+    }
+  }
 
     /**
      * 用于把一个数据集添加到此地图作为一个普通图层显示，即创建一个普通图层。(@deprecated)
@@ -497,6 +525,27 @@ export default class Map{
             console.error(e);
         }
     }
+  
+  /**
+   * 新建一个图层组，并将数据集集合添加到图层组中
+   * @param datasets
+   * @param groupName
+   * @returns {Promise.<Layer>}
+   */
+    async addLayerGroup(datasets, groupName) {
+      try{
+        let datasetsIds = []
+        for(let i = 0; i < datasets.length; i++) {
+          datasetsIds.push(datasets._SMDatasetId)
+        }
+        var {layerId} = await M.addLayerGroup(this._SMMapId, datasetsIds);
+        var layer = new Layer();
+        layer._SMLayerId = layerId;
+        return layer;
+      }catch(e){
+        console.error(e);
+      }
+    }
 
     /**
      * 用于将一个数据集添加到此图层集合作为一个专题图层显示，即创建一个专题图层，并指定专题图层的专题图对象。
@@ -549,6 +598,21 @@ export default class Map{
     async contains(name){
         try{
             var {isContain} = await M.contains(this._SMMapId,name);
+            return isContain;
+        }catch(e){
+            console.error(e);
+        }
+    }
+  
+  /**
+   * 判断地图是否包含某个名字的数据集。(比较Caption)
+   * @param name  -  数据集名称
+   * @param datasourceName  - 数据源名称
+   * @returns {Promise.<Promise.isContain>}
+   */
+    async containsCaption(name, datasourceName){
+        try{
+            var {isContain} = await M.containsCaption(this._SMMapId, name, datasourceName);
             return isContain;
         }catch(e){
             console.error(e);

@@ -29,6 +29,23 @@ const nativeEvt = new NativeEventEmitter(MC);
  CREATEPOINT:在可编辑图层上点击式绘点。
  CREATEPOLYLINE:在可编辑图层中点击式绘直线。
  CREATEPOLYGON:在可编辑图层中点击式绘多边形。
+ ERASE_REGION                 // 擦除面对象
+ SPLIT_BY_LINE                // 使用线切分
+ UNION_REGION                 // 面与面合并
+ COMPOSE_REGION               // 面与面组合
+ PATCH_HOLLOW_REGION          // 切割岛洞多边形
+ INTERSECT_REGION             // 填充导洞对象
+ FILL_HOLLOW_REGION           // 求交面对象
+ PATCH_POSOTIONAL_REGION      // 多对象补洞
+ MOVE_COMMON_NODE             // 公共点编辑(协调编辑)
+ CREATE_POSITIONAL_REGION     // 公共边构面
+ SPLIT_BY_DRAWLINE            // 面被线分割（手绘式）
+ DRAWREGION_HOLLOW_REGION     // 手绘岛洞面（手绘式）
+ DRAWREGION_ERASE_REGION      // 面被面擦除(手绘式)
+ SPLIT_BY_DRAWREGION          // 面被面分割(手绘式)
+ MOVE_GEOMETRY                // 平移对象
+ MULTI_SELECT                 // 多选对象
+ SWIPE                        // 卷帘模式
  */
 export default class MapControl{
 
@@ -449,6 +466,40 @@ export default class MapControl{
                 case 199 : actionStr = 'FREEDRAW';
                     break;
                 case 3000 : actionStr = 'CREATEPLOT';
+                    break;
+                case 201 : actionStr = 'ERASE_REGION';
+                    break;
+                case 202 : actionStr = 'SPLIT_BY_LINE';
+                    break;
+                case 203 : actionStr = 'UNION_REGION';
+                    break;
+                case 204 : actionStr = 'COMPOSE_REGION';
+                    break;
+                case 205 : actionStr = 'PATCH_HOLLOW_REGION';
+                    break;
+                case 207 : actionStr = 'INTERSECT_REGION';
+                    break;
+                case 206 : actionStr = 'FILL_HOLLOW_REGION';
+                    break;
+                case 208 : actionStr = 'PATCH_POSOTIONAL_REGION';
+                    break;
+                case 209 : actionStr = 'MOVE_COMMON_NODE';
+                    break;
+                case 210 : actionStr = 'CREATE_POSITIONAL_REGION';
+                    break;
+                case 215 : actionStr = 'SPLIT_BY_DRAWLINE';
+                    break;
+                case 216 : actionStr = 'DRAWREGION_HOLLOW_REGION';
+                    break;
+                case 217 : actionStr = 'DRAWREGION_ERASE_REGION';
+                    break;
+                case 218 : actionStr = 'SPLIT_BY_DRAWREGION';
+                    break;
+                case 301 : actionStr = 'MOVE_GEOMETRY';
+                    break;
+                case 305 : actionStr = 'MULTI_SELECT';
+                    break;
+                case 501 : actionStr = 'SWIPE';
                     break;
                 default : throw new Error("Unknown Action Type");
             }

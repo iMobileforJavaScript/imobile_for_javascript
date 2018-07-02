@@ -16,6 +16,7 @@ import com.supermap.realspace.SceneControl;
 public class SceneViewManager extends SimpleViewManager<SceneControl> {
 
     public static final String REACT_CLASS="RCTSceneView";
+    private final String sdcard = android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString();
 
     ThemedReactContext m_ThemedReactContext;
     SceneControl mSceneControl;
@@ -28,11 +29,20 @@ public class SceneViewManager extends SimpleViewManager<SceneControl> {
 
     @Override
     public SceneControl createViewInstance(ThemedReactContext reactContext){
+        Environment.setLicensePath(sdcard + "/SuperMap/license/");
         Environment.initialization(reactContext.getBaseContext());
+        System.out.println("==========iTablet==========SceneViewManager================");
         m_ThemedReactContext = reactContext;
+        System.out.println("==========iTablet==========SceneViewManager========m_ThemedReactContext========" + m_ThemedReactContext);
         mSceneControl = new SceneControl(m_ThemedReactContext);
+        System.out.println("==========iTablet==========SceneViewManager========mSceneControl========" + mSceneControl);
+
         final String sceneControlId = JSSceneControl.registerId(mSceneControl);
+        System.out.println("==========iTablet==========SceneViewManager=======sceneControlId=========" + sceneControlId);
+
         n_r_eventSender.putString("sceneControlId",sceneControlId);
+        System.out.println("==========iTablet==========SceneViewManager=======sceneControlId=========" + n_r_eventSender);
+
         return mSceneControl;
     }
 

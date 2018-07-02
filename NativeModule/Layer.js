@@ -4,12 +4,14 @@
  E-mail: pridehao@gmail.com
  
  **********************************************************************************/
-import {NativeModules} from 'react-native';
-let L = NativeModules.JSLayer;
-import Dataset from './Dataset.js';
-import Selection from './Selection.js';
-import LayerSetting from './LayerSetting.js';
-import LayerSettingVector from './LayerSettingVector.js';
+import {NativeModules} from 'react-native'
+let L = NativeModules.JSLayer
+import Dataset from './Dataset.js'
+import Selection from './Selection.js'
+import LayerSetting from './LayerSetting.js'
+import LayerSettingVector from './LayerSettingVector.js'
+import LayerSettingGrid from './LayerSettingGrid'
+import LayerSettingImage from './LayerSettingImage'
 
 /**
  * @class Layer
@@ -24,9 +26,9 @@ export default class Layer{
      */
     async setEditable(editable){
         try{
-            await L.setEditable(this._SMLayerId,editable);
+            await L.setEditable(this._SMLayerId,editable)
         }catch(e){
-            console.error(e);
+            console.error(e)
         }
     }
     /**
@@ -36,10 +38,10 @@ export default class Layer{
      */
     async getEditable(){
         try{
-            var{isEditable} = await L.getEditable(this._SMLayerId);
-            return isEditable;
+            var{isEditable} = await L.getEditable(this._SMLayerId)
+            return isEditable
         }catch(e){
-            console.error(e);
+            console.error(e)
         }
     }
 
@@ -50,10 +52,10 @@ export default class Layer{
      */
     async getName(){
         try{
-            var {layerName} = await L.getName(this._SMLayerId);
-            return layerName;
+            var {layerName} = await L.getName(this._SMLayerId)
+            return layerName
         }catch(e){
-            console.error(e);
+            console.error(e)
         }
     }
 
@@ -64,12 +66,12 @@ export default class Layer{
      */
     async getDataset(){
         try{
-            var {datasetId} = await L.getDataset(this._SMLayerId);
-            var dataset = new Dataset();
-            dataset._SMDatasetId = datasetId;
-            return dataset;
+            var {datasetId} = await L.getDataset(this._SMLayerId)
+            var dataset = new Dataset()
+            dataset._SMDatasetId = datasetId
+            return dataset
         }catch(e){
-            console.error(e);
+            console.error(e)
         }
     }
 
@@ -81,9 +83,9 @@ export default class Layer{
      */
     async setDataset(dataset){
         try{
-            await L.setDataset(this._SMLayerId,dataset._SMDatasetId);
+            await L.setDataset(this._SMLayerId,dataset._SMDatasetId)
         }catch(e){
-            console.error(e);
+            console.error(e)
         }
     }
 
@@ -94,13 +96,13 @@ export default class Layer{
      */
     async getSelection(){
         try{
-            var {selectionId,recordsetId} = await L.getSelection(this._SMLayerId);
-            var selection = new Selection();
-            selection._SMSelectionId = selectionId;
-            selection._SMRecordsetId = recordsetId;
-            return selection;
+            var {selectionId,recordsetId} = await L.getSelection(this._SMLayerId)
+            var selection = new Selection()
+            selection._SMSelectionId = selectionId
+            selection._SMRecordsetId = recordsetId
+            return selection
         }catch(e){
-            console.error(e);
+            console.error(e)
         }
     }
 
@@ -112,9 +114,9 @@ export default class Layer{
      */
     async setSelectable(b){
         try{
-            await L.setSelectable(this._SMLayerId,b);
+            await L.setSelectable(this._SMLayerId,b)
         }catch(e){
-            console.error(e);
+            console.error(e)
         }
     }
     
@@ -126,10 +128,10 @@ export default class Layer{
      */
     async isSelectable(){
         try{
-            var{selectable} = await L.isSelectable(this._SMLayerId);
-            return selectable;
+            var{selectable} = await L.isSelectable(this._SMLayerId)
+            return selectable
         }catch(e){
-            console.error(e);
+            console.error(e)
         }
     }
     
@@ -140,10 +142,10 @@ export default class Layer{
      */
     async getVisible(){
         try{
-            var isVisible = await L.getVisible(this._SMLayerId);
-            return isVisible;
+            var isVisible = await L.getVisible(this._SMLayerId)
+            return isVisible
         }catch(e){
-            console.error(e);
+            console.error(e)
         }
     }
 
@@ -155,11 +157,37 @@ export default class Layer{
      */
     async setVisible(b){
         try{
-            await L.setVisible(this._SMLayerId,b);
+            await L.setVisible(this._SMLayerId,b)
         }catch(e){
-            console.error(e);
+            console.error(e)
         }
     }
+  
+  /**
+   * 获取此图层是否可捕捉
+   * @returns {Promise}
+   */
+  async isSnapable(){
+    try{
+      var isSnapable = await L.isSnapable(this._SMLayerId)
+      return isSnapable
+    }catch(e){
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 设置此图层是否可捕捉，false不可捕捉， true可捕捉
+   * @param isSnapable
+   * @returns {Promise.<void>}
+   */
+  async setSnapable(isSnapable){
+    try{
+      await L.setSnapable(this._SMLayerId, isSnapable)
+    }catch(e){
+      console.error(e)
+    }
+  }
 
     /**
      * 返回普通图层的风格设置。LayerSettingVector 类用来对矢量数据图层风格进行设置和修改。
@@ -168,19 +196,24 @@ export default class Layer{
      */
     async getAdditionalSetting(){
         try{
-            var layerSetting;
-            var {_layerSettingId_,type} = await L.getAdditionalSetting(this._SMLayerId);
-            if(type===0){
-            layerSetting = new LayerSettingVector();
-            layerSetting._SMLayerSettingVectorId = _layerSettingId_;
-            }else if(type===1){
-            //image
+            var layerSetting
+            var {_layerSettingId_,type} = await L.getAdditionalSetting(this._SMLayerId)
+            debugger
+            if(type ===0 ){
+                layerSetting = new LayerSettingVector()
+                layerSetting._SMLayerSettingId = _layerSettingId_
+            }else if(type === 1){
+                //image
+                layerSetting = new LayerSettingImage()
+                layerSetting._SMLayerSettingId = _layerSettingId_
             }else{
-            //grid
+                //grid
+                layerSetting = new LayerSettingGrid()
+                layerSetting._SMLayerSettingId = _layerSettingId_
             }
-            return layerSetting;
+            return layerSetting
         }catch(e){
-            console.error(e);
+            console.error(e)
         }
     }
 
@@ -192,9 +225,9 @@ export default class Layer{
      */
     async setAdditionalSetting(layerSetting){
         try{
-            await L.setAdditionalSetting(this._SMLayerId,layerSetting._SMLayerSettingId);
+            await L.setAdditionalSetting(this._SMLayerId,layerSetting._SMLayerSettingId)
         }catch(e){
-            console.error(e);
+            console.error(e)
         }
     }
 }

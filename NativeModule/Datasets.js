@@ -12,7 +12,6 @@ import Recordset from './Recordset.js';
 
 /**
  * @class Datasets
- * @deprecated
  * @description 数据集集合类。提供对数据集的管理功能，如创建、删除、重命名等操作。
  */
 export default class Datasets{
@@ -24,7 +23,7 @@ export default class Datasets{
      * @returns {Promise.<Dataset>}
      */
     async get(index){
-        this._drepecated();
+        // this._drepecated();
         try{
             var dataset = new Dataset();
             if(typeof index != "string"){
@@ -39,6 +38,16 @@ export default class Datasets{
             console.error(e);
         }
     }
+    
+    async getCount(){
+        // this._drepecated();
+        try{
+            var { count } = await D.getCount(this._SMDatasetsId);
+            return count;
+        }catch(e){
+            console.error(e);
+        }
+    }
 
     /**
      * 返回一个数据源中未被使用的数据集的名称。
@@ -47,7 +56,7 @@ export default class Datasets{
      * @returns {Promise.<string>}
      */
     async getAvailableDatasetName(name){
-        this._drepecated();
+        // this._drepecated();
         try{
             var {datasetName} = await D.getAvailableDatasetName(this._SMDatasetsId,name);
             return datasetName;
@@ -64,7 +73,7 @@ export default class Datasets{
      * @returns {Promise.<DatasetVector>}
      */
     async create(datasetVectorInfo){
-        this._drepecated();
+        // this._drepecated();
         try{
             var {datasetVectorId} = await D.create(this._SMDatasetsId,datasetVectorInfo._SMDatasetVectorInfoId);
             var datasetVector = new DatasetVector();
@@ -75,9 +84,9 @@ export default class Datasets{
         }
     }
 
-    _drepecated(){
-        console.warn("Datasets.js:This class has been deprecated. " +
-            "All its implements has been migrated to the Datasource class." +
-            "Relevant modifications refer to the API documents please");
-    }
+    // _drepecated(){
+    //     console.warn("Datasets.js:This class has been deprecated. " +
+    //         "All its implements has been migrated to the Datasource class." +
+    //         "Relevant modifications refer to the API documents please");
+    // }
 }

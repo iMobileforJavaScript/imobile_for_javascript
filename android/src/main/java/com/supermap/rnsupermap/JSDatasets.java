@@ -60,6 +60,20 @@ public class JSDatasets extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void getCount(String datasetsId, Promise promise){
+        try{
+            m_datasets = m_DatasetsList.get(datasetsId);
+            int count = m_datasets.getCount();
+
+            WritableMap map = Arguments.createMap();
+            map.putInt("count", count);
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void getByName(String datasetsId, String index, Promise promise){
         try{
             m_datasets = m_DatasetsList.get(datasetsId);

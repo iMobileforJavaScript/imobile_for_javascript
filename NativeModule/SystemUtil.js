@@ -20,4 +20,18 @@ export default class SystemUtil{
             console.error(e);
         }
     }
+  
+  /**
+   * 获取文件夹中的目录内容
+   * @param path
+   * @returns {Promise}
+   */
+  async getDirectoryContent(path){
+    try{
+      let directoryContent = await SU.getDirectoryContent(path);
+      return directoryContent;
+    }catch (e){
+      console.error(e);
+    }
+  }
 }

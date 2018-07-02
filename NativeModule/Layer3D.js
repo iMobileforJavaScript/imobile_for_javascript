@@ -12,6 +12,20 @@ let L = NativeModules.JSLayer3D;
 export default class Layer3D {
 
     /**
+     * 获取Layer3D名称。
+     * @memberOf Layer3D
+     * @returns {Boolean}
+     */
+    async getName() {
+        try {
+            var { layer3DName } = await L.getName(this._SMLayer3DId);
+            return layer3DName;
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    /**
      *更新三维图层。
      * @memberOf Layer3D
      * @returns {Boolean}
@@ -69,6 +83,20 @@ export default class Layer3D {
                 var { isRelease } = await L.getRelease(this._SMLayer3DId);
             }
             return isRelease;
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    /**
+     * 返回设置颜色的对象个数。
+     * @memberOf Layer3D
+     * @returns {number}
+     */
+    async getObjectsColorCount() {
+        try {
+            let { count } = await L.getObjectsColorCount(this._SMLayer3DId);
+            return count;
         } catch (e) {
             console.error(e);
         }

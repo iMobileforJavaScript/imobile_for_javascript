@@ -52,6 +52,20 @@ public class JSDatasource extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void getAlias(String datasourceId,Promise promise) {
+        try {
+            m_datasource = m_DatasourceList.get(datasourceId);
+            String alias = m_datasource.getAlias();
+
+            WritableMap map = Arguments.createMap();
+            map.putString("alias",alias);
+            promise.resolve(map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void getDatasets(String datasourceId,Promise promise){
         try {
             m_datasource = m_DatasourceList.get(datasourceId);

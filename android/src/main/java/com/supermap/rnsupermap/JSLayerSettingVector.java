@@ -64,7 +64,7 @@ public class JSLayerSettingVector extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getStyle(String layerSettingVectorId,Promise promise){
         try{
-            LayerSettingVector layerSettingVector = new LayerSettingVector();
+            LayerSettingVector layerSettingVector = getObjFromList(layerSettingVectorId);
             GeoStyle style = layerSettingVector.getStyle();
             String geoStyleId = JSGeoStyle.registerId(style);
 
@@ -90,16 +90,15 @@ public class JSLayerSettingVector extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getType(String layerSettingVectorId,String geoStyleId,Promise promise){
+    public void getType(String layerSettingVectorId,Promise promise){
         try{
             LayerSettingVector layerSettingVector = getObjFromList(layerSettingVectorId);
-            GeoStyle style = JSGeoStyle.getObjFromList(geoStyleId);
             LayerSettingType layerSettingType = layerSettingVector.getType();
             int type = Enum.getValueByName(LayerSettingType.class,layerSettingType.name());
 
             WritableMap map = Arguments.createMap();
             map.putInt("type",type);
-            promise.resolve(true);
+            promise.resolve(map);
         }catch (Exception e){
             promise.reject(e);
         }
