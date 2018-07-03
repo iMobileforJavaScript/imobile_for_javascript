@@ -63,5 +63,43 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void fileIsExist(String path, Promise promise) {
+        try {
+            Boolean isExist = false;
+            File file = new File(path);
+
+            if (file.exists()) {
+                isExist = true;
+            }
+
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("isExist", isExist);
+            promise.resolve(map);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void fileIsExistInHomeDirectory(String path, Promise promise) {
+        try {
+            String homeDirectory = android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+
+            Boolean isExist = false;
+            File file = new File(homeDirectory + "/" + path);
+
+            if (file.exists()) {
+                isExist = true;
+            }
+
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("isExist", isExist);
+            promise.resolve(map);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 }
 

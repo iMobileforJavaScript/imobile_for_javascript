@@ -17,6 +17,7 @@ import com.supermap.data.Rectangle2D;
 import com.supermap.data.StrokeType;
 import com.supermap.data.Workspace;
 import com.supermap.data.WorkspaceConnectionInfo;
+import com.supermap.data.WorkspaceType;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -286,11 +287,49 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
     }
 */
     @ReactMethod
-    public void saveWorkspaceWithServer(String workspaceId,String server,Promise promise){
+    public void saveWorkspaceWithInfo(String workspaceId,String path, String caption, int type,Promise promise){
         try{
+            String homeDirectory = android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+
             Workspace workspace = getObjById(workspaceId);
             WorkspaceConnectionInfo info = workspace.getConnectionInfo();
+
+            String server = homeDirectory + "/" + path;
             info.setServer(server);
+            if (caption.length() > 0) {
+                workspace.setCaption(caption);
+            }
+            switch (type) {
+                case 4:
+                    info.setType(WorkspaceType.SXW);
+                    info.setServer(server + "/" + caption + ".sxw");
+                    break;
+
+                // SMW 工作空间信息设置
+                case 5:
+                    info.setType(WorkspaceType.SMW);
+                    info.setServer(server + "/" + caption + ".smw");
+                    break;
+
+                // SXWU 文件工作空间信息设置
+                case 8:
+                    info.setType(WorkspaceType.SXWU);
+                    info.setServer(server + "/" + caption + ".sxwu");
+                    break;
+
+                // SMWU 工作空间信息设置
+                case 9:
+                    info.setType(WorkspaceType.SMWU);
+                    info.setServer(server + "/" + caption + ".smwu");
+                    break;
+
+                // 其他情况
+                default:
+                    info.setType(WorkspaceType.SMWU);
+                    info.setServer(server + "/" + caption + ".smwu");
+                    break;
+            }
+
             boolean saved = workspace.save();
             WritableMap map = Arguments.createMap();
             map.putBoolean("saved",saved);
@@ -414,6 +453,20 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
 
             WritableMap map = Arguments.createMap();
             map.putString("name",name);
+            promise.resolve(map);
+        }catch(Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void isModified(String workspaceId, Promise promise){
+        try{
+            Workspace workspace = getObjById(workspaceId);
+            Boolean isModified = workspace.isModified();
+
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("isModified",isModified);
             promise.resolve(map);
         }catch(Exception e) {
             promise.reject(e);

@@ -6,6 +6,7 @@
  **********************************************************************************/
 import { NativeModules } from 'react-native';
 let W = NativeModules.JSWorkspace;
+let WT = NativeModules.JSWorkspaceType;
 import DS from './Datasources.js';
 import Ds from './Datasource.js';
 import Maps from './Maps.js';
@@ -212,14 +213,15 @@ export default class Workspace{
     /**
      * 保存工作空间
      * @memberOf Workspace
-     * @param {string} server - 另存url（可选参数）
+     * @param {object} info - {path: 另存url（可选参数）, caption: 工作空间名称}
      * @returns {boolean}
      */
-    async saveWorkspace(server){
+    async saveWorkspace(info){
         try{
-            if(server){
-                var {saved} = await W.saveWorkspaceWithServer(this._SMWorkspaceId,server);
+            if(info && typeof info === 'object' && Object.getOwnPropertyNames(info).length > 0){
+                var {saved} = await W.saveWorkspaceWithInfo(this._SMWorkspaceId, info.path, info.caption, info.type || WT.SMWU);
             }else{
+              debugger
                 var {saved} = await W.saveWorkspace(this._SMWorkspaceId);
             }
             return saved;
@@ -322,6 +324,15 @@ export default class Workspace{
             return name;
         }catch(e){
             console.error(e);
+        }
+    }
+    
+    async isModified() {
+        try {
+            let { isModified } = await W.isModified(this._SMWorkspaceId);
+            return isModified
+        } catch(e){
+          console.error(e);
         }
     }
 

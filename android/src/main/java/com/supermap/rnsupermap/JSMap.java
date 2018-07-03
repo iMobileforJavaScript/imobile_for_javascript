@@ -96,6 +96,21 @@ public class JSMap extends ReactContextBaseJavaModule {
             return e.getMessage();
         }
     }
+
+    @ReactMethod
+    public void getName(String mapId, Promise promise){
+        try{
+            m_Map = mapList.get(mapId);
+            String name = m_Map.getName();
+
+            WritableMap map = Arguments.createMap();
+            map.putString("name", name);
+
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
     
     @ReactMethod
     public void setWorkspace(String mapId,String workspaceId,Promise promise){
@@ -397,7 +412,7 @@ public class JSMap extends ReactContextBaseJavaModule {
         try{
             Map map = mapList.get(mapId);
             boolean saved = map.saveAs(mapName);
-            
+
             WritableMap wMap = Arguments.createMap();
             wMap.putBoolean("saved",saved);
             promise.resolve(wMap);
@@ -719,6 +734,20 @@ public class JSMap extends ReactContextBaseJavaModule {
             
             WritableMap map1 = Arguments.createMap();
             map1.putBoolean("moveUp",moveUp);
+            promise.resolve(map1);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void isModified(String mapId, Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            Boolean isModified = map.isModified();
+
+            WritableMap map1 = Arguments.createMap();
+            map1.putBoolean("isModified", isModified);
             promise.resolve(map1);
         }catch (Exception e){
             promise.reject(e);

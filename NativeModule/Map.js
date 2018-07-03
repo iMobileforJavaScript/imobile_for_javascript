@@ -56,7 +56,7 @@ export default class Map{
     async getLayer(layerIndex){
         try{
             var layer = new Layer();
-            if(typeof layerIndex == "string"){
+            if(typeof layerIndex === "string"){
                 var {layerId} = await M.getLayerByName(this._SMMapId,layerIndex);
           }else{
                 var {layerId} = await M.getLayer(this._SMMapId,layerIndex);
@@ -274,6 +274,7 @@ export default class Map{
             return saved;
         }catch(e){
             console.error(e);
+          return false
         }
     }
 
@@ -647,5 +648,18 @@ export default class Map{
         }catch(e){
             console.error(e);
         }
+    }
+  
+  /**
+   * 判断当前地图是否被更改
+   * @returns {Promise.<Promise.isModified>}
+   */
+  async isModified() {
+      try{
+        var {isModified} = await M.isModified(this._SMMapId);
+        return isModified;
+      }catch(e){
+        console.error(e);
+      }
     }
 }

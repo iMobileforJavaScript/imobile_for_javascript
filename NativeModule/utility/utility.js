@@ -32,3 +32,15 @@ exports.getDirectoryContent = async function (path) {
   let directories = await util.getDirectoryContent(path);
   return directories;
 }
+
+exports.fileIsExist = async function (path) {
+  let util = new SystemUtil();
+  let isExist = await util.fileIsExist(path);
+  return isExist;
+}
+
+exports.fileIsExistInHomeDirectory = async function (path) {
+  let util = new SystemUtil();
+  let isExist = await util.fileIsExistInHomeDirectory(path);
+  return isExist;
+}

@@ -34,4 +34,32 @@ export default class SystemUtil{
       console.error(e);
     }
   }
+  
+  /**
+   * 判断文件是否存在
+   * @param path
+   * @returns {Promise}
+   */
+  async fileIsExist(path){
+    try{
+      let { isExist } = await SU.fileIsExist(path);
+      return isExist;
+    }catch (e){
+      console.error(e);
+    }
+  }
+  
+  /**
+   * 判断文件是否存在在Home Directory中
+   * @param path
+   * @returns {Promise}
+   */
+  async fileIsExistInHomeDirectory(path){
+    try{
+      let { isExist } = await SU.fileIsExistInHomeDirectory(path);
+      return isExist;
+    }catch (e){
+      console.error(e);
+    }
+  }
 }
