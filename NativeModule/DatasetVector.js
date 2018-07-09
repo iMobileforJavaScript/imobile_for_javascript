@@ -98,14 +98,26 @@ export default class DatasetVector {
                 queryParameter.spatialQueryObject && await qp.setSpatialQueryObject(queryParameter.spatialQueryObject);
 
                 queryParameter.spatialQueryMode && await qp.setSpatialQueryMode(queryParameter.spatialQueryMode);
+                
+                queryParameter.cursorType && await qp.setCursorType(queryParameter.cursorType);
 
                 if (queryParameter.size) qp.size = queryParameter.size;
                 if (queryParameter.batch) qp.batch = queryParameter.batch;
             }
 
 
-            var result = await DV.query(this._SMDatasetVectorId, qp._SMQueryParameterId,
+            let result = await DV.query(this._SMDatasetVectorId, qp._SMQueryParameterId,
                 qp.size, qp.batch);
+            let geo = result.geoJson && JSON.parse(result.geoJson) || {}
+            Object.assign(result, {geo: geo})
+            return result;
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    async getFieldInfos() {
+        try {
+            let result = await DV.getFieldInfos(this._SMDatasetVectorId);
             return result;
         } catch (e) {
             console.log(e);
@@ -282,5 +294,55 @@ export default class DatasetVector {
             console.error(e);
         }
     }
-    
+  
+  async setFieldValuesByNames(infos = {}) {
+    try {
+      let { result, editResult, updateResult} = await DV.setFieldValueByName(this._SMDatasetVectorId, infos);
+      return { result, editResult, updateResult }
+    } catch (e){
+      console.error(e);
+    }
+  }
+  
+  /**
+   * 添加FieldInfo
+   * @param info
+   * @returns {Promise.<{index: Promise.index}>}
+   */
+  async addFieldInfo(info = {}) {
+    try {
+      let { index } = await DV.addFieldInfo(this._SMDatasetVectorId, info);
+      return index
+    } catch (e){
+      console.error(e);
+    }
+  }
+  
+  async editFieldInfo(key, info) {
+    try {
+      if (info instanceof Number) {
+        let { index } = await DV.editFieldInfoByIndex(this._SMDatasetVectorId, key, info);
+        return index
+      } else {
+        let { index } = await DV.editFieldInfoByName(this._SMDatasetVectorId, key, info);
+        return index
+      }
+    } catch (e){
+      console.error(e);
+    }
+  }
+  
+  async removeFieldInfo(info) {
+    try {
+      if (info instanceof Number) {
+        let { result } = await DV.removeFieldInfoByIndex(this._SMDatasetVectorId, info);
+        return result
+      } else {
+        let { result } = await DV.removeFieldInfoByName(this._SMDatasetVectorId, info);
+        return result
+      }
+    } catch (e){
+      console.error(e);
+    }
+  }
 }

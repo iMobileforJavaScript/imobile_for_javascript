@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.data.CursorType;
 import com.supermap.data.Geometry;
 import com.supermap.data.QueryParameter;
 import com.supermap.data.SpatialQueryMode;
@@ -151,6 +152,18 @@ public class JSQueryParameter extends ReactContextBaseJavaModule {
         try{
             QueryParameter qp = getObjFromList(queryParameterId);
             qp.setSpatialQueryMode((SpatialQueryMode)Enum.parse(SpatialQueryMode.class,queryMode));
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setCursorType(String queryParameterId, int cursorType, Promise promise){
+        try{
+            QueryParameter qp = getObjFromList(queryParameterId);
+            qp.setCursorType((CursorType) Enum.parse(CursorType.class, cursorType));
 
             promise.resolve(true);
         }catch (Exception e){

@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
@@ -18,6 +19,7 @@ import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.Enum;
 import com.supermap.data.CursorType;
+import com.supermap.data.FieldInfo;
 import com.supermap.data.FieldInfos;
 import com.supermap.data.FieldType;
 import com.supermap.data.Geometry;
@@ -420,6 +422,412 @@ public class JSDatasetVector extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             promise.reject(e);
         }
+    }
+
+    @ReactMethod
+    public void setFieldValueByName(String dataVectorId, ReadableMap info, Promise promise){
+        try{
+            DatasetVector datasetVector = getObjFromList(dataVectorId);
+            Recordset recordset = datasetVector.getRecordset(false, CursorType.DYNAMIC);
+
+            boolean result = false;
+            boolean editResult;
+            boolean updateResult;
+
+            editResult = recordset.edit();
+            Map<String, Object> map = info.toHashMap();
+            for (Map.Entry<String, Object> item : map.entrySet()) {
+                String name = item.getKey();
+                Object value = item.getValue();
+                if (value == null) {
+                    result = recordset.setFieldValueNull(name);
+                } else {
+                    result = recordset.setFieldValue(name, value);
+                }
+            }
+
+            updateResult = recordset.update();
+            WritableMap wMap = Arguments.createMap();
+            wMap.putBoolean("result", result);
+            wMap.putBoolean("editResult", editResult);
+            wMap.putBoolean("updateResult", updateResult);
+            promise.resolve(wMap);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+//    /**
+//     * 向当前记录集添加FieldInfo
+//     * @param recordsetId
+//     * @param info
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void addFieldInfo(String recordsetId, ReadableMap info, Promise promise){
+//        try{
+//            Recordset recordset = m_RecordsetList.get(recordsetId);
+//
+//            queryByFilter();
+//
+//
+//            boolean editResult;
+//            boolean updateResult;
+//
+//            recordset.moveFirst();
+//            editResult = recordset.edit();
+//
+//            FieldInfos fieldInfos = recordset.getFieldInfos();
+//            FieldInfo fieldInfo = new FieldInfo();
+//
+//            Map<String, Object> map = info.toHashMap();
+//            for (Map.Entry<String, Object> item : map.entrySet()) {
+//                String name = item.getKey();
+//                Object value = item.getValue();
+//                switch (name) {
+//                    case "caption":
+//                        fieldInfo.setCaption((String) value);
+//                        break;
+//                    case "name":
+//                        fieldInfo.setName((String) value);
+//                        break;
+//                    case "type":
+//                        fieldInfo.setType((FieldType) Enum.parse(FieldType.class, ((Number) value).intValue()));
+//                        break;
+//                    case "maxLength":
+//                        fieldInfo.setMaxLength(((Number) value).intValue());
+//                        break;
+//                    case "defaultValue":
+//                        fieldInfo.setDefaultValue((String) value);
+//                        break;
+//                    case "isRequired":
+//                        fieldInfo.setRequired((boolean) value);
+//                        break;
+//                    case "isZeroLengthAllowed":
+//                        fieldInfo.setZeroLengthAllowed((boolean) value);
+//                        break;
+//                }
+//            }
+//
+//            int index = fieldInfos.add(fieldInfo);
+//
+//            updateResult = recordset.update();
+//
+//            WritableMap wMap = Arguments.createMap();
+//            wMap.putBoolean("editResult", editResult);
+//            wMap.putInt("index", index);
+//            wMap.putBoolean("updateResult", updateResult);
+//            promise.resolve(wMap);
+//        }catch (Exception e){
+//            promise.reject(e);
+//        }
+//    }
+
+    /**
+     * 获取DataVector的FieldInfos
+     * @param dataVectorId
+     * @param promise
+     */
+    @ReactMethod
+    public void getFieldInfos(String dataVectorId, Promise promise) {
+        try {
+            DatasetVector datasetVector = getObjFromList(dataVectorId);
+
+            FieldInfos fieldInfos = datasetVector.getFieldInfos();
+
+            WritableMap writableMap = fieldInfosToMap(fieldInfos);
+
+            promise.resolve(writableMap);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 向当前记录集添加FieldInfo
+     * @param dataVectorId
+     * @param info
+     * @param promise
+     */
+    @ReactMethod
+    public void addFieldInfo(String dataVectorId, ReadableMap info, Promise promise){
+        try {
+            DatasetVector datasetVector = getObjFromList(dataVectorId);
+
+            FieldInfos fieldInfos = datasetVector.getFieldInfos();
+
+            FieldInfo fieldInfo = new FieldInfo();
+
+            Map<String, Object> map = info.toHashMap();
+            for (Map.Entry<String, Object> item : map.entrySet()) {
+                String name = item.getKey();
+                Object value = item.getValue();
+                switch (name) {
+                    case "caption":
+                        fieldInfo.setCaption((String) value);
+                        break;
+                    case "name":
+                        fieldInfo.setName((String) value);
+                        break;
+                    case "type":
+                        fieldInfo.setType((FieldType) Enum.parse(FieldType.class, ((Number) value).intValue()));
+                        break;
+                    case "maxLength":
+                        fieldInfo.setMaxLength(((Number) value).intValue());
+                        break;
+                    case "defaultValue":
+                        fieldInfo.setDefaultValue((String) value);
+                        break;
+                    case "isRequired":
+                        fieldInfo.setRequired((boolean) value);
+                        break;
+                    case "isZeroLengthAllowed":
+                        fieldInfo.setZeroLengthAllowed((boolean) value);
+                        break;
+                }
+            }
+
+            int index = fieldInfos.add(fieldInfo);
+
+            WritableMap wMap = Arguments.createMap();
+            wMap.putInt("index", index);
+            promise.resolve(wMap);
+        } catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据名称修改指定的FieldInfo
+     * @param dataVectorId
+     * @param infoName
+     * @param info
+     * @param promise
+     */
+    @ReactMethod
+    public void editFieldInfoByName(String dataVectorId, String infoName, ReadableMap info, Promise promise){
+        try {
+            DatasetVector datasetVector = getObjFromList(dataVectorId);
+
+            if (!datasetVector.isOpen()) {
+                Boolean isopen = datasetVector.open();
+            }
+
+            FieldInfos fieldInfos = datasetVector.getFieldInfos();
+
+            FieldInfo fieldInfo = fieldInfos.get(infoName);
+
+            Map<String, Object> map = info.toHashMap();
+            for (Map.Entry<String, Object> item : map.entrySet()) {
+                String name = item.getKey();
+                Object value = item.getValue();
+                switch (name) {
+                    case "caption":
+                        fieldInfo.setCaption((String) value);
+                        break;
+                    case "name":
+                        fieldInfo.setName((String) value);
+                        break;
+                    case "type":
+                        fieldInfo.setType((FieldType) Enum.parse(FieldType.class, ((Number) value).intValue()));
+                        break;
+                    case "maxLength":
+                        fieldInfo.setMaxLength(((Number) value).intValue());
+                        break;
+                    case "defaultValue":
+                        fieldInfo.setDefaultValue((String) value);
+                        break;
+                    case "isRequired":
+                        fieldInfo.setRequired((boolean) value);
+                        break;
+                    case "isZeroLengthAllowed":
+                        fieldInfo.setZeroLengthAllowed((boolean) value);
+                        break;
+                }
+            }
+
+            int index = fieldInfos.add(fieldInfo);
+            WritableMap wMap = Arguments.createMap();
+            wMap.putInt("index", index);
+            promise.resolve(wMap);
+        } catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据序号修改指定的FieldInfo
+     * @param dataVectorId
+     * @param index
+     * @param info
+     * @param promise
+     */
+    @ReactMethod
+    public void editFieldInfoByIndex(String dataVectorId, int index, ReadableMap info, Promise promise){
+        try {
+            DatasetVector datasetVector = getObjFromList(dataVectorId);
+
+            if (!datasetVector.isOpen()) {
+                datasetVector.open();
+            }
+
+            FieldInfos fieldInfos = datasetVector.getFieldInfos();
+
+            FieldInfo fieldInfo = fieldInfos.get(index);
+
+            Map<String, Object> map = info.toHashMap();
+            for (Map.Entry<String, Object> item : map.entrySet()) {
+                String name = item.getKey();
+                Object value = item.getValue();
+                switch (name) {
+                    case "caption":
+                        fieldInfo.setCaption((String) value);
+                        break;
+                    case "name":
+                        fieldInfo.setName((String) value);
+                        break;
+                    case "type":
+                        fieldInfo.setType((FieldType) Enum.parse(FieldType.class, ((Number) value).intValue()));
+                        break;
+                    case "maxLength":
+                        fieldInfo.setMaxLength(((Number) value).intValue());
+                        break;
+                    case "defaultValue":
+                        fieldInfo.setDefaultValue((String) value);
+                        break;
+                    case "isRequired":
+                        fieldInfo.setRequired((boolean) value);
+                        break;
+                    case "isZeroLengthAllowed":
+                        fieldInfo.setZeroLengthAllowed((boolean) value);
+                        break;
+                }
+            }
+
+            int ind = fieldInfos.add(fieldInfo);
+
+            WritableMap wMap = Arguments.createMap();
+            wMap.putInt("index", ind);
+            promise.resolve(wMap);
+        } catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据序号删除FieldInfo
+     * @param dataVectorId
+     * @param index
+     * @param promise
+     */
+    @ReactMethod
+    public void removeFieldInfoByIndex(String dataVectorId, int index, Promise promise) {
+        try {
+            DatasetVector datasetVector = getObjFromList(dataVectorId);
+
+            FieldInfos fieldInfos = datasetVector.getFieldInfos();
+
+            Boolean result = fieldInfos.remove(index);
+
+            WritableMap wMap = Arguments.createMap();
+            wMap.putBoolean("result", result);
+            promise.resolve(wMap);
+        } catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据名称删除FieldInfo
+     * @param dataVectorId
+     * @param name
+     * @param promise
+     */
+    @ReactMethod
+    public void removeFieldInfoByName(String dataVectorId, String name, Promise promise) {
+        try {
+            DatasetVector datasetVector = getObjFromList(dataVectorId);
+
+            FieldInfos fieldInfos = datasetVector.getFieldInfos();
+
+            Boolean result = fieldInfos.remove(name);
+
+            WritableMap wMap = Arguments.createMap();
+            wMap.putBoolean("result", result);
+            promise.resolve(wMap);
+        } catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 将FieldInfos转为Map
+     * @param fieldInfos
+     * @return
+     */
+    public static WritableMap fieldInfosToMap(FieldInfos fieldInfos){
+        //获取字段信息
+        Map<String, Map<String, Object>> fields = new HashMap<>();
+        for (int i = 0; i < fieldInfos.getCount(); i++) {
+            Map<String, Object> subMap = new HashMap<>();
+            subMap.put("caption", fieldInfos.get(i).getCaption());
+            subMap.put("defaultValue", fieldInfos.get(i).getDefaultValue());
+            subMap.put("type", fieldInfos.get(i).getType());
+            subMap.put("name", fieldInfos.get(i).getName());
+            subMap.put("maxLength", fieldInfos.get(i).getMaxLength());
+            subMap.put("isRequired", fieldInfos.get(i).isRequired());
+            subMap.put("isSystemField", fieldInfos.get(i).isSystemField());
+
+            fields.put(fieldInfos.get(i).getName(), subMap);
+        }
+
+        WritableMap fieldInfosMap = Arguments.createMap();
+
+        for (Map.Entry<String,  Map<String, Object>> field : fields.entrySet()) {
+            WritableMap keyMap = Arguments.createMap();
+            WritableMap itemWMap = Arguments.createMap();
+            String name = field.getKey();
+            Map<String, Object> fieldInfo = field.getValue();
+
+            for (Map.Entry<String, Object> item : fieldInfo.entrySet()) {
+                String key = item.getKey();
+                Object v = item.getValue();
+
+                if (key.equals("caption") || key.equals("defaultValue") || key.equals("name")) {
+                    if (v == null) {
+                        itemWMap.putString(key, "");
+                    } else {
+                        itemWMap.putString(key, (String) v);
+                    }
+                } else if (key.equals("isRequired") || key.equals("isSystemField")) {
+                    if (v == null) {
+                        itemWMap.putString(key, "");
+                    } else {
+                        itemWMap.putBoolean(key, (Boolean) v);
+                    }
+                } else if (key.equals("maxLength")) {
+                    if (v == null) {
+                        itemWMap.putString(key, "");
+                    } else {
+                        itemWMap.putInt("maxLength", (Integer) v);
+                    }
+                } else if (key.equals("type")) {
+                    FieldType type = (FieldType) v;
+                    if (v == null) {
+                        itemWMap.putString(key, "");
+                    } else {
+                        itemWMap.putInt(key, type.value());
+                    }
+                }
+            }
+
+            keyMap.putMap("fieldInfo", itemWMap);
+            keyMap.putString("name", name);
+
+            fieldInfosMap.putMap(name, keyMap);
+        }
+
+        return fieldInfosMap;
     }
 }
 

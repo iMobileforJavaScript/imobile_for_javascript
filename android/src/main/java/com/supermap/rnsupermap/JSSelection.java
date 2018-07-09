@@ -99,5 +99,33 @@ public class JSSelection extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void getCount(String selectionId,Promise promise){
+        try{
+            Selection selection = getObjFromList(selectionId);
+            int count = selection.getCount();
+
+            WritableMap map = Arguments.createMap();
+            map.putInt("count", count);
+            promise.resolve(map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void get(String selectionId, int id, Promise promise){
+        try{
+            Selection selection = getObjFromList(selectionId);
+            int count = selection.get(id);
+
+            WritableMap map = Arguments.createMap();
+            map.putInt("count", count);
+            promise.resolve(map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 }
 

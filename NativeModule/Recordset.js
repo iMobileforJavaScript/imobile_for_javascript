@@ -78,11 +78,83 @@ export default class Recordset {
         }
     }
 
-    async update(){
+    async edit(){
         try{
-            await R.update(this._SMRecordsetId);
+            let isEdit = await R.edit(this._SMRecordsetId);
+            return isEdit
         }catch (e){
             console.error(e);
         }
     }
+
+    async update(){
+        try{
+          let isUpdate = await R.update(this._SMRecordsetId);
+          return isUpdate
+        }catch (e){
+            console.error(e);
+        }
+    }
+
+    async getFieldCount(){
+        try{
+          let { count } = await R.getFieldCount(this._SMRecordsetId);
+          return count
+        }catch (e){
+            console.error(e);
+        }
+    }
+    
+    async getFieldInfosArray(count = 0, size = 20) {
+      try{
+        let arr = await R.getFieldInfosArray(this._SMRecordsetId, count, size);
+        return arr
+      }catch (e){
+        console.error(e);
+      }
+    }
+    
+    async setFieldValueByName(info) {
+      try {
+        await R.setFieldValueByName(this._SMRecordsetId, info);
+      } catch (e){
+        console.error(e);
+      }
+    }
+    
+    async setFieldValueByIndex(info) {
+      try {
+        await R.setFieldValueByIndex(this._SMRecordsetId, info);
+      } catch (e){
+        console.error(e);
+      }
+    }
+    
+    async setFieldValuesByNames(infos = {}) {
+      try {
+        let { result, editResult, updateResult} = await R.setFieldValueByName(this._SMRecordsetId, infos);
+        return { result, editResult, updateResult }
+      } catch (e){
+        console.error(e);
+      }
+    }
+    
+    async setFieldValuesByIndexes(infos = {}) {
+      try {
+          let { result, editResult, updateResult } = await R.setFieldValueByIndex(this._SMRecordsetId, infos);
+          return { result, editResult, updateResult }
+      } catch (e){
+        console.error(e);
+      }
+    }
+    
+    async addFieldInfo(info = {}) {
+      try {
+          let { index, editResult, updateResult } = await R.addFieldInfo(this._SMRecordsetId, info);
+          return { index, editResult, updateResult }
+      } catch (e){
+        console.error(e);
+      }
+    }
+  
 }

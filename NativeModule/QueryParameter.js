@@ -60,7 +60,7 @@ export default class QueryParameter {
      */
     async setAttributeFilter (attributeFilter){
         try{
-            typeof attributeFilter == "string" &&
+            typeof attributeFilter === "string" &&
                 await QP.setAttributeFilter(this._SMQueryParameterId,attributeFilter);
         }catch (e){
             console.error(e);
@@ -152,7 +152,21 @@ export default class QueryParameter {
     async setSpatialQueryMode(mode){
         try{
             console.log("QueryParameter:" + mode);
-            typeof mode == "number" && await QP.setSpatialQueryMode(this._SMQueryParameterId,mode);
+            typeof mode === "number" && await QP.setSpatialQueryMode(this._SMQueryParameterId,mode);
+        }catch (e){
+            console.error(e);
+        }
+    }
+  
+  /**
+   * 设置查询游标类型 CursorType
+   * @param cursorType
+   * @returns {Promise.<void>}
+   */
+  async setCursorType(cursorType){
+        try{
+            console.log("cursorType:" + cursorType);
+            typeof cursorType === "number" && await QP.setCursorType(this._SMQueryParameterId,cursorType);
         }catch (e){
             console.error(e);
         }

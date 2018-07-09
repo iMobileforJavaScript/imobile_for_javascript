@@ -88,4 +88,17 @@ export default class Selection {
             console.log(e);
         }
     }
+  
+  /**
+   * 获取选中集合数量
+   * @returns {Promise.<void>}
+   */
+  async getCount() {
+        try {
+            let { count } = await S.getCount()
+          return count
+        } catch(e){
+          console.log(e);
+        }
+    }
 }

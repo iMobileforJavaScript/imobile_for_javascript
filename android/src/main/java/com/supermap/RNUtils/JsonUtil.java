@@ -5,6 +5,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.data.Enum;
 import com.supermap.data.FieldInfos;
 import com.supermap.data.FieldType;
 import com.supermap.data.Point2D;
@@ -91,10 +92,18 @@ public class JsonUtil {
     public static WritableArray recordsetToJsonArray(Recordset recordset,int count,int size){
         //获取字段信息
         FieldInfos fieldInfos = recordset.getFieldInfos();
-        Map<String, FieldType> fields = new HashMap<>();
-
+        Map<String, Map<String, Object>> fields = new HashMap<>();
         for (int i = 0; i < fieldInfos.getCount(); i++) {
-            fields.put(fieldInfos.get(i).getName(), fieldInfos.get(i).getType());
+            Map<String, Object> subMap = new HashMap<>();
+            subMap.put("caption", fieldInfos.get(i).getCaption());
+            subMap.put("defaultValue", fieldInfos.get(i).getDefaultValue());
+            subMap.put("type", fieldInfos.get(i).getType());
+            subMap.put("name", fieldInfos.get(i).getName());
+            subMap.put("maxLength", fieldInfos.get(i).getMaxLength());
+            subMap.put("isRequired", fieldInfos.get(i).isRequired());
+            subMap.put("isSystemField", fieldInfos.get(i).isSystemField());
+
+            fields.put(fieldInfos.get(i).getName(), subMap);
         }
         //JS数组，存放
         WritableArray recordArray = Arguments.createArray();
@@ -116,36 +125,94 @@ public class JsonUtil {
      * @param fields    该记录中的所有属性
      * @return
      */
-    private static WritableMap parseRecordset(Recordset recordset, Map<String, FieldType> fields) {
+    private static WritableMap parseRecordset(Recordset recordset, Map<String, Map<String, Object>> fields) {
         WritableMap map = Arguments.createMap();
 
-        for (Map.Entry field : fields.entrySet()) {
-            String name = (String) field.getKey();
-            FieldType type = (FieldType) field.getValue();
-            if (type == FieldType.DOUBLE) {
-                Double d = (Double) recordset.getFieldValue(name);
-                map.putDouble(name, (Double) recordset.getFieldValue(name));
-            } else if (type == FieldType.SINGLE) {
-                BigDecimal b = new BigDecimal(recordset.getFieldValue(name).toString());
-                Double d = b.doubleValue();
-                map.putDouble(name, d);
-            } else if (type == FieldType.CHAR ||
-                    type == FieldType.TEXT ||
-                    type == FieldType.WTEXT ||
-                    type == FieldType.DATETIME
-                    ) {
-                map.putString(name, (String) recordset.getFieldValue(name));
-            } else if (type == FieldType.BYTE ||
-                    type == FieldType.INT16 ||
-                    type == FieldType.INT32 ||
-                    type == FieldType.INT64 ||
-                    type == FieldType.LONGBINARY
-                    ) {
-                map.putInt(name, (Integer) recordset.getFieldValue(name));
-            } else {
-                map.putBoolean(name, (Boolean) recordset.getFieldValue(name));
+        for (Map.Entry<String,  Map<String, Object>> field : fields.entrySet()) {
+            WritableMap keyMap = Arguments.createMap();
+            WritableMap itemWMap = Arguments.createMap();
+            String name = field.getKey();
+            Map<String, Object> fieldInfo = field.getValue();
+
+            for (Map.Entry<String, Object> item : fieldInfo.entrySet()) {
+                String key = item.getKey();
+                Object v = item.getValue();
+
+                if (key.equals("caption") || key.equals("defaultValue") || key.equals("name")) {
+                    if (v == null) {
+                        itemWMap.putString(key, "");
+                    } else {
+                        itemWMap.putString(key, (String) v);
+                    }
+                } else if (key.equals("isRequired") || key.equals("isSystemField")) {
+                    if (v == null) {
+                        itemWMap.putString(key, "");
+                    } else {
+                        itemWMap.putBoolean(key, (Boolean) v);
+                    }
+                } else if (key.equals("maxLength")) {
+                    if (v == null) {
+                        itemWMap.putString(key, "");
+                    } else {
+                        itemWMap.putInt("maxLength", (Integer) v);
+                    }
+                } else if (key.equals("type")) {
+                    FieldType type = (FieldType) v;
+                    if (v == null) {
+                        itemWMap.putString(key, "");
+                    } else {
+                        itemWMap.putInt(key, type.value());
+                    }
+
+                    Object fieldValue = recordset.getFieldValue(name);
+                    if (type == FieldType.DOUBLE) {
+                        Double d = (Double) fieldValue;
+                        keyMap.putDouble("value", d);
+                    } else if (type == FieldType.SINGLE) {
+                        if (fieldValue == null) {
+                            keyMap.putString(key, "");
+                        } else {
+                            BigDecimal b = new BigDecimal(fieldValue.toString());
+                            Double d = b.doubleValue();
+                            keyMap.putDouble("value", d);
+                        }
+                    } else if (type == FieldType.CHAR ||
+                            type == FieldType.TEXT ||
+                            type == FieldType.WTEXT ||
+                            type == FieldType.DATETIME
+                            ) {
+                        if (fieldValue == null) {
+                            keyMap.putString(key, "");
+                        } else {
+                            keyMap.putString("value", (String) fieldValue);
+                        }
+                    } else if (type == FieldType.BYTE ||
+                            type == FieldType.INT16 ||
+                            type == FieldType.INT32 ||
+                            type == FieldType.INT64 ||
+                            type == FieldType.LONGBINARY
+                            ) {
+                        if (fieldValue == null) {
+                            keyMap.putString(key, "");
+                        } else {
+                            keyMap.putInt("value", (Integer) fieldValue);
+                        }
+                    } else {
+                        if (fieldValue == null) {
+                            keyMap.putString(key, "");
+                        } else {
+                            keyMap.putBoolean("value", (Boolean) fieldValue);
+                        }
+                    }
+                }
             }
+
+            keyMap.putMap("fieldInfo", itemWMap);
+            keyMap.putString("name", name);
+
+            map.putMap(name, keyMap);
         }
+
         return map;
     }
 

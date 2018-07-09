@@ -4,6 +4,7 @@ let BufferEndType = NativeModules.JSBufferEndType;
 let RadiusUnit = NativeModules.JSRadiusUnit;
 let EncodeType = NativeModules.JSEncodeType;
 let DatasetType = NativeModules.JSDatasetType;
+let FieldType = NativeModules.JSFieldType;
 
 import BufferAnalyst from './NativeModule/BufferAnalyst.js';
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js';
@@ -162,6 +163,7 @@ export {
     RadiusUnit,
     EncodeType,
     DatasetType,
+    FieldType,
     
     BufferAnalyst,
     BufferAnalystGeometry,

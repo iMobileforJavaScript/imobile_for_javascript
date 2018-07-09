@@ -221,7 +221,6 @@ export default class Workspace{
             if(info && typeof info === 'object' && Object.getOwnPropertyNames(info).length > 0){
                 var {saved} = await W.saveWorkspaceWithInfo(this._SMWorkspaceId, info.path, info.caption, info.type || WT.SMWU);
             }else{
-              debugger
                 var {saved} = await W.saveWorkspace(this._SMWorkspaceId);
             }
             return saved;

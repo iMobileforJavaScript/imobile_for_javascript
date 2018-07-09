@@ -7,6 +7,7 @@
 import {NativeModules} from 'react-native'
 let L = NativeModules.JSLayer
 import Dataset from './Dataset.js'
+import Recordset from './Recordset.js'
 import Selection from './Selection.js'
 import LayerSetting from './LayerSetting.js'
 import LayerSettingVector from './LayerSettingVector.js'
@@ -98,8 +99,11 @@ export default class Layer{
         try{
             var {selectionId,recordsetId} = await L.getSelection(this._SMLayerId)
             var selection = new Selection()
+            var recordset = new Recordset()
             selection._SMSelectionId = selectionId
-            selection._SMRecordsetId = recordsetId
+            recordset._SMRecordsetId = recordsetId
+          
+            selection.recordset = recordset
             return selection
         }catch(e){
             console.error(e)
@@ -198,7 +202,6 @@ export default class Layer{
         try{
             var layerSetting
             var {_layerSettingId_,type} = await L.getAdditionalSetting(this._SMLayerId)
-            debugger
             if(type ===0 ){
                 layerSetting = new LayerSettingVector()
                 layerSetting._SMLayerSettingId = _layerSettingId_
