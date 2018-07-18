@@ -11,6 +11,7 @@ import Layers from './Layers.js';
 import Point2D from './Point2D.js';
 import Point from './Point.js';
 import TrackingLayer from './TrackingLayer.js';
+import PrjCoordSys from './PrjCoordSys.js';
 
 const nativeEvt = new NativeEventEmitter(M);
 
@@ -659,6 +660,22 @@ export default class Map{
         var {isModified} = await M.isModified(this._SMMapId);
         return isModified;
       }catch(e){
+        console.error(e);
+      }
+    }
+  
+  /**
+   * 返回地图的投影坐标系统
+   * @returns {Promise.<PrjCoordSys>}
+   */
+  async getPrjCoordSys() {
+      try{
+        let prjCoordSysId = await M.getPrjCoordSys(this._SMMapId);
+        let prjCoordSys = new PrjCoordSys()
+        prjCoordSys._SMPrjCoordSysId = prjCoordSysId
+        return prjCoordSys;
+      }catch(e){
+        debugger
         console.error(e);
       }
     }

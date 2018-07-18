@@ -276,14 +276,14 @@ public class JsonUtil {
      * @throws Exception
      */
     public static Point2Ds jsonToPoint2Ds(ReadableArray array) throws Exception {
-        Point2Ds point2Ds = null;
+        Point2Ds point2Ds = new Point2Ds();
         for (int i = 0; i < array.size(); i++) {
             Double x = array.getMap(i).getDouble("x");
             Double y = array.getMap(i).getDouble("y");
             Point2D point2D = new Point2D(x, y);
             point2Ds.add(point2D);
         }
-        if (point2Ds == null) throw new Error("输入的点对象数组为空");
+        if (point2Ds.getCount() == 0) throw new Error("输入的点对象数组为空");
         return point2Ds;
     }
 
@@ -336,5 +336,27 @@ public class JsonUtil {
 
         map.putArray("pathInfo",steps);
         return map;
+    }
+
+    /**
+     * 将Point2Ds转成JSON格式
+     * @param point2Ds - Point2Ds对象
+     * @return {WritableArray} - Json数组，元素为{x:---,y;---}坐标对对象。
+     * @throws Exception
+     */
+    public static WritableArray pathGuidesToJson(Point2Ds point2Ds) throws Exception{
+        try{
+            WritableArray array = Arguments.createArray();
+            for(int i = 0 ; i < point2Ds.getCount();i++ ){
+                Point2D point2D = point2Ds.getItem(i);
+                WritableMap jsonPoint2D = Arguments.createMap();
+                jsonPoint2D.putDouble("x",point2D.getX());
+                jsonPoint2D.putDouble("y",point2D.getY());
+                array.pushMap(jsonPoint2D);
+            }
+            return array;
+        }catch (Exception e){
+            throw e;
+        }
     }
 }

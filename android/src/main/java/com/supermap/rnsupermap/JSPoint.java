@@ -26,7 +26,7 @@ public class JSPoint extends ReactContextBaseJavaModule {
         return REACT_CLASS;
     }
 
-    public Point getObjFromList(String id){
+    public static Point getObjFromList(String id){
         return m_PointList.get(id);
     }
 
@@ -53,6 +53,31 @@ public class JSPoint extends ReactContextBaseJavaModule {
             map.putString("pointId",pointId);
             promise.resolve(map);
         }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+
+    @ReactMethod
+    public void getX(String pointId,Promise promise){
+        try{
+            Point point = getObjFromList(pointId);
+            double x = point.getX();
+
+            promise.resolve(x);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getY(String pointId,Promise promise){
+        try{
+            Point point = getObjFromList(pointId);
+            double y = point.getY();
+
+            promise.resolve(y);
+        }catch (Exception e){
             promise.reject(e);
         }
     }

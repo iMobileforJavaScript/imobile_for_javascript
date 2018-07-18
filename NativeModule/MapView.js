@@ -75,6 +75,7 @@ export default class JSMapView{
         try{
             await MV.addCallOut(this._SMMapViewId,callOut._SMCallOutId,pointName);
         }catch(e){
+            debugger
             console.error(e);
         }
     }

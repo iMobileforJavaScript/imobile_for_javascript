@@ -114,8 +114,37 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSChartPoint(reactContext));
         modules.add(new JSRelationalChartPoint(reactContext));
 
+        modules.add(new JSFacilityAnalyst(reactContext));
+        modules.add(new JSFacilityAnalystSetting(reactContext));
+        modules.add(new JSWeightFieldInfo(reactContext));
+        modules.add(new JSWeightFieldInfos(reactContext));
+
+        modules.add(new JSTextPart(reactContext));
+        modules.add(new JSTextStyle(reactContext));
+        modules.add(new JSTextAlignment(reactContext));
+        modules.add(new JSGeoText(reactContext));
+
+        modules.add(new JSTransportationAnalystParameter(reactContext));
+        modules.add(new JSTransportationAnalyst(reactContext));
+        modules.add(new JSLocationAnalystParameter(reactContext));
+        modules.add(new JSSupplyCenter(reactContext));
+        modules.add(new JSSupplyCenters(reactContext));
+        modules.add(new JSTransportationAnalystSetting(reactContext));
+        modules.add(new JSPrjCoordSys(reactContext));
+        modules.add(new JSPrjCoordSysType(reactContext));
+        modules.add(new JSCoordSysTransParameter(reactContext));
+        modules.add(new JSSupplyCenterType(reactContext));
+        modules.add(new JSGeoLineM(reactContext));
+        modules.add(new JSPointM(reactContext));
+        modules.add(new JSCoordSysTranslator(reactContext));
+        modules.add(new JSCoordSysTransMethod(reactContext));
+
         modules.add(new JSEnvironment(reactContext));
         modules.add(new LogModule(reactContext));
+
+        modules.add(new JSRangeMode(reactContext));
+
+
         return modules;
     }
 }

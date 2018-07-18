@@ -260,7 +260,10 @@ public class JSMap extends ReactContextBaseJavaModule {
                     wMap.putString("id", layerId);
                     wMap.putInt("type", type);
                     wMap.putInt("index", i);
-                    wMap.putString("name", dataset.getName());
+                    wMap.putString("name", layer.getName());
+                    wMap.putString("caption", layer.getCaption());
+                    wMap.putString("description", layer.getDescription());
+                    wMap.putString("datasetName", dataset.getName());
                     arr.pushMap(wMap);
                     temp.put(type, arr);
                 } else {
@@ -271,7 +274,10 @@ public class JSMap extends ReactContextBaseJavaModule {
                     wMap.putString("id", layerId);
                     wMap.putInt("type", type);
                     wMap.putInt("index", i);
-                    wMap.putString("name", dataset.getName());
+                    wMap.putString("name", layer.getName());
+                    wMap.putString("caption", layer.getCaption());
+                    wMap.putString("description", layer.getDescription());
+                    wMap.putString("datasetName", dataset.getName());
                     arr.pushMap(wMap);
                 }
             }
@@ -312,7 +318,10 @@ public class JSMap extends ReactContextBaseJavaModule {
                     wMap.putString("id", layerId);
                     wMap.putInt("type", type);
                     wMap.putInt("index", i);
-                    wMap.putString("name", dataset.getName());
+                    wMap.putString("name", layer.getName());
+                    wMap.putString("caption", layer.getCaption());
+                    wMap.putString("description", layer.getDescription());
+                    wMap.putString("datasetName", dataset.getName());
                     arr.pushMap(wMap);
                 }
             }
@@ -749,6 +758,19 @@ public class JSMap extends ReactContextBaseJavaModule {
             WritableMap map1 = Arguments.createMap();
             map1.putBoolean("isModified", isModified);
             promise.resolve(map1);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getPrjCoordSys(String mapId, Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            PrjCoordSys prjCoordSys = map.getPrjCoordSys();
+            String prjCoordSysId = JSPrjCoordSys.registerId(prjCoordSys);
+
+            promise.resolve(prjCoordSysId);
         }catch (Exception e){
             promise.reject(e);
         }

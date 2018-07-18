@@ -61,6 +61,7 @@ public class JSOverlayAnalyst extends ReactContextBaseJavaModule {
             map.putBoolean("clipped",clipped);
             promise.resolve(map);
         }catch (Exception e){
+            e.printStackTrace();
             promise.reject(e);
         }
     }

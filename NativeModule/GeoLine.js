@@ -38,7 +38,7 @@ export default class GeoLine extends Geometry{
             }else{
                 var {geoLineId} = await GL.createObj();
             }
-            geoLine = new GeoLine();
+            let geoLine = new GeoLine();
             geoLine._SMGeoLineId = geoLineId;
             return geoLine;
         }catch (e){

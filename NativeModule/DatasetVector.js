@@ -28,6 +28,20 @@ export default class DatasetVector {
                               }
                               })
     }*/
+  
+  /**
+   * 获取数据集名称。
+   * @memberOf DatasetVector
+   * @returns {string}
+   */
+  async getName(){
+    try{
+      let name = await DV.getName(this._SMDatasetVectorId);
+      return name
+    }catch(e){
+      console.error(e);
+    }
+  }
     
     /**
      * 查询落在已知空间范围内的记录。
@@ -192,7 +206,7 @@ export default class DatasetVector {
      */
     async toGeoJSON(hasAttributte, startID, endID) {
         try {
-            var {geoJSON} =await DV.toGeoJSON(this._SMDatasetVectorId);
+            var {geoJSON} =await DV.toGeoJSON(this._SMDatasetVectorId, hasAttributte, startID, endID);
             var json = JSON.parse(geoJSON);
             return geoJSON;
         } catch (e) {

@@ -29,4 +29,22 @@ export default class Point{
             console.error(e);
         }
     }
+    
+    async getX() {
+      try{
+        let x = await P.getX(this._SMPointId);
+        return x;
+      }catch (e){
+        console.error(e);
+      }
+    }
+    
+    async getY() {
+      try{
+        let y = await P.getY(this._SMPointId);
+        return y;
+      }catch (e){
+        console.error(e);
+      }
+    }
 }

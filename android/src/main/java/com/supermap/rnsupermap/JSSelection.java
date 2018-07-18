@@ -127,5 +127,41 @@ public class JSSelection extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void add(String selectionId, int geometryId, Promise promise){
+        try{
+            Selection selection = getObjFromList(selectionId);
+            int index = selection.add(geometryId);
+
+            promise.resolve(index);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void remove(String selectionId, int geometryId, Promise promise){
+        try{
+            Selection selection = getObjFromList(selectionId);
+            boolean result = selection.remove(geometryId);
+
+            promise.resolve(result);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void removeRange(String selectionId, int index, int count, Promise promise){
+        try{
+            Selection selection = getObjFromList(selectionId);
+            int result = selection.removeRange(index, count);
+
+            promise.resolve(result);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 }
 

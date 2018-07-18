@@ -1,6 +1,8 @@
 package com.supermap.rnsupermap;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -67,6 +69,36 @@ public class JSCallOut extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void setHeight(String callOutId, int height, Promise promise){
+        try{
+            CallOut callOut = m_CallOutList.get(callOutId);
+            if (m_imageView == null) {
+                m_imageView = new ImageView(m_rootView.getContext());
+            }
+            m_imageView.setMaxHeight(height);
+
+            promise.resolve(true);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setWidth(String callOutId, int width, Promise promise){
+        try{
+            CallOut callOut = m_CallOutList.get(callOutId);
+            if (m_imageView == null) {
+                m_imageView = new ImageView(m_rootView.getContext());
+            }
+            m_imageView.setMaxWidth(width);
+
+            promise.resolve(true);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void setStyle(String callOutId,Promise promise){
         try{
             CallOut callOut = m_CallOutList.get(callOutId);
@@ -104,7 +136,41 @@ public class JSCallOut extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setContentView(String callOutId,int imageViewId,Promise promise){
+    public void setLocationByXY(String callOutId, double x, double y, Promise promise){
+        try{
+            CallOut callOut = m_CallOutList.get(callOutId);
+            callOut.setLocation(x, y);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setContentView(String callOutId, String imagePath,Promise promise){
+        try{
+            m_CallOut = m_CallOutList.get(callOutId);
+//            ImageView imageView = (ImageView)callOut.getRootView().findViewById(imageViewId);
+//            ViewGroup viewGroup = (ViewGroup)imageView.getParent();
+//            viewGroup.removeViewAt(imageViewId);
+
+
+            m_rootView = (ViewGroup) m_CallOut.getRootView();
+            m_imageView = new ImageView(m_rootView.getContext());
+//            Bitmap bmp= BitmapFactory.decodeFile(imagePath);
+//            m_imageView.setImageBitmap(bmp);
+            m_imageView.setImageResource(R.drawable.startpoint);
+            getCurrentActivity().runOnUiThread(updateThread);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setContentViewWithImageViewId(String callOutId,int imageViewId,Promise promise){
         try{
             m_CallOut = m_CallOutList.get(callOutId);
 //            ImageView imageView = (ImageView)callOut.getRootView().findViewById(imageViewId);
@@ -121,6 +187,22 @@ public class JSCallOut extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void showAtXY(String callOutId, double x, double y ,Promise promise){
+        try{
+            m_CallOut = m_CallOutList.get(callOutId);
+
+            m_CallOut.setLocation(x, y);
+
+            getCurrentActivity().runOnUiThread(updateThread);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
 
     Runnable updateThread = new Runnable(){
         @Override

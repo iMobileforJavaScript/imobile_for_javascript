@@ -26,6 +26,11 @@ public class JSPoint2D extends ReactContextBaseJavaModule {
         return REACT_CLASS;
     }
 
+    public static Point2D getObjFromList(String id){
+        return m_Point2DList.get(id);
+    }
+
+
     public static String registerId(Point2D obj) {
         for (Map.Entry entry : m_Point2DList.entrySet()) {
             if (obj.equals(entry.getValue())) {
@@ -62,6 +67,30 @@ public class JSPoint2D extends ReactContextBaseJavaModule {
             WritableMap map = Arguments.createMap();
             map.putString("point2DId",point2DId);
             promise.resolve(map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getX(String point2DId,Promise promise){
+        try{
+            Point2D point2D = getObjFromList(point2DId);
+            double x = point2D.getX();
+
+            promise.resolve(x);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getY(String point2DId,Promise promise){
+        try{
+            Point2D point2D = getObjFromList(point2DId);
+            double y = point2D.getY();
+
+            promise.resolve(y);
         }catch (Exception e){
             promise.reject(e);
         }

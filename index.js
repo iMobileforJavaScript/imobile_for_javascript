@@ -5,6 +5,11 @@ let RadiusUnit = NativeModules.JSRadiusUnit;
 let EncodeType = NativeModules.JSEncodeType;
 let DatasetType = NativeModules.JSDatasetType;
 let FieldType = NativeModules.JSFieldType;
+let TextAlignment = NativeModules.JSTextAlignment;
+let SupplyCenterType = NativeModules.JSSupplyCenterType;
+let PrjCoordSysType = NativeModules.JSPrjCoordSysType;
+let CoordSysTransMethod = NativeModules.JSCoordSysTransMethod;
+let RangeMode = NativeModules.JSRangeMode;
 
 import BufferAnalyst from './NativeModule/BufferAnalyst.js';
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js';
@@ -19,6 +24,7 @@ import Datasource from './NativeModule/Datasource.js';
 import DatasourceConnectionInfo from './NativeModule/DatasourceConnectionInfo.js';
 import DataUploadService from './NativeModule/DataUploadService.js';
 import GeoLine from './NativeModule/GeoLine.js';
+import GeoLineM from './NativeModule/GeoLineM.js';
 import Geometry from './NativeModule/Geometry.js';
 import GeoPoint from './NativeModule/GeoPoint.js';
 import GeoRegion from './NativeModule/GeoRegion.js';
@@ -37,6 +43,7 @@ import OverlayAnalyst from './NativeModule/OverlayAnalyst.js';
 import OverlayAnalystParameter from './NativeModule/OverlayAnalystParameter.js';
 import Point from './NativeModule/Point.js';
 import Point2D from './NativeModule/Point2D.js';
+import PointM from './NativeModule/PointM'
 import PrjCoordSys from './NativeModule/PrjCoordSys.js';
 import QueryParameter from './NativeModule/QueryParameter.js';
 import QueryService from './NativeModule/QueryService.js';
@@ -86,6 +93,23 @@ import Point3D from './NativeModule/Point3D';
 import Camera from './NativeModule/Camera';
 import Layer3DOSGBFile from './NativeModule/Layer3DOSGBFile';
 
+import FacilityAnalyst from './NativeModule/FacilityAnalyst'
+import FacilityAnalystSetting from './NativeModule/FacilityAnalystSetting'
+import WeightFieldInfo from './NativeModule/WeightFieldInfo'
+import WeightFieldInfos from './NativeModule/WeightFieldInfos'
+import TextPart from './NativeModule/TextPart'
+import TextStyle from './NativeModule/TextStyle'
+import GeoText from './NativeModule/GeoText'
+
+import TransportationAnalystParameter from './NativeModule/TransportationAnalystParameter'
+import TransportationAnalyst from './NativeModule/TransportationAnalyst'
+import LocationAnalystParameter from './NativeModule/LocationAnalystParameter'
+import SupplyCenter from './NativeModule/SupplyCenter'
+import SupplyCenters from './NativeModule/SupplyCenters'
+import TransportationAnalystSetting from './NativeModule/TransportationAnalystSetting'
+import CoordSysTranslator from './NativeModule/CoordSysTranslator'
+import CoordSysTransParameter from './NativeModule/CoordSysTransParameter'
+
 import Utility from './NativeModule/utility/utility.js';
 
 import SMMapView from './NativeModule/components/SMMapViewUI.js';
@@ -101,119 +125,145 @@ import SMPieChartView from './NativeModule/components/SMPieChartViewUI.js';
 import SMInstrumentChartView from './NativeModule/components/SMInstrumentChartViewUI.js';
 import SMWorkspaceManagerView from './NativeModule/components/SMWorkspaceManagerComponent.js';
 
+import EngineType from './NativeModule/EngineType'
 
 /*
-import Datasets from './NativeModule/Datasets.js';
-import Datasources from './NativeModule/Datasources.js';
-import Layers from './NativeModule/Layers.js';
-import Maps from './NativeModule/Maps.js';
-import Recordset from './NativeModule/Recordset.js';
-*/
+ import Datasets from './NativeModule/Datasets.js';
+ import Datasources from './NativeModule/Datasources.js';
+ import Layers from './NativeModule/Layers.js';
+ import Maps from './NativeModule/Maps.js';
+ import Recordset from './NativeModule/Recordset.js';
+ */
 export {
-    SMMapView,
-    SMLayerListView,
-    SMLegendView,
-    SMScaleView,
-    SMSceneView,
-    SMPlotView,
-    // SMSearchView,
-    SMWorkspaceManagerView,
-    
-    Utility,
-
-    Layer3Ds,
-    Layer3D,
-    Feature3D,
-    Feature3Ds,
-    Geometry3D,
-    Point3D,
-    Camera,
-    Layer3DOSGBFile,
-    
-    AMQPManager,
-    AMQPReceiver,
-    AMQPSender,
-    STOMPManager,
-    STOMPReceiver,
-    STOMPSender,
-    MQTTClientSide,
-    
-    SMBarChartView,
-    SMLineChartView,
-    SMPieChartView,
-    SMInstrumentChartView,
-    ChartData,
-    ChartView,
-    ChartPoint,
-    ChartLegend,
-    ColorScheme,
-    BarChartData,
-    BarChartDataItem,
-    LineChartData,
-    PieChartData,
-    // HotChart,
-    GridHotChart,
-    PointDensityChart,
-    PolymerChart,
-    RelationalPointChart,
-    RelationalChartPoint,
-    
-    Action,
-    BufferEndType,
-    RadiusUnit,
-    EncodeType,
-    DatasetType,
-    FieldType,
-    
-    BufferAnalyst,
-    BufferAnalystGeometry,
-    BufferAnalystParameter,
-    Callout,
-    CursorType,
-    DataDownloadService,
-    Dataset,
-    DatasetVector,
-    DatasetVectorInfo,
-    Datasource,
-    DatasourceConnectionInfo,
-    DataUploadService,
-    Feature,
-    FeatureSet,
-    GeoLine,
-    Geometry,
-    GeoPoint,
-    GeoRegion,
-    GeoStyle,
-    Layer,
-    LayerSetting,
-    LayerSettingVector,
-    LocationManager,
-    Map,
-    MapControl,
-    MapView,
-    Navigation2,
-    OverlayAnalyst,
-    OverlayAnalystParameter,
-    Point,
-    Point2D,
-    PrjCoordSys,
-    QueryParameter,
-    QueryService,
-    Rectangle2D,
-    Selection,
-    ServiceBase,
-    ServiceQueryParameter,
-    Size2D,
-    Track,
-    TrackingLayer,
-    Workspace,
-    WorkspaceConnectionInfo,
-    
-    /*
-    Datasets,
-    Datasources,
-    Layers,
-    Maps,
-    Recordset,
-     */
+  SMMapView,
+  SMLayerListView,
+  SMLegendView,
+  SMScaleView,
+  SMSceneView,
+  SMPlotView,
+  // SMSearchView,
+  SMWorkspaceManagerView,
+  
+  Utility,
+  
+  Layer3Ds,
+  Layer3D,
+  Feature3D,
+  Feature3Ds,
+  Geometry3D,
+  Point3D,
+  Camera,
+  Layer3DOSGBFile,
+  
+  AMQPManager,
+  AMQPReceiver,
+  AMQPSender,
+  STOMPManager,
+  STOMPReceiver,
+  STOMPSender,
+  MQTTClientSide,
+  
+  SMBarChartView,
+  SMLineChartView,
+  SMPieChartView,
+  SMInstrumentChartView,
+  ChartData,
+  ChartView,
+  ChartPoint,
+  ChartLegend,
+  ColorScheme,
+  BarChartData,
+  BarChartDataItem,
+  LineChartData,
+  PieChartData,
+  // HotChart,
+  GridHotChart,
+  PointDensityChart,
+  PolymerChart,
+  RelationalPointChart,
+  RelationalChartPoint,
+  
+  Action,
+  BufferEndType,
+  RadiusUnit,
+  EncodeType,
+  DatasetType,
+  FieldType,
+  TextAlignment,
+  
+  BufferAnalyst,
+  BufferAnalystGeometry,
+  BufferAnalystParameter,
+  Callout,
+  CursorType,
+  DataDownloadService,
+  Dataset,
+  DatasetVector,
+  DatasetVectorInfo,
+  Datasource,
+  DatasourceConnectionInfo,
+  DataUploadService,
+  Feature,
+  FeatureSet,
+  GeoLine,
+  GeoLineM,
+  Geometry,
+  GeoPoint,
+  GeoRegion,
+  GeoStyle,
+  Layer,
+  LayerSetting,
+  LayerSettingVector,
+  LocationManager,
+  Map,
+  MapControl,
+  MapView,
+  Navigation2,
+  OverlayAnalyst,
+  OverlayAnalystParameter,
+  Point,
+  Point2D,
+  PointM,
+  PrjCoordSys,
+  QueryParameter,
+  QueryService,
+  Rectangle2D,
+  Selection,
+  ServiceBase,
+  ServiceQueryParameter,
+  Size2D,
+  Track,
+  TrackingLayer,
+  Workspace,
+  WorkspaceConnectionInfo,
+  FacilityAnalyst,
+  FacilityAnalystSetting,
+  WeightFieldInfo,
+  WeightFieldInfos,
+  TextStyle,
+  TextPart,
+  GeoText,
+  
+  SupplyCenterType,
+  PrjCoordSysType,
+  CoordSysTransMethod,
+  TransportationAnalystParameter,
+  TransportationAnalyst,
+  LocationAnalystParameter,
+  SupplyCenter,
+  SupplyCenters,
+  TransportationAnalystSetting,
+  CoordSysTranslator,
+  CoordSysTransParameter,
+  
+  EngineType,
+  RangeMode,
+  
+  /*
+   Datasets,
+   Datasources,
+   Layers,
+   Maps,
+   Recordset,
+   */
 };

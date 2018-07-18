@@ -3,20 +3,14 @@ package com.supermap.rnsupermap;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.data.GeoLine;
-import com.supermap.data.GeoPoint;
 import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class JSGeoLine extends JSGeometry {

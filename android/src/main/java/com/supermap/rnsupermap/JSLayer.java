@@ -7,6 +7,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.data.Dataset;
+import com.supermap.data.Point;
+import com.supermap.data.Point2D;
 import com.supermap.data.Recordset;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerGroup;
@@ -222,10 +224,7 @@ public class JSLayer extends ReactContextBaseJavaModule {
         try{
             int typeNum;
             Layer layer = mLayerList.get(layerId);
-            System.out.println("========getAdditionalSetting========");
             LayerSetting layerSetting = layer.getAdditionalSetting();
-            System.out.println("========getAdditionalSetting=====layerSetting===");
-            System.out.println("============layerSetting Type===" + layerSetting);
             String layerSettingId = JSLayerSetting.registerId(layerSetting);
             if (layerSetting instanceof LayerSettingVector){
                 typeNum = 0;
@@ -270,6 +269,51 @@ public class JSLayer extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void hitTestEx(String layerId, String pointId, int tolerance, Promise promise){
+        try{
+            Layer layer = mLayerList.get(layerId);
+
+            Point point = JSPoint.getObjFromList(pointId);
+            Selection selection = layer.hitTestEx(point, tolerance);
+            String selectionId = JSSelection.registerId(selection);
+
+            Recordset recordset = selection.toRecordset();
+            String recordsetId = JSRecordset.registerId(recordset);
+
+            WritableMap map = Arguments.createMap();
+            map.putString("selectionId", selectionId);
+            map.putString("recordsetId", recordsetId);
+
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void hitTest(String layerId, String point2DId, int tolerance, Promise promise){
+        try{
+            Layer layer = mLayerList.get(layerId);
+            Point2D point2D = JSPoint2D.getObjFromList(point2DId);
+            Selection selection = layer.hitTest(point2D, tolerance);
+            String selectionId = JSSelection.registerId(selection);
+
+            Recordset recordset = selection.toRecordset();
+            String recordsetId = JSRecordset.registerId(recordset);
+
+            WritableMap map = Arguments.createMap();
+            map.putString("selectionId", selectionId);
+            map.putString("recordsetId", recordsetId);
+
+            promise.resolve(map);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+
 
 //    @ReactMethod
 //    public void ungroup(String layerGroupId,Promise promise){

@@ -1,7 +1,7 @@
 /**
  * Created by will on 2017/3/10.
  */
-export const EngineType = {
+export default {
     OGC: 23,
     UDB: 219,
     SuperMapCloud: 224,

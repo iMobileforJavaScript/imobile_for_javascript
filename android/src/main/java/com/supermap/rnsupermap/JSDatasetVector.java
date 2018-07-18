@@ -42,7 +42,8 @@ import java.util.Vector;
 
 import static com.facebook.react.bridge.ReadableType.Array;
 
-public class JSDatasetVector extends ReactContextBaseJavaModule {
+//public class JSDatasetVector extends ReactContextBaseJavaModule {
+public class JSDatasetVector extends JSDataset {
     public static final String REACT_CLASS = "JSDatasetVector";
     public static final String QUERYBYFILTER = "com.supermap.RN.JSDatasetVector.query_by_filter";
     private static Map<String, DatasetVector> m_DatasetVectorList = new HashMap<String, DatasetVector>();
@@ -73,6 +74,17 @@ public class JSDatasetVector extends ReactContextBaseJavaModule {
         String id = Long.toString(calendar.getTimeInMillis());
         m_DatasetVectorList.put(id, obj);
         return id;
+    }
+
+    @ReactMethod
+    public void getName(String datasetVectorId, Promise promise) {
+        try {
+            DatasetVector datasetVector = m_DatasetVectorList.get(datasetVectorId);
+            String name = datasetVector.getName();
+            promise.resolve(name);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
     }
 
     @ReactMethod

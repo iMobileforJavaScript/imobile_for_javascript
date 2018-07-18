@@ -37,7 +37,8 @@ public class JSMapView extends ReactContextBaseJavaModule {
     CallOut m_callout;
     String m_PointName;
 
-
+    public static final int STARTPOINT = R.drawable.startpoint;
+    public static final int DESTPOINT = R.drawable.destpoint;
 
     @Override
     public String getName(){return "JSMapView";}

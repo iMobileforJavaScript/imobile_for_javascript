@@ -70,6 +70,15 @@ export default class Recordset {
         }
     }
 
+    async moveFirst(){
+        try{
+            let result = await R.moveFirst(this._SMRecordsetId);
+            return result;
+        }catch (e){
+            console.error(e);
+        }
+    }
+
     async moveNext(){
         try{
             await R.moveNext(this._SMRecordsetId);

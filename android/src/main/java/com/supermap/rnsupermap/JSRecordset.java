@@ -123,6 +123,18 @@ public class JSRecordset extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void moveFirst(String recordsetId,Promise promise){
+        try{
+            Recordset recordset = getObjFromList(recordsetId);
+            boolean result = recordset.moveFirst();
+
+            promise.resolve(result);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void moveNext(String recordsetId,Promise promise){
         try{
             Recordset recordset = getObjFromList(recordsetId);

@@ -9,6 +9,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.data.DatasetType;
 import com.supermap.data.Datasource;
@@ -402,10 +403,14 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
      * 设置当前影像图层显示的波段索引
      */
     @ReactMethod
-    public void setVisibleSubLayers(String layerSettingImageId, String[] subLayers,Promise promise){
+    public void setVisibleSubLayers(String layerSettingImageId, ReadableArray subLayers, Promise promise){
         try{
             LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
-            layerSettingImage.setVisibleSubLayers(subLayers);
+            String[] list = new String[subLayers.size()];
+            for (int i = 0; i < subLayers.size(); i++) {
+                list[i] = subLayers.getString(i);
+            }
+            layerSettingImage.setVisibleSubLayers(list);
 
             promise.resolve(true);
         }catch (Exception e){

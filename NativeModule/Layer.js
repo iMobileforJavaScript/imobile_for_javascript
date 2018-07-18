@@ -233,4 +233,46 @@ export default class Layer{
             console.error(e)
         }
     }
+  
+  /**
+   * 返回选中的对象的集合
+   * @param point2DId
+   * @param tolerance
+   * @returns {Promise.<Selection>}
+   */
+    async hitTest(point2DId, tolerance) {
+        try {
+            let { selectionId, recordsetId } = await L.hitTest(this._SMLayerId, point2DId, tolerance)
+            let selection = await new Selection()
+            selection._SMSelectionId = selectionId
+            let recordset = await new Recordset()
+            recordset._SMRecordsetId = recordsetId
+          
+            selection.recordset = recordset
+            return selection
+        } catch (e) {
+          console.error(e)
+        }
+    }
+  
+  /**
+   * 返回选中的对象的集合
+   * @param point
+   * @param tolerance
+   * @returns {Promise.<Selection>}
+   */
+    async hitTestEx(point, tolerance) {
+        try {
+            let { selectionId, recordsetId } = await L.hitTestEx(this._SMLayerId, point._SMPointId, tolerance)
+            let selection = await new Selection()
+            selection._SMSelectionId = selectionId
+            let recordset = await new Recordset()
+            recordset._SMRecordsetId = recordsetId
+    
+            selection.recordset = recordset
+            return selection
+        } catch (e) {
+          console.error(e)
+        }
+    }
 }

@@ -186,6 +186,11 @@ var RCTMapView = requireNativeComponent('RCTMapView',SMMapView,{nativeOnly:{
     onChange:true,
 }});
 
+SMMapView.Image = {
+  STARTPOINT,
+  DESTPOINT,
+}
+
 var styles = StyleSheet.create({
     views: {
         flex: 1,
