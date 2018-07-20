@@ -313,6 +313,29 @@ public class JSLayer extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void getCaption(String layerId, Promise promise){
+        try{
+            Layer layer = mLayerList.get(layerId);
+            String value = layer.getCaption();
+
+            promise.resolve(value);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setCaption(String layerId, String value, Promise promise){
+        try{
+            Layer layer = mLayerList.get(layerId);
+            layer.setCaption(value);
+
+            promise.resolve(true);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
 
 
 //    @ReactMethod

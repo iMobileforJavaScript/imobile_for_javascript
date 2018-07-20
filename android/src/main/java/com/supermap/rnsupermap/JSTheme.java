@@ -55,9 +55,8 @@ public class JSTheme extends ReactContextBaseJavaModule {
     public void makeThemeLabel(String datasetVectorId, String rangeExpress, int rangeMode, double rangeParameter,
                           int colorGradientType, Promise promise){
         try{
-            ThemeLabel themeLabel = new ThemeLabel();
             DatasetVector datasetVector = JSDatasetVector.getObjFromList(datasetVectorId);
-            themeLabel.makeDefault(datasetVector,rangeExpress,(RangeMode) Enum.parse(RangeMode.class,rangeMode)
+            ThemeLabel themeLabel = ThemeLabel.makeDefault(datasetVector,rangeExpress,(RangeMode) Enum.parse(RangeMode.class,rangeMode)
                     ,rangeParameter,(ColorGradientType)Enum.parse(ColorGradientType.class,colorGradientType));
 
             String themeId = registerId(themeLabel);
@@ -73,9 +72,8 @@ public class JSTheme extends ReactContextBaseJavaModule {
     public void makeThemeRange(String datasetVectorId, String rangeExpress, int rangeMode, double rangeParameter,
                                int colorGradientType, Promise promise){
         try{
-            ThemeRange themeRange = new ThemeRange();
             DatasetVector datasetVector = JSDatasetVector.getObjFromList(datasetVectorId);
-            themeRange.makeDefault(datasetVector,rangeExpress,(RangeMode) Enum.parse(RangeMode.class,rangeMode)
+            ThemeRange themeRange = ThemeRange.makeDefault(datasetVector,rangeExpress,(RangeMode) Enum.parse(RangeMode.class,rangeMode)
                     ,rangeParameter,(ColorGradientType)Enum.parse(ColorGradientType.class,colorGradientType));
 
             String themeId = registerId(themeRange);
@@ -91,11 +89,10 @@ public class JSTheme extends ReactContextBaseJavaModule {
     public void makeThemeUnique(String datasetVectorId, String uniqueExpression,
                                int colorGradientType, Promise promise){
         try{
-            ThemeUnique themeUnique = new ThemeUnique();
             DatasetVector datasetVector = JSDatasetVector.getObjFromList(datasetVectorId);
-            ThemeUnique themeUnique1 = themeUnique.makeDefault(datasetVector,uniqueExpression,(ColorGradientType)Enum.parse(ColorGradientType.class,colorGradientType));
+            ThemeUnique themeUnique = ThemeUnique.makeDefault(datasetVector,uniqueExpression,(ColorGradientType)Enum.parse(ColorGradientType.class,colorGradientType));
 
-            String themeId = registerId(themeUnique1);
+            String themeId = registerId(themeUnique);
             WritableMap map = Arguments.createMap();
             map.putString("themeId",themeId);
             promise.resolve(map);

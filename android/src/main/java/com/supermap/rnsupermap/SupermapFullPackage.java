@@ -143,7 +143,13 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new LogModule(reactContext));
 
         modules.add(new JSRangeMode(reactContext));
-
+        modules.add(new JSThemeLabel(reactContext));
+        modules.add(new JSThemeLabelItem(reactContext));
+        modules.add(new JSThemeRangeItem(reactContext));
+        modules.add(new JSThemeUniqueItem(reactContext));
+        modules.add(new JSThemeUnique(reactContext));
+        modules.add(new JSThemeRange(reactContext));
+        modules.add(new JSColorGradientType(reactContext));
 
         return modules;
     }

@@ -10,6 +10,7 @@ let SupplyCenterType = NativeModules.JSSupplyCenterType;
 let PrjCoordSysType = NativeModules.JSPrjCoordSysType;
 let CoordSysTransMethod = NativeModules.JSCoordSysTransMethod;
 let RangeMode = NativeModules.JSRangeMode;
+let ColorGradientType = NativeModules.JSColorGradientType;
 
 import BufferAnalyst from './NativeModule/BufferAnalyst.js';
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js';
@@ -126,6 +127,12 @@ import SMInstrumentChartView from './NativeModule/components/SMInstrumentChartVi
 import SMWorkspaceManagerView from './NativeModule/components/SMWorkspaceManagerComponent.js';
 
 import EngineType from './NativeModule/EngineType'
+import ThemeLabelItem from './NativeModule/ThemeLabelItem'
+import ThemeRangeItem from './NativeModule/ThemeRangeItem'
+import ThemeUniqueItem from './NativeModule/ThemeUniqueItem'
+import ThemeLabel from './NativeModule/ThemeLabel'
+import ThemeRange from './NativeModule/ThemeRange'
+import ThemeUnique from './NativeModule/ThemeUnique'
 
 /*
  import Datasets from './NativeModule/Datasets.js';
@@ -257,7 +264,16 @@ export {
   CoordSysTransParameter,
   
   EngineType,
+  
   RangeMode,
+  ThemeLabelItem,
+  ThemeRangeItem,
+  ThemeUniqueItem,
+  ThemeLabel,
+  ThemeRange,
+  ThemeUnique,
+  
+  ColorGradientType,
   
   /*
    Datasets,

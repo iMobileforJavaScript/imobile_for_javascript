@@ -657,12 +657,9 @@ public class JSMap extends ReactContextBaseJavaModule {
     public void removeLayerByName(String mapId,String layerName,Promise promise){
         try{
             Map map = mapList.get(mapId);
-            String layerId = JSLayer.registerId(map.getLayers().get(layerName));
-            map.getLayers().remove(layerName);
-            
-            WritableMap map1 = Arguments.createMap();
-            map1.putString("layerId",layerId);
-            promise.resolve(map1);
+            boolean result = map.getLayers().remove(layerName);
+
+            promise.resolve(result);
         }catch (Exception e){
             promise.reject(e);
         }
@@ -672,12 +669,8 @@ public class JSMap extends ReactContextBaseJavaModule {
     public void removeLayerByIndex(String mapId,int index,Promise promise){
         try{
             Map map = mapList.get(mapId);
-            String layerId = JSLayer.registerId(map.getLayers().get(index));
-            map.getLayers().remove(index);
-            
-            WritableMap map1 = Arguments.createMap();
-            map1.putString("layerId",layerId);
-            promise.resolve(map1);
+            boolean result = map.getLayers().remove(index);
+            promise.resolve(result);
         }catch (Exception e){
             promise.reject(e);
         }
