@@ -133,6 +133,7 @@ import ThemeUniqueItem from './NativeModule/ThemeUniqueItem'
 import ThemeLabel from './NativeModule/ThemeLabel'
 import ThemeRange from './NativeModule/ThemeRange'
 import ThemeUnique from './NativeModule/ThemeUnique'
+import OpenMapfile from './NativeModule/OpenMapfile'
 
 /*
  import Datasets from './NativeModule/Datasets.js';
@@ -272,6 +273,7 @@ export {
   ThemeLabel,
   ThemeRange,
   ThemeUnique,
+  OpenMapfile,
   
   ColorGradientType,
   

@@ -150,6 +150,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSThemeUnique(reactContext));
         modules.add(new JSThemeRange(reactContext));
         modules.add(new JSColorGradientType(reactContext));
+        modules.add(new JSOpenMapfile(reactContext));
 
         return modules;
     }
