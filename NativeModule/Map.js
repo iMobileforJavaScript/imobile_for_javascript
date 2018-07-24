@@ -84,10 +84,10 @@ export default class Map {
   }
   
   /**
-   * 根据类型查找图层
+   * 根据类型查找图层, type = -1 时，返回全部类型
    * @returns {Promise}
    */
-  async getLayersByType(type) {
+  async getLayersByType(type = -1) {
     try {
       let layers = await M.getLayersByType(this._SMMapId, type);
       

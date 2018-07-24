@@ -311,17 +311,21 @@ public class JSMap extends ReactContextBaseJavaModule {
                 Dataset dataset = layer.getDataset();
                 String datasetType = dataset.getType().toString();
                 int intType = Enum.getValueByName(DatasetType.class, datasetType);
-                if (intType == type) {
+                if (intType == type || type == -1) {
                     String layerId = JSLayer.registerId(layer);
 
                     WritableMap wMap = new Arguments().createMap();
                     wMap.putString("id", layerId);
-                    wMap.putInt("type", type);
+                    wMap.putInt("type", intType);
                     wMap.putInt("index", i);
                     wMap.putString("name", layer.getName());
                     wMap.putString("caption", layer.getCaption());
                     wMap.putString("description", layer.getDescription());
                     wMap.putString("datasetName", dataset.getName());
+                    wMap.putBoolean("isEditable", layer.isEditable());
+                    wMap.putBoolean("isVisible", layer.isVisible());
+                    wMap.putBoolean("isSelectable", layer.isSelectable());
+                    wMap.putBoolean("isSnapable", layer.isSnapable());
                     arr.pushMap(wMap);
                 }
             }

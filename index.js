@@ -11,6 +11,7 @@ let PrjCoordSysType = NativeModules.JSPrjCoordSysType;
 let CoordSysTransMethod = NativeModules.JSCoordSysTransMethod;
 let RangeMode = NativeModules.JSRangeMode;
 let ColorGradientType = NativeModules.JSColorGradientType;
+let GPSElementType = NativeModules.JSGPSElementType;
 
 import BufferAnalyst from './NativeModule/BufferAnalyst.js';
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js';
@@ -70,6 +71,8 @@ import BarChartData from './NativeModule/BarChartData.js';
 import BarChartDataItem from './NativeModule/BarChartDataItem.js';
 import LineChartData from './NativeModule/LineChartData.js';
 import PieChartData from './NativeModule/PieChartData.js';
+import OpenMapfile from'./NativeModule/OpenMapfile.js';
+
 // import HotChart from './NativeModule/HotChart.js';
 import GridHotChart from './NativeModule/GridHotChart.js';
 import PointDensityChart from './NativeModule/PointDensityChart.js';
@@ -133,6 +136,12 @@ import ThemeUniqueItem from './NativeModule/ThemeUniqueItem'
 import ThemeLabel from './NativeModule/ThemeLabel'
 import ThemeRange from './NativeModule/ThemeRange'
 import ThemeUnique from './NativeModule/ThemeUnique'
+
+import Collector from './NativeModule/Collector'
+import CollectorElement from './NativeModule/CollectorElement'
+import ElementPoint from './NativeModule/ElementPoint'
+import ElementLine from './NativeModule/ElementLine'
+import ElementPolygon from './NativeModule/ElementPolygon'
 
 /*
  import Datasets from './NativeModule/Datasets.js';
@@ -274,6 +283,14 @@ export {
   ThemeUnique,
   
   ColorGradientType,
+  OpenMapfile,
+  
+  GPSElementType,
+  Collector,
+  CollectorElement,
+  ElementPoint,
+  ElementLine,
+  ElementPolygon,
   
   /*
    Datasets,

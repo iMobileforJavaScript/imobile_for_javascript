@@ -3,6 +3,7 @@ package com.supermap.rnsupermap;
 import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 
 import com.facebook.react.bridge.WritableArray;
 import com.supermap.RNUtils.N_R_EventSender;
@@ -20,6 +21,7 @@ import com.supermap.data.GeoPie;
 import com.supermap.data.GeoPoint;
 import com.supermap.data.GeoRegion;
 import com.supermap.data.Geometry;
+import com.supermap.data.GeometryType;
 import com.supermap.data.Point;
 import com.supermap.data.Point2D;
 import com.supermap.mapping.Action;
@@ -41,6 +43,7 @@ import com.supermap.mapping.MapParameterChangedListener;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.RefreshListener;
 import com.supermap.mapping.UndoStateChangeListener;
+import com.supermap.mapping.collector.Collector;
 import com.supermap.navi.Navigation;
 import com.supermap.navi.Navigation2;
 
@@ -93,6 +96,8 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     private static final String ADDNODEENABLE = "com.supermap.RN.JSMapcontrol.add_node_enable";
     private static final String DELETENODEENABLE = "com.supermap.RN.JSMapcontrol.delete_node_enable";
 
+//    private static final String TOUCH_UP_EVENT = "com.supermap.RN.JSMapcontrol.touch_up";
+
 //    Listeners
     private ActionChangedListener mActionChangedListener;
     private RefreshListener mRefreshListener;
@@ -107,6 +112,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     private MeasureListener mMeasureListener;
     private UndoStateChangeListener mUndoStateChangeListener;
     private EditStatusListener mEditStatusListener;
+    private View.OnTouchListener mTouchListener;
 
     @Override
     public String getName(){return "JSMapControl";}
@@ -328,8 +334,8 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     @ReactMethod
     public void submit(String mapControlId,Promise promise){
         try{
-            MapControl mapControl = mapControlList.get(mapControlId);
-            Boolean b = mapControl.submit();
+            mMapControl = mapControlList.get(mapControlId);
+            Boolean b = mMapControl.submit();
 
             promise.resolve(b);
         }catch (Exception e){
@@ -1003,6 +1009,40 @@ public class JSMapControl extends ReactContextBaseJavaModule {
 
         }
     }
+
+    @ReactMethod
+    public void getCollector(String mapControlId, Promise promise){
+        try {
+            mMapControl = mapControlList.get(mapControlId);
+            Collector collector = mMapControl.getCollector();
+            String id = JSCollector.registerId(collector);
+            promise.resolve(id);
+        }catch (Exception e){
+            promise.reject(e);
+
+        }
+    }
+
+    /**
+     * 指定编辑几何对象
+     * @param mapControlId
+     * @param GeoID
+     * @param layerId
+     * @param promise
+     */
+    @ReactMethod
+    public void appointEditGeometry(String mapControlId, int GeoID, String layerId, Promise promise){
+        try{
+            mMapControl = mapControlList.get(mapControlId);
+            Layer layer = JSLayer.getLayer(layerId);
+            boolean result = mMapControl.appointEditGeometry(GeoID, layer);
+            promise.resolve(result);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+
 
     Runnable updateThread = new Runnable(){
         @Override

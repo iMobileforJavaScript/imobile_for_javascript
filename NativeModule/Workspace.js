@@ -177,7 +177,7 @@ export default class Workspace{
         try{
             if(jsonObject.webBBox){
                 var rect = jsonObject.webBBox;
-                if(typeof rect != 'string') jsonObject.webBBox = rect._SMRectangle2DId;
+                if(typeof rect !== 'string') jsonObject.webBBox = rect._SMRectangle2DId;
             }
             var {datasourceId} = await W.openDatasource(this._SMWorkspaceId,jsonObject);
             var datasource = new Datasource();
