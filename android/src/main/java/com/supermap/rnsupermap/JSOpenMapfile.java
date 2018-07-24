@@ -1,6 +1,5 @@
 package com.supermap.rnsupermap;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -9,9 +8,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 
 import java.io.File;
-import java.sql.Array;
-import java.util.ArrayList;
-import java.util.List;
 
 public class JSOpenMapfile extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "JSOpenMapfile";

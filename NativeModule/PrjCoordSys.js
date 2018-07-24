@@ -38,7 +38,6 @@ export default class PrjCoordSys {
       let type = await PCS.getType(this._SMPrjCoordSysId)
       return type
     } catch (e) {
-      debugger
       console.error(e)
     }
   }

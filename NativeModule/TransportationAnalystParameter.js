@@ -211,7 +211,6 @@ export default class TransportationAnalystParameter {
     try {
       await TAP.setEdgesReturn(this._SMTransportationAnalystParameterId, value);
     } catch (e) {
-      debugger
       console.error(e);
     }
   }
@@ -238,7 +237,6 @@ export default class TransportationAnalystParameter {
     try {
       await TAP.setNodesReturn(this._SMTransportationAnalystParameterId, value);
     } catch (e) {
-      debugger
       console.error(e);
     }
   }
@@ -252,7 +250,6 @@ export default class TransportationAnalystParameter {
     try {
       await TAP.setPathGuidesReturn(this._SMTransportationAnalystParameterId, value);
     } catch (e) {
-      debugger
       console.error(e);
     }
   }
@@ -266,7 +263,6 @@ export default class TransportationAnalystParameter {
     try {
       await TAP.setRoutesReturn(this._SMTransportationAnalystParameterId, value);
     } catch (e) {
-      debugger
       console.error(e);
     }
   }
@@ -293,7 +289,6 @@ export default class TransportationAnalystParameter {
     try {
       await TAP.setPoints(this._SMTransportationAnalystParameterId, points2DsArr);
     } catch (e) {
-      debugger
       console.error(e);
     }
   }

@@ -164,7 +164,6 @@ export default class CallOut {
         await C.setLocation(this._SMCalloutId, arguments[0]._SMPoint2DId);
       }
     } catch (e) {
-      debugger
       console.error(e);
     }
   }
@@ -192,7 +191,6 @@ export default class CallOut {
     try {
       await C.setContentView(this._SMCalloutId, imagePath);
     } catch (e) {
-      debugger
       console.error(e);
     }
   }

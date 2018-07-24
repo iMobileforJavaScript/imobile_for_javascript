@@ -8,7 +8,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.supermap.RNUtils.N_R_EventSender;
 import com.supermap.data.Dataset;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
