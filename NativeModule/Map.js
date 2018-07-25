@@ -674,7 +674,6 @@ export default class Map {
       prjCoordSys._SMPrjCoordSysId = prjCoordSysId
       return prjCoordSys;
     } catch (e) {
-      debugger
       console.error(e);
     }
   }

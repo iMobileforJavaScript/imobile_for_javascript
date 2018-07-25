@@ -155,7 +155,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSElementLine(reactContext));
         modules.add(new JSElementPoint(reactContext));
         modules.add(new JSElementPolygon(reactContext));
-        
+
         modules.add(new JSGPSElementType(reactContext));
         modules.add(new JSGeometryType(reactContext));
         modules.add(new JSOpenMapfile(reactContext));

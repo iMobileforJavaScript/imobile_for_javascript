@@ -399,7 +399,6 @@ export default class TransportationAnalystSetting {
     try {
       await TAS.setNodeIDField(this._SMTransportationAnalystSettingId, value)
     } catch (e) {
-      debugger
       console.error(e)
     }
   }
@@ -413,7 +412,6 @@ export default class TransportationAnalystSetting {
     try {
       await TAS.setNodeNameField(this._SMTransportationAnalystSettingId, value)
     } catch (e) {
-      debugger
       console.error(e)
     }
   }
