@@ -244,4 +244,40 @@ public class JSDatasource extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void isOpened(String datasourceId, Promise promise){
+        try {
+            m_datasource = m_DatasourceList.get(datasourceId);
+            boolean value = m_datasource.isOpened();
+
+            promise.resolve(value);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void isModified(String datasourceId, Promise promise){
+        try {
+            m_datasource = m_DatasourceList.get(datasourceId);
+            boolean value = m_datasource.isModified();
+
+            promise.resolve(value);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void isReadOnly(String datasourceId, Promise promise){
+        try {
+            m_datasource = m_DatasourceList.get(datasourceId);
+            boolean value = m_datasource.isReadOnly();
+
+            promise.resolve(value);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 }

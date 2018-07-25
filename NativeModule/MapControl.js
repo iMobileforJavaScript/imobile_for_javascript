@@ -316,26 +316,26 @@ export default class MapControl {
    * @param {function} callback - 刷新处理回调函数
    * @returns {Promise.<void>}
    */
-  /*
-   async setRefreshListener(callback){
-   try{
-   var success = await MC.setRefreshListener(this._SMMapControlId);
-   console.log("MapControl:test result:",success);
-   if(success){
-   DeviceEventEmitter.addListener("com.supermap.RN.JSMapcontrol.refresh_event",function (e) {
-   // console.log("MapControl:监听到地图刷新");
-   if(typeof callback == 'function'){
-   callback(e);
-   }else{
-   console.error("Please set a callback function as the first argument.");
-   }
-   });
-   }
-   }catch(e){
-   console.error(e);
-   }
-   }
-   */
+  
+  async setRefreshListener(callback) {
+    try {
+      var success = await MC.setRefreshListener(this._SMMapControlId);
+      console.log("MapControl:test result:", success);
+      if (success) {
+        DeviceEventEmitter.addListener("com.supermap.RN.JSMapcontrol.refresh_event", function (e) {
+          // console.log("MapControl:监听到地图刷新");
+          if (typeof callback === 'function') {
+            callback(e);
+          } else {
+            console.error("Please set a callback function as the first argument.");
+          }
+        });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
   
   /**
    * 获得当前Geometry几何对象

@@ -9,8 +9,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 public class JSSystemUtil extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "JSSystemUtil";

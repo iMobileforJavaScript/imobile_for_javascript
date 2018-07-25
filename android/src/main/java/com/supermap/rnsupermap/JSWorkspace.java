@@ -13,17 +13,15 @@ import com.supermap.data.Datasources;
 import com.supermap.data.EngineType;
 import com.supermap.data.Enum;
 import com.supermap.data.Maps;
-import com.supermap.data.Rectangle2D;
-import com.supermap.data.StrokeType;
 import com.supermap.data.Workspace;
 import com.supermap.data.WorkspaceConnectionInfo;
 import com.supermap.data.WorkspaceType;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.io.File;
+
 
 /**
  * Created by will on 2016/6/16.
@@ -377,13 +375,28 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
 //            info.setServer(android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + filePath);
             info.setServer(path);
             info.setEngineType((EngineType) Enum.parse(EngineType.class,engineType));
+
+            File file = new File(path);
+            if (path.endsWith(".udb")) {
+                String s1 = path.substring(0, path.lastIndexOf(".udb"));
+                String path2 = s1 + ".udd";
+                File file2 = new File(path2);
+                if (file2.exists() && file2.isFile()) {
+                    file2.delete();
+                }
+            }
+
+            if (file.exists() && file.isFile()) {
+                file.delete();
+            }
+
             Datasource datasource = workspace.getDatasources().create(info);
 
-            String datasourceId = JSDatasource.registerId(datasource);
-
-            WritableMap map = Arguments.createMap();
-            map.putString("datasourceId",datasourceId);
-            promise.resolve(map);
+            String datasourceId = "";
+            if (datasource != null) {
+                datasourceId = JSDatasource.registerId(datasource);
+            }
+            promise.resolve(datasourceId);
         }catch(Exception e) {
             promise.reject(e);
         }
