@@ -103,10 +103,7 @@ public class JSMap extends ReactContextBaseJavaModule {
             m_Map = mapList.get(mapId);
             String name = m_Map.getName();
 
-            WritableMap map = Arguments.createMap();
-            map.putString("name", name);
-
-            promise.resolve(map);
+            promise.resolve(name);
         }catch(Exception e){
             promise.reject(e);
         }

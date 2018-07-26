@@ -267,7 +267,7 @@ export default class Map {
    */
   async save(mapName) {
     try {
-      if (typeof mapName === 'string') {
+      if (mapName) {
         var { saved } = await M.saveAs(this._SMMapId, mapName);
       } else {
         var { saved } = await M.save(this._SMMapId);
@@ -673,6 +673,18 @@ export default class Map {
       let prjCoordSys = new PrjCoordSys()
       prjCoordSys._SMPrjCoordSysId = prjCoordSysId
       return prjCoordSys;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  /**
+   * 返回地图的名称
+   * @returns {Promise.<PrjCoordSys>}
+   */
+  async getName() {
+    try {
+      return await M.getName(this._SMMapId);
     } catch (e) {
       console.error(e);
     }
