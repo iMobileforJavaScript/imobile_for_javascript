@@ -398,4 +398,23 @@ public class JSRecordset extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 删除当前记录集指定id的记录
+     * @param recordsetId
+     * @param id
+     * @param promise
+     */
+    @ReactMethod
+    public void deleteById(String recordsetId, int id, Promise promise) {
+        try {
+            Recordset recordset = m_RecordsetList.get(recordsetId);
+            recordset.seekID(id);
+            boolean result = recordset.delete();
+
+            promise.resolve(result);
+        } catch (Exception e){
+            promise.reject(e);
+        }
+    }
 }

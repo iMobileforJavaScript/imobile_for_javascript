@@ -165,5 +165,13 @@ export default class Recordset {
         console.error(e);
       }
     }
+    
+    async deleteById(id) {
+      try {
+          return await R.deleteById(this._SMRecordsetId, id);
+      } catch (e){
+        console.error(e);
+      }
+    }
   
 }
