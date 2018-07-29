@@ -160,6 +160,8 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSGeometryType(reactContext));
         modules.add(new JSOpenMapfile(reactContext));
 
+        modules.add(new JSSpeechManager(reactContext));
+
         return modules;
     }
 }

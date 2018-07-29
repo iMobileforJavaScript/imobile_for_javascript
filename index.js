@@ -143,6 +143,8 @@ import ElementPoint from './NativeModule/ElementPoint'
 import ElementLine from './NativeModule/ElementLine'
 import ElementPolygon from './NativeModule/ElementPolygon'
 
+import SpeechManager from './NativeModule/SpeechManager'
+
 /*
  import Datasets from './NativeModule/Datasets.js';
  import Datasources from './NativeModule/Datasources.js';
@@ -291,6 +293,8 @@ export {
   ElementPoint,
   ElementLine,
   ElementPolygon,
+  
+  SpeechManager,
   
   /*
    Datasets,
