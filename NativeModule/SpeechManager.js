@@ -123,10 +123,9 @@ export default class SpeechManager {
   }
   
   /**
-   * 用于从选择集中删除指定的若干几何对象，这些几何对象由原来的选中状态变为非选中状态
-   * @param index  要删除的第一个几何对象的序列号
-   * @param count  要删除的几何对象的个数
-   * @returns {Promise.<Promise.<void>|Promise|Promise.<Promise|Boolean|Promise.<Promise.count>|Promise.<void>|Promise.<number>>|Promise.<Promise.count>|Boolean|Promise.<number>>}
+   * 调用此函数，开始语音听写
+   * @param handlers
+   * @returns {Promise.<void>}
    */
   async startListening(handlers) {
     try {
