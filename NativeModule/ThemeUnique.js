@@ -75,7 +75,7 @@ export default class ThemeUnique extends Theme {
       } else if (arguments[2] && arguments[2] instanceof Array) {
         id = await TU.makeDefaultWithColors(arguments[0]._SMDatasetVectorId, arguments[1], arguments[2])
       } else {
-        id = await TU.makeDefault(arguments[0]._SMDatasetVectorId, expression)
+        id = await TU.makeDefault(arguments[0]._SMDatasetVectorId, arguments[1])
       }
       let themeUnique = new ThemeUnique()
       themeUnique._SMThemeUniqueId = id

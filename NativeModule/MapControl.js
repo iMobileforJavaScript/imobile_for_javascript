@@ -1117,6 +1117,28 @@ export default class MapControl {
     }
   }
   
+  /**
+   * 将当前显示内容绘制到指定位图上, 并获取路径
+   * @params params      Object
+   * mapView    Object
+   * width      int
+   * height     int
+   * quality    int      0 - 100
+   * type       string   png, jpg/jpeg, webp
+   * @returns {Promise.<{result: Promise.result, uri: Promise.uri}>}
+   */
+  async outputMap(params = {}) {
+    try {
+      let paramss = {width: 2000, height: 2000, quality: 60, type: 'png', mapViewId: ''}
+      Object.assign(paramss, params, {mapViewId: params.mapView._SMMapViewId})
+      debugger
+      let { result, uri } = await MC.outputMap(this._SMMapControlId, paramss.mapViewId, paramss.width, paramss.height, paramss.quality, paramss.type);
+      return { result, uri }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
   // /**
   //  * 设置touch监听
   //  * @returns {Promise.<Collector>}

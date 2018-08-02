@@ -1,5 +1,7 @@
 package com.supermap.rnsupermap;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -40,6 +42,7 @@ import com.supermap.mapping.GeometrySelectedListener;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MapParameterChangedListener;
+import com.supermap.mapping.MapView;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.RefreshListener;
 import com.supermap.mapping.UndoStateChangeListener;
@@ -47,6 +50,9 @@ import com.supermap.mapping.collector.Collector;
 import com.supermap.navi.Navigation;
 import com.supermap.navi.Navigation2;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,6 +70,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     private Navigation2 mNavigation2;
     ReactContext mReactContext;
 
+    private static final String TEMP_FILE_PREFIX = "iTabletImage";
 
     private static final String BOUNDSCHANGED = "Supermap.MapControl.MapParamChanged.BoundsChanged";
     private static final String SCALECHANGED = "Supermap.MapControl.MapParamChanged.ScaleChanged";
@@ -1042,6 +1049,107 @@ public class JSMapControl extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 将当前显示内容绘制到指定位图上
+     * @param mapControlId
+     * @param width
+     * @param height
+     * @param quality
+     * @param type
+     * @param promise
+     */
+    @ReactMethod
+    public void outputMap(String mapControlId, String mapViewId, int width, int height, int quality, String type, Promise promise){
+        try{
+            getCurrentActivity().runOnUiThread(new OutputMapThread(mapControlId, mapViewId, width, height, quality, type, promise));
+
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    class OutputMapThread implements Runnable {
+
+        private String mapControlId;
+        private String mapViewId;
+        private int width;
+        private int height;
+        private int quality;
+        private String type;
+        private Promise promise;
+
+        public OutputMapThread(String mapControlId, String mapViewId, int width, int height, int quality, String type, Promise promise) {
+            this.mapControlId = mapControlId;
+            this.mapViewId = mapViewId;
+            this.width = width;
+            this.height = height;
+            this.quality = quality;
+            this.type = type;
+            this.promise = promise;
+        }
+
+        @Override
+        public void run() {
+            try {
+                mMapControl = mapControlList.get(mapControlId);
+                MapView mapView;
+                int imgHeight = height;
+                int imgWidth = width;
+                if (!mapControlId.equals("")) {
+                    mapView = JSMapView.getObjById(mapViewId);
+                    imgHeight = mapView.getHeight();
+                    imgWidth = mapView.getWidth();
+                }
+                Bitmap bitmap = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
+                boolean result = mMapControl.outputMap(bitmap);
+                File externalCacheDir = getReactApplicationContext().getExternalCacheDir();
+                File internalCacheDir = getReactApplicationContext().getCacheDir();
+                File cacheDir;
+                if (externalCacheDir == null && internalCacheDir == null) {
+                    throw new IOException("No cache directory available");
+                }
+                if (externalCacheDir == null) {
+                    cacheDir = internalCacheDir;
+                }
+                else if (internalCacheDir == null) {
+                    cacheDir = externalCacheDir;
+                } else {
+                    cacheDir = externalCacheDir.getFreeSpace() > internalCacheDir.getFreeSpace() ?
+                            externalCacheDir : internalCacheDir;
+                }
+                String suffix = ".png";
+                File bitmapFile = File.createTempFile(TEMP_FILE_PREFIX, suffix, cacheDir);
+
+                Bitmap.CompressFormat compressFormat;
+                switch (type) {
+                    case "jpeg":
+                    case "jpg":
+                        compressFormat = Bitmap.CompressFormat.JPEG;
+                        break;
+                    case "webp":
+                        compressFormat = Bitmap.CompressFormat.WEBP;
+                        break;
+                    case "png":
+                    default:
+                        compressFormat = Bitmap.CompressFormat.PNG;
+                        break;
+                }
+                FileOutputStream fos = new FileOutputStream(bitmapFile);
+                bitmap.compress(compressFormat, quality, fos);
+                fos.flush();
+                fos.close();
+                String uri = Uri.fromFile(bitmapFile).toString();
+
+                WritableMap map = Arguments.createMap();
+
+                map.putBoolean("result", result);
+                map.putString("uri", uri);
+                promise.resolve(map);
+            } catch (Exception e) {
+                promise.reject(e);
+            }
+        }
+    }
 
 
     Runnable updateThread = new Runnable(){
