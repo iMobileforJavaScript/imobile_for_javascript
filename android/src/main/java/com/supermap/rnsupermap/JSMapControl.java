@@ -1095,6 +1095,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                 MapView mapView;
                 int imgHeight = height;
                 int imgWidth = width;
+
                 if (!mapControlId.equals("")) {
                     mapView = JSMapView.getObjById(mapViewId);
                     imgHeight = mapView.getHeight();

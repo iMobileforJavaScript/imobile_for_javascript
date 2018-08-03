@@ -118,7 +118,7 @@ export default class Recordset {
       try{
         let arr = await R.getFieldInfosArray(this._SMRecordsetId, count, size);
         return arr
-      }catch (e){
+      } catch (e){
         console.error(e);
       }
     }

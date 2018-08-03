@@ -6,7 +6,7 @@
  **********************************************************************************/
 const LONGPRESS_EVENT = "com.supermap.RN.JSMapcontrol.long_press_event";
 
-import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform } from 'react-native';
+import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform, Dimensions } from 'react-native';
 let MC = NativeModules.JSMapControl;
 import Map from './Map.js';
 import Navigation2 from './IndustryNavi.js';
@@ -1131,7 +1131,6 @@ export default class MapControl {
     try {
       let paramss = {width: 2000, height: 2000, quality: 60, type: 'png', mapViewId: ''}
       Object.assign(paramss, params, {mapViewId: params.mapView._SMMapViewId})
-      debugger
       let { result, uri } = await MC.outputMap(this._SMMapControlId, paramss.mapViewId, paramss.width, paramss.height, paramss.quality, paramss.type);
       return { result, uri }
     } catch (e) {

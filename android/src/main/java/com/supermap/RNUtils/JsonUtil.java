@@ -138,72 +138,56 @@ public class JsonUtil {
                 String key = item.getKey();
                 Object v = item.getValue();
 
-                if (key.equals("caption") || key.equals("defaultValue") || key.equals("name")) {
-                    if (v == null) {
-                        itemWMap.putString(key, "");
-                    } else {
+                if (v == null) {
+                    itemWMap.putString(key, "");
+                    continue;
+                }
+                switch (key) {
+                    case "caption":
+                    case "defaultValue":
+                    case "name":
                         itemWMap.putString(key, (String) v);
-                    }
-                } else if (key.equals("isRequired") || key.equals("isSystemField")) {
-                    if (v == null) {
-                        itemWMap.putString(key, "");
-                    } else {
+                        break;
+                    case "isRequired":
+                    case "isSystemField":
                         itemWMap.putBoolean(key, (Boolean) v);
-                    }
-                } else if (key.equals("maxLength")) {
-                    if (v == null) {
-                        itemWMap.putString(key, "");
-                    } else {
-                        itemWMap.putInt("maxLength", (Integer) v);
-                    }
-                } else if (key.equals("type")) {
-                    FieldType type = (FieldType) v;
-                    if (v == null) {
-                        itemWMap.putString(key, "");
-                    } else {
+                        break;
+                    case "maxLength":
+                        itemWMap.putInt("maxLength", (int) v);
+                        break;
+                    case "type":
+                        FieldType type = (FieldType) v;
                         itemWMap.putInt(key, type.value());
-                    }
 
-                    Object fieldValue = recordset.getFieldValue(name);
-                    if (type == FieldType.DOUBLE) {
-                        Double d = (Double) fieldValue;
-                        keyMap.putDouble("value", d);
-                    } else if (type == FieldType.SINGLE) {
+                        Object fieldValue = recordset.getFieldValue(name);
+
                         if (fieldValue == null) {
-                            keyMap.putString(key, "");
-                        } else {
+                            keyMap.putString("value", "");
+                        } else if (type == FieldType.DOUBLE) {
+                            Double d = (Double) fieldValue;
+                            keyMap.putDouble("value", d);
+                        } else if (type == FieldType.SINGLE) {
                             BigDecimal b = new BigDecimal(fieldValue.toString());
                             Double d = b.doubleValue();
                             keyMap.putDouble("value", d);
-                        }
-                    } else if (type == FieldType.CHAR ||
-                            type == FieldType.TEXT ||
-                            type == FieldType.WTEXT ||
-                            type == FieldType.DATETIME
-                            ) {
-                        if (fieldValue == null) {
-                            keyMap.putString(key, "");
-                        } else {
-                            keyMap.putString("value", (String) fieldValue);
-                        }
-                    } else if (type == FieldType.BYTE ||
-                            type == FieldType.INT16 ||
-                            type == FieldType.INT32 ||
-                            type == FieldType.INT64 ||
-                            type == FieldType.LONGBINARY
-                            ) {
-                        if (fieldValue == null) {
-                            keyMap.putString(key, "");
-                        } else {
-                            keyMap.putInt("value", (Integer) fieldValue);
-                        }
-                    } else {
-                        if (fieldValue == null) {
-                            keyMap.putString(key, "");
+                        } else if (type == FieldType.CHAR ||
+                                type == FieldType.TEXT ||
+                                type == FieldType.WTEXT ||
+                                type == FieldType.DATETIME
+                                ) {
+                            keyMap.putString("value", fieldValue.toString());
+                        } else if (type == FieldType.INT16) {
+                            keyMap.putInt("value", ((Short) fieldValue).intValue());
+                        } else if (type == FieldType.INT32) {
+                            keyMap.putInt("value", (int) fieldValue);
+                        } else if (type == FieldType.INT64) {
+                            keyMap.putInt("value", ((Long) fieldValue).intValue());
+                        } else if (type == FieldType.LONGBINARY || type == FieldType.BYTE) {
+                            keyMap.putString("value", fieldValue.toString());
                         } else {
                             keyMap.putBoolean("value", (Boolean) fieldValue);
                         }
-                    }
+                        break;
                 }
             }
 
