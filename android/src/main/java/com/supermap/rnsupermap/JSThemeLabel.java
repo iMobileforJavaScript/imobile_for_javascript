@@ -3,7 +3,14 @@ package com.supermap.rnsupermap;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
+import com.supermap.data.ColorGradientType;
+import com.supermap.data.DatasetVector;
+import com.supermap.data.Enum;
+import com.supermap.data.GeoStyle;
 import com.supermap.data.TextStyle;
+import com.supermap.mapping.AlongLineDirection;
+import com.supermap.mapping.LabelBackShape;
+import com.supermap.mapping.RangeMode;
 import com.supermap.mapping.ThemeLabel;
 import com.supermap.mapping.ThemeLabelItem;
 
@@ -290,5 +297,197 @@ public class JSThemeLabel extends JSTheme {
         }
     }
 
+    /**
+     * 根据给定的矢量数据集、分段字段表达式、分段模式和相应的分段参数生成默认的标签专题图
+     * @param datasetVectorId
+     * @param expression
+     * @param rangeMode
+     * @param rangeParameter
+     * @param promise
+     */
+    @ReactMethod
+    public void makeDefault(String datasetVectorId, String expression, int rangeMode, double rangeParameter, Promise promise){
+        try{
+            DatasetVector datasetVector = JSDatasetVector.getObjFromList(datasetVectorId);
+            RangeMode rm = (RangeMode) Enum.parse(RangeMode.class, rangeMode);
+            m_ThemeLabel = ThemeLabel.makeDefault(datasetVector, expression, rm, rangeParameter);
+
+            String id = registerId(m_ThemeLabel);
+            promise.resolve(id);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据给定的矢量数据集、分段字段表达式、分段模式、相应的分段参数和颜色渐变模式生成默认的标签专题图
+     * @param datasetVectorId
+     * @param expression
+     * @param rangeMode
+     * @param rangeParameter
+     * @param colorGradientType
+     * @param promise
+     */
+    @ReactMethod
+    public void makeDefault(String datasetVectorId, String expression, int rangeMode, double rangeParameter, int colorGradientType, Promise promise){
+        try{
+            DatasetVector datasetVector = JSDatasetVector.getObjFromList(datasetVectorId);
+            RangeMode rm = (RangeMode) Enum.parse(RangeMode.class, rangeMode);
+            ColorGradientType colorGType = (ColorGradientType) Enum.parse(ColorGradientType.class, colorGradientType);
+            m_ThemeLabel = ThemeLabel.makeDefault(datasetVector, expression, rm, rangeParameter, colorGType);
+
+            String id = registerId(m_ThemeLabel);
+            promise.resolve(id);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 对标签专题图中分段的风格进行反序显示
+     * @param themeRangeId
+     * @param promise
+     */
+    @ReactMethod
+    public void reverseStyle(String themeRangeId, Promise promise){
+        try{
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            m_ThemeLabel.reverseStyle();
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置是否以全方向文本避让
+     * @param themeRangeId
+     * @param value
+     * @param promise
+     */
+    @ReactMethod
+    public void setAllDirectionsOverlappedAvoided(String themeRangeId, boolean value, Promise promise){
+        try{
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            m_ThemeLabel.setAllDirectionsOverlappedAvoided(value);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置是否沿线显示文本
+     * @param themeRangeId
+     * @param value
+     * @param promise
+     */
+    @ReactMethod
+    public void setAlongLine(String themeRangeId, boolean value, Promise promise){
+        try{
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            m_ThemeLabel.setAlongLine(value);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标签沿线标注方向
+     * @param themeRangeId
+     * @param value
+     * @param promise
+     */
+    @ReactMethod
+    public void setAlongLineDirection(String themeRangeId, int value, Promise promise){
+        try{
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            AlongLineDirection alongLineDirection = (AlongLineDirection) Enum.parse(AlongLineDirection.class, value);
+
+            m_ThemeLabel.setAlongLineDirection(alongLineDirection);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置沿线文本间隔比率，该方法只对沿线标注起作用
+     * @param themeRangeId
+     * @param value
+     * @param promise
+     */
+    @ReactMethod
+    public void setAlongLineSpaceRatio(String themeRangeId, double value, Promise promise){
+        try{
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            m_ThemeLabel.setAlongLineSpaceRatio(value);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 当沿线显示文本时，是否将文本角度固定
+     * @param themeRangeId
+     * @param value
+     * @param promise
+     */
+    @ReactMethod
+    public void setAngleFixed(String themeRangeId, boolean value, Promise promise){
+        try{
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            m_ThemeLabel.setAngleFixed(value);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标签专题图中的标签背景的形状类型
+     * @param themeRangeId
+     * @param value
+     * @param promise
+     */
+    @ReactMethod
+    public void setBackShape(String themeRangeId, int value, Promise promise){
+        try{
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            LabelBackShape labelBackShape = (LabelBackShape) Enum.parse(ColorGradientType.class, value);
+            m_ThemeLabel.setBackShape(labelBackShape);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标签专题图中的标签背景风格,OpenGL不支持标签背景透明度
+     * @param themeRangeId
+     * @param styleId
+     * @param promise
+     */
+    @ReactMethod
+    public void setBackStyle(String themeRangeId, String styleId, Promise promise){
+        try{
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            GeoStyle style = JSGeoStyle.getObjFromList(styleId);
+            m_ThemeLabel.setBackStyle(style);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 }
 

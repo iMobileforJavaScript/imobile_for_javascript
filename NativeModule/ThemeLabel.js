@@ -28,6 +28,31 @@ export default class ThemeLabel extends Theme {
   }
   
   /**
+   * 根据给定的矢量数据集、分段字段表达式、分段模式和相应的分段参数生成默认的标签专题图
+   * @param datasetVector Object
+   * @param expression String
+   * @param rangeMode Number
+   * @param rangeParameter Number
+   * @param colorGradientType(option)
+   * @returns {Promise.<ThemeRange>}
+   */
+  async makeDefault() {
+    try {
+      let id
+      if (arguments && arguments.length === 5) {
+        id = await TL.makeDefaultWithColorGradient(arguments[0]._SMDatasetVectorId, arguments[1], arguments[2], arguments[3], arguments[4])
+      } else {
+        id = await TL.makeDefault(arguments[0]._SMDatasetVectorId, arguments[1], arguments[2], arguments[3])
+      }
+      let themeRange = new ThemeRange()
+      themeRange._SMThemeRangeId = id
+      return themeRange
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
    * 返回标签专题图子项的名称
    * @returns {Promise}
    */
@@ -150,6 +175,19 @@ export default class ThemeLabel extends Theme {
   async toString() {
     try {
       return await TL.toString(this._SMThemeId)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 设置统一文本风格
+   * @param style
+   * @returns {Promise}
+   */
+  async setUniformStyle(style) {
+    try {
+      return await TL.setUniformStyle(this._SMThemeId, style._SMTextStyleId)
     } catch (e) {
       console.error(e)
     }
