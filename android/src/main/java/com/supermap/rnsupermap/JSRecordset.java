@@ -211,13 +211,6 @@ public class JSRecordset extends ReactContextBaseJavaModule {
 
             recordset.moveFirst();
 
-            //获取字段信息
-            FieldInfos fieldInfos = recordset.getFieldInfos();
-            Map<String, FieldType> fields = new HashMap<>();
-            for (int i = 0; i < fieldInfos.getCount(); i++) {
-                fields.put(fieldInfos.get(i).getName(), fieldInfos.get(i).getType());
-            }
-
             WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, count, size);
 
             promise.resolve(recordArray);

@@ -27,7 +27,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JSLayerSettingImage extends ReactContextBaseJavaModule {
+public class JSLayerSettingImage extends JSLayerSetting {
     public static final String REACT_CLASS = "JSLayerSettingImage";
     protected static Map<String, LayerSettingImage> m_LayerSettingImageList = new HashMap<String, LayerSettingImage>();
     LayerSettingImage m_LayerSettingImage;
@@ -36,27 +36,27 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
         super(context);
     }
 
-    public static LayerSettingImage getObjFromList(String id) {
-        return m_LayerSettingImageList.get(id);
-    }
+//    public static LayerSettingImage getObjFromList(String id) {
+//        return m_LayerSettingImageList.get(id);
+//    }
 
     @Override
     public String getName() {
         return REACT_CLASS;
     }
 
-    public static String registerId(LayerSettingImage obj) {
-        for (Map.Entry entry : m_LayerSettingImageList.entrySet()) {
-            if (obj.equals(entry.getValue())) {
-                return (String) entry.getKey();
-            }
-        }
-
-        Calendar calendar = Calendar.getInstance();
-        String id = Long.toString(calendar.getTimeInMillis());
-        m_LayerSettingImageList.put(id, obj);
-        return id;
-    }
+//    public static String registerId(LayerSettingImage obj) {
+//        for (Map.Entry entry : m_LayerSettingImageList.entrySet()) {
+//            if (obj.equals(entry.getValue())) {
+//                return (String) entry.getKey();
+//            }
+//        }
+//
+//        Calendar calendar = Calendar.getInstance();
+//        String id = Long.toString(calendar.getTimeInMillis());
+//        m_LayerSettingImageList.put(id, obj);
+//        return id;
+//    }
 
     @ReactMethod
     public void createObj(Promise promise){
@@ -75,7 +75,7 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getType(String layerSettingImageId, String geoStyleId, Promise promise){
         try{
-            LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
+            LayerSettingImage layerSettingImage = (LayerSettingImage) getObjFromList(layerSettingImageId);
             LayerSettingType layerSettingType = layerSettingImage.getType();
             int type = Enum.getValueByName(LayerSettingType.class,layerSettingType.name());
 
@@ -125,7 +125,7 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getCacheMaxSize(String layerSettingImageId, Promise promise){
         try{
-            LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
+            LayerSettingImage layerSettingImage = (LayerSettingImage) getObjFromList(layerSettingImageId);
             int cacheMaxSize = layerSettingImage.getCacheMaxSize();
 
             WritableMap map = Arguments.createMap();
@@ -210,7 +210,7 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getTransparentColor(String layerSettingImageId, Promise promise){
         try{
-            LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
+            LayerSettingImage layerSettingImage = (LayerSettingImage) getObjFromList(layerSettingImageId);
             Color color = layerSettingImage.getTransparentColor();
 
             int R = color.getR();
@@ -235,7 +235,7 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getTransparentColorTolerance(String layerSettingImageId, Promise promise){
         try{
-            LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
+            LayerSettingImage layerSettingImage = (LayerSettingImage) getObjFromList(layerSettingImageId);
             int mapLayersID = layerSettingImage.getTransparentColorTolerance();
 
             WritableMap map = Arguments.createMap();
@@ -252,7 +252,7 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
     @ReactMethod
     public void isTransparent(String layerSettingImageId, Promise promise){
         try{
-            LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
+            LayerSettingImage layerSettingImage = (LayerSettingImage) getObjFromList(layerSettingImageId);
             boolean isTransparent = layerSettingImage.isTransparent();
 
             WritableMap map = Arguments.createMap();
@@ -269,7 +269,7 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setCacheMaxSize(String layerSettingImageId, int maxSize,Promise promise){
         try{
-            LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
+            LayerSettingImage layerSettingImage = (LayerSettingImage) getObjFromList(layerSettingImageId);
             layerSettingImage.setCacheMaxSize(maxSize);
 
             promise.resolve(true);
@@ -284,7 +284,7 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setDisplayBandIndexes(String layerSettingImageId, int[] bandIndexes,Promise promise){
         try{
-            LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
+            LayerSettingImage layerSettingImage = (LayerSettingImage) getObjFromList(layerSettingImageId);
             layerSettingImage.setDisplayBandIndexes(bandIndexes);
 
             promise.resolve(true);
@@ -314,7 +314,7 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setDisplayMode(String layerSettingImageId, ImageDisplayMode mode,Promise promise){
         try{
-            LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
+            LayerSettingImage layerSettingImage = (LayerSettingImage) getObjFromList(layerSettingImageId);
             layerSettingImage.setDisplayMode(mode);
 
             promise.resolve(true);
@@ -329,7 +329,7 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setImageStretchOption(String layerSettingImageId, ImageStretchOption option,Promise promise){
         try{
-            LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
+            LayerSettingImage layerSettingImage = (LayerSettingImage) getObjFromList(layerSettingImageId);
             layerSettingImage.setImageStretchOption(option);
 
             promise.resolve(true);
@@ -344,7 +344,7 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setMapLayersID(String layerSettingImageId, String laysersID,Promise promise){
         try{
-            LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
+            LayerSettingImage layerSettingImage = (LayerSettingImage) getObjFromList(layerSettingImageId);
             layerSettingImage.setMapLayersID(laysersID);
 
             promise.resolve(true);
@@ -359,7 +359,7 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setTransparent(String layerSettingImageId, boolean enable,Promise promise){
         try{
-            LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
+            LayerSettingImage layerSettingImage = (LayerSettingImage) getObjFromList(layerSettingImageId);
             layerSettingImage.setTransparent(enable);
 
             promise.resolve(true);
@@ -374,7 +374,7 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setTransparentColor(String layerSettingImageId, int r, int g, int b, int a,Promise promise){
         try{
-            LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
+            LayerSettingImage layerSettingImage = (LayerSettingImage) getObjFromList(layerSettingImageId);
             Color color = new Color(r, g, b, a);
             layerSettingImage.setTransparentColor(color);
 
@@ -390,7 +390,7 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setTransparentColorTolerance(String layerSettingImageId, int value,Promise promise){
         try{
-            LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
+            LayerSettingImage layerSettingImage = (LayerSettingImage) getObjFromList(layerSettingImageId);
             layerSettingImage.setTransparentColorTolerance(value);
 
             promise.resolve(true);
@@ -405,7 +405,7 @@ public class JSLayerSettingImage extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setVisibleSubLayers(String layerSettingImageId, ReadableArray subLayers, Promise promise){
         try{
-            LayerSettingImage layerSettingImage = getObjFromList(layerSettingImageId);
+            LayerSettingImage layerSettingImage = (LayerSettingImage) getObjFromList(layerSettingImageId);
             String[] list = new String[subLayers.size()];
             for (int i = 0; i < subLayers.size(); i++) {
                 list[i] = subLayers.getString(i);

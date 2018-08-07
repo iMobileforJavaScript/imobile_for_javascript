@@ -46,108 +46,108 @@ public class JSGeoStyle extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void createObj(Promise promise){
-        try{
+    public void createObj(Promise promise) {
+        try {
             GeoStyle geoStyle = new GeoStyle();
             String geoStyleId = registerId(geoStyle);
 
             WritableMap map = Arguments.createMap();
-            map.putString("geoStyleId",geoStyleId);
+            map.putString("geoStyleId", geoStyleId);
             promise.resolve(map);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void setLineColor(String geoStyleId,int r,int g,int b,Promise promise){
-        try{
+    public void setLineColor(String geoStyleId, int r, int g, int b, Promise promise) {
+        try {
             GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
-            Color color = new Color(r,g,b);
+            Color color = new Color(r, g, b);
             geoStyle.setLineColor(color);
 
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void setLineSymbolID(String geoStyleId,int symboleId,Promise promise){
-        try{
+    public void setLineSymbolID(String geoStyleId, int symboleId, Promise promise) {
+        try {
             GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
             geoStyle.setLineSymbolID(symboleId);
 
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void setLineWidth(String geoStyleId,Double lineWidth,Promise promise){
-        try{
+    public void setLineWidth(String geoStyleId, Double lineWidth, Promise promise) {
+        try {
             GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
             geoStyle.setLineWidth(lineWidth);
 
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void setMarkerSymbolID(String geoStyleId,int markerSymbolId,Promise promise){
-        try{
+    public void setMarkerSymbolID(String geoStyleId, int markerSymbolId, Promise promise) {
+        try {
             GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
             geoStyle.setMarkerSymbolID(markerSymbolId);
 
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void setMarkerSize(String geoStyleId,String size2DId,Promise promise){
-        try{
+    public void setMarkerSize(String geoStyleId, String size2DId, Promise promise) {
+        try {
             GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
             Size2D size2D = JSSize2D.getObjFromList(size2DId);
             geoStyle.setMarkerSize(size2D);
 
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void setFillForeColor(String geoStyleId,int r,int g,int b,Promise promise){
-        try{
+    public void setFillForeColor(String geoStyleId, int r, int g, int b, Promise promise) {
+        try {
             GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
-            geoStyle.setFillForeColor(new Color(r,g,b));
+            geoStyle.setFillForeColor(new Color(r, g, b));
 
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void setFillOpaqueRate(String geoStyleId,int rate,Promise promise){
-        try{
+    public void setFillOpaqueRate(String geoStyleId, int rate, Promise promise) {
+        try {
             GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
             geoStyle.setFillOpaqueRate(rate);
 
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void getLineColor(String geoStyleId, Promise promise){
-        try{
+    public void getLineColor(String geoStyleId, Promise promise) {
+        try {
             GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
             Color color = geoStyle.getLineColor();
             WritableMap map = Arguments.createMap();
@@ -157,63 +157,63 @@ public class JSGeoStyle extends ReactContextBaseJavaModule {
             map.putInt("a", color.getA());
 
             promise.resolve(map);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void getLineSymbolID(String geoStyleId, Promise promise){
-        try{
+    public void getLineSymbolID(String geoStyleId, Promise promise) {
+        try {
             GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
             int value = geoStyle.getLineSymbolID();
 
             promise.resolve(value);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void getLineWidth(String geoStyleId, Promise promise){
-        try{
+    public void getLineWidth(String geoStyleId, Promise promise) {
+        try {
             GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
             double value = geoStyle.getLineWidth();
 
             promise.resolve(value);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void getMarkerSymbolID(String geoStyleId, Promise promise){
-        try{
+    public void getMarkerSymbolID(String geoStyleId, Promise promise) {
+        try {
             GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
             int value = geoStyle.getMarkerSymbolID();
 
             promise.resolve(value);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void getMarkerSize(String geoStyleId, Promise promise){
-        try{
+    public void getMarkerSize(String geoStyleId, Promise promise) {
+        try {
             GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
             Size2D size2D = geoStyle.getMarkerSize();
             String size2DId = JSSize2D.registerId(size2D);
 
             promise.resolve(size2DId);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void getFillForeColor(String geoStyleId, Promise promise){
-        try{
+    public void getFillForeColor(String geoStyleId, Promise promise) {
+        try {
             GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
             Color color = geoStyle.getFillForeColor();
             WritableMap map = Arguments.createMap();
@@ -223,19 +223,49 @@ public class JSGeoStyle extends ReactContextBaseJavaModule {
             map.putInt("a", color.getA());
 
             promise.resolve(map);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void getFillOpaqueRate(String geoStyleId, Promise promise){
-        try{
+    public void getFillOpaqueRate(String geoStyleId, Promise promise) {
+        try {
             GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
             int value = geoStyle.getFillOpaqueRate();
 
             promise.resolve(value);
-        }catch (Exception e){
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getPointColor(String geoStyleId, Promise promise) {
+        try {
+            GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
+            Color color = geoStyle.getPointColor();
+            WritableMap map = Arguments.createMap();
+            map.putInt("r", color.getR());
+            map.putInt("g", color.getG());
+            map.putInt("b", color.getB());
+            map.putInt("a", color.getA());
+
+            promise.resolve(map);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setPointColor(String geoStyleId, int r, int g, int b, Promise promise) {
+        try {
+            GeoStyle geoStyle = m_GeoStyleList.get(geoStyleId);
+            Color color = new Color(r, g, b);
+            geoStyle.setPointColor(color);
+
+            promise.resolve(true);
+        } catch (Exception e) {
             promise.reject(e);
         }
     }

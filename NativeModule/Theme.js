@@ -72,6 +72,14 @@ export default class Theme {
     }
   }
   
+  async getType() {
+    try {
+      return await T.getType(this._SMThemeId)
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
 }
 
 Theme.RangeMode = {

@@ -12,6 +12,7 @@ let CoordSysTransMethod = NativeModules.JSCoordSysTransMethod;
 let RangeMode = NativeModules.JSRangeMode;
 let ColorGradientType = NativeModules.JSColorGradientType;
 let GPSElementType = NativeModules.JSGPSElementType;
+let ThemeType = NativeModules.JSThemeType;
 
 import BufferAnalyst from './NativeModule/BufferAnalyst.js';
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js';
@@ -295,6 +296,8 @@ export {
   ElementPolygon,
   
   SpeechManager,
+  
+  ThemeType,
   
   /*
    Datasets,

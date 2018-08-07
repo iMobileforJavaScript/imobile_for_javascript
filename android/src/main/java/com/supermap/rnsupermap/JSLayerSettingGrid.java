@@ -20,7 +20,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JSLayerSettingGrid extends ReactContextBaseJavaModule {
+public class JSLayerSettingGrid extends JSLayerSetting {
     public static final String REACT_CLASS = "JSLayerSettingGrid";
     protected static Map<String, LayerSettingGrid> m_LayerSettingGridList = new HashMap<String, LayerSettingGrid>();
     LayerSettingGrid m_LayerSettingGrid;
@@ -29,27 +29,27 @@ public class JSLayerSettingGrid extends ReactContextBaseJavaModule {
         super(context);
     }
 
-    public static LayerSettingGrid getObjFromList(String id) {
-        return m_LayerSettingGridList.get(id);
-    }
+//    public static LayerSettingGrid getObjFromList(String id) {
+//        return m_LayerSettingGridList.get(id);
+//    }
 
     @Override
     public String getName() {
         return REACT_CLASS;
     }
 
-    public static String registerId(LayerSettingGrid obj) {
-        for (Map.Entry entry : m_LayerSettingGridList.entrySet()) {
-            if (obj.equals(entry.getValue())) {
-                return (String) entry.getKey();
-            }
-        }
-
-        Calendar calendar = Calendar.getInstance();
-        String id = Long.toString(calendar.getTimeInMillis());
-        m_LayerSettingGridList.put(id, obj);
-        return id;
-    }
+//    public static String registerId(LayerSettingGrid obj) {
+//        for (Map.Entry entry : m_LayerSettingGridList.entrySet()) {
+//            if (obj.equals(entry.getValue())) {
+//                return (String) entry.getKey();
+//            }
+//        }
+//
+//        Calendar calendar = Calendar.getInstance();
+//        String id = Long.toString(calendar.getTimeInMillis());
+//        m_LayerSettingGridList.put(id, obj);
+//        return id;
+//    }
 
     @ReactMethod
     public void createObj(Promise promise){
@@ -71,7 +71,7 @@ public class JSLayerSettingGrid extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getSpecialValue(String layerSettingGridId, Promise promise){
         try{
-            LayerSettingGrid layerSettingGrid = getObjFromList(layerSettingGridId);
+            LayerSettingGrid layerSettingGrid = (LayerSettingGrid) getObjFromList(layerSettingGridId);
             double specialValue = layerSettingGrid.getSpecialValue();
 
             WritableMap map = Arguments.createMap();
@@ -88,7 +88,7 @@ public class JSLayerSettingGrid extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setSpecialValue(String layerSettingGridId, double specialValue, Promise promise){
         try{
-            LayerSettingGrid layerSettingGrid = getObjFromList(layerSettingGridId);
+            LayerSettingGrid layerSettingGrid = (LayerSettingGrid) getObjFromList(layerSettingGridId);
             layerSettingGrid.setSpecialValue(specialValue);
 
             promise.resolve(true);
@@ -103,7 +103,7 @@ public class JSLayerSettingGrid extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getType(String layerSettingGridId, Promise promise){
         try{
-            LayerSettingGrid layerSettingGrid = getObjFromList(layerSettingGridId);
+            LayerSettingGrid layerSettingGrid = (LayerSettingGrid) getObjFromList(layerSettingGridId);
             LayerSettingType layerSettingType = layerSettingGrid.getType();
             int type = Enum.getValueByName(LayerSettingType.class,layerSettingType.name());
 
@@ -121,7 +121,7 @@ public class JSLayerSettingGrid extends ReactContextBaseJavaModule {
     @ReactMethod
     public void isSpecialValueTransparent(String layerSettingGridId, Promise promise){
         try {
-            LayerSettingGrid layerSettingGrid = getObjFromList(layerSettingGridId);
+            LayerSettingGrid layerSettingGrid = (LayerSettingGrid) getObjFromList(layerSettingGridId);
             boolean isSpecialValueTransparent = layerSettingGrid.isSpecialValueTransparent();
 
             WritableMap map = Arguments.createMap();
@@ -138,7 +138,7 @@ public class JSLayerSettingGrid extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setSpecialValueTransparent(String layerSettingGridId, boolean specialValueTransparent, Promise promise){
         try{
-            LayerSettingGrid layerSettingGrid = getObjFromList(layerSettingGridId);
+            LayerSettingGrid layerSettingGrid = (LayerSettingGrid) getObjFromList(layerSettingGridId);
             layerSettingGrid.setSpecialValueTransparent(specialValueTransparent);
 
             promise.resolve(true);
@@ -179,7 +179,7 @@ public class JSLayerSettingGrid extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setSpecialValueColor(String layerSettingGridId, int r, int g, int b, int a, Promise promise){
         try{
-            LayerSettingGrid layerSettingGrid = getObjFromList(layerSettingGridId);
+            LayerSettingGrid layerSettingGrid = (LayerSettingGrid) getObjFromList(layerSettingGridId);
             Color specialValueColor = new Color(a, g, b, a);
             layerSettingGrid.setSpecialValueColor(specialValueColor);
 

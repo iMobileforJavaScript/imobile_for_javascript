@@ -105,7 +105,7 @@ export default class GeoStyle {
   }
   
   /**
-   *设置填充符号的前景色。
+   * 设置填充符号的前景色。
    * @memberOf GeoStyle
    * @param {number} r - rgb颜色的red值
    * @param {number} g - rgb颜色的green值
@@ -216,6 +216,33 @@ export default class GeoStyle {
   async getFillOpaqueRate() {
     try {
       return await G.getFillOpaqueRate(this._SMGeoStyleId)
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  /**
+   * 返回点的颜色
+   * @returns {Promise}
+   */
+  async getPointColor() {
+    try {
+      return await G.getPointColor(this._SMGeoStyleId)
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  /**
+   * 设置点的颜色
+   * @param r
+   * @param g
+   * @param b
+   * @returns {Promise.<void>}
+   */
+  async setPointColor(r, g, b) {
+    try {
+      await G.setPointColor(this._SMGeoStyleId, r, g, b);
     } catch (e) {
       console.error(e);
     }

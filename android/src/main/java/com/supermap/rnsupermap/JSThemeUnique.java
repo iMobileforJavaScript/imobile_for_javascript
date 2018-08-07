@@ -279,5 +279,40 @@ public class JSThemeUnique extends JSTheme {
             promise.reject(e);
         }
     }
+
+    /**
+     * 设置单值专题图字段表达式
+     * @param themeUniqueId
+     * @param expression
+     * @param promise
+     */
+    @ReactMethod
+    public void setUniqueExpression(String themeUniqueId, String expression, Promise promise){
+        try{
+            m_ThemeUnique = (ThemeUnique)getObjFromList(themeUniqueId);
+            m_ThemeUnique.setUniqueExpression(expression);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 返回单值专题图字段表达式
+     * @param themeUniqueId
+     * @param promise
+     */
+    @ReactMethod
+    public void getUniqueExpression(String themeUniqueId, Promise promise){
+        try{
+            m_ThemeUnique = (ThemeUnique)getObjFromList(themeUniqueId);
+            String value = m_ThemeUnique.getUniqueExpression();
+
+            promise.resolve(value);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 }
 

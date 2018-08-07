@@ -247,8 +247,7 @@ public class JSMap extends ReactContextBaseJavaModule {
             for (int i = 0; i < count; i++) {
                 Layer layer = layers.get(i);
                 Dataset dataset = layer.getDataset();
-                String datasetType = dataset.getType().toString();
-                int type = Enum.getValueByName(DatasetType.class, datasetType);
+                int type = dataset.getType().value();
 
                 if (temp.get(type) == null || temp.get(type) == "") {
                     WritableArray arr = Arguments.createArray();
@@ -306,14 +305,20 @@ public class JSMap extends ReactContextBaseJavaModule {
             for (int i = 0; i < count; i++) {
                 Layer layer = layers.get(i);
                 Dataset dataset = layer.getDataset();
-                String datasetType = dataset.getType().toString();
-                int intType = Enum.getValueByName(DatasetType.class, datasetType);
+                int intType = dataset.getType().value();
                 if (intType == type || type == -1) {
                     String layerId = JSLayer.registerId(layer);
+
+                    Theme theme = layer.getTheme();
+                    int themeType = 0;
+                    if (theme != null) {
+                        themeType = theme.getType().value();
+                    }
 
                     WritableMap wMap = new Arguments().createMap();
                     wMap.putString("id", layerId);
                     wMap.putInt("type", intType);
+                    wMap.putInt("themeType", themeType);
                     wMap.putInt("index", i);
                     wMap.putString("name", layer.getName());
                     wMap.putString("caption", layer.getCaption());

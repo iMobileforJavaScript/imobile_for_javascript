@@ -58,7 +58,7 @@ export default class ThemeRangeItem {
     try {
       let geoStyleId = await TRI.getStyle(this._SMThemeRangeItemId)
       let geoStyle = new GeoStyle()
-      geoStyle.SMGeoStyleId = geoStyleId
+      geoStyle._SMGeoStyleId = geoStyleId
       return geoStyle
     } catch (e) {
       console.error(e)
@@ -123,7 +123,7 @@ export default class ThemeRangeItem {
    */
   async setStyle(geoStyle) {
     try {
-      await TRI.setStyle(this._SMThemeRangeItemId, geoStyle.SMGeoStyleId)
+      await TRI.setStyle(this._SMThemeRangeItemId, geoStyle._SMGeoStyleId)
     } catch (e) {
       console.error(e)
     }

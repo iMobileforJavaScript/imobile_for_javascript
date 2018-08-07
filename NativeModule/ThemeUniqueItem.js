@@ -110,7 +110,7 @@ export default class ThemeUniqueItem {
    */
   async setStyle(geoStyle) {
     try {
-      await TUI.setStyle(this._SMThemeUniqueItemId, geoStyle.SMGeoStyleId)
+      await TUI.setStyle(this._SMThemeUniqueItemId, geoStyle._SMGeoStyleId)
     } catch (e) {
       console.error(e)
     }

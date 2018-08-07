@@ -163,6 +163,8 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSSpeechManager(reactContext));
         modules.add(new JSAlongLineDirection(reactContext));
 
+        modules.add(new JSThemeType(reactContext));
+
         return modules;
     }
 }

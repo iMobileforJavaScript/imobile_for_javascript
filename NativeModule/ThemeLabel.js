@@ -192,4 +192,54 @@ export default class ThemeLabel extends Theme {
       console.error(e)
     }
   }
+  
+  /**
+   * 设置标注字段表达式
+   * @param expression
+   * @returns {Promise.<void>}
+   */
+  async setLabelExpression(expression) {
+    try {
+      await TL.setLabelExpression(this._SMThemeId, expression)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 设置分段字段表达式
+   * @param expression
+   * @returns {Promise.<void>}
+   */
+  async setRangeExpression(expression) {
+    try {
+      await TL.setRangeExpression(this._SMThemeId, expression)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 返回标注字段表达式
+   * @returns {Promise}
+   */
+  async getLabelExpression() {
+    try {
+      return await TL.getLabelExpression(this._SMThemeId)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 返回分段字段表达式
+   * @returns {Promise}
+   */
+  async getRangeExpression() {
+    try {
+      return await TL.getRangeExpression(this._SMThemeId)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 }

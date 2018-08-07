@@ -39,12 +39,15 @@ public class JSTheme extends ReactContextBaseJavaModule {
     }
 
     public static String registerId(Theme obj) {
+        System.out.println("=====iTablet=====JSTheme===0==" + m_ThemeList.size());
+
         for (Map.Entry entry : m_ThemeList.entrySet()) {
+            System.out.println("=====iTablet=====JSTheme===1==" + entry + "==" + obj);
             if (obj.equals(entry.getValue())) {
                 return (String) entry.getKey();
             }
         }
-
+        System.out.println("=====iTablet=====JSTheme===2==" + obj);
         Calendar calendar = Calendar.getInstance();
         String id = Long.toString(calendar.getTimeInMillis());
         m_ThemeList.put(id, obj);
@@ -53,50 +56,61 @@ public class JSTheme extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void makeThemeLabel(String datasetVectorId, String rangeExpress, int rangeMode, double rangeParameter,
-                          int colorGradientType, Promise promise){
-        try{
+                               int colorGradientType, Promise promise) {
+        try {
             DatasetVector datasetVector = JSDatasetVector.getObjFromList(datasetVectorId);
-            ThemeLabel themeLabel = ThemeLabel.makeDefault(datasetVector,rangeExpress,(RangeMode) Enum.parse(RangeMode.class,rangeMode)
-                    ,rangeParameter,(ColorGradientType)Enum.parse(ColorGradientType.class,colorGradientType));
+            ThemeLabel themeLabel = ThemeLabel.makeDefault(datasetVector, rangeExpress, (RangeMode) Enum.parse(RangeMode.class, rangeMode)
+                    , rangeParameter, (ColorGradientType) Enum.parse(ColorGradientType.class, colorGradientType));
 
             String themeId = registerId(themeLabel);
             WritableMap map = Arguments.createMap();
-            map.putString("themeId",themeId);
+            map.putString("themeId", themeId);
             promise.resolve(map);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
     public void makeThemeRange(String datasetVectorId, String rangeExpress, int rangeMode, double rangeParameter,
-                               int colorGradientType, Promise promise){
-        try{
+                               int colorGradientType, Promise promise) {
+        try {
             DatasetVector datasetVector = JSDatasetVector.getObjFromList(datasetVectorId);
-            ThemeRange themeRange = ThemeRange.makeDefault(datasetVector,rangeExpress,(RangeMode) Enum.parse(RangeMode.class,rangeMode)
-                    ,rangeParameter,(ColorGradientType)Enum.parse(ColorGradientType.class,colorGradientType));
+            ThemeRange themeRange = ThemeRange.makeDefault(datasetVector, rangeExpress, (RangeMode) Enum.parse(RangeMode.class, rangeMode)
+                    , rangeParameter, (ColorGradientType) Enum.parse(ColorGradientType.class, colorGradientType));
 
             String themeId = registerId(themeRange);
             WritableMap map = Arguments.createMap();
-            map.putString("themeId",themeId);
+            map.putString("themeId", themeId);
             promise.resolve(map);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
     public void makeThemeUnique(String datasetVectorId, String uniqueExpression,
-                               int colorGradientType, Promise promise){
-        try{
+                                int colorGradientType, Promise promise) {
+        try {
             DatasetVector datasetVector = JSDatasetVector.getObjFromList(datasetVectorId);
-            ThemeUnique themeUnique = ThemeUnique.makeDefault(datasetVector,uniqueExpression,(ColorGradientType)Enum.parse(ColorGradientType.class,colorGradientType));
+            ThemeUnique themeUnique = ThemeUnique.makeDefault(datasetVector, uniqueExpression, (ColorGradientType) Enum.parse(ColorGradientType.class, colorGradientType));
 
             String themeId = registerId(themeUnique);
             WritableMap map = Arguments.createMap();
-            map.putString("themeId",themeId);
+            map.putString("themeId", themeId);
             promise.resolve(map);
-        }catch (Exception e){
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getType(String themeId, Promise promise) {
+        try {
+            Theme theme = getObjFromList(themeId);
+            int type = theme.getType().value();
+            promise.resolve(type);
+        } catch (Exception e) {
             promise.reject(e);
         }
     }

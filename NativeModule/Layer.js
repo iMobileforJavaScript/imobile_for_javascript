@@ -13,6 +13,7 @@ import LayerSetting from './LayerSetting.js'
 import LayerSettingVector from './LayerSettingVector.js'
 import LayerSettingGrid from './LayerSettingGrid'
 import LayerSettingImage from './LayerSettingImage'
+import Theme from './Theme'
 
 /**
  * @class Layer
@@ -201,8 +202,8 @@ export default class Layer {
    */
   async getAdditionalSetting() {
     try {
-      var layerSetting
-      var { _layerSettingId_, type } = await L.getAdditionalSetting(this._SMLayerId)
+      let layerSetting
+      let { _layerSettingId_, type } = await L.getAdditionalSetting(this._SMLayerId)
       if (type === 0) {
         layerSetting = new LayerSettingVector()
         layerSetting._SMLayerSettingId = _layerSettingId_
@@ -297,6 +298,25 @@ export default class Layer {
   async setCaption(value) {
     try {
       await L.setCaption(this._SMLayerId, value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 获取专题图层的专题图对象
+   * @returns {Promise.<void>}
+   */
+  async getTheme() {
+    try {
+      let themeId = await L.getTheme(this._SMLayerId)
+      if (themeId) {
+        let theme = new Theme()
+        theme._SMThemeId = themeId
+        return theme
+      } else {
+        return null
+      }
     } catch (e) {
       console.error(e)
     }

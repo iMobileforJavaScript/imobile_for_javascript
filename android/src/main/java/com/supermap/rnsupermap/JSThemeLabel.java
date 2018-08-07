@@ -74,6 +74,22 @@ public class JSThemeLabel extends JSTheme {
     }
 
     /**
+     * 返回标注字段表达式
+     * @param themeLabelId
+     * @param promise
+     */
+    @ReactMethod
+    public void getLabelExpression(String themeLabelId, Promise promise){
+        try{
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeLabelId);
+            String value = m_ThemeLabel.getLabelExpression();
+            promise.resolve(value);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 返回分段字段表达式
      * @param themeLabelId
      * @param promise

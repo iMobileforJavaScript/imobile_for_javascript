@@ -197,4 +197,31 @@ export default class ThemeUnique extends Theme {
       return false
     }
   }
+  
+  /**
+   * 返回单值专题图字段表达式
+   * @returns {Promise.<*>}
+   */
+  async getUniqueExpression() {
+    try {
+      return await TU.getUniqueExpression(this._SMThemeUniqueId)
+    } catch (e) {
+      console.error(e)
+      return false
+    }
+  }
+  
+  /**
+   * 设置单值专题图字段表达式
+   * @param expression
+   * @returns {Promise.<*>}
+   */
+  async setUniqueExpression(expression) {
+    try {
+      await TU.setUniqueExpression(this._SMThemeUniqueId, expression)
+    } catch (e) {
+      console.error(e)
+      return false
+    }
+  }
 }
