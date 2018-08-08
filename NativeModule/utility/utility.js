@@ -20,7 +20,7 @@ exports.Point2Map = async function (map,x, y) {
     return mapPoint;
 }
 
-exports.appendingHomeDirectory = async function (path) {
+exports.appendingHomeDirectory = async function (path = '') {
     let util = new SystemUtil();
     let homeDirectory = await util.getHomeDirectory();
     let newPath = homeDirectory + path;
