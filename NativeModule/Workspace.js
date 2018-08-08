@@ -248,18 +248,17 @@ export default class Workspace {
    * @memberOf Workspace
    * @param filePath 指定创建数据集路径
    * @param engineType 数据集引擎类型
-   * @param alias 别名
    * @returns {Promise.<Datasource>}
    */
-  async createDatasource(filePath, engineType, alias) {
+  async createDatasource(filePath, engineType) {
     try {
-      let datasourceId = await W.createDatasource(this._SMWorkspaceId, filePath, engineType, alias);
-      if (datasourceId) { // 创建成功返回id
+      let datasourceId = await W.createDatasource(this._SMWorkspaceId, filePath, engineType);
+      if (datasourceId) {
         let datasource = new Ds();
         datasource._SMDatasourceId = datasourceId;
         return datasource;
-      } else { // 创建失败，重名，返回false
-        return false
+      } else {
+        return null
       }
     } catch (e) {
       console.error(e);
