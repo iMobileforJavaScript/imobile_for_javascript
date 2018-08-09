@@ -7,7 +7,9 @@
 //
 
 #import "NativeUtil.h"
-
+#import "SuperMap/Recordset.h"
+#import "SuperMap/FieldInfos.h"
+#import "SuperMap/FieldInfo.h"
 @implementation NativeUtil
 +(UIColor*)uiColorTransFromArr:(NSArray<NSNumber*>*)arr{
     @try{
@@ -39,5 +41,104 @@
     }@catch(NSException *exception){
         @throw exception;
     }
+}
++(NSMutableArray *)recordsetToJsonArray:(Recordset*)recordset count:(NSInteger)count size:(NSInteger)size{
+    FieldInfos* fieldInfos = [recordset fieldInfos];
+    NSMutableDictionary* fieldsDics= [[NSMutableDictionary alloc]initWithCapacity:7];
+    int count2 = (int)[fieldInfos count];
+    for(int i = 0;i < count2;i++){
+        NSMutableDictionary* fieldsDic = [[NSMutableDictionary alloc]initWithCapacity:7];
+        NSString* caption = [fieldInfos get:i].caption;
+        NSString* defaultValue = [fieldInfos get:i].defaultValue;
+        FieldType type = [fieldInfos get:i].fieldType;
+        NSString* fieldName = [fieldInfos get:i].name;
+        NSInteger maxLength = [fieldInfos get:i].maxLength;
+        BOOL isRequired = [fieldInfos get:i].isRequired;
+        BOOL isSystemField = [fieldInfos get:i].isSystemField;
+        [fieldsDic setObject:caption forKey:@"caption"];
+        [fieldsDic setObject:defaultValue forKey:@"defaultValue"];
+        [fieldsDic setObject:@(type) forKey:@"type"];
+        [fieldsDic setObject:fieldName forKey:@"name"];
+        [fieldsDic setObject:@(maxLength) forKey:@"maxLength"];
+        [fieldsDic setObject:@(isRequired) forKey:@"isRequired"];
+        [fieldsDic setObject:@(isSystemField) forKey:@"isSystemField"];
+        
+        [fieldsDics setObject:fieldsDic forKey:fieldName];
+    }
+    
+    NSMutableArray* recordArray = [[NSMutableArray alloc]initWithCapacity:count];
+    while(( ![recordset isEOF] && count < size ) ){
+        NSMutableDictionary* dic = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics];
+        [recordArray addObject:dic];
+        [recordset moveNext];
+        count++;
+    }
+    return recordArray;
+}
++(NSMutableDictionary *)parseRecordset:(Recordset *)recordset fieldsDics:(NSMutableDictionary*)fieldsDics{
+    int fieldsDicsCount = (int)[fieldsDics count];
+    NSMutableDictionary* map =[[NSMutableDictionary alloc]init];
+    NSArray* keys = fieldsDics.allKeys;
+    NSArray* values = fieldsDics.allValues;
+    
+    for(int i = 0;i < fieldsDicsCount;i++){
+        NSMutableDictionary* keyMap =[[NSMutableDictionary alloc]init];
+        NSMutableDictionary* itemWMap =[[NSMutableDictionary alloc]init];
+        
+        NSString* keyName =(NSString*)keys[i];
+        NSMutableDictionary* fieldsDic = (NSMutableDictionary*)values[i];
+        
+        NSArray* keys2 = fieldsDic.allKeys;
+        NSArray* values2 = fieldsDic.allValues;
+        int fieldsDicCount = (int)[fieldsDic count];
+        for(int a = 0;a < fieldsDicCount;a ++){
+            NSString* keyName2 =(NSString*)keys2[i];
+            if(values2[i] == nil){
+                [itemWMap setObject:@"" forKey:keyName2]; // ???
+                continue;
+            }
+            if([keyName2 isEqualToString:@"caption"] || [keyName2 isEqualToString:@"defaultValue"]
+               ||[keyName2 isEqualToString:@"name"]){
+                [itemWMap setObject:(NSString*)values2[i] forKey:keyName2]; // ???
+            }
+            else if([keyName2 isEqualToString:@"isRequired"] || [keyName2 isEqualToString:@"isSystemField"]){
+                [itemWMap setObject:values2[i] forKey:keyName2]; //  ???
+            }
+            else if([keyName2 isEqualToString:@"maxLength"]){
+                [itemWMap setObject:values2[i] forKey:keyName2];  // ???
+            }
+            else if([keyName2 isEqualToString:@"type"]){
+                FieldType type = (FieldType)(((NSString*)values2[i]).intValue);
+                [itemWMap setObject:values2[i] forKey:keyName2];
+                
+                NSObject* object = [recordset getFieldValueWithString:keyName];
+                if(object == nil){
+                    [keyMap setObject:@"" forKey:@"value"];
+                }
+//                else if (type == FT_DOUBLE ||
+//                         type == FT_SINGLE ||
+//                         type == FT_CHAR ||
+//                         type == FT_TEXT ||
+//                         type == FT_WTEXT ||
+//                         type == FT_DATETIME ||
+//                         type == FT_INT16 ||
+//                         type == FT_INT32 ||
+//                         type == FT_INT64 ||
+//                         type == FT_LONGBINARY ||
+//                         type == FT_BYTE
+//                         ){
+//                    [keyMap setObject:object forKey:@"value"];
+//                }
+                else {
+                    [keyMap setObject:object forKey:@"value"];
+                }
+            }
+        }
+        [keyMap setObject:itemWMap forKey:@"fieldInfo"];
+        [keyMap setObject:keyName forKey:@"name"];
+        
+        [map setObject:keyMap forKey:keyName];
+    }
+    return map;
 }
 @end

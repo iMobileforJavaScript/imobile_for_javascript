@@ -12,6 +12,8 @@
 #import "SuperMap/Layer.h"
 #import "SuperMap/Point2D.h"
 #import "SuperMap/Action.h"
+#import "SuperMap/Rectangle2D.h"
+
 @implementation JSAdoptMapView
 RCT_EXPORT_MODULE(JSMapControl);
         
@@ -244,6 +246,75 @@ RCT_REMAP_METHOD(getNavigation2,getNavigation2BymapControlId:(NSString*)Id resol
   }else{
     reject(@"MapControl",@"getNavigation2() failed.",nil);
   }
+}
+
+RCT_REMAP_METHOD(outputMap,outputMapId:(NSString*)Id mapViewId:(NSString*)Id w:(int)width h:(int)height q:(int)quality type:(NSString*) type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    MapControl* mapControl = [JSObjManager getObjWithKey:Id];
+    
+    // = [NSHomeDirectory() stringByAppendingString:@"/tmp"];
+    if(mapControl){
+        
+        int64_t delayInSeconds = 2;      // 延迟的时间
+        /*
+         *@parameter 1,时间参照，从此刻开始计时
+         *@parameter 2,延时多久，此处为秒级，还有纳秒等。10ull * NSEC_PER_MSEC
+         */
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            // do something
+            NSString* imagePath;
+            int w = width;
+            int h = height;
+            if(w > mapControl.frame.size.width*[UIScreen mainScreen].scale){
+                w = mapControl.frame.size.width*[UIScreen mainScreen].scale;
+            }
+            if(h > mapControl.frame.size.height*[UIScreen mainScreen].scale){
+                h = mapControl.frame.size.height*[UIScreen mainScreen].scale;
+            }
+//            NSString* name = mapControl.map.name;
+//            NSString* ds = mapControl.map.description;
+            Rectangle2D* bounds =mapControl.map.viewBounds;
+            CGPoint point = [mapControl.map mapToPixel:mapControl.map.center];
+            //            CGPoint point1 = [mapControl.map mapToPixel:[[Point2D alloc] initWithX:bounds.left Y:bounds.bottom]];
+            //            CGPoint point2 = [mapControl.map mapToPixel:[[Point2D alloc] initWithX:bounds.right Y:bounds.bottom]];
+            //            CGPoint point3 = [mapControl.map mapToPixel:[[Point2D alloc] initWithX:bounds.right Y:bounds.bottom]];
+            
+            CGImageRef im = [mapControl outputMap:CGRectMake(point.x-200, point.y-200, 400, 400)];
+            UIImage* image = [[UIImage alloc]initWithCGImage:im];
+            // UIImageView* iv = [[UIImageView alloc]initWithImage:image];
+            //[mapControl addSubview:iv];
+            NSDate *datenow = [NSDate date];//现在时间,你可以输出来看下是什么格式
+            
+            NSString *timeSp = [NSString stringWithFormat:@"%ld", (long)[datenow timeIntervalSince1970]];
+            if([type isEqualToString:@"jpeg"] || [type isEqualToString:@"jpg"]){
+                imagePath = [NSHomeDirectory() stringByAppendingFormat:@"/tmp/%@.jpg",timeSp];
+                [UIImageJPEGRepresentation(image, quality/100.0) writeToFile:imagePath atomically:YES];
+            }else{
+                imagePath = [NSHomeDirectory() stringByAppendingFormat:@"/tmp/%@.png",timeSp];
+                [UIImagePNGRepresentation(image) writeToFile:imagePath atomically:YES];
+            }
+            if(imagePath)
+                resolve(@{@"result":@(1),@"uri":imagePath});
+            else{
+                resolve(@{@"result":@(0),@"uri":@""});
+            }
+
+        });
+    }else{
+        reject(@"MapControl",@"getCollector() failed.",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getCollector,getCollectorId:(NSString*)Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    MapControl* mapControl = [JSObjManager getObjWithKey:Id];
+    Collector* collector = [mapControl getCollector];
+    if(collector){
+        NSInteger key = (NSInteger)collector;
+        [JSObjManager addObj:collector];
+        resolve(@{@"CollectorId":@(key).stringValue});
+    }else{
+        reject(@"MapControl",@"getCollector() failed.",nil);
+    }
 }
 
 RCT_REMAP_METHOD(getTraditionalNavi,getTraditionalNaviBymapControlId:(NSString*)Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

@@ -12,13 +12,15 @@
 @implementation JSDatasetVectorInfo
 RCT_EXPORT_MODULE();
 RCT_REMAP_METHOD(createObjByNameType,name:(NSString*)name type:(DatasetType)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-  DatasetVectorInfo* info = [[DatasetVectorInfo alloc]initWithName:name datasetType:type];
-    if(info){
-      NSInteger key = (NSInteger)info;
-      [JSObjManager addObj:info];
-      resolve(@{@"datasetVectorInfoId":@(key).stringValue});
-    }else{
-      reject(@"datasetVectorInfo",@"create failed!!!",nil);
-    }
+    @try {
+        DatasetVectorInfo* info = [[DatasetVectorInfo alloc]initWithName:name datasetType:type];
+        if(info){
+            NSInteger key = (NSInteger)info;
+            [JSObjManager addObj:info];
+            resolve(@{@"datasetVectorInfoId":@(key).stringValue});
+        }
+    } @catch (NSException *exception) {
+        reject(@"datasetVectorInfo",@"create failed!!!",nil);
+    } 
 }
 @end

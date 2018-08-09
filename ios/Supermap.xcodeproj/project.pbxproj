@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A0D367D211AEE4600B9626D /* JSThemeType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D367C211AEE4600B9626D /* JSThemeType.m */; };
+		0A0D3682211BC8F600B9626D /* JSFacilityAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D367F211BC8F600B9626D /* JSFacilityAnalyst.m */; };
+		0A0D3683211BC8F600B9626D /* JSFacilityAnalystSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D3681211BC8F600B9626D /* JSFacilityAnalystSetting.m */; };
+		0A0D3688211BC90800B9626D /* JSWeightFieldInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D3685211BC90800B9626D /* JSWeightFieldInfo.m */; };
+		0A0D3689211BC90800B9626D /* JSWeightFieldInfos.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D3687211BC90800B9626D /* JSWeightFieldInfos.m */; };
+		0AF8061B21119CD70066EA4D /* JSCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF8061A21119CD70066EA4D /* JSCollector.m */; };
+		0AF8061E21119D1C0066EA4D /* JSCollectorElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF8061D21119D1C0066EA4D /* JSCollectorElement.m */; };
+		0AF8064E21119F480066EA4D /* JSCollectorLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF8064D21119F480066EA4D /* JSCollectorLine.m */; };
+		0AF8065121119F7A0066EA4D /* JSElementPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF8065021119F7A0066EA4D /* JSElementPoint.m */; };
+		0AF8065421119F950066EA4D /* JSElementPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF8065321119F950066EA4D /* JSElementPolygon.m */; };
+		0AF806592111D1F80066EA4D /* JSSpeechManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF806582111D1F80066EA4D /* JSSpeechManager.m */; };
 		FF0583831ED65F590095978A /* JSLegendViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF0583821ED65F590095978A /* JSLegendViewManager.m */; };
 		FF0583861ED6741F0095978A /* JSLayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF0583851ED6741F0095978A /* JSLayerManager.m */; };
 		FF1405261EA839A7000E0314 /* JSOverlayAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1405251EA839A7000E0314 /* JSOverlayAnalyst.m */; };
@@ -123,6 +134,28 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0A0D367B211AEE4600B9626D /* JSThemeType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSThemeType.h; path = objNative/JSThemeType.h; sourceTree = "<group>"; };
+		0A0D367C211AEE4600B9626D /* JSThemeType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSThemeType.m; path = objNative/JSThemeType.m; sourceTree = "<group>"; };
+		0A0D367E211BC8F600B9626D /* JSFacilityAnalyst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSFacilityAnalyst.h; path = objNative/JSFacilityAnalyst.h; sourceTree = "<group>"; };
+		0A0D367F211BC8F600B9626D /* JSFacilityAnalyst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSFacilityAnalyst.m; path = objNative/JSFacilityAnalyst.m; sourceTree = "<group>"; };
+		0A0D3680211BC8F600B9626D /* JSFacilityAnalystSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSFacilityAnalystSetting.h; path = objNative/JSFacilityAnalystSetting.h; sourceTree = "<group>"; };
+		0A0D3681211BC8F600B9626D /* JSFacilityAnalystSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSFacilityAnalystSetting.m; path = objNative/JSFacilityAnalystSetting.m; sourceTree = "<group>"; };
+		0A0D3684211BC90800B9626D /* JSWeightFieldInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSWeightFieldInfo.h; path = objNative/JSWeightFieldInfo.h; sourceTree = "<group>"; };
+		0A0D3685211BC90800B9626D /* JSWeightFieldInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSWeightFieldInfo.m; path = objNative/JSWeightFieldInfo.m; sourceTree = "<group>"; };
+		0A0D3686211BC90800B9626D /* JSWeightFieldInfos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSWeightFieldInfos.h; path = objNative/JSWeightFieldInfos.h; sourceTree = "<group>"; };
+		0A0D3687211BC90800B9626D /* JSWeightFieldInfos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSWeightFieldInfos.m; path = objNative/JSWeightFieldInfos.m; sourceTree = "<group>"; };
+		0AF8061921119CD70066EA4D /* JSCollector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCollector.h; path = objNative/JSCollector.h; sourceTree = "<group>"; };
+		0AF8061A21119CD70066EA4D /* JSCollector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCollector.m; path = objNative/JSCollector.m; sourceTree = "<group>"; };
+		0AF8061C21119D1C0066EA4D /* JSCollectorElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCollectorElement.h; path = objNative/JSCollectorElement.h; sourceTree = "<group>"; };
+		0AF8061D21119D1C0066EA4D /* JSCollectorElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCollectorElement.m; path = objNative/JSCollectorElement.m; sourceTree = "<group>"; };
+		0AF8064C21119F480066EA4D /* JSCollectorLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCollectorLine.h; path = objNative/JSCollectorLine.h; sourceTree = "<group>"; };
+		0AF8064D21119F480066EA4D /* JSCollectorLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCollectorLine.m; path = objNative/JSCollectorLine.m; sourceTree = "<group>"; };
+		0AF8064F21119F7A0066EA4D /* JSElementPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSElementPoint.h; path = objNative/JSElementPoint.h; sourceTree = "<group>"; };
+		0AF8065021119F7A0066EA4D /* JSElementPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSElementPoint.m; path = objNative/JSElementPoint.m; sourceTree = "<group>"; };
+		0AF8065221119F950066EA4D /* JSElementPolygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSElementPolygon.h; path = objNative/JSElementPolygon.h; sourceTree = "<group>"; };
+		0AF8065321119F950066EA4D /* JSElementPolygon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSElementPolygon.m; path = objNative/JSElementPolygon.m; sourceTree = "<group>"; };
+		0AF806572111D1F80066EA4D /* JSSpeechManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSpeechManager.h; path = objNative/JSSpeechManager.h; sourceTree = "<group>"; };
+		0AF806582111D1F80066EA4D /* JSSpeechManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSpeechManager.m; path = objNative/JSSpeechManager.m; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libSupermap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSupermap.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF0583811ED65F590095978A /* JSLegendViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLegendViewManager.h; path = objNative/JSLegendViewManager.h; sourceTree = "<group>"; };
 		FF0583821ED65F590095978A /* JSLegendViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLegendViewManager.m; path = objNative/JSLegendViewManager.m; sourceTree = "<group>"; };
@@ -339,6 +372,35 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0AF806562111D1C10066EA4D /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+				0A0D3684211BC90800B9626D /* JSWeightFieldInfo.h */,
+				0A0D3685211BC90800B9626D /* JSWeightFieldInfo.m */,
+				0A0D3686211BC90800B9626D /* JSWeightFieldInfos.h */,
+				0A0D3687211BC90800B9626D /* JSWeightFieldInfos.m */,
+				0A0D367E211BC8F600B9626D /* JSFacilityAnalyst.h */,
+				0A0D367F211BC8F600B9626D /* JSFacilityAnalyst.m */,
+				0A0D3680211BC8F600B9626D /* JSFacilityAnalystSetting.h */,
+				0A0D3681211BC8F600B9626D /* JSFacilityAnalystSetting.m */,
+				0AF806572111D1F80066EA4D /* JSSpeechManager.h */,
+				0AF806582111D1F80066EA4D /* JSSpeechManager.m */,
+				0AF8064F21119F7A0066EA4D /* JSElementPoint.h */,
+				0AF8065021119F7A0066EA4D /* JSElementPoint.m */,
+				0AF8065221119F950066EA4D /* JSElementPolygon.h */,
+				0AF8065321119F950066EA4D /* JSElementPolygon.m */,
+				0AF8064C21119F480066EA4D /* JSCollectorLine.h */,
+				0AF8064D21119F480066EA4D /* JSCollectorLine.m */,
+				0AF8061C21119D1C0066EA4D /* JSCollectorElement.h */,
+				0AF8061D21119D1C0066EA4D /* JSCollectorElement.m */,
+				0AF8061921119CD70066EA4D /* JSCollector.h */,
+				0AF8061A21119CD70066EA4D /* JSCollector.m */,
+				0A0D367B211AEE4600B9626D /* JSThemeType.h */,
+				0A0D367C211AEE4600B9626D /* JSThemeType.m */,
+			);
+			name = "New Group";
+			sourceTree = "<group>";
+		};
 		134814211AA4EA7D00B7C361 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -350,6 +412,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				0AF806562111D1C10066EA4D /* New Group */,
 				FFB06C4B1F428C7900F9527F /* JSAction.h */,
 				FFB06C4C1F428C7900F9527F /* JSAction.m */,
 				FFB06C481F42875000F9527F /* RCTConvert+Action.h */,
@@ -596,6 +659,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 58B511D21A9E6C8500147676;
 			productRefGroup = 58B511D21A9E6C8500147676;
@@ -613,10 +677,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				FFE622A71F26F44500B9BF32 /* JSInstrumentChartViewManager.m in Sources */,
+				0AF8065121119F7A0066EA4D /* JSElementPoint.m in Sources */,
 				FFFC46C41F20339300F5DDA4 /* JSBarChartViewManager.m in Sources */,
 				FFB06C471F41768900F9527F /* JSPieChart.m in Sources */,
 				FF52E27F1FBAE56D007F3EDE /* JSRelationalChartPoint.m in Sources */,
+				0A0D3683211BC8F600B9626D /* JSFacilityAnalystSetting.m in Sources */,
 				FFD1F0451E31E22200CACDC5 /* JSWorkspace.m in Sources */,
+				0AF8061E21119D1C0066EA4D /* JSCollectorElement.m in Sources */,
 				FF3308F51F1C99E700712398 /* JSTimeLine.m in Sources */,
 				FFD1F0351E31E22200CACDC5 /* JSMapView.m in Sources */,
 				FF28BFAC1F1EF2520024AA02 /* JSPieChartViewManager.m in Sources */,
@@ -628,20 +695,24 @@
 				FFD1F03D1E31E22200CACDC5 /* JSRecordset.m in Sources */,
 				FF1CB72E1EC000A600562DCD /* JSPointDensityChart.m in Sources */,
 				FF263BBB1EC5586500A8374C /* JSAMQPSender.m in Sources */,
+				0A0D367D211AEE4600B9626D /* JSThemeType.m in Sources */,
 				FF1CB7341EC0096100562DCD /* JSRelationalPointChart.m in Sources */,
 				FFB06CC81F4424FD00F9527F /* RCTConvert+DatasetType.m in Sources */,
 				FFD1F0341E31E22200CACDC5 /* JSMaps.m in Sources */,
 				FF1CB7311EC001FC00562DCD /* JSPolymerChart.m in Sources */,
 				FFF1A4D31EBDA38E00C21142 /* JSHotChart.m in Sources */,
 				FFB06C7A1F43D17B00F9527F /* RCTConvert+RadiusUnit.m in Sources */,
+				0AF806592111D1F80066EA4D /* JSSpeechManager.m in Sources */,
 				FFD1F01D1E31E22200CACDC5 /* JSDataset.m in Sources */,
 				FF1B90321E78C92400CE2481 /* JSNavigation.m in Sources */,
+				0AF8061B21119CD70066EA4D /* JSCollector.m in Sources */,
 				FFD1F0411E31E22200CACDC5 /* JSServiceQueryParameter.m in Sources */,
 				FFD1F0311E31E22200CACDC5 /* JSLocationManager.m in Sources */,
 				FFD1F02A1E31E22200CACDC5 /* JSGeoPoint.m in Sources */,
 				FFD1F0291E31E22200CACDC5 /* JSGeometry.m in Sources */,
 				FFD1F0301E31E22200CACDC5 /* JSLayerSettingVector.m in Sources */,
 				FFD1F0191E31E22200CACDC5 /* JSAdoptMapView.m in Sources */,
+				0AF8064E21119F480066EA4D /* JSCollectorLine.m in Sources */,
 				FFD1F0201E31E22200CACDC5 /* JSDatasetVectorInfo.m in Sources */,
 				FFD1F0211E31E22200CACDC5 /* JSDatasource.m in Sources */,
 				FF0583831ED65F590095978A /* JSLegendViewManager.m in Sources */,
@@ -660,10 +731,12 @@
 				FFD1F0391E31E22200CACDC5 /* JSPoint2D.m in Sources */,
 				FFD1F0461E31E22200CACDC5 /* JSWorkspaceConnectionInfo.m in Sources */,
 				FFF1A4D61EBDA5A400C21142 /* JSColorScheme.m in Sources */,
+				0A0D3689211BC90800B9626D /* JSWeightFieldInfos.m in Sources */,
 				FFD1F01A1E31E22200CACDC5 /* JSBufferAnalystGeometry.m in Sources */,
 				FFF203E11EBC5CC800DA9A1F /* JSBarChartData.m in Sources */,
 				FF0583861ED6741F0095978A /* JSLayerManager.m in Sources */,
 				FF5367F71ED3C6330093535D /* JSScaleViewManager.m in Sources */,
+				0A0D3682211BC8F600B9626D /* JSFacilityAnalyst.m in Sources */,
 				FF47894A1E8A4AAB00E0DA44 /* JSSystemUtil.m in Sources */,
 				FFD1F0261E31E22200CACDC5 /* JSFeature.m in Sources */,
 				FF1FC4B91F53FD23004791DC /* JSSceneView.m in Sources */,
@@ -686,6 +759,7 @@
 				FFD1F0241E31E22200CACDC5 /* JSDataUploadService.m in Sources */,
 				FFD1F02C1E31E22200CACDC5 /* JSGeoStyle.m in Sources */,
 				FF6362111ECECAD900E9F6F3 /* JSBufferAnalyst.m in Sources */,
+				0AF8065421119F950066EA4D /* JSElementPolygon.m in Sources */,
 				FF4216151F25CF5400F9CCFE /* JSBarChartDataItem.m in Sources */,
 				FFB06C4A1F42875000F9527F /* RCTConvert+Action.m in Sources */,
 				FFDFED351EC930C200C39D87 /* JSSTOMPManager.m in Sources */,
@@ -701,6 +775,7 @@
 				FF4A44CD1ECC3672003E4FE4 /* JSAMQPReceiver.m in Sources */,
 				FFE622A41F26E12A00B9BF32 /* JSLineChartViewManager.m in Sources */,
 				FF54E2C11F3C50FB0007A188 /* JSLineChart.m in Sources */,
+				0A0D3688211BC90800B9626D /* JSWeightFieldInfo.m in Sources */,
 				FFB06C7D1F43D3CF00F9527F /* JSRadiusUnit.m in Sources */,
 				FFD1F01E1E31E22200CACDC5 /* JSDatasets.m in Sources */,
 				FFB06CCB1F44266300F9527F /* JSDatasetType.m in Sources */,

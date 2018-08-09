@@ -8,6 +8,8 @@
 
 #import "JSMap.h"
 #import "SuperMap/Layers.h"
+#import "SuperMap/Layer.h"
+#import "SuperMap/Dataset.h"
 #import "SuperMap/Rectangle2D.h"
 #import "SuperMap/Point2D.h"
 #import "JSObjManager.h"
@@ -89,6 +91,72 @@ RCT_REMAP_METHOD(getLayerByName,getLayerByKey:(NSString*)key andName:(NSString*)
         resolve(@{@"layerId":@(key).stringValue});
     }else
         reject(@"Map",@"getLayerByName:get layer failed !",nil);
+}
+
+RCT_REMAP_METHOD(getName,getNameByKey:(NSString*)key  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Map* map = [JSObjManager getObjWithKey:key];
+    if(map){
+        
+        NSString* mapName = map.name;
+        resolve(mapName);
+    }else
+        reject(@"Map",@"getLayerByName:get layer failed !",nil);
+}
+RCT_REMAP_METHOD(getLayersByType, getLayersByTypeyKey:(NSString*)key  type:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Map* map = [JSObjManager getObjWithKey:key];
+    if(map){
+        
+        Layers* layers = map.layers;
+        int count = [layers getCount];
+        NSMutableArray* arr = [[NSMutableArray alloc]initWithCapacity:5];
+        for (int i = 0; i < count; i++) {
+            Layer* layer = [layers getLayerAtIndex:i];
+            Dataset* dataset = layer.dataset;
+            
+            DatasetType dType = dataset.datasetType;
+            if ( dType == type || type == -1) {
+                NSString* layerId = [JSObjManager addObj:layer];
+               
+                NSDictionary* wMap = @{@"id":layerId,
+                                       @"type":@(dType),
+                                       @"index":@(i),
+                                       @"name": layer.name,
+                                       @"caption": layer.caption,
+                                       @"description": layer.description,
+                                       @"datasetName": dataset.name,
+                                       @"isEditable": @(layer.editable),
+                                       @"isVisible": @(layer.visible),
+                                       @"isSelectable": @(layer.selectable),
+                                       @"isSnapable": @(layer.isSnapable)
+                                       };
+              
+                [arr addObject:wMap];
+            }
+        }
+        resolve(arr);
+    }else
+        reject(@"Map",@"getLayerByName:get layer failed !",nil);
+}
+RCT_REMAP_METHOD(containsCaption,acontainsCaptionKey:(NSString*)key cation:(NSString*)cation datasourceName:(NSString*)datasourceName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Map* map = [JSObjManager getObjWithKey:key];
+    
+    if(map){
+        int count = [map.layers getCount];
+        BOOL isContain = false;
+        
+        for(int i = 0; i < count; i++) {
+            
+            NSString* layerCaption = [map.layers getLayerAtIndex:i].caption;
+            
+            if ([layerCaption containsString:[NSString stringWithFormat:@"%@@%@",cation,datasourceName]]) {
+                isContain = true;
+                break;
+            }
+        }
+        
+        resolve(@{@"isContain":@(isContain)});
+    }else
+        reject(@"Map",@"containsCaption:Map or Dataset not exeist!",nil);
 }
 
 RCT_REMAP_METHOD(addDataset,addDatasetByKey:(NSString*)key andDataSetId:(NSString*)id withHeadBool:(BOOL)ToHead resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -473,17 +541,30 @@ RCT_REMAP_METHOD(addThemeLayer,addThemeLayerById:(NSString*)mapId datasetId:(NSS
         reject(@"Map",@"add Theme Layer failed!!!",nil);
     }
 }
-/* 此接口未开出
+
+RCT_REMAP_METHOD(isModified,mapId:(NSString*)mapId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Map* map = [JSObjManager getObjWithKey:mapId];
+  
+    if(map){
+        BOOL b = map.isModified;
+        resolve(@{@"isModified":@(b)});
+    }else{
+        reject(@"Map",@"isModified Layer failed!!!",nil);
+    }
+}
+
+
+// 此接口未开出
 RCT_REMAP_METHOD(getPrjCoordSys,getPrjCoordSysKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Map* map = [JSObjManager getObjWithKey:key];
     if(map.prjCoordSys){
         NSInteger projKey = (NSInteger)map.prjCoordSys;
         [JSObjManager addObj:map.prjCoordSys];
-        resolve(@{@"prjCoordSysId":@(projKey).stringValue});
+        resolve(@(projKey).stringValue);
     }else{
         reject(@"Map",@"getProjSys failed!!!",nil);
     }
 }
- */
+ 
 
 @end

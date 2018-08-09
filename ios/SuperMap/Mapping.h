@@ -25,6 +25,7 @@
 #import "LayerSettingVector.h"
 #import "LayerSettingImage.h"
 #import "LayerSettingGrid.h"
+#import "LayerSettingVectorCache.h"
 #import "Layers.h"
 #import "Map.h"
 #import "MapControl.h"
@@ -68,5 +69,7 @@
 #import "TranslateAnimator.h"
 #import "ZoomAnimator.h"
 #import "AlphaAnimator.h"
+
+#import "ARControl.h"
 
 #endif

@@ -101,4 +101,5 @@
 #import "LicenseStatus.h"
 #import "MapCacheService.h"
 #import "CloudLicenseManager.h"
+#import "RecycleLicenseManager.h"
 #endif

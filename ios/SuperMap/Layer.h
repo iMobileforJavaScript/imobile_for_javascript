@@ -31,6 +31,10 @@
 @property(nonatomic,assign)id<LayerStateDelegate>layerDelegate;
 
 /**
+ * @brief 设置,获取 图层卷帘模式
+ */
+@property(nonatomic)BOOL isSwipe;
+/**
      * @brief 获取或设置图层的标题。
      * <p> 图层的标题为图层的显示名称，例如在图例或排版制图时显示的图层的名称即为图层的标题。注意与图层的名称相区别。
      * @return 图层的标题。

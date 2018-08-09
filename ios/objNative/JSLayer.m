@@ -12,6 +12,11 @@
 #import "SuperMap/LayerSettingGrid.h"
 #import "SuperMap/Datasource.h"
 #import "SuperMap/Layer.h"
+#import "SuperMap/Point2D.h"
+#import "SuperMap/Selection.h"
+#import "SuperMap/Theme.h"
+#import "JSSelection.h"
+
 
 @implementation JSLayer
 
@@ -48,6 +53,16 @@ RCT_REMAP_METHOD(getName,getNameByKey:(NSString*)key resolver:(RCTPromiseResolve
         reject(@"Layer",@"getName() failed.",nil);
     }
 }
+RCT_REMAP_METHOD(getTheme,getThemeKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [JSObjManager getObjWithKey:key];
+        Theme* theme = layer.theme;
+        NSString* keyID =  [JSObjManager addObj:theme];
+        resolve(keyID);
+    } @catch (NSException *exception) {
+        reject(@"Layer",@"getTheme failed.",nil);
+    }
+}
 
 RCT_REMAP_METHOD(getDataset,getDatasetByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -57,6 +72,27 @@ RCT_REMAP_METHOD(getDataset,getDatasetByKey:(NSString*)key resolver:(RCTPromiseR
         resolve(@{@"datasetId":@(key).stringValue});
     } @catch (NSException *exception) {
         reject(@"Layer",@"getDataset() failed.",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getCaption,getCaptionByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [JSObjManager getObjWithKey:key];
+        NSString* caption = layer.caption;
+        resolve(caption);
+    } @catch (NSException *exception) {
+        reject(@"Layer",@"getDataset() failed.",nil);
+    }
+}
+
+
+RCT_REMAP_METHOD(setCaption,setCaptionByKey:(NSString*)key  caption:(NSString*)caption resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+         Layer* layer = [JSObjManager getObjWithKey:key];
+        layer.caption = caption;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"Layer",@"setDataset() failed.",nil);
     }
 }
 
@@ -162,6 +198,37 @@ RCT_REMAP_METHOD(setAdditionalSetting,setAdditionalSettingByKey:(NSString*)layer
         layer.layerSetting = layerSetting;
         NSNumber* num = [NSNumber numberWithBool:true];
         resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"Layer",@"setAdditionalSetting() failed.",nil);
+    }
+}
+// add lucd
+RCT_REMAP_METHOD(hitTestEx,layerIdById:(NSString*)layerId apointId:(NSString*)pointId tolerance:(NSInteger)tolerance resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [JSObjManager getObjWithKey:layerId];
+        
+//        Point* point = [JSObjManager getObjWithKey:apointId];
+//        Selection* selection = layer // ios 缺少hitTestEx
+        
+    } @catch (NSException *exception) {
+        reject(@"Layer",@"setAdditionalSetting() failed.",nil);
+    }
+}
+RCT_REMAP_METHOD(hitTest,layerIdById:(NSString*)layerId point2DId:(NSString*)point2DId tolerance:(NSInteger)tolerance resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [JSObjManager getObjWithKey:layerId];
+        
+        Point2D* point2d = [JSObjManager getObjWithKey:point2DId];
+        Selection* selection = [layer hitTest:point2d With:tolerance];
+        NSInteger selectionId = (NSInteger)selection;
+        [JSObjManager addObj:selection];
+        Recordset* recordset = [selection toRecordset];
+        NSInteger recordsetId = (NSInteger) recordset;
+        [JSObjManager addObj:recordset];
+        resolve(@{@"selectionId":@(selectionId),
+                  @"recordsetId":@(recordsetId)
+                  });
+        
     } @catch (NSException *exception) {
         reject(@"Layer",@"setAdditionalSetting() failed.",nil);
     }

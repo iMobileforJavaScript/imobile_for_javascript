@@ -12,6 +12,6 @@
 @interface JSObjManager : NSObject
 
 +(id)getObjWithKey:(id)key;
-+(void)addObj:(id)obj;
++(NSString*)addObj:(id)obj;
 +(void)removeObj:(id)key;
 @end

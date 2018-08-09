@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @class Workspace,Datasource,DatasourceConnectionInfo,WebParams;
-
+@class OnlineTileServer;
 /**  数据源的集合类。
  * 
  * <p> 对数据源进行管理，包括创建、打开、关闭数据源等功能。
@@ -21,6 +21,8 @@
     NSMutableArray* _datasources;
     
     NSRecursiveLock* _lock;
+    
+    OnlineTileServer *m_onlineTileServer;
 }
 
 /**

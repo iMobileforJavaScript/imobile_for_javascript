@@ -82,6 +82,11 @@ typedef enum{
  @return  当前地图的旋转角度。
      */
 @property (assign,nonatomic) double angle;
+/**@brief 获取或设置当前地图的倾斜角度。
+ <p>  单位为度，精度到 0.1 度。范围0～90度。
+ @return  当前地图的倾斜角度。
+ */
+@property (assign,nonatomic) double slantAngle;
 
 /**@brief  获取或设置当前地图的背景风格。
  @return  当前地图的背景风格。
@@ -223,6 +228,10 @@ typedef enum{
  * 设置,获取地图动态投影时所使用的参数，默认7个参数全为0
  */
 @property(nonatomic,strong)CoordSysTransParameter* dynamicPrjTransParameter;
+/**
+ * 压盖设置 是否显示压盖对象（用于关闭／开启文字和点图层的自动避让）
+ */
+@property(nonatomic,assign) BOOL IsOverlapDisplay;
 
 #pragma Mark functions
 

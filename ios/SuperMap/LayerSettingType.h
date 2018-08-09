@@ -15,6 +15,8 @@ typedef enum {
     //影像
     RASTER = 1,
     //栅格
-    GRID = 2
+    GRID = 2,
+    //矢量切片
+  //  VECTORCACHE = 3
     
 }LayerSettingType;

@@ -22,6 +22,19 @@
 @property(nonatomic,strong)GeoStyle* style;
 
 /**
+ * 设置当前编辑节点的宽度,单位是10mm
+ */
+@property(nonatomic)double editNodeWidth;
+
+/**
+ * 设置是否采用手势打点
+ * @param collectorId
+ * @param value
+ * @param promise
+ */
+@property(nonatomic)BOOL isSingleTapEnable;
+
+/**
  * 定位地图到当前位置
  */
 -(void)moveToCurrentPos;
@@ -42,6 +55,10 @@
 -(Datasource*)getDatasource;
 
 /**
+ * 设置当前编辑节点的宽度,单位是10mm
+ */
+-(double)getEditNodeWidth;
+/**
  * 创建指定类型的对象
  */
 -(BOOL)createElement:(GPSElementType)type;
@@ -61,12 +78,6 @@
  * 添加点,GPS获取的点
  */
 -(BOOL)addGPSPoint;
-
-/**
- * 提示信息,居中显示
- * @param info
- */
-+(void)showInfo:(NSString*)info;
 
 /**
  * 回退操作

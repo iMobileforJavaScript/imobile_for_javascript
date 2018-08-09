@@ -35,12 +35,16 @@ static NSMutableDictionary* mDict=nil;// = //[[NSMutableDictionary alloc]initWit
   
   return obj;
 }
-+(void)addObj:(id)obj{
++(NSString*)addObj:(id)obj{
   if(!mDict)
     mDict = [[NSMutableDictionary alloc]initWithCapacity:30];
+    
+  NSString* objId;
   NSNumber* key = @((NSInteger)obj);
-  if(mDict[key.stringValue]==nil){
-    mDict[key.stringValue]=obj;
+  if(mDict[key.stringValue]==nil)
+  {
+      
+      mDict[key.stringValue]=obj;
       if([obj isKindOfClass:[MapControl class]]){
           NSString* mapControlKey = @"com.supermap.mapControl"; //为解决ui控件无法初始化视图的问题，JS层mapctrl暂时只能作为单例使用，此种方法取出来的
           if (mDict[mapControlKey]==nil) {                      //mapctrl应只用于原生UI控件的封装
@@ -53,5 +57,7 @@ static NSMutableDictionary* mDict=nil;// = //[[NSMutableDictionary alloc]initWit
     //@throw [[NSException alloc]initWithName:@"RN ERROR" reason:@"native has exeisted" userInfo:nil];
     NSLog(@"native has exeisted");
   }
+    objId = key.stringValue;
+    return objId;
 }
 @end

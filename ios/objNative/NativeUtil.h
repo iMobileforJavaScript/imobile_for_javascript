@@ -9,7 +9,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <SuperMap/Color.h>
+@class Recordset;
 @interface NativeUtil : NSObject
 +(UIColor*)uiColorTransFromArr:(NSArray<NSNumber*>*)arr;
 +(Color*)smColorTransFromArr:(NSArray<NSNumber*>*)arr;
++(NSMutableDictionary *)recordsetToJsonArray:(Recordset*)recordset count:(NSInteger)count size:(NSInteger)size;
 @end

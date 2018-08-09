@@ -61,4 +61,17 @@ RCT_REMAP_METHOD(getWithName,getWithNameByUserKey:(NSString*)key name:(NSString*
     reject(@"datasets",@"get datasetVector by name failed",nil);
   }
 }
+
+
+RCT_REMAP_METHOD(getCount,getCountrKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Datasets* datasets = [JSObjManager getObjWithKey:key];
+   
+    if (datasets) {
+        int n = datasets.count;
+        resolve(@{@"count":@(n)});
+    }else{
+        reject(@"datasets",@"getCountrKey by name failed",nil);
+    }
+}
+
 @end

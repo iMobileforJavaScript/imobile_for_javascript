@@ -6,8 +6,11 @@
 //
 
 #import "JSRecordset.h"
-#import "SuperMap/Recordset.h"
 #import "JSObjManager.h"
+#import "SuperMap/Recordset.h"
+#import "SuperMap/FieldInfos.h"
+#import "SuperMap/FieldInfo.h"
+#import "NativeUtil.h"
 @implementation JSRecordset
 RCT_EXPORT_MODULE();
 RCT_REMAP_METHOD(getRecordCount,getRecordCountById:(NSString*)recordsetId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -75,5 +78,143 @@ RCT_REMAP_METHOD(moveNext,moveNextById:(NSString*)recordsetId resolver:(RCTPromi
 RCT_REMAP_METHOD(update,updateById:(NSString*)recordsetId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
   [recordSet update];
+}
+// add lucd
+RCT_REMAP_METHOD(getFieldCount,getFieldCountById:(NSString*)recordsetId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try { Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
+        int count = (int)[recordSet fieldCount];
+        if (count) {
+            NSNumber* num = [NSNumber numberWithInteger:count];
+            resolve(@{@"count":num});
+        }else{
+            reject(@"getFieldCount",@"get fieldCount failed!!!",nil);
+        }
+    }
+    @catch(NSException *exception){
+         reject(@"JSRecordset",@"getFieldCount expection",nil);
+    }
+}
+RCT_REMAP_METHOD(getFieldInfosArray,getFieldInfosArrayById:(NSString*)recordsetId count:(NSInteger)count size:(NSInteger)size resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        Recordset* recordset = [JSObjManager getObjWithKey:recordsetId];
+        [recordset moveFirst];
+        NSMutableArray* recordsetArray = [NativeUtil recordsetToJsonArray:recordset count:count size:size];
+        resolve(recordsetArray);
+    }
+    @catch(NSException *exception){
+        reject(@"JSRecordset",@"getFieldInfosArray expection",nil);
+    }
+}
+
+
+RCT_REMAP_METHOD(setFieldValueByIndex,setFieldValueByIndexById:(NSString*)recordsetId info:(NSMutableDictionary *)dic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{  Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
+        BOOL result = NO;
+        BOOL editResult ;
+        BOOL updateResult ;
+        [recordSet moveFirst];
+        editResult = [recordSet edit];
+        
+        int count = (int)[dic count];
+        NSArray* keys = dic.allKeys;
+        NSArray* values = dic.allValues;
+        for(int i = 0;i < count;i++){
+            NSString* sKey = keys[i];
+            int index = [sKey intValue];
+            if(values[i] == nil){
+                result = [recordSet setFieldValueNULL:index];
+            }else{
+                result = [recordSet setFieldValue:index Obj:values[i]];
+            }
+        }
+        updateResult = [recordSet update];
+        resolve(@{@"result":@(result),
+                  @"editResult":@(editResult),
+                  @"updateResult":@(updateResult)
+                  });
+    }
+    @catch(NSException *exception){
+        reject(@"JSRecordset",@"getFieldInfosArray expection",nil);
+    }
+}
+RCT_REMAP_METHOD(setFieldValueByName,setFieldValueByNameById:(NSString*)recordsetId info:(NSMutableDictionary *)dic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{ Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
+        BOOL result = NO;
+        BOOL editResult ;
+        BOOL updateResult ;
+        [recordSet moveFirst];
+        editResult = [recordSet edit];
+        
+        int count = (int)[dic count];
+        NSArray* keys = dic.allKeys;
+        NSArray* values = dic.allValues;
+        for(int i = 0;i < count;i++){
+            NSString* name = (NSString*)keys[i];
+            if(values[i] == nil){
+                result = [recordSet setFieldValueNULLWithString:name];
+            }else{
+                result = [recordSet setFieldValueWithString:name Obj:values[i]];
+            }
+        }
+        updateResult = [recordSet update];
+        resolve(@{@"result":@(result),
+                  @"editResult":@(editResult),
+                  @"updateResult":@(updateResult)
+                  });
+    }
+    @catch(NSException *exception){
+        reject(@"JSRecordset",@"getFieldInfosArray expection",nil);
+    }
+}
+RCT_REMAP_METHOD(addFieldInfo,addFieldInfoById:(NSString*)recordsetId info:(NSMutableDictionary *)dic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
+        
+        BOOL editResult ;
+        BOOL updateResult ;
+        [recordSet moveFirst];
+        editResult = [recordSet edit];
+        
+        FieldInfos* fieldInfos = recordSet.fieldInfos;
+        FieldInfo* fieldInfo = [[FieldInfo alloc] init];
+        
+        int count = (int)[dic count];
+        NSArray* keys = dic.allKeys;
+        NSArray* values = dic.allValues;
+        for(int i = 0;i < count;i++){
+            NSString* key = (NSString *)keys[i];
+            if([key containsString:@"caption"]){
+                fieldInfo.caption = (NSString*)values[i];
+            }
+            else if([key containsString:@"name"]){
+                fieldInfo.name = (NSString*)values[i];
+            }
+            else if([key containsString:@"type"]){
+                fieldInfo.fieldType =(FieldType)[((NSString*)values[i]) intValue];
+            }
+            else if([key containsString:@"maxLength"]){
+                fieldInfo.maxLength = [((NSString*)values[i]) intValue];
+            }
+            else if([key containsString:@"defaultValue"]){
+                fieldInfo.defaultValue = (NSString*)values[i];
+            }
+            else if([key containsString:@"isRequired"]){
+                fieldInfo.required = [((NSString*)values[i]) boolValue];
+            }
+            else if([key containsString:@"isZeroLengthAllowed"]){
+                fieldInfo.zeroLengthAllowed = [((NSString*)values[i]) boolValue];
+            }
+        }
+        int index = [fieldInfos add:fieldInfo];
+        updateResult = [recordSet update];
+        
+        resolve(@{@"index":@(index),
+                  @"editResult":@(editResult),
+                  @"updateResult":@(updateResult)
+                  });
+    }
+    @catch(NSException *exception){
+        reject(@"JSRecordset",@"getFieldInfosArray expection",nil);
+    }
 }
 @end
