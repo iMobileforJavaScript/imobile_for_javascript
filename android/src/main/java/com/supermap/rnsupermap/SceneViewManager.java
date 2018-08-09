@@ -29,7 +29,7 @@ public class SceneViewManager extends SimpleViewManager<SceneControl> {
 
     @Override
     public SceneControl createViewInstance(ThemedReactContext reactContext){
-        Environment.setLicensePath(sdcard + "/SuperMap/license/");
+        Environment.setLicensePath(sdcard + "/iTablet/license/");
         Environment.initialization(reactContext.getBaseContext());
         m_ThemedReactContext = reactContext;
         mSceneControl = new SceneControl(m_ThemedReactContext);

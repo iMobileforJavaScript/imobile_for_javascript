@@ -62,4 +62,17 @@ export default class SystemUtil{
       console.error(e);
     }
   }
+  
+  /**
+   * 创建文件目录
+   * @param path - 绝对路径
+   * @returns {Promise}
+   */
+  async createDirectory(path){
+    try{
+      return await SU.createDirectory(path);
+    }catch (e){
+      console.error(e);
+    }
+  }
 }

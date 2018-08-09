@@ -25,7 +25,7 @@ public class MapViewManager extends SimpleViewManager<MapView> {
     @Override
     public MapView createViewInstance(ThemedReactContext reactContext){
         // 设置许可路径,初始化环境
-        Environment.setLicensePath(sdcard + "/SuperMap/license/");
+        Environment.setLicensePath(sdcard + "/iTablet/license/");
         Environment.initialization(reactContext.getBaseContext());
 
         m_ThemedReactContext=reactContext;

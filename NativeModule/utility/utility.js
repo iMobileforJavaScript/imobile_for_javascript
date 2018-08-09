@@ -44,3 +44,8 @@ exports.fileIsExistInHomeDirectory = async function (path) {
   let isExist = await util.fileIsExistInHomeDirectory(path);
   return isExist;
 }
+
+exports.createDirectory = async function (path) {
+  let util = new SystemUtil();
+  return await util.createDirectory(path);
+}
