@@ -7,30 +7,30 @@ let SU = NativeModules.JSSystemUtil;
 /**
  * @class Point - 像素点类。用于标示移动设备屏幕的像素点。
  */
-export default class SystemUtil{
-    /**
-     * 获取沙盒路径
-     * @returns {Promise.<string>}
-     */
-    async getHomeDirectory(){
-        try{
-            var {homeDirectory} = await SU.getHomeDirectory();
-            return homeDirectory;
-        }catch (e){
-            console.error(e);
-        }
+export default class SystemUtil {
+  /**
+   * 获取沙盒路径
+   * @returns {Promise.<string>}
+   */
+  async getHomeDirectory() {
+    try {
+      var { homeDirectory } = await SU.getHomeDirectory();
+      return homeDirectory;
+    } catch (e) {
+      console.error(e);
     }
+  }
   
   /**
    * 获取文件夹中的目录内容
    * @param path
    * @returns {Promise}
    */
-  async getDirectoryContent(path){
-    try{
+  async getDirectoryContent(path) {
+    try {
       let directoryContent = await SU.getDirectoryContent(path);
       return directoryContent;
-    }catch (e){
+    } catch (e) {
       console.error(e);
     }
   }
@@ -40,11 +40,11 @@ export default class SystemUtil{
    * @param path
    * @returns {Promise}
    */
-  async fileIsExist(path){
-    try{
+  async fileIsExist(path) {
+    try {
       let { isExist } = await SU.fileIsExist(path);
       return isExist;
-    }catch (e){
+    } catch (e) {
       console.error(e);
     }
   }
@@ -54,11 +54,11 @@ export default class SystemUtil{
    * @param path
    * @returns {Promise}
    */
-  async fileIsExistInHomeDirectory(path){
-    try{
+  async fileIsExistInHomeDirectory(path) {
+    try {
       let { isExist } = await SU.fileIsExistInHomeDirectory(path);
       return isExist;
-    }catch (e){
+    } catch (e) {
       console.error(e);
     }
   }
@@ -68,11 +68,41 @@ export default class SystemUtil{
    * @param path - 绝对路径
    * @returns {Promise}
    */
-  async createDirectory(path){
-    try{
+  async createDirectory(path) {
+    try {
       return await SU.createDirectory(path);
-    }catch (e){
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  /**
+   * 获取文件夹内容
+   * @param path
+   * @returns {Promise}
+   */
+  async getPathList(path) {
+    try {
+      let fileList = await SU.getPathList(path);
+      return fileList;
+      
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  /**
+   * 判断是否是文件夹
+   * @param path
+   * @returns {Promise.<Promise|*>}
+   */
+  async isDirectory(path) {
+    try {
+      let result = await SU.isDirectory(path);
+      return result;
+    } catch (e) {
       console.error(e);
     }
   }
 }
+

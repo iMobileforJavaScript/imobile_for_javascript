@@ -15,6 +15,7 @@ import java.io.OutputStream;
 
 public class JSSystemUtil extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "JSSystemUtil";
+    private final String homeDirectory = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 
     public JSSystemUtil(ReactApplicationContext context) {
         super(context);
@@ -28,8 +29,6 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getHomeDirectory(Promise promise) {
         try {
-            String homeDirectory = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-
             WritableMap map = Arguments.createMap();
             map.putString("homeDirectory", homeDirectory);
             promise.resolve(map);
@@ -86,8 +85,6 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
     @ReactMethod
     public void fileIsExistInHomeDirectory(String path, Promise promise) {
         try {
-            String homeDirectory = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-
             Boolean isExist = false;
             File file = new File(homeDirectory + "/" + path);
 
@@ -126,13 +123,48 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void isDirectory(String path, Promise promise) {
+        try {
+            File file = new File(path);
+            boolean isDirectory = file.isDirectory();
+            promise.resolve(isDirectory);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getPathList(String path, Promise promise) {
+        try {
+            File file = new File(path);
+
+            File[] files = file.listFiles();
+            WritableArray array = Arguments.createArray();
+            for (int i = 0; i < files.length; i++) {
+                String p = files[i].getAbsolutePath().replace(homeDirectory, "");
+                String n = files[i].getName();
+                boolean isDirectory = files[i].isDirectory();
+                WritableMap map = Arguments.createMap();
+                map.putString("path", p);
+                map.putString("name", n);
+                map.putBoolean("isDirectory", isDirectory);
+                array.pushMap(map);
+            }
+            promise.resolve(array);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     /**
-     * 创建文件目录
-     * @param path - 绝对路径
+     * 拷贝文件到app目录下
+     * @param fileName
+     * @param path
      * @param promise
      */
     @ReactMethod
-    public void assetsDataToSD(String fileName, Promise promise) {
+    public void assetsDataToSD(String fileName, String path, Promise promise) {
         try {
             InputStream myInput;
             OutputStream myOutput = new FileOutputStream(fileName);

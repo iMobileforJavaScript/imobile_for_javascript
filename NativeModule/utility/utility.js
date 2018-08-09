@@ -11,6 +11,7 @@
 
 import Point from '../Point';
 import SystemUtil from '../SystemUtil';
+const util = new SystemUtil();
 
 exports.Point2Map = async function (map,x, y) {
     let pointFac = new Point();
@@ -21,31 +22,34 @@ exports.Point2Map = async function (map,x, y) {
 }
 
 exports.appendingHomeDirectory = async function (path = '') {
-    let util = new SystemUtil();
     let homeDirectory = await util.getHomeDirectory();
     let newPath = homeDirectory + path;
     return newPath;
 }
 
 exports.getDirectoryContent = async function (path) {
-  let util = new SystemUtil();
   let directories = await util.getDirectoryContent(path);
   return directories;
 }
 
 exports.fileIsExist = async function (path) {
-  let util = new SystemUtil();
   let isExist = await util.fileIsExist(path);
   return isExist;
 }
 
 exports.fileIsExistInHomeDirectory = async function (path) {
-  let util = new SystemUtil();
   let isExist = await util.fileIsExistInHomeDirectory(path);
   return isExist;
 }
 
 exports.createDirectory = async function (path) {
-  let util = new SystemUtil();
   return await util.createDirectory(path);
+}
+
+exports.getPathList = async function (path) {
+  return await util.getPathList(path);
+}
+
+exports.isDirectory = async function (path) {
+  return await util.isDirectory(path);
 }

@@ -158,7 +158,6 @@ public class SupermapFullPackage implements ReactPackage {
 
         modules.add(new JSGPSElementType(reactContext));
         modules.add(new JSGeometryType(reactContext));
-        modules.add(new JSOpenMapfile(reactContext));
 
         modules.add(new JSSpeechManager(reactContext));
         modules.add(new JSAlongLineDirection(reactContext));
