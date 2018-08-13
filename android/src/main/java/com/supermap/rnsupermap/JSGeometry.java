@@ -6,11 +6,13 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.data.Enum;
 import com.supermap.data.GeoLine;
 import com.supermap.data.GeoPoint;
 import com.supermap.data.GeoRegion;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
+import com.supermap.data.GeometryType;
 import com.supermap.data.Point2D;
 
 import java.util.Calendar;
@@ -49,29 +51,54 @@ public class JSGeometry extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getInnerPoint(String geometryId, Promise promise){
-        try{
+    public void getInnerPoint(String geometryId, Promise promise) {
+        try {
             Geometry geometry = m_GeometryList.get(geometryId);
             Point2D point2D = geometry.getInnerPoint();
             String point2DId = JSPoint2D.registerId(point2D);
 
             WritableMap map = Arguments.createMap();
-            map.putString("point2DId",point2DId);
+            map.putString("point2DId", point2DId);
             promise.resolve(map);
-        }catch(Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void setStyle(String geometryId,String geoStyleId,Promise promise){
-        try{
+    public void setStyle(String geometryId, String geoStyleId, Promise promise) {
+        try {
             Geometry geometry = getObjFromList(geometryId);
             GeoStyle geoStyle = JSGeoStyle.getObjFromList(geoStyleId);
             geometry.setStyle(geoStyle);
 
             promise.resolve(true);
-        }catch(Exception e){
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getID(String geometryId, Promise promise) {
+        try {
+            Geometry geometry = getObjFromList(geometryId);
+            int id = geometry.getID();
+
+            promise.resolve(id);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getType(String geometryId, Promise promise) {
+        try {
+            Geometry geometry = getObjFromList(geometryId);
+            GeometryType geoType = geometry.getType();
+            int intType = Enum.getValueByName(GeometryType.class, geoType.name());
+
+            promise.resolve(intType);
+        } catch (Exception e) {
             promise.reject(e);
         }
     }

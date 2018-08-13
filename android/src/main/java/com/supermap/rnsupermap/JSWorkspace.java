@@ -485,4 +485,17 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void getConnectionInfo(String workspaceId, Promise promise){
+        try{
+            Workspace workspace = getObjById(workspaceId);
+            WorkspaceConnectionInfo info = workspace.getConnectionInfo();
+            String infoId = JSWorkspaceConnectionInfo.registerId(info);
+
+            promise.resolve(infoId);
+        }catch(Exception e) {
+            promise.reject(e);
+        }
+    }
 }

@@ -92,6 +92,22 @@ export default class SystemUtil {
   }
   
   /**
+   * 根据过滤条件获取文件夹内容
+   * @param path
+   * @param filter  {name: 文件名, type: 文件类型}
+   * @returns {Promise}
+   */
+  async getPathListByFilter(path, filter) {
+    try {
+      let fileList = await SU.getPathListByFilter(path, filter);
+      return fileList;
+      
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  /**
    * 判断是否是文件夹
    * @param path
    * @returns {Promise.<Promise|*>}

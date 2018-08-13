@@ -11,6 +11,7 @@ import Datasets from './Datasets.js';
 import Dataset from './Dataset.js';
 import DatasetVector from './DatasetVector.js';
 import PrjCoordSys from './PrjCoordSys.js';
+import DatasourceConnectionInfo from './DatasourceConnectionInfo.js';
 
 /**
  * @class Datasource
@@ -241,6 +242,21 @@ export default class Datasource {
   async isReadOnly() {
     try {
       return await D.isReadOnly(this._SMDatasourceId);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  /**
+   * 返回此数据源的连接信息
+   * @returns {Promise.<Promise|Promise.<void>>}
+   */
+  async getConnectionInfo() {
+    try {
+      let id = await D.getConnectionInfo(this._SMDatasourceId);
+      let connInfo = new DatasourceConnectionInfo()
+      connInfo._SMDatasourceConnectionInfoId = id
+      return connInfo
     } catch (e) {
       console.error(e);
     }
