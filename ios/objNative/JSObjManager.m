@@ -30,7 +30,8 @@ static NSMutableDictionary* mDict=nil;// = //[[NSMutableDictionary alloc]initWit
   id obj = mDict[key];
   
   if(obj==nil){
-    @throw [[NSException alloc]initWithName:@"RN ERROR" reason:@"native obj is not exeist" userInfo:nil];
+      NSLog(@"native obj is not exeist");
+   // @throw [[NSException alloc]initWithName:@"RN ERROR" reason:@"native obj is not exeist" userInfo:nil];
   }
   
   return obj;

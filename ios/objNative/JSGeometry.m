@@ -35,4 +35,24 @@ RCT_REMAP_METHOD(setStyle,setStyleByGeometryId:(NSString*)geometryId geoStyleId:
     }
    
 }
+
+RCT_REMAP_METHOD(getID,getIDId:(NSString*)geometryId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Geometry* geo = [JSObjManager getObjWithKey:geometryId];
+        int p2D = [geo getID];
+        resolve(@(p2D));
+    } @catch (NSException *exception) {
+         reject(@"geometry",@"geometry getID failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getType,getTypeId:(NSString*)geometryId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Geometry* geo = [JSObjManager getObjWithKey:geometryId];
+        int p2D = [geo getType];
+        resolve(@(p2D));
+    } @catch (NSException *exception) {
+        reject(@"geometry",@"geometry getType failed!!!",nil);
+    }
+}
 @end

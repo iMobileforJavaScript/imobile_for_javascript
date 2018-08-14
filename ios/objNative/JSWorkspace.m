@@ -293,16 +293,18 @@ RCT_REMAP_METHOD(saveWorkspace,saveWorkspaceByKey:(NSString*)key resolver:(RCTPr
 }
 
 RCT_REMAP_METHOD(closeWorkspace,closeWorkspaceByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-  Workspace* workspace = [JSObjManager getObjWithKey:key];
-  if(workspace){
-      [workspace close];
-      [JSObjManager removeObj:key];
-      [workspace dispose];
-      NSNumber* nsClosed = [NSNumber numberWithBool:TRUE];
-    resolve(@{@"closed":nsClosed});
-  }else{
-    reject(@"workspace",@"close failed!!!",nil);
-  }
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        if(workspace){
+            [workspace close];
+            [JSObjManager removeObj:key];
+            [workspace dispose];
+            NSNumber* nsClosed = [NSNumber numberWithBool:TRUE];
+            resolve(@{@"closed":nsClosed});
+        }
+    } @catch (NSException *exception) {
+        reject(@"workspace",@"close failed!!!",nil);
+    } 
 }
 
 #pragma mark - 原datasources类放法
@@ -378,7 +380,18 @@ RCT_REMAP_METHOD(closeAllDatasource,closeAllDatasourceByKey:(NSString*)key resol
         reject(@"workspace",@"close all Datasource failed!!!",nil);
     }
 }
+RCT_REMAP_METHOD(getConnectionInfo,getConnectionInfoKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        WorkspaceConnectionInfo* info = workspace.connectionInfo;
+        NSString* key1 = [JSObjManager addObj:info];
+        resolve(key1);
+    } @catch (NSException *exception) {
+        reject(@"workspace",@"workspace getConnectionInfo all Datasource failed!!!",nil);
+    }
 
+}
 #pragma mark - 原maps类方法
 
 RCT_REMAP_METHOD(removeMap,removeMapByKey:(NSString*)key andMapName:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

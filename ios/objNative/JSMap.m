@@ -140,6 +140,53 @@ RCT_REMAP_METHOD(getLayersByType, getLayersByTypeyKey:(NSString*)key  type:(int)
     }else
         reject(@"Map",@"getLayerByName:get layer failed !",nil);
 }
+
+RCT_REMAP_METHOD(getLayersWithType, ggetLayersWithTypeKey:(NSString*)key  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Map* map = [JSObjManager getObjWithKey:key];
+    if(map){
+        
+        Layers* layers = map.layers;
+        int count = [layers getCount];
+        
+        NSMutableDictionary* temp = [[NSMutableDictionary alloc]initWithCapacity:5];
+        NSMutableArray* arr = nil;//[[NSMutableArray alloc]initWithCapacity:5];
+        for (int i = 0; i < count; i++) {
+            Layer* layer = [layers getLayerAtIndex:i];
+            Dataset* dataset = layer.dataset;
+            
+            DatasetType dType = dataset.datasetType;
+            if ( ![temp.allKeys containsObject:@(dType)]) {
+                arr = [[NSMutableArray alloc]initWithCapacity:5];
+                temp[@(dType)] = arr;
+            }
+            arr = temp[@(dType)];
+            NSString* layerId = [JSObjManager addObj:layer];
+            NSDictionary* wMap = @{@"id":layerId,
+                                   @"type":@(dType),
+                                   @"index":@(i),
+                                   @"name": layer.name,
+                                   @"caption": layer.caption,
+                                   @"description": layer.description,
+                                   @"datasetName": dataset.name,
+                                   @"isEditable": @(layer.editable),
+                                   @"isVisible": @(layer.visible),
+                                   @"isSelectable": @(layer.selectable),
+                                   @"isSnapable": @(layer.isSnapable)
+                                   };
+            
+            [arr addObject:wMap];
+        }
+        NSMutableArray* resultArr = [NSMutableArray array];
+        for(NSNumber* key in temp.allKeys){
+            [resultArr addObject:[NSString stringWithFormat:@"%@",key]];
+            [resultArr addObject:temp[key]];
+        }
+        resolve(resultArr);
+    }else
+        reject(@"Map",@"Map getLayersWithType:get layer failed !",nil);
+}
+
+
 RCT_REMAP_METHOD(containsCaption,acontainsCaptionKey:(NSString*)key cation:(NSString*)cation datasourceName:(NSString*)datasourceName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Map* map = [JSObjManager getObjWithKey:key];
     

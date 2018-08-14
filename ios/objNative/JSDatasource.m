@@ -77,7 +77,7 @@ RCT_REMAP_METHOD(getDataset,getDatasetByKey:(NSString*)key andNum:(int)num resol
         [JSObjManager addObj:dataset];
         resolve(@{@"datasetId":@(key).stringValue});
     }else{
-        reject(@"dataSource",@"get dataset failed",nil);
+        reject(@"dataSource",@"dataSource get dataset failed",nil);
     }
 }
 

@@ -27,6 +27,7 @@ RCT_REMAP_METHOD(getRecordCount,getRecordCountById:(NSString*)recordsetId resolv
 RCT_REMAP_METHOD(dispose,disposeById:(NSString*)recordsetId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
   [recordSet dispose];
+    resolve(@(1));
 }
 
 RCT_REMAP_METHOD(getGeometry,getGeometryById:(NSString*)recordsetId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -68,16 +69,41 @@ RCT_REMAP_METHOD(addNew,addNewById:(NSString*)recordsetId geoId:(NSString*)geoId
   Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
   Geometry* geo = [JSObjManager getObjWithKey:geoId];
   [recordSet addNew:geo];
+    resolve(@(1));
 }
 
 RCT_REMAP_METHOD(moveNext,moveNextById:(NSString*)recordsetId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
   [recordSet moveNext];
+    resolve(@(1));
 }
+RCT_REMAP_METHOD(moveFirst,moveFirstId:(NSString*)recordsetId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
+    [recordSet moveFirst];
+    resolve(@(1));
+}
+RCT_REMAP_METHOD(moveLast,moveLastId:(NSString*)recordsetId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
+    [recordSet moveLast];
+    resolve(@(1));
+}
+RCT_REMAP_METHOD(movePrev,movePrevId:(NSString*)recordsetId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
+    [recordSet movePrev];
+    resolve(@(1));
+}
+
+RCT_REMAP_METHOD(moveTo,moveToId:(NSString*)recordsetId index:(int)n resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
+    [recordSet moveTo:n];
+    resolve(@(1));
+}
+
 
 RCT_REMAP_METHOD(update,updateById:(NSString*)recordsetId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
   [recordSet update];
+    resolve(@(1));
 }
 // add lucd
 RCT_REMAP_METHOD(getFieldCount,getFieldCountById:(NSString*)recordsetId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -105,7 +131,17 @@ RCT_REMAP_METHOD(getFieldInfosArray,getFieldInfosArrayById:(NSString*)recordsetI
         reject(@"JSRecordset",@"getFieldInfosArray expection",nil);
     }
 }
-
+RCT_REMAP_METHOD(getFieldInfo,getFieldInfoById:(NSString*)recordsetId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        Recordset* recordset = [JSObjManager getObjWithKey:recordsetId];
+        [recordset moveFirst];
+        NSMutableArray* recordsetArray = [NativeUtil recordsetToJsonArray:recordset count:0 size:1];
+        resolve(recordsetArray);
+    }
+    @catch(NSException *exception){
+        reject(@"JSRecordset",@"getFieldInfosArray expection",nil);
+    }
+}
 
 RCT_REMAP_METHOD(setFieldValueByIndex,setFieldValueByIndexById:(NSString*)recordsetId info:(NSMutableDictionary *)dic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try{  Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
