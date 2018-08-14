@@ -92,6 +92,40 @@ RCT_REMAP_METHOD(assetsDataToSD,assetsDataToSDPath:(NSString*)path getHomeDirect
     
 }
 
+RCT_REMAP_METHOD(isDirectory,isDirectoryPath:(NSString*)path getHomeDirectoryWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    // NSString* home = NSHomeDirectory();
+    BOOL isDir = FALSE;
+    BOOL isDirExist = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
+    
+    resolve(@(isDirExist&&isDir));
+    
+}
+
+RCT_REMAP_METHOD(getPathList,getPathListPath:(NSString*)path getHomeDirectoryWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    NSMutableArray* array = [NSMutableArray arrayWithCapacity:10];
+    
+    NSFileManager* fileMgr = [NSFileManager defaultManager];
+    NSArray* tempArray = [fileMgr contentsOfDirectoryAtPath:path error:nil];
+    
+    for (NSString* fileName in tempArray) {
+        
+        BOOL flag = YES;
+        
+        NSString* fullPath = [path stringByAppendingPathComponent:fileName];
+        
+        if ([fileMgr fileExistsAtPath:fullPath isDirectory:&flag]) {
+            
+            NSString* tt = [fullPath stringByReplacingOccurrencesOfString:[NSHomeDirectory() stringByAppendingString:@"/Documents"] withString:@""];
+            [array addObject:@{@"name":fileName,@"path":tt,@"isDirectory":@(flag)}];
+          //  [array addObject:@{@"name":fileName,@"type":@"directory"}];
+        }
+        
+    }
+    
+    resolve(array);
+    
+}
+
 RCT_REMAP_METHOD(fileIsExist,fileIsExistPath:(NSString*)path getHomeDirectoryWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
    // NSString* home = NSHomeDirectory();
     BOOL b =[[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:nil];

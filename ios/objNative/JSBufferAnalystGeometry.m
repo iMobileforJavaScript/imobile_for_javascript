@@ -23,7 +23,7 @@ RCT_REMAP_METHOD(createBuffer,geometryId:(NSString*)geoId bufferAnalystParaId:(N
         [JSObjManager addObj:region];
         resolve(@{@"geoRegionId":@(regionKey).stringValue});
     } @catch (NSException *exception) {
-        reject(@"bufferAnalystGeo",@"bufferAnalyst failed",nil);
+        reject(@"bufferAnalystGeo",@"bufferAnalystGeo bufferAnalyst failed",nil);
     }
 }
 @end

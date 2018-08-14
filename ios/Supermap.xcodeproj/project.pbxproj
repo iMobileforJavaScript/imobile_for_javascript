@@ -7,118 +7,144 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A0D367D211AEE4600B9626D /* JSThemeType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D367C211AEE4600B9626D /* JSThemeType.m */; };
-		0A0D3682211BC8F600B9626D /* JSFacilityAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D367F211BC8F600B9626D /* JSFacilityAnalyst.m */; };
-		0A0D3683211BC8F600B9626D /* JSFacilityAnalystSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D3681211BC8F600B9626D /* JSFacilityAnalystSetting.m */; };
-		0A0D3688211BC90800B9626D /* JSWeightFieldInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D3685211BC90800B9626D /* JSWeightFieldInfo.m */; };
-		0A0D3689211BC90800B9626D /* JSWeightFieldInfos.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0D3687211BC90800B9626D /* JSWeightFieldInfos.m */; };
-		0AF8061B21119CD70066EA4D /* JSCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF8061A21119CD70066EA4D /* JSCollector.m */; };
-		0AF8061E21119D1C0066EA4D /* JSCollectorElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF8061D21119D1C0066EA4D /* JSCollectorElement.m */; };
-		0AF8064E21119F480066EA4D /* JSCollectorLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF8064D21119F480066EA4D /* JSCollectorLine.m */; };
-		0AF8065121119F7A0066EA4D /* JSElementPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF8065021119F7A0066EA4D /* JSElementPoint.m */; };
-		0AF8065421119F950066EA4D /* JSElementPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF8065321119F950066EA4D /* JSElementPolygon.m */; };
-		0AF806592111D1F80066EA4D /* JSSpeechManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF806582111D1F80066EA4D /* JSSpeechManager.m */; };
-		FF0583831ED65F590095978A /* JSLegendViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF0583821ED65F590095978A /* JSLegendViewManager.m */; };
-		FF0583861ED6741F0095978A /* JSLayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF0583851ED6741F0095978A /* JSLayerManager.m */; };
-		FF1405261EA839A7000E0314 /* JSOverlayAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1405251EA839A7000E0314 /* JSOverlayAnalyst.m */; };
-		FF1405411EA8A56B000E0314 /* JSOverlayAnalystParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1405401EA8A56B000E0314 /* JSOverlayAnalystParameter.m */; };
-		FF1B90321E78C92400CE2481 /* JSNavigation.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1B90311E78C92400CE2481 /* JSNavigation.m */; };
-		FF1CB72E1EC000A600562DCD /* JSPointDensityChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1CB72D1EC000A600562DCD /* JSPointDensityChart.m */; };
-		FF1CB7311EC001FC00562DCD /* JSPolymerChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1CB7301EC001FC00562DCD /* JSPolymerChart.m */; };
-		FF1CB7341EC0096100562DCD /* JSRelationalPointChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1CB7331EC0096100562DCD /* JSRelationalPointChart.m */; };
-		FF1FC4B91F53FD23004791DC /* JSSceneView.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1FC4B81F53FD23004791DC /* JSSceneView.m */; };
-		FF23718F1ECACBF800A86EEF /* JSMQTTClientSide.m in Sources */ = {isa = PBXBuildFile; fileRef = FF23718E1ECACBF800A86EEF /* JSMQTTClientSide.m */; };
-		FF263BB81EC547BA00A8374C /* JSAMQPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF263BB71EC547BA00A8374C /* JSAMQPManager.m */; };
-		FF263BBB1EC5586500A8374C /* JSAMQPSender.m in Sources */ = {isa = PBXBuildFile; fileRef = FF263BBA1EC5586500A8374C /* JSAMQPSender.m */; };
-		FF28BFAC1F1EF2520024AA02 /* JSPieChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF28BFAB1F1EF2520024AA02 /* JSPieChartViewManager.m */; };
-		FF3308F51F1C99E700712398 /* JSTimeLine.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3308F41F1C99E700712398 /* JSTimeLine.m */; };
-		FF4216151F25CF5400F9CCFE /* JSBarChartDataItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4216141F25CF5400F9CCFE /* JSBarChartDataItem.m */; };
-		FF47894A1E8A4AAB00E0DA44 /* JSSystemUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4789491E8A4AAB00E0DA44 /* JSSystemUtil.m */; };
-		FF4A44CA1ECC1DB2003E4FE4 /* JSBufferAnalystParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4A44C91ECC1DB2003E4FE4 /* JSBufferAnalystParameter.m */; };
-		FF4A44CD1ECC3672003E4FE4 /* JSAMQPReceiver.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4A44CC1ECC3672003E4FE4 /* JSAMQPReceiver.m */; };
-		FF52E27C1FBACCF3007F3EDE /* NativeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = FF52E27B1FBACCF3007F3EDE /* NativeUtil.m */; };
-		FF52E27F1FBAE56D007F3EDE /* JSRelationalChartPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = FF52E27E1FBAE56D007F3EDE /* JSRelationalChartPoint.m */; };
-		FF5367F71ED3C6330093535D /* JSScaleViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5367F61ED3C6330093535D /* JSScaleViewManager.m */; };
-		FF54E2A41F3C0D9D0007A188 /* JSBarChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FF54E2A31F3C0D9D0007A188 /* JSBarChart.m */; };
-		FF54E2C11F3C50FB0007A188 /* JSLineChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FF54E2C01F3C50FB0007A188 /* JSLineChart.m */; };
-		FF6362111ECECAD900E9F6F3 /* JSBufferAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6362101ECECAD900E9F6F3 /* JSBufferAnalyst.m */; };
-		FFA114051EAEDACD00650302 /* SceneViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA114041EAEDACD00650302 /* SceneViewManager.m */; };
-		FFA114471EB0810D00650302 /* JSTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = FFA114461EB0810D00650302 /* JSTheme.m */; };
-		FFB06C471F41768900F9527F /* JSPieChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C461F41768900F9527F /* JSPieChart.m */; };
-		FFB06C4A1F42875000F9527F /* RCTConvert+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C491F42875000F9527F /* RCTConvert+Action.m */; };
-		FFB06C4D1F428C7900F9527F /* JSAction.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C4C1F428C7900F9527F /* JSAction.m */; };
-		FFB06C741F43C9F200F9527F /* RCTConvert+BufferEndType.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C731F43C9F200F9527F /* RCTConvert+BufferEndType.m */; };
-		FFB06C771F43CABD00F9527F /* JSBufferEndType.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C761F43CABD00F9527F /* JSBufferEndType.m */; };
-		FFB06C7A1F43D17B00F9527F /* RCTConvert+RadiusUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C791F43D17B00F9527F /* RCTConvert+RadiusUnit.m */; };
-		FFB06C7D1F43D3CF00F9527F /* JSRadiusUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06C7C1F43D3CF00F9527F /* JSRadiusUnit.m */; };
-		FFB06CC21F44231300F9527F /* RCTConvert+EncodeType.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06CC11F44231300F9527F /* RCTConvert+EncodeType.m */; };
-		FFB06CC51F4423E700F9527F /* JSEncodeType.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06CC41F4423E700F9527F /* JSEncodeType.m */; };
-		FFB06CC81F4424FD00F9527F /* RCTConvert+DatasetType.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06CC71F4424FD00F9527F /* RCTConvert+DatasetType.m */; };
-		FFB06CCB1F44266300F9527F /* JSDatasetType.m in Sources */ = {isa = PBXBuildFile; fileRef = FFB06CCA1F44266300F9527F /* JSDatasetType.m */; };
-		FFD1F0191E31E22200CACDC5 /* JSAdoptMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFBE1E31E22200CACDC5 /* JSAdoptMapView.m */; };
-		FFD1F01A1E31E22200CACDC5 /* JSBufferAnalystGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFC01E31E22200CACDC5 /* JSBufferAnalystGeometry.m */; };
-		FFD1F01B1E31E22200CACDC5 /* JSCallOut.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFC21E31E22200CACDC5 /* JSCallOut.m */; };
-		FFD1F01C1E31E22200CACDC5 /* JSDataDownloadService.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFC41E31E22200CACDC5 /* JSDataDownloadService.m */; };
-		FFD1F01D1E31E22200CACDC5 /* JSDataset.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFC61E31E22200CACDC5 /* JSDataset.m */; };
-		FFD1F01E1E31E22200CACDC5 /* JSDatasets.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFC81E31E22200CACDC5 /* JSDatasets.m */; };
-		FFD1F01F1E31E22200CACDC5 /* JSDatasetVector.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFCA1E31E22200CACDC5 /* JSDatasetVector.m */; };
-		FFD1F0201E31E22200CACDC5 /* JSDatasetVectorInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFCC1E31E22200CACDC5 /* JSDatasetVectorInfo.m */; };
-		FFD1F0211E31E22200CACDC5 /* JSDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFCE1E31E22200CACDC5 /* JSDatasource.m */; };
-		FFD1F0221E31E22200CACDC5 /* JSDatasourceConnectionInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFD01E31E22200CACDC5 /* JSDatasourceConnectionInfo.m */; };
-		FFD1F0231E31E22200CACDC5 /* JSDatasources.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFD21E31E22200CACDC5 /* JSDatasources.m */; };
-		FFD1F0241E31E22200CACDC5 /* JSDataUploadService.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFD41E31E22200CACDC5 /* JSDataUploadService.m */; };
-		FFD1F0261E31E22200CACDC5 /* JSFeature.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFD81E31E22200CACDC5 /* JSFeature.m */; };
-		FFD1F0271E31E22200CACDC5 /* JSFeatureSet.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFDA1E31E22200CACDC5 /* JSFeatureSet.m */; };
-		FFD1F0281E31E22200CACDC5 /* JSGeoLine.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFDC1E31E22200CACDC5 /* JSGeoLine.m */; };
-		FFD1F0291E31E22200CACDC5 /* JSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFDE1E31E22200CACDC5 /* JSGeometry.m */; };
-		FFD1F02A1E31E22200CACDC5 /* JSGeoPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFE01E31E22200CACDC5 /* JSGeoPoint.m */; };
-		FFD1F02B1E31E22200CACDC5 /* JSGeoRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFE21E31E22200CACDC5 /* JSGeoRegion.m */; };
-		FFD1F02C1E31E22200CACDC5 /* JSGeoStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFE41E31E22200CACDC5 /* JSGeoStyle.m */; };
-		FFD1F02D1E31E22200CACDC5 /* JSLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFE61E31E22200CACDC5 /* JSLayer.m */; };
-		FFD1F02E1E31E22200CACDC5 /* JSLayers.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFE81E31E22200CACDC5 /* JSLayers.m */; };
-		FFD1F02F1E31E22200CACDC5 /* JSLayerSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFEA1E31E22200CACDC5 /* JSLayerSetting.m */; };
-		FFD1F0301E31E22200CACDC5 /* JSLayerSettingVector.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFEC1E31E22200CACDC5 /* JSLayerSettingVector.m */; };
-		FFD1F0311E31E22200CACDC5 /* JSLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFEE1E31E22200CACDC5 /* JSLocationManager.m */; };
-		FFD1F0321E31E22200CACDC5 /* JSMap.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFF01E31E22200CACDC5 /* JSMap.m */; };
-		FFD1F0331E31E22200CACDC5 /* JSMapControl.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFF21E31E22200CACDC5 /* JSMapControl.m */; };
-		FFD1F0341E31E22200CACDC5 /* JSMaps.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFF41E31E22200CACDC5 /* JSMaps.m */; };
-		FFD1F0351E31E22200CACDC5 /* JSMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFF61E31E22200CACDC5 /* JSMapView.m */; };
-		FFD1F0361E31E22200CACDC5 /* JSNavigation2.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFF81E31E22200CACDC5 /* JSNavigation2.m */; };
-		FFD1F0371E31E22200CACDC5 /* JSObjManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFFA1E31E22200CACDC5 /* JSObjManager.m */; };
-		FFD1F0381E31E22200CACDC5 /* JSPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFFC1E31E22200CACDC5 /* JSPoint.m */; };
-		FFD1F0391E31E22200CACDC5 /* JSPoint2D.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1EFFE1E31E22200CACDC5 /* JSPoint2D.m */; };
-		FFD1F03A1E31E22200CACDC5 /* JSPrjCoordSys.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1F0001E31E22200CACDC5 /* JSPrjCoordSys.m */; };
-		FFD1F03B1E31E22200CACDC5 /* JSQueryParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1F0021E31E22200CACDC5 /* JSQueryParameter.m */; };
-		FFD1F03C1E31E22200CACDC5 /* JSQueryService.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1F0041E31E22200CACDC5 /* JSQueryService.m */; };
-		FFD1F03D1E31E22200CACDC5 /* JSRecordset.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1F0061E31E22200CACDC5 /* JSRecordset.m */; };
-		FFD1F03E1E31E22200CACDC5 /* JSRectangle2D.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1F0081E31E22200CACDC5 /* JSRectangle2D.m */; };
-		FFD1F03F1E31E22200CACDC5 /* JSSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1F00A1E31E22200CACDC5 /* JSSelection.m */; };
-		FFD1F0401E31E22200CACDC5 /* JSServiceBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1F00C1E31E22200CACDC5 /* JSServiceBase.m */; };
-		FFD1F0411E31E22200CACDC5 /* JSServiceQueryParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1F00E1E31E22200CACDC5 /* JSServiceQueryParameter.m */; };
-		FFD1F0421E31E22200CACDC5 /* JSSize2D.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1F0101E31E22200CACDC5 /* JSSize2D.m */; };
-		FFD1F0431E31E22200CACDC5 /* JSTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1F0121E31E22200CACDC5 /* JSTrack.m */; };
-		FFD1F0441E31E22200CACDC5 /* JSTrackingLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1F0141E31E22200CACDC5 /* JSTrackingLayer.m */; };
-		FFD1F0451E31E22200CACDC5 /* JSWorkspace.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1F0161E31E22200CACDC5 /* JSWorkspace.m */; };
-		FFD1F0461E31E22200CACDC5 /* JSWorkspaceConnectionInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD1F0181E31E22200CACDC5 /* JSWorkspaceConnectionInfo.m */; };
-		FFD50D571EA9E67E00C5F209 /* JSScene.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD50D561EA9E67E00C5F209 /* JSScene.m */; };
-		FFD50D661EA9F7BD00C5F209 /* JSSceneControl.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD50D651EA9F7BD00C5F209 /* JSSceneControl.m */; };
-		FFDFED351EC930C200C39D87 /* JSSTOMPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDFED341EC930C200C39D87 /* JSSTOMPManager.m */; };
-		FFDFED381EC93BB900C39D87 /* JSSTOMPReceiver.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDFED371EC93BB900C39D87 /* JSSTOMPReceiver.m */; };
-		FFDFED3B1EC9449100C39D87 /* JSSTOMPSender.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDFED3A1EC9449100C39D87 /* JSSTOMPSender.m */; };
-		FFE622A41F26E12A00B9BF32 /* JSLineChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE622A31F26E12A00B9BF32 /* JSLineChartViewManager.m */; };
-		FFE622A71F26F44500B9BF32 /* JSInstrumentChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE622A61F26F44500B9BF32 /* JSInstrumentChartViewManager.m */; };
-		FFEFAA421EB9B3790002AE4C /* JSChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFEFAA411EB9B3790002AE4C /* JSChartView.m */; };
-		FFF1A4D01EBD5E7900C21142 /* JSChartLegend.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF1A4CF1EBD5E7900C21142 /* JSChartLegend.m */; };
-		FFF1A4D31EBDA38E00C21142 /* JSHotChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF1A4D21EBDA38E00C21142 /* JSHotChart.m */; };
-		FFF1A4D61EBDA5A400C21142 /* JSColorScheme.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF1A4D51EBDA5A400C21142 /* JSColorScheme.m */; };
-		FFF1A4D91EBDB31200C21142 /* JSGridHotChart.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF1A4D81EBDB31200C21142 /* JSGridHotChart.m */; };
-		FFF203C91EBAB91400DA9A1F /* JSChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF203C81EBAB91400DA9A1F /* JSChartData.m */; };
-		FFF203E11EBC5CC800DA9A1F /* JSBarChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF203E01EBC5CC800DA9A1F /* JSBarChartData.m */; };
-		FFF203E41EBC707000DA9A1F /* JSPieChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF203E31EBC707000DA9A1F /* JSPieChartData.m */; };
-		FFF203E71EBC7AEA00DA9A1F /* JSLineChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF203E61EBC7AEA00DA9A1F /* JSLineChartData.m */; };
-		FFF203EA1EBC99F600DA9A1F /* JSChartPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF203E91EBC99F600DA9A1F /* JSChartPoint.m */; };
-		FFF803EF209D423900FA57AA /* JSLayer3Ds.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF803EE209D423900FA57AA /* JSLayer3Ds.m */; };
-		FFFC46C41F20339300F5DDA4 /* JSBarChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFC46C31F20339300F5DDA4 /* JSBarChartViewManager.m */; };
+		0A332DEA211D623E00F56F26 /* JSAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CD7211D623D00F56F26 /* JSAction.m */; };
+		0A332DEB211D623E00F56F26 /* JSAdoptMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CD9211D623D00F56F26 /* JSAdoptMapView.m */; };
+		0A332DEC211D623E00F56F26 /* JSAMQPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CDB211D623D00F56F26 /* JSAMQPManager.m */; };
+		0A332DED211D623E00F56F26 /* JSAMQPReceiver.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CDD211D623D00F56F26 /* JSAMQPReceiver.m */; };
+		0A332DEE211D623E00F56F26 /* JSAMQPSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CDF211D623D00F56F26 /* JSAMQPSender.m */; };
+		0A332DEF211D623E00F56F26 /* JSBarChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CE1211D623D00F56F26 /* JSBarChart.m */; };
+		0A332DF0211D623E00F56F26 /* JSBarChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CE3211D623D00F56F26 /* JSBarChartData.m */; };
+		0A332DF1211D623E00F56F26 /* JSBarChartDataItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CE5211D623D00F56F26 /* JSBarChartDataItem.m */; };
+		0A332DF2211D623E00F56F26 /* JSBarChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CE7211D623D00F56F26 /* JSBarChartViewManager.m */; };
+		0A332DF3211D623E00F56F26 /* JSBufferAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CE9211D623D00F56F26 /* JSBufferAnalyst.m */; };
+		0A332DF4211D623E00F56F26 /* JSBufferAnalystGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CEB211D623D00F56F26 /* JSBufferAnalystGeometry.m */; };
+		0A332DF5211D623E00F56F26 /* JSBufferAnalystParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CED211D623D00F56F26 /* JSBufferAnalystParameter.m */; };
+		0A332DF6211D623E00F56F26 /* JSBufferEndType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CEF211D623D00F56F26 /* JSBufferEndType.m */; };
+		0A332DF7211D623E00F56F26 /* JSCallOut.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CF1211D623D00F56F26 /* JSCallOut.m */; };
+		0A332DF8211D623E00F56F26 /* JSChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CF3211D623D00F56F26 /* JSChartData.m */; };
+		0A332DF9211D623E00F56F26 /* JSChartLegend.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CF5211D623D00F56F26 /* JSChartLegend.m */; };
+		0A332DFA211D623E00F56F26 /* JSChartPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CF7211D623D00F56F26 /* JSChartPoint.m */; };
+		0A332DFB211D623E00F56F26 /* JSChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CF9211D623D00F56F26 /* JSChartView.m */; };
+		0A332DFC211D623E00F56F26 /* JSCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CFB211D623D00F56F26 /* JSCollector.m */; };
+		0A332DFD211D623E00F56F26 /* JSCollectorElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CFD211D623D00F56F26 /* JSCollectorElement.m */; };
+		0A332DFE211D623E00F56F26 /* JSCollectorLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CFF211D623D00F56F26 /* JSCollectorLine.m */; };
+		0A332DFF211D623E00F56F26 /* JSColorGradientType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D01211D623D00F56F26 /* JSColorGradientType.m */; };
+		0A332E00211D623E00F56F26 /* JSColorScheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D03211D623D00F56F26 /* JSColorScheme.m */; };
+		0A332E01211D623E00F56F26 /* JSCoordSysTranslator.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D05211D623D00F56F26 /* JSCoordSysTranslator.m */; };
+		0A332E02211D623E00F56F26 /* JSCoordSysTransMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D07211D623D00F56F26 /* JSCoordSysTransMethod.m */; };
+		0A332E03211D623E00F56F26 /* JSCoordSysTransParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D09211D623D00F56F26 /* JSCoordSysTransParameter.m */; };
+		0A332E04211D623E00F56F26 /* JSDataDownloadService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D0B211D623D00F56F26 /* JSDataDownloadService.m */; };
+		0A332E05211D623E00F56F26 /* JSDataset.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D0D211D623D00F56F26 /* JSDataset.m */; };
+		0A332E06211D623E00F56F26 /* JSDatasets.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D0F211D623D00F56F26 /* JSDatasets.m */; };
+		0A332E07211D623E00F56F26 /* JSDatasetType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D11211D623D00F56F26 /* JSDatasetType.m */; };
+		0A332E08211D623E00F56F26 /* JSDatasetVector.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D13211D623D00F56F26 /* JSDatasetVector.m */; };
+		0A332E09211D623E00F56F26 /* JSDatasetVectorInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D15211D623D00F56F26 /* JSDatasetVectorInfo.m */; };
+		0A332E0A211D623E00F56F26 /* JSDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D17211D623D00F56F26 /* JSDatasource.m */; };
+		0A332E0B211D623E00F56F26 /* JSDatasourceConnectionInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D19211D623D00F56F26 /* JSDatasourceConnectionInfo.m */; };
+		0A332E0C211D623E00F56F26 /* JSDatasources.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D1B211D623D00F56F26 /* JSDatasources.m */; };
+		0A332E0D211D623E00F56F26 /* JSDataUploadService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D1D211D623D00F56F26 /* JSDataUploadService.m */; };
+		0A332E0E211D623E00F56F26 /* JSElementPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D1F211D623D00F56F26 /* JSElementPoint.m */; };
+		0A332E0F211D623E00F56F26 /* JSElementPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D21211D623D00F56F26 /* JSElementPolygon.m */; };
+		0A332E10211D623E00F56F26 /* JSEncodeType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D23211D623D00F56F26 /* JSEncodeType.m */; };
+		0A332E11211D623E00F56F26 /* JSEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D25211D623D00F56F26 /* JSEnvironment.m */; };
+		0A332E12211D623E00F56F26 /* JSFacilityAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D27211D623D00F56F26 /* JSFacilityAnalyst.m */; };
+		0A332E13211D623E00F56F26 /* JSFacilityAnalystSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D29211D623D00F56F26 /* JSFacilityAnalystSetting.m */; };
+		0A332E14211D623E00F56F26 /* JSFeature.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D2B211D623D00F56F26 /* JSFeature.m */; };
+		0A332E15211D623E00F56F26 /* JSFeatureSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D2D211D623D00F56F26 /* JSFeatureSet.m */; };
+		0A332E16211D623E00F56F26 /* JSGeoLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D2F211D623D00F56F26 /* JSGeoLine.m */; };
+		0A332E17211D623E00F56F26 /* JSGeoLineM.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D31211D623D00F56F26 /* JSGeoLineM.m */; };
+		0A332E18211D623E00F56F26 /* JSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D33211D623D00F56F26 /* JSGeometry.m */; };
+		0A332E19211D623E00F56F26 /* JSGeoPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D35211D623D00F56F26 /* JSGeoPoint.m */; };
+		0A332E1A211D623E00F56F26 /* JSGeoRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D37211D623D00F56F26 /* JSGeoRegion.m */; };
+		0A332E1B211D623E00F56F26 /* JSGeoStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D39211D623D00F56F26 /* JSGeoStyle.m */; };
+		0A332E1C211D623E00F56F26 /* JSGeoText.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D3B211D623D00F56F26 /* JSGeoText.m */; };
+		0A332E1D211D623E00F56F26 /* JSGridHotChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D3D211D623D00F56F26 /* JSGridHotChart.m */; };
+		0A332E1E211D623E00F56F26 /* JSHotChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D3F211D623D00F56F26 /* JSHotChart.m */; };
+		0A332E1F211D623E00F56F26 /* JSInstrumentChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D41211D623D00F56F26 /* JSInstrumentChartViewManager.m */; };
+		0A332E20211D623E00F56F26 /* JSLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D43211D623D00F56F26 /* JSLayer.m */; };
+		0A332E21211D623E00F56F26 /* JSLayer3Ds.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D45211D623D00F56F26 /* JSLayer3Ds.m */; };
+		0A332E22211D623E00F56F26 /* JSLayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D47211D623D00F56F26 /* JSLayerManager.m */; };
+		0A332E23211D623E00F56F26 /* JSLayers.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D49211D623D00F56F26 /* JSLayers.m */; };
+		0A332E24211D623E00F56F26 /* JSLayerSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D4B211D623D00F56F26 /* JSLayerSetting.m */; };
+		0A332E25211D623E00F56F26 /* JSLayerSettingVector.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D4D211D623D00F56F26 /* JSLayerSettingVector.m */; };
+		0A332E26211D623E00F56F26 /* JSLegendViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D4F211D623D00F56F26 /* JSLegendViewManager.m */; };
+		0A332E27211D623E00F56F26 /* JSLineChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D51211D623D00F56F26 /* JSLineChart.m */; };
+		0A332E28211D623E00F56F26 /* JSLineChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D53211D623D00F56F26 /* JSLineChartData.m */; };
+		0A332E29211D623E00F56F26 /* JSLineChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D55211D623D00F56F26 /* JSLineChartViewManager.m */; };
+		0A332E2A211D623E00F56F26 /* JSLocationAnalystParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D57211D623D00F56F26 /* JSLocationAnalystParameter.m */; };
+		0A332E2B211D623E00F56F26 /* JSLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D59211D623D00F56F26 /* JSLocationManager.m */; };
+		0A332E2C211D623E00F56F26 /* JSMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D5B211D623D00F56F26 /* JSMap.m */; };
+		0A332E2D211D623E00F56F26 /* JSMapControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D5D211D623D00F56F26 /* JSMapControl.m */; };
+		0A332E2E211D623E00F56F26 /* JSMaps.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D5F211D623D00F56F26 /* JSMaps.m */; };
+		0A332E2F211D623E00F56F26 /* JSMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D61211D623D00F56F26 /* JSMapView.m */; };
+		0A332E30211D623E00F56F26 /* JSMQTTClientSide.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D63211D623D00F56F26 /* JSMQTTClientSide.m */; };
+		0A332E31211D623E00F56F26 /* JSNavigation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D65211D623D00F56F26 /* JSNavigation.m */; };
+		0A332E32211D623E00F56F26 /* JSNavigation2.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D67211D623D00F56F26 /* JSNavigation2.m */; };
+		0A332E33211D623E00F56F26 /* JSObjManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D69211D623D00F56F26 /* JSObjManager.m */; };
+		0A332E34211D623E00F56F26 /* JsonUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D6B211D623D00F56F26 /* JsonUtil.m */; };
+		0A332E35211D623E00F56F26 /* JSOverlayAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D6D211D623D00F56F26 /* JSOverlayAnalyst.m */; };
+		0A332E36211D623E00F56F26 /* JSOverlayAnalystParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D6F211D623D00F56F26 /* JSOverlayAnalystParameter.m */; };
+		0A332E37211D623E00F56F26 /* JSPieChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D71211D623D00F56F26 /* JSPieChart.m */; };
+		0A332E38211D623E00F56F26 /* JSPieChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D73211D623D00F56F26 /* JSPieChartData.m */; };
+		0A332E39211D623E00F56F26 /* JSPieChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D75211D623D00F56F26 /* JSPieChartViewManager.m */; };
+		0A332E3A211D623E00F56F26 /* JSPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D77211D623D00F56F26 /* JSPoint.m */; };
+		0A332E3B211D623E00F56F26 /* JSPoint2D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D79211D623D00F56F26 /* JSPoint2D.m */; };
+		0A332E3C211D623E00F56F26 /* JSPointDensityChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D7B211D623E00F56F26 /* JSPointDensityChart.m */; };
+		0A332E3D211D623E00F56F26 /* JSPointM.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D7D211D623E00F56F26 /* JSPointM.m */; };
+		0A332E3E211D623E00F56F26 /* JSPolymerChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D7F211D623E00F56F26 /* JSPolymerChart.m */; };
+		0A332E3F211D623E00F56F26 /* JSPrjCoordSys.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D81211D623E00F56F26 /* JSPrjCoordSys.m */; };
+		0A332E40211D623E00F56F26 /* JSPrjCoordSysType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D83211D623E00F56F26 /* JSPrjCoordSysType.m */; };
+		0A332E41211D623E00F56F26 /* JSProjectionType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D85211D623E00F56F26 /* JSProjectionType.m */; };
+		0A332E42211D623E00F56F26 /* JSQueryParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D87211D623E00F56F26 /* JSQueryParameter.m */; };
+		0A332E43211D623E00F56F26 /* JSQueryService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D89211D623E00F56F26 /* JSQueryService.m */; };
+		0A332E44211D623E00F56F26 /* JSRadiusUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D8B211D623E00F56F26 /* JSRadiusUnit.m */; };
+		0A332E45211D623E00F56F26 /* JSRecordset.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D8D211D623E00F56F26 /* JSRecordset.m */; };
+		0A332E46211D623E00F56F26 /* JSRectangle2D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D8F211D623E00F56F26 /* JSRectangle2D.m */; };
+		0A332E47211D623E00F56F26 /* JSRelationalChartPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D91211D623E00F56F26 /* JSRelationalChartPoint.m */; };
+		0A332E48211D623E00F56F26 /* JSRelationalPointChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D93211D623E00F56F26 /* JSRelationalPointChart.m */; };
+		0A332E49211D623E00F56F26 /* JSScaleViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D95211D623E00F56F26 /* JSScaleViewManager.m */; };
+		0A332E4A211D623E00F56F26 /* JSScene.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D97211D623E00F56F26 /* JSScene.m */; };
+		0A332E4B211D623E00F56F26 /* JSSceneControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D99211D623E00F56F26 /* JSSceneControl.m */; };
+		0A332E4C211D623E00F56F26 /* JSSceneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D9B211D623E00F56F26 /* JSSceneView.m */; };
+		0A332E4D211D623E00F56F26 /* JSSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D9D211D623E00F56F26 /* JSSelection.m */; };
+		0A332E4E211D623E00F56F26 /* JSServiceBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D9F211D623E00F56F26 /* JSServiceBase.m */; };
+		0A332E4F211D623E00F56F26 /* JSServiceQueryParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DA1211D623E00F56F26 /* JSServiceQueryParameter.m */; };
+		0A332E50211D623E00F56F26 /* JSSize2D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DA3211D623E00F56F26 /* JSSize2D.m */; };
+		0A332E51211D623E00F56F26 /* JSSpeechManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DA5211D623E00F56F26 /* JSSpeechManager.m */; };
+		0A332E52211D623E00F56F26 /* JSSTOMPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DA7211D623E00F56F26 /* JSSTOMPManager.m */; };
+		0A332E53211D623E00F56F26 /* JSSTOMPReceiver.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DA9211D623E00F56F26 /* JSSTOMPReceiver.m */; };
+		0A332E54211D623E00F56F26 /* JSSTOMPSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DAB211D623E00F56F26 /* JSSTOMPSender.m */; };
+		0A332E55211D623E00F56F26 /* JSSupplyCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DAD211D623E00F56F26 /* JSSupplyCenter.m */; };
+		0A332E56211D623E00F56F26 /* JSSupplyCenters.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DAF211D623E00F56F26 /* JSSupplyCenters.m */; };
+		0A332E57211D623E00F56F26 /* JSSupplyCenterType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DB1211D623E00F56F26 /* JSSupplyCenterType.m */; };
+		0A332E58211D623E00F56F26 /* JSSystemUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DB3211D623E00F56F26 /* JSSystemUtil.m */; };
+		0A332E59211D623E00F56F26 /* JSTextAlignment.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DB5211D623E00F56F26 /* JSTextAlignment.m */; };
+		0A332E5A211D623E00F56F26 /* JSTextPart.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DB7211D623E00F56F26 /* JSTextPart.m */; };
+		0A332E5B211D623E00F56F26 /* JSTextStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DB9211D623E00F56F26 /* JSTextStyle.m */; };
+		0A332E5C211D623E00F56F26 /* JSTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DBB211D623E00F56F26 /* JSTheme.m */; };
+		0A332E5D211D623E00F56F26 /* JSThemeLabelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DBD211D623E00F56F26 /* JSThemeLabelItem.m */; };
+		0A332E5E211D623E00F56F26 /* JSThemeRange.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DBF211D623E00F56F26 /* JSThemeRange.m */; };
+		0A332E5F211D623E00F56F26 /* JSThemeRangeItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DC1211D623E00F56F26 /* JSThemeRangeItem.m */; };
+		0A332E60211D623E00F56F26 /* JSThemeType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DC3211D623E00F56F26 /* JSThemeType.m */; };
+		0A332E61211D623E00F56F26 /* JSThemeUnique.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DC5211D623E00F56F26 /* JSThemeUnique.m */; };
+		0A332E62211D623E00F56F26 /* JSThemeUniqueItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DC7211D623E00F56F26 /* JSThemeUniqueItem.m */; };
+		0A332E63211D623E00F56F26 /* JSTimeLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DC9211D623E00F56F26 /* JSTimeLine.m */; };
+		0A332E64211D623E00F56F26 /* JSTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DCB211D623E00F56F26 /* JSTrack.m */; };
+		0A332E65211D623E00F56F26 /* JSTrackingLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DCD211D623E00F56F26 /* JSTrackingLayer.m */; };
+		0A332E66211D623E00F56F26 /* JSTransportationAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DCF211D623E00F56F26 /* JSTransportationAnalyst.m */; };
+		0A332E67211D623E00F56F26 /* JSTransportationAnalystParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DD1211D623E00F56F26 /* JSTransportationAnalystParameter.m */; };
+		0A332E68211D623E00F56F26 /* JSTransportationAnalystSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DD3211D623E00F56F26 /* JSTransportationAnalystSetting.m */; };
+		0A332E69211D623E00F56F26 /* JSWeightFieldInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DD5211D623E00F56F26 /* JSWeightFieldInfo.m */; };
+		0A332E6A211D623E00F56F26 /* JSWeightFieldInfos.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DD7211D623E00F56F26 /* JSWeightFieldInfos.m */; };
+		0A332E6B211D623E00F56F26 /* JSWorkspace.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DD9211D623E00F56F26 /* JSWorkspace.m */; };
+		0A332E6C211D623E00F56F26 /* JSWorkspaceConnectionInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DDB211D623E00F56F26 /* JSWorkspaceConnectionInfo.m */; };
+		0A332E6D211D623E00F56F26 /* NativeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DDD211D623E00F56F26 /* NativeUtil.m */; };
+		0A332E6E211D623E00F56F26 /* RCTConvert+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DDF211D623E00F56F26 /* RCTConvert+Action.m */; };
+		0A332E6F211D623E00F56F26 /* RCTConvert+BufferEndType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE1211D623E00F56F26 /* RCTConvert+BufferEndType.m */; };
+		0A332E70211D623E00F56F26 /* RCTConvert+DatasetType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE3211D623E00F56F26 /* RCTConvert+DatasetType.m */; };
+		0A332E71211D623E00F56F26 /* RCTConvert+EncodeType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE5211D623E00F56F26 /* RCTConvert+EncodeType.m */; };
+		0A332E72211D623E00F56F26 /* RCTConvert+RadiusUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE7211D623E00F56F26 /* RCTConvert+RadiusUnit.m */; };
+		0A332E73211D623E00F56F26 /* SceneViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE9211D623E00F56F26 /* SceneViewManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -134,231 +160,283 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0A0D367B211AEE4600B9626D /* JSThemeType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSThemeType.h; path = objNative/JSThemeType.h; sourceTree = "<group>"; };
-		0A0D367C211AEE4600B9626D /* JSThemeType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSThemeType.m; path = objNative/JSThemeType.m; sourceTree = "<group>"; };
-		0A0D367E211BC8F600B9626D /* JSFacilityAnalyst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSFacilityAnalyst.h; path = objNative/JSFacilityAnalyst.h; sourceTree = "<group>"; };
-		0A0D367F211BC8F600B9626D /* JSFacilityAnalyst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSFacilityAnalyst.m; path = objNative/JSFacilityAnalyst.m; sourceTree = "<group>"; };
-		0A0D3680211BC8F600B9626D /* JSFacilityAnalystSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSFacilityAnalystSetting.h; path = objNative/JSFacilityAnalystSetting.h; sourceTree = "<group>"; };
-		0A0D3681211BC8F600B9626D /* JSFacilityAnalystSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSFacilityAnalystSetting.m; path = objNative/JSFacilityAnalystSetting.m; sourceTree = "<group>"; };
-		0A0D3684211BC90800B9626D /* JSWeightFieldInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSWeightFieldInfo.h; path = objNative/JSWeightFieldInfo.h; sourceTree = "<group>"; };
-		0A0D3685211BC90800B9626D /* JSWeightFieldInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSWeightFieldInfo.m; path = objNative/JSWeightFieldInfo.m; sourceTree = "<group>"; };
-		0A0D3686211BC90800B9626D /* JSWeightFieldInfos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSWeightFieldInfos.h; path = objNative/JSWeightFieldInfos.h; sourceTree = "<group>"; };
-		0A0D3687211BC90800B9626D /* JSWeightFieldInfos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSWeightFieldInfos.m; path = objNative/JSWeightFieldInfos.m; sourceTree = "<group>"; };
-		0AF8061921119CD70066EA4D /* JSCollector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCollector.h; path = objNative/JSCollector.h; sourceTree = "<group>"; };
-		0AF8061A21119CD70066EA4D /* JSCollector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCollector.m; path = objNative/JSCollector.m; sourceTree = "<group>"; };
-		0AF8061C21119D1C0066EA4D /* JSCollectorElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCollectorElement.h; path = objNative/JSCollectorElement.h; sourceTree = "<group>"; };
-		0AF8061D21119D1C0066EA4D /* JSCollectorElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCollectorElement.m; path = objNative/JSCollectorElement.m; sourceTree = "<group>"; };
-		0AF8064C21119F480066EA4D /* JSCollectorLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCollectorLine.h; path = objNative/JSCollectorLine.h; sourceTree = "<group>"; };
-		0AF8064D21119F480066EA4D /* JSCollectorLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCollectorLine.m; path = objNative/JSCollectorLine.m; sourceTree = "<group>"; };
-		0AF8064F21119F7A0066EA4D /* JSElementPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSElementPoint.h; path = objNative/JSElementPoint.h; sourceTree = "<group>"; };
-		0AF8065021119F7A0066EA4D /* JSElementPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSElementPoint.m; path = objNative/JSElementPoint.m; sourceTree = "<group>"; };
-		0AF8065221119F950066EA4D /* JSElementPolygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSElementPolygon.h; path = objNative/JSElementPolygon.h; sourceTree = "<group>"; };
-		0AF8065321119F950066EA4D /* JSElementPolygon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSElementPolygon.m; path = objNative/JSElementPolygon.m; sourceTree = "<group>"; };
-		0AF806572111D1F80066EA4D /* JSSpeechManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSpeechManager.h; path = objNative/JSSpeechManager.h; sourceTree = "<group>"; };
-		0AF806582111D1F80066EA4D /* JSSpeechManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSpeechManager.m; path = objNative/JSSpeechManager.m; sourceTree = "<group>"; };
+		0A332CD6211D623D00F56F26 /* JSAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAction.h; path = objNative/JSAction.h; sourceTree = "<group>"; };
+		0A332CD7211D623D00F56F26 /* JSAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAction.m; path = objNative/JSAction.m; sourceTree = "<group>"; };
+		0A332CD8211D623D00F56F26 /* JSAdoptMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAdoptMapView.h; path = objNative/JSAdoptMapView.h; sourceTree = "<group>"; };
+		0A332CD9211D623D00F56F26 /* JSAdoptMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAdoptMapView.m; path = objNative/JSAdoptMapView.m; sourceTree = "<group>"; };
+		0A332CDA211D623D00F56F26 /* JSAMQPManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAMQPManager.h; path = objNative/JSAMQPManager.h; sourceTree = "<group>"; };
+		0A332CDB211D623D00F56F26 /* JSAMQPManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAMQPManager.m; path = objNative/JSAMQPManager.m; sourceTree = "<group>"; };
+		0A332CDC211D623D00F56F26 /* JSAMQPReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAMQPReceiver.h; path = objNative/JSAMQPReceiver.h; sourceTree = "<group>"; };
+		0A332CDD211D623D00F56F26 /* JSAMQPReceiver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAMQPReceiver.m; path = objNative/JSAMQPReceiver.m; sourceTree = "<group>"; };
+		0A332CDE211D623D00F56F26 /* JSAMQPSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAMQPSender.h; path = objNative/JSAMQPSender.h; sourceTree = "<group>"; };
+		0A332CDF211D623D00F56F26 /* JSAMQPSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAMQPSender.m; path = objNative/JSAMQPSender.m; sourceTree = "<group>"; };
+		0A332CE0211D623D00F56F26 /* JSBarChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBarChart.h; path = objNative/JSBarChart.h; sourceTree = "<group>"; };
+		0A332CE1211D623D00F56F26 /* JSBarChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBarChart.m; path = objNative/JSBarChart.m; sourceTree = "<group>"; };
+		0A332CE2211D623D00F56F26 /* JSBarChartData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBarChartData.h; path = objNative/JSBarChartData.h; sourceTree = "<group>"; };
+		0A332CE3211D623D00F56F26 /* JSBarChartData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBarChartData.m; path = objNative/JSBarChartData.m; sourceTree = "<group>"; };
+		0A332CE4211D623D00F56F26 /* JSBarChartDataItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBarChartDataItem.h; path = objNative/JSBarChartDataItem.h; sourceTree = "<group>"; };
+		0A332CE5211D623D00F56F26 /* JSBarChartDataItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBarChartDataItem.m; path = objNative/JSBarChartDataItem.m; sourceTree = "<group>"; };
+		0A332CE6211D623D00F56F26 /* JSBarChartViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBarChartViewManager.h; path = objNative/JSBarChartViewManager.h; sourceTree = "<group>"; };
+		0A332CE7211D623D00F56F26 /* JSBarChartViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBarChartViewManager.m; path = objNative/JSBarChartViewManager.m; sourceTree = "<group>"; };
+		0A332CE8211D623D00F56F26 /* JSBufferAnalyst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBufferAnalyst.h; path = objNative/JSBufferAnalyst.h; sourceTree = "<group>"; };
+		0A332CE9211D623D00F56F26 /* JSBufferAnalyst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBufferAnalyst.m; path = objNative/JSBufferAnalyst.m; sourceTree = "<group>"; };
+		0A332CEA211D623D00F56F26 /* JSBufferAnalystGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBufferAnalystGeometry.h; path = objNative/JSBufferAnalystGeometry.h; sourceTree = "<group>"; };
+		0A332CEB211D623D00F56F26 /* JSBufferAnalystGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBufferAnalystGeometry.m; path = objNative/JSBufferAnalystGeometry.m; sourceTree = "<group>"; };
+		0A332CEC211D623D00F56F26 /* JSBufferAnalystParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBufferAnalystParameter.h; path = objNative/JSBufferAnalystParameter.h; sourceTree = "<group>"; };
+		0A332CED211D623D00F56F26 /* JSBufferAnalystParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBufferAnalystParameter.m; path = objNative/JSBufferAnalystParameter.m; sourceTree = "<group>"; };
+		0A332CEE211D623D00F56F26 /* JSBufferEndType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBufferEndType.h; path = objNative/JSBufferEndType.h; sourceTree = "<group>"; };
+		0A332CEF211D623D00F56F26 /* JSBufferEndType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBufferEndType.m; path = objNative/JSBufferEndType.m; sourceTree = "<group>"; };
+		0A332CF0211D623D00F56F26 /* JSCallOut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCallOut.h; path = objNative/JSCallOut.h; sourceTree = "<group>"; };
+		0A332CF1211D623D00F56F26 /* JSCallOut.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCallOut.m; path = objNative/JSCallOut.m; sourceTree = "<group>"; };
+		0A332CF2211D623D00F56F26 /* JSChartData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSChartData.h; path = objNative/JSChartData.h; sourceTree = "<group>"; };
+		0A332CF3211D623D00F56F26 /* JSChartData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSChartData.m; path = objNative/JSChartData.m; sourceTree = "<group>"; };
+		0A332CF4211D623D00F56F26 /* JSChartLegend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSChartLegend.h; path = objNative/JSChartLegend.h; sourceTree = "<group>"; };
+		0A332CF5211D623D00F56F26 /* JSChartLegend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSChartLegend.m; path = objNative/JSChartLegend.m; sourceTree = "<group>"; };
+		0A332CF6211D623D00F56F26 /* JSChartPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSChartPoint.h; path = objNative/JSChartPoint.h; sourceTree = "<group>"; };
+		0A332CF7211D623D00F56F26 /* JSChartPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSChartPoint.m; path = objNative/JSChartPoint.m; sourceTree = "<group>"; };
+		0A332CF8211D623D00F56F26 /* JSChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSChartView.h; path = objNative/JSChartView.h; sourceTree = "<group>"; };
+		0A332CF9211D623D00F56F26 /* JSChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSChartView.m; path = objNative/JSChartView.m; sourceTree = "<group>"; };
+		0A332CFA211D623D00F56F26 /* JSCollector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCollector.h; path = objNative/JSCollector.h; sourceTree = "<group>"; };
+		0A332CFB211D623D00F56F26 /* JSCollector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCollector.m; path = objNative/JSCollector.m; sourceTree = "<group>"; };
+		0A332CFC211D623D00F56F26 /* JSCollectorElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCollectorElement.h; path = objNative/JSCollectorElement.h; sourceTree = "<group>"; };
+		0A332CFD211D623D00F56F26 /* JSCollectorElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCollectorElement.m; path = objNative/JSCollectorElement.m; sourceTree = "<group>"; };
+		0A332CFE211D623D00F56F26 /* JSCollectorLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCollectorLine.h; path = objNative/JSCollectorLine.h; sourceTree = "<group>"; };
+		0A332CFF211D623D00F56F26 /* JSCollectorLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCollectorLine.m; path = objNative/JSCollectorLine.m; sourceTree = "<group>"; };
+		0A332D00211D623D00F56F26 /* JSColorGradientType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSColorGradientType.h; path = objNative/JSColorGradientType.h; sourceTree = "<group>"; };
+		0A332D01211D623D00F56F26 /* JSColorGradientType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSColorGradientType.m; path = objNative/JSColorGradientType.m; sourceTree = "<group>"; };
+		0A332D02211D623D00F56F26 /* JSColorScheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSColorScheme.h; path = objNative/JSColorScheme.h; sourceTree = "<group>"; };
+		0A332D03211D623D00F56F26 /* JSColorScheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSColorScheme.m; path = objNative/JSColorScheme.m; sourceTree = "<group>"; };
+		0A332D04211D623D00F56F26 /* JSCoordSysTranslator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCoordSysTranslator.h; path = objNative/JSCoordSysTranslator.h; sourceTree = "<group>"; };
+		0A332D05211D623D00F56F26 /* JSCoordSysTranslator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCoordSysTranslator.m; path = objNative/JSCoordSysTranslator.m; sourceTree = "<group>"; };
+		0A332D06211D623D00F56F26 /* JSCoordSysTransMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCoordSysTransMethod.h; path = objNative/JSCoordSysTransMethod.h; sourceTree = "<group>"; };
+		0A332D07211D623D00F56F26 /* JSCoordSysTransMethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCoordSysTransMethod.m; path = objNative/JSCoordSysTransMethod.m; sourceTree = "<group>"; };
+		0A332D08211D623D00F56F26 /* JSCoordSysTransParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCoordSysTransParameter.h; path = objNative/JSCoordSysTransParameter.h; sourceTree = "<group>"; };
+		0A332D09211D623D00F56F26 /* JSCoordSysTransParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCoordSysTransParameter.m; path = objNative/JSCoordSysTransParameter.m; sourceTree = "<group>"; };
+		0A332D0A211D623D00F56F26 /* JSDataDownloadService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDataDownloadService.h; path = objNative/JSDataDownloadService.h; sourceTree = "<group>"; };
+		0A332D0B211D623D00F56F26 /* JSDataDownloadService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDataDownloadService.m; path = objNative/JSDataDownloadService.m; sourceTree = "<group>"; };
+		0A332D0C211D623D00F56F26 /* JSDataset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDataset.h; path = objNative/JSDataset.h; sourceTree = "<group>"; };
+		0A332D0D211D623D00F56F26 /* JSDataset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDataset.m; path = objNative/JSDataset.m; sourceTree = "<group>"; };
+		0A332D0E211D623D00F56F26 /* JSDatasets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDatasets.h; path = objNative/JSDatasets.h; sourceTree = "<group>"; };
+		0A332D0F211D623D00F56F26 /* JSDatasets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDatasets.m; path = objNative/JSDatasets.m; sourceTree = "<group>"; };
+		0A332D10211D623D00F56F26 /* JSDatasetType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDatasetType.h; path = objNative/JSDatasetType.h; sourceTree = "<group>"; };
+		0A332D11211D623D00F56F26 /* JSDatasetType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDatasetType.m; path = objNative/JSDatasetType.m; sourceTree = "<group>"; };
+		0A332D12211D623D00F56F26 /* JSDatasetVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDatasetVector.h; path = objNative/JSDatasetVector.h; sourceTree = "<group>"; };
+		0A332D13211D623D00F56F26 /* JSDatasetVector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDatasetVector.m; path = objNative/JSDatasetVector.m; sourceTree = "<group>"; };
+		0A332D14211D623D00F56F26 /* JSDatasetVectorInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDatasetVectorInfo.h; path = objNative/JSDatasetVectorInfo.h; sourceTree = "<group>"; };
+		0A332D15211D623D00F56F26 /* JSDatasetVectorInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDatasetVectorInfo.m; path = objNative/JSDatasetVectorInfo.m; sourceTree = "<group>"; };
+		0A332D16211D623D00F56F26 /* JSDatasource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDatasource.h; path = objNative/JSDatasource.h; sourceTree = "<group>"; };
+		0A332D17211D623D00F56F26 /* JSDatasource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDatasource.m; path = objNative/JSDatasource.m; sourceTree = "<group>"; };
+		0A332D18211D623D00F56F26 /* JSDatasourceConnectionInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDatasourceConnectionInfo.h; path = objNative/JSDatasourceConnectionInfo.h; sourceTree = "<group>"; };
+		0A332D19211D623D00F56F26 /* JSDatasourceConnectionInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDatasourceConnectionInfo.m; path = objNative/JSDatasourceConnectionInfo.m; sourceTree = "<group>"; };
+		0A332D1A211D623D00F56F26 /* JSDatasources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDatasources.h; path = objNative/JSDatasources.h; sourceTree = "<group>"; };
+		0A332D1B211D623D00F56F26 /* JSDatasources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDatasources.m; path = objNative/JSDatasources.m; sourceTree = "<group>"; };
+		0A332D1C211D623D00F56F26 /* JSDataUploadService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDataUploadService.h; path = objNative/JSDataUploadService.h; sourceTree = "<group>"; };
+		0A332D1D211D623D00F56F26 /* JSDataUploadService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDataUploadService.m; path = objNative/JSDataUploadService.m; sourceTree = "<group>"; };
+		0A332D1E211D623D00F56F26 /* JSElementPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSElementPoint.h; path = objNative/JSElementPoint.h; sourceTree = "<group>"; };
+		0A332D1F211D623D00F56F26 /* JSElementPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSElementPoint.m; path = objNative/JSElementPoint.m; sourceTree = "<group>"; };
+		0A332D20211D623D00F56F26 /* JSElementPolygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSElementPolygon.h; path = objNative/JSElementPolygon.h; sourceTree = "<group>"; };
+		0A332D21211D623D00F56F26 /* JSElementPolygon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSElementPolygon.m; path = objNative/JSElementPolygon.m; sourceTree = "<group>"; };
+		0A332D22211D623D00F56F26 /* JSEncodeType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSEncodeType.h; path = objNative/JSEncodeType.h; sourceTree = "<group>"; };
+		0A332D23211D623D00F56F26 /* JSEncodeType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSEncodeType.m; path = objNative/JSEncodeType.m; sourceTree = "<group>"; };
+		0A332D24211D623D00F56F26 /* JSEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSEnvironment.h; path = objNative/JSEnvironment.h; sourceTree = "<group>"; };
+		0A332D25211D623D00F56F26 /* JSEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSEnvironment.m; path = objNative/JSEnvironment.m; sourceTree = "<group>"; };
+		0A332D26211D623D00F56F26 /* JSFacilityAnalyst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSFacilityAnalyst.h; path = objNative/JSFacilityAnalyst.h; sourceTree = "<group>"; };
+		0A332D27211D623D00F56F26 /* JSFacilityAnalyst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSFacilityAnalyst.m; path = objNative/JSFacilityAnalyst.m; sourceTree = "<group>"; };
+		0A332D28211D623D00F56F26 /* JSFacilityAnalystSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSFacilityAnalystSetting.h; path = objNative/JSFacilityAnalystSetting.h; sourceTree = "<group>"; };
+		0A332D29211D623D00F56F26 /* JSFacilityAnalystSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSFacilityAnalystSetting.m; path = objNative/JSFacilityAnalystSetting.m; sourceTree = "<group>"; };
+		0A332D2A211D623D00F56F26 /* JSFeature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSFeature.h; path = objNative/JSFeature.h; sourceTree = "<group>"; };
+		0A332D2B211D623D00F56F26 /* JSFeature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSFeature.m; path = objNative/JSFeature.m; sourceTree = "<group>"; };
+		0A332D2C211D623D00F56F26 /* JSFeatureSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSFeatureSet.h; path = objNative/JSFeatureSet.h; sourceTree = "<group>"; };
+		0A332D2D211D623D00F56F26 /* JSFeatureSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSFeatureSet.m; path = objNative/JSFeatureSet.m; sourceTree = "<group>"; };
+		0A332D2E211D623D00F56F26 /* JSGeoLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGeoLine.h; path = objNative/JSGeoLine.h; sourceTree = "<group>"; };
+		0A332D2F211D623D00F56F26 /* JSGeoLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGeoLine.m; path = objNative/JSGeoLine.m; sourceTree = "<group>"; };
+		0A332D30211D623D00F56F26 /* JSGeoLineM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGeoLineM.h; path = objNative/JSGeoLineM.h; sourceTree = "<group>"; };
+		0A332D31211D623D00F56F26 /* JSGeoLineM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGeoLineM.m; path = objNative/JSGeoLineM.m; sourceTree = "<group>"; };
+		0A332D32211D623D00F56F26 /* JSGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGeometry.h; path = objNative/JSGeometry.h; sourceTree = "<group>"; };
+		0A332D33211D623D00F56F26 /* JSGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGeometry.m; path = objNative/JSGeometry.m; sourceTree = "<group>"; };
+		0A332D34211D623D00F56F26 /* JSGeoPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGeoPoint.h; path = objNative/JSGeoPoint.h; sourceTree = "<group>"; };
+		0A332D35211D623D00F56F26 /* JSGeoPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGeoPoint.m; path = objNative/JSGeoPoint.m; sourceTree = "<group>"; };
+		0A332D36211D623D00F56F26 /* JSGeoRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGeoRegion.h; path = objNative/JSGeoRegion.h; sourceTree = "<group>"; };
+		0A332D37211D623D00F56F26 /* JSGeoRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGeoRegion.m; path = objNative/JSGeoRegion.m; sourceTree = "<group>"; };
+		0A332D38211D623D00F56F26 /* JSGeoStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGeoStyle.h; path = objNative/JSGeoStyle.h; sourceTree = "<group>"; };
+		0A332D39211D623D00F56F26 /* JSGeoStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGeoStyle.m; path = objNative/JSGeoStyle.m; sourceTree = "<group>"; };
+		0A332D3A211D623D00F56F26 /* JSGeoText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGeoText.h; path = objNative/JSGeoText.h; sourceTree = "<group>"; };
+		0A332D3B211D623D00F56F26 /* JSGeoText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGeoText.m; path = objNative/JSGeoText.m; sourceTree = "<group>"; };
+		0A332D3C211D623D00F56F26 /* JSGridHotChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGridHotChart.h; path = objNative/JSGridHotChart.h; sourceTree = "<group>"; };
+		0A332D3D211D623D00F56F26 /* JSGridHotChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGridHotChart.m; path = objNative/JSGridHotChart.m; sourceTree = "<group>"; };
+		0A332D3E211D623D00F56F26 /* JSHotChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSHotChart.h; path = objNative/JSHotChart.h; sourceTree = "<group>"; };
+		0A332D3F211D623D00F56F26 /* JSHotChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSHotChart.m; path = objNative/JSHotChart.m; sourceTree = "<group>"; };
+		0A332D40211D623D00F56F26 /* JSInstrumentChartViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSInstrumentChartViewManager.h; path = objNative/JSInstrumentChartViewManager.h; sourceTree = "<group>"; };
+		0A332D41211D623D00F56F26 /* JSInstrumentChartViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSInstrumentChartViewManager.m; path = objNative/JSInstrumentChartViewManager.m; sourceTree = "<group>"; };
+		0A332D42211D623D00F56F26 /* JSLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLayer.h; path = objNative/JSLayer.h; sourceTree = "<group>"; };
+		0A332D43211D623D00F56F26 /* JSLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLayer.m; path = objNative/JSLayer.m; sourceTree = "<group>"; };
+		0A332D44211D623D00F56F26 /* JSLayer3Ds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLayer3Ds.h; path = objNative/JSLayer3Ds.h; sourceTree = "<group>"; };
+		0A332D45211D623D00F56F26 /* JSLayer3Ds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLayer3Ds.m; path = objNative/JSLayer3Ds.m; sourceTree = "<group>"; };
+		0A332D46211D623D00F56F26 /* JSLayerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLayerManager.h; path = objNative/JSLayerManager.h; sourceTree = "<group>"; };
+		0A332D47211D623D00F56F26 /* JSLayerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLayerManager.m; path = objNative/JSLayerManager.m; sourceTree = "<group>"; };
+		0A332D48211D623D00F56F26 /* JSLayers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLayers.h; path = objNative/JSLayers.h; sourceTree = "<group>"; };
+		0A332D49211D623D00F56F26 /* JSLayers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLayers.m; path = objNative/JSLayers.m; sourceTree = "<group>"; };
+		0A332D4A211D623D00F56F26 /* JSLayerSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLayerSetting.h; path = objNative/JSLayerSetting.h; sourceTree = "<group>"; };
+		0A332D4B211D623D00F56F26 /* JSLayerSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLayerSetting.m; path = objNative/JSLayerSetting.m; sourceTree = "<group>"; };
+		0A332D4C211D623D00F56F26 /* JSLayerSettingVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLayerSettingVector.h; path = objNative/JSLayerSettingVector.h; sourceTree = "<group>"; };
+		0A332D4D211D623D00F56F26 /* JSLayerSettingVector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLayerSettingVector.m; path = objNative/JSLayerSettingVector.m; sourceTree = "<group>"; };
+		0A332D4E211D623D00F56F26 /* JSLegendViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLegendViewManager.h; path = objNative/JSLegendViewManager.h; sourceTree = "<group>"; };
+		0A332D4F211D623D00F56F26 /* JSLegendViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLegendViewManager.m; path = objNative/JSLegendViewManager.m; sourceTree = "<group>"; };
+		0A332D50211D623D00F56F26 /* JSLineChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLineChart.h; path = objNative/JSLineChart.h; sourceTree = "<group>"; };
+		0A332D51211D623D00F56F26 /* JSLineChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLineChart.m; path = objNative/JSLineChart.m; sourceTree = "<group>"; };
+		0A332D52211D623D00F56F26 /* JSLineChartData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLineChartData.h; path = objNative/JSLineChartData.h; sourceTree = "<group>"; };
+		0A332D53211D623D00F56F26 /* JSLineChartData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLineChartData.m; path = objNative/JSLineChartData.m; sourceTree = "<group>"; };
+		0A332D54211D623D00F56F26 /* JSLineChartViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLineChartViewManager.h; path = objNative/JSLineChartViewManager.h; sourceTree = "<group>"; };
+		0A332D55211D623D00F56F26 /* JSLineChartViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLineChartViewManager.m; path = objNative/JSLineChartViewManager.m; sourceTree = "<group>"; };
+		0A332D56211D623D00F56F26 /* JSLocationAnalystParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLocationAnalystParameter.h; path = objNative/JSLocationAnalystParameter.h; sourceTree = "<group>"; };
+		0A332D57211D623D00F56F26 /* JSLocationAnalystParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLocationAnalystParameter.m; path = objNative/JSLocationAnalystParameter.m; sourceTree = "<group>"; };
+		0A332D58211D623D00F56F26 /* JSLocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLocationManager.h; path = objNative/JSLocationManager.h; sourceTree = "<group>"; };
+		0A332D59211D623D00F56F26 /* JSLocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLocationManager.m; path = objNative/JSLocationManager.m; sourceTree = "<group>"; };
+		0A332D5A211D623D00F56F26 /* JSMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSMap.h; path = objNative/JSMap.h; sourceTree = "<group>"; };
+		0A332D5B211D623D00F56F26 /* JSMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSMap.m; path = objNative/JSMap.m; sourceTree = "<group>"; };
+		0A332D5C211D623D00F56F26 /* JSMapControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSMapControl.h; path = objNative/JSMapControl.h; sourceTree = "<group>"; };
+		0A332D5D211D623D00F56F26 /* JSMapControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSMapControl.m; path = objNative/JSMapControl.m; sourceTree = "<group>"; };
+		0A332D5E211D623D00F56F26 /* JSMaps.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSMaps.h; path = objNative/JSMaps.h; sourceTree = "<group>"; };
+		0A332D5F211D623D00F56F26 /* JSMaps.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSMaps.m; path = objNative/JSMaps.m; sourceTree = "<group>"; };
+		0A332D60211D623D00F56F26 /* JSMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSMapView.h; path = objNative/JSMapView.h; sourceTree = "<group>"; };
+		0A332D61211D623D00F56F26 /* JSMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSMapView.m; path = objNative/JSMapView.m; sourceTree = "<group>"; };
+		0A332D62211D623D00F56F26 /* JSMQTTClientSide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSMQTTClientSide.h; path = objNative/JSMQTTClientSide.h; sourceTree = "<group>"; };
+		0A332D63211D623D00F56F26 /* JSMQTTClientSide.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSMQTTClientSide.m; path = objNative/JSMQTTClientSide.m; sourceTree = "<group>"; };
+		0A332D64211D623D00F56F26 /* JSNavigation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSNavigation.h; path = objNative/JSNavigation.h; sourceTree = "<group>"; };
+		0A332D65211D623D00F56F26 /* JSNavigation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSNavigation.m; path = objNative/JSNavigation.m; sourceTree = "<group>"; };
+		0A332D66211D623D00F56F26 /* JSNavigation2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSNavigation2.h; path = objNative/JSNavigation2.h; sourceTree = "<group>"; };
+		0A332D67211D623D00F56F26 /* JSNavigation2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSNavigation2.m; path = objNative/JSNavigation2.m; sourceTree = "<group>"; };
+		0A332D68211D623D00F56F26 /* JSObjManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSObjManager.h; path = objNative/JSObjManager.h; sourceTree = "<group>"; };
+		0A332D69211D623D00F56F26 /* JSObjManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSObjManager.m; path = objNative/JSObjManager.m; sourceTree = "<group>"; };
+		0A332D6A211D623D00F56F26 /* JsonUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonUtil.h; path = objNative/JsonUtil.h; sourceTree = "<group>"; };
+		0A332D6B211D623D00F56F26 /* JsonUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JsonUtil.m; path = objNative/JsonUtil.m; sourceTree = "<group>"; };
+		0A332D6C211D623D00F56F26 /* JSOverlayAnalyst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSOverlayAnalyst.h; path = objNative/JSOverlayAnalyst.h; sourceTree = "<group>"; };
+		0A332D6D211D623D00F56F26 /* JSOverlayAnalyst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSOverlayAnalyst.m; path = objNative/JSOverlayAnalyst.m; sourceTree = "<group>"; };
+		0A332D6E211D623D00F56F26 /* JSOverlayAnalystParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSOverlayAnalystParameter.h; path = objNative/JSOverlayAnalystParameter.h; sourceTree = "<group>"; };
+		0A332D6F211D623D00F56F26 /* JSOverlayAnalystParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSOverlayAnalystParameter.m; path = objNative/JSOverlayAnalystParameter.m; sourceTree = "<group>"; };
+		0A332D70211D623D00F56F26 /* JSPieChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPieChart.h; path = objNative/JSPieChart.h; sourceTree = "<group>"; };
+		0A332D71211D623D00F56F26 /* JSPieChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPieChart.m; path = objNative/JSPieChart.m; sourceTree = "<group>"; };
+		0A332D72211D623D00F56F26 /* JSPieChartData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPieChartData.h; path = objNative/JSPieChartData.h; sourceTree = "<group>"; };
+		0A332D73211D623D00F56F26 /* JSPieChartData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPieChartData.m; path = objNative/JSPieChartData.m; sourceTree = "<group>"; };
+		0A332D74211D623D00F56F26 /* JSPieChartViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPieChartViewManager.h; path = objNative/JSPieChartViewManager.h; sourceTree = "<group>"; };
+		0A332D75211D623D00F56F26 /* JSPieChartViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPieChartViewManager.m; path = objNative/JSPieChartViewManager.m; sourceTree = "<group>"; };
+		0A332D76211D623D00F56F26 /* JSPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPoint.h; path = objNative/JSPoint.h; sourceTree = "<group>"; };
+		0A332D77211D623D00F56F26 /* JSPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPoint.m; path = objNative/JSPoint.m; sourceTree = "<group>"; };
+		0A332D78211D623D00F56F26 /* JSPoint2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPoint2D.h; path = objNative/JSPoint2D.h; sourceTree = "<group>"; };
+		0A332D79211D623D00F56F26 /* JSPoint2D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPoint2D.m; path = objNative/JSPoint2D.m; sourceTree = "<group>"; };
+		0A332D7A211D623D00F56F26 /* JSPointDensityChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPointDensityChart.h; path = objNative/JSPointDensityChart.h; sourceTree = "<group>"; };
+		0A332D7B211D623E00F56F26 /* JSPointDensityChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPointDensityChart.m; path = objNative/JSPointDensityChart.m; sourceTree = "<group>"; };
+		0A332D7C211D623E00F56F26 /* JSPointM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPointM.h; path = objNative/JSPointM.h; sourceTree = "<group>"; };
+		0A332D7D211D623E00F56F26 /* JSPointM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPointM.m; path = objNative/JSPointM.m; sourceTree = "<group>"; };
+		0A332D7E211D623E00F56F26 /* JSPolymerChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPolymerChart.h; path = objNative/JSPolymerChart.h; sourceTree = "<group>"; };
+		0A332D7F211D623E00F56F26 /* JSPolymerChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPolymerChart.m; path = objNative/JSPolymerChart.m; sourceTree = "<group>"; };
+		0A332D80211D623E00F56F26 /* JSPrjCoordSys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPrjCoordSys.h; path = objNative/JSPrjCoordSys.h; sourceTree = "<group>"; };
+		0A332D81211D623E00F56F26 /* JSPrjCoordSys.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPrjCoordSys.m; path = objNative/JSPrjCoordSys.m; sourceTree = "<group>"; };
+		0A332D82211D623E00F56F26 /* JSPrjCoordSysType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPrjCoordSysType.h; path = objNative/JSPrjCoordSysType.h; sourceTree = "<group>"; };
+		0A332D83211D623E00F56F26 /* JSPrjCoordSysType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPrjCoordSysType.m; path = objNative/JSPrjCoordSysType.m; sourceTree = "<group>"; };
+		0A332D84211D623E00F56F26 /* JSProjectionType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSProjectionType.h; path = objNative/JSProjectionType.h; sourceTree = "<group>"; };
+		0A332D85211D623E00F56F26 /* JSProjectionType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSProjectionType.m; path = objNative/JSProjectionType.m; sourceTree = "<group>"; };
+		0A332D86211D623E00F56F26 /* JSQueryParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSQueryParameter.h; path = objNative/JSQueryParameter.h; sourceTree = "<group>"; };
+		0A332D87211D623E00F56F26 /* JSQueryParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSQueryParameter.m; path = objNative/JSQueryParameter.m; sourceTree = "<group>"; };
+		0A332D88211D623E00F56F26 /* JSQueryService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSQueryService.h; path = objNative/JSQueryService.h; sourceTree = "<group>"; };
+		0A332D89211D623E00F56F26 /* JSQueryService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSQueryService.m; path = objNative/JSQueryService.m; sourceTree = "<group>"; };
+		0A332D8A211D623E00F56F26 /* JSRadiusUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSRadiusUnit.h; path = objNative/JSRadiusUnit.h; sourceTree = "<group>"; };
+		0A332D8B211D623E00F56F26 /* JSRadiusUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSRadiusUnit.m; path = objNative/JSRadiusUnit.m; sourceTree = "<group>"; };
+		0A332D8C211D623E00F56F26 /* JSRecordset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSRecordset.h; path = objNative/JSRecordset.h; sourceTree = "<group>"; };
+		0A332D8D211D623E00F56F26 /* JSRecordset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSRecordset.m; path = objNative/JSRecordset.m; sourceTree = "<group>"; };
+		0A332D8E211D623E00F56F26 /* JSRectangle2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSRectangle2D.h; path = objNative/JSRectangle2D.h; sourceTree = "<group>"; };
+		0A332D8F211D623E00F56F26 /* JSRectangle2D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSRectangle2D.m; path = objNative/JSRectangle2D.m; sourceTree = "<group>"; };
+		0A332D90211D623E00F56F26 /* JSRelationalChartPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSRelationalChartPoint.h; path = objNative/JSRelationalChartPoint.h; sourceTree = "<group>"; };
+		0A332D91211D623E00F56F26 /* JSRelationalChartPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSRelationalChartPoint.m; path = objNative/JSRelationalChartPoint.m; sourceTree = "<group>"; };
+		0A332D92211D623E00F56F26 /* JSRelationalPointChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSRelationalPointChart.h; path = objNative/JSRelationalPointChart.h; sourceTree = "<group>"; };
+		0A332D93211D623E00F56F26 /* JSRelationalPointChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSRelationalPointChart.m; path = objNative/JSRelationalPointChart.m; sourceTree = "<group>"; };
+		0A332D94211D623E00F56F26 /* JSScaleViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSScaleViewManager.h; path = objNative/JSScaleViewManager.h; sourceTree = "<group>"; };
+		0A332D95211D623E00F56F26 /* JSScaleViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSScaleViewManager.m; path = objNative/JSScaleViewManager.m; sourceTree = "<group>"; };
+		0A332D96211D623E00F56F26 /* JSScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSScene.h; path = objNative/JSScene.h; sourceTree = "<group>"; };
+		0A332D97211D623E00F56F26 /* JSScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSScene.m; path = objNative/JSScene.m; sourceTree = "<group>"; };
+		0A332D98211D623E00F56F26 /* JSSceneControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSceneControl.h; path = objNative/JSSceneControl.h; sourceTree = "<group>"; };
+		0A332D99211D623E00F56F26 /* JSSceneControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSceneControl.m; path = objNative/JSSceneControl.m; sourceTree = "<group>"; };
+		0A332D9A211D623E00F56F26 /* JSSceneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSceneView.h; path = objNative/JSSceneView.h; sourceTree = "<group>"; };
+		0A332D9B211D623E00F56F26 /* JSSceneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSceneView.m; path = objNative/JSSceneView.m; sourceTree = "<group>"; };
+		0A332D9C211D623E00F56F26 /* JSSelection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSelection.h; path = objNative/JSSelection.h; sourceTree = "<group>"; };
+		0A332D9D211D623E00F56F26 /* JSSelection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSelection.m; path = objNative/JSSelection.m; sourceTree = "<group>"; };
+		0A332D9E211D623E00F56F26 /* JSServiceBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSServiceBase.h; path = objNative/JSServiceBase.h; sourceTree = "<group>"; };
+		0A332D9F211D623E00F56F26 /* JSServiceBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSServiceBase.m; path = objNative/JSServiceBase.m; sourceTree = "<group>"; };
+		0A332DA0211D623E00F56F26 /* JSServiceQueryParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSServiceQueryParameter.h; path = objNative/JSServiceQueryParameter.h; sourceTree = "<group>"; };
+		0A332DA1211D623E00F56F26 /* JSServiceQueryParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSServiceQueryParameter.m; path = objNative/JSServiceQueryParameter.m; sourceTree = "<group>"; };
+		0A332DA2211D623E00F56F26 /* JSSize2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSize2D.h; path = objNative/JSSize2D.h; sourceTree = "<group>"; };
+		0A332DA3211D623E00F56F26 /* JSSize2D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSize2D.m; path = objNative/JSSize2D.m; sourceTree = "<group>"; };
+		0A332DA4211D623E00F56F26 /* JSSpeechManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSpeechManager.h; path = objNative/JSSpeechManager.h; sourceTree = "<group>"; };
+		0A332DA5211D623E00F56F26 /* JSSpeechManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSpeechManager.m; path = objNative/JSSpeechManager.m; sourceTree = "<group>"; };
+		0A332DA6211D623E00F56F26 /* JSSTOMPManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSTOMPManager.h; path = objNative/JSSTOMPManager.h; sourceTree = "<group>"; };
+		0A332DA7211D623E00F56F26 /* JSSTOMPManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSTOMPManager.m; path = objNative/JSSTOMPManager.m; sourceTree = "<group>"; };
+		0A332DA8211D623E00F56F26 /* JSSTOMPReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSTOMPReceiver.h; path = objNative/JSSTOMPReceiver.h; sourceTree = "<group>"; };
+		0A332DA9211D623E00F56F26 /* JSSTOMPReceiver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSTOMPReceiver.m; path = objNative/JSSTOMPReceiver.m; sourceTree = "<group>"; };
+		0A332DAA211D623E00F56F26 /* JSSTOMPSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSTOMPSender.h; path = objNative/JSSTOMPSender.h; sourceTree = "<group>"; };
+		0A332DAB211D623E00F56F26 /* JSSTOMPSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSTOMPSender.m; path = objNative/JSSTOMPSender.m; sourceTree = "<group>"; };
+		0A332DAC211D623E00F56F26 /* JSSupplyCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSupplyCenter.h; path = objNative/JSSupplyCenter.h; sourceTree = "<group>"; };
+		0A332DAD211D623E00F56F26 /* JSSupplyCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSupplyCenter.m; path = objNative/JSSupplyCenter.m; sourceTree = "<group>"; };
+		0A332DAE211D623E00F56F26 /* JSSupplyCenters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSupplyCenters.h; path = objNative/JSSupplyCenters.h; sourceTree = "<group>"; };
+		0A332DAF211D623E00F56F26 /* JSSupplyCenters.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSupplyCenters.m; path = objNative/JSSupplyCenters.m; sourceTree = "<group>"; };
+		0A332DB0211D623E00F56F26 /* JSSupplyCenterType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSupplyCenterType.h; path = objNative/JSSupplyCenterType.h; sourceTree = "<group>"; };
+		0A332DB1211D623E00F56F26 /* JSSupplyCenterType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSupplyCenterType.m; path = objNative/JSSupplyCenterType.m; sourceTree = "<group>"; };
+		0A332DB2211D623E00F56F26 /* JSSystemUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSystemUtil.h; path = objNative/JSSystemUtil.h; sourceTree = "<group>"; };
+		0A332DB3211D623E00F56F26 /* JSSystemUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSystemUtil.m; path = objNative/JSSystemUtil.m; sourceTree = "<group>"; };
+		0A332DB4211D623E00F56F26 /* JSTextAlignment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTextAlignment.h; path = objNative/JSTextAlignment.h; sourceTree = "<group>"; };
+		0A332DB5211D623E00F56F26 /* JSTextAlignment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTextAlignment.m; path = objNative/JSTextAlignment.m; sourceTree = "<group>"; };
+		0A332DB6211D623E00F56F26 /* JSTextPart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTextPart.h; path = objNative/JSTextPart.h; sourceTree = "<group>"; };
+		0A332DB7211D623E00F56F26 /* JSTextPart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTextPart.m; path = objNative/JSTextPart.m; sourceTree = "<group>"; };
+		0A332DB8211D623E00F56F26 /* JSTextStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTextStyle.h; path = objNative/JSTextStyle.h; sourceTree = "<group>"; };
+		0A332DB9211D623E00F56F26 /* JSTextStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTextStyle.m; path = objNative/JSTextStyle.m; sourceTree = "<group>"; };
+		0A332DBA211D623E00F56F26 /* JSTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTheme.h; path = objNative/JSTheme.h; sourceTree = "<group>"; };
+		0A332DBB211D623E00F56F26 /* JSTheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTheme.m; path = objNative/JSTheme.m; sourceTree = "<group>"; };
+		0A332DBC211D623E00F56F26 /* JSThemeLabelItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSThemeLabelItem.h; path = objNative/JSThemeLabelItem.h; sourceTree = "<group>"; };
+		0A332DBD211D623E00F56F26 /* JSThemeLabelItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSThemeLabelItem.m; path = objNative/JSThemeLabelItem.m; sourceTree = "<group>"; };
+		0A332DBE211D623E00F56F26 /* JSThemeRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSThemeRange.h; path = objNative/JSThemeRange.h; sourceTree = "<group>"; };
+		0A332DBF211D623E00F56F26 /* JSThemeRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSThemeRange.m; path = objNative/JSThemeRange.m; sourceTree = "<group>"; };
+		0A332DC0211D623E00F56F26 /* JSThemeRangeItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSThemeRangeItem.h; path = objNative/JSThemeRangeItem.h; sourceTree = "<group>"; };
+		0A332DC1211D623E00F56F26 /* JSThemeRangeItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSThemeRangeItem.m; path = objNative/JSThemeRangeItem.m; sourceTree = "<group>"; };
+		0A332DC2211D623E00F56F26 /* JSThemeType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSThemeType.h; path = objNative/JSThemeType.h; sourceTree = "<group>"; };
+		0A332DC3211D623E00F56F26 /* JSThemeType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSThemeType.m; path = objNative/JSThemeType.m; sourceTree = "<group>"; };
+		0A332DC4211D623E00F56F26 /* JSThemeUnique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSThemeUnique.h; path = objNative/JSThemeUnique.h; sourceTree = "<group>"; };
+		0A332DC5211D623E00F56F26 /* JSThemeUnique.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSThemeUnique.m; path = objNative/JSThemeUnique.m; sourceTree = "<group>"; };
+		0A332DC6211D623E00F56F26 /* JSThemeUniqueItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSThemeUniqueItem.h; path = objNative/JSThemeUniqueItem.h; sourceTree = "<group>"; };
+		0A332DC7211D623E00F56F26 /* JSThemeUniqueItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSThemeUniqueItem.m; path = objNative/JSThemeUniqueItem.m; sourceTree = "<group>"; };
+		0A332DC8211D623E00F56F26 /* JSTimeLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTimeLine.h; path = objNative/JSTimeLine.h; sourceTree = "<group>"; };
+		0A332DC9211D623E00F56F26 /* JSTimeLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTimeLine.m; path = objNative/JSTimeLine.m; sourceTree = "<group>"; };
+		0A332DCA211D623E00F56F26 /* JSTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTrack.h; path = objNative/JSTrack.h; sourceTree = "<group>"; };
+		0A332DCB211D623E00F56F26 /* JSTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTrack.m; path = objNative/JSTrack.m; sourceTree = "<group>"; };
+		0A332DCC211D623E00F56F26 /* JSTrackingLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTrackingLayer.h; path = objNative/JSTrackingLayer.h; sourceTree = "<group>"; };
+		0A332DCD211D623E00F56F26 /* JSTrackingLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTrackingLayer.m; path = objNative/JSTrackingLayer.m; sourceTree = "<group>"; };
+		0A332DCE211D623E00F56F26 /* JSTransportationAnalyst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTransportationAnalyst.h; path = objNative/JSTransportationAnalyst.h; sourceTree = "<group>"; };
+		0A332DCF211D623E00F56F26 /* JSTransportationAnalyst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTransportationAnalyst.m; path = objNative/JSTransportationAnalyst.m; sourceTree = "<group>"; };
+		0A332DD0211D623E00F56F26 /* JSTransportationAnalystParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTransportationAnalystParameter.h; path = objNative/JSTransportationAnalystParameter.h; sourceTree = "<group>"; };
+		0A332DD1211D623E00F56F26 /* JSTransportationAnalystParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTransportationAnalystParameter.m; path = objNative/JSTransportationAnalystParameter.m; sourceTree = "<group>"; };
+		0A332DD2211D623E00F56F26 /* JSTransportationAnalystSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTransportationAnalystSetting.h; path = objNative/JSTransportationAnalystSetting.h; sourceTree = "<group>"; };
+		0A332DD3211D623E00F56F26 /* JSTransportationAnalystSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTransportationAnalystSetting.m; path = objNative/JSTransportationAnalystSetting.m; sourceTree = "<group>"; };
+		0A332DD4211D623E00F56F26 /* JSWeightFieldInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSWeightFieldInfo.h; path = objNative/JSWeightFieldInfo.h; sourceTree = "<group>"; };
+		0A332DD5211D623E00F56F26 /* JSWeightFieldInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSWeightFieldInfo.m; path = objNative/JSWeightFieldInfo.m; sourceTree = "<group>"; };
+		0A332DD6211D623E00F56F26 /* JSWeightFieldInfos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSWeightFieldInfos.h; path = objNative/JSWeightFieldInfos.h; sourceTree = "<group>"; };
+		0A332DD7211D623E00F56F26 /* JSWeightFieldInfos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSWeightFieldInfos.m; path = objNative/JSWeightFieldInfos.m; sourceTree = "<group>"; };
+		0A332DD8211D623E00F56F26 /* JSWorkspace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSWorkspace.h; path = objNative/JSWorkspace.h; sourceTree = "<group>"; };
+		0A332DD9211D623E00F56F26 /* JSWorkspace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSWorkspace.m; path = objNative/JSWorkspace.m; sourceTree = "<group>"; };
+		0A332DDA211D623E00F56F26 /* JSWorkspaceConnectionInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSWorkspaceConnectionInfo.h; path = objNative/JSWorkspaceConnectionInfo.h; sourceTree = "<group>"; };
+		0A332DDB211D623E00F56F26 /* JSWorkspaceConnectionInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSWorkspaceConnectionInfo.m; path = objNative/JSWorkspaceConnectionInfo.m; sourceTree = "<group>"; };
+		0A332DDC211D623E00F56F26 /* NativeUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeUtil.h; path = objNative/NativeUtil.h; sourceTree = "<group>"; };
+		0A332DDD211D623E00F56F26 /* NativeUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeUtil.m; path = objNative/NativeUtil.m; sourceTree = "<group>"; };
+		0A332DDE211D623E00F56F26 /* RCTConvert+Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+Action.h"; path = "objNative/RCTConvert+Action.h"; sourceTree = "<group>"; };
+		0A332DDF211D623E00F56F26 /* RCTConvert+Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+Action.m"; path = "objNative/RCTConvert+Action.m"; sourceTree = "<group>"; };
+		0A332DE0211D623E00F56F26 /* RCTConvert+BufferEndType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+BufferEndType.h"; path = "objNative/RCTConvert+BufferEndType.h"; sourceTree = "<group>"; };
+		0A332DE1211D623E00F56F26 /* RCTConvert+BufferEndType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+BufferEndType.m"; path = "objNative/RCTConvert+BufferEndType.m"; sourceTree = "<group>"; };
+		0A332DE2211D623E00F56F26 /* RCTConvert+DatasetType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+DatasetType.h"; path = "objNative/RCTConvert+DatasetType.h"; sourceTree = "<group>"; };
+		0A332DE3211D623E00F56F26 /* RCTConvert+DatasetType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+DatasetType.m"; path = "objNative/RCTConvert+DatasetType.m"; sourceTree = "<group>"; };
+		0A332DE4211D623E00F56F26 /* RCTConvert+EncodeType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+EncodeType.h"; path = "objNative/RCTConvert+EncodeType.h"; sourceTree = "<group>"; };
+		0A332DE5211D623E00F56F26 /* RCTConvert+EncodeType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+EncodeType.m"; path = "objNative/RCTConvert+EncodeType.m"; sourceTree = "<group>"; };
+		0A332DE6211D623E00F56F26 /* RCTConvert+RadiusUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+RadiusUnit.h"; path = "objNative/RCTConvert+RadiusUnit.h"; sourceTree = "<group>"; };
+		0A332DE7211D623E00F56F26 /* RCTConvert+RadiusUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+RadiusUnit.m"; path = "objNative/RCTConvert+RadiusUnit.m"; sourceTree = "<group>"; };
+		0A332DE8211D623E00F56F26 /* SceneViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneViewManager.h; path = objNative/SceneViewManager.h; sourceTree = "<group>"; };
+		0A332DE9211D623E00F56F26 /* SceneViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SceneViewManager.m; path = objNative/SceneViewManager.m; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libSupermap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSupermap.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		FF0583811ED65F590095978A /* JSLegendViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLegendViewManager.h; path = objNative/JSLegendViewManager.h; sourceTree = "<group>"; };
-		FF0583821ED65F590095978A /* JSLegendViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLegendViewManager.m; path = objNative/JSLegendViewManager.m; sourceTree = "<group>"; };
-		FF0583841ED6741F0095978A /* JSLayerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLayerManager.h; path = objNative/JSLayerManager.h; sourceTree = "<group>"; };
-		FF0583851ED6741F0095978A /* JSLayerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLayerManager.m; path = objNative/JSLayerManager.m; sourceTree = "<group>"; };
-		FF1405241EA839A7000E0314 /* JSOverlayAnalyst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSOverlayAnalyst.h; path = objNative/JSOverlayAnalyst.h; sourceTree = "<group>"; };
-		FF1405251EA839A7000E0314 /* JSOverlayAnalyst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSOverlayAnalyst.m; path = objNative/JSOverlayAnalyst.m; sourceTree = "<group>"; };
-		FF14053F1EA8A56B000E0314 /* JSOverlayAnalystParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSOverlayAnalystParameter.h; path = objNative/JSOverlayAnalystParameter.h; sourceTree = "<group>"; };
-		FF1405401EA8A56B000E0314 /* JSOverlayAnalystParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSOverlayAnalystParameter.m; path = objNative/JSOverlayAnalystParameter.m; sourceTree = "<group>"; };
-		FF1B90301E78C92400CE2481 /* JSNavigation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSNavigation.h; path = objNative/JSNavigation.h; sourceTree = "<group>"; };
-		FF1B90311E78C92400CE2481 /* JSNavigation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSNavigation.m; path = objNative/JSNavigation.m; sourceTree = "<group>"; };
-		FF1CB72C1EC000A600562DCD /* JSPointDensityChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPointDensityChart.h; path = objNative/JSPointDensityChart.h; sourceTree = "<group>"; };
-		FF1CB72D1EC000A600562DCD /* JSPointDensityChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPointDensityChart.m; path = objNative/JSPointDensityChart.m; sourceTree = "<group>"; };
-		FF1CB72F1EC001FC00562DCD /* JSPolymerChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPolymerChart.h; path = objNative/JSPolymerChart.h; sourceTree = "<group>"; };
-		FF1CB7301EC001FC00562DCD /* JSPolymerChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPolymerChart.m; path = objNative/JSPolymerChart.m; sourceTree = "<group>"; };
-		FF1CB7321EC0096100562DCD /* JSRelationalPointChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSRelationalPointChart.h; path = objNative/JSRelationalPointChart.h; sourceTree = "<group>"; };
-		FF1CB7331EC0096100562DCD /* JSRelationalPointChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSRelationalPointChart.m; path = objNative/JSRelationalPointChart.m; sourceTree = "<group>"; };
-		FF1FC4B71F53FD23004791DC /* JSSceneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSceneView.h; path = objNative/JSSceneView.h; sourceTree = "<group>"; };
-		FF1FC4B81F53FD23004791DC /* JSSceneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSceneView.m; path = objNative/JSSceneView.m; sourceTree = "<group>"; };
-		FF23718D1ECACBF800A86EEF /* JSMQTTClientSide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSMQTTClientSide.h; path = objNative/JSMQTTClientSide.h; sourceTree = "<group>"; };
-		FF23718E1ECACBF800A86EEF /* JSMQTTClientSide.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSMQTTClientSide.m; path = objNative/JSMQTTClientSide.m; sourceTree = "<group>"; };
-		FF263BB61EC547BA00A8374C /* JSAMQPManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAMQPManager.h; path = objNative/JSAMQPManager.h; sourceTree = "<group>"; };
-		FF263BB71EC547BA00A8374C /* JSAMQPManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAMQPManager.m; path = objNative/JSAMQPManager.m; sourceTree = "<group>"; };
-		FF263BB91EC5586500A8374C /* JSAMQPSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAMQPSender.h; path = objNative/JSAMQPSender.h; sourceTree = "<group>"; };
-		FF263BBA1EC5586500A8374C /* JSAMQPSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAMQPSender.m; path = objNative/JSAMQPSender.m; sourceTree = "<group>"; };
-		FF28BFAA1F1EF2520024AA02 /* JSPieChartViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPieChartViewManager.h; path = objNative/JSPieChartViewManager.h; sourceTree = "<group>"; };
-		FF28BFAB1F1EF2520024AA02 /* JSPieChartViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPieChartViewManager.m; path = objNative/JSPieChartViewManager.m; sourceTree = "<group>"; };
-		FF3308F31F1C99E700712398 /* JSTimeLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTimeLine.h; path = objNative/JSTimeLine.h; sourceTree = "<group>"; };
-		FF3308F41F1C99E700712398 /* JSTimeLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTimeLine.m; path = objNative/JSTimeLine.m; sourceTree = "<group>"; };
-		FF4216131F25CF5400F9CCFE /* JSBarChartDataItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBarChartDataItem.h; path = objNative/JSBarChartDataItem.h; sourceTree = "<group>"; };
-		FF4216141F25CF5400F9CCFE /* JSBarChartDataItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBarChartDataItem.m; path = objNative/JSBarChartDataItem.m; sourceTree = "<group>"; };
-		FF4789481E8A4AAB00E0DA44 /* JSSystemUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSystemUtil.h; path = objNative/JSSystemUtil.h; sourceTree = "<group>"; };
-		FF4789491E8A4AAB00E0DA44 /* JSSystemUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSystemUtil.m; path = objNative/JSSystemUtil.m; sourceTree = "<group>"; };
-		FF4A44C81ECC1DB2003E4FE4 /* JSBufferAnalystParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBufferAnalystParameter.h; path = objNative/JSBufferAnalystParameter.h; sourceTree = "<group>"; };
-		FF4A44C91ECC1DB2003E4FE4 /* JSBufferAnalystParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBufferAnalystParameter.m; path = objNative/JSBufferAnalystParameter.m; sourceTree = "<group>"; };
-		FF4A44CB1ECC3672003E4FE4 /* JSAMQPReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAMQPReceiver.h; path = objNative/JSAMQPReceiver.h; sourceTree = "<group>"; };
-		FF4A44CC1ECC3672003E4FE4 /* JSAMQPReceiver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAMQPReceiver.m; path = objNative/JSAMQPReceiver.m; sourceTree = "<group>"; };
-		FF52E27A1FBACCF2007F3EDE /* NativeUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NativeUtil.h; path = objNative/NativeUtil.h; sourceTree = "<group>"; };
-		FF52E27B1FBACCF3007F3EDE /* NativeUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = NativeUtil.m; path = objNative/NativeUtil.m; sourceTree = "<group>"; };
-		FF52E27D1FBAE56D007F3EDE /* JSRelationalChartPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSRelationalChartPoint.h; path = objNative/JSRelationalChartPoint.h; sourceTree = "<group>"; };
-		FF52E27E1FBAE56D007F3EDE /* JSRelationalChartPoint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSRelationalChartPoint.m; path = objNative/JSRelationalChartPoint.m; sourceTree = "<group>"; };
-		FF5367F51ED3C6330093535D /* JSScaleViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSScaleViewManager.h; path = objNative/JSScaleViewManager.h; sourceTree = "<group>"; };
-		FF5367F61ED3C6330093535D /* JSScaleViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSScaleViewManager.m; path = objNative/JSScaleViewManager.m; sourceTree = "<group>"; };
-		FF54E2A21F3C0D9D0007A188 /* JSBarChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBarChart.h; path = objNative/JSBarChart.h; sourceTree = "<group>"; };
-		FF54E2A31F3C0D9D0007A188 /* JSBarChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBarChart.m; path = objNative/JSBarChart.m; sourceTree = "<group>"; };
-		FF54E2BF1F3C50FB0007A188 /* JSLineChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLineChart.h; path = objNative/JSLineChart.h; sourceTree = "<group>"; };
-		FF54E2C01F3C50FB0007A188 /* JSLineChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLineChart.m; path = objNative/JSLineChart.m; sourceTree = "<group>"; };
-		FF63620F1ECECAD900E9F6F3 /* JSBufferAnalyst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBufferAnalyst.h; path = objNative/JSBufferAnalyst.h; sourceTree = "<group>"; };
-		FF6362101ECECAD900E9F6F3 /* JSBufferAnalyst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBufferAnalyst.m; path = objNative/JSBufferAnalyst.m; sourceTree = "<group>"; };
-		FFA114031EAEDACD00650302 /* SceneViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneViewManager.h; path = objNative/SceneViewManager.h; sourceTree = "<group>"; };
-		FFA114041EAEDACD00650302 /* SceneViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SceneViewManager.m; path = objNative/SceneViewManager.m; sourceTree = "<group>"; };
-		FFA114451EB0810D00650302 /* JSTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTheme.h; path = objNative/JSTheme.h; sourceTree = "<group>"; };
-		FFA114461EB0810D00650302 /* JSTheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTheme.m; path = objNative/JSTheme.m; sourceTree = "<group>"; };
-		FFB06C451F41768900F9527F /* JSPieChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPieChart.h; path = objNative/JSPieChart.h; sourceTree = "<group>"; };
-		FFB06C461F41768900F9527F /* JSPieChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPieChart.m; path = objNative/JSPieChart.m; sourceTree = "<group>"; };
-		FFB06C481F42875000F9527F /* RCTConvert+Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+Action.h"; path = "objNative/RCTConvert+Action.h"; sourceTree = "<group>"; };
-		FFB06C491F42875000F9527F /* RCTConvert+Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+Action.m"; path = "objNative/RCTConvert+Action.m"; sourceTree = "<group>"; };
-		FFB06C4B1F428C7900F9527F /* JSAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAction.h; path = objNative/JSAction.h; sourceTree = "<group>"; };
-		FFB06C4C1F428C7900F9527F /* JSAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAction.m; path = objNative/JSAction.m; sourceTree = "<group>"; };
-		FFB06C721F43C9F200F9527F /* RCTConvert+BufferEndType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+BufferEndType.h"; path = "objNative/RCTConvert+BufferEndType.h"; sourceTree = "<group>"; };
-		FFB06C731F43C9F200F9527F /* RCTConvert+BufferEndType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+BufferEndType.m"; path = "objNative/RCTConvert+BufferEndType.m"; sourceTree = "<group>"; };
-		FFB06C751F43CABD00F9527F /* JSBufferEndType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBufferEndType.h; path = objNative/JSBufferEndType.h; sourceTree = "<group>"; };
-		FFB06C761F43CABD00F9527F /* JSBufferEndType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBufferEndType.m; path = objNative/JSBufferEndType.m; sourceTree = "<group>"; };
-		FFB06C781F43D17B00F9527F /* RCTConvert+RadiusUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+RadiusUnit.h"; path = "objNative/RCTConvert+RadiusUnit.h"; sourceTree = "<group>"; };
-		FFB06C791F43D17B00F9527F /* RCTConvert+RadiusUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+RadiusUnit.m"; path = "objNative/RCTConvert+RadiusUnit.m"; sourceTree = "<group>"; };
-		FFB06C7B1F43D3CF00F9527F /* JSRadiusUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSRadiusUnit.h; path = objNative/JSRadiusUnit.h; sourceTree = "<group>"; };
-		FFB06C7C1F43D3CF00F9527F /* JSRadiusUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSRadiusUnit.m; path = objNative/JSRadiusUnit.m; sourceTree = "<group>"; };
-		FFB06CC01F44231300F9527F /* RCTConvert+EncodeType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+EncodeType.h"; path = "objNative/RCTConvert+EncodeType.h"; sourceTree = "<group>"; };
-		FFB06CC11F44231300F9527F /* RCTConvert+EncodeType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+EncodeType.m"; path = "objNative/RCTConvert+EncodeType.m"; sourceTree = "<group>"; };
-		FFB06CC31F4423E700F9527F /* JSEncodeType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSEncodeType.h; path = objNative/JSEncodeType.h; sourceTree = "<group>"; };
-		FFB06CC41F4423E700F9527F /* JSEncodeType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSEncodeType.m; path = objNative/JSEncodeType.m; sourceTree = "<group>"; };
-		FFB06CC61F4424FD00F9527F /* RCTConvert+DatasetType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+DatasetType.h"; path = "objNative/RCTConvert+DatasetType.h"; sourceTree = "<group>"; };
-		FFB06CC71F4424FD00F9527F /* RCTConvert+DatasetType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+DatasetType.m"; path = "objNative/RCTConvert+DatasetType.m"; sourceTree = "<group>"; };
-		FFB06CC91F44266300F9527F /* JSDatasetType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDatasetType.h; path = objNative/JSDatasetType.h; sourceTree = "<group>"; };
-		FFB06CCA1F44266300F9527F /* JSDatasetType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDatasetType.m; path = objNative/JSDatasetType.m; sourceTree = "<group>"; };
-		FFD1EFBD1E31E22200CACDC5 /* JSAdoptMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAdoptMapView.h; path = objNative/JSAdoptMapView.h; sourceTree = "<group>"; };
-		FFD1EFBE1E31E22200CACDC5 /* JSAdoptMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAdoptMapView.m; path = objNative/JSAdoptMapView.m; sourceTree = "<group>"; };
-		FFD1EFBF1E31E22200CACDC5 /* JSBufferAnalystGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBufferAnalystGeometry.h; path = objNative/JSBufferAnalystGeometry.h; sourceTree = "<group>"; };
-		FFD1EFC01E31E22200CACDC5 /* JSBufferAnalystGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBufferAnalystGeometry.m; path = objNative/JSBufferAnalystGeometry.m; sourceTree = "<group>"; };
-		FFD1EFC11E31E22200CACDC5 /* JSCallOut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSCallOut.h; path = objNative/JSCallOut.h; sourceTree = "<group>"; };
-		FFD1EFC21E31E22200CACDC5 /* JSCallOut.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSCallOut.m; path = objNative/JSCallOut.m; sourceTree = "<group>"; };
-		FFD1EFC31E31E22200CACDC5 /* JSDataDownloadService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDataDownloadService.h; path = objNative/JSDataDownloadService.h; sourceTree = "<group>"; };
-		FFD1EFC41E31E22200CACDC5 /* JSDataDownloadService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDataDownloadService.m; path = objNative/JSDataDownloadService.m; sourceTree = "<group>"; };
-		FFD1EFC51E31E22200CACDC5 /* JSDataset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDataset.h; path = objNative/JSDataset.h; sourceTree = "<group>"; };
-		FFD1EFC61E31E22200CACDC5 /* JSDataset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDataset.m; path = objNative/JSDataset.m; sourceTree = "<group>"; };
-		FFD1EFC71E31E22200CACDC5 /* JSDatasets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDatasets.h; path = objNative/JSDatasets.h; sourceTree = "<group>"; };
-		FFD1EFC81E31E22200CACDC5 /* JSDatasets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDatasets.m; path = objNative/JSDatasets.m; sourceTree = "<group>"; };
-		FFD1EFC91E31E22200CACDC5 /* JSDatasetVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDatasetVector.h; path = objNative/JSDatasetVector.h; sourceTree = "<group>"; };
-		FFD1EFCA1E31E22200CACDC5 /* JSDatasetVector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDatasetVector.m; path = objNative/JSDatasetVector.m; sourceTree = "<group>"; };
-		FFD1EFCB1E31E22200CACDC5 /* JSDatasetVectorInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDatasetVectorInfo.h; path = objNative/JSDatasetVectorInfo.h; sourceTree = "<group>"; };
-		FFD1EFCC1E31E22200CACDC5 /* JSDatasetVectorInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDatasetVectorInfo.m; path = objNative/JSDatasetVectorInfo.m; sourceTree = "<group>"; };
-		FFD1EFCD1E31E22200CACDC5 /* JSDatasource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDatasource.h; path = objNative/JSDatasource.h; sourceTree = "<group>"; };
-		FFD1EFCE1E31E22200CACDC5 /* JSDatasource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDatasource.m; path = objNative/JSDatasource.m; sourceTree = "<group>"; };
-		FFD1EFCF1E31E22200CACDC5 /* JSDatasourceConnectionInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDatasourceConnectionInfo.h; path = objNative/JSDatasourceConnectionInfo.h; sourceTree = "<group>"; };
-		FFD1EFD01E31E22200CACDC5 /* JSDatasourceConnectionInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDatasourceConnectionInfo.m; path = objNative/JSDatasourceConnectionInfo.m; sourceTree = "<group>"; };
-		FFD1EFD11E31E22200CACDC5 /* JSDatasources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDatasources.h; path = objNative/JSDatasources.h; sourceTree = "<group>"; };
-		FFD1EFD21E31E22200CACDC5 /* JSDatasources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDatasources.m; path = objNative/JSDatasources.m; sourceTree = "<group>"; };
-		FFD1EFD31E31E22200CACDC5 /* JSDataUploadService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDataUploadService.h; path = objNative/JSDataUploadService.h; sourceTree = "<group>"; };
-		FFD1EFD41E31E22200CACDC5 /* JSDataUploadService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDataUploadService.m; path = objNative/JSDataUploadService.m; sourceTree = "<group>"; };
-		FFD1EFD71E31E22200CACDC5 /* JSFeature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSFeature.h; path = objNative/JSFeature.h; sourceTree = "<group>"; };
-		FFD1EFD81E31E22200CACDC5 /* JSFeature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSFeature.m; path = objNative/JSFeature.m; sourceTree = "<group>"; };
-		FFD1EFD91E31E22200CACDC5 /* JSFeatureSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSFeatureSet.h; path = objNative/JSFeatureSet.h; sourceTree = "<group>"; };
-		FFD1EFDA1E31E22200CACDC5 /* JSFeatureSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSFeatureSet.m; path = objNative/JSFeatureSet.m; sourceTree = "<group>"; };
-		FFD1EFDB1E31E22200CACDC5 /* JSGeoLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGeoLine.h; path = objNative/JSGeoLine.h; sourceTree = "<group>"; };
-		FFD1EFDC1E31E22200CACDC5 /* JSGeoLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGeoLine.m; path = objNative/JSGeoLine.m; sourceTree = "<group>"; };
-		FFD1EFDD1E31E22200CACDC5 /* JSGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGeometry.h; path = objNative/JSGeometry.h; sourceTree = "<group>"; };
-		FFD1EFDE1E31E22200CACDC5 /* JSGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGeometry.m; path = objNative/JSGeometry.m; sourceTree = "<group>"; };
-		FFD1EFDF1E31E22200CACDC5 /* JSGeoPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGeoPoint.h; path = objNative/JSGeoPoint.h; sourceTree = "<group>"; };
-		FFD1EFE01E31E22200CACDC5 /* JSGeoPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGeoPoint.m; path = objNative/JSGeoPoint.m; sourceTree = "<group>"; };
-		FFD1EFE11E31E22200CACDC5 /* JSGeoRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGeoRegion.h; path = objNative/JSGeoRegion.h; sourceTree = "<group>"; };
-		FFD1EFE21E31E22200CACDC5 /* JSGeoRegion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGeoRegion.m; path = objNative/JSGeoRegion.m; sourceTree = "<group>"; };
-		FFD1EFE31E31E22200CACDC5 /* JSGeoStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGeoStyle.h; path = objNative/JSGeoStyle.h; sourceTree = "<group>"; };
-		FFD1EFE41E31E22200CACDC5 /* JSGeoStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGeoStyle.m; path = objNative/JSGeoStyle.m; sourceTree = "<group>"; };
-		FFD1EFE51E31E22200CACDC5 /* JSLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLayer.h; path = objNative/JSLayer.h; sourceTree = "<group>"; };
-		FFD1EFE61E31E22200CACDC5 /* JSLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLayer.m; path = objNative/JSLayer.m; sourceTree = "<group>"; };
-		FFD1EFE71E31E22200CACDC5 /* JSLayers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLayers.h; path = objNative/JSLayers.h; sourceTree = "<group>"; };
-		FFD1EFE81E31E22200CACDC5 /* JSLayers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLayers.m; path = objNative/JSLayers.m; sourceTree = "<group>"; };
-		FFD1EFE91E31E22200CACDC5 /* JSLayerSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLayerSetting.h; path = objNative/JSLayerSetting.h; sourceTree = "<group>"; };
-		FFD1EFEA1E31E22200CACDC5 /* JSLayerSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLayerSetting.m; path = objNative/JSLayerSetting.m; sourceTree = "<group>"; };
-		FFD1EFEB1E31E22200CACDC5 /* JSLayerSettingVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLayerSettingVector.h; path = objNative/JSLayerSettingVector.h; sourceTree = "<group>"; };
-		FFD1EFEC1E31E22200CACDC5 /* JSLayerSettingVector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLayerSettingVector.m; path = objNative/JSLayerSettingVector.m; sourceTree = "<group>"; };
-		FFD1EFED1E31E22200CACDC5 /* JSLocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLocationManager.h; path = objNative/JSLocationManager.h; sourceTree = "<group>"; };
-		FFD1EFEE1E31E22200CACDC5 /* JSLocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLocationManager.m; path = objNative/JSLocationManager.m; sourceTree = "<group>"; };
-		FFD1EFEF1E31E22200CACDC5 /* JSMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSMap.h; path = objNative/JSMap.h; sourceTree = "<group>"; };
-		FFD1EFF01E31E22200CACDC5 /* JSMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSMap.m; path = objNative/JSMap.m; sourceTree = "<group>"; };
-		FFD1EFF11E31E22200CACDC5 /* JSMapControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSMapControl.h; path = objNative/JSMapControl.h; sourceTree = "<group>"; };
-		FFD1EFF21E31E22200CACDC5 /* JSMapControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSMapControl.m; path = objNative/JSMapControl.m; sourceTree = "<group>"; };
-		FFD1EFF31E31E22200CACDC5 /* JSMaps.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSMaps.h; path = objNative/JSMaps.h; sourceTree = "<group>"; };
-		FFD1EFF41E31E22200CACDC5 /* JSMaps.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSMaps.m; path = objNative/JSMaps.m; sourceTree = "<group>"; };
-		FFD1EFF51E31E22200CACDC5 /* JSMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSMapView.h; path = objNative/JSMapView.h; sourceTree = "<group>"; };
-		FFD1EFF61E31E22200CACDC5 /* JSMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSMapView.m; path = objNative/JSMapView.m; sourceTree = "<group>"; };
-		FFD1EFF71E31E22200CACDC5 /* JSNavigation2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSNavigation2.h; path = objNative/JSNavigation2.h; sourceTree = "<group>"; };
-		FFD1EFF81E31E22200CACDC5 /* JSNavigation2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSNavigation2.m; path = objNative/JSNavigation2.m; sourceTree = "<group>"; };
-		FFD1EFF91E31E22200CACDC5 /* JSObjManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSObjManager.h; path = objNative/JSObjManager.h; sourceTree = "<group>"; };
-		FFD1EFFA1E31E22200CACDC5 /* JSObjManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSObjManager.m; path = objNative/JSObjManager.m; sourceTree = "<group>"; };
-		FFD1EFFB1E31E22200CACDC5 /* JSPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPoint.h; path = objNative/JSPoint.h; sourceTree = "<group>"; };
-		FFD1EFFC1E31E22200CACDC5 /* JSPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPoint.m; path = objNative/JSPoint.m; sourceTree = "<group>"; };
-		FFD1EFFD1E31E22200CACDC5 /* JSPoint2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPoint2D.h; path = objNative/JSPoint2D.h; sourceTree = "<group>"; };
-		FFD1EFFE1E31E22200CACDC5 /* JSPoint2D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPoint2D.m; path = objNative/JSPoint2D.m; sourceTree = "<group>"; };
-		FFD1EFFF1E31E22200CACDC5 /* JSPrjCoordSys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPrjCoordSys.h; path = objNative/JSPrjCoordSys.h; sourceTree = "<group>"; };
-		FFD1F0001E31E22200CACDC5 /* JSPrjCoordSys.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPrjCoordSys.m; path = objNative/JSPrjCoordSys.m; sourceTree = "<group>"; };
-		FFD1F0011E31E22200CACDC5 /* JSQueryParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSQueryParameter.h; path = objNative/JSQueryParameter.h; sourceTree = "<group>"; };
-		FFD1F0021E31E22200CACDC5 /* JSQueryParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSQueryParameter.m; path = objNative/JSQueryParameter.m; sourceTree = "<group>"; };
-		FFD1F0031E31E22200CACDC5 /* JSQueryService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSQueryService.h; path = objNative/JSQueryService.h; sourceTree = "<group>"; };
-		FFD1F0041E31E22200CACDC5 /* JSQueryService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSQueryService.m; path = objNative/JSQueryService.m; sourceTree = "<group>"; };
-		FFD1F0051E31E22200CACDC5 /* JSRecordset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSRecordset.h; path = objNative/JSRecordset.h; sourceTree = "<group>"; };
-		FFD1F0061E31E22200CACDC5 /* JSRecordset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSRecordset.m; path = objNative/JSRecordset.m; sourceTree = "<group>"; };
-		FFD1F0071E31E22200CACDC5 /* JSRectangle2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSRectangle2D.h; path = objNative/JSRectangle2D.h; sourceTree = "<group>"; };
-		FFD1F0081E31E22200CACDC5 /* JSRectangle2D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSRectangle2D.m; path = objNative/JSRectangle2D.m; sourceTree = "<group>"; };
-		FFD1F0091E31E22200CACDC5 /* JSSelection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSelection.h; path = objNative/JSSelection.h; sourceTree = "<group>"; };
-		FFD1F00A1E31E22200CACDC5 /* JSSelection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSelection.m; path = objNative/JSSelection.m; sourceTree = "<group>"; };
-		FFD1F00B1E31E22200CACDC5 /* JSServiceBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSServiceBase.h; path = objNative/JSServiceBase.h; sourceTree = "<group>"; };
-		FFD1F00C1E31E22200CACDC5 /* JSServiceBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSServiceBase.m; path = objNative/JSServiceBase.m; sourceTree = "<group>"; };
-		FFD1F00D1E31E22200CACDC5 /* JSServiceQueryParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSServiceQueryParameter.h; path = objNative/JSServiceQueryParameter.h; sourceTree = "<group>"; };
-		FFD1F00E1E31E22200CACDC5 /* JSServiceQueryParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSServiceQueryParameter.m; path = objNative/JSServiceQueryParameter.m; sourceTree = "<group>"; };
-		FFD1F00F1E31E22200CACDC5 /* JSSize2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSize2D.h; path = objNative/JSSize2D.h; sourceTree = "<group>"; };
-		FFD1F0101E31E22200CACDC5 /* JSSize2D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSize2D.m; path = objNative/JSSize2D.m; sourceTree = "<group>"; };
-		FFD1F0111E31E22200CACDC5 /* JSTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTrack.h; path = objNative/JSTrack.h; sourceTree = "<group>"; };
-		FFD1F0121E31E22200CACDC5 /* JSTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTrack.m; path = objNative/JSTrack.m; sourceTree = "<group>"; };
-		FFD1F0131E31E22200CACDC5 /* JSTrackingLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSTrackingLayer.h; path = objNative/JSTrackingLayer.h; sourceTree = "<group>"; };
-		FFD1F0141E31E22200CACDC5 /* JSTrackingLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSTrackingLayer.m; path = objNative/JSTrackingLayer.m; sourceTree = "<group>"; };
-		FFD1F0151E31E22200CACDC5 /* JSWorkspace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSWorkspace.h; path = objNative/JSWorkspace.h; sourceTree = "<group>"; };
-		FFD1F0161E31E22200CACDC5 /* JSWorkspace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSWorkspace.m; path = objNative/JSWorkspace.m; sourceTree = "<group>"; };
-		FFD1F0171E31E22200CACDC5 /* JSWorkspaceConnectionInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSWorkspaceConnectionInfo.h; path = objNative/JSWorkspaceConnectionInfo.h; sourceTree = "<group>"; };
-		FFD1F0181E31E22200CACDC5 /* JSWorkspaceConnectionInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSWorkspaceConnectionInfo.m; path = objNative/JSWorkspaceConnectionInfo.m; sourceTree = "<group>"; };
-		FFD50D551EA9E67E00C5F209 /* JSScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSScene.h; path = objNative/JSScene.h; sourceTree = "<group>"; };
-		FFD50D561EA9E67E00C5F209 /* JSScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSScene.m; path = objNative/JSScene.m; sourceTree = "<group>"; };
-		FFD50D641EA9F7BD00C5F209 /* JSSceneControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSceneControl.h; path = objNative/JSSceneControl.h; sourceTree = "<group>"; };
-		FFD50D651EA9F7BD00C5F209 /* JSSceneControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSceneControl.m; path = objNative/JSSceneControl.m; sourceTree = "<group>"; };
-		FFDFED331EC930C200C39D87 /* JSSTOMPManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSTOMPManager.h; path = objNative/JSSTOMPManager.h; sourceTree = "<group>"; };
-		FFDFED341EC930C200C39D87 /* JSSTOMPManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSTOMPManager.m; path = objNative/JSSTOMPManager.m; sourceTree = "<group>"; };
-		FFDFED361EC93BB900C39D87 /* JSSTOMPReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSTOMPReceiver.h; path = objNative/JSSTOMPReceiver.h; sourceTree = "<group>"; };
-		FFDFED371EC93BB900C39D87 /* JSSTOMPReceiver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSTOMPReceiver.m; path = objNative/JSSTOMPReceiver.m; sourceTree = "<group>"; };
-		FFDFED391EC9449100C39D87 /* JSSTOMPSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSSTOMPSender.h; path = objNative/JSSTOMPSender.h; sourceTree = "<group>"; };
-		FFDFED3A1EC9449100C39D87 /* JSSTOMPSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSSTOMPSender.m; path = objNative/JSSTOMPSender.m; sourceTree = "<group>"; };
-		FFE622A21F26E12A00B9BF32 /* JSLineChartViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLineChartViewManager.h; path = objNative/JSLineChartViewManager.h; sourceTree = "<group>"; };
-		FFE622A31F26E12A00B9BF32 /* JSLineChartViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLineChartViewManager.m; path = objNative/JSLineChartViewManager.m; sourceTree = "<group>"; };
-		FFE622A51F26F44500B9BF32 /* JSInstrumentChartViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSInstrumentChartViewManager.h; path = objNative/JSInstrumentChartViewManager.h; sourceTree = "<group>"; };
-		FFE622A61F26F44500B9BF32 /* JSInstrumentChartViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSInstrumentChartViewManager.m; path = objNative/JSInstrumentChartViewManager.m; sourceTree = "<group>"; };
-		FFEFAA401EB9B3790002AE4C /* JSChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSChartView.h; path = objNative/JSChartView.h; sourceTree = "<group>"; };
-		FFEFAA411EB9B3790002AE4C /* JSChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSChartView.m; path = objNative/JSChartView.m; sourceTree = "<group>"; };
-		FFF1A4CE1EBD5E7900C21142 /* JSChartLegend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSChartLegend.h; path = objNative/JSChartLegend.h; sourceTree = "<group>"; };
-		FFF1A4CF1EBD5E7900C21142 /* JSChartLegend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSChartLegend.m; path = objNative/JSChartLegend.m; sourceTree = "<group>"; };
-		FFF1A4D11EBDA38E00C21142 /* JSHotChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSHotChart.h; path = objNative/JSHotChart.h; sourceTree = "<group>"; };
-		FFF1A4D21EBDA38E00C21142 /* JSHotChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSHotChart.m; path = objNative/JSHotChart.m; sourceTree = "<group>"; };
-		FFF1A4D41EBDA5A400C21142 /* JSColorScheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSColorScheme.h; path = objNative/JSColorScheme.h; sourceTree = "<group>"; };
-		FFF1A4D51EBDA5A400C21142 /* JSColorScheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSColorScheme.m; path = objNative/JSColorScheme.m; sourceTree = "<group>"; };
-		FFF1A4D71EBDB31200C21142 /* JSGridHotChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGridHotChart.h; path = objNative/JSGridHotChart.h; sourceTree = "<group>"; };
-		FFF1A4D81EBDB31200C21142 /* JSGridHotChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGridHotChart.m; path = objNative/JSGridHotChart.m; sourceTree = "<group>"; };
-		FFF203C71EBAB91400DA9A1F /* JSChartData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSChartData.h; path = objNative/JSChartData.h; sourceTree = "<group>"; };
-		FFF203C81EBAB91400DA9A1F /* JSChartData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSChartData.m; path = objNative/JSChartData.m; sourceTree = "<group>"; };
-		FFF203DF1EBC5CC800DA9A1F /* JSBarChartData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBarChartData.h; path = objNative/JSBarChartData.h; sourceTree = "<group>"; };
-		FFF203E01EBC5CC800DA9A1F /* JSBarChartData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBarChartData.m; path = objNative/JSBarChartData.m; sourceTree = "<group>"; };
-		FFF203E21EBC707000DA9A1F /* JSPieChartData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSPieChartData.h; path = objNative/JSPieChartData.h; sourceTree = "<group>"; };
-		FFF203E31EBC707000DA9A1F /* JSPieChartData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSPieChartData.m; path = objNative/JSPieChartData.m; sourceTree = "<group>"; };
-		FFF203E51EBC7AEA00DA9A1F /* JSLineChartData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSLineChartData.h; path = objNative/JSLineChartData.h; sourceTree = "<group>"; };
-		FFF203E61EBC7AEA00DA9A1F /* JSLineChartData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSLineChartData.m; path = objNative/JSLineChartData.m; sourceTree = "<group>"; };
-		FFF203E81EBC99F600DA9A1F /* JSChartPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSChartPoint.h; path = objNative/JSChartPoint.h; sourceTree = "<group>"; };
-		FFF203E91EBC99F600DA9A1F /* JSChartPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSChartPoint.m; path = objNative/JSChartPoint.m; sourceTree = "<group>"; };
-		FFF803ED209D423900FA57AA /* JSLayer3Ds.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSLayer3Ds.h; path = objNative/JSLayer3Ds.h; sourceTree = "<group>"; };
-		FFF803EE209D423900FA57AA /* JSLayer3Ds.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSLayer3Ds.m; path = objNative/JSLayer3Ds.m; sourceTree = "<group>"; };
-		FFFC46C21F20339300F5DDA4 /* JSBarChartViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSBarChartViewManager.h; path = objNative/JSBarChartViewManager.h; sourceTree = "<group>"; };
-		FFFC46C31F20339300F5DDA4 /* JSBarChartViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSBarChartViewManager.m; path = objNative/JSBarChartViewManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -372,35 +450,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0AF806562111D1C10066EA4D /* New Group */ = {
-			isa = PBXGroup;
-			children = (
-				0A0D3684211BC90800B9626D /* JSWeightFieldInfo.h */,
-				0A0D3685211BC90800B9626D /* JSWeightFieldInfo.m */,
-				0A0D3686211BC90800B9626D /* JSWeightFieldInfos.h */,
-				0A0D3687211BC90800B9626D /* JSWeightFieldInfos.m */,
-				0A0D367E211BC8F600B9626D /* JSFacilityAnalyst.h */,
-				0A0D367F211BC8F600B9626D /* JSFacilityAnalyst.m */,
-				0A0D3680211BC8F600B9626D /* JSFacilityAnalystSetting.h */,
-				0A0D3681211BC8F600B9626D /* JSFacilityAnalystSetting.m */,
-				0AF806572111D1F80066EA4D /* JSSpeechManager.h */,
-				0AF806582111D1F80066EA4D /* JSSpeechManager.m */,
-				0AF8064F21119F7A0066EA4D /* JSElementPoint.h */,
-				0AF8065021119F7A0066EA4D /* JSElementPoint.m */,
-				0AF8065221119F950066EA4D /* JSElementPolygon.h */,
-				0AF8065321119F950066EA4D /* JSElementPolygon.m */,
-				0AF8064C21119F480066EA4D /* JSCollectorLine.h */,
-				0AF8064D21119F480066EA4D /* JSCollectorLine.m */,
-				0AF8061C21119D1C0066EA4D /* JSCollectorElement.h */,
-				0AF8061D21119D1C0066EA4D /* JSCollectorElement.m */,
-				0AF8061921119CD70066EA4D /* JSCollector.h */,
-				0AF8061A21119CD70066EA4D /* JSCollector.m */,
-				0A0D367B211AEE4600B9626D /* JSThemeType.h */,
-				0A0D367C211AEE4600B9626D /* JSThemeType.m */,
-			);
-			name = "New Group";
-			sourceTree = "<group>";
-		};
 		134814211AA4EA7D00B7C361 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -412,209 +461,282 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				0AF806562111D1C10066EA4D /* New Group */,
-				FFB06C4B1F428C7900F9527F /* JSAction.h */,
-				FFB06C4C1F428C7900F9527F /* JSAction.m */,
-				FFB06C481F42875000F9527F /* RCTConvert+Action.h */,
-				FFB06C491F42875000F9527F /* RCTConvert+Action.m */,
-				FFB06C751F43CABD00F9527F /* JSBufferEndType.h */,
-				FFB06C761F43CABD00F9527F /* JSBufferEndType.m */,
-				FFB06C721F43C9F200F9527F /* RCTConvert+BufferEndType.h */,
-				FFB06C731F43C9F200F9527F /* RCTConvert+BufferEndType.m */,
-				FFB06CC91F44266300F9527F /* JSDatasetType.h */,
-				FFB06CCA1F44266300F9527F /* JSDatasetType.m */,
-				FFB06CC61F4424FD00F9527F /* RCTConvert+DatasetType.h */,
-				FFB06CC71F4424FD00F9527F /* RCTConvert+DatasetType.m */,
-				FFB06CC31F4423E700F9527F /* JSEncodeType.h */,
-				FFB06CC41F4423E700F9527F /* JSEncodeType.m */,
-				FFB06CC01F44231300F9527F /* RCTConvert+EncodeType.h */,
-				FFB06CC11F44231300F9527F /* RCTConvert+EncodeType.m */,
-				FFB06C7B1F43D3CF00F9527F /* JSRadiusUnit.h */,
-				FFB06C7C1F43D3CF00F9527F /* JSRadiusUnit.m */,
-				FFB06C781F43D17B00F9527F /* RCTConvert+RadiusUnit.h */,
-				FFB06C791F43D17B00F9527F /* RCTConvert+RadiusUnit.m */,
-				FF263BB91EC5586500A8374C /* JSAMQPSender.h */,
-				FF263BBA1EC5586500A8374C /* JSAMQPSender.m */,
-				FF4A44CB1ECC3672003E4FE4 /* JSAMQPReceiver.h */,
-				FF4A44CC1ECC3672003E4FE4 /* JSAMQPReceiver.m */,
-				FF263BB61EC547BA00A8374C /* JSAMQPManager.h */,
-				FF263BB71EC547BA00A8374C /* JSAMQPManager.m */,
-				FFDFED391EC9449100C39D87 /* JSSTOMPSender.h */,
-				FFDFED3A1EC9449100C39D87 /* JSSTOMPSender.m */,
-				FFDFED361EC93BB900C39D87 /* JSSTOMPReceiver.h */,
-				FFDFED371EC93BB900C39D87 /* JSSTOMPReceiver.m */,
-				FFDFED331EC930C200C39D87 /* JSSTOMPManager.h */,
-				FFDFED341EC930C200C39D87 /* JSSTOMPManager.m */,
-				FF23718D1ECACBF800A86EEF /* JSMQTTClientSide.h */,
-				FF23718E1ECACBF800A86EEF /* JSMQTTClientSide.m */,
-				FFEFAA401EB9B3790002AE4C /* JSChartView.h */,
-				FFEFAA411EB9B3790002AE4C /* JSChartView.m */,
-				FFF203C71EBAB91400DA9A1F /* JSChartData.h */,
-				FFF203C81EBAB91400DA9A1F /* JSChartData.m */,
-				FFF1A4CE1EBD5E7900C21142 /* JSChartLegend.h */,
-				FFF1A4CF1EBD5E7900C21142 /* JSChartLegend.m */,
-				FFF203E81EBC99F600DA9A1F /* JSChartPoint.h */,
-				FFF203E91EBC99F600DA9A1F /* JSChartPoint.m */,
-				FFF1A4D41EBDA5A400C21142 /* JSColorScheme.h */,
-				FFF1A4D51EBDA5A400C21142 /* JSColorScheme.m */,
-				FFB06C451F41768900F9527F /* JSPieChart.h */,
-				FFB06C461F41768900F9527F /* JSPieChart.m */,
-				FF28BFAA1F1EF2520024AA02 /* JSPieChartViewManager.h */,
-				FF28BFAB1F1EF2520024AA02 /* JSPieChartViewManager.m */,
-				FFF203E21EBC707000DA9A1F /* JSPieChartData.h */,
-				FFF203E31EBC707000DA9A1F /* JSPieChartData.m */,
-				FF54E2BF1F3C50FB0007A188 /* JSLineChart.h */,
-				FF54E2C01F3C50FB0007A188 /* JSLineChart.m */,
-				FFE622A21F26E12A00B9BF32 /* JSLineChartViewManager.h */,
-				FFE622A31F26E12A00B9BF32 /* JSLineChartViewManager.m */,
-				FFF203E51EBC7AEA00DA9A1F /* JSLineChartData.h */,
-				FFF203E61EBC7AEA00DA9A1F /* JSLineChartData.m */,
-				FF54E2A21F3C0D9D0007A188 /* JSBarChart.h */,
-				FF54E2A31F3C0D9D0007A188 /* JSBarChart.m */,
-				FFFC46C21F20339300F5DDA4 /* JSBarChartViewManager.h */,
-				FFFC46C31F20339300F5DDA4 /* JSBarChartViewManager.m */,
-				FFF203DF1EBC5CC800DA9A1F /* JSBarChartData.h */,
-				FFF203E01EBC5CC800DA9A1F /* JSBarChartData.m */,
-				FF4216131F25CF5400F9CCFE /* JSBarChartDataItem.h */,
-				FF4216141F25CF5400F9CCFE /* JSBarChartDataItem.m */,
-				FFF1A4D11EBDA38E00C21142 /* JSHotChart.h */,
-				FFF1A4D21EBDA38E00C21142 /* JSHotChart.m */,
-				FFF1A4D71EBDB31200C21142 /* JSGridHotChart.h */,
-				FFF1A4D81EBDB31200C21142 /* JSGridHotChart.m */,
-				FF1CB72F1EC001FC00562DCD /* JSPolymerChart.h */,
-				FF1CB7301EC001FC00562DCD /* JSPolymerChart.m */,
-				FF1CB72C1EC000A600562DCD /* JSPointDensityChart.h */,
-				FF1CB72D1EC000A600562DCD /* JSPointDensityChart.m */,
-				FF1CB7321EC0096100562DCD /* JSRelationalPointChart.h */,
-				FF1CB7331EC0096100562DCD /* JSRelationalPointChart.m */,
-				FF52E27D1FBAE56D007F3EDE /* JSRelationalChartPoint.h */,
-				FF52E27E1FBAE56D007F3EDE /* JSRelationalChartPoint.m */,
-				FFE622A51F26F44500B9BF32 /* JSInstrumentChartViewManager.h */,
-				FFE622A61F26F44500B9BF32 /* JSInstrumentChartViewManager.m */,
-				FF3308F31F1C99E700712398 /* JSTimeLine.h */,
-				FF3308F41F1C99E700712398 /* JSTimeLine.m */,
-				FFD50D551EA9E67E00C5F209 /* JSScene.h */,
-				FFD50D561EA9E67E00C5F209 /* JSScene.m */,
-				FFF803ED209D423900FA57AA /* JSLayer3Ds.h */,
-				FFF803EE209D423900FA57AA /* JSLayer3Ds.m */,
-				FFD50D641EA9F7BD00C5F209 /* JSSceneControl.h */,
-				FFD50D651EA9F7BD00C5F209 /* JSSceneControl.m */,
-				FF1FC4B71F53FD23004791DC /* JSSceneView.h */,
-				FF1FC4B81F53FD23004791DC /* JSSceneView.m */,
-				FFA114031EAEDACD00650302 /* SceneViewManager.h */,
-				FFA114041EAEDACD00650302 /* SceneViewManager.m */,
-				FF1405241EA839A7000E0314 /* JSOverlayAnalyst.h */,
-				FF1405251EA839A7000E0314 /* JSOverlayAnalyst.m */,
-				FF14053F1EA8A56B000E0314 /* JSOverlayAnalystParameter.h */,
-				FF1405401EA8A56B000E0314 /* JSOverlayAnalystParameter.m */,
-				FF63620F1ECECAD900E9F6F3 /* JSBufferAnalyst.h */,
-				FF6362101ECECAD900E9F6F3 /* JSBufferAnalyst.m */,
-				FFD1EFBF1E31E22200CACDC5 /* JSBufferAnalystGeometry.h */,
-				FFD1EFC01E31E22200CACDC5 /* JSBufferAnalystGeometry.m */,
-				FF4A44C81ECC1DB2003E4FE4 /* JSBufferAnalystParameter.h */,
-				FF4A44C91ECC1DB2003E4FE4 /* JSBufferAnalystParameter.m */,
-				FFD1EFC11E31E22200CACDC5 /* JSCallOut.h */,
-				FFD1EFC21E31E22200CACDC5 /* JSCallOut.m */,
-				FFD1EFC51E31E22200CACDC5 /* JSDataset.h */,
-				FFD1EFC61E31E22200CACDC5 /* JSDataset.m */,
-				FFD1EFC71E31E22200CACDC5 /* JSDatasets.h */,
-				FFD1EFC81E31E22200CACDC5 /* JSDatasets.m */,
-				FFD1EFC91E31E22200CACDC5 /* JSDatasetVector.h */,
-				FFD1EFCA1E31E22200CACDC5 /* JSDatasetVector.m */,
-				FFD1EFCB1E31E22200CACDC5 /* JSDatasetVectorInfo.h */,
-				FFD1EFCC1E31E22200CACDC5 /* JSDatasetVectorInfo.m */,
-				FFD1EFCD1E31E22200CACDC5 /* JSDatasource.h */,
-				FFD1EFCE1E31E22200CACDC5 /* JSDatasource.m */,
-				FFD1EFD11E31E22200CACDC5 /* JSDatasources.h */,
-				FFD1EFD21E31E22200CACDC5 /* JSDatasources.m */,
-				FFD1EFCF1E31E22200CACDC5 /* JSDatasourceConnectionInfo.h */,
-				FFD1EFD01E31E22200CACDC5 /* JSDatasourceConnectionInfo.m */,
-				FFD1EFC31E31E22200CACDC5 /* JSDataDownloadService.h */,
-				FFD1EFC41E31E22200CACDC5 /* JSDataDownloadService.m */,
-				FFD1EFD31E31E22200CACDC5 /* JSDataUploadService.h */,
-				FFD1EFD41E31E22200CACDC5 /* JSDataUploadService.m */,
-				FFD1EFD71E31E22200CACDC5 /* JSFeature.h */,
-				FFD1EFD81E31E22200CACDC5 /* JSFeature.m */,
-				FFD1EFD91E31E22200CACDC5 /* JSFeatureSet.h */,
-				FFD1EFDA1E31E22200CACDC5 /* JSFeatureSet.m */,
-				FFD1EFDD1E31E22200CACDC5 /* JSGeometry.h */,
-				FFD1EFDE1E31E22200CACDC5 /* JSGeometry.m */,
-				FFD1EFDB1E31E22200CACDC5 /* JSGeoLine.h */,
-				FFD1EFDC1E31E22200CACDC5 /* JSGeoLine.m */,
-				FFD1EFDF1E31E22200CACDC5 /* JSGeoPoint.h */,
-				FFD1EFE01E31E22200CACDC5 /* JSGeoPoint.m */,
-				FFD1EFE11E31E22200CACDC5 /* JSGeoRegion.h */,
-				FFD1EFE21E31E22200CACDC5 /* JSGeoRegion.m */,
-				FFD1EFE31E31E22200CACDC5 /* JSGeoStyle.h */,
-				FFD1EFE41E31E22200CACDC5 /* JSGeoStyle.m */,
-				FFD1EFE51E31E22200CACDC5 /* JSLayer.h */,
-				FFD1EFE61E31E22200CACDC5 /* JSLayer.m */,
-				FFD1EFE71E31E22200CACDC5 /* JSLayers.h */,
-				FFD1EFE81E31E22200CACDC5 /* JSLayers.m */,
-				FFD1EFE91E31E22200CACDC5 /* JSLayerSetting.h */,
-				FFD1EFEA1E31E22200CACDC5 /* JSLayerSetting.m */,
-				FFD1EFEB1E31E22200CACDC5 /* JSLayerSettingVector.h */,
-				FFD1EFEC1E31E22200CACDC5 /* JSLayerSettingVector.m */,
-				FFD1EFED1E31E22200CACDC5 /* JSLocationManager.h */,
-				FFD1EFEE1E31E22200CACDC5 /* JSLocationManager.m */,
-				FFD1EFEF1E31E22200CACDC5 /* JSMap.h */,
-				FFD1EFF01E31E22200CACDC5 /* JSMap.m */,
-				FFD1EFF31E31E22200CACDC5 /* JSMaps.h */,
-				FFD1EFF41E31E22200CACDC5 /* JSMaps.m */,
-				FF1B90301E78C92400CE2481 /* JSNavigation.h */,
-				FF1B90311E78C92400CE2481 /* JSNavigation.m */,
-				FFD1EFF71E31E22200CACDC5 /* JSNavigation2.h */,
-				FFD1EFF81E31E22200CACDC5 /* JSNavigation2.m */,
-				FFD1EFFB1E31E22200CACDC5 /* JSPoint.h */,
-				FFD1EFFC1E31E22200CACDC5 /* JSPoint.m */,
-				FFD1EFFD1E31E22200CACDC5 /* JSPoint2D.h */,
-				FFD1EFFE1E31E22200CACDC5 /* JSPoint2D.m */,
-				FFD1EFFF1E31E22200CACDC5 /* JSPrjCoordSys.h */,
-				FFD1F0001E31E22200CACDC5 /* JSPrjCoordSys.m */,
-				FFD1F0011E31E22200CACDC5 /* JSQueryParameter.h */,
-				FFD1F0021E31E22200CACDC5 /* JSQueryParameter.m */,
-				FFD1F0031E31E22200CACDC5 /* JSQueryService.h */,
-				FFD1F0041E31E22200CACDC5 /* JSQueryService.m */,
-				FFD1F0051E31E22200CACDC5 /* JSRecordset.h */,
-				FFD1F0061E31E22200CACDC5 /* JSRecordset.m */,
-				FFD1F0071E31E22200CACDC5 /* JSRectangle2D.h */,
-				FFD1F0081E31E22200CACDC5 /* JSRectangle2D.m */,
-				FFD1F0091E31E22200CACDC5 /* JSSelection.h */,
-				FFD1F00A1E31E22200CACDC5 /* JSSelection.m */,
-				FFD1F00B1E31E22200CACDC5 /* JSServiceBase.h */,
-				FFD1F00C1E31E22200CACDC5 /* JSServiceBase.m */,
-				FFD1F00D1E31E22200CACDC5 /* JSServiceQueryParameter.h */,
-				FFD1F00E1E31E22200CACDC5 /* JSServiceQueryParameter.m */,
-				FFD1F00F1E31E22200CACDC5 /* JSSize2D.h */,
-				FFD1F0101E31E22200CACDC5 /* JSSize2D.m */,
-				FFA114451EB0810D00650302 /* JSTheme.h */,
-				FFA114461EB0810D00650302 /* JSTheme.m */,
-				FFD1F0111E31E22200CACDC5 /* JSTrack.h */,
-				FFD1F0121E31E22200CACDC5 /* JSTrack.m */,
-				FFD1F0131E31E22200CACDC5 /* JSTrackingLayer.h */,
-				FFD1F0141E31E22200CACDC5 /* JSTrackingLayer.m */,
-				FFD1F0151E31E22200CACDC5 /* JSWorkspace.h */,
-				FFD1F0161E31E22200CACDC5 /* JSWorkspace.m */,
-				FFD1F0171E31E22200CACDC5 /* JSWorkspaceConnectionInfo.h */,
-				FFD1F0181E31E22200CACDC5 /* JSWorkspaceConnectionInfo.m */,
-				FFD1EFBD1E31E22200CACDC5 /* JSAdoptMapView.h */,
-				FFD1EFBE1E31E22200CACDC5 /* JSAdoptMapView.m */,
-				FFD1EFF51E31E22200CACDC5 /* JSMapView.h */,
-				FFD1EFF61E31E22200CACDC5 /* JSMapView.m */,
-				FFD1EFF11E31E22200CACDC5 /* JSMapControl.h */,
-				FFD1EFF21E31E22200CACDC5 /* JSMapControl.m */,
-				FF0583841ED6741F0095978A /* JSLayerManager.h */,
-				FF0583851ED6741F0095978A /* JSLayerManager.m */,
-				FF0583811ED65F590095978A /* JSLegendViewManager.h */,
-				FF0583821ED65F590095978A /* JSLegendViewManager.m */,
-				FF5367F51ED3C6330093535D /* JSScaleViewManager.h */,
-				FF5367F61ED3C6330093535D /* JSScaleViewManager.m */,
-				FFD1EFF91E31E22200CACDC5 /* JSObjManager.h */,
-				FFD1EFFA1E31E22200CACDC5 /* JSObjManager.m */,
-				FF4789481E8A4AAB00E0DA44 /* JSSystemUtil.h */,
-				FF4789491E8A4AAB00E0DA44 /* JSSystemUtil.m */,
-				FF52E27A1FBACCF2007F3EDE /* NativeUtil.h */,
-				FF52E27B1FBACCF3007F3EDE /* NativeUtil.m */,
+				0A332CD6211D623D00F56F26 /* JSAction.h */,
+				0A332CD7211D623D00F56F26 /* JSAction.m */,
+				0A332CD8211D623D00F56F26 /* JSAdoptMapView.h */,
+				0A332CD9211D623D00F56F26 /* JSAdoptMapView.m */,
+				0A332CDA211D623D00F56F26 /* JSAMQPManager.h */,
+				0A332CDB211D623D00F56F26 /* JSAMQPManager.m */,
+				0A332CDC211D623D00F56F26 /* JSAMQPReceiver.h */,
+				0A332CDD211D623D00F56F26 /* JSAMQPReceiver.m */,
+				0A332CDE211D623D00F56F26 /* JSAMQPSender.h */,
+				0A332CDF211D623D00F56F26 /* JSAMQPSender.m */,
+				0A332CE0211D623D00F56F26 /* JSBarChart.h */,
+				0A332CE1211D623D00F56F26 /* JSBarChart.m */,
+				0A332CE2211D623D00F56F26 /* JSBarChartData.h */,
+				0A332CE3211D623D00F56F26 /* JSBarChartData.m */,
+				0A332CE4211D623D00F56F26 /* JSBarChartDataItem.h */,
+				0A332CE5211D623D00F56F26 /* JSBarChartDataItem.m */,
+				0A332CE6211D623D00F56F26 /* JSBarChartViewManager.h */,
+				0A332CE7211D623D00F56F26 /* JSBarChartViewManager.m */,
+				0A332CE8211D623D00F56F26 /* JSBufferAnalyst.h */,
+				0A332CE9211D623D00F56F26 /* JSBufferAnalyst.m */,
+				0A332CEA211D623D00F56F26 /* JSBufferAnalystGeometry.h */,
+				0A332CEB211D623D00F56F26 /* JSBufferAnalystGeometry.m */,
+				0A332CEC211D623D00F56F26 /* JSBufferAnalystParameter.h */,
+				0A332CED211D623D00F56F26 /* JSBufferAnalystParameter.m */,
+				0A332CEE211D623D00F56F26 /* JSBufferEndType.h */,
+				0A332CEF211D623D00F56F26 /* JSBufferEndType.m */,
+				0A332CF0211D623D00F56F26 /* JSCallOut.h */,
+				0A332CF1211D623D00F56F26 /* JSCallOut.m */,
+				0A332CF2211D623D00F56F26 /* JSChartData.h */,
+				0A332CF3211D623D00F56F26 /* JSChartData.m */,
+				0A332CF4211D623D00F56F26 /* JSChartLegend.h */,
+				0A332CF5211D623D00F56F26 /* JSChartLegend.m */,
+				0A332CF6211D623D00F56F26 /* JSChartPoint.h */,
+				0A332CF7211D623D00F56F26 /* JSChartPoint.m */,
+				0A332CF8211D623D00F56F26 /* JSChartView.h */,
+				0A332CF9211D623D00F56F26 /* JSChartView.m */,
+				0A332CFA211D623D00F56F26 /* JSCollector.h */,
+				0A332CFB211D623D00F56F26 /* JSCollector.m */,
+				0A332CFC211D623D00F56F26 /* JSCollectorElement.h */,
+				0A332CFD211D623D00F56F26 /* JSCollectorElement.m */,
+				0A332CFE211D623D00F56F26 /* JSCollectorLine.h */,
+				0A332CFF211D623D00F56F26 /* JSCollectorLine.m */,
+				0A332D00211D623D00F56F26 /* JSColorGradientType.h */,
+				0A332D01211D623D00F56F26 /* JSColorGradientType.m */,
+				0A332D02211D623D00F56F26 /* JSColorScheme.h */,
+				0A332D03211D623D00F56F26 /* JSColorScheme.m */,
+				0A332D04211D623D00F56F26 /* JSCoordSysTranslator.h */,
+				0A332D05211D623D00F56F26 /* JSCoordSysTranslator.m */,
+				0A332D06211D623D00F56F26 /* JSCoordSysTransMethod.h */,
+				0A332D07211D623D00F56F26 /* JSCoordSysTransMethod.m */,
+				0A332D08211D623D00F56F26 /* JSCoordSysTransParameter.h */,
+				0A332D09211D623D00F56F26 /* JSCoordSysTransParameter.m */,
+				0A332D0A211D623D00F56F26 /* JSDataDownloadService.h */,
+				0A332D0B211D623D00F56F26 /* JSDataDownloadService.m */,
+				0A332D0C211D623D00F56F26 /* JSDataset.h */,
+				0A332D0D211D623D00F56F26 /* JSDataset.m */,
+				0A332D0E211D623D00F56F26 /* JSDatasets.h */,
+				0A332D0F211D623D00F56F26 /* JSDatasets.m */,
+				0A332D10211D623D00F56F26 /* JSDatasetType.h */,
+				0A332D11211D623D00F56F26 /* JSDatasetType.m */,
+				0A332D12211D623D00F56F26 /* JSDatasetVector.h */,
+				0A332D13211D623D00F56F26 /* JSDatasetVector.m */,
+				0A332D14211D623D00F56F26 /* JSDatasetVectorInfo.h */,
+				0A332D15211D623D00F56F26 /* JSDatasetVectorInfo.m */,
+				0A332D16211D623D00F56F26 /* JSDatasource.h */,
+				0A332D17211D623D00F56F26 /* JSDatasource.m */,
+				0A332D18211D623D00F56F26 /* JSDatasourceConnectionInfo.h */,
+				0A332D19211D623D00F56F26 /* JSDatasourceConnectionInfo.m */,
+				0A332D1A211D623D00F56F26 /* JSDatasources.h */,
+				0A332D1B211D623D00F56F26 /* JSDatasources.m */,
+				0A332D1C211D623D00F56F26 /* JSDataUploadService.h */,
+				0A332D1D211D623D00F56F26 /* JSDataUploadService.m */,
+				0A332D1E211D623D00F56F26 /* JSElementPoint.h */,
+				0A332D1F211D623D00F56F26 /* JSElementPoint.m */,
+				0A332D20211D623D00F56F26 /* JSElementPolygon.h */,
+				0A332D21211D623D00F56F26 /* JSElementPolygon.m */,
+				0A332D22211D623D00F56F26 /* JSEncodeType.h */,
+				0A332D23211D623D00F56F26 /* JSEncodeType.m */,
+				0A332D24211D623D00F56F26 /* JSEnvironment.h */,
+				0A332D25211D623D00F56F26 /* JSEnvironment.m */,
+				0A332D26211D623D00F56F26 /* JSFacilityAnalyst.h */,
+				0A332D27211D623D00F56F26 /* JSFacilityAnalyst.m */,
+				0A332D28211D623D00F56F26 /* JSFacilityAnalystSetting.h */,
+				0A332D29211D623D00F56F26 /* JSFacilityAnalystSetting.m */,
+				0A332D2A211D623D00F56F26 /* JSFeature.h */,
+				0A332D2B211D623D00F56F26 /* JSFeature.m */,
+				0A332D2C211D623D00F56F26 /* JSFeatureSet.h */,
+				0A332D2D211D623D00F56F26 /* JSFeatureSet.m */,
+				0A332D2E211D623D00F56F26 /* JSGeoLine.h */,
+				0A332D2F211D623D00F56F26 /* JSGeoLine.m */,
+				0A332D30211D623D00F56F26 /* JSGeoLineM.h */,
+				0A332D31211D623D00F56F26 /* JSGeoLineM.m */,
+				0A332D32211D623D00F56F26 /* JSGeometry.h */,
+				0A332D33211D623D00F56F26 /* JSGeometry.m */,
+				0A332D34211D623D00F56F26 /* JSGeoPoint.h */,
+				0A332D35211D623D00F56F26 /* JSGeoPoint.m */,
+				0A332D36211D623D00F56F26 /* JSGeoRegion.h */,
+				0A332D37211D623D00F56F26 /* JSGeoRegion.m */,
+				0A332D38211D623D00F56F26 /* JSGeoStyle.h */,
+				0A332D39211D623D00F56F26 /* JSGeoStyle.m */,
+				0A332D3A211D623D00F56F26 /* JSGeoText.h */,
+				0A332D3B211D623D00F56F26 /* JSGeoText.m */,
+				0A332D3C211D623D00F56F26 /* JSGridHotChart.h */,
+				0A332D3D211D623D00F56F26 /* JSGridHotChart.m */,
+				0A332D3E211D623D00F56F26 /* JSHotChart.h */,
+				0A332D3F211D623D00F56F26 /* JSHotChart.m */,
+				0A332D40211D623D00F56F26 /* JSInstrumentChartViewManager.h */,
+				0A332D41211D623D00F56F26 /* JSInstrumentChartViewManager.m */,
+				0A332D42211D623D00F56F26 /* JSLayer.h */,
+				0A332D43211D623D00F56F26 /* JSLayer.m */,
+				0A332D44211D623D00F56F26 /* JSLayer3Ds.h */,
+				0A332D45211D623D00F56F26 /* JSLayer3Ds.m */,
+				0A332D46211D623D00F56F26 /* JSLayerManager.h */,
+				0A332D47211D623D00F56F26 /* JSLayerManager.m */,
+				0A332D48211D623D00F56F26 /* JSLayers.h */,
+				0A332D49211D623D00F56F26 /* JSLayers.m */,
+				0A332D4A211D623D00F56F26 /* JSLayerSetting.h */,
+				0A332D4B211D623D00F56F26 /* JSLayerSetting.m */,
+				0A332D4C211D623D00F56F26 /* JSLayerSettingVector.h */,
+				0A332D4D211D623D00F56F26 /* JSLayerSettingVector.m */,
+				0A332D4E211D623D00F56F26 /* JSLegendViewManager.h */,
+				0A332D4F211D623D00F56F26 /* JSLegendViewManager.m */,
+				0A332D50211D623D00F56F26 /* JSLineChart.h */,
+				0A332D51211D623D00F56F26 /* JSLineChart.m */,
+				0A332D52211D623D00F56F26 /* JSLineChartData.h */,
+				0A332D53211D623D00F56F26 /* JSLineChartData.m */,
+				0A332D54211D623D00F56F26 /* JSLineChartViewManager.h */,
+				0A332D55211D623D00F56F26 /* JSLineChartViewManager.m */,
+				0A332D56211D623D00F56F26 /* JSLocationAnalystParameter.h */,
+				0A332D57211D623D00F56F26 /* JSLocationAnalystParameter.m */,
+				0A332D58211D623D00F56F26 /* JSLocationManager.h */,
+				0A332D59211D623D00F56F26 /* JSLocationManager.m */,
+				0A332D5A211D623D00F56F26 /* JSMap.h */,
+				0A332D5B211D623D00F56F26 /* JSMap.m */,
+				0A332D5C211D623D00F56F26 /* JSMapControl.h */,
+				0A332D5D211D623D00F56F26 /* JSMapControl.m */,
+				0A332D5E211D623D00F56F26 /* JSMaps.h */,
+				0A332D5F211D623D00F56F26 /* JSMaps.m */,
+				0A332D60211D623D00F56F26 /* JSMapView.h */,
+				0A332D61211D623D00F56F26 /* JSMapView.m */,
+				0A332D62211D623D00F56F26 /* JSMQTTClientSide.h */,
+				0A332D63211D623D00F56F26 /* JSMQTTClientSide.m */,
+				0A332D64211D623D00F56F26 /* JSNavigation.h */,
+				0A332D65211D623D00F56F26 /* JSNavigation.m */,
+				0A332D66211D623D00F56F26 /* JSNavigation2.h */,
+				0A332D67211D623D00F56F26 /* JSNavigation2.m */,
+				0A332D68211D623D00F56F26 /* JSObjManager.h */,
+				0A332D69211D623D00F56F26 /* JSObjManager.m */,
+				0A332D6A211D623D00F56F26 /* JsonUtil.h */,
+				0A332D6B211D623D00F56F26 /* JsonUtil.m */,
+				0A332D6C211D623D00F56F26 /* JSOverlayAnalyst.h */,
+				0A332D6D211D623D00F56F26 /* JSOverlayAnalyst.m */,
+				0A332D6E211D623D00F56F26 /* JSOverlayAnalystParameter.h */,
+				0A332D6F211D623D00F56F26 /* JSOverlayAnalystParameter.m */,
+				0A332D70211D623D00F56F26 /* JSPieChart.h */,
+				0A332D71211D623D00F56F26 /* JSPieChart.m */,
+				0A332D72211D623D00F56F26 /* JSPieChartData.h */,
+				0A332D73211D623D00F56F26 /* JSPieChartData.m */,
+				0A332D74211D623D00F56F26 /* JSPieChartViewManager.h */,
+				0A332D75211D623D00F56F26 /* JSPieChartViewManager.m */,
+				0A332D76211D623D00F56F26 /* JSPoint.h */,
+				0A332D77211D623D00F56F26 /* JSPoint.m */,
+				0A332D78211D623D00F56F26 /* JSPoint2D.h */,
+				0A332D79211D623D00F56F26 /* JSPoint2D.m */,
+				0A332D7A211D623D00F56F26 /* JSPointDensityChart.h */,
+				0A332D7B211D623E00F56F26 /* JSPointDensityChart.m */,
+				0A332D7C211D623E00F56F26 /* JSPointM.h */,
+				0A332D7D211D623E00F56F26 /* JSPointM.m */,
+				0A332D7E211D623E00F56F26 /* JSPolymerChart.h */,
+				0A332D7F211D623E00F56F26 /* JSPolymerChart.m */,
+				0A332D80211D623E00F56F26 /* JSPrjCoordSys.h */,
+				0A332D81211D623E00F56F26 /* JSPrjCoordSys.m */,
+				0A332D82211D623E00F56F26 /* JSPrjCoordSysType.h */,
+				0A332D83211D623E00F56F26 /* JSPrjCoordSysType.m */,
+				0A332D84211D623E00F56F26 /* JSProjectionType.h */,
+				0A332D85211D623E00F56F26 /* JSProjectionType.m */,
+				0A332D86211D623E00F56F26 /* JSQueryParameter.h */,
+				0A332D87211D623E00F56F26 /* JSQueryParameter.m */,
+				0A332D88211D623E00F56F26 /* JSQueryService.h */,
+				0A332D89211D623E00F56F26 /* JSQueryService.m */,
+				0A332D8A211D623E00F56F26 /* JSRadiusUnit.h */,
+				0A332D8B211D623E00F56F26 /* JSRadiusUnit.m */,
+				0A332D8C211D623E00F56F26 /* JSRecordset.h */,
+				0A332D8D211D623E00F56F26 /* JSRecordset.m */,
+				0A332D8E211D623E00F56F26 /* JSRectangle2D.h */,
+				0A332D8F211D623E00F56F26 /* JSRectangle2D.m */,
+				0A332D90211D623E00F56F26 /* JSRelationalChartPoint.h */,
+				0A332D91211D623E00F56F26 /* JSRelationalChartPoint.m */,
+				0A332D92211D623E00F56F26 /* JSRelationalPointChart.h */,
+				0A332D93211D623E00F56F26 /* JSRelationalPointChart.m */,
+				0A332D94211D623E00F56F26 /* JSScaleViewManager.h */,
+				0A332D95211D623E00F56F26 /* JSScaleViewManager.m */,
+				0A332D96211D623E00F56F26 /* JSScene.h */,
+				0A332D97211D623E00F56F26 /* JSScene.m */,
+				0A332D98211D623E00F56F26 /* JSSceneControl.h */,
+				0A332D99211D623E00F56F26 /* JSSceneControl.m */,
+				0A332D9A211D623E00F56F26 /* JSSceneView.h */,
+				0A332D9B211D623E00F56F26 /* JSSceneView.m */,
+				0A332D9C211D623E00F56F26 /* JSSelection.h */,
+				0A332D9D211D623E00F56F26 /* JSSelection.m */,
+				0A332D9E211D623E00F56F26 /* JSServiceBase.h */,
+				0A332D9F211D623E00F56F26 /* JSServiceBase.m */,
+				0A332DA0211D623E00F56F26 /* JSServiceQueryParameter.h */,
+				0A332DA1211D623E00F56F26 /* JSServiceQueryParameter.m */,
+				0A332DA2211D623E00F56F26 /* JSSize2D.h */,
+				0A332DA3211D623E00F56F26 /* JSSize2D.m */,
+				0A332DA4211D623E00F56F26 /* JSSpeechManager.h */,
+				0A332DA5211D623E00F56F26 /* JSSpeechManager.m */,
+				0A332DA6211D623E00F56F26 /* JSSTOMPManager.h */,
+				0A332DA7211D623E00F56F26 /* JSSTOMPManager.m */,
+				0A332DA8211D623E00F56F26 /* JSSTOMPReceiver.h */,
+				0A332DA9211D623E00F56F26 /* JSSTOMPReceiver.m */,
+				0A332DAA211D623E00F56F26 /* JSSTOMPSender.h */,
+				0A332DAB211D623E00F56F26 /* JSSTOMPSender.m */,
+				0A332DAC211D623E00F56F26 /* JSSupplyCenter.h */,
+				0A332DAD211D623E00F56F26 /* JSSupplyCenter.m */,
+				0A332DAE211D623E00F56F26 /* JSSupplyCenters.h */,
+				0A332DAF211D623E00F56F26 /* JSSupplyCenters.m */,
+				0A332DB0211D623E00F56F26 /* JSSupplyCenterType.h */,
+				0A332DB1211D623E00F56F26 /* JSSupplyCenterType.m */,
+				0A332DB2211D623E00F56F26 /* JSSystemUtil.h */,
+				0A332DB3211D623E00F56F26 /* JSSystemUtil.m */,
+				0A332DB4211D623E00F56F26 /* JSTextAlignment.h */,
+				0A332DB5211D623E00F56F26 /* JSTextAlignment.m */,
+				0A332DB6211D623E00F56F26 /* JSTextPart.h */,
+				0A332DB7211D623E00F56F26 /* JSTextPart.m */,
+				0A332DB8211D623E00F56F26 /* JSTextStyle.h */,
+				0A332DB9211D623E00F56F26 /* JSTextStyle.m */,
+				0A332DBA211D623E00F56F26 /* JSTheme.h */,
+				0A332DBB211D623E00F56F26 /* JSTheme.m */,
+				0A332DBC211D623E00F56F26 /* JSThemeLabelItem.h */,
+				0A332DBD211D623E00F56F26 /* JSThemeLabelItem.m */,
+				0A332DBE211D623E00F56F26 /* JSThemeRange.h */,
+				0A332DBF211D623E00F56F26 /* JSThemeRange.m */,
+				0A332DC0211D623E00F56F26 /* JSThemeRangeItem.h */,
+				0A332DC1211D623E00F56F26 /* JSThemeRangeItem.m */,
+				0A332DC2211D623E00F56F26 /* JSThemeType.h */,
+				0A332DC3211D623E00F56F26 /* JSThemeType.m */,
+				0A332DC4211D623E00F56F26 /* JSThemeUnique.h */,
+				0A332DC5211D623E00F56F26 /* JSThemeUnique.m */,
+				0A332DC6211D623E00F56F26 /* JSThemeUniqueItem.h */,
+				0A332DC7211D623E00F56F26 /* JSThemeUniqueItem.m */,
+				0A332DC8211D623E00F56F26 /* JSTimeLine.h */,
+				0A332DC9211D623E00F56F26 /* JSTimeLine.m */,
+				0A332DCA211D623E00F56F26 /* JSTrack.h */,
+				0A332DCB211D623E00F56F26 /* JSTrack.m */,
+				0A332DCC211D623E00F56F26 /* JSTrackingLayer.h */,
+				0A332DCD211D623E00F56F26 /* JSTrackingLayer.m */,
+				0A332DCE211D623E00F56F26 /* JSTransportationAnalyst.h */,
+				0A332DCF211D623E00F56F26 /* JSTransportationAnalyst.m */,
+				0A332DD0211D623E00F56F26 /* JSTransportationAnalystParameter.h */,
+				0A332DD1211D623E00F56F26 /* JSTransportationAnalystParameter.m */,
+				0A332DD2211D623E00F56F26 /* JSTransportationAnalystSetting.h */,
+				0A332DD3211D623E00F56F26 /* JSTransportationAnalystSetting.m */,
+				0A332DD4211D623E00F56F26 /* JSWeightFieldInfo.h */,
+				0A332DD5211D623E00F56F26 /* JSWeightFieldInfo.m */,
+				0A332DD6211D623E00F56F26 /* JSWeightFieldInfos.h */,
+				0A332DD7211D623E00F56F26 /* JSWeightFieldInfos.m */,
+				0A332DD8211D623E00F56F26 /* JSWorkspace.h */,
+				0A332DD9211D623E00F56F26 /* JSWorkspace.m */,
+				0A332DDA211D623E00F56F26 /* JSWorkspaceConnectionInfo.h */,
+				0A332DDB211D623E00F56F26 /* JSWorkspaceConnectionInfo.m */,
+				0A332DDC211D623E00F56F26 /* NativeUtil.h */,
+				0A332DDD211D623E00F56F26 /* NativeUtil.m */,
+				0A332DDE211D623E00F56F26 /* RCTConvert+Action.h */,
+				0A332DDF211D623E00F56F26 /* RCTConvert+Action.m */,
+				0A332DE0211D623E00F56F26 /* RCTConvert+BufferEndType.h */,
+				0A332DE1211D623E00F56F26 /* RCTConvert+BufferEndType.m */,
+				0A332DE2211D623E00F56F26 /* RCTConvert+DatasetType.h */,
+				0A332DE3211D623E00F56F26 /* RCTConvert+DatasetType.m */,
+				0A332DE4211D623E00F56F26 /* RCTConvert+EncodeType.h */,
+				0A332DE5211D623E00F56F26 /* RCTConvert+EncodeType.m */,
+				0A332DE6211D623E00F56F26 /* RCTConvert+RadiusUnit.h */,
+				0A332DE7211D623E00F56F26 /* RCTConvert+RadiusUnit.m */,
+				0A332DE8211D623E00F56F26 /* SceneViewManager.h */,
+				0A332DE9211D623E00F56F26 /* SceneViewManager.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -676,118 +798,144 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FFE622A71F26F44500B9BF32 /* JSInstrumentChartViewManager.m in Sources */,
-				0AF8065121119F7A0066EA4D /* JSElementPoint.m in Sources */,
-				FFFC46C41F20339300F5DDA4 /* JSBarChartViewManager.m in Sources */,
-				FFB06C471F41768900F9527F /* JSPieChart.m in Sources */,
-				FF52E27F1FBAE56D007F3EDE /* JSRelationalChartPoint.m in Sources */,
-				0A0D3683211BC8F600B9626D /* JSFacilityAnalystSetting.m in Sources */,
-				FFD1F0451E31E22200CACDC5 /* JSWorkspace.m in Sources */,
-				0AF8061E21119D1C0066EA4D /* JSCollectorElement.m in Sources */,
-				FF3308F51F1C99E700712398 /* JSTimeLine.m in Sources */,
-				FFD1F0351E31E22200CACDC5 /* JSMapView.m in Sources */,
-				FF28BFAC1F1EF2520024AA02 /* JSPieChartViewManager.m in Sources */,
-				FF1405411EA8A56B000E0314 /* JSOverlayAnalystParameter.m in Sources */,
-				FFF203C91EBAB91400DA9A1F /* JSChartData.m in Sources */,
-				FF23718F1ECACBF800A86EEF /* JSMQTTClientSide.m in Sources */,
-				FFD1F02F1E31E22200CACDC5 /* JSLayerSetting.m in Sources */,
-				FFA114471EB0810D00650302 /* JSTheme.m in Sources */,
-				FFD1F03D1E31E22200CACDC5 /* JSRecordset.m in Sources */,
-				FF1CB72E1EC000A600562DCD /* JSPointDensityChart.m in Sources */,
-				FF263BBB1EC5586500A8374C /* JSAMQPSender.m in Sources */,
-				0A0D367D211AEE4600B9626D /* JSThemeType.m in Sources */,
-				FF1CB7341EC0096100562DCD /* JSRelationalPointChart.m in Sources */,
-				FFB06CC81F4424FD00F9527F /* RCTConvert+DatasetType.m in Sources */,
-				FFD1F0341E31E22200CACDC5 /* JSMaps.m in Sources */,
-				FF1CB7311EC001FC00562DCD /* JSPolymerChart.m in Sources */,
-				FFF1A4D31EBDA38E00C21142 /* JSHotChart.m in Sources */,
-				FFB06C7A1F43D17B00F9527F /* RCTConvert+RadiusUnit.m in Sources */,
-				0AF806592111D1F80066EA4D /* JSSpeechManager.m in Sources */,
-				FFD1F01D1E31E22200CACDC5 /* JSDataset.m in Sources */,
-				FF1B90321E78C92400CE2481 /* JSNavigation.m in Sources */,
-				0AF8061B21119CD70066EA4D /* JSCollector.m in Sources */,
-				FFD1F0411E31E22200CACDC5 /* JSServiceQueryParameter.m in Sources */,
-				FFD1F0311E31E22200CACDC5 /* JSLocationManager.m in Sources */,
-				FFD1F02A1E31E22200CACDC5 /* JSGeoPoint.m in Sources */,
-				FFD1F0291E31E22200CACDC5 /* JSGeometry.m in Sources */,
-				FFD1F0301E31E22200CACDC5 /* JSLayerSettingVector.m in Sources */,
-				FFD1F0191E31E22200CACDC5 /* JSAdoptMapView.m in Sources */,
-				0AF8064E21119F480066EA4D /* JSCollectorLine.m in Sources */,
-				FFD1F0201E31E22200CACDC5 /* JSDatasetVectorInfo.m in Sources */,
-				FFD1F0211E31E22200CACDC5 /* JSDatasource.m in Sources */,
-				FF0583831ED65F590095978A /* JSLegendViewManager.m in Sources */,
-				FFF803EF209D423900FA57AA /* JSLayer3Ds.m in Sources */,
-				FFD1F03A1E31E22200CACDC5 /* JSPrjCoordSys.m in Sources */,
-				FFD1F03F1E31E22200CACDC5 /* JSSelection.m in Sources */,
-				FFD1F0381E31E22200CACDC5 /* JSPoint.m in Sources */,
-				FFD1F02B1E31E22200CACDC5 /* JSGeoRegion.m in Sources */,
-				FFEFAA421EB9B3790002AE4C /* JSChartView.m in Sources */,
-				FF1405261EA839A7000E0314 /* JSOverlayAnalyst.m in Sources */,
-				FFB06CC21F44231300F9527F /* RCTConvert+EncodeType.m in Sources */,
-				FFDFED3B1EC9449100C39D87 /* JSSTOMPSender.m in Sources */,
-				FFB06CC51F4423E700F9527F /* JSEncodeType.m in Sources */,
-				FFB06C4D1F428C7900F9527F /* JSAction.m in Sources */,
-				FFD1F0441E31E22200CACDC5 /* JSTrackingLayer.m in Sources */,
-				FFD1F0391E31E22200CACDC5 /* JSPoint2D.m in Sources */,
-				FFD1F0461E31E22200CACDC5 /* JSWorkspaceConnectionInfo.m in Sources */,
-				FFF1A4D61EBDA5A400C21142 /* JSColorScheme.m in Sources */,
-				0A0D3689211BC90800B9626D /* JSWeightFieldInfos.m in Sources */,
-				FFD1F01A1E31E22200CACDC5 /* JSBufferAnalystGeometry.m in Sources */,
-				FFF203E11EBC5CC800DA9A1F /* JSBarChartData.m in Sources */,
-				FF0583861ED6741F0095978A /* JSLayerManager.m in Sources */,
-				FF5367F71ED3C6330093535D /* JSScaleViewManager.m in Sources */,
-				0A0D3682211BC8F600B9626D /* JSFacilityAnalyst.m in Sources */,
-				FF47894A1E8A4AAB00E0DA44 /* JSSystemUtil.m in Sources */,
-				FFD1F0261E31E22200CACDC5 /* JSFeature.m in Sources */,
-				FF1FC4B91F53FD23004791DC /* JSSceneView.m in Sources */,
-				FF263BB81EC547BA00A8374C /* JSAMQPManager.m in Sources */,
-				FFD1F0281E31E22200CACDC5 /* JSGeoLine.m in Sources */,
-				FFD1F0361E31E22200CACDC5 /* JSNavigation2.m in Sources */,
-				FFB06C771F43CABD00F9527F /* JSBufferEndType.m in Sources */,
-				FFD1F03B1E31E22200CACDC5 /* JSQueryParameter.m in Sources */,
-				FFD1F01F1E31E22200CACDC5 /* JSDatasetVector.m in Sources */,
-				FFD1F03E1E31E22200CACDC5 /* JSRectangle2D.m in Sources */,
-				FF52E27C1FBACCF3007F3EDE /* NativeUtil.m in Sources */,
-				FFD1F0231E31E22200CACDC5 /* JSDatasources.m in Sources */,
-				FFF1A4D91EBDB31200C21142 /* JSGridHotChart.m in Sources */,
-				FFD1F0271E31E22200CACDC5 /* JSFeatureSet.m in Sources */,
-				FFD1F0421E31E22200CACDC5 /* JSSize2D.m in Sources */,
-				FFD1F0431E31E22200CACDC5 /* JSTrack.m in Sources */,
-				FFF203EA1EBC99F600DA9A1F /* JSChartPoint.m in Sources */,
-				FFD1F01C1E31E22200CACDC5 /* JSDataDownloadService.m in Sources */,
-				FFD1F01B1E31E22200CACDC5 /* JSCallOut.m in Sources */,
-				FFD1F0241E31E22200CACDC5 /* JSDataUploadService.m in Sources */,
-				FFD1F02C1E31E22200CACDC5 /* JSGeoStyle.m in Sources */,
-				FF6362111ECECAD900E9F6F3 /* JSBufferAnalyst.m in Sources */,
-				0AF8065421119F950066EA4D /* JSElementPolygon.m in Sources */,
-				FF4216151F25CF5400F9CCFE /* JSBarChartDataItem.m in Sources */,
-				FFB06C4A1F42875000F9527F /* RCTConvert+Action.m in Sources */,
-				FFDFED351EC930C200C39D87 /* JSSTOMPManager.m in Sources */,
-				FF4A44CA1ECC1DB2003E4FE4 /* JSBufferAnalystParameter.m in Sources */,
-				FFB06C741F43C9F200F9527F /* RCTConvert+BufferEndType.m in Sources */,
-				FFD50D661EA9F7BD00C5F209 /* JSSceneControl.m in Sources */,
-				FFF203E41EBC707000DA9A1F /* JSPieChartData.m in Sources */,
-				FFD1F03C1E31E22200CACDC5 /* JSQueryService.m in Sources */,
-				FFD1F02D1E31E22200CACDC5 /* JSLayer.m in Sources */,
-				FFD1F02E1E31E22200CACDC5 /* JSLayers.m in Sources */,
-				FFD1F0331E31E22200CACDC5 /* JSMapControl.m in Sources */,
-				FFD1F0401E31E22200CACDC5 /* JSServiceBase.m in Sources */,
-				FF4A44CD1ECC3672003E4FE4 /* JSAMQPReceiver.m in Sources */,
-				FFE622A41F26E12A00B9BF32 /* JSLineChartViewManager.m in Sources */,
-				FF54E2C11F3C50FB0007A188 /* JSLineChart.m in Sources */,
-				0A0D3688211BC90800B9626D /* JSWeightFieldInfo.m in Sources */,
-				FFB06C7D1F43D3CF00F9527F /* JSRadiusUnit.m in Sources */,
-				FFD1F01E1E31E22200CACDC5 /* JSDatasets.m in Sources */,
-				FFB06CCB1F44266300F9527F /* JSDatasetType.m in Sources */,
-				FFD1F0371E31E22200CACDC5 /* JSObjManager.m in Sources */,
-				FFF1A4D01EBD5E7900C21142 /* JSChartLegend.m in Sources */,
-				FFD1F0221E31E22200CACDC5 /* JSDatasourceConnectionInfo.m in Sources */,
-				FFD1F0321E31E22200CACDC5 /* JSMap.m in Sources */,
-				FF54E2A41F3C0D9D0007A188 /* JSBarChart.m in Sources */,
-				FFF203E71EBC7AEA00DA9A1F /* JSLineChartData.m in Sources */,
-				FFD50D571EA9E67E00C5F209 /* JSScene.m in Sources */,
-				FFA114051EAEDACD00650302 /* SceneViewManager.m in Sources */,
-				FFDFED381EC93BB900C39D87 /* JSSTOMPReceiver.m in Sources */,
+				0A332E57211D623E00F56F26 /* JSSupplyCenterType.m in Sources */,
+				0A332E2C211D623E00F56F26 /* JSMap.m in Sources */,
+				0A332E06211D623E00F56F26 /* JSDatasets.m in Sources */,
+				0A332E18211D623E00F56F26 /* JSGeometry.m in Sources */,
+				0A332DF0211D623E00F56F26 /* JSBarChartData.m in Sources */,
+				0A332E5B211D623E00F56F26 /* JSTextStyle.m in Sources */,
+				0A332E51211D623E00F56F26 /* JSSpeechManager.m in Sources */,
+				0A332DED211D623E00F56F26 /* JSAMQPReceiver.m in Sources */,
+				0A332E4A211D623E00F56F26 /* JSScene.m in Sources */,
+				0A332E25211D623E00F56F26 /* JSLayerSettingVector.m in Sources */,
+				0A332E31211D623E00F56F26 /* JSNavigation.m in Sources */,
+				0A332E07211D623E00F56F26 /* JSDatasetType.m in Sources */,
+				0A332DEA211D623E00F56F26 /* JSAction.m in Sources */,
+				0A332E5C211D623E00F56F26 /* JSTheme.m in Sources */,
+				0A332E0E211D623E00F56F26 /* JSElementPoint.m in Sources */,
+				0A332E59211D623E00F56F26 /* JSTextAlignment.m in Sources */,
+				0A332E70211D623E00F56F26 /* RCTConvert+DatasetType.m in Sources */,
+				0A332E20211D623E00F56F26 /* JSLayer.m in Sources */,
+				0A332E5A211D623E00F56F26 /* JSTextPart.m in Sources */,
+				0A332E53211D623E00F56F26 /* JSSTOMPReceiver.m in Sources */,
+				0A332E68211D623E00F56F26 /* JSTransportationAnalystSetting.m in Sources */,
+				0A332E47211D623E00F56F26 /* JSRelationalChartPoint.m in Sources */,
+				0A332E5D211D623E00F56F26 /* JSThemeLabelItem.m in Sources */,
+				0A332DEB211D623E00F56F26 /* JSAdoptMapView.m in Sources */,
+				0A332DFB211D623E00F56F26 /* JSChartView.m in Sources */,
+				0A332E36211D623E00F56F26 /* JSOverlayAnalystParameter.m in Sources */,
+				0A332DF1211D623E00F56F26 /* JSBarChartDataItem.m in Sources */,
+				0A332E61211D623E00F56F26 /* JSThemeUnique.m in Sources */,
+				0A332E21211D623E00F56F26 /* JSLayer3Ds.m in Sources */,
+				0A332E2E211D623E00F56F26 /* JSMaps.m in Sources */,
+				0A332E01211D623E00F56F26 /* JSCoordSysTranslator.m in Sources */,
+				0A332E42211D623E00F56F26 /* JSQueryParameter.m in Sources */,
+				0A332E0D211D623E00F56F26 /* JSDataUploadService.m in Sources */,
+				0A332E24211D623E00F56F26 /* JSLayerSetting.m in Sources */,
+				0A332E4D211D623E00F56F26 /* JSSelection.m in Sources */,
+				0A332E37211D623E00F56F26 /* JSPieChart.m in Sources */,
+				0A332E69211D623E00F56F26 /* JSWeightFieldInfo.m in Sources */,
+				0A332E4F211D623E00F56F26 /* JSServiceQueryParameter.m in Sources */,
+				0A332E6C211D623E00F56F26 /* JSWorkspaceConnectionInfo.m in Sources */,
+				0A332E56211D623E00F56F26 /* JSSupplyCenters.m in Sources */,
+				0A332E22211D623E00F56F26 /* JSLayerManager.m in Sources */,
+				0A332E58211D623E00F56F26 /* JSSystemUtil.m in Sources */,
+				0A332E6B211D623E00F56F26 /* JSWorkspace.m in Sources */,
+				0A332E16211D623E00F56F26 /* JSGeoLine.m in Sources */,
+				0A332E45211D623E00F56F26 /* JSRecordset.m in Sources */,
+				0A332DF7211D623E00F56F26 /* JSCallOut.m in Sources */,
+				0A332E65211D623E00F56F26 /* JSTrackingLayer.m in Sources */,
+				0A332E1A211D623E00F56F26 /* JSGeoRegion.m in Sources */,
+				0A332E3F211D623E00F56F26 /* JSPrjCoordSys.m in Sources */,
+				0A332E1D211D623E00F56F26 /* JSGridHotChart.m in Sources */,
+				0A332E35211D623E00F56F26 /* JSOverlayAnalyst.m in Sources */,
+				0A332DF5211D623E00F56F26 /* JSBufferAnalystParameter.m in Sources */,
+				0A332E1B211D623E00F56F26 /* JSGeoStyle.m in Sources */,
+				0A332E08211D623E00F56F26 /* JSDatasetVector.m in Sources */,
+				0A332E50211D623E00F56F26 /* JSSize2D.m in Sources */,
+				0A332E30211D623E00F56F26 /* JSMQTTClientSide.m in Sources */,
+				0A332DEF211D623E00F56F26 /* JSBarChart.m in Sources */,
+				0A332E48211D623E00F56F26 /* JSRelationalPointChart.m in Sources */,
+				0A332E54211D623E00F56F26 /* JSSTOMPSender.m in Sources */,
+				0A332DFD211D623E00F56F26 /* JSCollectorElement.m in Sources */,
+				0A332E3E211D623E00F56F26 /* JSPolymerChart.m in Sources */,
+				0A332E6D211D623E00F56F26 /* NativeUtil.m in Sources */,
+				0A332E0F211D623E00F56F26 /* JSElementPolygon.m in Sources */,
+				0A332E73211D623E00F56F26 /* SceneViewManager.m in Sources */,
+				0A332E2B211D623E00F56F26 /* JSLocationManager.m in Sources */,
+				0A332E3B211D623E00F56F26 /* JSPoint2D.m in Sources */,
+				0A332E4E211D623E00F56F26 /* JSServiceBase.m in Sources */,
+				0A332E49211D623E00F56F26 /* JSScaleViewManager.m in Sources */,
+				0A332E66211D623E00F56F26 /* JSTransportationAnalyst.m in Sources */,
+				0A332E1E211D623E00F56F26 /* JSHotChart.m in Sources */,
+				0A332E23211D623E00F56F26 /* JSLayers.m in Sources */,
+				0A332E2F211D623E00F56F26 /* JSMapView.m in Sources */,
+				0A332E46211D623E00F56F26 /* JSRectangle2D.m in Sources */,
+				0A332E03211D623E00F56F26 /* JSCoordSysTransParameter.m in Sources */,
+				0A332E6E211D623E00F56F26 /* RCTConvert+Action.m in Sources */,
+				0A332E38211D623E00F56F26 /* JSPieChartData.m in Sources */,
+				0A332DFC211D623E00F56F26 /* JSCollector.m in Sources */,
+				0A332E60211D623E00F56F26 /* JSThemeType.m in Sources */,
+				0A332DFE211D623E00F56F26 /* JSCollectorLine.m in Sources */,
+				0A332E29211D623E00F56F26 /* JSLineChartViewManager.m in Sources */,
+				0A332E40211D623E00F56F26 /* JSPrjCoordSysType.m in Sources */,
+				0A332DF9211D623E00F56F26 /* JSChartLegend.m in Sources */,
+				0A332E09211D623E00F56F26 /* JSDatasetVectorInfo.m in Sources */,
+				0A332DF2211D623E00F56F26 /* JSBarChartViewManager.m in Sources */,
+				0A332E19211D623E00F56F26 /* JSGeoPoint.m in Sources */,
+				0A332E3A211D623E00F56F26 /* JSPoint.m in Sources */,
+				0A332E13211D623E00F56F26 /* JSFacilityAnalystSetting.m in Sources */,
+				0A332E10211D623E00F56F26 /* JSEncodeType.m in Sources */,
+				0A332E71211D623E00F56F26 /* RCTConvert+EncodeType.m in Sources */,
+				0A332E17211D623E00F56F26 /* JSGeoLineM.m in Sources */,
+				0A332E32211D623E00F56F26 /* JSNavigation2.m in Sources */,
+				0A332E02211D623E00F56F26 /* JSCoordSysTransMethod.m in Sources */,
+				0A332E41211D623E00F56F26 /* JSProjectionType.m in Sources */,
+				0A332E05211D623E00F56F26 /* JSDataset.m in Sources */,
+				0A332E39211D623E00F56F26 /* JSPieChartViewManager.m in Sources */,
+				0A332E2A211D623E00F56F26 /* JSLocationAnalystParameter.m in Sources */,
+				0A332E6F211D623E00F56F26 /* RCTConvert+BufferEndType.m in Sources */,
+				0A332E52211D623E00F56F26 /* JSSTOMPManager.m in Sources */,
+				0A332E3C211D623E00F56F26 /* JSPointDensityChart.m in Sources */,
+				0A332DEE211D623E00F56F26 /* JSAMQPSender.m in Sources */,
+				0A332DF8211D623E00F56F26 /* JSChartData.m in Sources */,
+				0A332E67211D623E00F56F26 /* JSTransportationAnalystParameter.m in Sources */,
+				0A332E5F211D623E00F56F26 /* JSThemeRangeItem.m in Sources */,
+				0A332DEC211D623E00F56F26 /* JSAMQPManager.m in Sources */,
+				0A332E5E211D623E00F56F26 /* JSThemeRange.m in Sources */,
+				0A332E3D211D623E00F56F26 /* JSPointM.m in Sources */,
+				0A332E0B211D623E00F56F26 /* JSDatasourceConnectionInfo.m in Sources */,
+				0A332DF3211D623E00F56F26 /* JSBufferAnalyst.m in Sources */,
+				0A332E28211D623E00F56F26 /* JSLineChartData.m in Sources */,
+				0A332E34211D623E00F56F26 /* JsonUtil.m in Sources */,
+				0A332E1C211D623E00F56F26 /* JSGeoText.m in Sources */,
+				0A332E0C211D623E00F56F26 /* JSDatasources.m in Sources */,
+				0A332E14211D623E00F56F26 /* JSFeature.m in Sources */,
+				0A332DFF211D623E00F56F26 /* JSColorGradientType.m in Sources */,
+				0A332E0A211D623E00F56F26 /* JSDatasource.m in Sources */,
+				0A332E6A211D623E00F56F26 /* JSWeightFieldInfos.m in Sources */,
+				0A332E27211D623E00F56F26 /* JSLineChart.m in Sources */,
+				0A332E2D211D623E00F56F26 /* JSMapControl.m in Sources */,
+				0A332E1F211D623E00F56F26 /* JSInstrumentChartViewManager.m in Sources */,
+				0A332E33211D623E00F56F26 /* JSObjManager.m in Sources */,
+				0A332E55211D623E00F56F26 /* JSSupplyCenter.m in Sources */,
+				0A332DF4211D623E00F56F26 /* JSBufferAnalystGeometry.m in Sources */,
+				0A332E43211D623E00F56F26 /* JSQueryService.m in Sources */,
+				0A332E62211D623E00F56F26 /* JSThemeUniqueItem.m in Sources */,
+				0A332E00211D623E00F56F26 /* JSColorScheme.m in Sources */,
+				0A332E63211D623E00F56F26 /* JSTimeLine.m in Sources */,
+				0A332E4B211D623E00F56F26 /* JSSceneControl.m in Sources */,
+				0A332E11211D623E00F56F26 /* JSEnvironment.m in Sources */,
+				0A332DF6211D623E00F56F26 /* JSBufferEndType.m in Sources */,
+				0A332E26211D623E00F56F26 /* JSLegendViewManager.m in Sources */,
+				0A332E72211D623E00F56F26 /* RCTConvert+RadiusUnit.m in Sources */,
+				0A332E44211D623E00F56F26 /* JSRadiusUnit.m in Sources */,
+				0A332DFA211D623E00F56F26 /* JSChartPoint.m in Sources */,
+				0A332E04211D623E00F56F26 /* JSDataDownloadService.m in Sources */,
+				0A332E64211D623E00F56F26 /* JSTrack.m in Sources */,
+				0A332E15211D623E00F56F26 /* JSFeatureSet.m in Sources */,
+				0A332E12211D623E00F56F26 /* JSFacilityAnalyst.m in Sources */,
+				0A332E4C211D623E00F56F26 /* JSSceneView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

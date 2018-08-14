@@ -110,8 +110,12 @@ RCT_REMAP_METHOD(open,openBykey:(NSString*)key andWorkspaceConnectionInfoId:(NSS
     WorkspaceConnectionInfo* info = [JSObjManager getObjWithKey:infoId];
     if(workspace&&info){
         BOOL openBit = [workspace open:info];
-        NSNumber* nsOpenBit = [NSNumber numberWithBool:openBit];
-        resolve(@{@"isOpen":nsOpenBit});
+        if(openBit){
+            
+            resolve(@{@"isOpen":@(YES)});
+        }else{
+            reject(@"workspace",@"workspace open failed!!!",nil);
+        }
     }else{
         reject(@"workspace",@"open failed!!!",nil);
     }
@@ -131,13 +135,15 @@ RCT_REMAP_METHOD(getMaps,geMapsByKey:(NSString*)key resolver:(RCTPromiseResolveB
 
 #pragma mark - maps类方法
 RCT_REMAP_METHOD(getMapName,getMapNameByKey:(NSString*)key andMapIndex:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    Workspace* workspace = [JSObjManager getObjWithKey:key];
-    if(workspace){
-        Maps* maps = workspace.maps;
-        NSString* mapName = [maps get:index];
-        resolve(@{@"mapName":mapName});
-    }else{
-        reject(@"workspace",@"get mapName failed!",nil);
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        if(workspace){
+            Maps* maps = workspace.maps;
+            NSString* mapName = [maps get:index];
+            resolve(@{@"mapName":mapName});
+        }
+    } @catch (NSException *exception) {
+        reject(@"workspace",@"workspace get mapName failed!",nil);
     }
 }
 /*

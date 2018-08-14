@@ -30,14 +30,25 @@ static NSString* VOLUME_CHANGED = @"com.supermap.RN.JSSpeechManager.volume_chang
     return @[BEGIN_OF_SPEECH, END_OF_SPEECH, ERROR,RESULT,VOLUME_CHANGED];
 }
 
-static SpeechManager* m_SpeechManager = NULL;
+static SpeechManager* m_SpeechManager = nil;
 
+-(id)init{
+    if(self=[super init]){
+        if(!m_SpeechManager){
+            //to do
+            m_SpeechManager = [SpeechManager sharedInstance];
+        }
+    }
+    
+    return self;
+}
 /**
  * 初始化语音SDK组件(只能在主线程中调用)，只需在应用启动时调用一次就够了
  * @param promise
  */
 RCT_REMAP_METHOD(init, resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+       
         if(!m_SpeechManager){
             //to do
             m_SpeechManager = [SpeechManager sharedInstance];

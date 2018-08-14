@@ -32,29 +32,33 @@ RCT_REMAP_METHOD(clip,clipBydsVectorId:(NSString*)dsVectorId andClipDsVectorId:(
 }
 
 RCT_REMAP_METHOD(erase,eraseBydsVectorId:(NSString*)dsVectorId andEraseDsVectorId:(NSString*)eraseDsVectorId andResult:(NSString*)resultDsVectorId andAnalystParaId:(NSString*)analystParaId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
-    DatasetVector* eraseDsVector = [JSObjManager getObjWithKey:eraseDsVectorId];
-    DatasetVector* resultDsVector = [JSObjManager getObjWithKey:resultDsVectorId];
-    OverlayAnalystParameter* analystPara = [JSObjManager getObjWithKey:analystParaId];
-    if (dsVector&&eraseDsVector&&resultDsVector) {
-        BOOL erased = [OverlayAnalyst erase:dsVector eraseDataset:eraseDsVector resultDataset:resultDsVector parameter:analystPara];
-        NSNumber* nsBool = [NSNumber numberWithBool:erased];
-        resolve(@{@"erased":nsBool});
-    }else{
+    @try {
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        DatasetVector* eraseDsVector = [JSObjManager getObjWithKey:eraseDsVectorId];
+        DatasetVector* resultDsVector = [JSObjManager getObjWithKey:resultDsVectorId];
+        OverlayAnalystParameter* analystPara = [JSObjManager getObjWithKey:analystParaId];
+        if (dsVector&&eraseDsVector&&resultDsVector) {
+            BOOL erased = [OverlayAnalyst erase:dsVector eraseDataset:eraseDsVector resultDataset:resultDsVector parameter:analystPara];
+            NSNumber* nsBool = [NSNumber numberWithBool:erased];
+            resolve(@{@"erased":nsBool});
+        }
+    } @catch (NSException *exception) {
         reject(@"OverlayAnalyst",@"erase failed!!!",nil);
     }
 }
 
 RCT_REMAP_METHOD(identity,identityBydsVectorId:(NSString*)dsVectorId andIdentityDsVectorId:(NSString*)identityDsVectorId andResult:(NSString*)resultDsVectorId andAnalystParaId:(NSString*)analystParaId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
-    DatasetVector* identityDsVector = [JSObjManager getObjWithKey:identityDsVectorId];
-    DatasetVector* resultDsVector = [JSObjManager getObjWithKey:resultDsVectorId];
-    OverlayAnalystParameter* analystPara = [JSObjManager getObjWithKey:analystParaId];
-    if (dsVector&&identityDsVector&&resultDsVector) {
-        BOOL identified = [OverlayAnalyst identity:dsVector identityDataset:identityDsVector resultDataset:resultDsVector parameter:analystPara];
-        NSNumber* nsBool = [NSNumber numberWithBool:identified];
-        resolve(@{@"identified":nsBool});
-    }else{
+    @try {
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        DatasetVector* identityDsVector = [JSObjManager getObjWithKey:identityDsVectorId];
+        DatasetVector* resultDsVector = [JSObjManager getObjWithKey:resultDsVectorId];
+        OverlayAnalystParameter* analystPara = [JSObjManager getObjWithKey:analystParaId];
+        if (dsVector&&identityDsVector&&resultDsVector) {
+            BOOL identified = [OverlayAnalyst identity:dsVector identityDataset:identityDsVector resultDataset:resultDsVector parameter:analystPara];
+            NSNumber* nsBool = [NSNumber numberWithBool:identified];
+            resolve(@{@"identified":nsBool});
+        }
+    } @catch (NSException *exception) {
         reject(@"OverlayAnalyst",@"identity failed!!!",nil);
     }
 }

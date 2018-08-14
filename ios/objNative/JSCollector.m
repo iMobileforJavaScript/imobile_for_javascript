@@ -7,9 +7,9 @@
 //
 
 #import "JSCollector.h"
-
 #import "SuperMap/Collector.h"
 #import "JSObjManager.h"
+
 @implementation JSCollector
 RCT_EXPORT_MODULE();
 

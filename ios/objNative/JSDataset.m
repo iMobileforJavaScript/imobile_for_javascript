@@ -45,7 +45,7 @@ RCT_REMAP_METHOD(getPrjCoordSys,key:(NSString*)key resolver:(RCTPromiseResolveBl
   if (proj) {
     NSInteger projSys = (NSInteger)proj;
     [JSObjManager addObj:proj];
-    resolve(@{@"projSysId":@(projSys).stringValue});
+    resolve(@{@"prjCoordSysId":@(projSys).stringValue});
   }else{
     reject(@"dataset",@"get dataset projSys failed",nil);
   }
@@ -76,16 +76,19 @@ RCT_REMAP_METHOD(isopen,isOpenJudgingByKey:(NSString*)key resolver:(RCTPromiseRe
 #pragma mark - 属性获取方法
 
 RCT_REMAP_METHOD(getType,getTypeByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    Dataset* dataset = [JSObjManager getObjWithKey:key];
-    DatasetType type = dataset.datasetType;
-    if (type) {
-        NSNumber * nsTypeNum = [NSNumber numberWithInt:(int)type];
-        resolve(@{@"opened":nsTypeNum});
-    }else{
-        reject(@"dataset",@"get type failed",nil);
+    
+    @try {
+        Dataset* dataset = [JSObjManager getObjWithKey:key];
+       
+        if (dataset) {
+            DatasetType type = dataset.datasetType;
+            NSNumber * nsTypeNum = [NSNumber numberWithInt:(int)type];
+            resolve(@{@"type":nsTypeNum});
+        }
+    } @catch (NSException *exception) {
+        reject(@"dataset",@"dataset get type failed",nil);
     }
 }
-
 RCT_REMAP_METHOD(getDatasource,getDatasourceByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Dataset* dataset = [JSObjManager getObjWithKey:key];
     Datasource* dataSource = dataset.datasource;
