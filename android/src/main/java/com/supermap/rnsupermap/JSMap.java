@@ -247,6 +247,9 @@ public class JSMap extends ReactContextBaseJavaModule {
             for (int i = 0; i < count; i++) {
                 Layer layer = layers.get(i);
                 Dataset dataset = layer.getDataset();
+                if (dataset == null) {
+                    continue;
+                }
                 int type = dataset.getType().value();
 
                 if (temp.get(type) == null || temp.get(type) == "") {
@@ -305,7 +308,11 @@ public class JSMap extends ReactContextBaseJavaModule {
             for (int i = 0; i < count; i++) {
                 Layer layer = layers.get(i);
                 Dataset dataset = layer.getDataset();
+                if (dataset == null) {
+                    continue;
+                }
                 int intType = dataset.getType().value();
+
                 if (intType == type || type == -1) {
                     String layerId = JSLayer.registerId(layer);
 

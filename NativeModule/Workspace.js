@@ -266,9 +266,9 @@ export default class Workspace {
   }
   
   /**
-   * 关闭指定名称的数据集
+   * 关闭指定名称的数据源
    * @memberOf Workspace
-   * @param datasourceName 数据集名称
+   * @param datasourceName 数据源名称
    * @returns {Promise.<boolean>}
    */
   async closeDatasource(datasourceName) {
@@ -280,7 +280,6 @@ export default class Workspace {
       console.error(e);
     }
   }
-  
   
   /**
    * 关闭所有数据集
@@ -334,6 +333,17 @@ export default class Workspace {
     try {
       let { isModified } = await W.isModified(this._SMWorkspaceId);
       return isModified
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  async getConnectionInfo() {
+    try {
+      let infoId = await W.getConnectionInfo(this._SMWorkspaceId);
+      let wcInfo = new WorkspaceConnectionInfo()
+      wcInfo._SMWorkspaceConnectionInfoId = infoId
+      return wcInfo
     } catch (e) {
       console.error(e);
     }

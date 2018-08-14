@@ -53,3 +53,7 @@ exports.getPathList = async function (path) {
 exports.isDirectory = async function (path) {
   return await util.isDirectory(path);
 }
+
+exports.getPathListByFilter = async function (path, filter) {
+  return await util.getPathListByFilter(path, filter);
+}

@@ -180,7 +180,7 @@ public class JSThemeUnique extends JSTheme {
             Colors colors1 = new Colors();
             for (int i = 0; i < colors.size(); i++) {
                 ReadableMap map = colors.getMap(i);
-                Color color = new Color(map.getInt("x"), map.getInt("y"), map.getInt("b"));
+                Color color = new Color(map.getInt("r"), map.getInt("g"), map.getInt("b"));
                 colors1.add(color);
             }
 

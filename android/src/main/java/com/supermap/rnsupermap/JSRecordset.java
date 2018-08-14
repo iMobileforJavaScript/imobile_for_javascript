@@ -147,6 +147,42 @@ public class JSRecordset extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void moveLast(String recordsetId,Promise promise){
+        try{
+            Recordset recordset = getObjFromList(recordsetId);
+            recordset.moveLast();
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void movePrev(String recordsetId,Promise promise){
+        try{
+            Recordset recordset = getObjFromList(recordsetId);
+            recordset.movePrev();
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void moveTo(String recordsetId, int index, Promise promise){
+        try{
+            Recordset recordset = getObjFromList(recordsetId);
+            recordset.moveTo(index);
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void addNew(String recordsetId,String geometryId,Promise promise){
         try{
             Recordset recordset = getObjFromList(recordsetId);
@@ -212,6 +248,23 @@ public class JSRecordset extends ReactContextBaseJavaModule {
             recordset.moveFirst();
 
             WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, count, size);
+
+            promise.resolve(recordArray);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取记录集recordset的中的一个FieldInfos，promise返回array
+     * @param recordsetId
+     * @param promise
+     */
+    @ReactMethod
+    public void getFieldInfo(String recordsetId, Promise promise){
+        try{
+            Recordset recordset = m_RecordsetList.get(recordsetId);
+            WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, 1);
 
             promise.resolve(recordArray);
         }catch (Exception e){

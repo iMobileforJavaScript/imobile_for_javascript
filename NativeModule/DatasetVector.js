@@ -55,7 +55,7 @@ export default class DatasetVector {
         try {
             var {recordsetId} = await DV.queryInBuffer(this._SMDatasetVectorId, rectangle2D._SMRectangle2DId, cursorType);
             var recordset = new Recordset();
-            recordset.recordsetId = recordsetId;
+            recordset._SMRecordsetId = recordsetId;
             return recordset;
         } catch (e) {
             console.error(e);
@@ -74,7 +74,7 @@ export default class DatasetVector {
         try {
             var {recordsetId} =await DV.getRecordset(this._SMDatasetVectorId, isEmptyRecordset, cursorType);
             var recordset = new Recordset();
-            recordset.recordsetId = recordsetId;
+            recordset._SMRecordsetId = recordsetId;
             return recordset;
         } catch (e) {
             console.error(e);

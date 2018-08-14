@@ -168,4 +168,15 @@ public class JSDataset extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void close(String datasetId, Promise promise){
+        try{
+            Dataset dataset = m_DatasetList.get(datasetId);
+            dataset.close();
+            promise.resolve(true);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
 }

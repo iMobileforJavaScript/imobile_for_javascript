@@ -13,6 +13,7 @@ let RangeMode = NativeModules.JSRangeMode;
 let ColorGradientType = NativeModules.JSColorGradientType;
 let GPSElementType = NativeModules.JSGPSElementType;
 let ThemeType = NativeModules.JSThemeType;
+let WorkspaceType = NativeModules.JSWorkspaceType;
 
 import BufferAnalyst from './NativeModule/BufferAnalyst.js';
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js';
@@ -72,7 +73,6 @@ import BarChartData from './NativeModule/BarChartData.js';
 import BarChartDataItem from './NativeModule/BarChartDataItem.js';
 import LineChartData from './NativeModule/LineChartData.js';
 import PieChartData from './NativeModule/PieChartData.js';
-import OpenMapfile from'./NativeModule/OpenMapfile.js';
 
 // import HotChart from './NativeModule/HotChart.js';
 import GridHotChart from './NativeModule/GridHotChart.js';
@@ -286,7 +286,6 @@ export {
   ThemeUnique,
   
   ColorGradientType,
-  OpenMapfile,
   
   GPSElementType,
   Collector,
@@ -298,6 +297,7 @@ export {
   SpeechManager,
   
   ThemeType,
+  WorkspaceType,
   
   /*
    Datasets,

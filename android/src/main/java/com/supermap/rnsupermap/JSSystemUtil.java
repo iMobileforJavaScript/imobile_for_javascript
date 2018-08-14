@@ -5,6 +5,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
@@ -145,6 +146,54 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
                 String p = files[i].getAbsolutePath().replace(homeDirectory, "");
                 String n = files[i].getName();
                 boolean isDirectory = files[i].isDirectory();
+                WritableMap map = Arguments.createMap();
+                map.putString("path", p);
+                map.putString("name", n);
+                map.putBoolean("isDirectory", isDirectory);
+                array.pushMap(map);
+            }
+            promise.resolve(array);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getPathListByFilter(String path, ReadableMap filter, Promise promise) {
+        try {
+            File file = new File(path);
+
+            File[] files = file.listFiles();
+            WritableArray array = Arguments.createArray();
+            for (int i = 0; i < files.length; i++) {
+                String p = files[i].getAbsolutePath().replace(homeDirectory, "");
+                String n = files[i].getName();
+                int lastDot = n.lastIndexOf(".");
+                String name, type = "";
+                if (lastDot > 0) {
+                    name = n.substring(0, lastDot).toLowerCase();
+                    type = n.substring(lastDot + 1).toLowerCase();
+                } else {
+                    name = n;
+                }
+                boolean isDirectory = files[i].isDirectory();
+
+                String filterName = "", filterType = "";
+                if (!filter.toHashMap().containsKey("name")) {
+                    filterName = filter.getString("name").toLowerCase();
+                }
+                if (filter.toHashMap().containsKey("type")) {
+                    filterType = filter.getString("type").toLowerCase();
+                }
+                // 判断文件名
+                if (!isDirectory && !filterName.equals("") && !name.contains(filterName)) {
+                    continue;
+                }
+                // 判断文件类型
+                if (!isDirectory && !filterType.equals("") && !type.contains(filterType)) {
+                    continue;
+                }
+
                 WritableMap map = Arguments.createMap();
                 map.putString("path", p);
                 map.putString("name", n);

@@ -13,6 +13,7 @@ import com.supermap.data.DatasetVector;
 import com.supermap.data.DatasetVectorInfo;
 import com.supermap.data.Datasets;
 import com.supermap.data.Datasource;
+import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.DatasourceEncrytionType;
 import com.supermap.data.EncodeType;
 import com.supermap.data.Enum;
@@ -276,6 +277,19 @@ public class JSDatasource extends ReactContextBaseJavaModule {
             boolean value = m_datasource.isReadOnly();
 
             promise.resolve(value);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getConnectionInfo(String datasourceId, Promise promise){
+        try {
+            m_datasource = m_DatasourceList.get(datasourceId);
+            DatasourceConnectionInfo info = m_datasource.getConnectionInfo();
+            String connInfoId = JSDatasourceConnectionInfo.registerId(info);
+
+            promise.resolve(connInfoId);
         }catch (Exception e){
             promise.reject(e);
         }
