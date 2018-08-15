@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.data.Dataset;
+import com.supermap.data.Enum;
 import com.supermap.data.Point;
 import com.supermap.data.Point2D;
 import com.supermap.data.Recordset;
@@ -19,6 +20,7 @@ import com.supermap.mapping.LayerSettingType;
 import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.Theme;
+import com.supermap.mapping.ThemeType;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -360,9 +362,16 @@ public class JSLayer extends ReactContextBaseJavaModule {
         try {
             Layer layer = mLayerList.get(layerId);
             Theme theme = layer.getTheme();
+            System.out.println("=====iTablet====layer===" + theme);
+
             if (theme != null) {
+                ThemeType type = theme.getType();
                 String themeId = JSTheme.registerId(theme);
-                promise.resolve(themeId);
+                System.out.println("=====iTablet====layer===" + themeId + "===" + type);
+                WritableMap map = Arguments.createMap();
+                map.putInt("type", type.value());
+                map.putString("themeId", themeId);
+                promise.resolve(map);
             } else {
                 promise.resolve(null);
             }

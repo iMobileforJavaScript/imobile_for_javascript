@@ -39,15 +39,11 @@ public class JSTheme extends ReactContextBaseJavaModule {
     }
 
     public static String registerId(Theme obj) {
-        System.out.println("=====iTablet=====JSTheme===0==" + m_ThemeList.size());
-
         for (Map.Entry entry : m_ThemeList.entrySet()) {
-            System.out.println("=====iTablet=====JSTheme===1==" + entry + "==" + obj);
             if (obj.equals(entry.getValue())) {
                 return (String) entry.getKey();
             }
         }
-        System.out.println("=====iTablet=====JSTheme===2==" + obj);
         Calendar calendar = Calendar.getInstance();
         String id = Long.toString(calendar.getTimeInMillis());
         m_ThemeList.put(id, obj);

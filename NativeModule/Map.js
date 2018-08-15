@@ -621,6 +621,20 @@ export default class Map {
   }
   
   /**
+   * 将指定位置的图层移动到另一个指定位置
+   * @param from
+   * @param to
+   * @returns {Promise.<bool.moved>}
+   */
+  async moveTo(from, to) {
+    try {
+      return await M.moveTo(this._SMMapId, from, to);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  /**
    * 图层下移一层（图层的索引从 0 开始，从顶层开始依次编号）。
    * @memberOf Map
    * @param name - 图层的名字。
@@ -645,6 +659,20 @@ export default class Map {
     try {
       var { moved } = await M.moveUp(this._SMMapId, name);
       return moved;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  /**
+   * 插入一个图层
+   * @param index
+   * @param layer
+   * @returns {Promise.<Promise|Promise.<*>|List<T>|void|List.<T|U>>}
+   */
+  async insert(index, layer) {
+    try {
+      return await M.insert(this._SMMapId, index, layer._SMLayerId);
     } catch (e) {
       console.error(e);
     }
