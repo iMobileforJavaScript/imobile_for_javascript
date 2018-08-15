@@ -33,12 +33,36 @@ RCT_REMAP_METHOD(setLineColor,setLineColorWithStyleId:(NSString*)styleId redColo
      reject(@"geoStyle",@"setLineColor failed!!!",nil);
   }
 }
-
+RCT_REMAP_METHOD(setPointColor,setPointColorId:(NSString*)styleId redColor:(int)red greenColor:(int)green blueColor:(int)blue resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Color* color = [[Color alloc]initWithR:red G:green B:blue];
+    GeoStyle* style = [JSObjManager getObjWithKey:styleId];
+    if (style) {
+        [style setLineColor:color];
+       // [style setPointColor:color];
+        resolve(@"1");
+    }else{
+        reject(@"geoStyle",@"setLineColor failed!!!",nil);
+    }
+}
 RCT_REMAP_METHOD(setLineSymbolID,setLineSymbolIdWithStyleId:(NSString*)styleId symbolId:(int)symbolId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    GeoStyle* style = [JSObjManager getObjWithKey:styleId];
+    if (style) {
+        [style setLineSymbolID:symbolId];
+        resolve(@"1");
+    }else{
+        reject(@"geoStyle",@"setLineSymbolID failed!!!",nil);
+    }
+}
+
+
+RCT_REMAP_METHOD(getPointColor,getPointColorId:(NSString*)styleId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   GeoStyle* style = [JSObjManager getObjWithKey:styleId];
   if (style) {
-    [style setLineSymbolID:symbolId];
-    resolve(@"1");
+      Color* color = [style getLineColor];
+      resolve(@{@"r":@(color.red),
+                @"g":@(color.green),
+                @"b":@(color.blue),
+                });
   }else{
     reject(@"geoStyle",@"setLineSymbolID failed!!!",nil);
   }

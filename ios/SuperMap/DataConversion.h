@@ -118,4 +118,18 @@
 // param filepath 导出文件路径名
 // param dataset 目标数据集
 +(BOOL)exportGPX:(NSString*)filepath fromDataset:(Dataset*)dataset;
+
+
+/**
+ * @brief img文件导入方法。将指定路径对应的img文件倒入成指定数据源中的同名数据集。
+ @param  filePath 指定倒入的shape文件路径。
+ @param  datasource 将文件倒入到的数据源。
+ */
++(BOOL)importIMG:(NSString*)filePath toDatasource:(Datasource*)datasource ;
+/**
+ * @brief img文件导出方法。将指定数据集导出到沙盒目录下生成／覆盖名为指定名称的文件。
+ @param  fileName 指定倒出文件名，若无.mif后缀，方法将自动添加。
+ @param  dataset 指定导出的数据集。
+ */
++(BOOL)exportIMG:(NSString*)fileName fromDataset:(Dataset*)dataset;
 @end

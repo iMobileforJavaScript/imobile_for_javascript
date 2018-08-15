@@ -77,7 +77,7 @@ RCT_REMAP_METHOD(getDataset,getDatasetByKey:(NSString*)key andNum:(int)num resol
         [JSObjManager addObj:dataset];
         resolve(@{@"datasetId":@(key).stringValue});
     }else{
-        reject(@"dataSource",@"get dataset failed",nil);
+        reject(@"dataSource",@"dataSource get dataset failed",nil);
     }
 }
 
@@ -93,6 +93,16 @@ RCT_REMAP_METHOD(getDatasetByName,getDatasetByKey:(NSString*)key andName:(NSStri
         reject(@"dataSource",@"get dataset failed",nil);
     }
 }
+RCT_REMAP_METHOD(getAlias,getAliasKey:(NSString*)key  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Datasource* datasource = [JSObjManager getObjWithKey:key];
+   
+    if(datasource){
+        resolve(@{@"alias":datasource.alias});
+    }else{
+        reject(@"dataSource",@"getAlias failed",nil);
+    }
+}
+
 
 RCT_REMAP_METHOD(getAvailableDatasetName,getAvailableNameByKey:(NSString*)key andName:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Datasource* datasource = [JSObjManager getObjWithKey:key];

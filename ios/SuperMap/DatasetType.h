@@ -90,5 +90,7 @@ typedef enum{
   //  Topo		=154,	 安卓没有该接口 IOS暂时注释掉
    // TIN2	=155,	 安卓没有该接口 IOS暂时注释掉
    // RelClass	=156 安卓没有该接口 IOS暂时注释掉
+    
+    VECTORCACHE = 301
 }DatasetType;
 

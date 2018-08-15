@@ -23,7 +23,6 @@
 
 /**
  * 设置websocket地址
- * @param wsAddress
  */
 @property(nonatomic,strong)NSString* address;
 

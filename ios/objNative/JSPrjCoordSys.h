@@ -1,9 +1,9 @@
 //
 //  JSPrjCoordSys.h
-//  HelloWorldDemo
+//  Supermap
 //
-//  Created by 王子豪 on 2016/11/23.
-//  Copyright © 2016年 Facebook. All rights reserved.
+//  Created by wnmng on 2018/8/9.
+//  Copyright © 2018年 Facebook. All rights reserved.
 //
 
 #import <React/RCTBridgeModule.h>

@@ -110,8 +110,12 @@ RCT_REMAP_METHOD(open,openBykey:(NSString*)key andWorkspaceConnectionInfoId:(NSS
     WorkspaceConnectionInfo* info = [JSObjManager getObjWithKey:infoId];
     if(workspace&&info){
         BOOL openBit = [workspace open:info];
-        NSNumber* nsOpenBit = [NSNumber numberWithBool:openBit];
-        resolve(@{@"isOpen":nsOpenBit});
+        if(openBit){
+            
+            resolve(@{@"isOpen":@(YES)});
+        }else{
+            reject(@"workspace",@"workspace open failed!!!",nil);
+        }
     }else{
         reject(@"workspace",@"open failed!!!",nil);
     }
@@ -131,13 +135,15 @@ RCT_REMAP_METHOD(getMaps,geMapsByKey:(NSString*)key resolver:(RCTPromiseResolveB
 
 #pragma mark - maps类方法
 RCT_REMAP_METHOD(getMapName,getMapNameByKey:(NSString*)key andMapIndex:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    Workspace* workspace = [JSObjManager getObjWithKey:key];
-    if(workspace){
-        Maps* maps = workspace.maps;
-        NSString* mapName = [maps get:index];
-        resolve(@{@"mapName":mapName});
-    }else{
-        reject(@"workspace",@"get mapName failed!",nil);
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        if(workspace){
+            Maps* maps = workspace.maps;
+            NSString* mapName = [maps get:index];
+            resolve(@{@"mapName":mapName});
+        }
+    } @catch (NSException *exception) {
+        reject(@"workspace",@"workspace get mapName failed!",nil);
     }
 }
 /*
@@ -180,39 +186,53 @@ RCT_REMAP_METHOD(openDatasource,openDatasourceByKey:(NSString*)key andPath:(NSSt
 */
 
 RCT_REMAP_METHOD(openDatasource,openDatasourceByKey:(NSString*)key jsonObject:(NSDictionary*)jsObj resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    Workspace* workspace = [JSObjManager getObjWithKey:key];
-    Datasources* dataSources = workspace.datasources;
-    DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
-    if(jsObj&&info){
-        NSArray* keyArr = [jsObj allKeys];
-        if ([keyArr containsObject:@"alias"]) info.alias = [jsObj objectForKey:@"alias"];
-        if ([keyArr containsObject:@"engineType"]){
-            NSNumber* num = [jsObj objectForKey:@"engineType"];
-            long type = num.floatValue;
-            info.engineType = (EngineType)type;
+    
+    @try{
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        Datasources* dataSources = workspace.datasources;
+        DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
+        if(jsObj&&info){
+            NSArray* keyArr = [jsObj allKeys];
+            BOOL bDefault = YES;
+            if ([keyArr containsObject:@"alias"]){
+                info.alias = [jsObj objectForKey:@"alias"];
+                bDefault = NO;
+            }
+            if ([keyArr containsObject:@"engineType"]){
+                NSNumber* num = [jsObj objectForKey:@"engineType"];
+                long type = num.floatValue;
+                info.engineType = (EngineType)type;
+            }
+            if ([keyArr containsObject:@"server"]){
+                NSString* path = [jsObj objectForKey:@"server"];
+                info.server = path;
+                if(bDefault){
+                    info.alias = [[path lastPathComponent] stringByDeletingPathExtension];
+                }
+            }
+            if([workspace.datasources indexOf:info.alias]!=-1){
+                [workspace.datasources closeAlias:info.alias];
+            }
+            if ([keyArr containsObject:@"driver"]) info.driver = [jsObj objectForKey:@"driver"];
+            if ([keyArr containsObject:@"user"]) info.user = [jsObj objectForKey:@"user"];
+            if ([keyArr containsObject:@"readOnly"]) info.readOnly = ((NSNumber*)[jsObj objectForKey:@"readOnly"]).boolValue;
+            if ([keyArr containsObject:@"password"]) info.password = [jsObj objectForKey:@"password"];
+            if ([keyArr containsObject:@"webCoordinate"]) info.webCoordinate = [jsObj objectForKey:@"webCoordinate"];
+            if ([keyArr containsObject:@"webVersion"]) info.webVersion = [jsObj objectForKey:@"webVersion"];
+            if ([keyArr containsObject:@"webFormat"]) info.webFormat = [jsObj objectForKey:@"webFormat"];
+            if ([keyArr containsObject:@"webVisibleLayers"]) info.webVisibleLayers = [jsObj objectForKey:@"webVisibleLayers"];
+            if ([keyArr containsObject:@"webExtendParam"]) info.webExtendParam = [jsObj objectForKey:@"webExtendParam"];
+            if ([keyArr containsObject:@"webBBox"]){
+                Rectangle2D* rect2d = [JSObjManager getObjWithKey:[jsObj objectForKey:@"webBBox"]];
+                info.webBBox = rect2d;
+            }
+            Datasource* dataSource = [dataSources open:info];
+            NSInteger nsDSource = (NSInteger)dataSource;
+            [JSObjManager addObj:dataSource];
+            resolve(@{@"datasourceId":@(nsDSource).stringValue});
         }
-        if ([keyArr containsObject:@"server"]){
-            NSString* path = [jsObj objectForKey:@"server"];
-            info.server = path;
-        }
-        if ([keyArr containsObject:@"driver"]) info.driver = [jsObj objectForKey:@"driver"];
-        if ([keyArr containsObject:@"user"]) info.user = [jsObj objectForKey:@"user"];
-        if ([keyArr containsObject:@"readOnly"]) info.readOnly = ((NSNumber*)[jsObj objectForKey:@"readOnly"]).boolValue;
-        if ([keyArr containsObject:@"password"]) info.password = [jsObj objectForKey:@"password"];
-        if ([keyArr containsObject:@"webCoordinate"]) info.webCoordinate = [jsObj objectForKey:@"webCoordinate"];
-        if ([keyArr containsObject:@"webVersion"]) info.webVersion = [jsObj objectForKey:@"webVersion"];
-        if ([keyArr containsObject:@"webFormat"]) info.webFormat = [jsObj objectForKey:@"webFormat"];
-        if ([keyArr containsObject:@"webVisibleLayers"]) info.webVisibleLayers = [jsObj objectForKey:@"webVisibleLayers"];
-        if ([keyArr containsObject:@"webExtendParam"]) info.webExtendParam = [jsObj objectForKey:@"webExtendParam"];
-        if ([keyArr containsObject:@"webBBox"]){
-            Rectangle2D* rect2d = [JSObjManager getObjWithKey:[jsObj objectForKey:@"webBBox"]];
-            info.webBBox = rect2d;
-        }
-        Datasource* dataSource = [dataSources open:info];
-        NSInteger nsDSource = (NSInteger)dataSource;
-        [JSObjManager addObj:dataSource];
-        resolve(@{@"datasourceId":@(nsDSource).stringValue});
-    }else{
+    }@catch (NSException *exception) {
+    
         reject(@"workspace",@"open LocalDatasource failed!",nil);
     }
 }
@@ -273,32 +293,67 @@ RCT_REMAP_METHOD(saveWorkspace,saveWorkspaceByKey:(NSString*)key resolver:(RCTPr
 }
 
 RCT_REMAP_METHOD(closeWorkspace,closeWorkspaceByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-  Workspace* workspace = [JSObjManager getObjWithKey:key];
-  if(workspace){
-      [workspace close];
-      [JSObjManager removeObj:key];
-      [workspace dispose];
-      NSNumber* nsClosed = [NSNumber numberWithBool:TRUE];
-    resolve(@{@"closed":nsClosed});
-  }else{
-    reject(@"workspace",@"close failed!!!",nil);
-  }
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        if(workspace){
+            [workspace close];
+            [JSObjManager removeObj:key];
+            [workspace dispose];
+            NSNumber* nsClosed = [NSNumber numberWithBool:TRUE];
+            resolve(@{@"closed":nsClosed});
+        }
+    } @catch (NSException *exception) {
+        reject(@"workspace",@"close failed!!!",nil);
+    } 
 }
 
 #pragma mark - 原datasources类放法
-
-RCT_REMAP_METHOD(createDatasource,createDatasourceByKey:(NSString*)key andFilePath:(NSString*)path andEngineType:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    Workspace* workspace = [JSObjManager getObjWithKey:key];
-    Datasources* dataSources = workspace.datasources;
-    if(dataSources){
-        DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
-        info.server = path;
-        info.engineType = type;
-        Datasource* dataSource = [dataSources create:info];
-        [JSObjManager addObj:dataSource];
-        NSInteger jsKey = (NSInteger)dataSource;
-        resolve(@{@"datasourceId":@(jsKey).stringValue});
-    }else{
++(BOOL)createFileDirectories:(NSString*)path
+{
+    
+    // 判断存放音频、视频的文件夹是否存在，不存在则创建对应文件夹
+    NSString* DOCUMENTS_FOLDER_AUDIO = path;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    BOOL isDir = FALSE;
+    BOOL isDirExist = [fileManager fileExistsAtPath:DOCUMENTS_FOLDER_AUDIO isDirectory:&isDir];
+    
+    
+    if(!(isDirExist && isDir)){
+        BOOL bCreateDir = [fileManager createDirectoryAtPath:DOCUMENTS_FOLDER_AUDIO withIntermediateDirectories:YES attributes:nil error:nil];
+        
+        if(!bCreateDir){
+            
+            NSLog(@"Create Directory Failed.");
+            return NO;
+        }else
+        {
+            //  NSLog(@"%@",DOCUMENTS_FOLDER_AUDIO);
+            return YES;
+        }
+    }
+    
+    return YES;
+}
+RCT_REMAP_METHOD(createDatasource,createDatasourceByKey:(NSString*)key  andFilePath:(NSString*)path andEngineType:(int)type  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        Datasources* dataSources = workspace.datasources;
+        if(dataSources){
+            DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
+            
+            [JSWorkspace createFileDirectories:[path stringByDeletingLastPathComponent]];
+            info.server = path;
+            info.engineType = type;
+            info.alias = [[path lastPathComponent] stringByDeletingPathExtension];
+            Datasource* dataSource = [dataSources create:info];
+            [JSObjManager addObj:dataSource];
+            NSInteger jsKey = (NSInteger)dataSource;
+            resolve(@(jsKey).stringValue);
+        }
+    }@catch (NSException *exception) {
+        
         reject(@"workspace",@"create Datasource failed!!!",nil);
     }
 }
@@ -325,7 +380,18 @@ RCT_REMAP_METHOD(closeAllDatasource,closeAllDatasourceByKey:(NSString*)key resol
         reject(@"workspace",@"close all Datasource failed!!!",nil);
     }
 }
+RCT_REMAP_METHOD(getConnectionInfo,getConnectionInfoKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        WorkspaceConnectionInfo* info = workspace.connectionInfo;
+        NSString* key1 = [JSObjManager addObj:info];
+        resolve(key1);
+    } @catch (NSException *exception) {
+        reject(@"workspace",@"workspace getConnectionInfo all Datasource failed!!!",nil);
+    }
 
+}
 #pragma mark - 原maps类方法
 
 RCT_REMAP_METHOD(removeMap,removeMapByKey:(NSString*)key andMapName:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

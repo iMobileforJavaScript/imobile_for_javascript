@@ -153,4 +153,9 @@ typedef enum {
      * 多选对象
      */
     MULTI_SELECT = 305,
+    
+    /**
+     * 卷帘模式
+     */
+    SWIPE = 501,
 }Action;

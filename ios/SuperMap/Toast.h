@@ -12,9 +12,9 @@
 {
   
 }
-+(void)show:(NSString*)message;
-+(void)show:(NSString*)message pos:(NSString*)pos;
-+(void)show:(NSString*)title message:(NSString*)message pos:(NSString*)pos duration:(float)duration;
++(void)show:(NSString*)message hostView:(UIView*)hostView;
++(void)show:(NSString*)message pos:(NSString*)pos hostView:(UIView*)hostView;
++(void)show:(NSString*)title message:(NSString*)message pos:(NSString*)pos duration:(float)duration hostView:(UIView*)hostView;
 +(void)showIndicatorView;
 +(void)showIndicatorViewWith:(UIColor*)color;
 +(void)hideIndicatorView;

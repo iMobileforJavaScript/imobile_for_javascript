@@ -244,7 +244,7 @@ public class JSMap extends ReactContextBaseJavaModule {
             WritableMap typesMap = Arguments.createMap();
             HashMap temp = new HashMap(); // ReadableArray 无法更新，用词此代替
 
-            for (int i = 0; i < count; i++) {
+            for (int i = 0; i <  count; i++) {
                 Layer layer = layers.get(i);
                 Dataset dataset = layer.getDataset();
                 if (dataset == null) {

@@ -24,8 +24,35 @@ RCT_REMAP_METHOD(getInnerPoint,getInnerPointByGeometryId:(NSString*)geometryId r
 }
 
 RCT_REMAP_METHOD(setStyle,setStyleByGeometryId:(NSString*)geometryId geoStyleId:(NSString*)geoStyleId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-  Geometry* geo = [JSObjManager getObjWithKey:geometryId];
-  GeoStyle* style = [JSObjManager getObjWithKey:geoStyleId];
-  [geo setStyle:style];
+    
+    @try {
+        Geometry* geo = [JSObjManager getObjWithKey:geometryId];
+        GeoStyle* style = [JSObjManager getObjWithKey:geoStyleId];
+        [geo setStyle:style];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"geometry",@"geometry setStyle failed!!!",nil);
+    }
+   
+}
+
+RCT_REMAP_METHOD(getID,getIDId:(NSString*)geometryId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Geometry* geo = [JSObjManager getObjWithKey:geometryId];
+        int p2D = [geo getID];
+        resolve(@(p2D));
+    } @catch (NSException *exception) {
+         reject(@"geometry",@"geometry getID failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getType,getTypeId:(NSString*)geometryId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Geometry* geo = [JSObjManager getObjWithKey:geometryId];
+        int p2D = [geo getType];
+        resolve(@(p2D));
+    } @catch (NSException *exception) {
+        reject(@"geometry",@"geometry getType failed!!!",nil);
+    }
 }
 @end

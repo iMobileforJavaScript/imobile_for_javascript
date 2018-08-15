@@ -8,8 +8,10 @@
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
 #import "Layer3DType.h"
+#import "Point3D.h"
+#import "BoxClipPart.h"
 
-@class Layer3Ds,Selection3D,FieldInfos,Rect2D,Feature3Ds;
+@class Layer3Ds,Selection3D,FieldInfos,Rect2D,Feature3Ds, GeoBox, Color;
 
 /** 三维图层类。
  <p>该类提供了三维图层显示和控制等便于三维地图管理的一系列设置方法。</p>
@@ -78,12 +80,47 @@
  */
 @property (nonatomic, assign) BOOL releaseWhenInvisible;
 
+///获取或设置裁剪面边线的颜色
+@property (nonatomic, strong) Color *clipLineColor;
+
 /**
  *  获取或设置图层对视口的可见性
  */
 
 - (BOOL)visibleInViewport:(NSInteger)index;
 - (void)setVisible:(BOOL)visible inViewport:(NSInteger)index;
+
+/** @brief 清除自定义裁剪面
+ */
+- (void)clearCustomClipPlane;
+
+/** @brief 设置自定义裁剪面，保留顺时针法线方向的模型
+ @param firstPoint 指定裁剪面的第一个顶点
+ @param secondPoint 指定裁剪面的第二个顶点
+ @param thirdPoint 指定裁剪面的第三个顶点
+ */
+- (void)setCustomClipPlaneWithPoint:(Point3D)firstPoint point:(Point3D)secondPoint point:(Point3D)thirdPoint;
+
+/** @brief 设置一个盒子，将图层在盒子之外的部分隐藏掉
+ @param box 指定的盒子
+ */
+- (void)setCustomClipPlanesByBox:(GeoBox *)box;
+
+/** @brief 设置一个盒子，对图层可渲染部分进行裁剪
+ @param box 指定的盒子
+ @param part 裁剪面裁剪模式
+ */
+- (void)clipByBox:(GeoBox *)box part:(BoxClipPart)part;
+
+/** @brief 获取用来裁剪的盒子
+ @return 返回裁剪的盒子
+ */
+- (GeoBox *)getClipBox;
+
+/** @brief 获取BOX裁剪的模式
+ @return 返回BOX裁剪的模式
+ */
+- (BoxClipPart)getBoxClipPart;
 
 /* 更新图层 */
 - (void)updateData;

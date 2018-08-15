@@ -93,4 +93,14 @@ RCT_REMAP_METHOD(setSpatialQueryMode,setSpatialQueryModeById:(NSString*)paraId m
     reject(@"queryParameter",@"get Obj failed!!!",nil);
   }
 }
+// add lucd
+RCT_REMAP_METHOD(setCursorType,queryParameterIdById:(NSString*)paraId mode:(int)mode resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    QueryParameter* para = [JSObjManager getObjWithKey:paraId];
+    if (para) {
+        para.cursorType = mode;
+        resolve(@"done");
+    }else{
+        reject(@"queryParameter",@"get Obj failed!!!",nil);
+    }
+}
 @end

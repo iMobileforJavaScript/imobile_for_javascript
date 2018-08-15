@@ -51,5 +51,8 @@ typedef enum{
     ET_BingMaps = 230,
     
     //OpenGLCache,用于打开OpenGLCache数据源
-    ET_OPENGLCACHE = 305
+    ET_OPENGLCACHE = 305,
+    
+    //mvt类型数据源
+    ET_MVTCACHE = 306
 }EngineType;

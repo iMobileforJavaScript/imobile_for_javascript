@@ -52,4 +52,15 @@ RCT_REMAP_METHOD(makeThemeRange, makeThemeRangeBydsVectorId:(NSString*)dsVectorI
         reject(@"theme",@"make Theme Range failed",nil);
     }
 }
+
+RCT_REMAP_METHOD(getType, getTypeId:(NSString*)dsVectorId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Theme* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+    if (dsVector) {
+        int type = dsVector.themeType;
+        resolve(@(type));
+    }else{
+        reject(@"theme",@"theme getType  failed",nil);
+    }
+}
+
 @end

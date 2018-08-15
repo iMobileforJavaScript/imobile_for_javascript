@@ -189,6 +189,16 @@
  * @param value 引导路径的样式
  */
 -(void)setRouteStyle:(GeoStyle*)style;
+
+/////////////////////////////////////////////////   add 2018.1.8 by-luchd
+/**
+ *@brief  设置途经点
+ * @param x 终点x坐标
+ * @param y 终点y坐标
+ */
+-(void)addWayPointWithX:(double)x y:(double)y;
+
+// end 2018.1.8
 @end
 
 @protocol navigation2ChangedDelegate<NSObject>

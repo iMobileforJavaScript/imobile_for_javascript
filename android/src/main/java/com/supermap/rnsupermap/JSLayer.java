@@ -233,18 +233,6 @@ public class JSLayer extends ReactContextBaseJavaModule {
             Layer layer = mLayerList.get(layerId);
             LayerSetting layerSetting = layer.getAdditionalSetting();
             String layerSettingId = JSLayerSetting.registerId(layerSetting);
-//            if (layerSetting instanceof LayerSettingVector){
-//                typeNum = 0;
-//            }else if (layerSetting instanceof LayerSettingImage){
-//                typeNum = 1;
-//            }else {
-//                typeNum = 2;
-//            }
-            System.out.println("=====iTablet=====getAdditionalSetting===0==");
-            System.out.println("=====iTablet=====getAdditionalSetting===1==" + layerId + "===" + layer + "===" + layerSetting);
-//            System.out.println("=====iTablet=====getAdditionalSetting===2==" + layerSetting.getClass().toString());
-//            LayerSettingType settingTye = layerSetting.getType();
-//            System.out.println("=====iTablet=====getAdditionalSetting===3==" + settingTye);
             if (layerSetting instanceof LayerSettingGrid) {
                 typeNum = 2;
             } else if (layerSetting instanceof LayerSettingImage) {
@@ -252,7 +240,6 @@ public class JSLayer extends ReactContextBaseJavaModule {
             } else {
                 typeNum = 0;
             }
-            System.out.println("=====iTablet=====getAdditionalSetting===4==" + typeNum);
             WritableMap map = Arguments.createMap();
             map.putString("_layerSettingId_", layerSettingId);
             map.putInt("type", typeNum);
@@ -362,12 +349,10 @@ public class JSLayer extends ReactContextBaseJavaModule {
         try {
             Layer layer = mLayerList.get(layerId);
             Theme theme = layer.getTheme();
-            System.out.println("=====iTablet====layer===" + theme);
 
             if (theme != null) {
                 ThemeType type = theme.getType();
                 String themeId = JSTheme.registerId(theme);
-                System.out.println("=====iTablet====layer===" + themeId + "===" + type);
                 WritableMap map = Arguments.createMap();
                 map.putInt("type", type.value());
                 map.putString("themeId", themeId);
