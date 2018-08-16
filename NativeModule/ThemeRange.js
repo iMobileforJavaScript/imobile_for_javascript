@@ -310,4 +310,28 @@ export default class ThemeRange extends Theme {
       console.error(e)
     }
   }
+  
+  /**
+   * 获取范围分段专题图的舍入精度
+   * @returns {Promise}
+   */
+  async getPrecision() {
+    try {
+      return await TR.getPrecision(this._SMThemeRangeId)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 返回当前的分段模式
+   * @returns {Promise}
+   */
+  async getRangeMode() {
+    try {
+      return await TR.getRangeMode(this._SMThemeRangeId)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 }

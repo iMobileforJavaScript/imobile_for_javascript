@@ -6,6 +6,7 @@
  **********************************************************************************/
 import { NativeModules } from 'react-native'
 let L = NativeModules.JSLayer
+let ThemeType = NativeModules.JSThemeType;
 import Dataset from './Dataset.js'
 import Recordset from './Recordset.js'
 import Selection from './Selection.js'
@@ -14,6 +15,9 @@ import LayerSettingVector from './LayerSettingVector.js'
 import LayerSettingGrid from './LayerSettingGrid'
 import LayerSettingImage from './LayerSettingImage'
 import Theme from './Theme'
+import ThemeLabel from './ThemeLabel'
+import ThemeRange from './ThemeRange'
+import ThemeUnique from './ThemeUnique'
 
 /**
  * @class Layer
@@ -309,10 +313,25 @@ export default class Layer {
    */
   async getTheme() {
     try {
-      let themeId = await L.getTheme(this._SMLayerId)
+      let {themeId, type} = await L.getTheme(this._SMLayerId)
       if (themeId) {
-        let theme = new Theme()
+        let theme;
+        switch (type) {
+          case ThemeType.UNIQUE:
+            theme = new ThemeUnique()
+            break
+          case ThemeType.RANGE:
+            theme = new ThemeRange()
+            break
+          case ThemeType.LABEL:
+            theme = new ThemeLabel()
+            break
+          default:
+            theme = new Theme()
+            break
+        }
         theme._SMThemeId = themeId
+        theme.type = type
         return theme
       } else {
         return null

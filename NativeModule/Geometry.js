@@ -52,7 +52,6 @@ export default class Geometry {
   async getType() {
     try {
       let id = this._SMGeometryId || this._SMGeoPointId;
-      debugger
       await G.getType(id);
     } catch (e) {
       console.error(e);

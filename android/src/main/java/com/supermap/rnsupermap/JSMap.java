@@ -726,12 +726,24 @@ public class JSMap extends ReactContextBaseJavaModule {
     }
     
     @ReactMethod
+    public void moveTo(String mapId, int from, int to,Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            Boolean moved = map.getLayers().moveTo(from, to);
+
+            promise.resolve(moved);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void moveDown(String mapId,String name,Promise promise){
         try{
             Map map = mapList.get(mapId);
             int layerIndex = map.getLayers().indexOf(name);
             Boolean moved = map.getLayers().moveDown(layerIndex);
-            
+
             WritableMap map1 = Arguments.createMap();
             map1.putBoolean("moved",moved);
             promise.resolve(map1);
@@ -750,6 +762,19 @@ public class JSMap extends ReactContextBaseJavaModule {
             WritableMap map1 = Arguments.createMap();
             map1.putBoolean("moveUp",moveUp);
             promise.resolve(map1);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void insert(String mapId, int index, String layerId, Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            Layer layer = JSLayer.getLayer(layerId);
+            Boolean result = map.getLayers().insert(index, layer);
+
+            promise.resolve(result);
         }catch (Exception e){
             promise.reject(e);
         }

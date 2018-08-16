@@ -82,7 +82,7 @@ export default class ThemeLabel extends Theme {
    */
   async getStyle() {
     try {
-      let textStyleId = await TL.getStyle(this._SMThemeId)
+      let textStyleId = await TL.getUniformStyle(this._SMThemeId)
       let textStyle = new TextStyle()
       textStyle._SMTextStyleId = textStyleId
       return textStyle

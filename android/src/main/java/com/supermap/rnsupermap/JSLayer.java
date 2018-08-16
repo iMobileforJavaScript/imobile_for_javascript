@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.data.Dataset;
+import com.supermap.data.Enum;
 import com.supermap.data.Point;
 import com.supermap.data.Point2D;
 import com.supermap.data.Recordset;
@@ -19,6 +20,7 @@ import com.supermap.mapping.LayerSettingType;
 import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.Theme;
+import com.supermap.mapping.ThemeType;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -231,18 +233,6 @@ public class JSLayer extends ReactContextBaseJavaModule {
             Layer layer = mLayerList.get(layerId);
             LayerSetting layerSetting = layer.getAdditionalSetting();
             String layerSettingId = JSLayerSetting.registerId(layerSetting);
-//            if (layerSetting instanceof LayerSettingVector){
-//                typeNum = 0;
-//            }else if (layerSetting instanceof LayerSettingImage){
-//                typeNum = 1;
-//            }else {
-//                typeNum = 2;
-//            }
-            System.out.println("=====iTablet=====getAdditionalSetting===0==");
-            System.out.println("=====iTablet=====getAdditionalSetting===1==" + layerId + "===" + layer + "===" + layerSetting);
-//            System.out.println("=====iTablet=====getAdditionalSetting===2==" + layerSetting.getClass().toString());
-//            LayerSettingType settingTye = layerSetting.getType();
-//            System.out.println("=====iTablet=====getAdditionalSetting===3==" + settingTye);
             if (layerSetting instanceof LayerSettingGrid) {
                 typeNum = 2;
             } else if (layerSetting instanceof LayerSettingImage) {
@@ -250,7 +240,6 @@ public class JSLayer extends ReactContextBaseJavaModule {
             } else {
                 typeNum = 0;
             }
-            System.out.println("=====iTablet=====getAdditionalSetting===4==" + typeNum);
             WritableMap map = Arguments.createMap();
             map.putString("_layerSettingId_", layerSettingId);
             map.putInt("type", typeNum);
@@ -360,9 +349,14 @@ public class JSLayer extends ReactContextBaseJavaModule {
         try {
             Layer layer = mLayerList.get(layerId);
             Theme theme = layer.getTheme();
+
             if (theme != null) {
+                ThemeType type = theme.getType();
                 String themeId = JSTheme.registerId(theme);
-                promise.resolve(themeId);
+                WritableMap map = Arguments.createMap();
+                map.putInt("type", type.value());
+                map.putString("themeId", themeId);
+                promise.resolve(map);
             } else {
                 promise.resolve(null);
             }

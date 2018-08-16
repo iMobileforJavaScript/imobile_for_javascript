@@ -441,5 +441,39 @@ public class JSThemeRange extends JSTheme {
             promise.reject(e);
         }
     }
+
+    /**
+     * 返回当前的分段模式
+     * @param themeRangeId
+     * @param promise
+     */
+    @ReactMethod
+    public void getRangeMode(String themeRangeId, Promise promise){
+        try{
+            m_ThemeRange = (ThemeRange)getObjFromList(themeRangeId);
+            RangeMode mode = m_ThemeRange.getRangeMode();
+
+            promise.resolve(mode.value());
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取范围分段专题图的舍入精度
+     * @param themeRangeId
+     * @param promise
+     */
+    @ReactMethod
+    public void getPrecision(String themeRangeId, Promise promise){
+        try{
+            m_ThemeRange = (ThemeRange)getObjFromList(themeRangeId);
+            double value = m_ThemeRange.getPrecision();
+
+            promise.resolve(value);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 }
 
