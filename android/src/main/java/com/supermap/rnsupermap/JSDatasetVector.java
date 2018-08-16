@@ -463,6 +463,8 @@ public class JSDatasetVector extends JSDataset {
             wMap.putBoolean("result", result);
             wMap.putBoolean("editResult", editResult);
             wMap.putBoolean("updateResult", updateResult);
+
+            recordset.dispose();
             promise.resolve(wMap);
         }catch (Exception e){
             promise.reject(e);

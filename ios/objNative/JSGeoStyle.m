@@ -119,4 +119,84 @@ RCT_REMAP_METHOD(setFillOpaqueRate,setFillOpaqueRateWithStyleId:(NSString*)style
     reject(@"geoStyle",@"setFillForeColor failed!!!",nil);
   }
 }
+
+RCT_REMAP_METHOD(getLineColor,getLineColorId:(NSString*)styleId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    GeoStyle* style = [JSObjManager getObjWithKey:styleId];
+    if (style) {
+        Color* color = [style getLineColor];
+        resolve(@{@"r":@(color.red),
+                  @"g":@(color.green),
+                  @"b":@(color.blue),
+                  @"a":@(color.alpha)
+                  });
+    }else{
+        reject(@"geoStyle",@"jsGeoStyle getLineColor failed!!!",nil);
+    }
+}
+RCT_REMAP_METHOD(getLineSymbolID,getLineSymbolIDId:(NSString*)styleId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    GeoStyle* style = [JSObjManager getObjWithKey:styleId];
+    if (style) {
+        int color = [style getLineSymbolID];
+        resolve(@(color));
+    }else{
+        reject(@"geoStyle",@"jsGeoStyle getLineSymbolID failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getLineWidth,getLineWidthId:(NSString*)styleId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    GeoStyle* style = [JSObjManager getObjWithKey:styleId];
+    if (style) {
+        double color = [style getLineWidth];
+        resolve(@(color));
+    }else{
+        reject(@"geoStyle",@"jsGeoStyle getLineWidth failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getMarkerSymbolID,getMarkerSymbolIDId:(NSString*)styleId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    GeoStyle* style = [JSObjManager getObjWithKey:styleId];
+    if (style) {
+        int color = [style getMarkerSymbolID];
+        resolve(@(color));
+    }else{
+        reject(@"geoStyle",@"jsGeoStyle getLineWidth failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getMarkerSize,getMarkerSizeId:(NSString*)styleId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    GeoStyle* style = [JSObjManager getObjWithKey:styleId];
+    if (style) {
+        Size2D* color = [style getMarkerSize];
+        resolve([JSObjManager addObj:color]);
+    }else{
+        reject(@"geoStyle",@"jsGeoStyle getMarkerSize failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getFillForeColor,getFillForeColorId:(NSString*)styleId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    GeoStyle* style = [JSObjManager getObjWithKey:styleId];
+    if (style) {
+        Color* color = [style getFillForeColor];
+        resolve(@{@"r":@(color.red),
+                  @"g":@(color.green),
+                  @"b":@(color.blue),
+                  @"a":@(color.alpha)
+                  });
+
+    }else{
+        reject(@"geoStyle",@"jsGeoStyle getFillForeColor failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getFillOpaqueRate,getFillOpaqueRateId:(NSString*)styleId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    GeoStyle* style = [JSObjManager getObjWithKey:styleId];
+    if (style) {
+        double color = [style getFillOpaqueRate];
+        resolve(@(color));
+
+    }else{
+        reject(@"geoStyle",@"jsGeoStyle getMarkerSize failed!!!",nil);
+    }
+}
+
 @end

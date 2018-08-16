@@ -15,6 +15,7 @@
 #import "JSObjManager.h"
 #import "JSRectangle2D.h"
 #import "JSPoint.h"
+#import "SuperMap/Theme.h"
 
 @implementation JSMap
 //所有导出方法名
@@ -120,8 +121,12 @@ RCT_REMAP_METHOD(getLayersByType, getLayersByTypeyKey:(NSString*)key  type:(int)
             if ( dType == type || type == -1) {
                 NSString* layerId = [JSObjManager addObj:layer];
                
+                Theme* theme = layer.theme;
+                int themeType = 0;
+                themeType = theme.themeType;
                 NSDictionary* wMap = @{@"id":layerId,
                                        @"type":@(dType),
+                                       @"themeType":@(themeType),
                                        @"index":@(i),
                                        @"name": layer.name,
                                        @"caption": layer.caption,

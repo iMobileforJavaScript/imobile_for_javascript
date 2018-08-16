@@ -127,6 +127,25 @@ RCT_REMAP_METHOD(getSelection,getSelectionByKey:(NSString*)key resolver:(RCTProm
     }
 }
 
+RCT_REMAP_METHOD(setSnapable,setSnapableByKey:(NSString*)layerId boolBit:(BOOL)boolBit resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [JSObjManager getObjWithKey:layerId];
+        layer.isSnapable = boolBit;
+        NSNumber* num = [NSNumber numberWithBool:true];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"Layer",@"setSelectable() failed.",nil);
+    }
+}
+RCT_REMAP_METHOD(isSnapable,isSnapableKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [JSObjManager getObjWithKey:key];
+        resolve(@{@"isSnapable":@(layer.isSnapable)});
+    } @catch (NSException *exception) {
+        reject(@"Layer",@"getSelection() failed.",nil);
+    }
+}
+
 RCT_REMAP_METHOD(setSelectable,setSelectableByKey:(NSString*)layerId boolBit:(BOOL)boolBit resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         Layer* layer = [JSObjManager getObjWithKey:layerId];

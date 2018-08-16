@@ -31,6 +31,7 @@ RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve
 RCT_REMAP_METHOD(dispose,disposeById:(NSString*)themeUniqueId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         ThemeLabel* theme = [JSObjManager getObjWithKey:themeUniqueId];
+        [JSObjManager removeObj:theme];
         [theme dispose];
         NSNumber* number = [NSNumber numberWithBool:YES];
         resolve(number);

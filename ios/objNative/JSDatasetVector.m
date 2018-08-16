@@ -12,6 +12,8 @@
 #import "SuperMap/Geometry.h"
 #import "SuperMap/Point2D.h"
 #import "SuperMap/Recordset.h"
+#import "SuperMap/FieldInfos.h"
+#import "SuperMap/FieldInfo.h"
 #import "JSObjManager.h"
 
 @implementation JSDatasetVector
@@ -252,4 +254,88 @@ RCT_REMAP_METHOD(getGeoInnerPoint, getGeoInnerPointById:(NSString*)dsVectorId SQ
         reject(@"datasetVector",@"get Geo Inner Point failed!!!",nil);
     }
 }
+
+RCT_REMAP_METHOD(setFieldValueByName, setFieldValueByNameId:(NSString*)dsVectorId info:(NSDictionary*)info resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        Recordset* recordSet = [dsVector recordset:NO cursorType:STATIC];
+        
+       
+        BOOL result = false;
+        BOOL editResult = [recordSet edit];
+        
+        BOOL updateResult;
+        for (NSString* key in info.allKeys) {
+            if(info[key]){
+                result = [recordSet setFieldValueWithString:key Obj:info[key]];
+            }else{
+                result = [recordSet setFieldValueNULLWithString:key];
+            }
+        }
+        updateResult = [recordSet update];
+         [recordSet dispose];
+        resolve(@{@"result":@(result),
+                  @"editResult":@(editResult),
+                  @"updateResult":@(updateResult),
+                  });
+    } @catch (NSException *exception) {
+        reject(@"datasetVector",@"setFieldValueByName failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getFieldInfos, getFieldInfosId:(NSString*)dsVectorId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+       
+        
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        FieldInfos* fieldInfos = dsVector.fieldInfos;;
+        
+        NSMutableDictionary* fields = [[NSMutableDictionary alloc]initWithCapacity:5];
+        NSMutableDictionary* fieldInfosMap = [[NSMutableDictionary alloc]initWithCapacity:5];
+        for (int i = 0; i < fieldInfos.count; i++) {
+            
+            FieldInfo* info = [fieldInfos get:i];
+            NSMutableDictionary* subMap = @{@"caption":info.caption,
+                                            @"defaultValue":info.defaultValue,
+                                            @"type":@(info.fieldType),
+                                            @"name":info.name,
+                                            @"maxLength":@(info.maxLength),
+                                            @"isRequired":@(info.isRequired),
+                                            @"isSystemField":@(info.isSystemField),
+                                            };
+            fields[@"fieldInfo"] = subMap;
+            fields[@"name"] = info.name;
+            fieldInfosMap[info.name] = fields;
+        }
+        
+//        for(NSString* fieldKey in fields.allKeys){
+//            NSMutableDictionary* keyMap = [[NSMutableDictionary alloc]initWithCapacity:5];
+//            NSMutableDictionary* itemWMap = [[NSMutableDictionary alloc]initWithCapacity:5];
+//            
+//            NSString* name = fieldKey;
+//            NSMutableDictionary* fieldInfo = fields[fieldKey];
+//            
+//            for(NSString* itemKey in fieldInfo.allKeys){
+//                NSMutableDictionary* item = fieldInfo[itemKey];
+//                
+//                NSString* key = itemKey;
+//                id v = item[key];
+//            
+//                if(v==nil){
+//                    itemWMap[key] = @"";
+//                }else{
+//                     itemWMap[key] = v;
+//                }
+//            }
+//            
+//            keyMap[@"fieldInfo"] = itemWMap;
+//            keyMap[@"name"] = name;
+//        }
+        resolve(fieldInfosMap);
+    } @catch (NSException *exception) {
+        reject(@"datasetVector",@"get Geo Inner Point failed!!!",nil);
+    }
+}
+
 @end
