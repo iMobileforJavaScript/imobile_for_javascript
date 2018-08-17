@@ -58,7 +58,9 @@ RCT_REMAP_METHOD(getTheme,getThemeKey:(NSString*)key resolver:(RCTPromiseResolve
         Layer* layer = [JSObjManager getObjWithKey:key];
         Theme* theme = layer.theme;
         NSString* keyID =  [JSObjManager addObj:theme];
-        resolve(keyID);
+        resolve(@{@"themeId":keyID,
+                  @"type":@(theme.themeType)
+                  });
     } @catch (NSException *exception) {
         reject(@"Layer",@"getTheme failed.",nil);
     }

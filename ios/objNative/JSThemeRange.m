@@ -364,4 +364,24 @@ RCT_REMAP_METHOD(getCustomInterval,getCustomIntervalById:(NSString*)themeRangeId
         reject(@"JSThemeRange",@"getCustomInterval expection",nil);
     }
 }
+
+RCT_REMAP_METHOD(getPrecision,getPrecisionId:(NSString*)themeRangeId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        ThemeRange* theme = [JSObjManager getObjWithKey: themeRangeId];
+        double value = [theme getPrecision];
+        resolve(@(value));
+    } @catch (NSException *exception) {
+        reject(@"JSThemeRange",@"getCustomInterval expection",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getRangeMode,getRangeModeId:(NSString*)themeRangeId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        ThemeRange* theme = [JSObjManager getObjWithKey: themeRangeId];
+        int value = theme.mRangeMode;
+        resolve(@(value));
+    } @catch (NSException *exception) {
+        reject(@"JSThemeRange",@"getCustomInterval expection",nil);
+    }
+}
 @end

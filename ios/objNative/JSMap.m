@@ -106,6 +106,27 @@ RCT_REMAP_METHOD(getName,getNameByKey:(NSString*)key  resolver:(RCTPromiseResolv
     }else
         reject(@"Map",@"getLayerByName:get layer failed !",nil);
 }
+
+RCT_REMAP_METHOD(insert,insertKey:(NSString*)key  index:(int)index layerId:(NSString*)layerId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Map* map = [JSObjManager getObjWithKey:key];
+    Layer* layer = [JSObjManager getObjWithKey:layerId];
+    if(map){
+        
+        NSString* mapName = map.name;
+        resolve(mapName);
+    }else
+        reject(@"Map",@"getLayerByName:get layer failed !",nil);
+}
+
+RCT_REMAP_METHOD(isModified,isModifiedKey:(NSString*)key  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Map* map = [JSObjManager getObjWithKey:key];
+    if(map){
+    
+        resolve(@(map.isModified));
+    }else
+        reject(@"Map",@"getLayerByName:get layer failed !",nil);
+}
+
 RCT_REMAP_METHOD(getLayersByType, getLayersByTypeyKey:(NSString*)key  type:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Map* map = [JSObjManager getObjWithKey:key];
     if(map){
