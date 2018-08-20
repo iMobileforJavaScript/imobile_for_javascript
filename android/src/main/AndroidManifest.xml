@@ -2,8 +2,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.supermap.rnsupermap">
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <meta-data
-        android:name="TencentMapSDK"
-        android:value="YSGBZ-3XD3P-W6MDB-V6YPH-RDKUT-EIFUR" />
 </manifest>
   

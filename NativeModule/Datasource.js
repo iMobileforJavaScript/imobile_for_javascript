@@ -98,7 +98,7 @@ export default class Datasource {
   async createDatasetVector(nameOrInfoObj, datasetType, encodeType) {
     try {
       if (arguments.length === 1) {
-        var { datasetVectorId } = await D.createDatasetVector(this._SMDatasourceId, nameOrInfoObj.datasetVectorInfoId);
+        var { datasetVectorId } = await D.createDatasetVector(this._SMDatasourceId, nameOrInfoObj._SMDatasetVectorInfoId);
         var datasetVector = new DatasetVector();
         datasetVector._SMDatasetVectorId = datasetVectorId;
         return datasetVector;

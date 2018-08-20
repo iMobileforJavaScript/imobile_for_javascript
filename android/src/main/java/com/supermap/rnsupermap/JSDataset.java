@@ -111,6 +111,19 @@ public class JSDataset extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void isReadOnly(String datasetId, Promise promise) {
+        try {
+            Dataset dataset = m_DatasetList.get(datasetId);
+            boolean isReadOnly = dataset.isReadOnly();
+
+            WritableMap map = Arguments.createMap();
+            promise.resolve(isReadOnly);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void getType(String datasetId, Promise promise) {
         try {
             Dataset dataset = m_DatasetList.get(datasetId);
@@ -184,7 +197,18 @@ public class JSDataset extends ReactContextBaseJavaModule {
     public void setName(String datasetId, String name, Promise promise) {
         try {
             Dataset dataset = m_DatasetList.get(datasetId);
-//            dataset.setName(name);
+            dataset.setName(name);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setReadOnly(String datasetId, boolean value, Promise promise) {
+        try {
+            Dataset dataset = m_DatasetList.get(datasetId);
+            dataset.setReadOnly(value);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

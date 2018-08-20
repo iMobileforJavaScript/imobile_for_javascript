@@ -31,7 +31,7 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
     public static Map<String,Workspace> mWorkspaceList=new HashMap<String,Workspace>();
     Workspace m_Workspace;
     WorkspaceConnectionInfo m_WorkspaceConnectionInfo;
-    private final String sdcard= android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+    private final String sdcard= android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 
     public JSWorkspace(ReactApplicationContext context){
         super(context);
@@ -129,6 +129,19 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
             map.putString("mapName",mapName);
             promise.resolve(map);
         }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void renameDatasource(String workspaceId, String oldName, String newName, Promise promise) {
+        try {
+            Workspace workspace = getObjById(workspaceId);
+            Datasources datasources = workspace.getDatasources();
+            datasources.RenameDatasource(oldName, newName);
+
+            promise.resolve(true);
+        } catch (Exception e) {
             promise.reject(e);
         }
     }

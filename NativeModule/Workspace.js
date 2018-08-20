@@ -57,6 +57,20 @@ export default class Workspace {
     }
   }
   
+  /**
+   * 重命名数据源
+   * @param oldName
+   * @param newName
+   * @returns {Promise.<void>}
+   */
+  async renameDatasource(oldName, newName) {
+    try {
+      await W.renameDatasource(this._SMWorkspaceId, oldName, newName);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
   /*
    * 通过数据源链接信息打开数据源
    * @memberOf Workspace

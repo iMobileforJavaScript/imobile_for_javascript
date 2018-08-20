@@ -10,10 +10,16 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.RNUtils.LocationTencent;
 import com.supermap.containts.EventConst;
+import com.supermap.data.CoordSysTransMethod;
+import com.supermap.data.CoordSysTransParameter;
+import com.supermap.data.CoordSysTranslator;
 import com.supermap.data.Dataset;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
 import com.supermap.data.Point2D;
+import com.supermap.data.Point2Ds;
+import com.supermap.data.PrjCoordSys;
+import com.supermap.data.PrjCoordSysType;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MapView;
 import com.supermap.mapping.collector.CollectionChangedListener;
@@ -46,7 +52,6 @@ public class JSCollector extends ReactContextBaseJavaModule {
     }
 
     public static String registerId(Collector collector) {
-        initNetworkLocation();
         if (!mCollectorList.isEmpty()) {
             for (Map.Entry entry : mCollectorList.entrySet()) {
                 if (collector.equals(entry.getValue())) {
@@ -59,12 +64,6 @@ public class JSCollector extends ReactContextBaseJavaModule {
         String id = Long.toString(calendar.getTimeInMillis());
         mCollectorList.put(id, collector);
         return id;
-    }
-
-    private static void initNetworkLocation() {
-        if (locationTencent == null) {
-            locationTencent = new LocationTencent(mReactContext);
-        }
     }
 
     @Override
@@ -95,6 +94,9 @@ public class JSCollector extends ReactContextBaseJavaModule {
         try {
             Collector collector = mCollectorList.get(collectorId);
             boolean result = collector.addGPSPoint();
+            if (!result) {
+                result = collector.addGPSPoint(locationTencent.getGPSPoint());
+            }
             promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
@@ -109,14 +111,63 @@ public class JSCollector extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void addGPSPointByPoint(String collectorId, String pnt2DId, Promise promise) {
+    public void addGPSPointByPoint(String collectorId, String mapId, String pnt2DId, Promise promise) {
         try {
             Collector collector = mCollectorList.get(collectorId);
+            com.supermap.mapping.Map map = JSMap.getObjFromList(mapId);
             Point2D point2D = JSPoint2D.getObjFromList(pnt2DId);
-            boolean result = collector.addGPSPoint(point2D);
+            boolean result = _addGPSPoint(collector, map, point2D);
+
             promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据x，y添加点,GPS获取的点
+     * @param collectorId
+     * @param mapId
+     * @param x
+     * @param y
+     * @param promise
+     */
+    @ReactMethod
+    public void addGPSPointByXY(String collectorId, String mapId, double x, double y, Promise promise) {
+        try {
+            Collector collector = mCollectorList.get(collectorId);
+            com.supermap.mapping.Map map = JSMap.getObjFromList(mapId);
+            Point2D point2D = new Point2D(x, y);
+            boolean result = _addGPSPoint(collector, map, point2D);
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    private boolean _addGPSPoint(Collector collector, com.supermap.mapping.Map map, Point2D point2D) {
+        try {
+            PrjCoordSys Prj = map.getPrjCoordSys();
+
+            if (point2D.getX() >= 0.00001 && point2D.getY() >= 0.00001) {
+                if (Prj.getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+                    Point2Ds points = new Point2Ds();
+                    points.add(point2D);
+                    PrjCoordSys desPrjCoorSys = new PrjCoordSys();
+                    desPrjCoorSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                    CoordSysTranslator.convert(points, desPrjCoorSys, Prj,
+                            new CoordSysTransParameter(),
+                            CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+
+                    point2D.setX(points.getItem(0).getX());
+                    point2D.setY(points.getItem(0).getY());
+                }
+                return collector.addGPSPoint(point2D);
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            throw e;
         }
     }
 
@@ -131,6 +182,8 @@ public class JSCollector extends ReactContextBaseJavaModule {
         try {
             Collector collector = mCollectorList.get(collectorId);
             collector.closeGPS();
+            locationTencent = LocationTencent.getInstance(mReactContext);
+            locationTencent.closeLocation();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -230,8 +283,13 @@ public class JSCollector extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getGPSPoint(String collectorId, Promise promise) {
         try {
+            locationTencent = LocationTencent.getInstance(mReactContext);
             Collector collector = mCollectorList.get(collectorId);
             Point2D point2D = collector.getGPSPoint();
+            if (point2D == null) {
+                point2D = locationTencent.getGPSPoint();
+            }
+
             String point2DId = JSPoint2D.registerId(point2D);
 
             promise.resolve(point2DId);
@@ -308,7 +366,7 @@ public class JSCollector extends ReactContextBaseJavaModule {
             boolean result = collector.openGPS();
 
             locationTencent = LocationTencent.getInstance(mReactContext);
-
+            locationTencent.openLocation(mReactContext);
             promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
@@ -342,18 +400,24 @@ public class JSCollector extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setCollectionChangedListener(String collectorId, Promise promise) {
         try {
+            locationTencent = LocationTencent.getInstance(mReactContext);
+
             Collector collector = mCollectorList.get(collectorId);
             mCollectionChangedListener = new CollectionChangedListener() {
                 @Override
                 public void collectionChanged(Point2D point2D, double v) {
                     WritableMap map = Arguments.createMap();
-                    map.putDouble("x", point2D.getX());
-                    map.putDouble("y", point2D.getY());
-                    map.putDouble("dAccuracy", v);
-                    System.out.println("=====iTablet====JSCOllector===" + point2D.getX() + "--" + point2D.getY());
+                    if (point2D.getX() >= 0.00001 && point2D.getY() >= 0.00001) {
+                        String pointId = JSPoint2D.registerId(point2D);
 
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(EventConst.COLLECTION_CHANGE, map);
+                        map.putDouble("x", point2D.getX());
+                        map.putDouble("y", point2D.getY());
+                        map.putString("pointId", pointId);
+                        map.putDouble("dAccuracy", v);
+
+                        mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                .emit(EventConst.COLLECTION_CHANGE, map);
+                    }
                 }
             };
             collector.setCollectionChangedListener(mCollectionChangedListener);

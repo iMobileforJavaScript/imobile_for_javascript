@@ -125,7 +125,7 @@ public class JSDatasources extends ReactContextBaseJavaModule {
     public void renameDatasource(String datasourcesId, String oldName, String newName, Promise promise) {
         try {
             Datasources datasources = m_DatasourceList.get(datasourcesId);
-//            datasources.RenameDatasource(oldName, newName);
+            datasources.RenameDatasource(oldName, newName);
 
             promise.resolve(true);
         } catch (Exception e) {

@@ -33,14 +33,25 @@ export default class Collector {
   
   /**
    * 添加点,GPS获取的点
-   * @param point2D (Option)
-   * @returns {Promise.<Promise.<Promise.<FacilityAnalyst>|Promise>|Promise.<FacilityAnalyst>>}
+   * @param map
+   *
+   * @param point2D
+   * --------------------
+   * @param x
+   * @param y
+   *
+   * @returns {Promise.<boolean>}
    */
-  async addGPSPoint (point2D) {
+  async addGPSPoint () {
     try {
       let result = false
-      if (point2D) {
-        result = await C.addGPSPointByPoint(this._SMCollectorId, point2D._SMPoint2DId)
+      if (arguments.length === 3) {
+        // let point2D = await new Point2D().createObj(arguments[1], arguments[2])
+        // console.warn('addGPSPoint:' + result + ': '
+        //   + (await point2D.getX()) + ' | ' + (await point2D.getY()))
+        result = await C.addGPSPointByXY(this._SMCollectorId, arguments[0]._SMMapId, arguments[1], arguments[2])
+      } else if (arguments.length === 2) {
+        result = await C.addGPSPointByPoint(this._SMCollectorId, arguments[0]._SMMapId, arguments[1]._SMPoint2DId)
       } else {
         result = await C.addGPSPoint(this._SMCollectorId)
       }
@@ -224,7 +235,17 @@ export default class Collector {
       }
       if(typeof handlers.collectionChanged === "function"){
         nativeEvt.addListener("com.supermap.RN.JSMapcontrol.collection_change",function (e) {
-          handlers.collectionChanged(e)
+          let point2D = new Point2D()
+          point2D._SMPoint2DId = e.pointId
+          handlers.collectionChanged({
+            ...e,
+            point2D,
+          })
+        })
+      }
+      if(typeof handlers.onSensorChanged === "function"){
+        nativeEvt.addListener("com.supermap.RN.JSMapcontrol.collection_sensor_change",function (e) {
+          handlers.onSensorChanged(e)
         })
       }
     } catch (e) {

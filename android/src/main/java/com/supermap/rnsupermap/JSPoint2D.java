@@ -34,6 +34,8 @@ public class JSPoint2D extends ReactContextBaseJavaModule {
     public static String registerId(Point2D obj) {
         for (Map.Entry entry : m_Point2DList.entrySet()) {
             if (obj.equals(entry.getValue())) {
+                String id = (String) entry.getKey();
+                m_Point2DList.put(id, obj);
                 return (String) entry.getKey();
             }
         }

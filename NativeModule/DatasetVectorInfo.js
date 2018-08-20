@@ -25,7 +25,7 @@ export default class DatasetVectorInfo {
         try{
             var {datasetVectorInfoId} = await DVI.createObjByNameType(name,type);
             var datasetVectorInfo = new DatasetVectorInfo();
-            datasetVectorInfo.datasetVectorInfoId = datasetVectorInfoId;
+            datasetVectorInfo._SMDatasetVectorInfoId = datasetVectorInfoId;
             return datasetVectorInfo;
         }catch (e){
             console.error(e);

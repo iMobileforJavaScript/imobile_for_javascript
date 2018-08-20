@@ -13,6 +13,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
 import com.supermap.data.Point2D;
 import com.supermap.plugin.LocationManagePlugin.GPSData;
+import com.supermap.rnsupermap.JSPoint2D;
 import com.tencent.tencentmap.lbssdk.TencentMapLBSApi;
 import com.tencent.tencentmap.lbssdk.TencentMapLBSApiListener;
 import com.tencent.tencentmap.lbssdk.TencentMapLBSApiResult;
@@ -57,18 +58,8 @@ public class LocationTencent {
      * @param context
      */
     public LocationTencent(Context context) {
-        m_Listener = new LocListener(m_reqGeoType, m_reqLevel, m_reqDelay);
-        mReactContext = (ReactContext)context;
-        int req = TencentMapLBSApi.getInstance().requestLocationUpdate(context, m_Listener);
-        TencentMapLBSApi.getInstance().setGPSUpdateInterval(1000);
-        if (req == -2)
-            System.out.println("Key不正确，请在manifext文件中设置正确的Key");
-
-//		m_Activity = activity;
-
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         mSensorOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-        startSensor();
     }
 
     static public LocationTencent getInstance(Context context) {
@@ -93,6 +84,10 @@ public class LocationTencent {
                     return;
                 }
                 mProAzimuth = mAzimuth;
+                WritableMap map = Arguments.createMap();
+                map.putDouble("azimuth", mAzimuth);
+                mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                        .emit(EventConst.COLLECTION_SENSER_CHANGE, map);
                 //绘制变化后的当前方位角
 //				m_Activity.getPointByAzimuth(getLocationInfo(), R.drawable.navi_popup);
 //				if( m_Activity.bPanNavi == true){
@@ -155,6 +150,22 @@ public class LocationTencent {
      *
      * @return
      */
+    public void openLocation(Context context) {
+        m_Listener = new LocListener(m_reqGeoType, m_reqLevel, m_reqDelay);
+        mReactContext = (ReactContext) context;
+        int req = TencentMapLBSApi.getInstance().requestLocationUpdate(context, m_Listener);
+        TencentMapLBSApi.getInstance().setGPSUpdateInterval(1000);
+        if (req == -2)
+            System.out.println("Key不正确，请在manifext文件中设置正确的Key");
+
+        startSensor();
+    }
+
+    /**
+     * 关闭定位监听和方位角监听
+     *
+     * @return
+     */
     public void closeLocation() {
         TencentMapLBSApi.getInstance().removeLocationUpdate();
         stopSensor();
@@ -199,34 +210,42 @@ public class LocationTencent {
         // 更新位置信息
         @Override
         public void onLocationUpdate(TencentMapLBSApiResult locResult) {
+            dealLocationResult(locResult);
+        }
+    }
 
-            m_locationIfo = locResult;
+    private void dealLocationResult(TencentMapLBSApiResult locResult) {
+        m_locationIfo = locResult;
 
-            //当前位置信息,用于导航和巡航
-            m_GPSData = new GPSData();
-            m_GPSData.dAltitude = locResult.Altitude;
-            m_GPSData.dLongitude = locResult.Longitude;
-            m_GPSData.dLatitude = locResult.Latitude;
-            m_GPSData.dSpeed = locResult.Speed;
+        //当前位置信息,用于导航和巡航
+        m_GPSData = new GPSData();
+        m_GPSData.dAltitude = locResult.Altitude;
+        m_GPSData.dLongitude = locResult.Longitude;
+        m_GPSData.dLatitude = locResult.Latitude;
+        m_GPSData.dSpeed = locResult.Speed;
 //			m_GPSData.dBearing = locResult.Bearing;
-            Calendar ca = Calendar.getInstance();
-            m_GPSData.nYear = ca.get(Calendar.YEAR);
-            m_GPSData.nMonth = ca.get(Calendar.MONTH);
-            m_GPSData.nDay = ca.get(Calendar.DATE);
-            m_GPSData.nHour = ca.get(Calendar.HOUR);
-            m_GPSData.nMinute = ca.get(Calendar.MINUTE);
-            m_GPSData.nSecond = ca.get(Calendar.SECOND);
+        Calendar ca = Calendar.getInstance();
+        m_GPSData.nYear = ca.get(Calendar.YEAR);
+        m_GPSData.nMonth = ca.get(Calendar.MONTH);
+        m_GPSData.nDay = ca.get(Calendar.DATE);
+        m_GPSData.nHour = ca.get(Calendar.HOUR);
+        m_GPSData.nMinute = ca.get(Calendar.MINUTE);
+        m_GPSData.nSecond = ca.get(Calendar.SECOND);
 
-            mAccuracy = locResult.Accuracy;
+        mAccuracy = locResult.Accuracy;
 
+        if (locResult.Longitude >= 0.00001 && locResult.Latitude >= 0.00001) {
             m_Point.setX(locResult.Longitude);
             m_Point.setY(locResult.Latitude);
+            Point2D point2D = new Point2D(locResult.Longitude, locResult.Latitude);
+            String pointId = JSPoint2D.registerId(point2D);
 
             WritableMap map = Arguments.createMap();
             map.putDouble("x", locResult.Longitude);
             map.putDouble("y", locResult.Latitude);
+            map.putDouble("azimuth", mAzimuth);
+            map.putString("pointId", pointId);
 //            map.putDouble("dAccuracy", v);
-System.out.println("=====iTablet====LocationTencent===" + locResult.Longitude + "--" + locResult.Latitude);
             mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                     .emit(EventConst.COLLECTION_CHANGE, map);
         }

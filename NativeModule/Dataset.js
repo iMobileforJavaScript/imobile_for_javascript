@@ -98,6 +98,18 @@ export default class Dataset {
   }
   
   /**
+   * 判断数据集是否只读
+   * @returns {Promise.<Promise|Promise.<void>|Promise.<Promise|Promise.<void>>>}
+   */
+  async isReadOnly() {
+    try {
+      return await D.isReadOnly(this._SMDatasetId);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  /**
    * 获取数据集名称。
    * @memberOf Dataset
    * @returns {string}
@@ -106,6 +118,32 @@ export default class Dataset {
     try {
       var { name } = await D.DSgetName(this._SMDatasetId);
       return name;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  /**
+   * 设置数据集名称。
+   * @memberOf Dataset
+   * @returns {string}
+   */
+  async setName(text) {
+    try {
+      await D.setName(this._SMDatasetId, text);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  /**
+   * 设置数据集是否只读
+   * @param value
+   * @returns {Promise.<void>}
+   */
+  async setReadOnly(value) {
+    try {
+      await D.setReadOnly(this._SMDatasetId, value);
     } catch (e) {
       console.error(e);
     }
@@ -253,7 +291,7 @@ Dataset.TYPE = {
   TEXT: 7,
   IMAGE: 81,
   CAD: 149,
-  NETWORK: 4,
+  Network: 4,
   NETWORK3D: 205,
   NdfVector: 500,
   GRID: 83,
