@@ -126,6 +126,7 @@ public class JSCollector extends ReactContextBaseJavaModule {
 
     /**
      * 根据x，y添加点,GPS获取的点
+     *
      * @param collectorId
      * @param mapId
      * @param x
