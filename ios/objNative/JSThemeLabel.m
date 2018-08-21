@@ -63,7 +63,7 @@ RCT_REMAP_METHOD(setLabelExpression,setLabelExpressionId:(NSString*)themeUniqueI
  * @param themeLabelId
  * @param promise
  */
-RCT_REMAP_METHOD(getLabelExpression,getLabelExpressionId:(NSString*)themeUniqueId expression:(NSString*)expression resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getLabelExpression,getLabelExpressionId:(NSString*)themeUniqueId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         resolve(m_LabelExpression);
     } @catch (NSException *exception) {
