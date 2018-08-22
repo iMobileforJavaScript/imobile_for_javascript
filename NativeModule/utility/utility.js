@@ -54,6 +54,6 @@ exports.isDirectory = async function (path) {
   return await util.isDirectory(path);
 }
 
-exports.getPathListByFilter = async function (path, filter) {
-  return await util.getPathListByFilter(path, filter);
+exports.getPathListByFilter = async function (path, {name = '', type = ''}) {
+  return await util.getPathListByFilter(path, {name, type});
 }
