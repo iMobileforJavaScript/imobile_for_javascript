@@ -146,6 +146,20 @@ RCT_REMAP_METHOD(getMapName,getMapNameByKey:(NSString*)key andMapIndex:(int)inde
         reject(@"workspace",@"workspace get mapName failed!",nil);
     }
 }
+
+RCT_REMAP_METHOD(renameDatasource,renameDatasourceKey:(NSString*)key oldName:(NSString*)oldName newName:(NSString*)newName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        if(workspace){
+            Datasources* ds = workspace.datasources;
+            [ds RenameDatasource:oldName with:newName];
+            resolve(@(1));
+        }
+    } @catch (NSException *exception) {
+        reject(@"workspace",@"workspace renameDatasourcefailed!",nil);
+    }
+}
+
 /*
 RCT_REMAP_METHOD(openLocalDatasource,openLocalDatasourceByKey:(NSString*)key andPath:(NSString*)path andEngineType:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Workspace* workspace = [JSObjManager getObjWithKey:key];

@@ -33,4 +33,23 @@ RCT_REMAP_METHOD(createObj,resolver:(RCTPromiseResolveBlock)resolve rejecter:(RC
     reject(@"point",@"create point failed!!!",nil);
   }
 }
+
+RCT_REMAP_METHOD(getX, getXId:(NSString*)id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Point2D* point = [JSObjManager getObjWithKey:id];
+    if (point) {
+       
+        resolve(@(point.x));
+    }else{
+        reject(@"point",@"getX point failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getY,getYId:(NSString*)id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+     Point2D* point = [JSObjManager getObjWithKey:id];
+    if (point) {
+        resolve(@(point.y));
+    }else{
+        reject(@"point",@"create point failed!!!",nil);
+    }
+}
 @end

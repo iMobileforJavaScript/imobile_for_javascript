@@ -9,6 +9,7 @@
 #import "JSCollector.h"
 #import "SuperMap/Collector.h"
 #import "JSObjManager.h"
+#import "SuperMap/Map.h"
 
 @implementation JSCollector
 RCT_EXPORT_MODULE();
@@ -36,18 +37,35 @@ RCT_REMAP_METHOD(addGPSPoint,addGPSPointById:(NSString*)senderId  resolver:(RCTP
  * @param pnt2DId
  * @param promise
  */
-RCT_REMAP_METHOD(addGPSPointByPoint,addGPSPointByPointId:(NSString*)senderId  pnt2DId:(NSString*)pointID resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addGPSPointByPoint,addGPSPointByPointId:(NSString*)senderId mapId:(NSString*)mapId pnt2DId:(NSString*)pointID resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         Collector* sender = [JSObjManager getObjWithKey:senderId];
-        Point2D* point = [JSObjManager getObjWithKey:pointID];
-        BOOL b =[sender addGPSPoint:point];
-        NSNumber* nsRemoved = [NSNumber numberWithBool:b];
-        resolve(nsRemoved);
+        [sender addGPSPoint];
+//        Point2D* point = [JSObjManager getObjWithKey:pointID];
+//        Map* map =  [JSObjManager getObjWithKey:mapId];
+//        BOOL b =[sender addGPSPoint:point];
+//        NSNumber* nsRemoved = [NSNumber numberWithBool:b];
+        resolve(@(1));
         
     } @catch (NSException *exception) {
         reject(@"JSCollector",@"addGPSPointByPoint expection",nil);
     }
 }
+
+RCT_REMAP_METHOD(addGPSPointByXY,addGPSPointByXYId:(NSString*)senderId  mapId:(NSString*) mapId x:(double) x y:(double)y  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Collector* sender = [JSObjManager getObjWithKey:senderId];
+        [sender addGPSPoint];
+//        Point2D* point = [JSObjManager getObjWithKey:pointID];
+//        BOOL b =[sender addGPSPoint:point];
+//        NSNumber* nsRemoved = [NSNumber numberWithBool:b];
+        resolve(@(1));
+        
+    } @catch (NSException *exception) {
+        reject(@"JSCollector",@"addGPSPointByPoint expection",nil);
+    }
+}
+
 /**
  * 关闭GPS
  * @param collectorId
@@ -273,8 +291,6 @@ RCT_REMAP_METHOD(redo,redoId:(NSString*)senderId  resolver:(RCTPromiseResolveBlo
 RCT_REMAP_METHOD(setCollectionChangedListener,setCollectionChangedListenerId:(NSString*)senderId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
-        
-        
     } @catch (NSException *exception) {
         reject(@"JSCollector",@"setCollectionChangedListener expection",nil);
     }
@@ -286,18 +302,32 @@ RCT_REMAP_METHOD(setCollectionChangedListener,setCollectionChangedListenerId:(NS
  * @param datasetId
  * @param promise
  */
-RCT_REMAP_METHOD(setDataset,setDatasetId:(NSString*)senderId datasetId:(NSString*)dataset resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        Collector* sender = [JSObjManager getObjWithKey:senderId];
-        Dataset* dataset = [JSObjManager getObjWithKey:dataset];
-        [sender setDataset:dataset] ;
-        
-        resolve([[NSNumber alloc] initWithBool:YES]);
-        
-    } @catch (NSException *exception) {
-        reject(@"JSCollector",@"setDataset expection",nil);
-    }
+
+RCT_REMAP_METHOD(setDataset,setDatasetId:(NSString*)senderId Id:(NSString*)datasetId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+        @try {
+            Collector* sender = [JSObjManager getObjWithKey:senderId];
+            Dataset* dataset = [JSObjManager getObjWithKey:datasetId];
+            [sender setDataset:dataset] ;
+    
+            resolve([[NSNumber alloc] initWithBool:YES]);
+    
+        } @catch (NSException *exception) {
+            reject(@"JSCollector",@"setDataset expection",nil);
+        }
 }
+
+//RCT_REMAP_METHOD(setDataset,setDatasetId:(NSString*)senderId datasetddId:(NSString*)dataset resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        Collector* sender = [JSObjManager getObjWithKey:senderId];
+//        Dataset* dataset = [JSObjManager getObjWithKey:dataset];
+//        [sender setDataset:dataset] ;
+//        
+//        resolve([[NSNumber alloc] initWithBool:YES]);
+//        
+//    } @catch (NSException *exception) {
+//        reject(@"JSCollector",@"setDataset expection",nil);
+//    }
+//}
 
 /**
  * 设置当前编辑节点的宽度,单位是10mm

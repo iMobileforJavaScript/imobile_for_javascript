@@ -36,7 +36,7 @@
 /// 获取或设置用户加入的对数据集的描述信息。
 @property (strong,nonatomic) NSString* description;      
 /// 获取此数据集的名称，是数据集的唯一标识。该标识不区分大小写 。
-@property (strong,nonatomic,readonly) NSString* name;    
+@property (strong,nonatomic) NSString* name;    
 /// 获取此数据集对象所属数据源对象。
 @property (strong,nonatomic,readonly) Datasource* datasource;  
 
