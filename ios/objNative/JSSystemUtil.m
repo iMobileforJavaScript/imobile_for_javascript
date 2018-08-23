@@ -18,15 +18,14 @@ RCT_REMAP_METHOD(getHomeDirectory,getHomeDirectoryWithresolver:(RCTPromiseResolv
         reject(@"systemUtil",@"get home directory failed",nil);
     }
 }
-
-RCT_REMAP_METHOD(getDirectoryContent, path:(NSString*)path getHomeDirectoryWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-   // NSString* home = NSHomeDirectory();
-    
+RCT_REMAP_METHOD(getPathListByFilter, path:(NSString*)path filter:(NSDictionary*)filter getHomeDirectoryWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     NSMutableArray* array = [NSMutableArray arrayWithCapacity:10];
     
     NSFileManager* fileMgr = [NSFileManager defaultManager];
     NSArray* tempArray = [fileMgr contentsOfDirectoryAtPath:path error:nil];
     
+    NSString* filterKey = filter[@"name"];
+    NSString* filterEx = filter[@"type"];
     for (NSString* fileName in tempArray) {
         
         BOOL flag = YES;
@@ -35,19 +34,40 @@ RCT_REMAP_METHOD(getDirectoryContent, path:(NSString*)path getHomeDirectoryWithr
         
         if ([fileMgr fileExistsAtPath:fullPath isDirectory:&flag]) {
             
+            NSString* tt = [fullPath stringByReplacingOccurrencesOfString:[NSHomeDirectory() stringByAppendingString:@"/Documents"] withString:@""];
+            NSString* extension = [tt pathExtension];
+            NSString* fileName = [tt lastPathComponent];
+            if([filterEx containsString:extension] && ([fileName containsString:filterKey]|| [filterKey isEqualToString:@""]))
+                [array addObject:@{@"name":fileName,@"path":tt,@"isDirectory":@(flag)}];
+        }
+        
+    }
+    
+    resolve(array);
+}
+
+RCT_REMAP_METHOD(getDirectoryContent, path:(NSString*)path getHomeDirectoryWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+   // NSString* home = NSHomeDirectory();
+    
+    NSMutableArray* array = [NSMutableArray arrayWithCapacity:10];
+    NSFileManager* fileMgr = [NSFileManager defaultManager];
+    NSArray* tempArray = [fileMgr contentsOfDirectoryAtPath:path error:nil];
+    
+    for (NSString* fileName in tempArray) {
+        
+        BOOL flag = YES;
+        NSString* fullPath = [path stringByAppendingPathComponent:fileName];
+        if ([fileMgr fileExistsAtPath:fullPath isDirectory:&flag]) {
+            
             if (!flag) {
                 [array addObject:@{@"name":fileName,@"type":@"file"}];
                 
             }else{
                 [array addObject:@{@"name":fileName,@"type":@"directory"}];
             }
-            
         }
-        
     }
-    
     resolve(array);
-    
 }
 +(BOOL)createFileDirectories:(NSString*)path
 {

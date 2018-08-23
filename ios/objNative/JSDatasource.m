@@ -182,4 +182,43 @@ RCT_REMAP_METHOD(createDatasetVectorDirectly,createDatasetVectorDirectlyByKey:(N
     }
 }
 
+RCT_REMAP_METHOD(isOpened,isOpenedKey:(NSString*)key  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Datasource* datasource = [JSObjManager getObjWithKey:key];
+    
+    if(datasource){
+        resolve(@(1));
+    }else{
+        reject(@"dataSource",@"getAlias failed",nil);
+    }
+}
+
+RCT_REMAP_METHOD(isModified,isModifiedKey:(NSString*)key  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Datasource* datasource = [JSObjManager getObjWithKey:key];
+    
+    if(datasource){
+        resolve(@(datasource.isModified));
+    }else{
+        reject(@"dataSource",@"isModified failed",nil);
+    }
+}
+
+RCT_REMAP_METHOD(isReadOnly,isReadOnlyKey:(NSString*)key  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Datasource* datasource = [JSObjManager getObjWithKey:key];
+    
+    if(datasource){
+        resolve(@(datasource.isReadOnly));
+    }else{
+        reject(@"dataSource",@"isReadOnly failed",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getConnectionInfo,getConnectionInfoKey:(NSString*)key  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Datasource* datasource = [JSObjManager getObjWithKey:key];
+    
+    if(datasource){
+        resolve([JSObjManager addObj:datasource.datasourceConnectionInfo]);
+    }else{
+        reject(@"dataSource",@"getAlias failed",nil);
+    }
+}
 @end
