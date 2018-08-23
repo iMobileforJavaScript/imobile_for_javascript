@@ -360,18 +360,14 @@ public class JSMap extends ReactContextBaseJavaModule {
             Layers layers = m_Map.getLayers();
             int count = layers.getCount();
             WritableArray arr = Arguments.createArray();
-            System.out.println("=====iTablet===getLayersByType=" + count);
             for (int i = 0; i < count; i++) {
                 Layer layer = layers.get(i);
                 Dataset dataset = layer.getDataset();
-                System.out.println("=====iTablet===loop=" + i + "----" + dataset);
 
                 int intType = type;
                 if (dataset != null) { // 没有数据集的Layer是LayerGroup
                     intType = dataset.getType().value();
                 }
-
-//                System.out.println("=====iTablet===loop==type=" + i + "----" + dataset.getType().name());
 
                 if (intType == type || type == -1 || dataset == null) {
                     WritableMap wMap = Arguments.createMap();
@@ -385,21 +381,13 @@ public class JSMap extends ReactContextBaseJavaModule {
                     }
 
                     wMap.putString("id", layerId);
-                    System.out.println("=====iTablet===id=" + i + "----" + layerId);
                     wMap.putString("name", layer.getName());
-                    System.out.println("=====iTablet===name=" + i + "----" + layer.getName());
                     wMap.putString("caption", layer.getCaption());
-                    System.out.println("=====iTablet===caption=" + i + "----" + layer.getCaption());
                     wMap.putString("description", layer.getDescription());
-                    System.out.println("=====iTablet===description=" + i + "----" + layer.getDescription());
                     wMap.putBoolean("isEditable", layer.isEditable());
-                    System.out.println("=====iTablet===isEditable=" + i + "----" + layer.isEditable());
                     wMap.putBoolean("isVisible", layer.isVisible());
-                    System.out.println("=====iTablet===isVisible=" + i + "----" + layer.isVisible());
                     wMap.putBoolean("isSelectable", layer.isSelectable());
-                    System.out.println("=====iTablet===isSelectable=" + i + "----" + layer.isSelectable());
                     wMap.putBoolean("isSnapable", layer.isSnapable());
-                    System.out.println("=====iTablet===isSnapable=" + i + "----" + layer.isSnapable());
 
                     if (dataset != null) { // 没有数据集的Layer是LayerGroup
                         wMap.putInt("type", intType);
