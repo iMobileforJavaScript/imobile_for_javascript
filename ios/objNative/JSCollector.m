@@ -48,6 +48,20 @@ RCT_REMAP_METHOD(addGPSPointByPoint,addGPSPointByPointId:(NSString*)senderId  pn
         reject(@"JSCollector",@"addGPSPointByPoint expection",nil);
     }
 }
+
+RCT_REMAP_METHOD(addGPSPointByXY,addGPSPointByXYId:(NSString*)senderId  mapId:(NSString*) mapId x:(double) x y:(double)y  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Collector* sender = [JSObjManager getObjWithKey:senderId];
+//        Point2D* point = [JSObjManager getObjWithKey:pointID];
+//        BOOL b =[sender addGPSPoint:point];
+//        NSNumber* nsRemoved = [NSNumber numberWithBool:b];
+        resolve(@(1));
+        
+    } @catch (NSException *exception) {
+        reject(@"JSCollector",@"addGPSPointByPoint expection",nil);
+    }
+}
+
 /**
  * 关闭GPS
  * @param collectorId

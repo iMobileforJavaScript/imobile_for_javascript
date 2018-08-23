@@ -44,18 +44,27 @@ RCT_REMAP_METHOD(get,userKey:(NSString*)key index:(NSInteger)index resolver:(RCT
   }
 }
 
-RCT_REMAP_METHOD(getByName,userKey:(NSString*)key alias:(NSString*)alias resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(renameDatasource,renameDatasourceKey:(NSString*)key oldName:(NSString*)oldName newName:(NSString*)newName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Datasources* datasources = [JSObjManager getObjWithKey:key];
-  Datasource* gettingDS = [datasources getAlias:alias];
-  if(gettingDS){
-    NSInteger DSkey = (NSInteger)gettingDS;
-    [JSObjManager addObj:gettingDS];
-    resolve(@{@"datasourceId":@(DSkey).stringValue});
+  
+  if(datasources){
+      [datasources RenameDatasource:oldName with:newName];
+      resolve(@(1));
   }else{
-    reject(@"datasources",@"get Datasource by alias failed",nil);
+    reject(@"datasources",@"renameDatasource Datasource by alias failed",nil);
   }
 }
-
+RCT_REMAP_METHOD(getByName,userKey:(NSString*)key alias:(NSString*)alias resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Datasources* datasources = [JSObjManager getObjWithKey:key];
+    Datasource* gettingDS = [datasources getAlias:alias];
+    if(gettingDS){
+        NSInteger DSkey = (NSInteger)gettingDS;
+        [JSObjManager addObj:gettingDS];
+        resolve(@{@"datasourceId":@(DSkey).stringValue});
+    }else{
+        reject(@"datasources",@"get Datasource by alias failed",nil);
+    }
+}
 RCT_REMAP_METHOD(getCount,getCountByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         Datasources* datasources = [JSObjManager getObjWithKey:key];

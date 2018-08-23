@@ -96,4 +96,12 @@
 	 */
 -(void) closeAll;
 
+/**
+ *  @brief 更改对应数据源名字。
+ *  @param alias 指定的数据源的别名
+ *  @param newAlias 新的别名
+ *  修改后需要保存工作空间，以在下次打开时依然生效
+ */
+-(void)RenameDatasource:(NSString*)alias with:(NSString*)newAlias;
+
 @end

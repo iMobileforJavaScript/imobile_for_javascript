@@ -62,6 +62,27 @@ RCT_REMAP_METHOD(openDataset,openDatasetByKey:(NSString*)key resolver:(RCTPromis
     }
 }
 
+
+RCT_REMAP_METHOD(setName,setNameKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Dataset* dataset = [JSObjManager getObjWithKey:key];
+    if(dataset){
+        dataset.name = key;
+        resolve(@(YES));
+    }else{
+        reject(@"dataset",@"dataset setName  failed",nil);
+    }
+}
+
+RCT_REMAP_METHOD(setReadOnly,setReadOnlyKey:(NSString*)key b:(BOOL)bValue resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Dataset* dataset = [JSObjManager getObjWithKey:key];
+    if(dataset){
+        [dataset setReadOnly:bValue];
+        resolve(@(YES));
+    }else{
+        reject(@"dataset",@"setReadOnly setName  failed",nil);
+    }
+}
+
 RCT_REMAP_METHOD(isopen,isOpenJudgingByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Dataset* dataset = [JSObjManager getObjWithKey:key];
     BOOL openBit = [dataset isOpen];

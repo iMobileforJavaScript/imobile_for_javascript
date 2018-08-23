@@ -79,7 +79,7 @@ RCT_REMAP_METHOD(setPassWord,setPassWordByKey:(NSString*)key password:(NSString*
 RCT_REMAP_METHOD(getServer,getServerKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   WorkspaceConnectionInfo* info = [JSObjManager getObjWithKey:key];
   if(info){
-    resolve(info.server);
+      resolve(@{@"Server":info.server} );
   }else
     reject(@"WorkSpaceInfo",@"workSpaceInfo not exeist!!!",nil);
 }
