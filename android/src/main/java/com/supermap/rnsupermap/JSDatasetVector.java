@@ -624,13 +624,10 @@ public class JSDatasetVector extends JSDataset {
             DatasetVector datasetVector = getObjFromList(dataVectorId);
 
             if (!datasetVector.isOpen()) {
-                Boolean isopen = datasetVector.open();
+                datasetVector.open();
             }
-
             FieldInfos fieldInfos = datasetVector.getFieldInfos();
-
             FieldInfo fieldInfo = fieldInfos.get(infoName);
-
             Map<String, Object> map = info.toHashMap();
             for (Map.Entry<String, Object> item : map.entrySet()) {
                 String name = item.getKey();
@@ -639,31 +636,31 @@ public class JSDatasetVector extends JSDataset {
                     case "caption":
                         fieldInfo.setCaption((String) value);
                         break;
-                    case "name":
-                        fieldInfo.setName((String) value);
-                        break;
-                    case "type":
-                        fieldInfo.setType((FieldType) Enum.parse(FieldType.class, ((Number) value).intValue()));
-                        break;
-                    case "maxLength":
-                        fieldInfo.setMaxLength(((Number) value).intValue());
-                        break;
-                    case "defaultValue":
-                        fieldInfo.setDefaultValue((String) value);
-                        break;
-                    case "isRequired":
-                        fieldInfo.setRequired((boolean) value);
-                        break;
-                    case "isZeroLengthAllowed":
-                        fieldInfo.setZeroLengthAllowed((boolean) value);
-                        break;
+//                    case "name":
+//                        fieldInfo.setName((String) value);
+//                        break;
+//                    case "type":
+//                        fieldInfo.setType((FieldType) Enum.parse(FieldType.class, ((Number) value).intValue()));
+//                        break;
+//                    case "maxLength":
+//                        fieldInfo.setMaxLength(((Number) value).intValue());
+//                        break;
+//                    case "defaultValue":
+//                        fieldInfo.setDefaultValue((String) value);
+//                        break;
+//                    case "isRequired":
+//                        fieldInfo.setRequired((boolean) value);
+//                        break;
+//                    case "isZeroLengthAllowed":
+//                        fieldInfo.setZeroLengthAllowed((boolean) value);
+//                        break;
                 }
             }
 
-            int index = fieldInfos.add(fieldInfo);
-            WritableMap wMap = Arguments.createMap();
-            wMap.putInt("index", index);
-            promise.resolve(wMap);
+//            int index = fieldInfos.add(fieldInfo);
+//            WritableMap wMap = Arguments.createMap();
+//            wMap.putInt("index", index);
+            promise.resolve(true);
         } catch (Exception e){
             promise.reject(e);
         }
@@ -697,32 +694,32 @@ public class JSDatasetVector extends JSDataset {
                     case "caption":
                         fieldInfo.setCaption((String) value);
                         break;
-                    case "name":
-                        fieldInfo.setName((String) value);
-                        break;
-                    case "type":
-                        fieldInfo.setType((FieldType) Enum.parse(FieldType.class, ((Number) value).intValue()));
-                        break;
-                    case "maxLength":
-                        fieldInfo.setMaxLength(((Number) value).intValue());
-                        break;
-                    case "defaultValue":
-                        fieldInfo.setDefaultValue((String) value);
-                        break;
-                    case "isRequired":
-                        fieldInfo.setRequired((boolean) value);
-                        break;
-                    case "isZeroLengthAllowed":
-                        fieldInfo.setZeroLengthAllowed((boolean) value);
-                        break;
+//                    case "name":
+//                        fieldInfo.setName((String) value);
+//                        break;
+//                    case "type":
+//                        fieldInfo.setType((FieldType) Enum.parse(FieldType.class, ((Number) value).intValue()));
+//                        break;
+//                    case "maxLength":
+//                        fieldInfo.setMaxLength(((Number) value).intValue());
+//                        break;
+//                    case "defaultValue":
+//                        fieldInfo.setDefaultValue((String) value);
+//                        break;
+//                    case "isRequired":
+//                        fieldInfo.setRequired((boolean) value);
+//                        break;
+//                    case "isZeroLengthAllowed":
+//                        fieldInfo.setZeroLengthAllowed((boolean) value);
+//                        break;
                 }
             }
 
-            int ind = fieldInfos.add(fieldInfo);
-
-            WritableMap wMap = Arguments.createMap();
-            wMap.putInt("index", ind);
-            promise.resolve(wMap);
+//            int ind = fieldInfos.add(fieldInfo);
+//
+//            WritableMap wMap = Arguments.createMap();
+//            wMap.putInt("index", ind);
+            promise.resolve(true);
         } catch (Exception e){
             promise.reject(e);
         }

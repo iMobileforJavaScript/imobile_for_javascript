@@ -24,8 +24,8 @@ public class JSGPSElementType extends ReactContextBaseJavaModule {
     @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
-        constants.put("LINE", CollectorElement.GPSElementType.LINE.name());                     // 空操作
-        constants.put("POINT", CollectorElement.GPSElementType.POINT.name());                            // 地图漫游
+        constants.put("LINE", CollectorElement.GPSElementType.LINE.name());
+        constants.put("POINT", CollectorElement.GPSElementType.POINT.name());
         constants.put("POLYGON", CollectorElement.GPSElementType.POLYGON.name());
         return constants;
     }

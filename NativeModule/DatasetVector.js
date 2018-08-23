@@ -336,11 +336,9 @@ export default class DatasetVector {
   async editFieldInfo(key, info) {
     try {
       if (info instanceof Number) {
-        let { index } = await DV.editFieldInfoByIndex(this._SMDatasetVectorId, key, info);
-        return index
+        return await DV.editFieldInfoByIndex(this._SMDatasetVectorId, key, info);
       } else {
-        let { index } = await DV.editFieldInfoByName(this._SMDatasetVectorId, key, info);
-        return index
+        return await DV.editFieldInfoByName(this._SMDatasetVectorId, key, info);
       }
     } catch (e) {
       console.error(e);
