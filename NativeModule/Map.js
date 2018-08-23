@@ -90,7 +90,11 @@ export default class Map {
   async getLayersByType(type = -1) {
     try {
       let layers = await M.getLayersByType(this._SMMapId, type);
-      
+      for (let i = 0; i < layers.length; i++) {
+        let layer = new Layer()
+        layer._SMLayerId = layers[i].id
+        layers[i].layer = layer
+      }
       return layers
     } catch (e) {
       console.error(e);

@@ -775,6 +775,25 @@ public class JSDatasetVector extends JSDataset {
     }
 
     /**
+     * 获取子数据集，适用于网络数据集
+     * @param dataVectorId
+     * @param promise
+     */
+    @ReactMethod
+    public void getChildDataset(String dataVectorId, Promise promise) {
+        try {
+            DatasetVector datasetVector = getObjFromList(dataVectorId);
+
+            Dataset dataset = datasetVector.getChildDataset();
+            String datasetId = JSDataset.registerId(dataset);
+
+            promise.resolve(datasetId);
+        } catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 将FieldInfos转为Map
      * @param fieldInfos
      * @return

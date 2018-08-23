@@ -178,19 +178,30 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
                 }
                 boolean isDirectory = files[i].isDirectory();
 
-                String filterName = "", filterType = "";
                 if (!filter.toHashMap().containsKey("name")) {
-                    filterName = filter.getString("name").toLowerCase();
+                    String filterName = filter.getString("name").toLowerCase().trim();
+                    // 判断文件名
+                    if (isDirectory || filterName.equals("") || !name.contains(filterName)) {
+                        continue;
+                    }
                 }
+                
+                boolean isExist = false;
                 if (filter.toHashMap().containsKey("type")) {
-                    filterType = filter.getString("type").toLowerCase();
+                    String filterType = filter.getString("type").toLowerCase();
+                    String[] types = filterType.split(",");
+                    for (int j = 0; j < types.length; j++) {
+                        String mType = types[j].trim();
+                        // 判断文件类型
+                        if (isDirectory || !isDirectory && !type.equals("") && type.contains(mType)) {
+                            isExist = true;
+                            break;
+                        } else {
+                            isExist = false;
+                        }
+                    }
                 }
-                // 判断文件名
-                if (!isDirectory && !filterName.equals("") && !name.contains(filterName)) {
-                    continue;
-                }
-                // 判断文件类型
-                if (!isDirectory && !filterType.equals("") && !type.contains(filterType)) {
+                if (!isExist) {
                     continue;
                 }
 
