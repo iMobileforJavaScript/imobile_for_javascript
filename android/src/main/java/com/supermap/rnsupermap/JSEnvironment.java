@@ -14,8 +14,9 @@ import com.supermap.data.Environment;
 
 public class JSEnvironment extends ReactContextBaseJavaModule {
     ReactApplicationContext m_context;
-    private final String sdcard= android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+    private final String sdcard = android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString();
     public static final String REACT_CLASS = "JSEnvironment";
+
     public JSEnvironment(ReactApplicationContext context) {
         super(context);
         m_context = context;
@@ -27,27 +28,27 @@ public class JSEnvironment extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setLicensePath(String path, Promise promise){
-        try{
-            Environment.setLicensePath(sdcard + path);
+    public void setLicensePath(String path, Promise promise) {
+        try {
+            Environment.setLicensePath(path);
 
             WritableMap map = Arguments.createMap();
-            map.putBoolean("isSet",true);
+            map.putBoolean("isSet", true);
             promise.resolve(map);
-        }catch(Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void initialization(Promise promise){
-        try{
+    public void initialization(Promise promise) {
+        try {
             Environment.initialization(m_context.getBaseContext());
 
             WritableMap map = Arguments.createMap();
-            map.putBoolean("isInit",true);
+            map.putBoolean("isInit", true);
             promise.resolve(map);
-        }catch(Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }

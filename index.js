@@ -146,6 +146,8 @@ import ElementPolygon from './NativeModule/ElementPolygon'
 
 import SpeechManager from './NativeModule/SpeechManager'
 import OnlineService from './NativeModule/OnlineService'
+
+import Environment from './NativeModule/Environment'
 /*
  import Datasets from './NativeModule/Datasets.js';
  import Datasources from './NativeModule/Datasources.js';
@@ -299,6 +301,7 @@ export {
   ThemeType,
   WorkspaceType,
   OnlineService,
+  Environment,
   /*
    Datasets,
    Datasources,
