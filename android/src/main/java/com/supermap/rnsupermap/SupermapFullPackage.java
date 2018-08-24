@@ -163,7 +163,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSAlongLineDirection(reactContext));
 
         modules.add(new JSThemeType(reactContext));
-
+        modules.add(new JSOlineService(reactContext));
         return modules;
     }
 }
