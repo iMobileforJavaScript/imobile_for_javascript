@@ -2,7 +2,7 @@
  Copyright © SuperMap. All rights reserved.
  Author: yangshanglong
  E-mail: yangshanglong@supermap.com
- 
+
  **********************************************************************************/
 
 import { NativeModules } from 'react-native'
@@ -16,41 +16,42 @@ import GeoStyle from './GeoStyle'
  * 单值专题图子项类
  */
 export default class ThemeUnique extends Theme {
-  
-  constructor(){
+
+  constructor() {
     super()
-    Object.defineProperty(this,"_SMThemeUniqueId",{
-      get:function () {
+    Object.defineProperty(this, "_SMThemeUniqueId", {
+      get: function () {
         return this._SMThemeId
       },
-      set:function (_SMThemeUniqueId) {
+      set: function (_SMThemeUniqueId) {
         this._SMThemeId = _SMThemeUniqueId;
       }
     })
   }
-  
-  async createObj(){
-    try{
+
+  async createObj() {
+    try {
       let id = await TU.createObj();
       let themeUnique = new ThemeUnique();
       themeUnique._SMThemeUniqueId = id;
       return themeUnique;
-    }catch (e){
+    } catch (e) {
       console.error(e);
     }
   }
-  
-  async createObjClone(){
-    try{
-      let id = await TU.createObjClone(this._SMThemeUniqueId);
+
+  async createObjClone(theme) {
+    try {
+      let id = await TU.createObjClone(theme._SMThemeId);
       let themeUnique = new ThemeUnique();
       themeUnique._SMThemeUniqueId = id;
       return themeUnique;
-    }catch (e){
+    } catch (e) {
+      debugger
       console.error(e);
     }
   }
-  
+
   async dispose() {
     try {
       if (!this._SMThemeUniqueId) return
@@ -59,7 +60,7 @@ export default class ThemeUnique extends Theme {
       console.error(e)
     }
   }
-  
+
   /**
    * 根据给定的矢量数据集、单值专题图字段表达式和颜色渐变模式生成默认的单值专题图
    * @param datasetVector
@@ -84,7 +85,7 @@ export default class ThemeUnique extends Theme {
       console.error(e)
     }
   }
-  
+
   /**
    * 删除单值专题图的子项
    * @returns {Promise.<void>}
@@ -96,7 +97,7 @@ export default class ThemeUnique extends Theme {
       console.error(e)
     }
   }
-  
+
   /**
    * 返回单值专题图中分段的个数
    * @returns {Promise.<*>}
@@ -108,7 +109,7 @@ export default class ThemeUnique extends Theme {
       console.error(e)
     }
   }
-  
+
   /**
    * 把一个单值专题图子项添加到单值列表的开头
    * @param item
@@ -125,7 +126,7 @@ export default class ThemeUnique extends Theme {
       return false
     }
   }
-  
+
   /**
    * 添加单值专题图子项
    * @param item
@@ -138,7 +139,7 @@ export default class ThemeUnique extends Theme {
       console.error(e)
     }
   }
-  
+
   /**
    * 删除一个指定序号的单值专题图子项
    * @param index
@@ -152,7 +153,7 @@ export default class ThemeUnique extends Theme {
       return false
     }
   }
-  
+
   /**
    * 将给定的单值专题图子项插入到指定序号的位置
    * @param index
@@ -167,7 +168,7 @@ export default class ThemeUnique extends Theme {
       return false
     }
   }
-  
+
   /**
    * 返回单值专题图中指定分段字段值在当前分段序列中的序号
    * @param value
@@ -181,7 +182,7 @@ export default class ThemeUnique extends Theme {
       return false
     }
   }
-  
+
   /**
    * 返回单值专题图中指定分段字段值在当前分段序列中的序号
    * @returns {Promise.<*>}
@@ -197,7 +198,7 @@ export default class ThemeUnique extends Theme {
       return false
     }
   }
-  
+
   /**
    * 返回单值专题图字段表达式
    * @returns {Promise.<*>}
@@ -210,7 +211,7 @@ export default class ThemeUnique extends Theme {
       return false
     }
   }
-  
+
   /**
    * 设置单值专题图字段表达式
    * @param expression

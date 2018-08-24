@@ -36,6 +36,19 @@ public class JSThemeRange extends JSTheme {
         }
     }
 
+    @ReactMethod
+    public void createObjClone(String themeId, Promise promise){
+        try{
+            ThemeRange origin = (ThemeRange) JSTheme.getObjFromList(themeId);
+            ThemeRange theme = new ThemeRange(origin);
+            String newThemeId = registerId(theme);
+
+            promise.resolve(newThemeId);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
     @Override
     public String getName() {
         return REACT_CLASS;

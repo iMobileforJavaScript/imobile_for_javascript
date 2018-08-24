@@ -38,6 +38,17 @@ export default class ThemeRange extends Theme {
       console.error(e);
     }
   }
+
+  async createObjClone(theme){
+    try{
+      let id = await TR.createObjClone(theme._SMThemeId);
+      let themeRange = new ThemeRange();
+      themeRange._SMThemeRangeId = id;
+      return themeRange;
+    }catch (e){
+      console.error(e);
+    }
+  }
   
   async dispose() {
     try {

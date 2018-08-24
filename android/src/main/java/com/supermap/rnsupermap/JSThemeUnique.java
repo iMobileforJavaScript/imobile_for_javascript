@@ -45,8 +45,6 @@ public class JSThemeUnique extends JSTheme {
             ThemeUnique theme = new ThemeUnique(old);
             String themeId = registerId(theme);
 
-            old.dispose();
-
             promise.resolve(themeId);
         }catch (Exception e){
             promise.reject(e);

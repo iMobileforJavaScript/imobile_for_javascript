@@ -15,7 +15,19 @@ import TextStyle from './TextStyle'
  * 标签专题图子项类
  */
 export default class ThemeLabel extends Theme {
-  
+
+  constructor() {
+    super()
+    Object.defineProperty(this, "_SMThemeLabelId", {
+      get: function () {
+        return this._SMThemeId
+      },
+      set: function (_SMThemeLabelId) {
+        this._SMThemeId = _SMThemeLabelId;
+      }
+    })
+  }
+
   async createObj(){
     try{
       let id = await TL.createObj();
@@ -26,7 +38,19 @@ export default class ThemeLabel extends Theme {
       console.error(e);
     }
   }
-  
+
+  async createObjClone(theme) {
+    try {
+      let id = await TL.createObjClone(theme._SMThemeId);
+      let themeLabel = new ThemeLabel();
+      themeLabel._SMThemeId = id;
+      return themeLabel;
+    } catch (e) {
+      debugger
+      console.error(e);
+    }
+  }
+
   /**
    * 根据给定的矢量数据集、分段字段表达式、分段模式和相应的分段参数生成默认的标签专题图
    * @param datasetVector Object
@@ -34,7 +58,7 @@ export default class ThemeLabel extends Theme {
    * @param rangeMode Number
    * @param rangeParameter Number
    * @param colorGradientType(option)
-   * @returns {Promise.<ThemeRange>}
+   * @returns {Promise.<ThemeLabel>}
    */
   async makeDefault() {
     try {
@@ -44,8 +68,8 @@ export default class ThemeLabel extends Theme {
       } else {
         id = await TL.makeDefault(arguments[0]._SMDatasetVectorId, arguments[1], arguments[2], arguments[3])
       }
-      let themeRange = new ThemeRange()
-      themeRange._SMThemeRangeId = id
+      let themeRange = new ThemeLabel()
+      themeRange.__SMThemeId = id
       return themeRange
     } catch (e) {
       console.error(e)

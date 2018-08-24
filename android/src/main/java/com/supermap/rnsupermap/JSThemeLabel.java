@@ -38,6 +38,19 @@ public class JSThemeLabel extends JSTheme {
         }
     }
 
+    @ReactMethod
+    public void createObjClone(String themeId, Promise promise){
+        try{
+            ThemeLabel origin = (ThemeLabel) JSTheme.getObjFromList(themeId);
+            ThemeLabel theme = new ThemeLabel(origin);
+            String newThemeId = registerId(theme);
+
+            promise.resolve(newThemeId);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
     @Override
     public String getName() {
         return REACT_CLASS;
@@ -361,13 +374,13 @@ public class JSThemeLabel extends JSTheme {
 
     /**
      * 对标签专题图中分段的风格进行反序显示
-     * @param themeRangeId
+     * @param themeLabelId
      * @param promise
      */
     @ReactMethod
-    public void reverseStyle(String themeRangeId, Promise promise){
+    public void reverseStyle(String themeLabelId, Promise promise){
         try{
-            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeLabelId);
             m_ThemeLabel.reverseStyle();
 
             promise.resolve(true);
@@ -378,14 +391,14 @@ public class JSThemeLabel extends JSTheme {
 
     /**
      * 设置是否以全方向文本避让
-     * @param themeRangeId
+     * @param themeLabelId
      * @param value
      * @param promise
      */
     @ReactMethod
-    public void setAllDirectionsOverlappedAvoided(String themeRangeId, boolean value, Promise promise){
+    public void setAllDirectionsOverlappedAvoided(String themeLabelId, boolean value, Promise promise){
         try{
-            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeLabelId);
             m_ThemeLabel.setAllDirectionsOverlappedAvoided(value);
 
             promise.resolve(true);
@@ -396,14 +409,14 @@ public class JSThemeLabel extends JSTheme {
 
     /**
      * 设置是否沿线显示文本
-     * @param themeRangeId
+     * @param themeLabelId
      * @param value
      * @param promise
      */
     @ReactMethod
-    public void setAlongLine(String themeRangeId, boolean value, Promise promise){
+    public void setAlongLine(String themeLabelId, boolean value, Promise promise){
         try{
-            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeLabelId);
             m_ThemeLabel.setAlongLine(value);
 
             promise.resolve(true);
@@ -414,14 +427,14 @@ public class JSThemeLabel extends JSTheme {
 
     /**
      * 设置标签沿线标注方向
-     * @param themeRangeId
+     * @param themeLabelId
      * @param value
      * @param promise
      */
     @ReactMethod
-    public void setAlongLineDirection(String themeRangeId, int value, Promise promise){
+    public void setAlongLineDirection(String themeLabelId, int value, Promise promise){
         try{
-            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeLabelId);
             AlongLineDirection alongLineDirection = (AlongLineDirection) Enum.parse(AlongLineDirection.class, value);
 
             m_ThemeLabel.setAlongLineDirection(alongLineDirection);
@@ -434,14 +447,14 @@ public class JSThemeLabel extends JSTheme {
 
     /**
      * 设置沿线文本间隔比率，该方法只对沿线标注起作用
-     * @param themeRangeId
+     * @param themeLabelId
      * @param value
      * @param promise
      */
     @ReactMethod
-    public void setAlongLineSpaceRatio(String themeRangeId, double value, Promise promise){
+    public void setAlongLineSpaceRatio(String themeLabelId, double value, Promise promise){
         try{
-            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeLabelId);
             m_ThemeLabel.setAlongLineSpaceRatio(value);
 
             promise.resolve(true);
@@ -452,14 +465,14 @@ public class JSThemeLabel extends JSTheme {
 
     /**
      * 当沿线显示文本时，是否将文本角度固定
-     * @param themeRangeId
+     * @param themeLabelId
      * @param value
      * @param promise
      */
     @ReactMethod
-    public void setAngleFixed(String themeRangeId, boolean value, Promise promise){
+    public void setAngleFixed(String themeLabelId, boolean value, Promise promise){
         try{
-            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeLabelId);
             m_ThemeLabel.setAngleFixed(value);
 
             promise.resolve(true);
@@ -470,14 +483,14 @@ public class JSThemeLabel extends JSTheme {
 
     /**
      * 设置标签专题图中的标签背景的形状类型
-     * @param themeRangeId
+     * @param themeLabelId
      * @param value
      * @param promise
      */
     @ReactMethod
-    public void setBackShape(String themeRangeId, int value, Promise promise){
+    public void setBackShape(String themeLabelId, int value, Promise promise){
         try{
-            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeLabelId);
             LabelBackShape labelBackShape = (LabelBackShape) Enum.parse(ColorGradientType.class, value);
             m_ThemeLabel.setBackShape(labelBackShape);
 
@@ -489,14 +502,14 @@ public class JSThemeLabel extends JSTheme {
 
     /**
      * 设置标签专题图中的标签背景风格,OpenGL不支持标签背景透明度
-     * @param themeRangeId
+     * @param themeLabelId
      * @param styleId
      * @param promise
      */
     @ReactMethod
-    public void setBackStyle(String themeRangeId, String styleId, Promise promise){
+    public void setBackStyle(String themeLabelId, String styleId, Promise promise){
         try{
-            m_ThemeLabel = (ThemeLabel)getObjFromList(themeRangeId);
+            m_ThemeLabel = (ThemeLabel)getObjFromList(themeLabelId);
             GeoStyle style = JSGeoStyle.getObjFromList(styleId);
             m_ThemeLabel.setBackStyle(style);
 
