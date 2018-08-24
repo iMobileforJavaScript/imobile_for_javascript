@@ -185,7 +185,7 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
                         continue;
                     }
                 }
-                
+
                 boolean isExist = false;
                 if (filter.toHashMap().containsKey("type")) {
                     String filterType = filter.getString("type").toLowerCase();

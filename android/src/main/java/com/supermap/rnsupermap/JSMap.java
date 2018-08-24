@@ -308,6 +308,7 @@ public class JSMap extends ReactContextBaseJavaModule {
             for (int i = 0; i < count; i++) {
                 Layer layer = layers.get(i);
                 Dataset dataset = layer.getDataset();
+
                 if (dataset == null) {
                     continue;
                 }
@@ -335,6 +336,68 @@ public class JSMap extends ReactContextBaseJavaModule {
                     wMap.putBoolean("isVisible", layer.isVisible());
                     wMap.putBoolean("isSelectable", layer.isSelectable());
                     wMap.putBoolean("isSnapable", layer.isSnapable());
+                    arr.pushMap(wMap);
+                }
+            }
+
+            promise.resolve(arr);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据类型查找图层
+     * @param mapId
+     * @param type
+     * @param promise
+     */
+    @ReactMethod
+    public void getLayersByType1(String mapId, int type, Promise promise){
+        // TODO getLayersByType1
+        try{
+            m_Map = mapList.get(mapId);
+            Layers layers = m_Map.getLayers();
+            int count = layers.getCount();
+            WritableArray arr = Arguments.createArray();
+            for (int i = 0; i < count; i++) {
+                Layer layer = layers.get(i);
+                Dataset dataset = layer.getDataset();
+
+                int intType = type;
+                if (dataset != null) { // 没有数据集的Layer是LayerGroup
+                    intType = dataset.getType().value();
+                }
+
+                if (intType == type || type == -1 || dataset == null) {
+                    WritableMap wMap = Arguments.createMap();
+                    String layerId = JSLayer.registerId(layer);
+
+
+                    Theme theme = layer.getTheme();
+                    int themeType = 0;
+                    if (theme != null) {
+                        themeType = theme.getType().value();
+                    }
+
+                    wMap.putString("id", layerId);
+                    wMap.putString("name", layer.getName());
+                    wMap.putString("caption", layer.getCaption());
+                    wMap.putString("description", layer.getDescription());
+                    wMap.putBoolean("isEditable", layer.isEditable());
+                    wMap.putBoolean("isVisible", layer.isVisible());
+                    wMap.putBoolean("isSelectable", layer.isSelectable());
+                    wMap.putBoolean("isSnapable", layer.isSnapable());
+
+                    if (dataset != null) { // 没有数据集的Layer是LayerGroup
+                        wMap.putInt("type", intType);
+                        wMap.putInt("themeType", themeType);
+                        wMap.putInt("index", i);
+                        wMap.putString("datasetName", dataset.getName());
+                        continue;
+                    } else {
+                        wMap.putString("type", "layerGroup");
+                    }
                     arr.pushMap(wMap);
                 }
             }

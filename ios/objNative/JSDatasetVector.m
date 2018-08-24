@@ -309,32 +309,169 @@ RCT_REMAP_METHOD(getFieldInfos, getFieldInfosId:(NSString*)dsVectorId  resolver:
             fieldInfosMap[info.name] = fields;
         }
         
-//        for(NSString* fieldKey in fields.allKeys){
-//            NSMutableDictionary* keyMap = [[NSMutableDictionary alloc]initWithCapacity:5];
-//            NSMutableDictionary* itemWMap = [[NSMutableDictionary alloc]initWithCapacity:5];
-//            
-//            NSString* name = fieldKey;
-//            NSMutableDictionary* fieldInfo = fields[fieldKey];
-//            
-//            for(NSString* itemKey in fieldInfo.allKeys){
-//                NSMutableDictionary* item = fieldInfo[itemKey];
-//                
-//                NSString* key = itemKey;
-//                id v = item[key];
-//            
-//                if(v==nil){
-//                    itemWMap[key] = @"";
-//                }else{
-//                     itemWMap[key] = v;
-//                }
-//            }
-//            
-//            keyMap[@"fieldInfo"] = itemWMap;
-//            keyMap[@"name"] = name;
-//        }
         resolve(fieldInfosMap);
     } @catch (NSException *exception) {
         reject(@"datasetVector",@"get Geo Inner Point failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(addFieldInfo, addFieldInfoId:(NSString*)dsVectorId  info:(NSDictionary*)info  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        FieldInfos* fieldInfos = dsVector.fieldInfos;;
+        FieldInfo* fieldInfo = [[FieldInfo alloc]init];
+        
+        for(NSString* item in info.allKeys){
+            NSString* name = item;
+            id value = info[item];
+            if([name isEqualToString:@"caption"]){
+                [fieldInfo setCaption:value];
+            }else if([name isEqualToString:@"name"]){
+                fieldInfo.name = value;
+            }else if([name isEqualToString:@"type"]){
+                fieldInfo.fieldType = ((NSNumber*)value).intValue;
+            }else if([name isEqualToString:@"maxLength"]){
+                fieldInfo.maxLength = ((NSNumber*)value).doubleValue;
+            }else if([name isEqualToString:@"defaultValue"]){
+                fieldInfo.defaultValue = value;
+            }else if([name isEqualToString:@"isRequired"]){
+                [fieldInfo setRequired:((NSNumber*)value).boolValue];
+            }else if([name isEqualToString:@"isZeroLengthAllowed"]){
+                [fieldInfo setZeroLengthAllowed:((NSNumber*)value).boolValue];
+            }
+        }
+
+        int n = [fieldInfos add:fieldInfo];
+        
+        resolve(@{@"index":@(n)});
+    } @catch (NSException *exception) {
+        reject(@"datasetVector",@"addFieldInfo Point failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(editFieldInfoByName, editFieldInfoByNameId:(NSString*)dsVectorId  infoName:(NSString*)infoName info:(NSDictionary*)info  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        if(![dsVector isOpen]){
+            [dsVector open];
+        }
+        FieldInfos* fieldInfos = dsVector.fieldInfos;;
+        FieldInfo* fieldInfo = [fieldInfos getName:infoName];
+        
+        for(NSString* item in info.allKeys){
+            NSString* name = item;
+            id value = info[item];
+            if([name isEqualToString:@"caption"]){
+                [fieldInfo setCaption:value];
+            }else if([name isEqualToString:@"name"]){
+                fieldInfo.name = value;
+            }else if([name isEqualToString:@"type"]){
+                fieldInfo.fieldType = ((NSNumber*)value).intValue;
+            }else if([name isEqualToString:@"maxLength"]){
+                fieldInfo.maxLength = ((NSNumber*)value).doubleValue;
+            }else if([name isEqualToString:@"defaultValue"]){
+                fieldInfo.defaultValue = value;
+            }else if([name isEqualToString:@"isRequired"]){
+                [fieldInfo setRequired:((NSNumber*)value).boolValue];
+            }else if([name isEqualToString:@"isZeroLengthAllowed"]){
+                [fieldInfo setZeroLengthAllowed:((NSNumber*)value).boolValue];
+            }
+        }
+        
+        int n = [fieldInfos add:fieldInfo];
+        
+        resolve(@{@"index":@(n)});
+    } @catch (NSException *exception) {
+        reject(@"datasetVector",@"addFieldInfo Point failed!!!",nil);
+    }
+}
+RCT_REMAP_METHOD(editFieldInfoByIndex, editFieldInfoByIndexId:(NSString*)dsVectorId  index:(int)index info:(NSDictionary*)info  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        if(![dsVector isOpen]){
+            [dsVector open];
+        }
+        FieldInfos* fieldInfos = dsVector.fieldInfos;;
+        FieldInfo* fieldInfo = [fieldInfos get:index];
+        
+        for(NSString* item in info.allKeys){
+            NSString* name = item;
+            id value = info[item];
+            if([name isEqualToString:@"caption"]){
+                [fieldInfo setCaption:value];
+            }else if([name isEqualToString:@"name"]){
+                fieldInfo.name = value;
+            }else if([name isEqualToString:@"type"]){
+                fieldInfo.fieldType = ((NSNumber*)value).intValue;
+            }else if([name isEqualToString:@"maxLength"]){
+                fieldInfo.maxLength = ((NSNumber*)value).doubleValue;
+            }else if([name isEqualToString:@"defaultValue"]){
+                fieldInfo.defaultValue = value;
+            }else if([name isEqualToString:@"isRequired"]){
+                [fieldInfo setRequired:((NSNumber*)value).boolValue];
+            }else if([name isEqualToString:@"isZeroLengthAllowed"]){
+                [fieldInfo setZeroLengthAllowed:((NSNumber*)value).boolValue];
+            }
+        }
+        
+        int n = [fieldInfos add:fieldInfo];
+        
+        resolve(@{@"index":@(n)});
+    } @catch (NSException *exception) {
+        reject(@"datasetVector",@"addFieldInfo Point failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(removeFieldInfoByIndex, removeFieldInfoByIndexId:(NSString*)dsVectorId  index:(int)index   resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        if(![dsVector isOpen]){
+            [dsVector open];
+        }
+        FieldInfos* fieldInfos = dsVector.fieldInfos;;
+        BOOL b = [fieldInfos removeFieldAtIndex:index];
+        
+        resolve(@{@"result":@(b)});
+    } @catch (NSException *exception) {
+        reject(@"datasetVector",@"removeFieldInfoByIndex Point failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(removeFieldInfoByName, removeFieldInfoByNameId:(NSString*)dsVectorId  infoName:(NSString*)infoName   resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        if(![dsVector isOpen]){
+            [dsVector open];
+        }
+        FieldInfos* fieldInfos = dsVector.fieldInfos;;
+        BOOL b = [fieldInfos removeFieldName:infoName];
+        
+        resolve(@{@"result":@(b)});
+    } @catch (NSException *exception) {
+        reject(@"datasetVector",@"removeFieldInfoByName Point failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getChildDataset, getChildDatasetId:(NSString*)dsVectorId   resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        if(![dsVector isOpen]){
+            [dsVector open];
+        }
+        DatasetVector* childDV = dsVector.childDataset;;
+        resolve([JSObjManager addObj:childDV]);
+    } @catch (NSException *exception) {
+        reject(@"datasetVector",@"getChildDataset Point failed!!!",nil);
     }
 }
 

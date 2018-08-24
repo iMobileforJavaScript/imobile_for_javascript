@@ -96,6 +96,21 @@ RCT_REMAP_METHOD(isopen,isOpenJudgingByKey:(NSString*)key resolver:(RCTPromiseRe
 
 #pragma mark - 属性获取方法
 
+RCT_REMAP_METHOD(isReadOnly,isReadOnlyKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    @try {
+        Dataset* dataset = [JSObjManager getObjWithKey:key];
+        
+        if (dataset) {
+            BOOL type = dataset.isReadOnly;
+           // NSNumber * nsTypeNum = [NSNumber numberWithInt:(int)type];
+            resolve(@(type));
+        }
+    } @catch (NSException *exception) {
+        reject(@"dataset",@"isReadOnly get type failed",nil);
+    }
+}
+
 RCT_REMAP_METHOD(getType,getTypeByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try {

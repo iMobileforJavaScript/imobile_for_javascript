@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0A0118A52122BC5600BC4AAB /* JSThemeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0118A42122BC5600BC4AAB /* JSThemeLabel.m */; };
 		0A01192E212412C500BC4AAB /* JSRangeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A01192D212412C500BC4AAB /* JSRangeMode.m */; };
+		0A17279F212E88AC00CF978C /* JSGPSElementType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A17279E212E88AC00CF978C /* JSGPSElementType.m */; };
 		0A332DEA211D623E00F56F26 /* JSAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CD7211D623D00F56F26 /* JSAction.m */; };
 		0A332DEB211D623E00F56F26 /* JSAdoptMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CD9211D623D00F56F26 /* JSAdoptMapView.m */; };
 		0A332DEC211D623E00F56F26 /* JSAMQPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CDB211D623D00F56F26 /* JSAMQPManager.m */; };
@@ -166,6 +167,8 @@
 		0A0118A42122BC5600BC4AAB /* JSThemeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSThemeLabel.m; path = objNative/JSThemeLabel.m; sourceTree = "<group>"; };
 		0A01192C212412C500BC4AAB /* JSRangeMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSRangeMode.h; path = objNative/JSRangeMode.h; sourceTree = "<group>"; };
 		0A01192D212412C500BC4AAB /* JSRangeMode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSRangeMode.m; path = objNative/JSRangeMode.m; sourceTree = "<group>"; };
+		0A17279D212E88AC00CF978C /* JSGPSElementType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSGPSElementType.h; path = objNative/JSGPSElementType.h; sourceTree = "<group>"; };
+		0A17279E212E88AC00CF978C /* JSGPSElementType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSGPSElementType.m; path = objNative/JSGPSElementType.m; sourceTree = "<group>"; };
 		0A332CD6211D623D00F56F26 /* JSAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAction.h; path = objNative/JSAction.h; sourceTree = "<group>"; };
 		0A332CD7211D623D00F56F26 /* JSAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSAction.m; path = objNative/JSAction.m; sourceTree = "<group>"; };
 		0A332CD8211D623D00F56F26 /* JSAdoptMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSAdoptMapView.h; path = objNative/JSAdoptMapView.h; sourceTree = "<group>"; };
@@ -467,6 +470,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				0A17279D212E88AC00CF978C /* JSGPSElementType.h */,
+				0A17279E212E88AC00CF978C /* JSGPSElementType.m */,
 				0A01192C212412C500BC4AAB /* JSRangeMode.h */,
 				0A01192D212412C500BC4AAB /* JSRangeMode.m */,
 				0A0118A32122BC5600BC4AAB /* JSThemeLabel.h */,
@@ -946,6 +951,7 @@
 				0A332E64211D623E00F56F26 /* JSTrack.m in Sources */,
 				0A332E15211D623E00F56F26 /* JSFeatureSet.m in Sources */,
 				0A0118A52122BC5600BC4AAB /* JSThemeLabel.m in Sources */,
+				0A17279F212E88AC00CF978C /* JSGPSElementType.m in Sources */,
 				0A332E12211D623E00F56F26 /* JSFacilityAnalyst.m in Sources */,
 				0A332E4C211D623E00F56F26 /* JSSceneView.m in Sources */,
 			);
