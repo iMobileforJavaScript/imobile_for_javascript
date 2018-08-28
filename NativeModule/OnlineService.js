@@ -11,13 +11,30 @@ export default class OlineService {
   //  String passworld    密码
   //  String filename     文件名称
 
-  async download(path, username, passworld, filename) {
+  async download(path, filename) {
     try {
-      let result = OS.download(path, username, passworld, filename)
+      debugger
+      let result = OS.download(path, filename)
       return result;
     } catch (e) {
       console.error(e);
     }
   }
-
+  async login(username, passworld) {
+    try {
+      debugger
+      let result = OS.login(username, passworld)
+      return result;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  async logout() {
+    try {
+      let result = OS.logout()
+      return result;
+    } catch (e) {
+      console.error(e);
+    }
+  }
 }

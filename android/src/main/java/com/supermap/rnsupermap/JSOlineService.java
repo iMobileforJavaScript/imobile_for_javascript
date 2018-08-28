@@ -8,6 +8,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.supermap.containts.EventConst;
 import com.supermap.onlineservices.DownLoadFile;
 import com.supermap.onlineservices.OnlineService;
 
@@ -34,38 +35,29 @@ public class JSOlineService extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void download( final String path, String username, String passworld, final String filename) {
+    public void download(String path, String filename,final Promise promise) {
         try {
             final OnlineService onlineService = getInstance();
-            onlineService.login(username, passworld, new OnlineService.LoginCallback() {
+            onlineService.DownLoadFile(mReactContext.getApplicationContext(), filename, path, new DownLoadFile.DownLoadListener() {
                 @Override
-                public void loginSuccess() {
-                    onlineService.DownLoadFile(mReactContext.getApplicationContext(), filename, path, new DownLoadFile.DownLoadListener() {
-                        @Override
-                        public void getProgress(int progeress) {
-                            Log.e("++++++++++++","+"+progeress);
-                            mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("DownLoad",progeress);
-                        }
+                public void getProgress(int progeress) {
+                    Log.e("++++++++++++", "+" + progeress);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADING, progeress);
 
-                        @Override
-                        public void onComplete() {
-                            Log.e("++++++++++++","11111111111111111");
-                        }
-
-                        @Override
-                        public void onFailure() {
-                            Log.e("++++++++++++","33333333333333333");
-                        }
-                    });
                 }
 
                 @Override
-                public void loginFailed(String s) {
-                    Log.e("++++++++++++","5555555555555555555");
+                public void onComplete() {
+                    Log.e("++++++++++++", "==========================" );
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ok", true);
+                }
+
+                @Override
+                public void onFailure() {
                 }
             });
         } catch (Exception e) {
-            Log.e("=============","+"+e);
+            promise.resolve(e);
         }
 
     }
@@ -73,7 +65,6 @@ public class JSOlineService extends ReactContextBaseJavaModule {
     @ReactMethod
     public void login(String username, String passworld, final Promise promise) {
         try {
-//            OnlineService onlineService = getInstance();
             OnlineService.login(username, passworld, new OnlineService.LoginCallback() {
                 @Override
                 public void loginSuccess() {
@@ -93,7 +84,6 @@ public class JSOlineService extends ReactContextBaseJavaModule {
     @ReactMethod
     public void logout(String username, String passworld, final Promise promise) {
         try {
-//            OnlineService onlineService = getInstance();
             OnlineService.logout();
         } catch (Exception e) {
             promise.resolve(e);
