@@ -80,4 +80,10 @@
      */
 -(void) dispose;
 
+/**
+ *  @brief 将当前工作空间链接信息对象输出为格式字符串
+ *  <p>其格式为{Name="",Type="",Server="",Database="",Driver="",User="",Password="",Version=""}
+ *  @return 当前工作空间链接信息
+ */
+-(NSString *) toString;
 @end

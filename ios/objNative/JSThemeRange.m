@@ -22,6 +22,17 @@ RCT_REMAP_METHOD(createObj, createObjResolver:(RCTPromiseResolveBlock)resolve re
     }
 }
 
+//RCT_REMAP_METHOD(createObjClone,createObjCloneById:(NSString*)themeRangeId withResolver(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        ThemeRange* oldTheme = [JSObjManager getObjWithKey:themeRangeId];
+//        ThemeRange* theme = [[ThemeRange alloc] clone:oldTheme];
+//        NSString* key = [JSObjManager addObj:theme];
+//        resolve(key);
+//    } @catch (NSException *exception) {
+//        reject(@"colorScheme",@"ThemeLabel create Obj expection",nil);
+//    }
+//}
+
 RCT_REMAP_METHOD(dispose,disposeById:(NSString*)themeRangeId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         ThemeRange* theme = [JSObjManager getObjWithKey:themeRangeId];

@@ -63,4 +63,10 @@
  * @return 升级成功，返回true，否则，返回false
  */
 -(BOOL)upgrade:(NSString*)userSerialIDFrom userID:(NSString*)userSerialIDTo;
+
+/**
+ * 清楚本地许可文件
+ * @return
+ */
+-(void)clearLocalLicense;
 @end

@@ -46,7 +46,6 @@ export default class ThemeLabel extends Theme {
       themeLabel._SMThemeId = id;
       return themeLabel;
     } catch (e) {
-      debugger
       console.error(e);
     }
   }

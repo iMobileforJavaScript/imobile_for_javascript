@@ -1,25 +1,31 @@
 package com.supermap.rnsupermap;
 
-import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.onlineservices.DownLoadFile;
 import com.supermap.onlineservices.OnlineService;
 
 public class JSOlineService extends ReactContextBaseJavaModule {
-    private Context context;
+
+    ReactContext mReactContext;
+    OnlineService onlineService;
 
     public JSOlineService(ReactApplicationContext reactContext) {
         super(reactContext);
-        context = reactContext;
+        mReactContext = reactContext;
+    }
+
+    public OnlineService getInstance() {
+        if (onlineService == null) {
+            onlineService = new OnlineService(mReactContext.getApplicationContext());
+        }
+        return onlineService;
     }
 
     @Override
@@ -28,20 +34,17 @@ public class JSOlineService extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void Download(final String path, String username, String passworld, final String filename) {
+    public void download( final String path, String username, String passworld, final String filename) {
         try {
-            final OnlineService onlineService = new OnlineService(context.getApplicationContext());
+            final OnlineService onlineService = getInstance();
             onlineService.login(username, passworld, new OnlineService.LoginCallback() {
                 @Override
                 public void loginSuccess() {
-                    onlineService.DownLoadFile(context.getApplicationContext(), filename, path, new DownLoadFile.DownLoadListener() {
+                    onlineService.DownLoadFile(mReactContext.getApplicationContext(), filename, path, new DownLoadFile.DownLoadListener() {
                         @Override
                         public void getProgress(int progeress) {
                             Log.e("++++++++++++","+"+progeress);
-                            if(progeress==99){
-                                Toast toast=Toast.makeText(context.getApplicationContext(),"下载成功",Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
+                            mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("DownLoad",progeress);
                         }
 
                         @Override
@@ -66,4 +69,35 @@ public class JSOlineService extends ReactContextBaseJavaModule {
         }
 
     }
+
+    @ReactMethod
+    public void login(String username, String passworld, final Promise promise) {
+        try {
+//            OnlineService onlineService = getInstance();
+            OnlineService.login(username, passworld, new OnlineService.LoginCallback() {
+                @Override
+                public void loginSuccess() {
+                    promise.resolve(true);
+                }
+
+                @Override
+                public void loginFailed(String error) {
+                    promise.resolve(error);
+                }
+            });
+        } catch (Exception e) {
+            promise.resolve(e);
+        }
+    }
+
+    @ReactMethod
+    public void logout(String username, String passworld, final Promise promise) {
+        try {
+//            OnlineService onlineService = getInstance();
+            OnlineService.logout();
+        } catch (Exception e) {
+            promise.resolve(e);
+        }
+    }
+
 }

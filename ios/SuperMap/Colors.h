@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ColorGradientType.h"
 @class Color;
 /**  颜色集合类。
 *
@@ -15,7 +16,7 @@
 @interface Colors : NSObject{
 
     BOOL _isForDataset;
-
+    
 }
 /** 根据指定的参数来构造一个 Colors 的新对象。
 * 
@@ -62,4 +63,15 @@
 * @return 一个随机颜色类型。
 */
 +(Colors *)makeRandom:(int)count;
+
+-(int) add:(Color *)color;
+-(void) clear;
+-(void) dispose;
+-(BOOL) insertAtIndex:(int)index color:(Color *)color;
++(Colors *)makeGradient:(int)count gradientColorArray:(NSMutableArray *)gradientColorArray;
++(Colors *)makeGradient2:(int)count colorGradientType:(ColorGradientType)colorGradientType reverse:(BOOL)reverse;
+-(BOOL) removeAtIndex:(int)index;
+-(void) setAtIndex:(int)index color:(Color *)color;
+-(Colors *) makeRandom2:(int)count colorArray:(NSMutableArray *)colorArray;
+
 @end

@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class WorkspaceConnectionInfo,Datasources,Maps,Scenes;
+@class WorkspaceConnectionInfo,Datasources,Maps,Scenes,Resources;
 
 /**    工作空间。
  *
@@ -65,6 +65,14 @@
  * @return 工作空间中的场景集合对象。
  */
 @property (nonatomic,readonly,strong) Scenes *scenes;
+
+/**
+ * @brief 返回符号库对象。
+ * <p>符号库对象包含工作空间下所有符号信息，内涵三个子库，即点符号库（MarkerSymbolLiberary）、线符号库（LineSymbolLiberary）和面符号库（FillSymbolLiberary）。
+ * <p> 默认值为一个初始化的 <Resources>  对象。
+ * @return 符号库对象。
+ */
+@property (nonatomic,readonly,strong) Resources *resources;
 
 /**
      * @brief  获取或设置用户加入的对当前工作空间的描述或说明性信息。

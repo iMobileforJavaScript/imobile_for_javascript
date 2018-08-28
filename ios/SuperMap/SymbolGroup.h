@@ -6,7 +6,7 @@
 //
 
 #import <UIKit/UIKit.h>
-@class SymbolLibrary;
+@class Symbol, SymbolLibrary,SymbolGroups;
 
 /** 符号库分组类。
  * 
@@ -16,14 +16,7 @@
  * <p>注：所谓的分组和子分组是符号库的逻辑组织形式，都是使用户可以将类别相同的符号放在一个组中，从而方便管理和使用。
  * <p>综上所述，一个符号库 <SymbolLibrary> 包含有唯一的一个根组 <SymbolGroup> 类对象，每个 <SymbolGroup> 类对象至多包含有一个  <SymbolGroups> 类对象，但却可以包含有零个或多个 <Symbol > 类对象，其中  <SymbolGroups> 类对象是 <SymbolGroup> 类对象的集合，以此实现符号库的树形管理结构。
  */
-@interface SymbolGroup : NSObject {
-@private
-    NSString *_name;
-    NSInteger _count;
-    SymbolLibrary *_symbolLibrary; 
-    SymbolGroup *_parentSymbolGroup;
-}
-
+@interface SymbolGroup : NSObject
  /**
      * @brief 返回该分组对象的名称，如果该分组对象的名称在其父分组中已经存在，则会抛出异常。
      * @return 该分组对象的名称。
@@ -41,7 +34,7 @@
      * @brief 返回与该符号库分组对象相关联的符号库。
      * @return 与该符号库分组对象相关联的符号库。
      */	
-@property(nonatomic,retain)SymbolLibrary *symbolLibrary;
+@property(nonatomic,retain,readonly)SymbolLibrary *symbolLibrary;
 
 /**
      * @brief 返回该分组对象的父分组。符号库的根组不存在父分组。
@@ -51,13 +44,35 @@
 	 * <p>综上所述，一个符号库 <SymbolLibrary> 包含有唯一的一个根组  <SymbolGroup> 类对象），每个   <SymbolGroup> 类对象至多包含有一个  <SymbolGroups> 类对象，但却可以包含有零个或多个  <Symbol> 类对象，其中  <SymbolGroups> 类对象是  <SymbolGroup>  类对象的集合，以此实现符号库的树形管理结构。
      * @return 该分组对象的父分组。
      */	
-@property(nonatomic,retain)SymbolGroup *parentSymbolGroup;
+@property(nonatomic,retain,readonly)SymbolGroup *parentSymbolGroup;
 
- /**
-     * @brief 返回该分组对象中指定索引处的符号对象。
-     * @param index 指定索引。
-     * @return 该分组对象中指定索引处的符号对象。
-     */
--(SymbolGroup *)getSymbolWithIndex:(NSInteger)index;
+@property(nonatomic,retain,readonly)SymbolGroups *childSymbolGroups;
+
+/**
+ * @brief 返回该分组对象中指定索引处的符号对象。
+ * @param index 指定索引。
+ * @return 该分组对象中指定索引处的符号对象。
+ */
+-(Symbol *)getSymbolWithIndex:(NSInteger)index;
+/**
+ * @brief 返回该分组对象中指定Id符号对象的索引。
+ * @param nId 指定符号对象的ID。
+ * @return 返回该分组对象中指定Id符号对象的索引。
+ */
+-(int)symbolIndexOfId:(int)nId;
+// 移动索引处的符号对象到别的分组
+-(BOOL)moveSymbol:(int)nIndex to:(SymbolGroup*)desGroup;
+// 删除ID对应的符号对象
+-(BOOL)removeSymbolById:(int)nId;
+/**
+ * @brief 返回ID对应符号对象所在子分组。
+ * @param nId 指定符号对象的ID。
+ * @return 返回ID对应符号对象所在子分组。
+ */
+-(SymbolGroup*)findSymbolGroupById:(int)nId;
+
+// 查找Symbol
+-(Symbol*)findSymbolById:(int)nId;
+-(Symbol*)findSymbolByName:(NSString*)name;
 
 @end

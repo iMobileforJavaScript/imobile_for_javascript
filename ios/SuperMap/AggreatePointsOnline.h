@@ -59,5 +59,20 @@
  * 数字精度 默认为 1
  */
 @property(nonatomic)NSInteger numericPrecision;
+/**
+ * 专题图分段个数
+ * 默认为:0
+ */
+@property(nonatomic)NSInteger rangeCount;
+/**
+ * 专题图分段模式: EQUALINTERVAL(等距离分段)、LOGARITHM(对数分段)、QUANTILE(等计数分段)、SQUAREROOT(平方根分段)、STDDEVIATION (标准差分段)
+ * 默认为:EQUALINTERVAL(等距离分段)
+ */
+@property(nonatomic,strong)NSString* rangeMode;
+/**
+ * 专题图颜色渐变模式: GREENORANGEVIOLET(绿橙紫渐变色)、GREENORANGERED(绿橙红渐变)、RAINBOW(彩虹色)、SPECTRUM(光谱渐变)、TERRAIN (地形渐变)
+ * 默认为:GREENORANGEVIOLET(绿橙紫渐变色)
+ */
+@property(nonatomic,strong)NSString* colorGradientType;
 
 @end

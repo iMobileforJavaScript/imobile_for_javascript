@@ -53,6 +53,12 @@
 @property(nonatomic)RangeMode mRangeMode;
 
 /**
+ * @brief 获取或设置标签沿线标注方向。
+ * <p> 默认值为LEFT_TOP_TO_RIGHT_BOTTOM。</p>
+ */
+@property(nonatomic,assign)AlongLineDirection alongLineDirection;
+
+/**
 * @brief 拷贝构造函数，根据给定的  <ThemeLabel> 对象构造一个与其完全相同的新对象。
 * @param themeLabel 给定的  <ThemeLabel>  对象。
 */
@@ -124,12 +130,7 @@
 */
 -(void)dispose;
 
-/**
-* @brief 返回标签沿线标注方向。
-* <p> 默认值为LEFT_TOP_TO_RIGHT_BOTTOM。</p>
-* @return 标签沿线标注方向。
-*/
--(AlongLineDirection )getAlongLineDirection;
+
 
 /**
 * @brief 返回指定序号的标签专题图中标签专题图子项。有关标签专题图子项详细信息，请参见 <ThemeLabelItem> 类。

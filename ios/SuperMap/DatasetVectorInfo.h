@@ -74,4 +74,11 @@
      */
 -(void) dispose;
 
+/**
+ *
+ * @brief输出矢量数据集的信息
+ * 其格式为{Name="",Type="",EncodeType=""}
+ */
+-(NSString *)toString;
+
 @end

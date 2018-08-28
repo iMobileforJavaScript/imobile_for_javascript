@@ -182,6 +182,12 @@
  * @param tolerance
  */
 -(void)setDeviateTolerance:(double)tolerance;
+
+/**
+ * 设置／获取行驶速度，单位 m/s
+ */
+@property (nonatomic) double speed;
+//  end
 @end
 @protocol Navigation3ChangedDelegate <NSObject>
 

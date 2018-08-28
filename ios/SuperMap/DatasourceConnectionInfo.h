@@ -175,4 +175,9 @@ typedef enum{
  * @return
  */
 -(NSString*)getProxyPort;
+/**
+ * 设置google地图瓦片大小,仅用于http://maps.google.com
+ * @param value 瓦片大小
+ */
+-(void) setWebImageSize:(int)value;
 @end

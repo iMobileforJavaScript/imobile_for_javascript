@@ -13,9 +13,7 @@
  *  
  * <p>点状符号库类、线型符号库类和填充符号库类都继承自该抽象类。用来管理符号对象，包括符号对象的添加、删除。
  */
-@interface SymbolLibrary : NSObject {
-    SymbolGroup *_symbolGroup;
-}
+@interface SymbolLibrary : NSObject 
 
 /**
      * 获取符号库的根组对象。
@@ -25,28 +23,30 @@
 	 * <p>综上所述，一个符号库 <SymbolLibrary> 包含有唯一的一个根组<SymbolGroup>  类对象，每个 <SymbolGroup>  类对象至多包含有一个  <SymbolGroups> 类对象，但却可以包含有零个或多个  <Symbol> 类对象，其中  <SymbolGroups> 类对象是  <SymbolGroup> 类对象的集合，以此实现符号库的树形管理结构。
      * @return 符号库的根组对象。
      */
-@property(nonatomic,retain)SymbolGroup *rootGroup;
+@property(nonatomic,retain,readonly)SymbolGroup *rootGroup;
+
+@property(nonatomic)BOOL isDispose;
 
 /**
      * @brief  根据指定符号的 ID 号，查找该符号所属的分组。
      * @param ID 指定符号的 ID 号。
      * @return 符号库分组对象。
      */	
-- (SymbolGroup *)findGroupWithID:(NSInteger)ID;
+- (SymbolGroup *)findGroupWithID:(int)nId;
 
 /**
      * @brief 测试当前符号库是否包含指定的 ID 号。
      * @param ID 需要进行测试的 ID 值。
      * @return 如果包含指定的 ID 号，返回 true；否则返回 false。
      */	
-- (BOOL)containID:(NSInteger)ID;
+- (BOOL)containID:(int)nId;;
 
  /**
      * @brief 在该符号库中查找指定 ID 号的符号对象。
      * @param ID 指定的 ID 值。
      * @return 符号对象。
      */
-- (Symbol *)findSymbolWithID:(NSInteger)ID;
+- (Symbol *)findSymbolWithID:(int)nId;
 
 /**
      * @brief 根据指定的名称，在该符号库中查找该名称所对应的符号对象，返回第一个与指定名称相同的符号对象。
@@ -55,5 +55,18 @@
      */	
 - (Symbol *)findSymbolWithName:(NSString *)name;
 
+-(BOOL)fromFile:(NSString*)strFileName;
+
+-(BOOL)removeWithID:(int)nId;
+
+-(int)add:(Symbol *)symbol toGroup:(SymbolGroup*)desGroup;
+
+-(int)add:(Symbol *)symbol;
+
+-(BOOL)moveSymbolByID:(int)nId toGroup:(SymbolGroup*)desGroup;
+
+-(NSString*)getLibPath;
+
+-(void)dispose;
 
 @end

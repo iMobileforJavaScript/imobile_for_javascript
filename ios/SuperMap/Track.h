@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "DatasetVector.h"
+@class LocationData;
 
 @interface Track : NSObject
 
@@ -24,6 +25,24 @@
 
 // 设置存入数据集的定位点的距离间隔，单位为米。
 @property (nonatomic,assign) double distanceInterval;
+
+/**
+ * 用户是否自定义位置
+ */
+@property (nonatomic,assign) BOOL customLocation;
+/**
+ * 设置LocationData数据
+ */
+-(void) setLocationData:(LocationData *) locationData;
+/**
+ * 设置速度和方位角模式的状态
+ */
+-(void) setSpeedAndDirectionAngle:(BOOL)speedAndDirectionAngle;
+/**
+ * 获取速度和方位角模式的状态
+ * return YES代表使用速度和方位角模式，NO则相反
+ */
+-(BOOL) isSpeedAndDirectionAngle;
 
 
 // 创建符合记录轨迹点规则的数据集

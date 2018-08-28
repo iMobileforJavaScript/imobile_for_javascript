@@ -11,7 +11,7 @@
 #import "ColorGradientType.h"
 #import "JoinItems.h"
 #import "Colors.h"
-
+@class GeoStyle;
 /** 单值专题图类。
 *  
 * <p>将字段或表达式的值相同的要素采用相同的风格来显示，从而用来区分不同的类别。例如，在表示土地的面数据中表示土地利用类型的字段中有草地，林地，居民地，耕地等值，使用单值专题图进行渲染时，每种类型的土地利用类型被赋予一种颜色或填充风格，从而可以看出每种类型的土地利用的分布区域和范围。可用于地质图、地貌图、植被图、土地利用图、政治行政区划图、自然区划图、经济区划图等。单值专题图着重表示现象质的差别，一般不表示数量的特征。尤其是有交叉或重叠现象时，此类不推荐使用，例如：民族分布区等。</p>
@@ -168,4 +168,11 @@
 * @brief  对单值专题图中子项的风格进行反序显示。
 */
 -(void)reverseStyle;
+
+@property (nonatomic,strong)NSString *offsetX;
+@property (nonatomic,strong)NSString *offsetY;
+@property (nonatomic)BOOL isOffsetFixed;
+/**默认风格,如果某个对象不在单值列表内,就使用这个风格进行显示*/
+@property (nonatomic,strong)GeoStyle *defaultGeoStyle;
+
 @end

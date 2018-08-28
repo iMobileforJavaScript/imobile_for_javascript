@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @class TransportationAnalystSetting,TransportationAnalystResult,TransportationAnalystParameter,Point2D,Point2Ds,ServiceAreaResult,TransportationAnalystCheckResult;
+@class DatasetVector;  
 @interface TransportationAnalyst : NSObject
 
 /**
@@ -66,4 +67,9 @@
 -(TransportationAnalystCheckResult *)check;
 
 -(void)dispose;
+
+-(BOOL) createModel:(NSString *)fileName;
+
+-(BOOL) loadModelWithFilePath:(NSString *)filePath datasetVector:(DatasetVector *)networkDataset;
+
 @end

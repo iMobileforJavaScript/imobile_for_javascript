@@ -24,4 +24,7 @@
 //移除用户自定义标示
 -(void)removeUserDefinedLegendItem:(LegendItem*)item;
 -(void)dispose;
+
+/** 设置关联的图例控件*/
+-(void) connectLegendView:(LegendView *)legendView;
 @end

@@ -53,4 +53,18 @@
 -(int)addRange:(NSArray*)joinItems;
 
 -(int)add:(JoinItem*)item;
+
+-(void)clear;
+
+-(void)dispose;
+
+-(BOOL)insert:(int)index joinItem:(JoinItem *)joinItem;
+
+-(int)insertRange:(int)index joinItemArray:(NSMutableArray *)joinItemArray;
+
+-(BOOL)remove:(int)index joinItem:(JoinItem *)joinItem;
+
+-(BOOL)removeRange:(int)index count:(int)count;
+
+-(NSMutableArray *)toArray;
 @end

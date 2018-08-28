@@ -4,7 +4,6 @@ export default class Environment {
 
   async setLicensePath(path) {
     try {
-      debugger
       var { isSet } = await E.setLicensePath(path);
       return isSet
     } catch (e) {

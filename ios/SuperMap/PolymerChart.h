@@ -20,8 +20,7 @@
 @property(nonatomic,strong)Color* foldColor;
 //设置展开暗处色
 @property(nonatomic,strong)Color* unfoldColor;
-//聚合半径，像素值。默认5
-@property(nonatomic)float polymerRadious;
+
 -(id)initWithMapControl:(MapControl*)mapControl;
 //设置关系点调色板
 -(void)setColorScheme:(ColorScheme*)colorScheme;

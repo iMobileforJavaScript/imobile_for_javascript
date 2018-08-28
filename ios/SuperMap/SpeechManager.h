@@ -52,12 +52,11 @@
 -(BOOL)isListening;
 
 /**
- * 设置识别音频文件的名字(xxx.wav)
+ * 设置识别音频文件的名字(格式为xxx.wav)
  * 通过此参数，可以在识别完成后在本地保存一个音频文件（默认保存目录在Library/Caches）
  * 是否必须设置：否
- * 值范围：有效的文件相对或绝对路径（含文件名）
  */
-@property (nonatomic,strong) NSString* aduioName;
+@property (nonatomic,strong) NSString* audioName;
 /**
  *设置是否返回标点符号,设置为true返回结果有标点,设置为false返回结果无标点。
  *

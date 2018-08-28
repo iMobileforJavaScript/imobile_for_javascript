@@ -70,6 +70,9 @@
 #import "ZoomAnimator.h"
 #import "AlphaAnimator.h"
 
+#import "MapControlGroup.h"
 #import "ARControl.h"
 
+#import "SpeechManager.h"
+#import "IntelligentSpeechDelegate.h"
 #endif

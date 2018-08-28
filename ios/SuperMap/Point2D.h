@@ -82,4 +82,35 @@
 */
 -(BOOL) fromJson:(id) JSONData;
 
+/**
+ * 通过将 Point2D 的坐标值舍入到与其接近的较大整数值，并以整数值构造一个新的Point2D返回
+ * @param pt Point2D 需要转换的二维点对象
+ * @return Point 转换后的二维点对象
+ */
++(Point2D *) ceiling:(Point2D *) point2D;
+/**
+ * 返回小于或等于比pt坐标值的最大整数对构造的Point2D
+ * @param pt Point2D 需要转换的二维点对象
+ * @return Point 转换后的二维点对象
+ */
++(Point2D *) floor:(Point2D *) point2D;
+
+/**
+ * 返回空的点对象
+ * @return Point2D
+ */
++(Point2D *) getEMPTY;
+/**
+ * 通过将 Point2D 的坐标值舍入到最接近的整数值，并以整数值为坐标构造一个新的Point2D返回
+ * @param pt Point2D 需要转换的二维点对象
+ * @return Point 转换后的二维点对象
+ */
++(Point2D *) round:(Point2D *) point2D;
+/**
+ * 判断是否为空的Point2D对象
+ * @return boolean
+ */
+-(BOOL) isEmpty;
+
+
 @end

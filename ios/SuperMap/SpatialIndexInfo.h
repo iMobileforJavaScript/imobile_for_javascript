@@ -51,4 +51,6 @@ typedef enum SpatialIndexType
 -(id)initWithGridCenter:(Point2D*)gridCenter gridSize0:(double)gridSize0 gridSize1:(double)gridSize1 gridSize2:(double)gridSize2;
 
 -(SpatialIndexInfo*)clone;
+
+-(void)dispose;
 @end

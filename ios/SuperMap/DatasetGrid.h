@@ -12,6 +12,7 @@
 #import "Colors.h"
 #import "DatasetVector.h"
 #import <CoreGraphics/CoreGraphics.h>
+@class StatisticsResult;
 /** 栅格数据集类。
  <p> 栅格数据集类，该类用于描述栅格数据，例如高程数据集和土地利用图。栅格数据采用网格形式组织并使用二维的栅格的像素值来记录数据，每个栅格（cell）代表一个像素要素，栅格值可以描述各种数据信息。
  <p> 栅格数据集中每 一个栅格（cell）存储的是表示地物的属性值，属性值可以是土壤类型、密度值、高程、温度、湿度等。
@@ -132,5 +133,16 @@
  @return  一个布尔值，表示更新是否成功，如果更新成功，返回 true，否则返回 false。
   */
 -(BOOL)update:(DatasetGrid *)dataset;
-
+/**
+ * 返回栅格数据集像素的统计结果，包括最大值、最小值、均值、中值、众数、稀数、方差、标准差。
+ *
+ * @return 返回统计结果。
+ */
+-(StatisticsResult *) buildStatistics;
+/**
+ * 返回栅格数据集像素的统计结果，包括最大值、最小值、均值、中值、众数、稀数、方差、标准差。
+ *
+ * @return 返回统计结果。
+ */
+-(StatisticsResult *) gridStatisticsResult;
 @end

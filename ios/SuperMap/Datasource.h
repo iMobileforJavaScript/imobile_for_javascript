@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "EncodeType.h"
 #import "DatasourceConnectionInfo.h"
-
+#import "Charset.h"
 @class Workspace,Datasets;
 @class PrjCoordSys;
 @class Dataset;
@@ -97,4 +97,8 @@
  * @return 修改是否成功。
  */
 -(BOOL)changePassword:(NSString*)oldPassword nwePasswd:(NSString*)newPassword type:(DatasourceEncryptionType)type;
+
+
+-(Dataset*)copyDataset2:(Dataset*)srcDataset desDatasetName:(NSString*)datasetName encodeType:(EncodeType)encodeType charset:(Charset)charset;
+-(BOOL) isOpended;
 @end

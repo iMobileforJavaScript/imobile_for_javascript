@@ -45,4 +45,7 @@
 @property(nonatomic,strong)Point2D* point;
 //!< 道路时间，单位分钟
 @property(nonatomic,assign)double time;
+
+//路段行驶速度
+@property(nonatomic,assign)double speed;
 @end

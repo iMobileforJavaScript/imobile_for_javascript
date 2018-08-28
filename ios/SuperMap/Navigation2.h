@@ -13,6 +13,7 @@
 @class GeoStyle;
 @class GeoLine;
 @class Point2D,GPSData;
+@class Point2Ds;
 @class DatasetVector,NaviStep;
 @protocol navigation2ChangedDelegate;
 @protocol Encryption;
@@ -189,8 +190,12 @@
  * @param value 引导路径的样式
  */
 -(void)setRouteStyle:(GeoStyle*)style;
+/**
+ * 设置起点和终点的引导线
+ * @param value 引导路径的样式
+ */
+-(void)setShowGuideLine:(GeoStyle*)style;
 
-/////////////////////////////////////////////////   add 2018.1.8 by-luchd
 /**
  *@brief  设置途经点
  * @param x 终点x坐标
@@ -198,7 +203,37 @@
  */
 -(void)addWayPointWithX:(double)x y:(double)y;
 
-// end 2018.1.8
+/**
+ * 障碍节点集合
+ */
+@property (nonatomic)NSMutableArray *barrierNodeArray;
+/**
+ 障碍点集合
+ */
+@property (nonatomic)Point2Ds *barrierPoints;
+/**
+ * 设置障碍边
+ * @param value 障碍边集合（参数为null时，为清空障碍边）
+ */
+-(void) setBarrierEdges:(NSMutableArray *)barrierEdgeArray;
+-(void) locateMap;
+-(void) pauseGuide;
+-(void) resumeGuide;
+/**
+ * 设置模拟导航速度(单位m/s)
+ */
+-(void) setSimulationSpeed:(double)speed;
+/**
+ * 设置模拟导航间隔时间(单位ms)
+ */
+-(void) setSimulationInterval:(int)interval;
+/**
+ * 添加导航偏移容限，单位米
+ * @param tolerance
+ */
+-(void) setDeviateTolerance:(double)deviateTolerance;
+
+
 @end
 
 @protocol navigation2ChangedDelegate<NSObject>

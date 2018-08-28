@@ -19,6 +19,13 @@
 @property(nonatomic)double y;
 @property(nonatomic)double z;
 
++(PointM*)getEMPTY;
+-(id)init;
 -(id)initWith:(double)x y:(double)y z:(double)z;
+-(PointM*)clone;
+-(BOOL)isEmpty;
+-(BOOL)equals:(PointM*)pntM;
+-(int)hashCode;
+-(NSString*)toString;
 
 @end

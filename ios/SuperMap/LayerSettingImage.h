@@ -94,4 +94,8 @@ typedef enum {
  */
 -(void)setVisibleSubLayers:(NSArray*)subLayers;
 
+/**
+ * 设置图层的最大缓存数
+ */
+@property (nonatomic) int cacheMaxSize;
 @end

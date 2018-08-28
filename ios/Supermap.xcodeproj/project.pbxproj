@@ -148,6 +148,8 @@
 		0A332E71211D623E00F56F26 /* RCTConvert+EncodeType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE5211D623E00F56F26 /* RCTConvert+EncodeType.m */; };
 		0A332E72211D623E00F56F26 /* RCTConvert+RadiusUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE7211D623E00F56F26 /* RCTConvert+RadiusUnit.m */; };
 		0A332E73211D623E00F56F26 /* SceneViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE9211D623E00F56F26 /* SceneViewManager.m */; };
+		D877B5B22133D5C00044AE61 /* JSOnlineService.m in Sources */ = {isa = PBXBuildFile; fileRef = D877B5B12133D5C00044AE61 /* JSOnlineService.m */; };
+		D877B5C42133F21E0044AE61 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = D877B5C32133F21E0044AE61 /* Constants.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -446,6 +448,10 @@
 		0A332DE8211D623E00F56F26 /* SceneViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneViewManager.h; path = objNative/SceneViewManager.h; sourceTree = "<group>"; };
 		0A332DE9211D623E00F56F26 /* SceneViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SceneViewManager.m; path = objNative/SceneViewManager.m; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libSupermap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSupermap.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D877B5B02133D5C00044AE61 /* JSOnlineService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSOnlineService.h; path = objNative/JSOnlineService.h; sourceTree = "<group>"; };
+		D877B5B12133D5C00044AE61 /* JSOnlineService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSOnlineService.m; path = objNative/JSOnlineService.m; sourceTree = "<group>"; };
+		D877B5C22133F21E0044AE61 /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = objNative/Constants.h; sourceTree = "<group>"; };
+		D877B5C32133F21E0044AE61 /* Constants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = Constants.m; path = objNative/Constants.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -470,6 +476,10 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				D877B5C22133F21E0044AE61 /* Constants.h */,
+				D877B5C32133F21E0044AE61 /* Constants.m */,
+				D877B5B02133D5C00044AE61 /* JSOnlineService.h */,
+				D877B5B12133D5C00044AE61 /* JSOnlineService.m */,
 				0A17279D212E88AC00CF978C /* JSGPSElementType.h */,
 				0A17279E212E88AC00CF978C /* JSGPSElementType.m */,
 				0A01192C212412C500BC4AAB /* JSRangeMode.h */,
@@ -846,6 +856,7 @@
 				0A332E01211D623E00F56F26 /* JSCoordSysTranslator.m in Sources */,
 				0A332E42211D623E00F56F26 /* JSQueryParameter.m in Sources */,
 				0A332E0D211D623E00F56F26 /* JSDataUploadService.m in Sources */,
+				D877B5C42133F21E0044AE61 /* Constants.m in Sources */,
 				0A332E24211D623E00F56F26 /* JSLayerSetting.m in Sources */,
 				0A332E4D211D623E00F56F26 /* JSSelection.m in Sources */,
 				0A332E37211D623E00F56F26 /* JSPieChart.m in Sources */,
@@ -890,6 +901,7 @@
 				0A332E03211D623E00F56F26 /* JSCoordSysTransParameter.m in Sources */,
 				0A332E6E211D623E00F56F26 /* RCTConvert+Action.m in Sources */,
 				0A332E38211D623E00F56F26 /* JSPieChartData.m in Sources */,
+				D877B5B22133D5C00044AE61 /* JSOnlineService.m in Sources */,
 				0A332DFC211D623E00F56F26 /* JSCollector.m in Sources */,
 				0A332E60211D623E00F56F26 /* JSThemeType.m in Sources */,
 				0A332DFE211D623E00F56F26 /* JSCollectorLine.m in Sources */,

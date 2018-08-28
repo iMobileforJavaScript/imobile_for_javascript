@@ -13,8 +13,14 @@
 #import "SpatialIndexInfo.h"
 
 @class Geometry;
-
+@class GeoLine;
 @class FieldInfos,DatasetVector,Recordset,QueryParameter;
+
+@protocol QueryDelegate <NSObject>
+@required
+-(void) queryResultWithDataset:(Dataset *)dataset fieldName:(NSString *)fieldName smIDs:(NSMutableArray *) smIDs;
+@end
+
 
 /** 矢量数据集类。
  * 
@@ -202,4 +208,44 @@
 -(BOOL)isSpatialIndexTypeSupported:(SpatialIndexType) spatialIndexType;
 -(SpatialIndexType)getSpatialIndexType;
 -(Rectangle2D*)computeBounds;
+
+
+/**
+	*  将点数据集中的所有点转换成线对象,仅支持点数据集
+	*  <p>若不是点数据集，会抛出异常。若点数据集中少于两个点，则返回null</p>
+	*  @return GeoLine 转换成功，返回转换后的线对象；否则返回null
+	*/
+-(GeoLine *)convertToLine;
+/**
+	*  将点数据集中的有相同字段值的点转换成线对象,仅支持点数据集
+	*  <p>若不是点数据集，会抛出异常。若点数据集中不存在指定的字段或没有包含该字段值的点，以及匹配结果少于两个点，则返回null</p>
+	*  @param fieldName   字段名
+	*  @param fieldValue  字段值
+	*  @return GeoLine    转换成功，返回转换后的线对象；否则返回null
+	*/
+-(GeoLine *)convertToLineWithFieldName:(NSString *) fieldName fieldValue:(NSString *) fieldValue;
+/**
+     *
+     *  @brief 通过ID数组删除数据集中的记录
+     *  @param idArray int型数组idArray
+     *  @return YES代表删除成功，NO则失败
+     */
+-(BOOL) deleteRecords:(NSArray *) idArray;
+/**
+	* 空间查询，查询指定空间范围内符合字段条件的记录
+	* @param attributeFilter  查询的条件，比如说 Kind=2008
+	* @param geoRegion        查询的区域
+	* @param count            返回的查询结果个数，默认10个，超过100按100算
+ */
+-(void) queryByFilter:(NSString *) attributeFilter geoRegion:(Geometry *) geoRegion count:(NSInteger)count;
+/**
+	* 属性查询，查询指定字段之中包含关键字的记录
+	* @param fieldName    查询的字段名，如Name, Name_PY, Name_PYSZM,即名称字段，名称拼音字段，名称拼音首字母字段
+	* @param keywords     对查询字段做查询的关键字
+	* @param geoRegion    可以指定范围，如果为NULL，则表示全范围查询
+	* @param count       返回的查询结果个数，默认10个，超过100按100算
+	*/
+-(void) queryByKeyword:(NSString *) fieldName keywords:(NSString *) keywords geoRegion:(Geometry *) geoRegion count:(NSInteger) count;
+
+@property(nonatomic)id<QueryDelegate> delegate;
 @end

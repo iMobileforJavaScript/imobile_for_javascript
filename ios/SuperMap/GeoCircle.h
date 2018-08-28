@@ -9,7 +9,7 @@
 #import "Geometry.h"
 
 @class Point2D;
-
+@class GeoLine,GeoRegion;
 @interface GeoCircle : Geometry
 
 /**
@@ -32,5 +32,35 @@
  * @param radius 指定的 半径。
  */
 - (id)initWithCenter:(Point2D *)center radius:(double)radius;
+
+-(id)initWithGeoCircle:(GeoCircle *)geoCircle;
+/**
+ 根据两个点创建一个圆，两个点分别为圆直径的两个端点
+ */
+- (id)initWithPoint:(Point2D *)point1 point2:(Point2D *)point2;
+/**
+  根据三点创建一个圆.
+  根据几何学知识，由三点可确定一个圆，创建三点圆时，这三个点均为弧上的点，因此不能在同一直线上
+ */
+- (id)initWithPoint2:(Point2D *)point1 point2:(Point2D *)point2 point3:(Point2D *)point3;
+
+
+-(GeoCircle *)clone;
+/**
+ 转换为线对象
+ */
+-(GeoLine *)convertToLine:(int) segmentCount;
+/**
+ 转换为面对象
+ */
+-(GeoRegion *)convertToRegion:(int) segmentCount;
+
+-(void)dispose;
+/**
+ 返回椭圆饼的面积。
+ */
+-(double) getArea;
+
+-(double)getPerimeter;
 
 @end

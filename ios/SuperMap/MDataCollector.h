@@ -11,6 +11,7 @@
 @class Rectangle2D;
 @class Dataset;
 @class Datasource;
+@class LocationData;
 
 @protocol MDataCollectorMediaFileListener <NSObject>
 
@@ -29,6 +30,11 @@
 @end
 
 @interface MDataCollector : NSObject
+
+/**
+ *  设置LocationData数据，其数据来自自定义的定位功能
+ */
+-(void)setLocationData:(LocationData *)locationData;
 
 
 //设置多媒体采集文件相对路径，设置后最好不要修改

@@ -183,5 +183,46 @@
  */
 -(BOOL)setSimulationInterval:(int)interval;
 
+/**
+ * 获取导航剩余时间
+ * @param speed 当前行驶速度
+ */
+-(NSInteger) getTimeToDestination:(double) speed;
+/**
+ * 获取导航时当前道路等级
+ */
+-(NSInteger) getPathRoadLevel;
+/**
+ * 获取导航副动作
+ */
+-(NSInteger) getSecondaryAction;
+/**
+ * 添加障碍点
+ * @param x
+ * @param y
+ */
+-(BOOL) addBarrierPointAtX:(double)x y:(double) y;
+
+/**
+ * 清除所有障碍点
+ */
+-(BOOL) clearBarrierPoints;
+/**
+ * 添加障碍区域
+ * @param left
+ * @param bottom
+ * @param right
+ * @param top
+ */
+-(BOOL) addBarrierBoundAtLeft:(double)left bottom:(double)bottom right:(double)right top:(double)top;
+/**
+ * 清除障碍区域
+ */
+-(BOOL) clearBarrierBound;
+/**
+ * 获取定位车辆位置与路网匹配状态
+ */
+-(NSInteger) getAdjust;
+
 @end
 

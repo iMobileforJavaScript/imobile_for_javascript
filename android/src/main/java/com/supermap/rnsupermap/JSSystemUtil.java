@@ -10,7 +10,9 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -239,6 +241,58 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
             myInput.close();
             myOutput.close();
         } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 文件解压
+     * @param zipFile
+     * @param targetDir
+     * @param promise
+     */
+    @ReactMethod
+    public static void UnZipFolder(String zipFile, String targetDir, Promise promise){
+        boolean isUnZiped = false;
+        java.util.zip.ZipInputStream inZip;
+        try {
+
+            inZip = new java.util.zip.ZipInputStream(new java.io.FileInputStream(zipFile));
+
+            java.util.zip.ZipEntry zipEntry;
+            String szName = "";
+
+            while ((zipEntry = inZip.getNextEntry()) != null) {
+                szName = zipEntry.getName();
+
+                if (zipEntry.isDirectory()) {
+
+                    java.io.File folder = new java.io.File(targetDir + java.io.File.separator + szName);
+                    folder.mkdirs();
+
+                } else {
+
+                    java.io.File file = new java.io.File(targetDir + java.io.File.separator + szName);
+                    file.createNewFile();
+                    // get the output stream of the file
+                    java.io.FileOutputStream out = new java.io.FileOutputStream(file);
+                    int len;
+                    byte[] buffer = new byte[1024];
+                    while ((len = inZip.read(buffer)) != -1) {
+                        out.write(buffer, 0, len);
+                        out.flush();
+                    }
+                    out.close();
+                }
+            }
+            inZip.close();
+            isUnZiped = true;
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("isUnZiped", isUnZiped);
+            promise.resolve(map);
+        } catch (FileNotFoundException e) {
+            promise.reject(e);
+        } catch (IOException e) {
             promise.reject(e);
         }
     }

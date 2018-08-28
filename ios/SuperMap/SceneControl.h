@@ -8,8 +8,7 @@
 #import <UIKit/UIKit.h>
 #import "Action3D.h"
 #import "Point3D.h"
-
-
+#import "SceneType.h"
 @protocol SceneControlTouchDelegate,Tracking3DDelegate,Tracked3DDelegate,PointInputDelegate;
 @class Scene,Tracking3DEvent,Tracked3DEvent
 #ifndef _NO2D_
@@ -59,6 +58,12 @@
  @param  viewControl 指定的视图控件。
  */
 - (void)initSceneControl:(UIViewController *)viewControl;
+
+/**@brief 在指定的视图控件和场景窗口类型上初始化三维场景控件。
+ @param  viewControl 指定的视图控件。
+ @param  type 场景类型，三维球/三维平面。
+ */
+- (void)initSceneControl:(UIViewController *)viewControl type:(SceneTypeMode)type;
 
  /// 当用户手动改变SceneControl时需调用resize方法来强制重绘
  - (void)resize;

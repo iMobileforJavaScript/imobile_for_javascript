@@ -1,4 +1,4 @@
-﻿//
+//
 //  TrackingLayer.h
 //  Visualization
 //
@@ -6,7 +6,8 @@
 //
 
 #import <Foundation/Foundation.h>
-
+@class TextStyle;
+@class FieldInfo,FieldInfos;
 @class Map,Geometry,Point2D;
 
 /** 跟踪图层类。
@@ -130,4 +131,78 @@
      * @brief  对跟踪图层进行批量更新。
      */	
 - (void)flushBuck;
+
+//! \brief 添加字段的显示风格
+//! \detail 每一个风格对应一个显示字段
+//! \param tag 对应的字段名称
+//! \param style 文本风格
+//! \param visible 是否可见
+//! \param tail true是加到末尾，false是加到开头
+-(BOOL) addLabel:(NSString *)tag textStyle:(TextStyle *)textStyle visible:(BOOL)visible tail:(BOOL)tail;
+//! \brief 创建double型字段
+-(BOOL) createUserFieldDouble:(NSString *)fieldName size:(int)size attribute:(int)attribute;
+//! \brief 创建int型字段
+-(BOOL) createUserFieldInt:(NSString *)fieldName size:(int)size attribute:(int)attribute;
+//! \brief 创建string型字段
+-(BOOL) createUserFieldString:(NSString *)fieldName size:(int)size attribute:(int)attribute;
+//! \brief 删除所有对象(保留表结构)
+-(void) deleteAllFeatures;
+//! \brief 删除指定字段
+-(BOOL) deleteUserField:(NSString *)fieldName;
+//! \brief 获取GeoEvent
+//! \param tag 几何对象的标签名称[in]
+//! \return 返回几何对象的ID
+-(int) getEvent:(NSString *)tag ;
+-(double) getFieldDouble:(int)index fieldName:(NSString *)fieldName;
+-(FieldInfo *) getFieldInfo:(NSString *)fieldName ;
+//! \brief 获取字段信息
+-(FieldInfos *) getFieldInfos;
+-(int) getFieldInt:(int)index fieldName:(NSString *)fieldName ;
+//! \brief 获取字段名
+-(NSString *) getFieldName:(int)index;
+-(NSString *) getFieldString:(int)index fieldName:(NSString *)fieldName;
+//! \biref 将指定标签移动到底部
+-(BOOL) labelMoveBottom:(NSString *)tag ;
+//! \biref 将指定标签的显示下移
+-(BOOL) labelMoveDown:(NSString *)tag ;
+//! \biref 将指定标签移动到顶部
+-(BOOL) labelMoveTop:(NSString *)tag ;
+//! \biref 将指定标签上移
+-(BOOL) labelMoveUp:(NSString *)tag ;
+//! \brief 移除字段的显示风格
+//! \param 字段名
+-(BOOL) removeLabel:(NSString *)fieldName;
+//! \brief 设置double类型的值
+-(BOOL) setFieldDouble:(NSString *)fieldName fieldValue:(double)fieldValue;
+//! \brief 设置指定记录指定字段的double类型的值
+-(BOOL) setFieldDoubleEx:(NSString *)fieldName fieldValue:(double)fieldValue index:(int)index;
+//! \brief 设置int类型的值
+-(BOOL) setFieldInt:(NSString *)fieldName fieldValue:(int)fieldValue;
+//! \brief 设置指定记录指定字段的int类型的值
+-(BOOL) setFieldIntEx:(NSString *)fieldName fieldValue:(int)fieldValue index:(int)index;
+//! \brief 设置string类型的值
+-(BOOL) setFieldString:(NSString *)fieldName fieldValue:(NSString *)fieldValue;
+//! \brief 设置指定记录指定字段的string类型的值
+-(BOOL) setFieldStringEx:(NSString *)fieldName fieldValue:(NSString *)fieldValue index:(int)index;
+//! \brief  设置标签对应的字段
+//! \param tag 目前对应的字段
+//! \param Caption 修改后的字段
+-(BOOL) setLabelCaption:(NSString *)tag caption:(NSString *)caption;
+//! \brief 设置字段文本的偏移
+//! \param tag 字段名
+//! \param x x方向偏移
+//! \param y y方向偏移
+-(BOOL) setLabelOffset:(NSString *)tag x:(short)x y:(short)y;
+//! \brief 设置标签的文本风格
+//! \brief style 文本风格
+-(BOOL) setLabelTextStyle:(NSString *)tag textStyle:(TextStyle *)textStyle;
+//! \brief 设置风格是否可见
+//! \param tag 字段名
+//! \param visible 是否可见
+-(BOOL) setLabelVisible:(NSString *)tag visible:(BOOL)visible;
+//! \brief 设置符号偏移
+//! \param x x方向偏移
+//! \param y y方向偏移
+-(void) setSymbolOffset:(short)x y:(short) y;
+// end
 @end

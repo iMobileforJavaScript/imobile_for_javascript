@@ -11,6 +11,7 @@
 @class Point2Ds;
 @class PrjCoordSys;
 @class CoordSysTransParameter;
+@class Geometry;
 
 /** 投影转换类。
  * 
@@ -48,4 +49,7 @@
      * @return 如果转换成功返回 true，否则返回 false。
      */
 +(BOOL)convert:(Point2Ds *)points PrjCoordSys:(PrjCoordSys*)srcPrjCoordSys PrjCoordSys:(PrjCoordSys*)desPrjCoordSys CoordSysTransParameter:(CoordSysTransParameter*)coordSysTransParameter CoordSysTransMethod:(CoordSysTransMethod)coordSysTransMethod;
+
++(BOOL)convert2:(Geometry *)geometry PrjCoordSys:(PrjCoordSys*)srcPrjCoordSys PrjCoordSys:(PrjCoordSys*)desPrjCoordSys CoordSysTransParameter:(CoordSysTransParameter*)coordSysTransParameter CoordSysTransMethod:(CoordSysTransMethod)coordSysTransMethod;
+
 @end

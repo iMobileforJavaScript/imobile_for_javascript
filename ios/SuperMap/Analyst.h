@@ -36,5 +36,7 @@
 #import "TurnType.h"
 #import "WeightFieldInfo.h"
 #import "WeightFieldInfos.h"
-
+#import "SupplyCenter.h"
+#import "SupplyCenters.h"
+#import "LocationAnalystParameter.h"
 #endif

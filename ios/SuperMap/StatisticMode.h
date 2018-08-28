@@ -31,9 +31,9 @@ typedef enum {
 /**
      * 标准差。
      */
-    //STDDEVIATION = 5,
+    STDDEVIATION = 5,
 /**
      * 方差。
      */
-    //VARIANCE = 6
+    VARIANCE = 6
 }StatisticMode;

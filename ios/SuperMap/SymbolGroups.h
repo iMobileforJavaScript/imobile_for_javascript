@@ -6,6 +6,7 @@
 //
 
 #import <UIKit/UIKit.h>
+
 @class SymbolGroup;
 @class SymbolLibrary;
 
@@ -17,12 +18,7 @@
  * <p>注：所谓的分组和子分组是符号库的逻辑组织形式，都是使用户可以将类别相同的符号放在一个组中，从而方便管理和使用。
  * <p>综上所述，一个符号库 <SymbolLibrary> 包含有唯一的一个根组 <SymbolGroup>  类对象，每个 <SymbolGroup>  类对象至多包含有一个  <SymbolGroups>  类对象，但却可以包含有零个或多个 <Symbol>  类对象，其中  <SymbolGroups>  类对象是 <SymbolGroup>  类对象的集合，以此实现符号库的树形管理结构。
  */
-@interface SymbolGroups : NSObject {
-@private
-    SymbolGroup  *_parentSymbolGroup;
-	NSMutableArray *_symbolGroups;
-	SymbolLibrary *_symbolLibrary;
-}
+@interface SymbolGroups : NSObject 
 
 /**
      * @brief  返回该分组集合中的子分组的个数。有关分组集合的具体组织结构，请参见 <SymbolGroups > 类的描述。
@@ -50,5 +46,23 @@
      * @return 指定名称的子分组对象在该分组集合中的索引值。
      */
 - (NSInteger)indexofGroup:(NSString *)groupName;
+/**
+ * @brief  在分组集合类里新建分组。
+ * @param name新分组名称。
+ * @return 该分组集合中新建的子分组。
+ */
+-(SymbolGroup*)createGroupWith:(NSString*)name;
+/**
+ * @brief  在分组集合类里移除子分组。
+ * @param name子分组名称。
+ * @return 移除是否成功。
+ */
+-(BOOL)removeGroupWith:(NSString*)name;
+/**
+ * @brief  在分组集合类是否包含子分组。
+ * @param name子分组名称。
+ * @return 在分组集合类是否包含子分组。
+ */
+-(BOOL)contains:(NSString*)name;
 
 @end

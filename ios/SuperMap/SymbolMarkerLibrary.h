@@ -13,4 +13,6 @@
  */
 @interface SymbolMarkerLibrary : SymbolLibrary
 
+-(void)dispose;
+
 @end

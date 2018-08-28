@@ -20,6 +20,12 @@
 @property(nonatomic)id<Navi3DMapChangedDelegate>delegate;
 
 /**
+ * 获取当前室内数据源
+ */
+-(Datasource *)getIndoorDatasource;
+
+
+/**
  * 加载楼层信息
  */
 -(void)reload;

@@ -63,4 +63,6 @@
 * @return 此连接信息对象的格式化字符串。
 */
 -(NSString*)toString;
+
+-(void)dispose;
 @end

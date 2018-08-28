@@ -28,9 +28,20 @@ RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve
     }
 }
 
-RCT_REMAP_METHOD(dispose,disposeById:(NSString*)themeUniqueId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//RCT_REMAP_METHOD(createObjClone,createObjCloneById:(NSString*)themeId withResolver(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        ThemeLabel* oldTheme = [JSObjManager getObjWithKey:themeId];
+//        ThemeLabel* theme = [[ThemeLabel alloc] initThemeLabel:oldTheme];
+//        NSString* key = [JSObjManager addObj:theme];
+//        resolve(key);
+//    } @catch (NSException *exception) {
+//        reject(@"colorScheme",@"ThemeLabel create Obj expection",nil);
+//    }
+//}
+
+RCT_REMAP_METHOD(dispose,disposeById:(NSString*)themeId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey:themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey:themeId];
         [JSObjManager removeObj:theme];
         [theme dispose];
         NSNumber* number = [NSNumber numberWithBool:YES];
@@ -46,9 +57,9 @@ RCT_REMAP_METHOD(dispose,disposeById:(NSString*)themeUniqueId resolver:(RCTPromi
  * @param expression
  * @param promise
  */
-RCT_REMAP_METHOD(setLabelExpression,setLabelExpressionId:(NSString*)themeUniqueId expression:(NSString*)expression resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setLabelExpression,setLabelExpressionId:(NSString*)themeId expression:(NSString*)expression resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         [theme setLabelExpression:expression];
         m_LabelExpression = expression;
         NSNumber* number =[NSNumber numberWithBool:YES];
@@ -63,7 +74,7 @@ RCT_REMAP_METHOD(setLabelExpression,setLabelExpressionId:(NSString*)themeUniqueI
  * @param themeLabelId
  * @param promise
  */
-RCT_REMAP_METHOD(getLabelExpression,getLabelExpressionId:(NSString*)themeUniqueId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getLabelExpression,getLabelExpressionId:(NSString*)themeId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         resolve(m_LabelExpression);
     } @catch (NSException *exception) {
@@ -77,7 +88,7 @@ RCT_REMAP_METHOD(getLabelExpression,getLabelExpressionId:(NSString*)themeUniqueI
  * @param promise
  */
 
-RCT_REMAP_METHOD(getRangeExpression,getRangeExpressionId:(NSString*)themeUniqueId expression:(NSString*)expression resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getRangeExpression,getRangeExpressionId:(NSString*)themeId expression:(NSString*)expression resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         resolve(m_RangeExpression);
     } @catch (NSException *exception) {
@@ -94,9 +105,9 @@ RCT_REMAP_METHOD(getRangeExpression,getRangeExpressionId:(NSString*)themeUniqueI
  * @param promise
  */
 
-RCT_REMAP_METHOD(setRangeExpression,setRangeExpressionId:(NSString*)themeUniqueId expression:(NSString*)expression resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setRangeExpression,setRangeExpressionId:(NSString*)themeId expression:(NSString*)expression resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         [theme setRangeExpression:expression];
         m_RangeExpression = expression;
         NSNumber* number =[NSNumber numberWithBool:YES];
@@ -115,9 +126,9 @@ RCT_REMAP_METHOD(setRangeExpression,setRangeExpressionId:(NSString*)themeUniqueI
  * @param promise
  */
 
-RCT_REMAP_METHOD(addToHead,addToHeadId:(NSString*)themeUniqueId  LabelItemId:(NSString*) themeLabelItemId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addToHead,addToHeadId:(NSString*)themeId  LabelItemId:(NSString*) themeLabelItemId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         ThemeLabelItem* item = [JSObjManager getObjWithKey: themeLabelItemId];
         [theme addToHead:item];
         NSNumber* number =[NSNumber numberWithBool:YES];
@@ -135,9 +146,9 @@ RCT_REMAP_METHOD(addToHead,addToHeadId:(NSString*)themeUniqueId  LabelItemId:(NS
  * @param themeLabelItemId
  * @param promise
  */
-RCT_REMAP_METHOD(addToTail,addToTailId:(NSString*)themeUniqueId  LabelItemId:(NSString*) themeLabelItemId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addToTail,addToTailId:(NSString*)themeId  LabelItemId:(NSString*) themeLabelItemId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         ThemeLabelItem* item = [JSObjManager getObjWithKey: themeLabelItemId];
         [theme addToTail:item];
         NSNumber* number =[NSNumber numberWithBool:YES];
@@ -154,9 +165,9 @@ RCT_REMAP_METHOD(addToTail,addToTailId:(NSString*)themeUniqueId  LabelItemId:(NS
  * @param promise
  */
 
-RCT_REMAP_METHOD(clear,clearId:(NSString*)themeUniqueId    resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(clear,clearId:(NSString*)themeId    resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
        
         [theme clear];
         NSNumber* number =[NSNumber numberWithBool:YES];
@@ -173,9 +184,9 @@ RCT_REMAP_METHOD(clear,clearId:(NSString*)themeUniqueId    resolver:(RCTPromiseR
  * @param promise
  */
 
-RCT_REMAP_METHOD(getCount,getCountId:(NSString*)themeUniqueId    resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getCount,getCountId:(NSString*)themeId    resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         
         int n = [theme getCount];
        // NSNumber* number =[NSNumber numberWithBool:YES];
@@ -194,9 +205,9 @@ RCT_REMAP_METHOD(getCount,getCountId:(NSString*)themeUniqueId    resolver:(RCTPr
  * @param promise
  */
 
-RCT_REMAP_METHOD(getItem,getItemId:(NSString*)themeUniqueId  index:(int)idx  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getItem,getItemId:(NSString*)themeId  index:(int)idx  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         ThemeLabelItem* item = [theme getItem:idx];
         
         resolve([JSObjManager addObj:item]);
@@ -215,9 +226,9 @@ RCT_REMAP_METHOD(getItem,getItemId:(NSString*)themeUniqueId  index:(int)idx  res
  * @param promise
  */
 
-RCT_REMAP_METHOD(indexOf,indexOfId:(NSString*)themeUniqueId  index:(double)value  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(indexOf,indexOfId:(NSString*)themeId  index:(double)value  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         int idx = [theme indexOf:value];
         
         resolve(@(idx));
@@ -234,9 +245,9 @@ RCT_REMAP_METHOD(indexOf,indexOfId:(NSString*)themeUniqueId  index:(double)value
  * @param promise
  */
 
-RCT_REMAP_METHOD(setUniformStyle,setUniformStyleId:(NSString*)themeUniqueId  style:(NSString*)styleId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setUniformStyle,setUniformStyleId:(NSString*)themeId  style:(NSString*)styleId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         GeoStyle* style = [JSObjManager getObjWithKey: styleId];
         [theme setMUniformStyle:style];
         
@@ -253,9 +264,9 @@ RCT_REMAP_METHOD(setUniformStyle,setUniformStyleId:(NSString*)themeUniqueId  sty
  * @param themeLabelId
  * @param promise
  */
-RCT_REMAP_METHOD(getUniformStyle,getUniformStyleId:(NSString*)themeUniqueId    resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getUniformStyle,getUniformStyleId:(NSString*)themeId    resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve([JSObjManager addObj: theme.mUniformStyle]);
     } @catch (NSException *exception) {
         reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
@@ -272,9 +283,9 @@ RCT_REMAP_METHOD(getUniformStyle,getUniformStyleId:(NSString*)themeUniqueId    r
  * @param caption
  * @param promise
  */
-RCT_REMAP_METHOD(merge,mergeId:(NSString*)themeUniqueId   index:(int)index size:(int)count styleId:(NSString*)styleId caption:(NSString*)caption  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(merge,mergeId:(NSString*)themeId   index:(int)index size:(int)count styleId:(NSString*)styleId caption:(NSString*)caption  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         GeoStyle* style = [JSObjManager getObjWithKey: styleId];
         BOOL b =  [theme merge:index Count:count TextStyle:style Caption:caption];
         resolve(@(b));
@@ -297,9 +308,9 @@ RCT_REMAP_METHOD(merge,mergeId:(NSString*)themeUniqueId   index:(int)index size:
  * @param promise
  */
 
-RCT_REMAP_METHOD(split,splitId:(NSString*)themeUniqueId   index:(int)index split:(double)splitValue styleId:(NSString*)styleId caption:(NSString*)caption styleId2:(NSString*)styleId2 caption2:(NSString*)caption2 resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(split,splitId:(NSString*)themeId   index:(int)index split:(double)splitValue styleId:(NSString*)styleId caption:(NSString*)caption styleId2:(NSString*)styleId2 caption2:(NSString*)caption2 resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         GeoStyle* style = [JSObjManager getObjWithKey: styleId];
         GeoStyle* style2 = [JSObjManager getObjWithKey: styleId2];
         BOOL b = [theme split:index SplitValue:splitValue Style1:style Caption1:caption Style2:style2 Caption2:caption2];
@@ -319,9 +330,9 @@ RCT_REMAP_METHOD(split,splitId:(NSString*)themeUniqueId   index:(int)index split
  * @param promise
  */
 
-RCT_REMAP_METHOD(makeDefault,datasetVectorIdId:(NSString*)themeUniqueId expression:(NSString*)expression rangeMode:(int) rangeMode rangeParameter:(double) rangeParameter resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(makeDefault,datasetVectorIdId:(NSString*)themeId expression:(NSString*)expression rangeMode:(int) rangeMode rangeParameter:(double) rangeParameter resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        DatasetVector* dv = [JSObjManager getObjWithKey: themeUniqueId];
+        DatasetVector* dv = [JSObjManager getObjWithKey: themeId];
         ThemeLabel* theme = [ThemeLabel makeDefault:dv rangeExpression:expression rangeMode:rangeMode rangeParameter:rangeParameter];
        
         resolve([JSObjManager addObj:theme]);
@@ -340,9 +351,9 @@ RCT_REMAP_METHOD(makeDefault,datasetVectorIdId:(NSString*)themeUniqueId expressi
  * @param colorGradientType
  * @param promise
  */
-RCT_REMAP_METHOD(makeDefault,datasetVectorIdId:(NSString*)themeUniqueId expression:(NSString*)expression rangeMode:(int) rangeMode rangeParameter:(double) rangeParameter colorGradientType:(int)colorGradientType resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(makeDefault,datasetVectorIdId:(NSString*)themeId expression:(NSString*)expression rangeMode:(int) rangeMode rangeParameter:(double) rangeParameter colorGradientType:(int)colorGradientType resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        DatasetVector* dv = [JSObjManager getObjWithKey: themeUniqueId];
+        DatasetVector* dv = [JSObjManager getObjWithKey: themeId];
         ThemeLabel* theme = [ThemeLabel makeDefault:dv rangeExpression:expression rangeMode:rangeMode rangeParameter:rangeParameter colorGradientType:colorGradientType];
         
         resolve([JSObjManager addObj:theme]);
@@ -358,9 +369,9 @@ RCT_REMAP_METHOD(makeDefault,datasetVectorIdId:(NSString*)themeUniqueId expressi
  * @param promise
  */
 
-RCT_REMAP_METHOD(reverseStyle,reverseStyleId:(NSString*)themeUniqueId    resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(reverseStyle,reverseStyleId:(NSString*)themeId    resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
@@ -376,9 +387,9 @@ RCT_REMAP_METHOD(reverseStyle,reverseStyleId:(NSString*)themeUniqueId    resolve
  * @param promise
  */
 
-RCT_REMAP_METHOD(setAllDirectionsOverlappedAvoided,setAllDirectionsOverlappedAvoidedId:(NSString*)themeUniqueId  b:(BOOL)b  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setAllDirectionsOverlappedAvoided,setAllDirectionsOverlappedAvoidedId:(NSString*)themeId  b:(BOOL)b  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
@@ -393,9 +404,9 @@ RCT_REMAP_METHOD(setAllDirectionsOverlappedAvoided,setAllDirectionsOverlappedAvo
  * @param value
  * @param promise
  */
-RCT_REMAP_METHOD(setAlongLine,setAlongLineId:(NSString*)themeUniqueId  b:(BOOL)b  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setAlongLine,setAlongLineId:(NSString*)themeId  b:(BOOL)b  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
@@ -412,9 +423,9 @@ RCT_REMAP_METHOD(setAlongLine,setAlongLineId:(NSString*)themeUniqueId  b:(BOOL)b
  * @param promise
  */
 
-RCT_REMAP_METHOD(setAlongLineDirection,setAlongLineDirectionId:(NSString*)themeUniqueId  b:(int)b  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setAlongLineDirection,setAlongLineDirectionId:(NSString*)themeId  b:(int)b  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
@@ -429,9 +440,9 @@ RCT_REMAP_METHOD(setAlongLineDirection,setAlongLineDirectionId:(NSString*)themeU
  * @param promise
  */
 
-RCT_REMAP_METHOD(setAlongLineSpaceRatio,setAlongLineSpaceRatioId:(NSString*)themeUniqueId  b:(double)b  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setAlongLineSpaceRatio,setAlongLineSpaceRatioId:(NSString*)themeId  b:(double)b  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
@@ -445,9 +456,9 @@ RCT_REMAP_METHOD(setAlongLineSpaceRatio,setAlongLineSpaceRatioId:(NSString*)them
  * @param promise
  */
 
-RCT_REMAP_METHOD(setAngleFixed,setAngleFixedId:(NSString*)themeUniqueId  b:(BOOL)b  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setAngleFixed,setAngleFixedId:(NSString*)themeId  b:(BOOL)b  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
@@ -463,9 +474,9 @@ RCT_REMAP_METHOD(setAngleFixed,setAngleFixedId:(NSString*)themeUniqueId  b:(BOOL
  * @param promise
  */
 
-RCT_REMAP_METHOD(setBackShape,setBackShapeId:(NSString*)themeUniqueId  value:(int)value  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setBackShape,setBackShapeId:(NSString*)themeId  value:(int)value  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
@@ -481,9 +492,9 @@ RCT_REMAP_METHOD(setBackShape,setBackShapeId:(NSString*)themeUniqueId  value:(in
  * @param promise
  */
 
-RCT_REMAP_METHOD(setBackStyle,setBackStyleId:(NSString*)themeUniqueId  value:(NSString*)value  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setBackStyle,setBackStyleId:(NSString*)themeId  value:(NSString*)value  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        ThemeLabel* theme = [JSObjManager getObjWithKey: themeUniqueId];
+        ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);

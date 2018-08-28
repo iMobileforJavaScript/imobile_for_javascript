@@ -6,10 +6,14 @@
 //
 
 #import "SymbolLibrary.h"
+@class SymbolMarkerLibrary;
 /** 符号库基类。
  *   
  * <p>点状符号库类、线型符号库类和填充符号库类都继承自该抽象类。用来管理符号对象，包括符号对象的添加、删除。
  */
 @interface SymbolLineLibrary : SymbolLibrary
+
+-(SymbolMarkerLibrary*)getInlineMarkerLib;
+-(void)dispose;
 
 @end

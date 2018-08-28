@@ -48,4 +48,6 @@
 /// 构造一个新的 Resources 对象。
 - (id)init;
 
+-(void)dispose;
+
 @end

@@ -39,5 +39,10 @@ typedef enum{
  * 打开默认捕捉功能,默认打开节点,端点,线上点捕捉
  */
 -(void)openDefault;
+/**
+ 获取或设置一个值, 标示指定的捕捉模式是否有效
+ */
+-(BOOL)getSnapMode:(SnapMode)mode;
+@property(nonatomic)int maxSnappedCount;
 
 @end

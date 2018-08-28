@@ -12,4 +12,6 @@
  */
 @interface SymbolFillLibrary : SymbolLibrary
 
+-(void)dispose;
+
 @end

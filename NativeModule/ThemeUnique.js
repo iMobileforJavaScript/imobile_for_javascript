@@ -47,7 +47,6 @@ export default class ThemeUnique extends Theme {
       themeUnique._SMThemeUniqueId = id;
       return themeUnique;
     } catch (e) {
-      debugger
       console.error(e);
     }
   }
