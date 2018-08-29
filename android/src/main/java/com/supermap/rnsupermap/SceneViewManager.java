@@ -19,7 +19,7 @@ public class SceneViewManager extends SimpleViewManager<SceneControl> {
     private final String sdcard = android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString();
 
     ThemedReactContext m_ThemedReactContext;
-    SceneControl mSceneControl;
+    private static SceneControl mSceneControl;
     final N_R_EventSender n_r_eventSender = new N_R_EventSender();
 
     @Override
@@ -32,7 +32,9 @@ public class SceneViewManager extends SimpleViewManager<SceneControl> {
         Environment.setLicensePath(sdcard + "/iTablet/license/");
         Environment.initialization(reactContext.getBaseContext());
         m_ThemedReactContext = reactContext;
-        mSceneControl = new SceneControl(m_ThemedReactContext);
+        if (mSceneControl == null) {
+            mSceneControl = new SceneControl(m_ThemedReactContext);
+        }
 
         final String sceneControlId = JSSceneControl.registerId(mSceneControl);
 

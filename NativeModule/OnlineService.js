@@ -13,7 +13,6 @@ export default class OlineService {
 
   async download(path, filename) {
     try {
-      debugger
       let result = OS.download(path, filename)
       return result;
     } catch (e) {
@@ -22,7 +21,6 @@ export default class OlineService {
   }
   async login(username, passworld) {
     try {
-      debugger
       let result = OS.login(username, passworld)
       return result;
     } catch (e) {
