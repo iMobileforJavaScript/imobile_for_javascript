@@ -41,7 +41,16 @@ public class JSGeoLineM extends JSGeometry {
         }
 
         Calendar calendar = Calendar.getInstance();
-        String id = Long.toString(calendar.getTimeInMillis());
+        long currentTime = calendar.getTimeInMillis();
+        String id = Long.toString(currentTime);
+        boolean notUnique = true;
+        while (notUnique) {
+            if (m_GeometryList.containsKey(id)) {
+                id = Long.toString(++currentTime);
+            } else {
+                notUnique = false;
+            }
+        }
         m_GeometryList.put(id, obj);
         return id;
     }

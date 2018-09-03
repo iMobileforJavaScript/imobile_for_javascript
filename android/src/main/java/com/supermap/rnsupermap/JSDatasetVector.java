@@ -1,24 +1,20 @@
 package com.supermap.rnsupermap;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.JsonWriter;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.RNUtils.JsonUtil;
 import com.supermap.RNUtils.N_R_EventSender;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.Enum;
-import com.supermap.data.CursorType;
 import com.supermap.data.FieldInfo;
 import com.supermap.data.FieldInfos;
 import com.supermap.data.FieldType;
@@ -30,17 +26,11 @@ import com.supermap.data.Recordset;
 import com.supermap.data.Rectangle2D;
 import com.supermap.data.SpatialIndexType;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-
-import static com.facebook.react.bridge.ReadableType.Array;
 
 //public class JSDatasetVector extends ReactContextBaseJavaModule {
 public class JSDatasetVector extends JSDataset {
@@ -142,34 +132,27 @@ public class JSDatasetVector extends JSDataset {
             }
 
             String recordsetId = JSRecordset.registerId(recordset);
-            if(recordset.getRecordCount() == 0) throw new Error("No records be found.");
-            //获取字段信息
-//            FieldInfos fieldInfos = recordset.getFieldInfos();
-//            Map<String, FieldType> fields = new HashMap<>();
-//
-//            for (int i = 0; i < fieldInfos.getCount(); i++) {
-//                fields.put(fieldInfos.get(i).getName(), fieldInfos.get(i).getType());
-//            }
-            //JS数组，存放
-//            WritableArray recordArray = Arguments.createArray();
-
-            //分批处理
-            int totalCount = recordset.getRecordCount(); //记录总数
-            int batches;    //总批数
-            size = size > 10 ? 10 : size ;  //一次返回最多10条记录
-            if (totalCount % size != 0) {
-                batches = totalCount / size + 1;
+            if (recordset.getRecordCount() == 0) {
+//                throw new Error("No records be found.");
+                promise.reject(new Error("No records be found."));
             } else {
-                batches = totalCount / size;
-            }
-            recordset.moveFirst();
+                //分批处理
+                int totalCount = recordset.getRecordCount(); //记录总数
+                int batches;    //总批数
+                size = size > 10 ? 10 : size;  //一次返回最多10条记录
+                if (totalCount % size != 0) {
+                    batches = totalCount / size + 1;
+                } else {
+                    batches = totalCount / size;
+                }
+                recordset.moveFirst();
 
-            //batch超出范围
-            batch = batch < 1 ? 1 : batch ;
-            batch = batch > batches ? batches : batch;
-            recordset.moveTo(size * (batch - 1));
-            geoJson = recordset.toGeoJSON(true,size);
-            geoJson = JsonUtil.rectifyGeoJSON(geoJson);
+                //batch超出范围
+                batch = batch < 1 ? 1 : batch;
+                batch = batch > batches ? batches : batch;
+                recordset.moveTo(size * (batch - 1));
+                geoJson = recordset.toGeoJSON(true, size);
+                geoJson = JsonUtil.rectifyGeoJSON(geoJson);
 //            int count = 0;
 //            while (!recordset.isEmpty() && !recordset.isEOF() && count < size) {
 //                WritableMap recordsMap = parseRecordset(recordset, fields);
@@ -178,16 +161,17 @@ public class JSDatasetVector extends JSDataset {
 //                count++;
 //            }
 
-            WritableMap returnMap = Arguments.createMap();
+                WritableMap returnMap = Arguments.createMap();
 //            returnMap.putArray("records", recordArray);
-            returnMap.putString("geoJson",geoJson);
-            returnMap.putString("queryParameterId", queryParameterId);
-            returnMap.putInt("counts", totalCount);
-            returnMap.putInt("batch", batch);
-            returnMap.putInt("size", size);
-            returnMap.putString("recordsetId", recordsetId);
+                returnMap.putString("geoJson", geoJson);
+                returnMap.putString("queryParameterId", queryParameterId);
+                returnMap.putInt("counts", totalCount);
+                returnMap.putInt("batch", batch);
+                returnMap.putInt("size", size);
+                returnMap.putString("recordsetId", recordsetId);
 
-            promise.resolve(returnMap);
+                promise.resolve(returnMap);
+            }
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -321,7 +305,7 @@ public class JSDatasetVector extends JSDataset {
     }
 
     @ReactMethod
-    public void queryByFilter(String dataVectorId, String attributeFilter,String geometryId,int count, Promise promise) {
+    public void queryByFilter(String dataVectorId, String attributeFilter, String geometryId, int count, Promise promise) {
         try {
             DatasetVector datasetVector = getObjFromList(dataVectorId);
             Geometry geometry = JSGeometry.getObjFromList(geometryId);
@@ -329,23 +313,23 @@ public class JSDatasetVector extends JSDataset {
             datasetVector.setQueryListener(new QueryListener() {
                 @Override
                 public void queryResult(Dataset dataset, String fieldName, Vector<Integer> SmIDs) {
-                    DatasetVector datasetVector1 = (DatasetVector)dataset;
+                    DatasetVector datasetVector1 = (DatasetVector) dataset;
                     Object[] arr = SmIDs.toArray();
                     int[] ids = {};
-                    for ( int i = 0 ; i < arr.length ; i ++ ){
-                        ids[i] = (int)arr[i];
+                    for (int i = 0; i < arr.length; i++) {
+                        ids[i] = (int) arr[i];
                     }
-                    Recordset recordset = datasetVector1.query(ids,CursorType.STATIC);
+                    Recordset recordset = datasetVector1.query(ids, CursorType.STATIC);
                     String[] geoJson = JsonUtil.recordsetToGeoJsons(recordset);
 
                     WritableArray writableArray = Arguments.createArray();
-                    for (int i = 0 ; i < geoJson.length ; i++ ){
+                    for (int i = 0; i < geoJson.length; i++) {
                         writableArray.pushString(geoJson[i]);
                     }
-                    N_R_EventSender.sendEvent(mReactContext,QUERYBYFILTER,writableArray);
+                    N_R_EventSender.sendEvent(mReactContext, QUERYBYFILTER, writableArray);
                 }
             });
-            datasetVector.queryByFilter(attributeFilter,geometry,count);
+            datasetVector.queryByFilter(attributeFilter, geometry, count);
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -358,12 +342,12 @@ public class JSDatasetVector extends JSDataset {
         try {
             WritableArray arr = new WritableNativeArray();
             DatasetVector datasetVector = getObjFromList(dataVectorId);
-            Recordset recordset = datasetVector.query(SQL,CursorType.STATIC);
+            Recordset recordset = datasetVector.query(SQL, CursorType.STATIC);
 
             int count = recordset.getRecordCount();
-            for (int num = 0;num<count;num++){
-                if (recordset.moveTo(num)){
-                    int SmID = (int)recordset.getFieldValue("SMID");
+            for (int num = 0; num < count; num++) {
+                if (recordset.moveTo(num)) {
+                    int SmID = (int) recordset.getFieldValue("SMID");
                     arr.pushInt(SmID);
                 }
             }
@@ -380,22 +364,22 @@ public class JSDatasetVector extends JSDataset {
         try {
             WritableArray arr = new WritableNativeArray();
             DatasetVector datasetVector = getObjFromList(dataVectorId);
-            Recordset recordset = datasetVector.query(SQL,CursorType.STATIC);
+            Recordset recordset = datasetVector.query(SQL, CursorType.STATIC);
 
             int count = recordset.getRecordCount();
-            for (int num = 0;num<count;num++){
-                if (recordset.moveTo(num)){
-                    Object fieldValue = (int)recordset.getFieldValue(fieldName);
-                    if (fieldValue instanceof Integer){
-                        arr.pushInt((Integer)fieldValue);
-                    }else if (fieldValue instanceof String){
-                        arr.pushString((String)fieldValue);
-                    }else if (fieldValue instanceof Double){
-                        arr.pushDouble((Double)fieldValue);
-                    }else if (fieldValue instanceof  Float){
-                        arr.pushDouble((Double)fieldValue);
-                    }else  if (fieldValue instanceof Boolean){
-                        arr.pushBoolean((Boolean)fieldValue);
+            for (int num = 0; num < count; num++) {
+                if (recordset.moveTo(num)) {
+                    Object fieldValue = (int) recordset.getFieldValue(fieldName);
+                    if (fieldValue instanceof Integer) {
+                        arr.pushInt((Integer) fieldValue);
+                    } else if (fieldValue instanceof String) {
+                        arr.pushString((String) fieldValue);
+                    } else if (fieldValue instanceof Double) {
+                        arr.pushDouble((Double) fieldValue);
+                    } else if (fieldValue instanceof Float) {
+                        arr.pushDouble((Double) fieldValue);
+                    } else if (fieldValue instanceof Boolean) {
+                        arr.pushBoolean((Boolean) fieldValue);
                     }
                 }
             }
@@ -413,11 +397,11 @@ public class JSDatasetVector extends JSDataset {
 
             WritableArray arr = new WritableNativeArray();
             DatasetVector datasetVector = getObjFromList(dataVectorId);
-            Recordset recordset = datasetVector.query(SQL,CursorType.STATIC);
+            Recordset recordset = datasetVector.query(SQL, CursorType.STATIC);
 
             int count = recordset.getRecordCount();
-            for (int num = 0;num<count;num++){
-                if (recordset.moveTo(num)){
+            for (int num = 0; num < count; num++) {
+                if (recordset.moveTo(num)) {
                     Geometry geo = recordset.getGeometry();
                     Point2D point = geo.getInnerPoint();
                     WritableArray pointArr = new WritableNativeArray();
@@ -437,8 +421,8 @@ public class JSDatasetVector extends JSDataset {
     }
 
     @ReactMethod
-    public void setFieldValueByName(String dataVectorId, ReadableMap info, Promise promise){
-        try{
+    public void setFieldValueByName(String dataVectorId, ReadableMap info, Promise promise) {
+        try {
             DatasetVector datasetVector = getObjFromList(dataVectorId);
             Recordset recordset = datasetVector.getRecordset(false, CursorType.DYNAMIC);
 
@@ -466,7 +450,7 @@ public class JSDatasetVector extends JSDataset {
 
             recordset.dispose();
             promise.resolve(wMap);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
@@ -539,6 +523,7 @@ public class JSDatasetVector extends JSDataset {
 
     /**
      * 获取DataVector的FieldInfos
+     *
      * @param dataVectorId
      * @param promise
      */
@@ -559,12 +544,13 @@ public class JSDatasetVector extends JSDataset {
 
     /**
      * 向当前记录集添加FieldInfo
+     *
      * @param dataVectorId
      * @param info
      * @param promise
      */
     @ReactMethod
-    public void addFieldInfo(String dataVectorId, ReadableMap info, Promise promise){
+    public void addFieldInfo(String dataVectorId, ReadableMap info, Promise promise) {
         try {
             DatasetVector datasetVector = getObjFromList(dataVectorId);
 
@@ -606,20 +592,21 @@ public class JSDatasetVector extends JSDataset {
             WritableMap wMap = Arguments.createMap();
             wMap.putInt("index", index);
             promise.resolve(wMap);
-        } catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 根据名称修改指定的FieldInfo
+     *
      * @param dataVectorId
      * @param infoName
      * @param info
      * @param promise
      */
     @ReactMethod
-    public void editFieldInfoByName(String dataVectorId, String infoName, ReadableMap info, Promise promise){
+    public void editFieldInfoByName(String dataVectorId, String infoName, ReadableMap info, Promise promise) {
         try {
             DatasetVector datasetVector = getObjFromList(dataVectorId);
 
@@ -661,20 +648,21 @@ public class JSDatasetVector extends JSDataset {
 //            WritableMap wMap = Arguments.createMap();
 //            wMap.putInt("index", index);
             promise.resolve(true);
-        } catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 根据序号修改指定的FieldInfo
+     *
      * @param dataVectorId
      * @param index
      * @param info
      * @param promise
      */
     @ReactMethod
-    public void editFieldInfoByIndex(String dataVectorId, int index, ReadableMap info, Promise promise){
+    public void editFieldInfoByIndex(String dataVectorId, int index, ReadableMap info, Promise promise) {
         try {
             DatasetVector datasetVector = getObjFromList(dataVectorId);
 
@@ -720,13 +708,14 @@ public class JSDatasetVector extends JSDataset {
 //            WritableMap wMap = Arguments.createMap();
 //            wMap.putInt("index", ind);
             promise.resolve(true);
-        } catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 根据序号删除FieldInfo
+     *
      * @param dataVectorId
      * @param index
      * @param promise
@@ -743,13 +732,14 @@ public class JSDatasetVector extends JSDataset {
             WritableMap wMap = Arguments.createMap();
             wMap.putBoolean("result", result);
             promise.resolve(wMap);
-        } catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 根据名称删除FieldInfo
+     *
      * @param dataVectorId
      * @param name
      * @param promise
@@ -766,13 +756,14 @@ public class JSDatasetVector extends JSDataset {
             WritableMap wMap = Arguments.createMap();
             wMap.putBoolean("result", result);
             promise.resolve(wMap);
-        } catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 获取子数据集，适用于网络数据集
+     *
      * @param dataVectorId
      * @param promise
      */
@@ -785,17 +776,18 @@ public class JSDatasetVector extends JSDataset {
             String datasetId = JSDataset.registerId(dataset);
 
             promise.resolve(datasetId);
-        } catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 将FieldInfos转为Map
+     *
      * @param fieldInfos
      * @return
      */
-    public static WritableMap fieldInfosToMap(FieldInfos fieldInfos){
+    public static WritableMap fieldInfosToMap(FieldInfos fieldInfos) {
         //获取字段信息
         Map<String, Map<String, Object>> fields = new HashMap<>();
         for (int i = 0; i < fieldInfos.getCount(); i++) {
@@ -813,7 +805,7 @@ public class JSDatasetVector extends JSDataset {
 
         WritableMap fieldInfosMap = Arguments.createMap();
 
-        for (Map.Entry<String,  Map<String, Object>> field : fields.entrySet()) {
+        for (Map.Entry<String, Map<String, Object>> field : fields.entrySet()) {
             WritableMap keyMap = Arguments.createMap();
             WritableMap itemWMap = Arguments.createMap();
             String name = field.getKey();

@@ -118,7 +118,7 @@ export default class DatasetVector {
         if (queryParameter.size) qp.size = queryParameter.size;
         if (queryParameter.batch) qp.batch = queryParameter.batch;
       }
-      
+      debugger
       
       let result = await DV.query(this._SMDatasetVectorId, qp._SMQueryParameterId,
         qp.size, qp.batch);

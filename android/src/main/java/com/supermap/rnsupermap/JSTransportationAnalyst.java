@@ -228,7 +228,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void findMTSPPathByPoint2Ds(String transportationAnalystId, String parameterId, WritableArray centerPoints,
+    public void findMTSPPathByPoint2Ds(String transportationAnalystId, String parameterId, ReadableArray centerPoints,
                                        boolean hasLeastTotalCost, Promise promise) {
         try {
             m_TransportationAnalyst = getObjFromList(transportationAnalystId);
@@ -457,6 +457,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
         for (int i = 0; i < routes.length; i++) {
             GeoLineM geoLineM = routes[i];
             String geoLineMId = JSGeoLineM.registerId(geoLineM);
+            GeoLineM geoLineM2 = JSGeoLineM.getObjFromList(geoLineMId);
             routeIds[i] = geoLineMId;
         }
 

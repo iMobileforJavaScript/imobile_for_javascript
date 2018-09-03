@@ -10,7 +10,7 @@ import TransportationAnalystSetting from './TransportationAnalystSetting'
 import GeoLineM from './GeoLineM'
 
 export default class TransportationAnalyst {
-  
+
   async createObj() {
     try {
       let transportationAnalystId = await TA.createObj();
@@ -115,14 +115,29 @@ export default class TransportationAnalyst {
   /**
    * 多旅行商（物流配送）分析，配送中心为点坐标串
    * @param transportationAnalystParameter
-   * @param centerPoints
+   * @param centerPoints    [{x, y}, {x, y}]
    * @param hasLeastTotalCost
    * @returns {Promise}
    */
-  async findMTSPPathByPoint2Ds(transportationAnalystParameter, centerPoints = [], hasLeastTotalCost = true) {
+  async findMTSPPathByPoint2Ds(transportationAnalystParameter, centerPoints = [], hasLeastTotalCost = false) {
     try {
-      return await TA.findMTSPPathByPoint2Ds(this._SMTransportationAnalystId,
+      let {
+        pathGuideIds, routeIds, edges,
+        nodesArr, stopIndexesArr,
+        stopWeightsArr, weightsArr
+      } = await TA.findMTSPPathByPoint2Ds(this._SMTransportationAnalystId,
         transportationAnalystParameter._SMTransportationAnalystParameterId, centerPoints, hasLeastTotalCost);
+
+      let routes = []
+      if (routeIds) {
+        for (let i = 0; i < routeIds.length; i++) {
+          let route = new GeoLineM()
+          route._SMGeoLineId = routeIds[i]
+          routes.push(route)
+        }
+      }
+
+      return { pathGuideIds, routes, edges, nodesArr, stopIndexesArr, stopWeightsArr, weightsArr }
     } catch (e) {
       console.error(e);
     }

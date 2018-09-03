@@ -47,9 +47,9 @@ public class JSTrackingLayer extends ReactContextBaseJavaModule {
         try{
             TrackingLayer trackingLayer = getObjFromList(trackingLayerId);
             Geometry geometry = JSGeometry.getObjFromList(geoId);
-            trackingLayer.add(geometry,tag);
+            int index = trackingLayer.add(geometry,tag);
 
-            promise.resolve(true);
+            promise.resolve(index);
         }catch (Exception e){
             promise.reject(e);
         }
