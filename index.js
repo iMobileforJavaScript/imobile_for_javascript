@@ -118,6 +118,7 @@ import CoordSysTransParameter from './NativeModule/CoordSysTransParameter'
 import Utility from './NativeModule/utility/utility.js';
 
 import SMMapView from './NativeModule/components/SMMapViewUI.js';
+import SMCallOut from './NativeModule/components/SMCallOut.js';
 import SMLayerListView from './NativeModule/components/SMLayerListViewUI.js';
 import SMLegendView from './NativeModule/components/SMLegendViewUI.js';
 import SMScaleView from './NativeModule/components/SMScaleViewUI.js';
@@ -157,6 +158,7 @@ import Environment from './NativeModule/Environment'
  */
 export {
   SMMapView,
+  SMCallOut,
   SMLayerListView,
   SMLegendView,
   SMScaleView,

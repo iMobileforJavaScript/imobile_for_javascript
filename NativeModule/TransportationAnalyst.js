@@ -134,7 +134,7 @@ export default class TransportationAnalyst {
    * @param hasLeastTotalCost
    * @returns {Promise}
    */
-  async findPath(transportationAnalystParameter, hasLeastTotalCost = true) {
+  async findPath(transportationAnalystParameter, hasLeastTotalCost = false) {
     try {
       let {
         pathGuideIds, routeIds, edges,
@@ -142,8 +142,7 @@ export default class TransportationAnalyst {
         stopWeightsArr, weightsArr
       } = await TA.findPath(this._SMTransportationAnalystId,
         transportationAnalystParameter._SMTransportationAnalystParameterId, hasLeastTotalCost);
-  
-      // TODO pathGuideIds
+
       let routes = []
       if (routeIds) {
         for (let i = 0; i < routeIds.length; i++) {

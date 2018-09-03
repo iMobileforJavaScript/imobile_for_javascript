@@ -168,7 +168,7 @@ public class JSMapView extends ReactContextBaseJavaModule {
             m_callout = JSCallOut.getObjFromList(callOutId);
             m_PointName = pointName;
 //            m_mapView.addCallout(m_callout,pointName);
-            getCurrentActivity().runOnUiThread(updateThread);
+            getCurrentActivity().runOnUiThread(addCallOutThread);
 
             promise.resolve(true);
         }catch (Exception e ){
@@ -180,7 +180,7 @@ public class JSMapView extends ReactContextBaseJavaModule {
     public void showCallOut(String mapViewId,Promise promise){
         try{
             m_mapView = mapViewList.get(mapViewId);
-            getCurrentActivity().runOnUiThread(shouCallOutThread);
+            getCurrentActivity().runOnUiThread(showCallOutThread);
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
@@ -200,7 +200,7 @@ public class JSMapView extends ReactContextBaseJavaModule {
         m_mapView = mapView;
         m_PointName = pointName;
 
-        getCurrentActivity().runOnUiThread(updateThread);
+        getCurrentActivity().runOnUiThread(addCallOutThread);
 
 //        Point2D ptInner = mapView.getMapControl().getMap().getCenter();
 //        ImageView imgView = new ImageView(getCurrentActivity());
@@ -212,20 +212,25 @@ public class JSMapView extends ReactContextBaseJavaModule {
 //        m_callout.setStyle(CalloutAlignment.BOTTOM);
 //        m_callout.setLocation(ptInner.getX(), ptInner.getY());
 //        m_mapView.removeAllCallOut();
-//        getCurrentActivity().runOnUiThread(updateThread);
+//        getCurrentActivity().runOnUiThread(addCallOutThread);
 
     }
 
-    Runnable updateThread = new Runnable(){
+    Runnable addCallOutThread = new Runnable(){
         @Override
         public void run(){
-            m_mapView.addCallout(m_callout);
+            if (m_PointName != null && !m_PointName.equals("")) {
+                m_mapView.addCallout(m_callout, m_PointName);
+            } else {
+                m_mapView.addCallout(m_callout);
+            }
+
             m_mapView.showCallOut();
         }
     };
 
 
-    Runnable shouCallOutThread = new Runnable(){
+    Runnable showCallOutThread = new Runnable(){
         @Override
         public void run(){
             m_mapView.showCallOut();

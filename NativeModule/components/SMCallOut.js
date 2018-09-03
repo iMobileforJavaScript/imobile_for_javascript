@@ -5,7 +5,8 @@ let React = require('react');
 let {requireNativeComponent,
     View,
     ViewPropTypes,
-}=require('react-native');
+} = require('react-native');
+import PropTypes from 'prop-types';
 
 class SMCallOut extends React.Component{
     constructor(){
@@ -18,7 +19,7 @@ class SMCallOut extends React.Component{
     }
 
     static propTypes = {
-        viewId:React.PropTypes.number,
+        viewId: PropTypes.number,
         ...ViewPropTypes,
     };
 

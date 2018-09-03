@@ -8,6 +8,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.JsonUtil;
@@ -15,11 +16,8 @@ import com.supermap.analyst.networkanalyst.DemandResult;
 import com.supermap.analyst.networkanalyst.LocationAnalystParameter;
 import com.supermap.analyst.networkanalyst.LocationAnalystResult;
 import com.supermap.analyst.networkanalyst.PathGuide;
-import com.supermap.analyst.networkanalyst.SupplyCenterType;
 import com.supermap.analyst.networkanalyst.SupplyResult;
 import com.supermap.analyst.networkanalyst.TransportationAnalyst;
-import com.supermap.analyst.networkanalyst.FacilityAnalystResult;
-import com.supermap.analyst.networkanalyst.FacilityAnalystSetting;
 import com.supermap.analyst.networkanalyst.TransportationAnalystParameter;
 import com.supermap.analyst.networkanalyst.TransportationAnalystResult;
 import com.supermap.analyst.networkanalyst.TransportationAnalystSetting;
@@ -30,18 +28,16 @@ import com.supermap.data.GeoLineM;
 import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "JSTransportationAnalyst";
-    public static Map<String , TransportationAnalyst> m_TransportationAnalystList = new HashMap<String , TransportationAnalyst>();
+    public static Map<String, TransportationAnalyst> m_TransportationAnalystList = new HashMap<String, TransportationAnalyst>();
     TransportationAnalyst m_TransportationAnalyst;
 
-    public JSTransportationAnalyst(ReactApplicationContext context){
+    public JSTransportationAnalyst(ReactApplicationContext context) {
         super(context);
     }
 
@@ -50,30 +46,31 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public String getName(){return REACT_CLASS;}
+    public String getName() {
+        return REACT_CLASS;
+    }
 
-    public static String registerId(TransportationAnalyst m_TransportationAnalyst){
-        for(Map.Entry entry:m_TransportationAnalystList.entrySet())
-        {
-            if(m_TransportationAnalyst.equals(entry.getValue())){
+    public static String registerId(TransportationAnalyst m_TransportationAnalyst) {
+        for (Map.Entry entry : m_TransportationAnalystList.entrySet()) {
+            if (m_TransportationAnalyst.equals(entry.getValue())) {
                 return (String) entry.getKey();
             }
         }
 
         Calendar calendar = Calendar.getInstance();
-        String id=Long.toString(calendar.getTimeInMillis());
-        m_TransportationAnalystList.put(id,m_TransportationAnalyst);
+        String id = Long.toString(calendar.getTimeInMillis());
+        m_TransportationAnalystList.put(id, m_TransportationAnalyst);
         return id;
     }
 
     @ReactMethod
-    public void createObj(Promise promise){
-        try{
+    public void createObj(Promise promise) {
+        try {
             TransportationAnalyst m_TransportationAnalyst = new TransportationAnalyst();
             String facilityAnalystId = registerId(m_TransportationAnalyst);
 
             promise.resolve(facilityAnalystId);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
@@ -93,6 +90,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
 
     /**
      * 创建内存文件
+     *
      * @param transportationAnalystId
      * @param path
      * @param promise
@@ -112,6 +110,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
 
     /**
      * 根据指定的参数进行最近设施查找分析，事件点为结点 ID
+     *
      * @param transportationAnalystId
      * @param parameterId
      * @param eventID
@@ -122,7 +121,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void findClosestFacilityByNode(String transportationAnalystId, String parameterId, int eventID,
-                                    int facilityCount, boolean isFromEvent, double maxWeight, Promise promise) {
+                                          int facilityCount, boolean isFromEvent, double maxWeight, Promise promise) {
         try {
             m_TransportationAnalyst = getObjFromList(transportationAnalystId);
             TransportationAnalystParameter parameter = JSTransportationAnalystParameter.getObjFromList(parameterId);
@@ -140,6 +139,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
 
     /**
      * 根据指定的参数进行最近设施查找分析，事件点为坐标点
+     *
      * @param transportationAnalystId
      * @param parameterId
      * @param point2DId
@@ -150,7 +150,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void findClosestFacilityByPoint2D(String transportationAnalystId, String parameterId, String point2DId,
-                                    int facilityCount, boolean isFromEvent, double maxWeight, Promise promise) {
+                                             int facilityCount, boolean isFromEvent, double maxWeight, Promise promise) {
         try {
             m_TransportationAnalyst = getObjFromList(transportationAnalystId);
             TransportationAnalystParameter parameter = JSTransportationAnalystParameter.getObjFromList(parameterId);
@@ -170,8 +170,9 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
 
     /**
      * 根据给定的参数进行选址分区分析
+     *
      * @param transportationAnalystId
-     * @param parameterId  LocationAnalystParameter
+     * @param parameterId             LocationAnalystParameter
      * @param promise
      */
     @ReactMethod
@@ -193,6 +194,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
 
     /**
      * 多旅行商（物流配送）分析，配送中心为结点 ID 数组
+     *
      * @param transportationAnalystId
      * @param parameterId
      * @param centerNodes
@@ -201,7 +203,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void findMTSPPathByNodes(String transportationAnalystId, String parameterId, int[] centerNodes,
-                             boolean hasLeastTotalCost, Promise promise) {
+                                    boolean hasLeastTotalCost, Promise promise) {
         try {
             m_TransportationAnalyst = getObjFromList(transportationAnalystId);
             TransportationAnalystParameter parameter = JSTransportationAnalystParameter.getObjFromList(parameterId);
@@ -218,6 +220,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
 
     /**
      * 多旅行商（物流配送）分析，配送中心为点坐标串
+     *
      * @param transportationAnalystId
      * @param parameterId
      * @param centerPoints
@@ -226,7 +229,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void findMTSPPathByPoint2Ds(String transportationAnalystId, String parameterId, WritableArray centerPoints,
-                             boolean hasLeastTotalCost, Promise promise) {
+                                       boolean hasLeastTotalCost, Promise promise) {
         try {
             m_TransportationAnalyst = getObjFromList(transportationAnalystId);
             TransportationAnalystParameter parameter = JSTransportationAnalystParameter.getObjFromList(parameterId);
@@ -246,6 +249,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
 
     /**
      * 最佳路径分析
+     *
      * @param transportationAnalystId
      * @param parameterId
      * @param hasLeastTotalCost
@@ -271,6 +275,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
 
     /**
      * 服务区分析
+     *
      * @param transportationAnalystId
      * @param parameterId
      * @param weights
@@ -298,6 +303,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
 
     /**
      * 返回交通网络分析环境设置对象
+     *
      * @param transportationAnalystId
      * @param promise
      */
@@ -318,6 +324,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
 
     /**
      * 加载网络模型
+     *
      * @param transportationAnalystId
      * @param promise
      */
@@ -337,6 +344,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
 
     /**
      * 加载内存文件
+     *
      * @param transportationAnalystId
      * @param filePath
      * @param networkDatasetId
@@ -359,6 +367,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
 
     /**
      * 设置交通网络分析环境设置对象
+     *
      * @param transportationAnalystId
      * @param settingId
      * @param promise
@@ -380,6 +389,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
 
     /**
      * 该方法用来更新弧段的权值
+     *
      * @param transportationAnalystId
      * @param edgeID
      * @param fromNodeID
@@ -403,6 +413,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
 
     /**
      * 该方法用来更新转向结点的权值
+     *
      * @param transportationAnalystId
      * @param nodeID
      * @param fromEdgeID
@@ -469,7 +480,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
         return map;
     }
 
-    private WritableArray arrayToWritableArray (Object[] arr) {
+    private WritableArray arrayToWritableArray(Object[] arr) {
         WritableArray writableArray = Arguments.createArray();
         for (int i = 0; i < arr.length; i++) {
             WritableArray subArr = Arguments.fromArray(arr[i]);
