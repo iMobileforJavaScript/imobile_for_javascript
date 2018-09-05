@@ -37,8 +37,10 @@ RCT_REMAP_METHOD(getPathListByFilter, path:(NSString*)path filter:(NSDictionary*
             NSString* tt = [fullPath stringByReplacingOccurrencesOfString:[NSHomeDirectory() stringByAppendingString:@"/Documents"] withString:@""];
             NSString* extension = [tt pathExtension];
             NSString* fileName = [tt lastPathComponent];
-            if([filterEx containsString:extension] && ([fileName containsString:filterKey]|| [filterKey isEqualToString:@""]))
+            if(([filterEx containsString:extension] && ([fileName containsString:filterKey] || [filterKey isEqualToString:@""])) || flag) {
                 [array addObject:@{@"name":fileName,@"path":tt,@"isDirectory":@(flag)}];
+            }
+                
         }
         
     }

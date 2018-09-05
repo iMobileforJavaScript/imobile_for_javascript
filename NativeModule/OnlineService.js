@@ -1,16 +1,9 @@
 import { NativeModules } from 'react-native';
-let OS = NativeModules.JSOlineService;
+let OS = NativeModules.JSOnlineService;
 
 
 //OnlinService
-export default class OlineService {
-
-  //  Onlin 下载数据文件
-  //  String path  文件保存路径
-  //  String username   用户名（用于登陆online）
-  //  String passworld    密码
-  //  String filename     文件名称
-
+export default class OnlineService {
   async download(path, filename) {
     try {
       let result = OS.download(path, filename)
