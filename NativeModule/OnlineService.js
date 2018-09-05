@@ -1,9 +1,9 @@
 import { NativeModules } from 'react-native';
-let OS = NativeModules.JSOlineService;
+let OS = NativeModules.JSOnlineService;
 
 
 //OnlinService
-export default class OlineService {
+export default class OnlineService {
 
   //  Onlin 下载数据文件
   //  String path  文件保存路径
