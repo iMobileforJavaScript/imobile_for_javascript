@@ -12,12 +12,12 @@ import com.supermap.containts.EventConst;
 import com.supermap.onlineservices.DownLoadFile;
 import com.supermap.onlineservices.OnlineService;
 
-public class JSOlineService extends ReactContextBaseJavaModule {
+public class JSOnlineService extends ReactContextBaseJavaModule {
 
     ReactContext mReactContext;
     OnlineService onlineService;
 
-    public JSOlineService(ReactApplicationContext reactContext) {
+    public JSOnlineService(ReactApplicationContext reactContext) {
         super(reactContext);
         mReactContext = reactContext;
     }
@@ -31,7 +31,7 @@ public class JSOlineService extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "JSOlineService";
+        return "JSOnlineService";
     }
 
     @ReactMethod
