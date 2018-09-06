@@ -536,4 +536,16 @@ RCT_REMAP_METHOD(setPlotSymbol,setPlotSymbolById:(NSString*)Id libId:(int)libId 
         reject(@"MapControl",@"setPlotSymbol() failed.",nil);
     }
 }
+
+RCT_REMAP_METHOD(appointEditGeometry,appointEditGeometryById:(NSString*)Id geoId:(int)geoId layerId:(NSString*)layerId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [JSObjManager getObjWithKey:Id];
+        Layer* layer = [JSObjManager getObjWithKey:layerId];
+        bool result = [mapControl appointEditGeometryWithID:geoId Layer:layer];
+        NSNumber* num = [NSNumber numberWithBool:result];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"MapControl",@"setPlotSymbol() failed.",nil);
+    }
+}
 @end

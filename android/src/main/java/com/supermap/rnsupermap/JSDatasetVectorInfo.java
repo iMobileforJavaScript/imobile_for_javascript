@@ -50,7 +50,6 @@ public class JSDatasetVectorInfo extends ReactContextBaseJavaModule {
         try{
             DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo(name,(DatasetType) Enum.parse(DatasetType.class,type));
             String datasetVectorInfoId = registerId(datasetVectorInfo);
-
             WritableMap map = Arguments.createMap();
             map.putString("datasetVectorInfoId",datasetVectorInfoId);
             promise.resolve(map);

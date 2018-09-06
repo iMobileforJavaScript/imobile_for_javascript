@@ -74,6 +74,7 @@ export default class MapControl {
    */
   async setAction(actionType) {
     try {
+      console.log(actionType)
       await MC.setAction(this._SMMapControlId, actionType);
     } catch (e) {
       console.error(e);
@@ -1133,6 +1134,20 @@ export default class MapControl {
       Object.assign(paramss, params, {mapViewId: params.mapView._SMMapViewId})
       let { result, uri } = await MC.outputMap(this._SMMapControlId, paramss.mapViewId, paramss.width, paramss.height, paramss.quality, paramss.type);
       return { result, uri }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /**
+   * 指定编辑几何对象
+   * @param geoID
+   * @param layer
+   * @returns {Promise}
+   */
+  async appointEditGeometry(geoID, layer) {
+    try {
+      return await MC.appointEditGeometry(this._SMMapControlId, geoID, layer._SMLayerId);
     } catch (e) {
       console.error(e);
     }

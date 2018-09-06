@@ -282,7 +282,7 @@ export default class TransportationAnalystParameter {
   
   /**
    * 设置分析时途经点的集合
-   * @param points2DsArr    [{x, y}, {x, y}]
+   * @param points2DsArr
    * @returns {Promise.<void>}
    */
   async setPoints(points2DsArr = []) {
