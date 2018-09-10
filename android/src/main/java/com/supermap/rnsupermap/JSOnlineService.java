@@ -83,9 +83,10 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void logout(String username, String passworld, final Promise promise) {
+    public void logout(final Promise promise) {
         try {
             OnlineService.logout();
+            promise.resolve(true);
         } catch (Exception e) {
             promise.resolve(e);
         }

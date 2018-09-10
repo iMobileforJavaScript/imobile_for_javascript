@@ -29,7 +29,7 @@ export default class OnlineService {
   }
   async login(username, passworld) {
     try {
-      let result = OS.login(username, passworld)
+      let result = await OS.login(username, passworld)
       return result;
     } catch (e) {
       console.error(e);
@@ -37,7 +37,7 @@ export default class OnlineService {
   }
   async logout() {
     try {
-      let result = OS.logout()
+      let result = await OS.logout()
       return result;
     } catch (e) {
       console.error(e);
