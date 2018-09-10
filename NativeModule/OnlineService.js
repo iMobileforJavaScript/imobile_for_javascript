@@ -19,6 +19,14 @@ export default class OnlineService {
       console.error(e);
     }
   }
+  async upload(path, filename) {
+    try {
+      let result = OS.upload(path, filename)
+      return result;
+    } catch (e) {
+      console.error(e);
+    }
+  }
   async login(username, passworld) {
     try {
       let result = OS.login(username, passworld)

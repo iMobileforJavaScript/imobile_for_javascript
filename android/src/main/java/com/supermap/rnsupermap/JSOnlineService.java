@@ -11,6 +11,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
 import com.supermap.onlineservices.DownLoadFile;
 import com.supermap.onlineservices.OnlineService;
+import com.supermap.onlineservices.UpLoadFile;
 
 public class JSOnlineService extends ReactContextBaseJavaModule {
 
@@ -43,17 +44,17 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
                 public void getProgress(int progeress) {
                     Log.e("++++++++++++", "+" + progeress);
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADING, progeress);
-
                 }
 
                 @Override
                 public void onComplete() {
                     Log.e("++++++++++++", "==========================" );
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ok", true);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED, true);
                 }
 
                 @Override
                 public void onFailure() {
+                    Log.e("++++++++++++", "++++++++++++++++++++++++++" );
                 }
             });
         } catch (Exception e) {
@@ -89,5 +90,19 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
             promise.resolve(e);
         }
     }
-
+    @ReactMethod
+    public void upload(String filepath, String filename, final Promise promise) {
+        try {
+            final OnlineService onlineService = getInstance();
+            onlineService.UpLoadFile(filepath,filename,new UpLoadFile.UpLoadListener(){
+                @Override
+                public void getProgress(int progeress) {
+                    Log.e("++++++++++++", "+" + progeress);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING, progeress);
+                }
+            });
+        } catch (Exception e) {
+            promise.resolve(e);
+        }
+    }
 }

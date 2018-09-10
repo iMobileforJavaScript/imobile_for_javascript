@@ -7,4 +7,5 @@ public class EventConst {
     public static final String ONLINE_SERVICE_DOWNLOADED = "com.supermap.RN.JSMapcontrol.online_service_downloaded";
     public static final String ONLINE_SERVICE_LOGIN = "com.supermap.RN.JSMapcontrol.online_service_login";
     public static final String ONLINE_SERVICE_LOGOUT = "com.supermap.RN.JSMapcontrol.online_service_logout";
+    public static final String ONLINE_SERVICE_UPLOADING = "com.supermap.RN.JSMapcontrol.online_service_uploading";
 }
