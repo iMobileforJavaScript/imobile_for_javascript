@@ -904,8 +904,7 @@ export default class MapControl {
    */
   async removeGeometrySelectedListener() {
     try {
-      await MC.removeGeometrySelectedListener(this._SMMapControlId);
-      debugger
+      await MC.removeGeometrySelectedListener(this._SMMapControlId);    
     } catch (e) {
       console.error(e);
     }
@@ -1162,7 +1161,6 @@ export default class MapControl {
     try {
       await MC.dispose(this._SMMapControlId);
     } catch (e) {
-      debugger
       console.error(e);
     }
   }
