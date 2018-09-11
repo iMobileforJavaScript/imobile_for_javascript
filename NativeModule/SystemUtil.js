@@ -122,7 +122,6 @@ export default class SystemUtil {
   }
   async UnZipFolder(zipfile,targetdir) {
     try {
-      debugger
       let result = await SU.UnZipFolder(zipfile,targetdir);
       return result;
     } catch (e) {

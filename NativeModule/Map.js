@@ -721,4 +721,18 @@ export default class Map {
       console.error(e);
     }
   }
+
+  /**
+   * 释放地图
+   * @returns {Promise.<PrjCoordSys>}
+   */
+  async dispose() {
+    try {
+      return await M.dispose(this._SMMapId);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+
 }

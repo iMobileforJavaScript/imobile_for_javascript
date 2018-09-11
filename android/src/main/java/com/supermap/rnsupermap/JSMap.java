@@ -60,7 +60,11 @@ public class JSMap extends ReactContextBaseJavaModule {
     public static Map getObjFromList(String id) {
         return mapList.get(id);
     }
-    
+
+    public static void removeObjFromList(String id) {
+        mapList.remove(id);
+    }
+
     public java.util.Map<String, Object> getConstants() {
         final java.util.Map<String, Object> constants = new HashMap<>();
         constants.put(NAVIGATION_STARTPOINT, "startpoint");
@@ -865,6 +869,19 @@ public class JSMap extends ReactContextBaseJavaModule {
             String prjCoordSysId = JSPrjCoordSys.registerId(prjCoordSys);
 
             promise.resolve(prjCoordSysId);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void dispose(String mapId, Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            map.dispose();
+            removeObjFromList(mapId);
+
+            promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
         }

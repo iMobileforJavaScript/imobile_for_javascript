@@ -905,6 +905,7 @@ export default class MapControl {
   async removeGeometrySelectedListener() {
     try {
       await MC.removeGeometrySelectedListener(this._SMMapControlId);
+      debugger
     } catch (e) {
       console.error(e);
     }
@@ -970,7 +971,7 @@ export default class MapControl {
    */
   async removeMeasureListener() {
     try {
-      await MC.removeMeasureListener(this._SMMapControlId);
+      return await MC.removeMeasureListener(this._SMMapControlId);
     } catch (e) {
       console.error(e);
     }
@@ -1149,6 +1150,19 @@ export default class MapControl {
     try {
       return await MC.appointEditGeometry(this._SMMapControlId, geoID, layer._SMLayerId);
     } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /**
+   * 释放对象
+   * @returns {Promise.<void>}
+   */
+  async dispose() {
+    try {
+      await MC.dispose(this._SMMapControlId);
+    } catch (e) {
+      debugger
       console.error(e);
     }
   }

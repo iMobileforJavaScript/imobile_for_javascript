@@ -393,6 +393,14 @@ export default class Workspace {
     }
     return value;
   }
+
+  async dispose() {
+    try {
+      return await W.dispose(this._SMWorkspaceId);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 }
 
 Workspace.SMWU = 9;

@@ -145,6 +145,12 @@ RCT_REMAP_METHOD(getLayersByType, getLayersByTypeyKey:(NSString*)key  type:(int)
                 Theme* theme = layer.theme;
                 int themeType = 0;
                 themeType = theme.themeType;
+                NSString* datasetName;
+                if (dataset.name != nil) {
+                    datasetName = dataset.name;
+                } else {
+                    datasetName = @"";
+                }
                 NSDictionary* wMap = @{@"id":layerId,
                                        @"type":@(dType),
                                        @"themeType":@(themeType),
@@ -152,7 +158,7 @@ RCT_REMAP_METHOD(getLayersByType, getLayersByTypeyKey:(NSString*)key  type:(int)
                                        @"name": layer.name,
                                        @"caption": layer.caption,
                                        @"description": layer.description,
-                                       @"datasetName": dataset.name,
+                                       @"datasetName": datasetName,
                                        @"isEditable": @(layer.editable),
                                        @"isVisible": @(layer.visible),
                                        @"isSelectable": @(layer.selectable),

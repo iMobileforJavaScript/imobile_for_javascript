@@ -92,29 +92,32 @@
         NSArray* values2 = fieldsDic.allValues;
         int fieldsDicCount = (int)[fieldsDic count];
         for(int a = 0;a < fieldsDicCount;a ++){
-            NSString* keyName2 =(NSString*)keys2[i];
-            if(values2[i] == nil){
+            NSString* keyName2 =(NSString*)keys2[a];
+            if(values2[a] == nil){
                 [itemWMap setObject:@"" forKey:keyName2]; // ???
                 continue;
             }
-            if([keyName2 isEqualToString:@"caption"] || [keyName2 isEqualToString:@"defaultValue"]
-               ||[keyName2 isEqualToString:@"name"]){
-                [itemWMap setObject:(NSString*)values2[i] forKey:keyName2]; // ???
-            }
-            else if([keyName2 isEqualToString:@"isRequired"] || [keyName2 isEqualToString:@"isSystemField"]){
-                [itemWMap setObject:values2[i] forKey:keyName2]; //  ???
-            }
-            else if([keyName2 isEqualToString:@"maxLength"]){
-                [itemWMap setObject:values2[i] forKey:keyName2];  // ???
-            }
-            else if([keyName2 isEqualToString:@"type"]){
-                FieldType type = (FieldType)(((NSString*)values2[i]).intValue);
-                [itemWMap setObject:values2[i] forKey:keyName2];
+            [itemWMap setObject:values2[a] forKey:keyName2];
+//            if([keyName2 isEqualToString:@"caption"] || [keyName2 isEqualToString:@"defaultValue"]
+//               ||[keyName2 isEqualToString:@"name"]){
+//                [itemWMap setObject:(NSString*)values2[i] forKey:keyName2]; // ???
+//            }
+//            else if([keyName2 isEqualToString:@"isRequired"] || [keyName2 isEqualToString:@"isSystemField"]){
+//                [itemWMap setObject:values2[i] forKey:keyName2]; //  ???
+//            }
+//            else if([keyName2 isEqualToString:@"maxLength"]){
+//                [itemWMap setObject:values2[i] forKey:keyName2];  // ???
+//            }
+//            else
+            if([keyName2 isEqualToString:@"type"]){
+                FieldType type = (FieldType)(((NSString*)values2[a]).intValue);
+//                [itemWMap setObject:values2[i] forKey:keyName2];
                 
                 NSObject* object = [recordset getFieldValueWithString:keyName];
                 if(object == nil){
                     [keyMap setObject:@"" forKey:@"value"];
                 }
+                [keyMap setObject:object forKey:@"value"];
 //                else if (type == FT_DOUBLE ||
 //                         type == FT_SINGLE ||
 //                         type == FT_CHAR ||
@@ -129,9 +132,9 @@
 //                         ){
 //                    [keyMap setObject:object forKey:@"value"];
 //                }
-                else {
-                    [keyMap setObject:object forKey:@"value"];
-                }
+//                else {
+//                    [keyMap setObject:object forKey:@"value"];
+//                }
             }
         }
         [keyMap setObject:itemWMap forKey:@"fieldInfo"];
