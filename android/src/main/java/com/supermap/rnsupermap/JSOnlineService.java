@@ -54,7 +54,7 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
 
                 @Override
                 public void onFailure() {
-                    Log.e("++++++++++++", "++++++++++++++++++++++++++" );
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, false);
                 }
             });
         } catch (Exception e) {
