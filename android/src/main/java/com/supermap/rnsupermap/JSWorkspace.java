@@ -41,6 +41,10 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
         return mWorkspaceList.get(id);
     }
 
+    public static void removeObjById(String id){
+        mWorkspaceList.remove(id);
+    }
+
     public static String registerId(Workspace workspace){
         if(!mWorkspaceList.isEmpty()) {
             for(Map.Entry entry:mWorkspaceList.entrySet()){
@@ -300,12 +304,10 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
     @ReactMethod
     public void saveWorkspaceWithInfo(String workspaceId,String path, String caption, int type,Promise promise){
         try{
-            String homeDirectory = android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString();
-
             Workspace workspace = getObjById(workspaceId);
             WorkspaceConnectionInfo info = workspace.getConnectionInfo();
 
-            String server = homeDirectory + "/" + path;
+            String server = path;
             info.setServer(server);
             if (caption.length() > 0) {
                 workspace.setCaption(caption);
@@ -509,6 +511,18 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
             String infoId = JSWorkspaceConnectionInfo.registerId(info);
 
             promise.resolve(infoId);
+        }catch(Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void dispose(String workspaceId, Promise promise){
+        try{
+            Workspace workspace = getObjById(workspaceId);
+            workspace.dispose();
+            removeObjById(workspaceId);
+            promise.resolve(true);
         }catch(Exception e) {
             promise.reject(e);
         }

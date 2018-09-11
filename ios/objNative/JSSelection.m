@@ -55,4 +55,22 @@ RCT_REMAP_METHOD(toRecordset,toRecordsetById:(NSString*)selectionId resolver:(RC
     reject(@"selection",@"toRecordSet failed!!!",nil);
   }
 }
+
+RCT_REMAP_METHOD(add, addById:(NSString*)selectionId geometryId:(int)geometryId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Selection* selection = [JSObjManager getObjWithKey:selectionId];
+    int index = [selection add:geometryId];
+    NSNumber* num = [NSNumber numberWithInteger:index];
+    resolve(num);
+}
+
+RCT_REMAP_METHOD(getCount, getCountById:(NSString*)selectionId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Selection* selection = [JSObjManager getObjWithKey:selectionId];
+        int index = [selection getCount];
+        NSNumber* num = [NSNumber numberWithInteger:index];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"selection", @"getCount failed!!!", nil);
+    }
+}
 @end

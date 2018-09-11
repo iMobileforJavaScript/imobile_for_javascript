@@ -90,6 +90,7 @@
         
         NSArray* keys2 = fieldsDic.allKeys;
         NSArray* values2 = fieldsDic.allValues;
+
         int fieldsDicCount = (int)[keys2 count];
         for(int a = 0;a < fieldsDicCount;a++){
             NSString* keyName2 =(NSString*)keys2[a];
@@ -97,6 +98,7 @@
                 [itemWMap setObject:@"" forKey:keyName2]; // ???
                 continue;
             }
+
             if([keyName2 isEqualToString:@"caption"] || [keyName2 isEqualToString:@"defaultValue"]
                ||[keyName2 isEqualToString:@"name"]){
                 [itemWMap setObject:(NSString*)values2[a] forKey:keyName2]; // ???

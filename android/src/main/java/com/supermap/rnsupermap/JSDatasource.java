@@ -131,7 +131,6 @@ public class JSDatasource extends ReactContextBaseJavaModule {
             DatasetVectorInfo datasetVectorInfo = JSDatasetVectorInfo.getObjFromList(datasetVectorInfoId);
             DatasetVector datasetVector = m_datasource.getDatasets().create(datasetVectorInfo);
             String datasetVectorId = JSDatasetVector.registerId(datasetVector);
-
             WritableMap map = Arguments.createMap();
             map.putString("datasetVectorId", datasetVectorId);
             promise.resolve(map);
