@@ -49,6 +49,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSGeometry3D(reactContext));
         modules.add(new JSLayers(reactContext));
         modules.add(new JSLayer(reactContext));
+        modules.add(new JSLayerGroup(reactContext));
         modules.add(new JSLayer3D(reactContext));
         modules.add(new JSLayer3Ds(reactContext));
         modules.add(new JSLayer3DOSGBFile(reactContext));

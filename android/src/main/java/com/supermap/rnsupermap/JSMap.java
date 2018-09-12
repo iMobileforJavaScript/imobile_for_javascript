@@ -139,7 +139,7 @@ public class JSMap extends ReactContextBaseJavaModule {
     @ReactMethod
     public void refresh(String mapId,Promise promise){
         try{
-            Map map=mapList.get(mapId);
+            Map map = mapList.get(mapId);
             map.refresh();
             promise.resolve(true);
         }catch (Exception e){
@@ -327,6 +327,12 @@ public class JSMap extends ReactContextBaseJavaModule {
                         themeType = theme.getType().value();
                     }
 
+                    LayerGroup layerGroup = layer.getParentGroup();
+                    String layerGroupId = "";
+                    if (layerGroup != null) {
+                        layerGroupId = JSLayerGroup.registerId(layerGroup);
+                    }
+
                     WritableMap wMap = new Arguments().createMap();
                     wMap.putString("id", layerId);
                     wMap.putInt("type", intType);
@@ -340,6 +346,7 @@ public class JSMap extends ReactContextBaseJavaModule {
                     wMap.putBoolean("isVisible", layer.isVisible());
                     wMap.putBoolean("isSelectable", layer.isSelectable());
                     wMap.putBoolean("isSnapable", layer.isSnapable());
+                    wMap.putString("layerGroupId", layerGroupId);
                     arr.pushMap(wMap);
                 }
             }
@@ -405,10 +412,8 @@ public class JSMap extends ReactContextBaseJavaModule {
                         wMap.putInt("type", intType);
                         wMap.putInt("index", i);
                         wMap.putString("datasetName", dataset.getName());
-                        continue;
                     } else {
                         wMap.putString("type", "layerGroup");
-                        wMap.putString("id", layerGroupId);
                     }
                     arr.pushMap(wMap);
                 }
