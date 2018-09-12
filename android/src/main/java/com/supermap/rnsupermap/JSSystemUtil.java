@@ -307,39 +307,49 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
 //        }
 //    }
     @ReactMethod
-    public static void unZipFile(String archive, String decompressDir) throws IOException, FileNotFoundException, ZipException {
-        BufferedInputStream bi;
-        ZipFile zf = new ZipFile(archive, "GBK");
-        Enumeration e = zf.getEntries();
-        while (e.hasMoreElements()) {
-            ZipEntry ze2 = (ZipEntry) e.nextElement();
-            String entryName = ze2.getName();
-            String path = decompressDir + "/" + entryName;
-            if (ze2.isDirectory()) {
-                System.out.println("正在创建解压目录 - " + entryName);
-                File decompressDirFile = new File(path);
-                if (!decompressDirFile.exists()) {
-                    decompressDirFile.mkdirs();
+    public static void unZipFile(String archive, String decompressDir, Promise promise) throws IOException, FileNotFoundException, ZipException {
+        try {
+            boolean isUnZiped = false;
+            BufferedInputStream bi;
+            ZipFile zf = new ZipFile(archive, "GBK");
+            Enumeration e = zf.getEntries();
+            while (e.hasMoreElements()) {
+                ZipEntry ze2 = (ZipEntry) e.nextElement();
+                String entryName = ze2.getName();
+                String path = decompressDir + "/" + entryName;
+                if (ze2.isDirectory()) {
+                    System.out.println("正在创建解压目录 - " + entryName);
+                    File decompressDirFile = new File(path);
+                    if (!decompressDirFile.exists()) {
+                        decompressDirFile.mkdirs();
+                    }
+                } else {
+                    System.out.println("正在创建解压文件 - " + entryName);
+                    String fileDir = path.substring(0, path.lastIndexOf("/"));
+                    File fileDirFile = new File(fileDir);
+                    if (!fileDirFile.exists()) {
+                        fileDirFile.mkdirs();
+                    }
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(decompressDir + "/" + entryName));
+                    bi = new BufferedInputStream(zf.getInputStream(ze2));
+                    byte[] readContent = new byte[1024];
+                    int readCount = bi.read(readContent);
+                    while (readCount != -1) {
+                        bos.write(readContent, 0, readCount);
+                        readCount = bi.read(readContent);
+                    }
+                    bos.close();
                 }
-            } else {
-                System.out.println("正在创建解压文件 - " + entryName);
-                String fileDir = path.substring(0, path.lastIndexOf("/"));
-                File fileDirFile = new File(fileDir);
-                if (!fileDirFile.exists()) {
-                    fileDirFile.mkdirs();
-                }
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(decompressDir + "/" + entryName));
-                bi = new BufferedInputStream(zf.getInputStream(ze2));
-                byte[] readContent = new byte[1024];
-                int readCount = bi.read(readContent);
-                while (readCount != -1) {
-                    bos.write(readContent, 0, readCount);
-                    readCount = bi.read(readContent);
-                }
-                bos.close();
             }
+            zf.close();
+            isUnZiped = true;
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("isUnZiped", isUnZiped);
+            promise.resolve(map);
+        } catch (Exception e) {
+            promise.reject(e);
         }
-        zf.close();
+
     }
 
 
