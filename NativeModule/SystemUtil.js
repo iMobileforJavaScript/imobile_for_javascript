@@ -122,7 +122,7 @@ export default class SystemUtil {
   }
   async UnZipFolder(zipfile,targetdir) {
     try {
-      let result = await SU.UnZipFolder(zipfile,targetdir);
+      let result = await SU.unZipFile(zipfile,targetdir);
       return result;
     } catch (e) {
       console.error(e);
