@@ -373,7 +373,7 @@ public class JSMap extends ReactContextBaseJavaModule {
                     intType = dataset.getType().value();
                 }
 
-                if (intType == type || type == -1 || dataset == null) {
+                if (intType == type || type == -1) {
                     WritableMap wMap = Arguments.createMap();
                     String layerId = JSLayer.registerId(layer);
 
@@ -384,6 +384,12 @@ public class JSMap extends ReactContextBaseJavaModule {
                         themeType = theme.getType().value();
                     }
 
+                    LayerGroup layerGroup = layer.getParentGroup();
+                    String layerGroupId = "";
+                    if (layerGroup != null) {
+                        layerGroupId = JSLayerGroup.registerId(layerGroup);
+                    }
+
                     wMap.putString("id", layerId);
                     wMap.putString("name", layer.getName());
                     wMap.putString("caption", layer.getCaption());
@@ -392,15 +398,17 @@ public class JSMap extends ReactContextBaseJavaModule {
                     wMap.putBoolean("isVisible", layer.isVisible());
                     wMap.putBoolean("isSelectable", layer.isSelectable());
                     wMap.putBoolean("isSnapable", layer.isSnapable());
+                    wMap.putString("layerGroupId", layerGroupId);
+                    wMap.putInt("themeType", themeType);
 
                     if (dataset != null) { // 没有数据集的Layer是LayerGroup
                         wMap.putInt("type", intType);
-                        wMap.putInt("themeType", themeType);
                         wMap.putInt("index", i);
                         wMap.putString("datasetName", dataset.getName());
                         continue;
                     } else {
                         wMap.putString("type", "layerGroup");
+                        wMap.putString("id", layerGroupId);
                     }
                     arr.pushMap(wMap);
                 }

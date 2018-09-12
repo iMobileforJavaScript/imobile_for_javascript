@@ -100,6 +100,24 @@ export default class Map {
       console.error(e);
     }
   }
+
+  /**
+   * 根据类型查找图层, type = -1 时，返回全部类型
+   * @returns {Promise}
+   */
+  async getLayersByType1(type = -1) {
+    try {
+      let layers = await M.getLayersByType1(this._SMMapId, type);
+      for (let i = 0; i < layers.length; i++) {
+        let layer = new Layer()
+        layer._SMLayerId = layers[i].id
+        layers[i].layer = layer
+      }
+      return layers
+    } catch (e) {
+      console.error(e);
+    }
+  }
   
   /**
    * 用于把一个数据集添加到此地图作为一个普通图层显示，即创建一个普通图层。(@deprecated)
