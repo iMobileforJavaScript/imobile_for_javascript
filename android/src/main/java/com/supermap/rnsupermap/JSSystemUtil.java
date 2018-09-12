@@ -8,17 +8,20 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import org.apache.tools.zip.*;
+
+import org.apache.tools.zip.ZipEntry;
+import org.apache.tools.zip.ZipFile;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.util.Enumeration;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Enumeration;
+import java.util.zip.ZipException;
 
 public class JSSystemUtil extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "JSSystemUtil";
@@ -45,13 +48,13 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getDirectoryContent(String path, Promise promise){
-        try{
+    public void getDirectoryContent(String path, Promise promise) {
+        try {
             File flist = new File(path);
             String[] mFileList = flist.list();
 
             WritableArray arr = Arguments.createArray();
-            for(String str: mFileList){
+            for (String str : mFileList) {
                 String type = "";
                 if (new File(path + "/" + str).isDirectory()) {
                     type = "directory";
@@ -66,7 +69,7 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
             }
 
             promise.resolve(arr);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
@@ -109,7 +112,8 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
 
     /**
      * 创建文件目录
-     * @param path - 绝对路径
+     *
+     * @param path    - 绝对路径
      * @param promise
      */
     @ReactMethod
@@ -225,6 +229,7 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
 
     /**
      * 拷贝文件到app目录下
+     *
      * @param fileName
      * @param path
      * @param promise
@@ -249,148 +254,103 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
         }
     }
 
-    /**
-     * 文件解压
-     * @param
-     * @param
-     */
+    //    /**
+//     * 文件解压
+//     * @param
+//     * @param
+//     */
+//    @ReactMethod
+//    public static void UnZipFolder(String zipFile, String targetDir, Promise promise){
+//        boolean isUnZiped = false;
+//        java.util.zip.ZipInputStream inZip;
+//        try {
+//
+//            inZip = new java.util.zip.ZipInputStream(new java.io.FileInputStream(zipFile));
+//
+//            java.util.zip.ZipEntry zipEntry;
+//            String szName = "";
+//
+//            while ((zipEntry = inZip.getNextEntry()) != null) {
+//                szName = zipEntry.getName();
+//
+//                if (zipEntry.isDirectory()) {
+//
+//                    java.io.File folder = new java.io.File(targetDir + java.io.File.separator + szName);
+//                    folder.mkdirs();
+//
+//                } else {
+//
+//                    java.io.File file = new java.io.File(targetDir + java.io.File.separator + szName);
+//                    file.createNewFile();
+//                    // get the output stream of the file
+//                    java.io.FileOutputStream out = new java.io.FileOutputStream(file);
+//                    int len;
+//                    byte[] buffer = new byte[1024];
+//                    while ((len = inZip.read(buffer)) != -1) {
+//                        out.write(buffer, 0, len);
+//                        out.flush();
+//                    }
+//                    out.close();
+//                }
+//            }
+//            inZip.close();
+//            isUnZiped = true;
+//            WritableMap map = Arguments.createMap();
+//            map.putBoolean("isUnZiped", isUnZiped);
+//            promise.resolve(map);
+////            File file = new File(zipFile);
+////            file.delete();
+//        } catch (FileNotFoundException e) {
+//            promise.reject(e);
+//        } catch (IOException e) {
+//            promise.reject(e);
+//        }
+//    }
     @ReactMethod
-    public static void UnZipFolder(String zipFile, String targetDir, Promise promise){
-        boolean isUnZiped = false;
-        java.util.zip.ZipInputStream inZip;
+    public static void unZipFile(String archive, String decompressDir, Promise promise) throws IOException, FileNotFoundException, ZipException {
         try {
-
-            inZip = new java.util.zip.ZipInputStream(new java.io.FileInputStream(zipFile));
-
-            java.util.zip.ZipEntry zipEntry;
-            String szName = "";
-
-            while ((zipEntry = inZip.getNextEntry()) != null) {
-                szName = zipEntry.getName();
-
-                if (zipEntry.isDirectory()) {
-
-                    java.io.File folder = new java.io.File(targetDir + java.io.File.separator + szName);
-                    folder.mkdirs();
-
-                } else {
-
-                    java.io.File file = new java.io.File(targetDir + java.io.File.separator + szName);
-                    file.createNewFile();
-                    // get the output stream of the file
-                    java.io.FileOutputStream out = new java.io.FileOutputStream(file);
-                    int len;
-                    byte[] buffer = new byte[1024];
-                    while ((len = inZip.read(buffer)) != -1) {
-                        out.write(buffer, 0, len);
-                        out.flush();
+            boolean isUnZiped = false;
+            BufferedInputStream bi;
+            ZipFile zf = new ZipFile(archive, "GBK");
+            Enumeration e = zf.getEntries();
+            while (e.hasMoreElements()) {
+                ZipEntry ze2 = (ZipEntry) e.nextElement();
+                String entryName = ze2.getName();
+                String path = decompressDir + "/" + entryName;
+                if (ze2.isDirectory()) {
+                    System.out.println("正在创建解压目录 - " + entryName);
+                    File decompressDirFile = new File(path);
+                    if (!decompressDirFile.exists()) {
+                        decompressDirFile.mkdirs();
                     }
-                    out.close();
+                } else {
+                    System.out.println("正在创建解压文件 - " + entryName);
+                    String fileDir = path.substring(0, path.lastIndexOf("/"));
+                    File fileDirFile = new File(fileDir);
+                    if (!fileDirFile.exists()) {
+                        fileDirFile.mkdirs();
+                    }
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(decompressDir + "/" + entryName));
+                    bi = new BufferedInputStream(zf.getInputStream(ze2));
+                    byte[] readContent = new byte[1024];
+                    int readCount = bi.read(readContent);
+                    while (readCount != -1) {
+                        bos.write(readContent, 0, readCount);
+                        readCount = bi.read(readContent);
+                    }
+                    bos.close();
                 }
             }
-            inZip.close();
+            zf.close();
             isUnZiped = true;
             WritableMap map = Arguments.createMap();
             map.putBoolean("isUnZiped", isUnZiped);
             promise.resolve(map);
-//            File file = new File(zipFile);
-//            file.delete();
-        } catch (FileNotFoundException e) {
-            promise.reject(e);
-        } catch (IOException e) {
+        } catch (Exception e) {
             promise.reject(e);
         }
+
     }
-//    @ReactMethod
-//    public static boolean UnZipFolder(String zipFile, String folderPath) {
-//        ZipFile zfile= null;
-//        try {
-//            //转码为GBK格式，支持中文
-//            zfile = new ZipFile(zipFile,"GBK");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-//        Enumeration zList=zfile.getEntries();
-//        ZipEntry ze=null;
-//        byte[] buf=new byte[1024];
-//        while(zList.hasMoreElements()){
-//            ze=(ZipEntry)zList.nextElement();
-//            //列举的压缩文件里面的各个文件，判断是否为目录
-//            if(ze.isDirectory()){
-//                String dirstr = folderPath + ze.getName();
-//                dirstr.trim();
-//                File f=new File(dirstr);
-//                f.mkdir();
-//                continue;
-//            }
-//            OutputStream os= null;
-//            FileOutputStream fos = null;
-//            // ze.getName()会返回 script/start.script这样的，是为了返回实体的File
-//            File realFile = getRealFileName(folderPath, ze.getName());
-//            try {
-//                fos = new FileOutputStream(realFile);
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//                return false;
-//            }
-//            os = new BufferedOutputStream(fos);
-//            InputStream is= null;
-//            try {
-//                is = new BufferedInputStream(zfile.getInputStream(ze));
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return false;
-//            }
-//            int readLen=0;
-//            //进行一些内容复制操作
-//            try {
-//                while ((readLen=is.read(buf, 0, 1024))!=-1) {
-//                    os.write(buf, 0, readLen);
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return false;
-//            }
-//            try {
-//                is.close();
-//                os.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return false;
-//            }
-//        }
-//        try {
-//            zfile.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-//        return true;
-//
-//    }
-//    public static File getRealFileName(String baseDir, String absFileName){
-//        System.out.println("======================");
-//        String[] dirs=absFileName.split("/");
-//        File ret = new File(baseDir);
-//        String substr = null;
-//
-//        if(dirs.length>1){
-//            for (int i = 0; i < dirs.length-1;i++) {
-//                substr = dirs[i];
-//                ret=new File(ret, substr);
-//            }
-//
-//            if(!ret.exists())
-//                ret.mkdirs();
-//            substr = dirs[dirs.length-1];
-//            ret=new File(ret, substr);
-//            return ret;
-//        }else{
-//            ret = new File(ret,absFileName);
-//        }
-//        return ret;
-//    }
 
 
 }

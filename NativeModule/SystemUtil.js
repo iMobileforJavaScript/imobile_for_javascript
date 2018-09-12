@@ -120,9 +120,9 @@ export default class SystemUtil {
       console.error(e);
     }
   }
-  async UnZipFolder(zipfile,targetdir) {
+  async unZipFile(zipfile,targetdir) {
     try {
-      let result = await SU.UnZipFolder(zipfile,targetdir);
+      let result = await SU.unZipFile(zipfile,targetdir);
       return result;
     } catch (e) {
       console.error(e);
