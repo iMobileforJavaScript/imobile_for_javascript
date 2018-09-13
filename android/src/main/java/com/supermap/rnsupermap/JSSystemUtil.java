@@ -358,8 +358,14 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public static void deleteZip(String zippath, Promise promise) {
-        File file = new File(zippath);
-        file.delete();
+        try {
+            File file = new File(zippath);
+            boolean result= file.delete();
+            promise.resolve(result);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+
     }
 
 }
