@@ -747,6 +747,18 @@ export default class Map {
   }
 
   /**
+   * 获取地图XML
+   * @returns {Promise.<PrjCoordSys>}
+   */
+  async toXML() {
+    try {
+      return await M.toXML(this._SMMapId);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /**
    * 释放地图
    * @returns {Promise.<PrjCoordSys>}
    */

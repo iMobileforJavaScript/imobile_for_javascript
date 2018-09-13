@@ -313,10 +313,10 @@ export default class Layer {
    */
   async getTheme() {
     try {
-      let {themeId, type} = await L.getTheme(this._SMLayerId)
-      if (themeId) {
+      let mTheme = await L.getTheme(this._SMLayerId) // {themeId, type}
+      if (mTheme && mTheme.themeId) {
         let theme;
-        switch (type) {
+        switch (mTheme.type) {
           case ThemeType.UNIQUE:
             theme = new ThemeUnique()
             break
@@ -330,8 +330,8 @@ export default class Layer {
             theme = new Theme()
             break
         }
-        theme._SMThemeId = themeId
-        theme.type = type
+        theme._SMThemeId = mTheme.themeId
+        theme.type = mTheme.type
         return theme
       } else {
         return null
