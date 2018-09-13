@@ -128,5 +128,12 @@ export default class SystemUtil {
       console.error(e);
     }
   }
+  async deleteZip(zipfile) {
+    try {
+      await SU.deleteZip(zipfile);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 }
 

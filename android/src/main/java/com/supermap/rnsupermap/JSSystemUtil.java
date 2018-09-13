@@ -1,5 +1,7 @@
 package com.supermap.rnsupermap;
 
+import android.util.Log;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -308,7 +310,9 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
 //    }
     @ReactMethod
     public static void unZipFile(String archive, String decompressDir, Promise promise) throws IOException, FileNotFoundException, ZipException {
+        Log.e("++++++++++++", "zipzipzipzipzipzipzipzipzipzipzipzip" );
         try {
+
             boolean isUnZiped = false;
             BufferedInputStream bi;
             ZipFile zf = new ZipFile(archive, "GBK");
@@ -352,6 +356,11 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
 
     }
 
+    @ReactMethod
+    public static void deleteZip(String zippath, Promise promise) {
+        File file = new File(zippath);
+        file.delete();
+    }
 
 }
 
