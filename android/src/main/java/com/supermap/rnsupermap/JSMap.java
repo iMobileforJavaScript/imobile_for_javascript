@@ -888,6 +888,18 @@ public class JSMap extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void toXML(String mapId, Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            String xml = map.toXML();
+
+            promise.resolve(xml);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void dispose(String mapId, Promise promise){
         try{
             Map map = mapList.get(mapId);

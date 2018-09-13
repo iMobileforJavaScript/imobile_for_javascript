@@ -401,6 +401,14 @@ export default class Workspace {
       console.error(e);
     }
   }
+
+  async addMap(name, mapXML) {
+    try {
+      return await W.addMap(this._SMWorkspaceId, name, mapXML);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 }
 
 Workspace.SMWU = 9;

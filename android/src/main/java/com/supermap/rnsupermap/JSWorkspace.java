@@ -109,6 +109,18 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void addMap(String workspaceId, String name, String mapXML, Promise promise){
+        try{
+            m_Workspace = mWorkspaceList.get(workspaceId);
+            Maps maps = m_Workspace.getMaps();
+            int index = maps.add(name, mapXML);
+            promise.resolve(index);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void getMaps(String workspaceId,Promise promise){
         try{
             m_Workspace = mWorkspaceList.get(workspaceId);
