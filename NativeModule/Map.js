@@ -8,6 +8,7 @@ import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform } from 
 let M = NativeModules.JSMap;
 import Layer from './Layer.js';
 import Layers from './Layers.js';
+import LayerGroup from './LayerGroup.js';
 import Point2D from './Point2D.js';
 import Point from './Point.js';
 import TrackingLayer from './TrackingLayer.js';
@@ -109,7 +110,12 @@ export default class Map {
     try {
       let layers = await M.getLayersByType1(this._SMMapId, type);
       for (let i = 0; i < layers.length; i++) {
-        let layer = new Layer()
+        let layer
+        if (layers[i].type === 'layerGroup') {
+          layer = new LayerGroup()
+        } else {
+          layer = new Layer()
+        }
         layer._SMLayerId = layers[i].id
         layers[i].layer = layer
       }
