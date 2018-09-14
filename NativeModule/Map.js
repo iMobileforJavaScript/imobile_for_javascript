@@ -90,6 +90,24 @@ export default class Map {
     }
   }
   
+  // /**
+  //  * 根据类型查找图层, type = -1 时，返回全部类型
+  //  * @returns {Promise}
+  //  */
+  // async getLayersByType(type = -1) {
+  //   try {
+  //     let layers = await M.getLayersByType(this._SMMapId, type);
+  //     for (let i = 0; i < layers.length; i++) {
+  //       let layer = new Layer()
+  //       layer._SMLayerId = layers[i].id
+  //       layers[i].layer = layer
+  //     }
+  //     return layers
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }
+
   /**
    * 根据类型查找图层, type = -1 时，返回全部类型
    * @returns {Promise}
@@ -97,24 +115,6 @@ export default class Map {
   async getLayersByType(type = -1) {
     try {
       let layers = await M.getLayersByType(this._SMMapId, type);
-      for (let i = 0; i < layers.length; i++) {
-        let layer = new Layer()
-        layer._SMLayerId = layers[i].id
-        layers[i].layer = layer
-      }
-      return layers
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  /**
-   * 根据类型查找图层, type = -1 时，返回全部类型
-   * @returns {Promise}
-   */
-  async getLayersByType1(type = -1) {
-    try {
-      let layers = await M.getLayersByType1(this._SMMapId, type);
       for (let i = 0; i < layers.length; i++) {
         let layer
         if (layers[i].type === 'layerGroup') {
@@ -586,22 +586,6 @@ export default class Map {
       console.error(e);
     }
   }
-
-  // /**
-  //  * 新建一个图层组
-  //  * @param groupName
-  //  * @returns {Promise.<LayerGroup>}
-  //  */
-  // async addEmptyLayerGroup(groupName) {
-  //   try {
-  //     var layerId = await M.addEmptyLayerGroup(this._SMMapId, groupName);
-  //     var layer = new LayerGroup();
-  //     layer._SMLayerId = layerId;
-  //     return layer;
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // }
   
   /**
    * 用于将一个数据集添加到此图层集合作为一个专题图层显示，即创建一个专题图层，并指定专题图层的专题图对象。

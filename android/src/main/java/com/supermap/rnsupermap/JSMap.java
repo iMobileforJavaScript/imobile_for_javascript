@@ -296,6 +296,67 @@ public class JSMap extends ReactContextBaseJavaModule {
         }
     }
 
+//    /**
+//     * 根据类型查找图层
+//     * @param mapId
+//     * @param type
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void getLayersByType(String mapId, int type, Promise promise){
+//        try{
+//            m_Map = mapList.get(mapId);
+//            Layers layers = m_Map.getLayers();
+//            int count = layers.getCount();
+//            WritableArray arr = Arguments.createArray();
+//            for (int i = 0; i < count; i++) {
+//                Layer layer = layers.get(i);
+//                Dataset dataset = layer.getDataset();
+//
+//                if (dataset == null) {
+//                    continue;
+//                }
+//                int intType = dataset.getType().value();
+//
+//                if (intType == type || type == -1) {
+//                    String layerId = JSLayer.registerId(layer);
+//
+//                    Theme theme = layer.getTheme();
+//                    int themeType = 0;
+//                    if (theme != null) {
+//                        themeType = theme.getType().value();
+//                    }
+//
+//                    LayerGroup layerGroup = layer.getParentGroup();
+//                    String layerGroupId = "";
+//                    if (layerGroup != null) {
+//                        layerGroupId = JSLayerGroup.registerId(layerGroup);
+//                    }
+//
+//                    WritableMap wMap = new Arguments().createMap();
+//                    wMap.putString("id", layerId);
+//                    wMap.putInt("type", intType);
+//                    wMap.putInt("themeType", themeType);
+//                    wMap.putInt("index", i);
+//                    wMap.putString("name", layer.getName());
+//                    wMap.putString("caption", layer.getCaption());
+//                    wMap.putString("description", layer.getDescription());
+//                    wMap.putString("datasetName", dataset.getName());
+//                    wMap.putBoolean("isEditable", layer.isEditable());
+//                    wMap.putBoolean("isVisible", layer.isVisible());
+//                    wMap.putBoolean("isSelectable", layer.isSelectable());
+//                    wMap.putBoolean("isSnapable", layer.isSnapable());
+//                    wMap.putString("layerGroupId", layerGroupId);
+//                    arr.pushMap(wMap);
+//                }
+//            }
+//
+//            promise.resolve(arr);
+//        }catch (Exception e){
+//            promise.reject(e);
+//        }
+//    }
+
     /**
      * 根据类型查找图层
      * @param mapId
@@ -304,68 +365,6 @@ public class JSMap extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void getLayersByType(String mapId, int type, Promise promise){
-        try{
-            m_Map = mapList.get(mapId);
-            Layers layers = m_Map.getLayers();
-            int count = layers.getCount();
-            WritableArray arr = Arguments.createArray();
-            for (int i = 0; i < count; i++) {
-                Layer layer = layers.get(i);
-                Dataset dataset = layer.getDataset();
-
-                if (dataset == null) {
-                    continue;
-                }
-                int intType = dataset.getType().value();
-
-                if (intType == type || type == -1) {
-                    String layerId = JSLayer.registerId(layer);
-
-                    Theme theme = layer.getTheme();
-                    int themeType = 0;
-                    if (theme != null) {
-                        themeType = theme.getType().value();
-                    }
-
-                    LayerGroup layerGroup = layer.getParentGroup();
-                    String layerGroupId = "";
-                    if (layerGroup != null) {
-                        layerGroupId = JSLayerGroup.registerId(layerGroup);
-                    }
-
-                    WritableMap wMap = new Arguments().createMap();
-                    wMap.putString("id", layerId);
-                    wMap.putInt("type", intType);
-                    wMap.putInt("themeType", themeType);
-                    wMap.putInt("index", i);
-                    wMap.putString("name", layer.getName());
-                    wMap.putString("caption", layer.getCaption());
-                    wMap.putString("description", layer.getDescription());
-                    wMap.putString("datasetName", dataset.getName());
-                    wMap.putBoolean("isEditable", layer.isEditable());
-                    wMap.putBoolean("isVisible", layer.isVisible());
-                    wMap.putBoolean("isSelectable", layer.isSelectable());
-                    wMap.putBoolean("isSnapable", layer.isSnapable());
-                    wMap.putString("layerGroupId", layerGroupId);
-                    arr.pushMap(wMap);
-                }
-            }
-
-            promise.resolve(arr);
-        }catch (Exception e){
-            promise.reject(e);
-        }
-    }
-
-    /**
-     * 根据类型查找图层
-     * @param mapId
-     * @param type
-     * @param promise
-     */
-    @ReactMethod
-    public void getLayersByType1(String mapId, int type, Promise promise){
-        // TODO getLayersByType1
         try{
             m_Map = mapList.get(mapId);
             Layers layers = m_Map.getLayers();
