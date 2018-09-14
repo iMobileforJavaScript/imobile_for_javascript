@@ -393,8 +393,10 @@ public class JSMap extends ReactContextBaseJavaModule {
 
                     LayerGroup layerGroup = layer.getParentGroup();
                     String layerGroupId = "";
+                    String groupName = "";
                     if (layerGroup != null) {
                         layerGroupId = JSLayerGroup.registerId(layerGroup);
+                        groupName = layerGroup.getName();
                     }
 
                     wMap.putString("id", layerId);
@@ -406,6 +408,7 @@ public class JSMap extends ReactContextBaseJavaModule {
                     wMap.putBoolean("isSelectable", layer.isSelectable());
                     wMap.putBoolean("isSnapable", layer.isSnapable());
                     wMap.putString("layerGroupId", layerGroupId);
+                    wMap.putString("groupName", groupName);
                     wMap.putInt("themeType", themeType);
 
                     if (dataset != null) { // 没有数据集的Layer是LayerGroup
@@ -413,6 +416,7 @@ public class JSMap extends ReactContextBaseJavaModule {
                         wMap.putInt("index", i);
                         wMap.putString("datasetName", dataset.getName());
                     } else {
+                        wMap.putInt("index", i);
                         wMap.putString("type", "layerGroup");
                     }
                     arr.pushMap(wMap);
@@ -915,19 +919,30 @@ public class JSMap extends ReactContextBaseJavaModule {
 /*****************************************LayerGroup***********************************************/
 
     @ReactMethod
-    public void addLayerGroup(String mapId, String datasetId, String groupName, Promise promise){
+    public void addLayerGroup(String mapId, ReadableArray layerIds, String groupName, Promise promise){
         try{
             Map map = mapList.get(mapId);
             LayerGroup layerGroup = map.getLayers().addGroup(groupName);
-            Dataset dataset = JSDataset.getObjById(datasetId);
-            Layer layer = map.getLayers().add(dataset, true);
-            map.getLayers().insertGroup(0, groupName);
-            layerGroup.add(layer);
+            for (int i = 0; i < layerIds.size(); i++) {
+                Layer layer = JSLayer.getLayer(layerIds.getString(i));
+                layerGroup.add(layer);
+            }
             String layerId = JSLayer.registerId(layerGroup);
 
-            WritableMap map1 = Arguments.createMap();
-            map1.putString("layerGroupId",layerId);
-            promise.resolve(map1);
+            promise.resolve(layerId);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void addEmptyLayerGroup(String mapId, String groupName, Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            LayerGroup layerGroup = map.getLayers().addGroup(groupName);
+            String layerId = JSLayer.registerId(layerGroup);
+
+            promise.resolve(layerId);
         }catch (Exception e){
             promise.reject(e);
         }

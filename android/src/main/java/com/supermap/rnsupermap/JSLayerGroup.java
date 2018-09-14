@@ -1,10 +1,15 @@
 package com.supermap.rnsupermap;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
+import com.supermap.data.Dataset;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerGroup;
+import com.supermap.mapping.Theme;
+
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,17 +89,58 @@ public class JSLayerGroup extends JSLayer {
     /**
      * 返回图层集合中指定索引的图层对象
      * @param layerGroupId
-     * @param value
+     * @param index
      * @param promise
      */
     @ReactMethod
-    public void get(String layerGroupId, int value, Promise promise){
+    public void get(String layerGroupId, int index, Promise promise){
         try{
             mLayerGroup = (LayerGroup) JSLayer.getLayer(layerGroupId);
-            Layer layer = mLayerGroup.get(value);
+            Layer layer = mLayerGroup.get(index);
+            Dataset dataset = layer.getDataset();
             String layerId = JSLayer.registerId(layer);
+            int intType = -1;
+            if (dataset != null) { // 没有数据集的Layer是LayerGroup
+                intType = dataset.getType().value();
+            }
 
-            promise.resolve(layerId);
+            Theme theme = layer.getTheme();
+            int themeType = 0;
+            if (theme != null) {
+                themeType = theme.getType().value();
+            }
+
+            WritableMap wMap = Arguments.createMap();
+            LayerGroup layerGroup = layer.getParentGroup();
+            String groupId = "";
+            String groupName = "";
+            if (layerGroup != null) {
+                groupId = registerId(layerGroup);
+                groupName = layerGroup.getName();
+            }
+
+            wMap.putString("id", layerId);
+            wMap.putString("name", layer.getName());
+            wMap.putString("caption", layer.getCaption());
+            wMap.putString("description", layer.getDescription());
+            wMap.putBoolean("isEditable", layer.isEditable());
+            wMap.putBoolean("isVisible", layer.isVisible());
+            wMap.putBoolean("isSelectable", layer.isSelectable());
+//            wMap.putBoolean("isSnapable", layer.isSnapable());
+            wMap.putBoolean("isSnapable", true);
+            wMap.putString("layerGroupId", groupId);
+            wMap.putString("groupName", groupName);
+            wMap.putInt("themeType", themeType);
+            wMap.putInt("index", index);
+
+            if (dataset != null && intType >= 0) { // 没有数据集的Layer是LayerGroup
+                wMap.putInt("type", intType);
+                wMap.putString("datasetName", dataset.getName());
+            } else {
+                wMap.putString("type", "layerGroup");
+            }
+
+            promise.resolve(wMap);
         }catch(Exception e){
             promise.reject(e);
         }
@@ -167,9 +213,10 @@ public class JSLayerGroup extends JSLayer {
     public void insertGroup(String layerGroupId, int index, String groupName, Promise promise){
         try{
             mLayerGroup = (LayerGroup) JSLayer.getLayer(layerGroupId);
-            mLayerGroup.insertGroup(index, groupName);
+            LayerGroup group = mLayerGroup.insertGroup(index, groupName);
+            String groupId = registerId(group);
 
-            promise.resolve(true);
+            promise.resolve(groupId);
         }catch(Exception e){
             promise.reject(e);
         }

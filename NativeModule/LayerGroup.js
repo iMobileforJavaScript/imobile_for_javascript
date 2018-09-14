@@ -6,13 +6,7 @@
  **********************************************************************************/
 import { NativeModules } from 'react-native'
 let LG = NativeModules.JSLayerGroup
-import Dataset from './Dataset.js'
-import Selection from './Selection.js'
-import LayerSetting from './LayerSetting.js'
-import LayerSettingVector from './LayerSettingVector.js'
-import LayerSettingGrid from './LayerSettingGrid'
-import LayerSettingImage from './LayerSettingImage'
-import Layer from './Layer'
+import Layer from './Layer.js'
 
 /**
  * @class LayerGroup
@@ -50,12 +44,20 @@ export default class LayerGroup extends Layer {
     }
   }
 
-  async get(index) {
+  async getLayer(index) {
     try {
-      let groupId = await LG.get(this._SMLayerId, index);
-      let layer = new Layer();
-      layer._SMLayerId = groupId;
-      return layer;
+      let item = await LG.get(this._SMLayerId, index);
+      let layer
+      if (item) {
+        if (item.type === 'layerGroup') {
+          layer = new LayerGroup();
+        } else {
+          layer = new Layer();
+        }
+        layer._SMLayerId = item.id;
+        item.layer = layer
+      }
+      return item;
     } catch (e) {
       console.error(e);
     }
@@ -77,17 +79,20 @@ export default class LayerGroup extends Layer {
     }
   }
 
-  async insert(layer) {
+  async insert(layer, index) {
     try {
-      await LG.insert(this._SMLayerId, layer._SMLayerId);
+      await LG.insert(this._SMLayerId, layer._SMLayerId, index);
     } catch (e) {
       console.error(e);
     }
   }
 
-  async insertGroup(layer) {
+  async insertGroup(index, groupName) {
     try {
-      await LG.insertGroup(this._SMLayerId, layer._SMLayerId);
+      let id = await LG.insertGroup(this._SMLayerId, index, groupName);
+      let group = new LayerGroup()
+      group._SMLayerId = id
+      return group
     } catch (e) {
       console.error(e);
     }

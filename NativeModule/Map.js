@@ -64,6 +64,12 @@ export default class Map {
         var { layerId } = await M.getLayer(this._SMMapId, layerIndex);
       }
       layer._SMLayerId = layerId;
+      let dataset = await layer.getDataset()
+      if (!dataset) { // 该图层为Layer
+        layer = new LayerGroup();
+        layer._SMLayerId = layerId;
+      }
+
       return layer;
     } catch (e) {
       console.error(e);
@@ -555,21 +561,37 @@ export default class Map {
       console.error(e);
     }
   }
-  
+
   /**
-   * 新建一个图层组，并将数据集集合添加到图层组中
-   * @param datasets
+   * 新建一个图层组，并将图层集合添加到图层组中
+   * @param layers
    * @param groupName
    * @returns {Promise.<Layer>}
    */
-  async addLayerGroup(datasets, groupName) {
+  async addLayerGroup(layers, groupName) {
     try {
-      let datasetsIds = []
-      for (let i = 0; i < datasets.length; i++) {
-        datasetsIds.push(datasets._SMDatasetId)
+      let layerIds = []
+      for (let i = 0; i < layers.length; i++) {
+        layerIds.push(layers._SMLayerId)
       }
-      var { layerId } = await M.addLayerGroup(this._SMMapId, datasetsIds);
-      var layer = new Layer();
+      var layerId = await M.addLayerGroup(this._SMMapId, layerIds);
+      var layer = new LayerGroup();
+      layer._SMLayerId = layerId;
+      return layer;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /**
+   * 新建一个图层组
+   * @param groupName
+   * @returns {Promise.<LayerGroup>}
+   */
+  async addEmptyLayerGroup(groupName) {
+    try {
+      var layerId = await M.addEmptyLayerGroup(this._SMMapId, groupName);
+      var layer = new LayerGroup();
       layer._SMLayerId = layerId;
       return layer;
     } catch (e) {
