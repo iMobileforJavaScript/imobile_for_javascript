@@ -13,6 +13,9 @@ import com.supermap.onlineservices.DownLoadFile;
 import com.supermap.onlineservices.OnlineService;
 import com.supermap.onlineservices.UpLoadFile;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class JSOnlineService extends ReactContextBaseJavaModule {
 
     ReactContext mReactContext;
@@ -36,7 +39,7 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void download(String path, String filename,final Promise promise) {
+    public void download(final String path, final String filename, final Promise promise) {
         try {
             final OnlineService onlineService = getInstance();
             onlineService.DownLoadFile(mReactContext.getApplicationContext(), filename, path, new DownLoadFile.DownLoadListener() {
@@ -49,7 +52,14 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
                 @Override
                 public void onComplete() {
                     Log.e("++++++++++++", "==========================" );
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED, true);
+                    TimerTask task=new TimerTask() {
+                        @Override
+                        public void run() {
+                            mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED, true);
+                        }
+                    };
+                    Timer timer=new Timer();
+                    timer.schedule(task,2000);
                 }
 
                 @Override
