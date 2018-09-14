@@ -315,7 +315,9 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
 
             boolean isUnZiped = false;
             BufferedInputStream bi;
+            Log.e("++++++++++++", "GBKGBKGBKGBKGBKGBKGBKGBKGBKGBKGBKGBK" );
             ZipFile zf = new ZipFile(archive, "GBK");
+            Log.e("++++++++++++", "okokokokokokokokokokokokokokokokokok" );
             Enumeration e = zf.getEntries();
             while (e.hasMoreElements()) {
                 ZipEntry ze2 = (ZipEntry) e.nextElement();
