@@ -568,13 +568,17 @@ export default class Map {
    * @param groupName
    * @returns {Promise.<Layer>}
    */
-  async addLayerGroup(layers, groupName) {
+  async addLayerGroup(groupName, layers = []) {
     try {
-      let layerIds = []
-      for (let i = 0; i < layers.length; i++) {
-        layerIds.push(layers._SMLayerId)
+      if (layers.length > 0) {
+        let layerIds = []
+        for (let i = 0; i < layers.length; i++) {
+          layerIds.push(layers[i]._SMLayerId)
+        }
+        var layerId = await M.addLayerGroup(this._SMMapId, layerIds, groupName);
+      } else {
+        var layerId = await M.addEmptyLayerGroup(this._SMMapId, groupName);
       }
-      var layerId = await M.addLayerGroup(this._SMMapId, layerIds);
       var layer = new LayerGroup();
       layer._SMLayerId = layerId;
       return layer;
@@ -583,21 +587,21 @@ export default class Map {
     }
   }
 
-  /**
-   * 新建一个图层组
-   * @param groupName
-   * @returns {Promise.<LayerGroup>}
-   */
-  async addEmptyLayerGroup(groupName) {
-    try {
-      var layerId = await M.addEmptyLayerGroup(this._SMMapId, groupName);
-      var layer = new LayerGroup();
-      layer._SMLayerId = layerId;
-      return layer;
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  // /**
+  //  * 新建一个图层组
+  //  * @param groupName
+  //  * @returns {Promise.<LayerGroup>}
+  //  */
+  // async addEmptyLayerGroup(groupName) {
+  //   try {
+  //     var layerId = await M.addEmptyLayerGroup(this._SMMapId, groupName);
+  //     var layer = new LayerGroup();
+  //     layer._SMLayerId = layerId;
+  //     return layer;
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }
   
   /**
    * 用于将一个数据集添加到此图层集合作为一个专题图层显示，即创建一个专题图层，并指定专题图层的专题图对象。
