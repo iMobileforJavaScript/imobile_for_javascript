@@ -149,6 +149,7 @@
 		0A332E72211D623E00F56F26 /* RCTConvert+RadiusUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE7211D623E00F56F26 /* RCTConvert+RadiusUnit.m */; };
 		0A332E73211D623E00F56F26 /* SceneViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE9211D623E00F56F26 /* SceneViewManager.m */; };
 		D82C65AB214208DC00E9EEC5 /* JSWorkspaceType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */; };
+		D85975FB214BA46700E39A7E /* JSLayerGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = D85975FA214BA46700E39A7E /* JSLayerGroup.m */; };
 		D877B5B22133D5C00044AE61 /* JSOnlineService.m in Sources */ = {isa = PBXBuildFile; fileRef = D877B5B12133D5C00044AE61 /* JSOnlineService.m */; };
 		D877B5C42133F21E0044AE61 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = D877B5C32133F21E0044AE61 /* Constants.m */; };
 /* End PBXBuildFile section */
@@ -451,6 +452,8 @@
 		134814201AA4EA6300B7C361 /* libSupermap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSupermap.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSWorkspaceType.m; path = objNative/JSWorkspaceType.m; sourceTree = "<group>"; };
 		D82C65AA214208DB00E9EEC5 /* JSWorkspaceType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSWorkspaceType.h; path = objNative/JSWorkspaceType.h; sourceTree = "<group>"; };
+		D85975F9214BA46700E39A7E /* JSLayerGroup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSLayerGroup.h; path = objNative/JSLayerGroup.h; sourceTree = "<group>"; };
+		D85975FA214BA46700E39A7E /* JSLayerGroup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSLayerGroup.m; path = objNative/JSLayerGroup.m; sourceTree = "<group>"; };
 		D877B5B02133D5C00044AE61 /* JSOnlineService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSOnlineService.h; path = objNative/JSOnlineService.h; sourceTree = "<group>"; };
 		D877B5B12133D5C00044AE61 /* JSOnlineService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSOnlineService.m; path = objNative/JSOnlineService.m; sourceTree = "<group>"; };
 		D877B5C22133F21E0044AE61 /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = objNative/Constants.h; sourceTree = "<group>"; };
@@ -479,6 +482,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				D85975F9214BA46700E39A7E /* JSLayerGroup.h */,
+				D85975FA214BA46700E39A7E /* JSLayerGroup.m */,
 				D82C65AA214208DB00E9EEC5 /* JSWorkspaceType.h */,
 				D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */,
 				D877B5C22133F21E0044AE61 /* Constants.h */,
@@ -911,6 +916,7 @@
 				0A332E60211D623E00F56F26 /* JSThemeType.m in Sources */,
 				0A332DFE211D623E00F56F26 /* JSCollectorLine.m in Sources */,
 				0A332E29211D623E00F56F26 /* JSLineChartViewManager.m in Sources */,
+				D85975FB214BA46700E39A7E /* JSLayerGroup.m in Sources */,
 				0A332E40211D623E00F56F26 /* JSPrjCoordSysType.m in Sources */,
 				0A332DF9211D623E00F56F26 /* JSChartLegend.m in Sources */,
 				0A332E09211D623E00F56F26 /* JSDatasetVectorInfo.m in Sources */,

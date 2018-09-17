@@ -321,6 +321,20 @@ RCT_REMAP_METHOD(closeWorkspace,closeWorkspaceByKey:(NSString*)key resolver:(RCT
     } 
 }
 
+RCT_REMAP_METHOD(dispose, disposeByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        if(workspace){
+            [workspace dispose];
+            [JSObjManager removeObj:key];
+            NSNumber* nsClosed = [NSNumber numberWithBool:TRUE];
+            resolve(nsClosed);
+        }
+    } @catch (NSException *exception) {
+        reject(@"workspace",@"close failed!!!",nil);
+    }
+}
+
 #pragma mark - 原datasources类放法
 +(BOOL)createFileDirectories:(NSString*)path
 {

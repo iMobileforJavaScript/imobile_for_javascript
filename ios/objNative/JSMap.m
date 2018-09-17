@@ -635,6 +635,18 @@ RCT_REMAP_METHOD(isModified,mapId:(NSString*)mapId resolver:(RCTPromiseResolveBl
     }
 }
 
+RCT_REMAP_METHOD(dispose, disposeById:(NSString*)mapId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Map* map = [JSObjManager getObjWithKey:mapId];
+    
+    if(map){
+        [map dispose];
+        [JSObjManager removeObj:mapId];
+        NSNumber* nsClosed = [NSNumber numberWithBool:TRUE];
+        resolve(@{@"dispose":nsClosed});
+    }else{
+        reject(@"Map",@"isModified Layer failed!!!",nil);
+    }
+}
 
 // 此接口未开出
 RCT_REMAP_METHOD(getPrjCoordSys,getPrjCoordSysKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
