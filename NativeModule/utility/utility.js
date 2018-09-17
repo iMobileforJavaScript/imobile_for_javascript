@@ -57,6 +57,9 @@ exports.isDirectory = async function (path) {
 exports.getPathListByFilter = async function (path, {name = '', type = ''}) {
   return await util.getPathListByFilter(path, {name, type});
 }
-exports.unZipFolder = async function (zipfile,targetdir) {
-  return await util.UnZipFolder(zipfile, targetdir);
+exports.unZipFile = async function (zipfile,targetdir) {
+  return await util.unZipFile(zipfile, targetdir);
+}
+exports.deleteZip = async function (zipfile) {
+  return await util.deleteZip(zipfile);
 }

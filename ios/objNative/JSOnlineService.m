@@ -22,11 +22,13 @@ RCT_REMAP_METHOD(login, loginByUserName:(NSString *)userName password:(NSString 
         OnlineService* onlineService = [OnlineService sharedService];
         [onlineService loginWithUsername:userName password:password completionCallback:^(NSError *error) {
             if ([error isEqual:nil]) {
-                
+                NSNumber* number =[NSNumber numberWithBool:YES];
+                resolve(number);
+            } else {
+                NSNumber* number =[NSNumber numberWithBool:NO];
+                resolve(number);
             }
         }];
-        NSNumber* number =[NSNumber numberWithBool:YES];
-        resolve(number);
     } @catch (NSException *exception) {
         reject(@"JSOnlineService", @"download failed", nil);
     }

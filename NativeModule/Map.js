@@ -8,6 +8,7 @@ import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform } from 
 let M = NativeModules.JSMap;
 import Layer from './Layer.js';
 import Layers from './Layers.js';
+import LayerGroup from './LayerGroup.js';
 import Point2D from './Point2D.js';
 import Point from './Point.js';
 import TrackingLayer from './TrackingLayer.js';
@@ -63,6 +64,12 @@ export default class Map {
         var { layerId } = await M.getLayer(this._SMMapId, layerIndex);
       }
       layer._SMLayerId = layerId;
+      let dataset = await layer.getDataset()
+      if (!dataset) { // 该图层为Layer
+        layer = new LayerGroup();
+        layer._SMLayerId = layerId;
+      }
+
       return layer;
     } catch (e) {
       console.error(e);
@@ -83,6 +90,24 @@ export default class Map {
     }
   }
   
+  // /**
+  //  * 根据类型查找图层, type = -1 时，返回全部类型
+  //  * @returns {Promise}
+  //  */
+  // async getLayersByType(type = -1) {
+  //   try {
+  //     let layers = await M.getLayersByType(this._SMMapId, type);
+  //     for (let i = 0; i < layers.length; i++) {
+  //       let layer = new Layer()
+  //       layer._SMLayerId = layers[i].id
+  //       layers[i].layer = layer
+  //     }
+  //     return layers
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }
+
   /**
    * 根据类型查找图层, type = -1 时，返回全部类型
    * @returns {Promise}
@@ -91,7 +116,12 @@ export default class Map {
     try {
       let layers = await M.getLayersByType(this._SMMapId, type);
       for (let i = 0; i < layers.length; i++) {
-        let layer = new Layer()
+        let layer
+        if (layers[i].type === 'layerGroup') {
+          layer = new LayerGroup()
+        } else {
+          layer = new Layer()
+        }
         layer._SMLayerId = layers[i].id
         layers[i].layer = layer
       }
@@ -531,21 +561,25 @@ export default class Map {
       console.error(e);
     }
   }
-  
+
   /**
-   * 新建一个图层组，并将数据集集合添加到图层组中
-   * @param datasets
+   * 新建一个图层组，并将图层集合添加到图层组中
+   * @param layers
    * @param groupName
    * @returns {Promise.<Layer>}
    */
-  async addLayerGroup(datasets, groupName) {
+  async addLayerGroup(groupName, layers = []) {
     try {
-      let datasetsIds = []
-      for (let i = 0; i < datasets.length; i++) {
-        datasetsIds.push(datasets._SMDatasetId)
+      if (layers.length > 0) {
+        let layerIds = []
+        for (let i = 0; i < layers.length; i++) {
+          layerIds.push(layers[i]._SMLayerId)
+        }
+        var layerId = await M.addLayerGroup(this._SMMapId, layerIds, groupName);
+      } else {
+        var layerId = await M.addEmptyLayerGroup(this._SMMapId, groupName);
       }
-      var { layerId } = await M.addLayerGroup(this._SMMapId, datasetsIds);
-      var layer = new Layer();
+      var layer = new LayerGroup();
       layer._SMLayerId = layerId;
       return layer;
     } catch (e) {
@@ -717,6 +751,18 @@ export default class Map {
   async getName() {
     try {
       return await M.getName(this._SMMapId);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /**
+   * 获取地图XML
+   * @returns {Promise.<PrjCoordSys>}
+   */
+  async toXML() {
+    try {
+      return await M.toXML(this._SMMapId);
     } catch (e) {
       console.error(e);
     }

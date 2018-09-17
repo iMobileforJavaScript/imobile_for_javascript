@@ -106,9 +106,12 @@ public class JSLayer extends ReactContextBaseJavaModule {
         try {
             Layer layer = mLayerList.get(layerId);
             Dataset dataset = layer.getDataset();
-            String datasetId = JSDataset.registerId(dataset);
-
             WritableMap map = Arguments.createMap();
+            String datasetId = "";
+            if (dataset != null) {
+                datasetId = JSDataset.registerId(dataset);
+            }
+
             map.putString("datasetId", datasetId);
             promise.resolve(map);
         } catch (Exception e) {

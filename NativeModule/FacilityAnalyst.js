@@ -262,7 +262,6 @@ export default class FacilityAnalyst {
    */
   async findPathFromNodes (startNodeId, endNodeId, weightName, isUncertainDirectionValid) {
     try {
-      console.log(startNodeId, endNodeId)
       let { coast, edges, nodes, message } = await FA.findPathFromNodes(this._SMFacilityAnalystId, startNodeId, endNodeId, weightName, isUncertainDirectionValid);
       return { coast, edges, nodes, message }
     } catch (e) {

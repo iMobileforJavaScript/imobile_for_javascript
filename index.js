@@ -36,6 +36,7 @@ import GeoStyle from './NativeModule/GeoStyle.js';
 import Feature from './NativeModule/Feature.js';
 import FeatureSet from './NativeModule/FeatureSet.js';
 import Layer from './NativeModule/Layer.js';
+import LayerGroup from './NativeModule/LayerGroup.js';
 import LayerSetting from './NativeModule/LayerSetting.js';
 import LayerSettingVector from './NativeModule/LayerSettingVector.js';
 import LocationManager from './NativeModule/LocationManager.js';
@@ -235,6 +236,7 @@ export {
   GeoRegion,
   GeoStyle,
   Layer,
+  LayerGroup,
   LayerSetting,
   LayerSettingVector,
   LocationManager,

@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "ThemeType.h"
-@class Map,Layers,Selection,Dataset,Theme,GeoRegion,m_selfEventHandle,Point2D,QueryParameter;
+@class Map,Layers,Selection,Dataset,Theme,GeoRegion,m_selfEventHandle,Point2D,QueryParameter,LayerGroup;
 @class ChartView;
 @protocol LayerSetting;
 @protocol LayerStateDelegate;
@@ -30,6 +30,7 @@
 
 @property(nonatomic,assign)id<LayerStateDelegate>layerDelegate;
 
+@property(nonatomic,strong) LayerGroup *parentGroup;
 /**
  * @brief 设置,获取 图层卷帘模式
  */

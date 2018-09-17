@@ -24,6 +24,10 @@ import ThemeUnique from './ThemeUnique'
  * @description (该类的实例不可被创建,只可以通过在 Map 类中的 addLayer 方法来创建)该类提供了图层显示和控制等的便于地图管理的一系列方法。当数据集被加载到地图窗口中显示的时，就形成了一个图层，因此图层是数据集的可视化显示。一个图层是对一个数据集的引用或参考。通过对可视化的图层的编辑，可以对 相应的数据集的要素进行编辑。一个图层或多个图层叠加显示则形成了地图。图层分为普通图层和专题图层，矢量的普通图层中所有要素采用相同的渲染风格，栅格图层采用颜色表来显示其像元；而专题图层则采用指定类型的专题图风格来渲染其中的 要素或像元。
  */
 export default class Layer {
+
+  constructor() {
+  }
+
   /**
    * 设置图层是否处于可编辑状态。该方法控制是否对图层所引用的数据进行修改。
    * @memberOf Layer
@@ -74,9 +78,14 @@ export default class Layer {
   async getDataset() {
     try {
       var { datasetId } = await L.getDataset(this._SMLayerId)
-      var dataset = new Dataset()
-      dataset._SMDatasetId = datasetId
-      return dataset
+      if (datasetId) {
+        var dataset = new Dataset()
+        dataset._SMDatasetId = datasetId
+        return dataset
+      } else {
+        return null
+      }
+
     } catch (e) {
       console.error(e)
     }
@@ -313,10 +322,10 @@ export default class Layer {
    */
   async getTheme() {
     try {
-      let {themeId, type} = await L.getTheme(this._SMLayerId)
-      if (themeId) {
+      let mTheme = await L.getTheme(this._SMLayerId) // {themeId, type}
+      if (mTheme && mTheme.themeId) {
         let theme;
-        switch (type) {
+        switch (mTheme.type) {
           case ThemeType.UNIQUE:
             theme = new ThemeUnique()
             break
@@ -330,8 +339,8 @@ export default class Layer {
             theme = new Theme()
             break
         }
-        theme._SMThemeId = themeId
-        theme.type = type
+        theme._SMThemeId = mTheme.themeId
+        theme.type = mTheme.type
         return theme
       } else {
         return null
