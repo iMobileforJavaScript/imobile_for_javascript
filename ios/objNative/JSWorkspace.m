@@ -456,6 +456,17 @@ RCT_REMAP_METHOD(getSceneName,getSceneNameByKey:(NSString*)key index:(int)index 
     }
 }
 
+RCT_REMAP_METHOD(addMap, addMapByKey:(NSString*)key name:(NSString *)name mapXML:(NSString *)mapXML resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        NSUInteger index = [workspace.maps add:name withXML:mapXML];
+        
+        resolve([NSNumber numberWithUnsignedInteger:index]);
+    } @catch (NSException *exception) {
+        reject(@"JSWorkspace getCount", exception.reason, nil);
+    }
+}
+
 #pragma mark - ios
 /*
 RCT_REMAP_METHOD(dispose,disposeKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

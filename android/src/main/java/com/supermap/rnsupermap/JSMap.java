@@ -14,15 +14,12 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.RNUtils.JsonUtil;
 import com.supermap.data.CoordSysTranslator;
 import com.supermap.data.Dataset;
-import com.supermap.data.DatasetType;
-import com.supermap.data.Enum;
 import com.supermap.data.Point;
 import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.Rectangle2D;
 import com.supermap.data.Workspace;
-import com.supermap.mapping.Action;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerGroup;
 import com.supermap.mapping.Layers;
@@ -918,7 +915,7 @@ public class JSMap extends ReactContextBaseJavaModule {
 /*****************************************LayerGroup***********************************************/
 
     @ReactMethod
-    public void addLayerGroup(String mapId, ReadableArray layerIds, String groupName, Promise promise){
+    public void addLayerGroupWithLayers(String mapId, ReadableArray layerIds, String groupName, Promise promise){
         try{
             Map map = mapList.get(mapId);
             LayerGroup layerGroup = map.getLayers().addGroup(groupName);
@@ -935,7 +932,7 @@ public class JSMap extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void addEmptyLayerGroup(String mapId, String groupName, Promise promise){
+    public void addLayerGroup(String mapId, String groupName, Promise promise){
         try{
             Map map = mapList.get(mapId);
             LayerGroup layerGroup = map.getLayers().addGroup(groupName);

@@ -70,7 +70,7 @@ RCT_REMAP_METHOD(getTFWeightField,getTFWeightFieldById:(NSString*)weightFieldInf
  * @param weightFieldInfoId
  * @param value
  */
-RCT_REMAP_METHOD(getTFWeightField,getTFWeightFieldById:(NSString*)weightFieldInfoId value:(NSString*)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setFTWeightField, setFTWeightFieldById:(NSString*)weightFieldInfoId value:(NSString*)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         m_WeightFieldInfo = [JSObjManager getObjWithKey:weightFieldInfoId];
         m_WeightFieldInfo.ftWeightField = value;

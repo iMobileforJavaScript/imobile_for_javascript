@@ -69,9 +69,13 @@ RCT_REMAP_METHOD(getTheme,getThemeKey:(NSString*)key resolver:(RCTPromiseResolve
 RCT_REMAP_METHOD(getDataset,getDatasetByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         Layer* layer = [JSObjManager getObjWithKey:key];
-        NSInteger key = (NSInteger)layer.dataset;
+        NSString* id = @"";
+        if (layer.dataset) {
+            NSInteger key = (NSInteger)layer.dataset;
+            id = @(key).stringValue;
+        }
         [JSObjManager addObj:layer.dataset];
-        resolve(@{@"datasetId":@(key).stringValue});
+        resolve(@{@"datasetId":id});
     } @catch (NSException *exception) {
         reject(@"Layer",@"getDataset() failed.",nil);
     }

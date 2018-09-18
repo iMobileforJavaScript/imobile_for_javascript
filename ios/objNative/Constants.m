@@ -13,6 +13,10 @@ NSString * const ONLINE_SERVICE_DOWNLOADING = @"com.supermap.RN.JSMapcontrol.onl
 NSString * const ONLINE_SERVICE_DOWNLOADED = @"com.supermap.RN.JSMapcontrol.online_service_downloaded";
 NSString * const ONLINE_SERVICE_LOGIN = @"com.supermap.RN.JSMapcontrol.online_service_login";
 NSString * const ONLINE_SERVICE_LOGOUT = @"com.supermap.RN.JSMapcontrol.online_service_logout";
+NSString * const ONLINE_SERVICE_DOWNLOADFAILURE = @"com.supermap.RN.JSMapcontrol.online_service_downloadfailure";
+NSString * const ONLINE_SERVICE_UPLOADING = @"com.supermap.RN.JSMapcontrol.online_service_uploading";
+NSString * const ONLINE_SERVICE_UPLOADED = @"com.supermap.RN.JSMapcontrol.online_service_uploaded";
+NSString * const ONLINE_SERVICE_UPLOADFAILURE = @"com.supermap.RN.JSMapcontrol.online_service_uploadfailure";
 
 @implementation Constants
 

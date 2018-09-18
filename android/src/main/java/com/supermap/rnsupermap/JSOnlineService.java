@@ -44,9 +44,9 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
             final OnlineService onlineService = getInstance();
             onlineService.DownLoadFile(mReactContext.getApplicationContext(), filename, path, new DownLoadFile.DownLoadListener() {
                 @Override
-                public void getProgress(int progeress) {
-                    Log.e("++++++++++++", "+" + progeress);
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADING, progeress);
+                public void getProgress(int progress) {
+                    Log.e("++++++++++++", "+" + progress);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADING, progress);
                 }
 
                 @Override
@@ -107,9 +107,9 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
             final OnlineService onlineService = getInstance();
             onlineService.UpLoadFile(filepath,filename,new UpLoadFile.UpLoadListener(){
                 @Override
-                public void getProgress(int progeress) {
-                    Log.e("++++++++++++", "+" + progeress);
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING, progeress);
+                public void getProgress(int progress) {
+                    Log.e("++++++++++++", "+" + progress);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING, progress);
                 }
             });
         } catch (Exception e) {

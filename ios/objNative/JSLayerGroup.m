@@ -50,6 +50,13 @@ RCT_REMAP_METHOD(get, getById:(NSString *)layerGroupId index:(int)index resolver
         NSString* layerId = [JSObjManager addObj:layer];
         int themeType = (int)layer.theme.themeType;
         
+        NSString* datasetName;
+        if (layer.dataset.name != nil) {
+            datasetName = layer.dataset.name;
+        } else {
+            datasetName = @"";
+        }
+        
         NSString* mLayerGroupId = [JSObjManager addObj:layer.parentGroup];
         NSString* mLayerGroupName = layer.parentGroup.name;
         
@@ -64,12 +71,12 @@ RCT_REMAP_METHOD(get, getById:(NSString *)layerGroupId index:(int)index resolver
         [dictionary setValue:[NSNumber numberWithBool:layer.isSnapable] forKey:@"isSnapable"];
         [dictionary setValue:mLayerGroupId forKey:@"layerGroupId"];
         [dictionary setValue:mLayerGroupName forKey:@"groupName"];
-        [dictionary setValue:[NSNumber numberWithFloat:themeType] forKey:@"themeType"];
+        [dictionary setValue:@(themeType) forKey:@"themeType"];
         [dictionary setValue:[NSNumber numberWithFloat:index] forKey:@"index"];
         
         if (layer.dataset != nil) {
             [dictionary setValue:[NSNumber numberWithInteger:layer.dataset.datasetType] forKey:@"type"];
-            [dictionary setValue:layer.dataset.name forKey:@"datasetName"];
+            [dictionary setValue:datasetName forKey:@"datasetName"];
         } else {
             [dictionary setValue:@"layerGroup" forKey:@"type"];
         }
@@ -83,12 +90,83 @@ RCT_REMAP_METHOD(get, getById:(NSString *)layerGroupId index:(int)index resolver
 RCT_REMAP_METHOD(getCount, getCountById:(NSString *)layerGroupId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         LayerGroup* layerGroup = [JSObjManager getObjWithKey:layerGroupId];
-        long count = [layerGroup getCount];
+        NSUInteger count = [layerGroup getCount];
         
-        resolve([NSNumber numberWithLong:count]);
+        resolve([NSNumber numberWithUnsignedInteger:count]);
     } @catch (NSException *exception) {
         reject(@"JSLayerGroup getCount", exception.reason, nil);
     }
 }
+
+RCT_REMAP_METHOD(indexOf, indexOf:(NSString *)layerGroupId layerId:(NSString *)layerId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        LayerGroup* layerGroup = [JSObjManager getObjWithKey:layerGroupId];
+        Layer* layer = [JSObjManager getObjWithKey:layerId];
+        NSUInteger count = [layerGroup indexOfLayer:layer];
+        
+        resolve([NSNumber numberWithUnsignedInteger:count]);
+    } @catch (NSException *exception) {
+        reject(@"JSLayerGroup getCount", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(insert, insertById:(NSString *)layerGroupId index:(int)index layerId:(NSString *)layerId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        LayerGroup* layerGroup = [JSObjManager getObjWithKey:layerGroupId];
+        Layer* layer = [JSObjManager getObjWithKey:layerId];
+        BOOL result = [layerGroup insert:index Layer:layer];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"JSLayerGroup getCount", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(insertGroup, insertGroupById:(NSString *)layerGroupId index:(int)index groupName:(NSString *)groupName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        LayerGroup* layerGroup = [JSObjManager getObjWithKey:layerGroupId];
+        BOOL result = [layerGroup insertGroup:index name:groupName];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"JSLayerGroup getCount", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(remove, removeById:(NSString *)layerGroupId layerId:(NSString *)layerId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        LayerGroup* layerGroup = [JSObjManager getObjWithKey:layerGroupId];
+        Layer* layer = [JSObjManager getObjWithKey:layerId];
+        BOOL result = [layerGroup removeLayer:layer];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"JSLayerGroup getCount", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(removeGroup, removeGroupById:(NSString *)layerGroupId groupId:(NSString *)groupId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        LayerGroup* layerGroup = [JSObjManager getObjWithKey:layerGroupId];
+        LayerGroup* removeGroup = [JSObjManager getObjWithKey:groupId];
+        BOOL result = [layerGroup removeGroup:removeGroup];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"JSLayerGroup getCount", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(ungroup, ungroupById:(NSString *)layerGroupId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        LayerGroup* layerGroup = [JSObjManager getObjWithKey:layerGroupId];
+        BOOL result = [layerGroup unGroup];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"JSLayerGroup getCount", exception.reason, nil);
+    }
+}
+
 
 @end

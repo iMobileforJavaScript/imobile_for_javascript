@@ -14,14 +14,24 @@
 RCT_EXPORT_MODULE();
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[ONLINE_SERVICE_DOWNLOADING, ONLINE_SERVICE_DOWNLOADED, ONLINE_SERVICE_LOGIN, ONLINE_SERVICE_LOGOUT];
+    return @[
+             ONLINE_SERVICE_DOWNLOADING,
+             ONLINE_SERVICE_DOWNLOADED,
+             ONLINE_SERVICE_LOGIN,
+             ONLINE_SERVICE_LOGOUT,
+             ONLINE_SERVICE_DOWNLOADFAILURE,
+             ONLINE_SERVICE_UPLOADING,
+             ONLINE_SERVICE_UPLOADED,
+             ONLINE_SERVICE_UPLOADFAILURE,
+             ];
 }
 
 RCT_REMAP_METHOD(login, loginByUserName:(NSString *)userName password:(NSString *)password resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         OnlineService* onlineService = [OnlineService sharedService];
         [onlineService loginWithUsername:userName password:password completionCallback:^(NSError *error) {
-            if ([error isEqual:nil]) {
+            if (error == nil) {
+                NSLog(@"login success");
                 NSNumber* number =[NSNumber numberWithBool:YES];
                 resolve(number);
             } else {
@@ -37,7 +47,9 @@ RCT_REMAP_METHOD(login, loginByUserName:(NSString *)userName password:(NSString 
 RCT_REMAP_METHOD(download, downloadByPath:(NSString *)path fileName:(NSString *)fileName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         OnlineService* onlineService = [OnlineService sharedService];
-        [onlineService downloadFileName:path filePath:fileName];
+        onlineService.downloadDelegate = self;
+        NSLog(@"start download");
+        [onlineService downloadFileName:fileName filePath:path];
         
         NSNumber* number =[NSNumber numberWithBool:YES];
         resolve(number);
@@ -49,24 +61,61 @@ RCT_REMAP_METHOD(download, downloadByPath:(NSString *)path fileName:(NSString *)
 - (void)bytesWritten:(int64_t) bytesWritten totalBytesWritten:(int64_t) totalBytesWritten
 totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
     @try {
-        long progeress = totalBytesWritten / totalBytesExpectedToWrite;
-        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADING
+        NSNumber* written = [NSNumber numberWithLongLong:totalBytesWritten];
+        NSNumber* total = [NSNumber numberWithLongLong:totalBytesExpectedToWrite];
+        float progress = [written floatValue] / [total floatValue] * 100;
+//        float progress = totalBytesWritten / totalBytesExpectedToWrite;
+        NSLog(@"downloading: %f", progress);
+        [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.online_service_downloading"
                            body:@{
-                                  @"progeress": [NSNumber numberWithLong:progeress],
-                                  @"downloaded": [NSNumber numberWithLong:totalBytesWritten],
-                                  @"total": [NSNumber numberWithLong:totalBytesExpectedToWrite],
+                                  @"progress": [NSNumber numberWithFloat:progress],
+                                  @"downloaded": [NSNumber numberWithLongLong:totalBytesWritten],
+                                  @"total": [NSNumber numberWithLongLong:totalBytesExpectedToWrite],
                                   }];
     } @catch (NSException *exception) {
-        
+        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADFAILURE
+                           body:exception.reason];
     }
 }
 
 - (void)downloadResult:(NSString*)error {
     @try {
-        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADED
-                           body:@{
-                                  @"error": error,
-                                  }];
+        if (error != nil) {
+            [self sendEventWithName:ONLINE_SERVICE_DOWNLOADFAILURE
+                               body:error];
+        } else {
+            [self sendEventWithName:ONLINE_SERVICE_DOWNLOADED
+                               body:[NSNumber numberWithBool:YES]];
+        }
+        
+    } @catch (NSException *exception) {
+        
+    }
+}
+
+RCT_REMAP_METHOD(upload, uploadByPath:(NSString *)path fileName:(NSString *)fileName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        OnlineService* onlineService = [OnlineService sharedService];
+        onlineService.uploadDelegate = self;
+        [onlineService uploadFilePath:path onlineFileName:fileName];
+        
+        NSNumber* number =[NSNumber numberWithBool:YES];
+        resolve(number);
+    } @catch (NSException *exception) {
+        reject(@"JSOnlineService", @"download failed", nil);
+    }
+}
+
+- (void)uploadResult:(NSString*)error {
+    @try {
+        if (error != nil) {
+            [self sendEventWithName:ONLINE_SERVICE_UPLOADED
+                               body:error];
+        } else {
+            [self sendEventWithName:ONLINE_SERVICE_UPLOADFAILURE
+                               body:[NSNumber numberWithBool:YES]];
+        }
+        
     } @catch (NSException *exception) {
         
     }

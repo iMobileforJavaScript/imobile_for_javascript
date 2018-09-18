@@ -11,6 +11,6 @@
 #import <React/RCTEventEmitter.h>
 #import "SuperMap/OnlineService.h"
 
-@interface JSOnlineService : RCTEventEmitter<RCTBridgeModule, OnlineServiceUploadDelegate>
+@interface JSOnlineService : RCTEventEmitter<RCTBridgeModule, OnlineServiceUploadDelegate, OnlineServiceDownloadDelegate>
 
 @end
