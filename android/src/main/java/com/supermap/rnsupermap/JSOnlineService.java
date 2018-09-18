@@ -13,9 +13,6 @@ import com.supermap.onlineservices.DownLoadFile;
 import com.supermap.onlineservices.OnlineService;
 import com.supermap.onlineservices.UpLoadFile;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class JSOnlineService extends ReactContextBaseJavaModule {
 
     ReactContext mReactContext;
@@ -44,22 +41,15 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
             final OnlineService onlineService = getInstance();
             onlineService.DownLoadFile(mReactContext.getApplicationContext(), filename, path, new DownLoadFile.DownLoadListener() {
                 @Override
-                public void getProgress(int progress) {
-                    Log.e("++++++++++++", "+" + progress);
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADING, progress);
+                public void getProgress(int progeress) {
+                    Log.e("++++++++++++", "+" + progeress);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADING, progeress);
                 }
 
                 @Override
                 public void onComplete() {
-                    Log.e("++++++++++++", "==========================" );
-                    TimerTask task=new TimerTask() {
-                        @Override
-                        public void run() {
-                            mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED, true);
-                        }
-                    };
-                    Timer timer=new Timer();
-                    timer.schedule(task,2000);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED, true);
+
                 }
 
                 @Override
@@ -107,9 +97,9 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
             final OnlineService onlineService = getInstance();
             onlineService.UpLoadFile(filepath,filename,new UpLoadFile.UpLoadListener(){
                 @Override
-                public void getProgress(int progress) {
-                    Log.e("++++++++++++", "+" + progress);
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING, progress);
+                public void getProgress(int progeress) {
+                    Log.e("++++++++++++", "+" + progeress);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING, progeress);
                 }
             });
         } catch (Exception e) {
