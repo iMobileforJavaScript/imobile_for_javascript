@@ -98,7 +98,7 @@ RCT_REMAP_METHOD(createElement,createElementById:(NSString*)senderId type:(NSStr
                                 @"LINE":@(COL_LINE),
                                 @"POLYGON":@(COL_POLYGON)
                                 };
-        BOOL b = [sender createElement:typeD[type]];
+        BOOL b = [sender createElement:[typeD[type] intValue]];
         NSNumber* nsRemoved = [NSNumber numberWithBool:b];
         resolve(nsRemoved);
         

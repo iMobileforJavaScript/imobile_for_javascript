@@ -16,6 +16,7 @@
 #import "JSRectangle2D.h"
 #import "JSPoint.h"
 #import "SuperMap/Theme.h"
+#import "SuperMap/LayerGroup.h"
 
 @implementation JSMap
 //所有导出方法名
@@ -151,21 +152,45 @@ RCT_REMAP_METHOD(getLayersByType, getLayersByTypeyKey:(NSString*)key  type:(int)
                 } else {
                     datasetName = @"";
                 }
-                NSDictionary* wMap = @{@"id":layerId,
-                                       @"type":@(dType),
-                                       @"themeType":@(themeType),
-                                       @"index":@(i),
-                                       @"name": layer.name,
-                                       @"caption": layer.caption,
-                                       @"description": layer.description,
-                                       @"datasetName": datasetName,
-                                       @"isEditable": @(layer.editable),
-                                       @"isVisible": @(layer.visible),
-                                       @"isSelectable": @(layer.selectable),
-                                       @"isSnapable": @(layer.isSnapable)
-                                       };
+//                NSDictionary* wMap = @{@"id":layerId,
+//                                       @"type":@(dType),
+//                                       @"themeType":@(themeType),
+//                                       @"index":@(i),
+//                                       @"name": layer.name,
+//                                       @"caption": layer.caption,
+//                                       @"description": layer.description,
+//                                       @"datasetName": datasetName,
+//                                       @"isEditable": @(layer.editable),
+//                                       @"isVisible": @(layer.visible),
+//                                       @"isSelectable": @(layer.selectable),
+//                                       @"isSnapable": @(layer.isSnapable)
+//                                       };
+                
+                NSString* mLayerGroupId = [JSObjManager addObj:layer.parentGroup];
+                NSString* mLayerGroupName = layer.parentGroup.name;
+                
+                NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+                [dictionary setValue:layerId forKey:@"id"];
+                [dictionary setValue:layer.name forKey:@"name"];
+                [dictionary setValue:layer.caption forKey:@"caption"];
+                [dictionary setValue:layer.description forKey:@"description"];
+                [dictionary setValue:[NSNumber numberWithBool:layer.editable] forKey:@"isEditable"];
+                [dictionary setValue:[NSNumber numberWithBool:layer.visible] forKey:@"isVisible"];
+                [dictionary setValue:[NSNumber numberWithBool:layer.selectable] forKey:@"isSelectable"];
+                [dictionary setValue:[NSNumber numberWithBool:layer.isSnapable] forKey:@"isSnapable"];
+                [dictionary setValue:mLayerGroupId forKey:@"layerGroupId"];
+                [dictionary setValue:mLayerGroupName forKey:@"groupName"];
+                [dictionary setValue:@(themeType) forKey:@"themeType"];
+                [dictionary setValue:[NSNumber numberWithFloat:i] forKey:@"index"];
+                
+                if (layer.dataset != nil) {
+                    [dictionary setValue:[NSNumber numberWithInteger:layer.dataset.datasetType] forKey:@"type"];
+                    [dictionary setValue:datasetName forKey:@"datasetName"];
+                } else {
+                    [dictionary setValue:@"layerGroup" forKey:@"type"];
+                }
               
-                [arr addObject:wMap];
+                [arr addObject:dictionary];
             }
         }
         resolve(arr);
@@ -645,6 +670,45 @@ RCT_REMAP_METHOD(dispose, disposeById:(NSString*)mapId resolver:(RCTPromiseResol
         resolve(@{@"dispose":nsClosed});
     }else{
         reject(@"Map",@"isModified Layer failed!!!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(toXML, toXMLById:(NSString*)mapId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Map* map = [JSObjManager getObjWithKey:mapId];
+        NSString* xml = [map toXML];
+        
+        resolve(xml);
+    } @catch (NSException *exception) {
+        reject(@"JSMap toXML", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(addLayerGroupWithLayers, addLayerGroupWithLayersById:(NSString*)mapId layerIds:(NSArray *)layerIds groupName:(NSString *)groupName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Map* map = [JSObjManager getObjWithKey:mapId];
+        LayerGroup* layerGroup = [map.layers addGroup:groupName];
+        for (int i = 0; i < [layerIds count]; i++) {
+            Layer* layer = [JSObjManager getObjWithKey:layerIds[i]];
+            [layerGroup add:layer];
+        }
+        NSString* groupId = [JSObjManager addObj:layerGroup];
+        
+        resolve(groupId);
+    } @catch (NSException *exception) {
+        reject(@"JSMap addLayerGroup", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(addLayerGroup, addLayerGroupById:(NSString*)mapId layerIds:(NSArray *)layerIds groupName:(NSString *)groupName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Map* map = [JSObjManager getObjWithKey:mapId];
+        LayerGroup* layerGroup = [map.layers addGroup:groupName];
+        NSString* groupId = [JSObjManager addObj:layerGroup];
+        
+        resolve(groupId);
+    } @catch (NSException *exception) {
+        reject(@"JSMap addLayerGroup", exception.reason, nil);
     }
 }
 

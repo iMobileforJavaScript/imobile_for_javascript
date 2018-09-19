@@ -13,9 +13,6 @@ import com.supermap.onlineservices.DownLoadFile;
 import com.supermap.onlineservices.OnlineService;
 import com.supermap.onlineservices.UpLoadFile;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class JSOnlineService extends ReactContextBaseJavaModule {
 
     ReactContext mReactContext;
@@ -51,15 +48,8 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
 
                 @Override
                 public void onComplete() {
-                    Log.e("++++++++++++", "==========================" );
-                    TimerTask task=new TimerTask() {
-                        @Override
-                        public void run() {
-                            mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED, true);
-                        }
-                    };
-                    Timer timer=new Timer();
-                    timer.schedule(task,2000);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED, true);
+
                 }
 
                 @Override

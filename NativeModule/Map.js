@@ -575,9 +575,9 @@ export default class Map {
         for (let i = 0; i < layers.length; i++) {
           layerIds.push(layers[i]._SMLayerId)
         }
-        var layerId = await M.addLayerGroup(this._SMMapId, layerIds, groupName);
+        var layerId = await M.addLayerGroupWithLayers(this._SMMapId, layerIds, groupName);
       } else {
-        var layerId = await M.addEmptyLayerGroup(this._SMMapId, groupName);
+        var layerId = await M.addLayerGroup(this._SMMapId, groupName);
       }
       var layer = new LayerGroup();
       layer._SMLayerId = layerId;

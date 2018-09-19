@@ -13,6 +13,10 @@ extern NSString* const ONLINE_SERVICE_DOWNLOADING;
 extern NSString* const ONLINE_SERVICE_DOWNLOADED;
 extern NSString* const ONLINE_SERVICE_LOGIN;
 extern NSString* const ONLINE_SERVICE_LOGOUT;
+extern NSString* const ONLINE_SERVICE_DOWNLOADFAILURE;
+extern NSString* const ONLINE_SERVICE_UPLOADING;
+extern NSString* const ONLINE_SERVICE_UPLOADED;
+extern NSString* const ONLINE_SERVICE_UPLOADFAILURE;
 
 @interface Constants : NSObject
 

@@ -193,13 +193,23 @@ RCT_REMAP_METHOD(setAction,mapControlId:(NSString*)Id actionType:(int)type resol
 }
 
 RCT_REMAP_METHOD(submit,submitByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    MapControl* mapControl = [JSObjManager getObjWithKey:key];
-    if (mapControl) {
+    @try {
+        MapControl* mapControl = [JSObjManager getObjWithKey:key];
+//        BOOL result = [mapControl submit];
+//        resolve([NSNumber numberWithBool:result]);
+        
         [mapControl submit];
-        resolve(@"submit successful");
-    }else{
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
         reject(@"MapControl",@"submit() failed.",nil);
     }
+//    MapControl* mapControl = [JSObjManager getObjWithKey:key];
+//    if (mapControl) {
+//        BOOL result = [mapControl submit];
+//        resolve([NSNumber numberWithBool:result]);
+//    }else{
+//        reject(@"MapControl",@"submit() failed.",nil);
+//    }
 }
 
 RCT_REMAP_METHOD(setGestureDetector,setGestureDetectorById:(NSString*)mapControlId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
