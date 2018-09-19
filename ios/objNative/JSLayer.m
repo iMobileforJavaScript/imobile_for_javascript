@@ -125,9 +125,17 @@ RCT_REMAP_METHOD(getSelection,getSelectionByKey:(NSString*)key resolver:(RCTProm
     @try {
         Layer* layer = [JSObjManager getObjWithKey:key];
         Selection* selection = [layer getSelection];
+        
+        Recordset* recordset = [selection toRecordset];
+        [JSObjManager addObj:recordset];
+        NSInteger recordsetKey = (NSInteger)recordset;
+        
         NSInteger key = (NSInteger)selection;
         [JSObjManager addObj:selection];
-        resolve(@{@"selectionId":@(key).stringValue});
+        resolve(@{
+                  @"selectionId":@(key).stringValue,
+                  @"recordsetId":@(recordsetKey).stringValue,
+                  });
     } @catch (NSException *exception) {
         reject(@"Layer",@"getSelection() failed.",nil);
     }

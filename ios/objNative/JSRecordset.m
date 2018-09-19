@@ -128,7 +128,7 @@ RCT_REMAP_METHOD(getFieldInfosArray,getFieldInfosArrayById:(NSString*)recordsetI
         resolve(recordsetArray);
     }
     @catch(NSException *exception){
-        reject(@"JSRecordset",@"getFieldInfosArray expection",nil);
+        reject(@"JSRecordset", exception.reason,nil);
     }
 }
 RCT_REMAP_METHOD(getFieldInfo,getFieldInfoById:(NSString*)recordsetId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -171,7 +171,7 @@ RCT_REMAP_METHOD(setFieldValueByIndex,setFieldValueByIndexById:(NSString*)record
                   });
     }
     @catch(NSException *exception){
-        reject(@"JSRecordset",@"getFieldInfosArray expection",nil);
+        reject(@"JSRecordset", exception.reason,nil);
     }
 }
 RCT_REMAP_METHOD(setFieldValueByName,setFieldValueByNameById:(NSString*)recordsetId info:(NSMutableDictionary *)dic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -200,7 +200,7 @@ RCT_REMAP_METHOD(setFieldValueByName,setFieldValueByNameById:(NSString*)recordse
                   });
     }
     @catch(NSException *exception){
-        reject(@"JSRecordset",@"getFieldInfosArray expection",nil);
+        reject(@"JSRecordset setFieldValueByName", exception.reason,nil);
     }
 }
 RCT_REMAP_METHOD(addFieldInfo,addFieldInfoById:(NSString*)recordsetId info:(NSMutableDictionary *)dic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -251,7 +251,7 @@ RCT_REMAP_METHOD(addFieldInfo,addFieldInfoById:(NSString*)recordsetId info:(NSMu
                   });
     }
     @catch(NSException *exception){
-        reject(@"JSRecordset",@"getFieldInfosArray expection",nil);
+        reject(@"JSRecordset addFieldInfo", exception.reason,nil);
     }
 }
 RCT_REMAP_METHOD(deleteById, deleteById:(NSString*)recordsetId targetId:(int)id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -263,7 +263,7 @@ RCT_REMAP_METHOD(deleteById, deleteById:(NSString*)recordsetId targetId:(int)id 
         resolve(num);
     }
     @catch(NSException *exception){
-        reject(@"JSRecordset",@"getFieldInfosArray expection",nil);
+        reject(@"JSRecordset deleteById", exception.reason,nil);
     }
 }
 @end

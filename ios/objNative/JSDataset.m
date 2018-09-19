@@ -63,13 +63,13 @@ RCT_REMAP_METHOD(openDataset,openDatasetByKey:(NSString*)key resolver:(RCTPromis
 }
 
 
-RCT_REMAP_METHOD(setName,setNameKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    Dataset* dataset = [JSObjManager getObjWithKey:key];
-    if(dataset){
-        dataset.name = key;
+RCT_REMAP_METHOD(setName, setNameKey:(NSString*)key name:(NSString *)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Dataset* dataset = [JSObjManager getObjWithKey:key];
+        dataset.name = name;
         resolve(@(YES));
-    }else{
-        reject(@"dataset",@"dataset setName  failed",nil);
+    } @catch (NSException *exception) {
+        reject(@"dataset setName", exception.reason,nil);
     }
 }
 
@@ -84,13 +84,13 @@ RCT_REMAP_METHOD(setReadOnly,setReadOnlyKey:(NSString*)key b:(BOOL)bValue resolv
 }
 
 RCT_REMAP_METHOD(isopen,isOpenJudgingByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    Dataset* dataset = [JSObjManager getObjWithKey:key];
-    BOOL openBit = [dataset isOpen];
-    if (openBit) {
+    @try {
+        Dataset* dataset = [JSObjManager getObjWithKey:key];
+        BOOL openBit = [dataset isOpen];
         NSNumber* NSOpen = [NSNumber numberWithBool:openBit];
         resolve(@{@"opened":NSOpen});
-    }else{
-        reject(@"dataset",@"isOpen judge failed",nil);
+    } @catch (NSException *exception) {
+        reject(@"dataset", exception.reason,nil);
     }
 }
 
@@ -155,6 +155,16 @@ RCT_REMAP_METHOD(DSgetName,getNameByKey:(NSString*)key resolver:(RCTPromiseResol
         resolve(@{@"name":name});
     }else{
         reject(@"dataset",@"get name failed",nil);
+    }
+}
+
+RCT_REMAP_METHOD(close, closeByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Dataset* dataset = [JSObjManager getObjWithKey:key];
+        [dataset close];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"dataset close", exception.reason,nil);
     }
 }
 @end

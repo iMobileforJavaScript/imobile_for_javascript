@@ -140,7 +140,7 @@ RCT_REMAP_METHOD(getLayersByType, getLayersByTypeyKey:(NSString*)key  type:(int)
             Dataset* dataset = layer.dataset;
             
             DatasetType dType = dataset.datasetType;
-            if ( dType == type || type == -1) {
+            if ( dType == type || type == -1 || dataset == nil) {
                 NSString* layerId = [JSObjManager addObj:layer];
                
                 Theme* theme = layer.theme;
