@@ -54,13 +54,13 @@ RCT_REMAP_METHOD(get,getKey:(NSString*)key  index:(int)index resolver:(RCTPromis
   }
 
 RCT_REMAP_METHOD(getCount,getCountByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-  Layers* layers = [JSObjManager getObjWithKey:key];
-  int count = [layers getCount];
-  if (count) {
-    NSNumber* num = [NSNumber numberWithInt:count];
-    resolve(@{@"count":num});
-  }else{
-      reject(@"Layers",@"get count failed!!!",nil);
-  }
+    @try {
+        Layers* layers = [JSObjManager getObjWithKey:key];
+        int count = [layers getCount];
+        NSNumber* num = [NSNumber numberWithInt:count];
+        resolve(@{@"count":num});
+    } @catch(NSException* exception) {
+        reject(@"Layers", exception.reason, nil);
+    }
 }
 @end

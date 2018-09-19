@@ -475,4 +475,14 @@ RCT_REMAP_METHOD(getChildDataset, getChildDatasetId:(NSString*)dsVectorId   reso
     }
 }
 
+RCT_REMAP_METHOD(getName, getNameById:(NSString*)dsVectorId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        resolve(dsVector.name);
+    } @catch (NSException *exception) {
+        reject(@"datasetVector", exception.reason, nil);
+    }
+}
+
+
 @end

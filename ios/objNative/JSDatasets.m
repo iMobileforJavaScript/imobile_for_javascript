@@ -27,11 +27,24 @@ RCT_REMAP_METHOD(get,getUserKey:(NSString*)key index:(NSInteger)index resolver:(
     reject(@"dataset",@"get:dataset not exeist!!!",nil);
 }
 
+RCT_REMAP_METHOD(getByName, getByNameByKey:(NSString*)key index:(NSString *)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    Datasets* datasets = [JSObjManager getObjWithKey:key];
+    Dataset* dataset = [datasets getWithName:index];
+    if(dataset){
+        NSInteger key = (NSInteger)dataset;
+        [JSObjManager addObj:dataset];
+        //resolve(@(key).stringValue);
+        resolve(@{@"datasetId":@(key).stringValue});
+        
+    }else
+        reject(@"dataset",@"get:dataset not exeist!!!",nil);
+}
+
 RCT_REMAP_METHOD(getAvailableDatasetName,userKey:(NSString*)key getAvailableDatasetName:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Datasets* datasets = [JSObjManager getObjWithKey:key];
   NSString* gettingName = [datasets availableDatasetName:name];
-  if (name) {
-    resolve(@{@"availableName":gettingName});
+  if (gettingName) {
+    resolve(@{@"datasetName":gettingName});
   }else{
     reject(@"datasets",@"get available name failed",nil);
   }
