@@ -68,7 +68,7 @@ RCT_REMAP_METHOD(getCount, getCountById:(NSString*)selectionId resolver:(RCTProm
         Selection* selection = [JSObjManager getObjWithKey:selectionId];
         int index = [selection getCount];
         NSNumber* num = [NSNumber numberWithInteger:index];
-        resolve(num);
+        resolve(@{@"count":num});
     } @catch (NSException *exception) {
         reject(@"selection", @"getCount failed!!!", nil);
     }

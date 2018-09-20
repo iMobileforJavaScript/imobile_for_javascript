@@ -15,6 +15,7 @@
 #import "SuperMap/Rectangle2D.h"
 #import "SuperMap/Maps.h"
 #import "SuperMap/Scenes.h"
+#import "SuperMap/WorkspaceType.h"
 #import "JSWorkspaceConnectionInfo.h"
 #import "JSDatasourceConnectionInfo.h"
 #import "JSDatasources.h"
@@ -304,6 +305,52 @@ RCT_REMAP_METHOD(saveWorkspace,saveWorkspaceByKey:(NSString*)key resolver:(RCTPr
       resolve(@{@"saved":nsSaved});
   }else
     reject(@"workspace",@"save failed!!!",nil);
+}
+
+RCT_REMAP_METHOD(saveWorkspaceWithInfo, saveWorkspaceWithInfoByKey:(NSString*)key path:(NSString *)path caption: (NSString *)caption type:(NSInteger)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        WorkspaceConnectionInfo* info = workspace.connectionInfo;
+        
+//        [info setServer:path];
+        [workspace setCaption:caption];
+        switch (type) {
+            case 4:
+                [info setType:SM_SXW];
+                [info setServer:[NSString stringWithFormat:@"%@/%@%@", path, caption, @".sxw"]];
+                break;
+                
+                // SMW 工作空间信息设置
+            case 5:
+                [info setType:SM_SMW];
+                [info setServer:[NSString stringWithFormat:@"%@/%@%@", path, caption, @".smw"]];
+                break;
+                
+                // SXWU 文件工作空间信息设置
+            case 8:
+                [info setType:SM_SXWU];
+                [info setServer:[NSString stringWithFormat:@"%@/%@%@", path, caption, @".sxwu"]];
+                break;
+                
+                // SMWU 工作空间信息设置
+            case 9:
+                [info setType:SM_SMWU];
+                [info setServer:[NSString stringWithFormat:@"%@/%@%@", path, caption, @".smwu"]];
+                break;
+                
+                // 其他情况
+            default:
+                [info setType:SM_SMWU];
+                [info setServer:[NSString stringWithFormat:@"%@/%@%@", path, caption, @".smwu"]];
+                break;
+        }
+        
+        BOOL saved = [workspace save];
+        NSNumber* nsSaved = [NSNumber numberWithBool:saved];
+        resolve(@{@"saved":nsSaved});
+    } @catch (NSException* exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
 }
 
 RCT_REMAP_METHOD(closeWorkspace,closeWorkspaceByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

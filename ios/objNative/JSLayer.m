@@ -125,9 +125,17 @@ RCT_REMAP_METHOD(getSelection,getSelectionByKey:(NSString*)key resolver:(RCTProm
     @try {
         Layer* layer = [JSObjManager getObjWithKey:key];
         Selection* selection = [layer getSelection];
+        
+        Recordset* recordset = [selection toRecordset];
+        [JSObjManager addObj:recordset];
+        NSInteger recordsetKey = (NSInteger)recordset;
+        
         NSInteger key = (NSInteger)selection;
         [JSObjManager addObj:selection];
-        resolve(@{@"selectionId":@(key).stringValue});
+        resolve(@{
+                  @"selectionId":@(key).stringValue,
+                  @"recordsetId":@(recordsetKey).stringValue,
+                  });
     } @catch (NSException *exception) {
         reject(@"Layer",@"getSelection() failed.",nil);
     }
@@ -245,13 +253,13 @@ RCT_REMAP_METHOD(hitTest,layerIdById:(NSString*)layerId point2DId:(NSString*)poi
         
         Point2D* point2d = [JSObjManager getObjWithKey:point2DId];
         Selection* selection = [layer hitTest:point2d With:tolerance];
-        NSInteger selectionId = (NSInteger)selection;
-        [JSObjManager addObj:selection];
+//        NSInteger selectionId = (NSInteger)selection;
+        NSString* selectionId = [JSObjManager addObj:selection];
         Recordset* recordset = [selection toRecordset];
-        NSInteger recordsetId = (NSInteger) recordset;
-        [JSObjManager addObj:recordset];
-        resolve(@{@"selectionId":@(selectionId),
-                  @"recordsetId":@(recordsetId)
+//        NSInteger recordsetId = (NSInteger) recordset;
+        NSString* recordsetId = [JSObjManager addObj:recordset];
+        resolve(@{@"selectionId":selectionId,
+                  @"recordsetId":recordsetId
                   });
         
     } @catch (NSException *exception) {

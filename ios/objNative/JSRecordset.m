@@ -172,6 +172,7 @@ RCT_REMAP_METHOD(setFieldValueByIndex,setFieldValueByIndexById:(NSString*)record
                   });
     }
     @catch(NSException *exception){
+
         reject(@"JSRecordset",@"JSRecordset setFieldValueByIndex expection",nil);
     }
 }
@@ -252,7 +253,9 @@ RCT_REMAP_METHOD(addFieldInfo,addFieldInfoById:(NSString*)recordsetId info:(NSMu
                   });
     }
     @catch(NSException *exception){
+
         reject(@"JSRecordset",@"JSRecordset addFieldInfo expection",nil);
+
     }
 }
 RCT_REMAP_METHOD(deleteById, deleteById:(NSString*)recordsetId targetId:(int)id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -264,7 +267,7 @@ RCT_REMAP_METHOD(deleteById, deleteById:(NSString*)recordsetId targetId:(int)id 
         resolve(num);
     }
     @catch(NSException *exception){
-        reject(@"JSRecordset",@"getFieldInfosArray expection",nil);
+        reject(@"JSRecordset deleteById", exception.reason,nil);
     }
 }
 @end

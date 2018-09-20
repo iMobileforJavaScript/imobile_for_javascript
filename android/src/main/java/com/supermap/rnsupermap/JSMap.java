@@ -376,7 +376,7 @@ public class JSMap extends ReactContextBaseJavaModule {
                     intType = dataset.getType().value();
                 }
 
-                if (intType == type || type == -1) {
+                if (intType == type || type == -1 || dataset == null) {
                     WritableMap wMap = Arguments.createMap();
                     String layerId = JSLayer.registerId(layer);
 

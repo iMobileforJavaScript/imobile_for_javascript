@@ -251,13 +251,13 @@ export default class Layer {
   
   /**
    * 返回选中的对象的集合
-   * @param point2DId
+   * @param point2D
    * @param tolerance
    * @returns {Promise.<Selection>}
    */
-  async hitTest(point2DId, tolerance) {
+  async hitTest(point2D, tolerance) {
     try {
-      let { selectionId, recordsetId } = await L.hitTest(this._SMLayerId, point2DId, tolerance)
+      let { selectionId, recordsetId } = await L.hitTest(this._SMLayerId, point2D._SMPoint2DId, tolerance)
       let selection = await new Selection()
       selection._SMSelectionId = selectionId
       let recordset = await new Recordset()

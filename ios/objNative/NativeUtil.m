@@ -66,8 +66,9 @@
         [fieldsDics setObject:fieldsDic forKey:fieldName];
     }
     
-    NSMutableArray* recordArray = [[NSMutableArray alloc]initWithCapacity:count];
-    while(( ![recordset isEOF] && count < size ) ){
+    NSMutableArray* recordArray = [[NSMutableArray alloc] init];
+//    while(( ![recordset isEOF] && count < size ) ){
+    while(( ![recordset isEOF] ) ){
         NSMutableDictionary* dic = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics];
         [recordArray addObject:dic];
         [recordset moveNext];
@@ -95,29 +96,19 @@
         for(int a = 0;a < fieldsDicCount;a++){
             NSString* keyName2 =(NSString*)keys2[a];
             if(values2[a] == nil){
-                [itemWMap setObject:@"" forKey:keyName2]; // ???
+                [itemWMap setObject:@"" forKey:keyName2];
                 continue;
             }
 
-            if([keyName2 isEqualToString:@"caption"] || [keyName2 isEqualToString:@"defaultValue"]
-               ||[keyName2 isEqualToString:@"name"]){
-                [itemWMap setObject:(NSString*)values2[a] forKey:keyName2]; // ???
-            }
-            else if([keyName2 isEqualToString:@"isRequired"] || [keyName2 isEqualToString:@"isSystemField"]){
-                [itemWMap setObject:values2[a] forKey:keyName2]; //  ???
-            }
-            else if([keyName2 isEqualToString:@"maxLength"]){
-                [itemWMap setObject:values2[a] forKey:keyName2];  // ???
-            }
-            else if([keyName2 isEqualToString:@"type"]){
-                FieldType type = (FieldType)(((NSString*)values2[a]).intValue);
-                [itemWMap setObject:values2[a] forKey:keyName2];
+            [itemWMap setObject:values2[a] forKey:keyName2];
+            if([keyName2 isEqualToString:@"type"]){
+//                FieldType type = (FieldType)(((NSString*)values2[a]).intValue);
+
                 
                 NSObject* object = [recordset getFieldValueWithString:keyName];
                 if(object == nil){
                     [keyMap setObject:@"" forKey:@"value"];
-                }
-                else {
+                } else {
                     [keyMap setObject:object forKey:@"value"];
                 }
             }

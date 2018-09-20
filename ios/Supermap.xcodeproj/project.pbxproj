@@ -152,6 +152,7 @@
 		D85975FB214BA46700E39A7E /* JSLayerGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = D85975FA214BA46700E39A7E /* JSLayerGroup.m */; };
 		D877B5B22133D5C00044AE61 /* JSOnlineService.m in Sources */ = {isa = PBXBuildFile; fileRef = D877B5B12133D5C00044AE61 /* JSOnlineService.m */; };
 		D877B5C42133F21E0044AE61 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = D877B5C32133F21E0044AE61 /* Constants.m */; };
+		D8C61D7C2151E2AE00560362 /* JSFieldType.m in Sources */ = {isa = PBXBuildFile; fileRef = D8C61D7B2151E2AD00560362 /* JSFieldType.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -458,6 +459,8 @@
 		D877B5B12133D5C00044AE61 /* JSOnlineService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSOnlineService.m; path = objNative/JSOnlineService.m; sourceTree = "<group>"; };
 		D877B5C22133F21E0044AE61 /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = objNative/Constants.h; sourceTree = "<group>"; };
 		D877B5C32133F21E0044AE61 /* Constants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = Constants.m; path = objNative/Constants.m; sourceTree = "<group>"; };
+		D8C61D7A2151E2AD00560362 /* JSFieldType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSFieldType.h; path = objNative/JSFieldType.h; sourceTree = "<group>"; };
+		D8C61D7B2151E2AD00560362 /* JSFieldType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSFieldType.m; path = objNative/JSFieldType.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -482,6 +485,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				D8C61D7A2151E2AD00560362 /* JSFieldType.h */,
+				D8C61D7B2151E2AD00560362 /* JSFieldType.m */,
 				D85975F9214BA46700E39A7E /* JSLayerGroup.h */,
 				D85975FA214BA46700E39A7E /* JSLayerGroup.m */,
 				D82C65AA214208DB00E9EEC5 /* JSWorkspaceType.h */,
@@ -902,6 +907,7 @@
 				0A332E2B211D623E00F56F26 /* JSLocationManager.m in Sources */,
 				0A332E3B211D623E00F56F26 /* JSPoint2D.m in Sources */,
 				0A332E4E211D623E00F56F26 /* JSServiceBase.m in Sources */,
+				D8C61D7C2151E2AE00560362 /* JSFieldType.m in Sources */,
 				0A332E49211D623E00F56F26 /* JSScaleViewManager.m in Sources */,
 				0A332E66211D623E00F56F26 /* JSTransportationAnalyst.m in Sources */,
 				0A332E1E211D623E00F56F26 /* JSHotChart.m in Sources */,

@@ -13,25 +13,23 @@
 @implementation JSPoint2D
 RCT_EXPORT_MODULE();
 RCT_REMAP_METHOD(createObjByXY,createObjByX:(double)xNum Y:(double)yNum resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-  Point2D* point = [[Point2D alloc]initWithX:xNum Y:yNum];
-  if (point) {
-    NSInteger key = (NSInteger)point;
-    [JSObjManager addObj:point];
-    resolve(@{@"point2DId":@(key).stringValue});
-  }else{
-    reject(@"point",@"create point failed!!!",nil);
-  }
+    @try {
+        Point2D* point = [[Point2D alloc]initWithX:xNum Y:yNum];
+        NSString* key = [JSObjManager addObj:point];
+        resolve(@{@"point2DId":key});
+    } @catch (NSException* exception) {
+        reject(@"point", exception.reason, nil);
+    }
 }
 
 RCT_REMAP_METHOD(createObj,resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-  Point2D* point = [[Point2D alloc]init];
-  if (point) {
-    NSInteger key = (NSInteger)point;
-    [JSObjManager addObj:point];
-    resolve(@{@"point2DId":@(key).stringValue});
-  }else{
-    reject(@"point",@"create point failed!!!",nil);
-  }
+    @try {
+        Point2D* point = [[Point2D alloc]init];
+        NSString* key = [JSObjManager addObj:point];
+        resolve(@{@"point2DId":key});
+    } @catch (NSException* exception) {
+        reject(@"point", exception.reason, nil);
+    }
 }
 
 RCT_REMAP_METHOD(getX, getXId:(NSString*)id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
