@@ -90,9 +90,13 @@ RCT_REMAP_METHOD(get, getById:(NSString *)layerGroupId index:(int)index resolver
 RCT_REMAP_METHOD(getCount, getCountById:(NSString *)layerGroupId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         LayerGroup* layerGroup = [JSObjManager getObjWithKey:layerGroupId];
-        NSUInteger count = [layerGroup getCount];
+        if([layerGroup isKindOfClass:[LayerGroup class]]){
+            NSUInteger count = [layerGroup getCount];
+            resolve([NSNumber numberWithUnsignedInteger:count]);
+        }else{
+            resolve(@(0));
+        }
         
-        resolve([NSNumber numberWithUnsignedInteger:count]);
     } @catch (NSException *exception) {
         reject(@"JSLayerGroup getCount", exception.reason, nil);
     }
