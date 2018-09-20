@@ -320,7 +320,7 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
             WorkspaceConnectionInfo info = workspace.getConnectionInfo();
 
             String server = path;
-            info.setServer(server);
+//            info.setServer(server);
             if (caption.length() > 0) {
                 workspace.setCaption(caption);
             }
