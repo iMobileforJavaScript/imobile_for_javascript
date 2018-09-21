@@ -1,8 +1,9 @@
 /**
  * Created by will on 2016/7/13.
  */
-import { NativeModules } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 let SU = NativeModules.JSSystemUtil;
+let ZA = NativeModules.JSZipArchive;
 
 /**
  * @class Point - 像素点类。用于标示移动设备屏幕的像素点。
@@ -122,7 +123,12 @@ export default class SystemUtil {
   }
   async unZipFile(zipfile,targetdir) {
     try {
-      let result = await SU.unZipFile(zipfile,targetdir);
+      let result;
+      if (Platform.OS === 'ios') {
+        result = await ZA.unZipFile(zipfile,targetdir);
+      } else {
+        result = await SU.unZipFile(zipfile,targetdir);
+      }
       return result;
     } catch (e) {
       console.error(e);
@@ -130,7 +136,13 @@ export default class SystemUtil {
   }
   async deleteZip(zipfile) {
     try {
-      await SU.deleteZip(zipfile);
+      let result;
+      if (Platform.OS === 'ios') {
+        result = await ZA.deleteZip(zipfile);
+      } else {
+        result = await SU.deleteZip(zipfile);
+      }
+      await result;
     } catch (e) {
       console.error(e);
     }

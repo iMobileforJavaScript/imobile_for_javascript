@@ -349,9 +349,9 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
             }
             zf.close();
             isUnZiped = true;
-            WritableMap map = Arguments.createMap();
-            map.putBoolean("isUnZiped", isUnZiped);
-            promise.resolve(map);
+//            WritableMap map = Arguments.createMap();
+//            map.putBoolean("isUnZiped", isUnZiped);
+            promise.resolve(isUnZiped);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -362,7 +362,10 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
     public static void deleteZip(String zippath, Promise promise) {
         try {
             File file = new File(zippath);
-            boolean result= file.delete();
+            boolean result = false;
+            if (file.exists()) {
+                result = file.delete();
+            }
             promise.resolve(result);
         }catch (Exception e){
             promise.reject(e);
