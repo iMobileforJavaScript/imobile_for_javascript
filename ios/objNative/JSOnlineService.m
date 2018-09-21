@@ -48,6 +48,11 @@ RCT_REMAP_METHOD(download, downloadByPath:(NSString *)path fileName:(NSString *)
     @try {
         OnlineService* onlineService = [OnlineService sharedService];
         onlineService.downloadDelegate = self;
+        
+        if([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:nil]){
+            [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+        }
+        
         NSLog(@"start download");
         [onlineService downloadFileName:fileName filePath:path];
         

@@ -302,25 +302,23 @@ RCT_REMAP_METHOD(getLayersCount,getLayersCountByKey:(NSString*)key resolver:(RCT
 #pragma mark - map方法
 
 RCT_REMAP_METHOD(open,openKey:(NSString*)key mapName:(NSString*)mapName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-  
-  Map* map = [JSObjManager getObjWithKey:key];
-  if(map){
-    if(![map open:mapName]){
-      NSLog(@"OPen map %@ failed",mapName);
+    @try {
+        Map* map = [JSObjManager getObjWithKey:key];
+        [map open:mapName];
+        resolve(@"1");
+    } @catch (NSException *exception) {
+        reject(@"Map", exception.reason, nil);
     }
-     resolve(@"1");
-  }else
-    reject(@"Map",@"open:Map object do not exeist!!!",nil);
 }
 
 RCT_REMAP_METHOD(close,closeByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    
-    Map* map = [JSObjManager getObjWithKey:key];
-    if(map){
+    @try {
+        Map* map = [JSObjManager getObjWithKey:key];
         [map close];
-        resolve(@"closed");
-    }else
-        reject(@"Map",@"close:Map not exeist!!!",nil);
+        resolve(@"1");
+    } @catch (NSException *exception) {
+        reject(@"Map", exception.reason, nil);
+    }
 }
 
 RCT_REMAP_METHOD(pixelToMap,pixelToMapByKey:(NSString*)key andPointId:(NSString*)pointId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

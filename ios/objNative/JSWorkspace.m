@@ -446,13 +446,13 @@ RCT_REMAP_METHOD(closeDatasource,closeDatasourceByKey:(NSString*)key andDatasour
 }
 
 RCT_REMAP_METHOD(closeAllDatasource,closeAllDatasourceByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    Workspace* workspace = [JSObjManager getObjWithKey:key];
-    Datasources* dataSources = workspace.datasources;
-    if(dataSources){
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        Datasources* dataSources = workspace.datasources;
         [dataSources closeAll];
-        resolve(@"closed");
-    }else{
-        reject(@"workspace",@"close all Datasource failed!!!",nil);
+        resolve(@"1");
+    } @catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
     }
 }
 RCT_REMAP_METHOD(getConnectionInfo,getConnectionInfoKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
