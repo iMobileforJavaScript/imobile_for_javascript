@@ -96,18 +96,48 @@
     NSMutableArray* routeIdArr = [[NSMutableArray alloc]init];
     for (int i = 0; i<arrRoutes.count; i++) {
         GeoLineM *lineM = [arrRoutes objectAtIndex:i];
-        NSInteger nsKey = (NSInteger)result;
-        [JSObjManager addObj:result];
-        [routeIdArr addObject:@(nsKey).stringValue];
+//        NSInteger nsKey = (NSInteger)result;
+        NSString* nsKey = [JSObjManager addObj:lineM];
+        [routeIdArr addObject:nsKey];
     }
     
-    return @{@"routeIds":routeIdArr,
-             @"edges":[result edges],
-             @"nodesArr":[result nodes],
-             @"stopIndexesArr":[result stops],
-             @"stopWeightsArr":[result stopWeights],
-             @"weightsArr":[result weights]
-             };
+    NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+    [dic setObject:routeIdArr forKey:@"routeIds"];
+    if (result.edges) {
+        [dic setObject:result.edges forKey:@"edges"];
+    } else {
+        [dic setObject:[NSArray array] forKey:@"edges"];
+    }
+    if (result.nodes) {
+        [dic setObject:result.nodes forKey:@"nodesArr"];
+    } else {
+        [dic setObject:[NSArray array] forKey:@"nodesArr"];
+    }
+    if (result.stops) {
+        [dic setObject:result.stops forKey:@"stopIndexesArr"];
+    } else {
+        [dic setObject:[NSArray array] forKey:@"stopIndexesArr"];
+    }
+    if (result.stopWeights) {
+        [dic setObject:result.stopWeights forKey:@"stopWeightsArr"];
+    } else {
+        [dic setObject:[NSArray array] forKey:@"stopWeightsArr"];
+    }
+    if (result.weights) {
+        [dic setObject:result.weights forKey:@"weightsArr"];
+    } else {
+        [dic setObject:[NSArray array] forKey:@"weightsArr"];
+    }
+    
+    return dic;
+    
+//    return @{@"routeIds":routeIdArr,
+//             @"edges":result.edges,
+//             @"nodesArr":result.nodes,
+//             @"stopIndexesArr":result.stops,
+//             @"stopWeightsArr":result.stopWeights,
+//             @"weightsArr":result.weights,
+//             };
 }
 
 

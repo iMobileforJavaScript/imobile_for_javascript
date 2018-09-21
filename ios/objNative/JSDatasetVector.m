@@ -291,10 +291,9 @@ RCT_REMAP_METHOD(getFieldInfos, getFieldInfosId:(NSString*)dsVectorId  resolver:
         DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
         FieldInfos* fieldInfos = dsVector.fieldInfos;;
         
-        NSMutableDictionary* fields = [[NSMutableDictionary alloc]initWithCapacity:5];
-        NSMutableDictionary* fieldInfosMap = [[NSMutableDictionary alloc]initWithCapacity:5];
+        NSMutableDictionary* fieldInfosMap = [[NSMutableDictionary alloc] init];
         for (int i = 0; i < fieldInfos.count; i++) {
-            
+            NSMutableDictionary* fields = [[NSMutableDictionary alloc] initWithCapacity:7];
             FieldInfo* info = [fieldInfos get:i];
             NSMutableDictionary* subMap = @{@"caption":info.caption,
                                             @"defaultValue":info.defaultValue,

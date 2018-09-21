@@ -14,8 +14,10 @@
 RCT_EXPORT_MODULE();
 
 -(NSDictionary*)constantsToExport{
-    return @{@"":@(0),
-             
+    return @{@"PCS_USER_DEFINED":@(PCST_USER_DEFINED),
+             @"PCS_NON_EARTH":@(PCST_NON_EARTH),
+             @"PCS_EARTH_LONGITUDE_LATITUDE":@(PCST_EARTH_LONGITUDE_LATITUDE),
+             @"PCS_SPHERE_MERCATOR":@(PCST_SPHERE_MERCATOR),
              };
 }
 

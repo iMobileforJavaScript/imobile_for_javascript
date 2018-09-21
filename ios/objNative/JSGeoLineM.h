@@ -7,7 +7,8 @@
 //
 
 #import <React/RCTBridgeModule.h>
+#import "JSGeometry.h"
 
-@interface JSGeoLineM : NSObject<RCTBridgeModule>
+@interface JSGeoLineM : JSGeometry<RCTBridgeModule>
 
 @end

@@ -381,13 +381,13 @@ RCT_REMAP_METHOD(setEdgeFilter,setEdgeFilter:(NSString*)transportationAnalystSet
  * @param value
  * @param promise
  */
-RCT_REMAP_METHOD(setEdgeIDFilter,setEdgeIDFilter:(NSString*)transportationAnalystSettingId filterID:(NSString*)edgeFilterID resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setEdgeIDField,setEdgeIDField:(NSString*)transportationAnalystSettingId filterID:(NSString*)edgeFilterID resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         TransportationAnalystSetting* transSetting = [JSObjManager getObjWithKey:transportationAnalystSettingId];
         [transSetting setEdgeIDField:edgeFilterID];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
-        reject(@"JSTransportationAnalystSetting",@"setEdgeIDFilter expection",nil);
+        reject(@"JSTransportationAnalystSetting",@"setEdgeIDField expection",nil);
     }
 }
 /**

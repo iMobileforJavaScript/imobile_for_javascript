@@ -176,7 +176,7 @@ RCT_REMAP_METHOD(findPath, findPath:(NSString*)transportationAnalystId param:(NS
         NSDictionary *resDic = [JsonUtil transportationResultToMap:result];
         resolve(resDic);
     } @catch (NSException *exception) {
-        reject(@"JSTransportationAnalyst",@"findPath expection",nil);
+        reject(@"JSTransportationAnalyst", exception.reason, nil);
     }
 }
 /**

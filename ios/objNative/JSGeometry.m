@@ -31,7 +31,7 @@ RCT_REMAP_METHOD(setStyle,setStyleByGeometryId:(NSString*)geometryId geoStyleId:
         [geo setStyle:style];
         resolve(@(YES));
     } @catch (NSException *exception) {
-        reject(@"geometry",@"geometry setStyle failed!!!",nil);
+        reject(@"geometry", exception.reason, nil);
     }
    
 }

@@ -117,9 +117,9 @@ RCT_EXPORT_MODULE(JSMapControl);
 
 -(void)geometrySelected:(int)geometryID Layer:(Layer*)layer{
     NSNumber* nsId = [NSNumber numberWithInt:geometryID];
-    NSInteger nsLayer = (NSInteger)layer;
-    [JSObjManager addObj:layer];
-    [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.geometry_selected" body:@{@"layerId":@(nsLayer).stringValue,
+//    NSInteger nsLayer = (NSInteger)layer;
+    NSString* nsLayer = [JSObjManager addObj:layer];
+    [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.geometry_selected" body:@{@"layerId":nsLayer,
                                                                                      @"id":nsId
                                                                                      }];
 }

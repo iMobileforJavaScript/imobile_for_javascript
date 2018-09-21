@@ -79,13 +79,13 @@ RCT_REMAP_METHOD(setLineWidth,setLineWidthWithStyleId:(NSString*)styleId lineWid
 }
 
 RCT_REMAP_METHOD(setMarkerSymbolID,setMarkerSymbolIdWithStyleId:(NSString*)styleId markerSymbolId:(int)markerSymbolId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-  GeoStyle* style = [JSObjManager getObjWithKey:styleId];
-  if (style) {
-  [style setMarkerSymbolID:markerSymbolId];
-    resolve(@"1");
-  }else{
-    reject(@"geoStyle",@"setMarkerSymbolID failed!!!",nil);
-  }
+    @try {
+        GeoStyle* style = [JSObjManager getObjWithKey:styleId];
+        [style setMarkerSymbolID:markerSymbolId];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException* exception) {
+        reject(@"geoStyle",@"setMarkerSymbolID failed!!!",nil);
+    }
 }
 ////////////////
 RCT_REMAP_METHOD(setMarkerSize,setMarkerSizeWithStyleId:(NSString*)styleId sizeId:(NSString*)sizeId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

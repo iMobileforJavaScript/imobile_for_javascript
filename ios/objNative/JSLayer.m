@@ -239,10 +239,16 @@ RCT_REMAP_METHOD(setAdditionalSetting,setAdditionalSettingByKey:(NSString*)layer
 RCT_REMAP_METHOD(hitTestEx,layerIdById:(NSString*)layerId apointId:(NSString*)pointId tolerance:(NSInteger)tolerance resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         Layer* layer = [JSObjManager getObjWithKey:layerId];
+        NSDictionary* pointDic = [JSObjManager getObjWithKey:pointId];
+        CGFloat x = [(NSNumber*)(pointDic[@"x"]) floatValue];
+        CGFloat y = [(NSNumber*)(pointDic[@"y"]) floatValue];
+        CGPoint point = CGPointMake(x, y);
+        Selection* selection = [layer hitTestEx:point With:tolerance];
+        NSString* selectionId = [JSObjManager addObj:selection];
         
-//        Point* point = [JSObjManager getObjWithKey:apointId];
-//        Selection* selection = layer // ios 缺少hitTestEx
-        
+        Recordset* recordset = [selection toRecordset];
+        NSString* recordsetId = [JSObjManager addObj:recordset];
+        resolve(@{@"selectionId":selectionId, @"recordsetId":recordsetId});
     } @catch (NSException *exception) {
         reject(@"Layer",@"setAdditionalSetting() failed.",nil);
     }
