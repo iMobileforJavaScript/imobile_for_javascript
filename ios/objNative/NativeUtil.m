@@ -91,16 +91,19 @@
         
         NSArray* keys2 = fieldsDic.allKeys;
         NSArray* values2 = fieldsDic.allValues;
-        int fieldsDicCount = (int)[fieldsDic count];
-        for(int a = 0;a < fieldsDicCount;a ++){
+
+        int fieldsDicCount = (int)[keys2 count];
+        for(int a = 0;a < fieldsDicCount;a++){
             NSString* keyName2 =(NSString*)keys2[a];
             if(values2[a] == nil){
                 [itemWMap setObject:@"" forKey:keyName2];
                 continue;
             }
+
             [itemWMap setObject:values2[a] forKey:keyName2];
             if([keyName2 isEqualToString:@"type"]){
 //                FieldType type = (FieldType)(((NSString*)values2[a]).intValue);
+
                 
                 NSObject* object = [recordset getFieldValueWithString:keyName];
                 if(object == nil){

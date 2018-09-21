@@ -28,16 +28,16 @@ RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve
     }
 }
 
-//RCT_REMAP_METHOD(createObjClone,createObjCloneById:(NSString*)themeId withResolver(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-//    @try {
-//        ThemeLabel* oldTheme = [JSObjManager getObjWithKey:themeId];
-//        ThemeLabel* theme = [[ThemeLabel alloc] initThemeLabel:oldTheme];
-//        NSString* key = [JSObjManager addObj:theme];
-//        resolve(key);
-//    } @catch (NSException *exception) {
-//        reject(@"colorScheme",@"ThemeLabel create Obj expection",nil);
-//    }
-//}
+RCT_REMAP_METHOD(createObjClone,createObjCloneById:(NSString*)themeId withResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        ThemeLabel* oldTheme = [JSObjManager getObjWithKey:themeId];
+        ThemeLabel* theme = [[ThemeLabel alloc] initThemeLabel:oldTheme];
+        NSString* key = [JSObjManager addObj:theme];
+        resolve(key);
+    } @catch (NSException *exception) {
+        reject(@"colorScheme",@"ThemeLabel createObjClone expection",nil);
+    }
+}
 
 RCT_REMAP_METHOD(dispose,disposeById:(NSString*)themeId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -233,7 +233,7 @@ RCT_REMAP_METHOD(indexOf,indexOfId:(NSString*)themeId  index:(double)value  reso
         
         resolve(@(idx));
     } @catch (NSException *exception) {
-        reject(@"JSThemeLabel",@"JSThemeLabel getItem expection",nil);
+        reject(@"JSThemeLabel",@"JSThemeLabel indexOf expection",nil);
     }
 }
 
@@ -253,7 +253,7 @@ RCT_REMAP_METHOD(setUniformStyle,setUniformStyleId:(NSString*)themeId  style:(NS
         
         resolve(@(1));
     } @catch (NSException *exception) {
-        reject(@"JSThemeLabel",@"JSThemeLabel getItem expection",nil);
+        reject(@"JSThemeLabel",@"JSThemeLabel setUniformStyle expection",nil);
     }
 }
 
@@ -374,7 +374,7 @@ RCT_REMAP_METHOD(reverseStyle,reverseStyleId:(NSString*)themeId    resolver:(RCT
         ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
-        reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
+        reject(@"JSThemeLabel",@"JSThemeLabel reverseStyle expection",nil);
     }
 }
 
@@ -392,7 +392,7 @@ RCT_REMAP_METHOD(setAllDirectionsOverlappedAvoided,setAllDirectionsOverlappedAvo
         ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
-        reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
+        reject(@"JSThemeLabel",@"JSThemeLabel setAllDirectionsOverlappedAvoided expection",nil);
     }
 }
 
@@ -409,7 +409,7 @@ RCT_REMAP_METHOD(setAlongLine,setAlongLineId:(NSString*)themeId  b:(BOOL)b  reso
         ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
-        reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
+        reject(@"JSThemeLabel",@"JSThemeLabel setAlongLine expection",nil);
     }
 }
 
@@ -428,7 +428,7 @@ RCT_REMAP_METHOD(setAlongLineDirection,setAlongLineDirectionId:(NSString*)themeI
         ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
-        reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
+        reject(@"JSThemeLabel",@"JSThemeLabel setAlongLineDirection expection",nil);
     }
 }
 
@@ -445,7 +445,7 @@ RCT_REMAP_METHOD(setAlongLineSpaceRatio,setAlongLineSpaceRatioId:(NSString*)them
         ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
-        reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
+        reject(@"JSThemeLabel",@"JSThemeLabel setAlongLineSpaceRatio expection",nil);
     }
 }
 
@@ -461,7 +461,7 @@ RCT_REMAP_METHOD(setAngleFixed,setAngleFixedId:(NSString*)themeId  b:(BOOL)b  re
         ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
-        reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
+        reject(@"JSThemeLabel",@"JSThemeLabel getUsetAngleFixedniformStyle expection",nil);
     }
 }
 
@@ -479,7 +479,7 @@ RCT_REMAP_METHOD(setBackShape,setBackShapeId:(NSString*)themeId  value:(int)valu
         ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
-        reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
+        reject(@"JSThemeLabel",@"JSThemeLabel setBackShape expection",nil);
     }
 }
 
@@ -497,7 +497,7 @@ RCT_REMAP_METHOD(setBackStyle,setBackStyleId:(NSString*)themeId  value:(NSString
         ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         resolve(@(1));
     } @catch (NSException *exception) {
-        reject(@"JSThemeLabel",@"JSThemeLabel getUniformStyle expection",nil);
+        reject(@"JSThemeLabel",@"JSThemeLabel setBackStyle expection",nil);
     }
 }
 

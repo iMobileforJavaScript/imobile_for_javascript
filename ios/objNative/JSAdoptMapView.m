@@ -137,30 +137,33 @@ RCT_EXPORT_MODULE(JSMapControl);
     [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.geometry_multi_selected" body:@{@"geometries":(NSArray*)layersIdAndIds}];
 }
 
--(double)getMeasureResult:(double)result lastPoint:(Point2D*)lastPoint{
+-(void)measureState{
+    
+}
+-(double)getMeasureResult:(double)result lastPoint:(Point2D*)lastPoint type:(int)type{
     NSNumber *nsResult = [NSNumber numberWithDouble:result];
     double x = lastPoint.x;
     double y = lastPoint.y;
     NSNumber* nsX = [NSNumber numberWithDouble:x];
     NSNumber* nsY = [NSNumber numberWithDouble:y];
     
-    MapControl*mapCtrl = [JSObjManager getObjWithKey:@"com.supermap.mapControl"];
-    Action action = mapCtrl.action;
-    if(action == MEASURELENGTH){
+    //MapControl*mapCtrl = [JSObjManager getObjWithKey:@"com.supermap.mapControl"];
+    //Action action = mapCtrl.action;
+    if(type == 0){
         [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.length_measured"
                            body:@{@"curResult":nsResult,
                                   @"curPoint":@{@"x":nsX,@"y":nsY}
                                   }];
     }
     
-    if(action == MEASUREAREA){
+    if(type == 1){
         [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.area_measured"
                            body:@{@"curResult":nsResult,
                                   @"curPoint":@{@"x":nsX,@"y":nsY}
                                   }];
     }
     
-    if(action == MEASUREANGLE){
+    if(type == 2){
         [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.angle_measured"
                            body:@{@"curAngle":nsResult,
                                   @"curPoint":@{@"x":nsX,@"y":nsY}
