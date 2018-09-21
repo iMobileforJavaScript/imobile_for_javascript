@@ -206,7 +206,7 @@
 -(Geometry*)getCurrentGeometry;
 
 /// 地图窗口上提交编辑绘制对象。提交对象操作必须以地图编辑为前提。
--(void)submit;
+-(BOOL)submit;
 
 /** 取消当前的操作。
  *
@@ -314,6 +314,7 @@
  * @param type 量算类型 0距离 1面积 2角度
  */
 -(void)getMeasureResult:(double)result lastPoint:(Point2D*)lastPoint type:(int)type;
+-(void)measureState;
 @end
 
 /**

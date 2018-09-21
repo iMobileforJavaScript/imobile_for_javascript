@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+
 @interface ChartData : NSObject
 
 -(id)initWith:(NSString*)lable color:(UIColor*)color ID:(int)geoId;
@@ -24,7 +24,7 @@
 //饼图数据
 @interface ChartPieData : ChartData
 
-//value:数据类型为 NSNumber类型，否则为无效数据/Users/Dragon/.Trash/ChartData.h
+//value:数据类型为 NSNumber类型，否则为无效数据
 -(id)initWithItemName:(NSString*)itemName value:(NSArray*)value color:(UIColor*)color ID:(int)geoId;
 //条目数值
 @property(nonatomic)double value;

@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreGraphics/CGGeometry.h>
 #import "ThemeType.h"
 @class Map,Layers,Selection,Dataset,Theme,GeoRegion,m_selfEventHandle,Point2D,QueryParameter,LayerGroup;
 @class ChartView;
@@ -30,7 +31,6 @@
 
 @property(nonatomic,assign)id<LayerStateDelegate>layerDelegate;
 
-@property(nonatomic,strong) LayerGroup *parentGroup;
 /**
  * @brief 设置,获取 图层卷帘模式
  */
@@ -116,6 +116,12 @@
  *            boolean
  */
 @property(nonatomic)BOOL isSnapable;
+
+/**
+ *  @brief  获取/设置 图层所在分组。
+ */
+@property(nonatomic,strong)LayerGroup* parentGroup;
+
 /**
  * 设置图层不透明度
  * @param value 不透明度   取值为0-100
@@ -152,15 +158,22 @@
  * @return 此图层中QueryParameter对象。
  */
 -(QueryParameter*) getDisplayFilter;
- /**
-     * @brief 返回选中的对象的集合。
-     *  <p>  若指定的点与对象上最近点的距离在指定容限范围的范围内，则该对象被选中。如果地图上有多个重叠的对象都满足条件，则都被选中，并返回多个对象。
-     * @param point 要测试的点，为地理坐标点。
-     * @param tolerance 指定的容限，为地理长度。
-     * @return 被选中的对象的集合。
+/**
+ * @brief 返回选中的对象的集合。
+ *  <p>  若指定的点与对象上最近点的距离在指定容限范围的范围内，则该对象被选中。如果地图上有多个重叠的对象都满足条件，则都被选中，并返回多个对象。
+ * @param point 要测试的点，为地理坐标点。
+ * @param tolerance 指定的容限，为地理长度。
+ * @return 被选中的对象的集合。
  */
 -(Selection *)hitTest:(Point2D *)point With:(double)tolerance;
-
+/**
+ * @brief 返回选中的对象的集合。
+ *  <p>  若指定的点与对象上最近点的距离在指定容限范围的范围内，则该对象被选中。如果地图上有多个重叠的对象都满足条件，则都被选中，并返回多个对象。
+ * @param point 要测试的点，为屏幕点。
+ * @param tolerance 指定的容限，为屏幕坐标点。
+ * @return 被选中的对象的集合。
+ */
+-(Selection *)hitTestEx:(CGPoint)point With:(double)tolerance;
 /**
      * @brief  返回指定的比例尺是否为可视比例尺，即在设定的最小显示比例尺和最大显示比例尺之间。
      * @param scale 指定的显示比例尺。

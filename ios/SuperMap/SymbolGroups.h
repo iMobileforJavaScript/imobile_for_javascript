@@ -59,7 +59,7 @@
  */
 -(BOOL)removeGroupWith:(NSString*)name;
 /**
- * @brief  在分组集合类是否包含子分组。
+ * @brief  在分组集合类是否包含子分组（递归遍历所有子集合）。
  * @param name子分组名称。
  * @return 在分组集合类是否包含子分组。
  */

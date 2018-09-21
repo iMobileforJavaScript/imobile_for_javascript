@@ -54,17 +54,42 @@
      * @return 符号对象。
      */	
 - (Symbol *)findSymbolWithName:(NSString *)name;
-
+/**
+ * @brief 根据指定的路径，从文件加载符号库。
+ * @param strFileName 指定的路径。
+ * @return 加载是否成功。
+ */
 -(BOOL)fromFile:(NSString*)strFileName;
-
+/**
+ * @brief 删除符号库中指定的 ID 号的符号。
+ * @param ID 需要删除符号的 ID 值。
+ * @return 如果删除成功，返回 true；否则返回 false。
+ */
 -(BOOL)removeWithID:(int)nId;
-
+/**
+ * @brief 向符号库中添加符号，并放在指定分组下。
+ * @param symbol 符号对象
+ * @param desGroup 符号分组
+ * @return 如果添加成功，返回 该符号在库中的 ID 值；否则返回 -1。
+ */
 -(int)add:(Symbol *)symbol toGroup:(SymbolGroup*)desGroup;
-
+/**
+ * @brief 向符号库中添加符号，放在根分组下。
+ * @param symbol 符号对象
+ * @return 如果添加成功，返回 该符号在库中的 ID 值；否则返回 -1。
+ */
 -(int)add:(Symbol *)symbol;
-
+/**
+ * @brief 将符号库中指定ID的符号，移动到指定分组下。
+ * @param nId 需要移动符号的 ID 值。
+ * @param desGroup 符号分组
+ * @return 如果移动成功，返回 YES；否则返回 NO。
+ */
 -(BOOL)moveSymbolByID:(int)nId toGroup:(SymbolGroup*)desGroup;
-
+/**
+ * @brief 符号库路径。
+ * @return 符号库路径。
+ */
 -(NSString*)getLibPath;
 
 -(void)dispose;

@@ -10,14 +10,16 @@
 
 @class Point2D,SymbolMarkerStroke;
 
+// 点符号类
 @interface SymbolMarker : Symbol
 
+// 点符号原点
 @property(nonatomic,strong) Point2D *origin;
-
+// 计算点符号显示尺寸
 -(int) computeDisplaySize:(int)nSymbolSize;
-
+// 获得点符号构成笔画数
 -(int)getStrokeCount;
-
+// 获得点符号构成笔画
 -(SymbolMarkerStroke*)getStroke:(int)index;
 
 -(void)dispose;
