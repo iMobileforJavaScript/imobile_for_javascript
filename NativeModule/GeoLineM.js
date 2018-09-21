@@ -33,7 +33,7 @@ export default class GeoLineM extends Geometry {
   async createObj(points) {
     try {
       let geoLineMId
-      if (!!points && typeof points == "array") {
+      if (!!points && typeof points === "array") {
         geoLineMId = await GLM.createObjByPts();
       } else {
         geoLineMId = await GLM.createObj();

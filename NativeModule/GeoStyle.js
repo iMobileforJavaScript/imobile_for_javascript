@@ -69,6 +69,7 @@ export default class GeoStyle {
    */
   async setLineWidth(lineWidth) {
     try {
+      debugger
       await G.setLineWidth(this._SMGeoStyleId, lineWidth);
     } catch (e) {
       console.error(e);

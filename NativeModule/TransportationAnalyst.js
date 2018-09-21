@@ -162,7 +162,8 @@ export default class TransportationAnalyst {
       if (routeIds) {
         for (let i = 0; i < routeIds.length; i++) {
           let route = new GeoLineM()
-          route._SMGeoLineId = routeIds[i]
+          route._SMGeometryId = routeIds[i]
+          // route._SMGeoLineId = routeIds[i]
           routes.push(route)
         }
       }
