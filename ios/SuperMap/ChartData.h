@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import <UIKit/UIkit.h>
 @interface ChartData : NSObject
 
 -(id)initWith:(NSString*)lable color:(UIColor*)color ID:(int)geoId;
