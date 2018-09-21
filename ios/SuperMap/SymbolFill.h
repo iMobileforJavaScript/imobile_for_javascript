@@ -7,7 +7,7 @@
 //
 
 #import "Symbol.h"
-
+// 面填充符号类
 @interface SymbolFill : Symbol
 
 -(void)dispose;

@@ -311,9 +311,9 @@
  * @brief 获取地图量算结果。
  * @param  result 地图量算结果,单位米。
  * @param lastPoint 量算时绘制的最后一个点 。
- * @param type 量算类型 0距离 1面积 2角度
  */
--(void)getMeasureResult:(double)result lastPoint:(Point2D*)lastPoint type:(int)type;
+-(void)getMeasureResult:(double)result lastPoint:(Point2D*)lastPoint;
+-(void)measureState;
 @end
 
 /**
