@@ -34,6 +34,8 @@ RCT_EXPORT_MODULE();
              @"SPLIT_BY_LINE":@(SPLIT_BY_LINE),
              @"ERASE_REGION":@(ERASE_REGION),
              @"DRAWREGION_ERASE_REGION":@(DRAWREGION_ERASE_REGION),
-             @"CREATEPLOT":@(CREATE_PLOT)};
+             @"CREATEPLOT":@(CREATE_PLOT),
+             @"MOVE_GEOMETRY":@(MOVE_GEOMETRY),
+             };
 }
 @end
