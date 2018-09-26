@@ -279,7 +279,7 @@ public class JSRecordset extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setFieldValueByName(String recordsetId, ReadableMap info, Promise promise){
+    public void setFieldValueByName(String recordsetId, int position, ReadableMap info, Promise promise){
         try{
             Recordset recordset = m_RecordsetList.get(recordsetId);
 
@@ -287,8 +287,10 @@ public class JSRecordset extends ReactContextBaseJavaModule {
             boolean editResult;
             boolean updateResult;
 
-            recordset.moveFirst();
-
+//            recordset.moveFirst();
+            if (position >= 0) {
+                recordset.moveTo(position);
+            }
             editResult = recordset.edit();
             Map<String, Object> map = info.toHashMap();
             for (Map.Entry<String, Object> item : map.entrySet()) {

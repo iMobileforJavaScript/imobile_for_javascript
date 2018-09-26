@@ -176,12 +176,17 @@ RCT_REMAP_METHOD(setFieldValueByIndex,setFieldValueByIndexById:(NSString*)record
         reject(@"JSRecordset",@"JSRecordset setFieldValueByIndex expection",nil);
     }
 }
-RCT_REMAP_METHOD(setFieldValueByName,setFieldValueByNameById:(NSString*)recordsetId info:(NSMutableDictionary *)dic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try{ Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
+RCT_REMAP_METHOD(setFieldValueByName,setFieldValueByNameById:(NSString*)recordsetId position:(int)position info:(NSDictionary *)dic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
         BOOL result = NO;
         BOOL editResult ;
         BOOL updateResult ;
-        [recordSet moveFirst];
+        
+        if (position >= 0) {
+            [recordSet move:position];
+        }
+        
         editResult = [recordSet edit];
         
         int count = (int)[dic count];

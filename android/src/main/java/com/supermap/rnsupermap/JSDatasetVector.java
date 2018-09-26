@@ -421,7 +421,7 @@ public class JSDatasetVector extends JSDataset {
     }
 
     @ReactMethod
-    public void setFieldValueByName(String dataVectorId, ReadableMap info, Promise promise) {
+    public void setFieldValueByName(String dataVectorId, int position, ReadableMap info, Promise promise) {
         try {
             DatasetVector datasetVector = getObjFromList(dataVectorId);
             Recordset recordset = datasetVector.getRecordset(false, CursorType.DYNAMIC);
@@ -429,6 +429,10 @@ public class JSDatasetVector extends JSDataset {
             boolean result = false;
             boolean editResult;
             boolean updateResult;
+
+            if (position >= 0) {
+                recordset.moveTo(position);
+            }
 
             editResult = recordset.edit();
             Map<String, Object> map = info.toHashMap();
@@ -534,9 +538,10 @@ public class JSDatasetVector extends JSDataset {
 
             FieldInfos fieldInfos = datasetVector.getFieldInfos();
 
-            WritableMap writableMap = fieldInfosToMap(fieldInfos);
+//            WritableMap writableMap = fieldInfosToMap(fieldInfos);
+            WritableArray writableArray = fieldInfosToArray(fieldInfos);
 
-            promise.resolve(writableMap);
+            promise.resolve(writableArray);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -787,7 +792,8 @@ public class JSDatasetVector extends JSDataset {
      * @param fieldInfos
      * @return
      */
-    public static WritableMap fieldInfosToMap(FieldInfos fieldInfos) {
+//    public static WritableMap fieldInfosToMap(FieldInfos fieldInfos) {
+    public static WritableArray fieldInfosToArray(FieldInfos fieldInfos) {
         //获取字段信息
         Map<String, Map<String, Object>> fields = new HashMap<>();
         for (int i = 0; i < fieldInfos.getCount(); i++) {
@@ -803,7 +809,8 @@ public class JSDatasetVector extends JSDataset {
             fields.put(fieldInfos.get(i).getName(), subMap);
         }
 
-        WritableMap fieldInfosMap = Arguments.createMap();
+//        WritableMap fieldInfosMap = Arguments.createMap();
+        WritableArray fieldInfosArray = Arguments.createArray();
 
         for (Map.Entry<String, Map<String, Object>> field : fields.entrySet()) {
             WritableMap keyMap = Arguments.createMap();
@@ -846,10 +853,11 @@ public class JSDatasetVector extends JSDataset {
             keyMap.putMap("fieldInfo", itemWMap);
             keyMap.putString("name", name);
 
-            fieldInfosMap.putMap(name, keyMap);
+//            fieldInfosMap.putMap(name, keyMap);
+            fieldInfosArray.pushMap(keyMap);
         }
 
-        return fieldInfosMap;
+        return fieldInfosArray;
     }
 }
 
