@@ -8,23 +8,35 @@
 
 #import "JSSceneView.h"
 
-
+@interface JSSceneView()
+{
+    NSTimer* timer;
+    UIView* oldView;
+}
+@end
 @implementation JSSceneView
 
 -(id)init{
     
+     UIWindow *si  = [[UIApplication sharedApplication].windows objectAtIndex:0];
+    oldView = si.subviews[0];
     if(self=[super init]){
         if (_sceneCtrl==nil) {
             _sceneCtrl = [[SceneControl alloc]init];
-            _sceneCtrl.multipleTouchEnabled = true;
-             [self addSubview:_sceneCtrl];
-            
+            _sceneCtrl.multipleTouchEnabled = YES;
+           //  [self addSubview:_sceneCtrl];
             [_sceneCtrl setFrame:self.bounds];
-            //UIViewController* vc = [[UIViewController alloc]init];
-            //[_sceneCtrl addSubview:vc.view];
-            
+            id target=_sceneCtrl;
+            while (target) {
+                target = ((UIResponder *)target).nextResponder;
+                if ([target isKindOfClass:[UIViewController class]]) {
+                    break;
+                }
+            }
+            [_sceneCtrl initSceneControl:(UIViewController*)target];
         }
     }
+    timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(change) userInfo:nil repeats:YES];
     return self;
 }
 /*
@@ -34,56 +46,23 @@
     // Drawing code
 }
 */
-
-- (UIViewController *)getCurrentVC
-{
-    UIViewController *rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
-    
-    UIViewController *currentVC = [self getCurrentVCFrom:rootViewController];
-    
-    return currentVC;
-}
-
-- (UIViewController *)getCurrentVCFrom:(UIViewController *)rootVC
-{
-    UIViewController *currentVC;
-    
-    if ([rootVC presentedViewController]) {
-        // 视图是被presented出来的
-        
-        rootVC = [rootVC presentedViewController];
+//static bool b = false;
+-(void)change{
+    if([_sceneCtrl.superview isEqual:self]){
+        [timer invalidate];
+        timer = nil;
+    }else{
+        UIWindow *si  = [[UIApplication sharedApplication].windows objectAtIndex:0];
+        [_sceneCtrl removeFromSuperview];
+        [si addSubview:oldView];
+        [self addSubview:_sceneCtrl];
+        [_sceneCtrl setFrame:self.bounds];
     }
-    
-    if ([rootVC isKindOfClass:[UITabBarController class]]) {
-        // 根视图为UITabBarController
-        
-        currentVC = [self getCurrentVCFrom:[(UITabBarController *)rootVC selectedViewController]];
-        
-    } else if ([rootVC isKindOfClass:[UINavigationController class]]){
-        // 根视图为UINavigationController
-        
-        currentVC = [self getCurrentVCFrom:[(UINavigationController *)rootVC visibleViewController]];
-        
-    } else {
-        // 根视图为非导航类
-        
-        currentVC = rootVC;
-    }
-    
-    return currentVC;
 }
 
 -(void)layoutSubviews{
-    [super layoutSubviews];
-    UIViewController* target= [self getCurrentVC];
-//    while (target) {
-//        target = ((UIResponder *)target).nextResponder;
-//        if ([target isKindOfClass:[UIViewController class]]) {
-//            NSLog(@"%@",target);
-//            break;
-//        }
-//    }
-    [_sceneCtrl initSceneControl:target];
-    //_sceneCtrl.hidden = YES;
+ 
+    
+   
 }
 @end
