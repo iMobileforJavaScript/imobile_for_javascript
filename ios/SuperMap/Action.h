@@ -120,6 +120,8 @@ typedef enum {
      */
     CREATE_POSITIONAL_REGION = 210,
     
+    DRAW_HOLLOW_REGION = 213,
+    
     /**
      * 面被线分割（手绘式）
      */

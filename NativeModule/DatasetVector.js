@@ -309,9 +309,9 @@ export default class DatasetVector {
     }
   }
   
-  async setFieldValuesByNames(infos = {}) {
+  async setFieldValuesByNames(infos = {}, position = -1) {
     try {
-      let { result, editResult, updateResult } = await DV.setFieldValueByName(this._SMDatasetVectorId, infos);
+      let { result, editResult, updateResult } = await DV.setFieldValueByName(this._SMDatasetVectorId, position, infos);
       return { result, editResult, updateResult }
     } catch (e) {
       console.error(e);

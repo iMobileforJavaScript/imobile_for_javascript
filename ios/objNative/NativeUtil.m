@@ -69,16 +69,16 @@
     NSMutableArray* recordArray = [[NSMutableArray alloc] init];
 //    while(( ![recordset isEOF] && count < size ) ){
     while(recordset.recordCount > 0 && ![recordset isEOF]){
-        NSMutableDictionary* dic = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics];
-        [recordArray addObject:dic];
+        NSMutableArray* arr = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics];
+        [recordArray addObject:arr];
         [recordset moveNext];
         count++;
     }
     return recordArray;
 }
-+(NSMutableDictionary *)parseRecordset:(Recordset *)recordset fieldsDics:(NSMutableDictionary*)fieldsDics{
++(NSMutableArray *)parseRecordset:(Recordset *)recordset fieldsDics:(NSMutableDictionary*)fieldsDics{
     int fieldsDicsCount = (int)[fieldsDics count];
-    NSMutableDictionary* map =[[NSMutableDictionary alloc]init];
+    NSMutableArray* array =[[NSMutableArray alloc]init];
     NSArray* keys = fieldsDics.allKeys;
     NSArray* values = fieldsDics.allValues;
     
@@ -116,8 +116,9 @@
         [keyMap setObject:itemWMap forKey:@"fieldInfo"];
         [keyMap setObject:keyName forKey:@"name"];
         
-        [map setObject:keyMap forKey:keyName];
+        [array addObject:keyMap];
+//        [map setObject:keyMap forKey:keyName];
     }
-    return map;
+    return array;
 }
 @end

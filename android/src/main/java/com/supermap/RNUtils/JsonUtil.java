@@ -109,8 +109,10 @@ public class JsonUtil {
         WritableArray recordArray = Arguments.createArray();
 
         while (!recordset.isEmpty() && !recordset.isEOF() && count < size) {
-            WritableMap recordsMap = parseRecordset(recordset, fields);
-            recordArray.pushMap(recordsMap);
+//            WritableMap recordsMap = parseRecordset(recordset, fields);
+//            recordArray.pushMap(recordsMap);
+            WritableArray recordArr = parseRecordset(recordset, fields);
+            recordArray.pushArray(recordArr);
             recordset.moveNext();
             count++;
         }
@@ -125,8 +127,9 @@ public class JsonUtil {
      * @param fields    该记录中的所有属性
      * @return
      */
-    private static WritableMap parseRecordset(Recordset recordset, Map<String, Map<String, Object>> fields) {
-        WritableMap map = Arguments.createMap();
+    private static WritableArray parseRecordset(Recordset recordset, Map<String, Map<String, Object>> fields) {
+//        WritableMap map = Arguments.createMap();
+        WritableArray array = Arguments.createArray();
 
         for (Map.Entry<String,  Map<String, Object>> field : fields.entrySet()) {
             WritableMap keyMap = Arguments.createMap();
@@ -194,10 +197,12 @@ public class JsonUtil {
             keyMap.putMap("fieldInfo", itemWMap);
             keyMap.putString("name", name);
 
-            map.putMap(name, keyMap);
+//            map.putMap(name, keyMap);
+            array.pushMap(keyMap);
         }
 
-        return map;
+
+        return array;
     }
 
     /**

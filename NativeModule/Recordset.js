@@ -171,9 +171,9 @@ export default class Recordset {
     }
   }
   
-  async setFieldValuesByNames(infos = {}) {
+  async setFieldValuesByNames(infos = {}, position = -1) {
     try {
-      let { result, editResult, updateResult } = await R.setFieldValueByName(this._SMRecordsetId, infos);
+      let { result, editResult, updateResult } = await R.setFieldValueByName(this._SMRecordsetId, position, infos);
       return { result, editResult, updateResult }
     } catch (e) {
       console.error(e);

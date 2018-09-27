@@ -53,13 +53,12 @@ static NSMutableDictionary* mDict=nil;// = //[[NSMutableDictionary alloc]initWit
           }else{
               NSLog(@"mapControl has exeisted");
           }
-         // mDict[mapControlKey] = obj;
       }
   }else{
     //@throw [[NSException alloc]initWithName:@"RN ERROR" reason:@"native has exeisted" userInfo:nil];
     NSLog(@"native has exeisted");
   }
-    objId = key.stringValue;
-    return objId;
+  objId = key.stringValue;
+  return objId;
 }
 @end

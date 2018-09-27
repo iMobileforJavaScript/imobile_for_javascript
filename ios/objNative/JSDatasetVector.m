@@ -255,13 +255,16 @@ RCT_REMAP_METHOD(getGeoInnerPoint, getGeoInnerPointById:(NSString*)dsVectorId SQ
     }
 }
 
-RCT_REMAP_METHOD(setFieldValueByName, setFieldValueByNameId:(NSString*)dsVectorId info:(NSDictionary*)info resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setFieldValueByName, setFieldValueByNameId:(NSString*)dsVectorId position:(int)position info:(NSDictionary*)info resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
-        Recordset* recordSet = [dsVector recordset:NO cursorType:STATIC];
+        Recordset* recordSet = [dsVector recordset:NO cursorType:DYNAMIC];
         
-       
+        if (position >= 0) {
+            [recordSet move:position];
+        }
+        
         BOOL result = false;
         BOOL editResult = [recordSet edit];
         
@@ -280,7 +283,7 @@ RCT_REMAP_METHOD(setFieldValueByName, setFieldValueByNameId:(NSString*)dsVectorI
                   @"updateResult":@(updateResult),
                   });
     } @catch (NSException *exception) {
-        reject(@"datasetVector",@"setFieldValueByName failed!!!",nil);
+        reject(@"datasetVector", exception.reason, nil);
     }
 }
 
@@ -291,11 +294,12 @@ RCT_REMAP_METHOD(getFieldInfos, getFieldInfosId:(NSString*)dsVectorId  resolver:
         DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
         FieldInfos* fieldInfos = dsVector.fieldInfos;;
         
-        NSMutableDictionary* fieldInfosMap = [[NSMutableDictionary alloc] init];
+//        NSMutableDictionary* fieldInfosMap = [[NSMutableDictionary alloc] init];
+        NSMutableArray* fieldInfosArray = [[NSMutableArray alloc] init];
         for (int i = 0; i < fieldInfos.count; i++) {
             NSMutableDictionary* fields = [[NSMutableDictionary alloc] initWithCapacity:7];
             FieldInfo* info = [fieldInfos get:i];
-            NSMutableDictionary* subMap = @{@"caption":info.caption,
+            NSDictionary* subMap = @{@"caption":info.caption,
                                             @"defaultValue":info.defaultValue,
                                             @"type":@(info.fieldType),
                                             @"name":info.name,
@@ -305,10 +309,10 @@ RCT_REMAP_METHOD(getFieldInfos, getFieldInfosId:(NSString*)dsVectorId  resolver:
                                             };
             fields[@"fieldInfo"] = subMap;
             fields[@"name"] = info.name;
-            fieldInfosMap[info.name] = fields;
+            [fieldInfosArray addObject:fields];
         }
         
-        resolve(fieldInfosMap);
+        resolve(fieldInfosArray);
     } @catch (NSException *exception) {
         reject(@"datasetVector",@"get Geo Inner Point failed!!!",nil);
     }
@@ -352,8 +356,6 @@ RCT_REMAP_METHOD(addFieldInfo, addFieldInfoId:(NSString*)dsVectorId  info:(NSDic
 
 RCT_REMAP_METHOD(editFieldInfoByName, editFieldInfoByNameId:(NSString*)dsVectorId  infoName:(NSString*)infoName info:(NSDictionary*)info  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        
-        
         DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
         if(![dsVector isOpen]){
             [dsVector open];
@@ -381,9 +383,7 @@ RCT_REMAP_METHOD(editFieldInfoByName, editFieldInfoByNameId:(NSString*)dsVectorI
             }
         }
         
-        int n = [fieldInfos add:fieldInfo];
-        
-        resolve(@{@"index":@(n)});
+        resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"datasetVector",@"addFieldInfo Point failed!!!",nil);
     }
