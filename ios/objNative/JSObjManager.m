@@ -48,12 +48,12 @@ static NSMutableDictionary* mDict=nil;// = //[[NSMutableDictionary alloc]initWit
       mDict[key.stringValue]=obj;
       if([obj isKindOfClass:[MapControl class]]){
           NSString* mapControlKey = @"com.supermap.mapControl"; //为解决ui控件无法初始化视图的问题，JS层mapctrl暂时只能作为单例使用，此种方法取出来的
-          if (mDict[mapControlKey]!=nil) {                      //mapctrl应只用于原生UI控件的封装
-              MapControl* mapControl = mDict[mapControlKey];
-              [mapControl dispose];
-              [mDict removeObjectForKey:@((NSInteger)mapControl).stringValue];
+          if (mDict[mapControlKey]==nil) {                      //mapctrl应只用于原生UI控件的封装
+              mDict[mapControlKey]=obj;
+          }else{
+              NSLog(@"mapControl has exeisted");
           }
-          mDict[mapControlKey] = obj;
+         // mDict[mapControlKey] = obj;
       }
   }else{
     //@throw [[NSException alloc]initWithName:@"RN ERROR" reason:@"native has exeisted" userInfo:nil];

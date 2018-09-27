@@ -38,7 +38,7 @@ RCT_REMAP_METHOD(createObj,resolver:(RCTPromiseResolveBlock)resolve rejecter:(RC
     [JSObjManager addObj:workspace];
     resolve(@{@"workspaceId":@(key).stringValue});
   }else{
-    reject(@"WorkSpaceInfo",@"create workSaceInfo failed!!!",nil);
+    reject(@"WorkSpaceInfo",@"workspace create workSaceInfo failed!!!",nil);
   }
 }
 RCT_REMAP_METHOD(destroyObj,destroyJSObjKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -49,7 +49,7 @@ RCT_REMAP_METHOD(destroyObj,destroyJSObjKey:(NSString*)key resolver:(RCTPromiseR
     [workspace dispose];
     resolve(@"1");
   }else{
-    reject(@"workspace",@"destroy obj failed!!!",nil);
+    reject(@"workspace",@"workspace destroy obj failed!!!",nil);
   }
 }
 
@@ -88,7 +88,7 @@ RCT_REMAP_METHOD(getDatasource, getDatasourceByKey:(NSString*)key andIndex:(int)
         NSInteger nsDatasource = (NSInteger)datasource;
         resolve(@{@"datasourceId":@(nsDatasource).stringValue});
     }else{
-        reject(@"workspace",@"get Datasource failed!!!",nil);
+        reject(@"workspace",@"workspace get Datasource failed!!!",nil);
     }
 }
 
@@ -100,7 +100,7 @@ RCT_REMAP_METHOD(getDatasourceByName, getDatasourceByKey:(NSString*)key andName:
         NSInteger nsDatasource = (NSInteger)datasource;
         resolve(@{@"datasourceId":@(nsDatasource).stringValue});
     }else{
-        reject(@"workspace",@"get Datasource failed!!!",nil);
+        reject(@"workspace",@"workspace get Datasource failed!!!",nil);
     }
 }
 
@@ -118,7 +118,7 @@ RCT_REMAP_METHOD(open,openBykey:(NSString*)key andWorkspaceConnectionInfoId:(NSS
             reject(@"workspace",@"workspace open failed!!!",nil);
         }
     }else{
-        reject(@"workspace",@"open failed!!!",nil);
+        reject(@"workspace",@"workspace open failed!!!",nil);
     }
 }
 
@@ -130,7 +130,7 @@ RCT_REMAP_METHOD(getMaps,geMapsByKey:(NSString*)key resolver:(RCTPromiseResolveB
         NSInteger nsMaps = (NSInteger)maps;
         resolve(@{@"mapsId":@(nsMaps).stringValue});
     }else{
-        reject(@"workspace",@"get maps failed!",nil);
+        reject(@"workspace",@"workspace get maps failed!",nil);
     }
 }
 

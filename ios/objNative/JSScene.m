@@ -21,7 +21,7 @@ RCT_REMAP_METHOD(setWorkspace,setWorkspaceBySceneId:(NSString*)sceneId workSpace
         [scene setWorkspace:workspace];
         resolve(@"setted");
     }else
-        reject(@"scene",@"setWorkSpace failed",nil);
+        reject(@"scene",@"scene setWorkSpace failed",nil);
 }
 
 RCT_REMAP_METHOD(getWorkspace,getWorkspaceBySceneId:(NSString*)sceneId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -32,7 +32,7 @@ RCT_REMAP_METHOD(getWorkspace,getWorkspaceBySceneId:(NSString*)sceneId resolver:
         [JSObjManager addObj:workspace];
         resolve(@{@"workspaceId":@(nsWorkspace).stringValue});
     }else
-        reject(@"scene",@"getWorkSpace failed",nil);
+        reject(@"scene",@"scene getWorkSpace failed",nil);
 }
 
 RCT_REMAP_METHOD(open, openBySceneId:(NSString*)sceneId sceneName:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -42,7 +42,7 @@ RCT_REMAP_METHOD(open, openBySceneId:(NSString*)sceneId sceneName:(NSString*)nam
         NSNumber* nsBool = [NSNumber numberWithBool:isOpen];
         resolve(@{@"opened":nsBool});
     }else{
-        reject(@"scene",@"open failed",nil);
+        reject(@"scene",@"scene open failed",nil);
     }
 }
 

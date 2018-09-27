@@ -25,7 +25,7 @@ RCT_REMAP_METHOD(getScene, getSceneByID:(NSString*)sceneControlId resolver:(RCTP
         [JSObjManager addObj:scene];
         resolve(@{@"sceneId":@(nsSceneKey).stringValue});
     }else{
-        reject(@"sceneControl",@"getScene failed",nil);
+        reject(@"sceneControl",@"sceneControl getScene failed",nil);
     }
 }
 
