@@ -362,7 +362,14 @@ export default class Workspace {
       console.error(e);
     }
   }
-  
+
+  async getSceneCount() {
+    try {
+      return await W.getSceneCount(this._SMWorkspaceId);
+    } catch (e) {
+      console.error(e);
+    }
+  }
   
   workspaceType = (type) => {
     var value;

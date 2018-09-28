@@ -112,12 +112,12 @@ RCT_REMAP_METHOD(zoom, zoomBySceneId:(NSString*)sceneId ratio:(double)ratio reso
 }
 
 RCT_REMAP_METHOD(close, closeBySceneId:(NSString*)sceneId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    Scene* scene = [JSObjManager getObjWithKey:sceneId];
-    if (scene) {
+    @try {
+        Scene* scene = [JSObjManager getObjWithKey:sceneId];
         [scene close];
         resolve(@"done");
-    }else{
-        reject(@"scene",@"scene close failed",nil);
+    } @catch (NSException *exception) {
+        reject(@"scene", exception.reason, nil);
     }
 }
 

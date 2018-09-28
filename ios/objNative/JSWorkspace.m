@@ -503,6 +503,17 @@ RCT_REMAP_METHOD(getSceneName,getSceneNameByKey:(NSString*)key index:(int)index 
     }
 }
 
+RCT_REMAP_METHOD(getSceneCount,getSceneCountByKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        Scenes* scenes = workspace.scenes;
+        NSInteger count = scenes.count;
+        resolve([NSNumber numberWithInteger:count]);
+    } @catch (NSException *exception) {
+        reject(@"workspace",@"get SceneName failed!!!",nil);
+    }
+}
+
 RCT_REMAP_METHOD(addMap, addMapByKey:(NSString*)key name:(NSString *)name mapXML:(NSString *)mapXML resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         Workspace* workspace = [JSObjManager getObjWithKey:key];
