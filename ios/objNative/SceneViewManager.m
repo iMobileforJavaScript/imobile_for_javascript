@@ -57,17 +57,21 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
     }
     return self;
 }
+static JSSceneView* g_sceneView = nil;
 - (UIView *)view
 {
-    JSSceneView* sceneView = [[JSSceneView alloc]init];
+    if(!g_sceneView){
+        g_sceneView = [[JSSceneView alloc]init];
+        [JSObjManager addObj:g_sceneView];
+    }
+    
 //    SceneControl* sceneControl = [[SceneControl alloc]init];
-    sceneView.sceneViewManger = self;
+    g_sceneView.sceneViewManger = self;
 //    sceneControl.tracked3DDelegate = self;
 //    sceneControl.tracking3DDelegate = self;
 //    sceneControl.sceneControlDelegate = self;
-    [JSObjManager addObj:sceneView];
     
-    return sceneView;
+    return g_sceneView;
 }
 
 -(dispatch_queue_t)methodQueue{

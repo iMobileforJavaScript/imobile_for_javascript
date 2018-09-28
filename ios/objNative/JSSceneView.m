@@ -57,6 +57,7 @@
         [si addSubview:oldView];
         [self addSubview:_sceneCtrl];
         [_sceneCtrl setFrame:self.bounds];
+        oldView = nil;
     }
 }
 
