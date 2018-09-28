@@ -502,6 +502,18 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void getSceneCount(String workspaceId, Promise promise){
+        try{
+            Workspace workspace = getObjById(workspaceId);
+            int count = workspace.getScenes().getCount();
+
+            promise.resolve(count);
+        }catch(Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void isModified(String workspaceId, Promise promise){
         try{
             Workspace workspace = getObjById(workspaceId);
