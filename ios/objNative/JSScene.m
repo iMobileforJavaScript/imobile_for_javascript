@@ -9,6 +9,8 @@
 #import "JSScene.h"
 #import "SuperMap/Scene.h"
 #import "JSObjManager.h"
+#import "SceneViewManager.h"
+#import "JSSceneView.h"
 
 @implementation JSScene
 
@@ -35,10 +37,19 @@ RCT_REMAP_METHOD(getWorkspace,getWorkspaceBySceneId:(NSString*)sceneId resolver:
         reject(@"scene",@"scene getWorkSpace failed",nil);
 }
 
+static BOOL bMapOPen = false;
 RCT_REMAP_METHOD(open, openBySceneId:(NSString*)sceneId sceneName:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Scene* scene = [JSObjManager getObjWithKey:sceneId];
+    if(bMapOPen){
+        resolve(@{@"opened":@(1)});
+    }
     if (scene) {
         BOOL isOpen = [scene open:name];
+        if(isOpen){
+            JSSceneView* view = [SceneViewManager getSceneControl];
+            view.sceneCtrl.isRender = true;
+        }
+        bMapOPen = isOpen;
         NSNumber* nsBool = [NSNumber numberWithBool:isOpen];
         resolve(@{@"opened":nsBool});
     }else{
@@ -47,9 +58,17 @@ RCT_REMAP_METHOD(open, openBySceneId:(NSString*)sceneId sceneName:(NSString*)nam
 }
 
 RCT_REMAP_METHOD(open2, openBySceneId:(NSString*)sceneId url:(NSString*)url name:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    if(bMapOPen){
+        resolve(@{@"opened":@(1)});
+    }
     Scene* scene = [JSObjManager getObjWithKey:sceneId];
     if (scene) {
         BOOL isOpen = [scene openSceneWithUrl:url Name:name Password:nil];
+        bMapOPen = isOpen;
+        if(isOpen){
+            JSSceneView* view = [SceneViewManager getSceneControl];
+            view.sceneCtrl.isRender = true;
+        }
         NSNumber* nsBool = [NSNumber numberWithBool:isOpen];
         resolve(@{@"opened":nsBool});
     }else{
@@ -58,10 +77,18 @@ RCT_REMAP_METHOD(open2, openBySceneId:(NSString*)sceneId url:(NSString*)url name
 }
 
 RCT_REMAP_METHOD(open3, openBySceneId:(NSString*)sceneId url:(NSString*)url name:(NSString*)name passWord:(NSString*)passWord resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    if(bMapOPen){
+        resolve(@{@"opened":@(1)});
+    }
     Scene* scene = [JSObjManager getObjWithKey:sceneId];
     if (scene) {
         BOOL isOpen = [scene openSceneWithUrl:url Name:name Password:passWord];
         NSNumber* nsBool = [NSNumber numberWithBool:isOpen];
+        bMapOPen = isOpen;
+        if(isOpen){
+            JSSceneView* view = [SceneViewManager getSceneControl];
+            view.sceneCtrl.isRender = true;
+        }
         resolve(@{@"opened":nsBool});
     }else{
         reject(@"scene",@"open2 failed",nil);
@@ -114,7 +141,10 @@ RCT_REMAP_METHOD(zoom, zoomBySceneId:(NSString*)sceneId ratio:(double)ratio reso
 RCT_REMAP_METHOD(close, closeBySceneId:(NSString*)sceneId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Scene* scene = [JSObjManager getObjWithKey:sceneId];
     if (scene) {
+        JSSceneView* view = [SceneViewManager getSceneControl];
+        view.sceneCtrl.isRender = false;
         [scene close];
+        bMapOPen = false;
         resolve(@"done");
     }else{
         reject(@"scene",@"scene close failed",nil);

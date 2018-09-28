@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTViewManager.h>
 #import "SuperMap/SceneControl.h"
-
+@class JSSceneView;
 @interface SceneViewManager : RCTViewManager
-
++(JSSceneView*)getSceneControl;
 @end

@@ -66,4 +66,8 @@
     
    
 }
+
+-(void)dealloc{
+    NSLog(@"scence destory !!!");
+}
 @end

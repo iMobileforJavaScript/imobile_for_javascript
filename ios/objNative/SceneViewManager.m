@@ -57,6 +57,9 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
     }
     return self;
 }
++(JSSceneView*)getSceneControl{
+    return g_sceneView;
+}
 static JSSceneView* g_sceneView = nil;
 - (UIView *)view
 {

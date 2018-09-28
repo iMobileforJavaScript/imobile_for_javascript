@@ -24,11 +24,11 @@
     Scene *_scene;
     BOOL _statusBarVisible;
     Action3D _action3D;
-    BOOL _isRender;
+  //  BOOL _isRender;
 }
 
 /// 返回或设置三维场景是否渲染，当设置为false时，场景将不再绘制。
-@property(nonatomic)BOOL isRender;
+@property(atomic)BOOL isRender;
 
 ///当触摸三维场景控件时会触发该委托。所实现的委托类必须符合 SceneControlTouchDelegate 的协议。
 @property(nonatomic)id<SceneControlTouchDelegate> sceneControlDelegate;
