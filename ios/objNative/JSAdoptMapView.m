@@ -561,4 +561,16 @@ RCT_REMAP_METHOD(appointEditGeometry,appointEditGeometryById:(NSString*)Id geoId
         reject(@"MapControl",@"setPlotSymbol() failed.",nil);
     }
 }
+
+RCT_REMAP_METHOD(dispose, disposeById:(NSString*)Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [JSObjManager getObjWithKey:Id];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [mapControl dispose];
+        });
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl",@"setPlotSymbol() failed.",nil);
+    }
+}
 @end

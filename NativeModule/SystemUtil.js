@@ -134,13 +134,13 @@ export default class SystemUtil {
       console.error(e);
     }
   }
-  async deleteZip(zipfile) {
+  async deleteFile(zipfile) {
     try {
       let result;
       if (Platform.OS === 'ios') {
-        result = await ZA.deleteZip(zipfile);
+        result = await ZA.deleteFile(zipfile);
       } else {
-        result = await SU.deleteZip(zipfile);
+        result = await SU.deleteFile(zipfile);
       }
       await result;
     } catch (e) {

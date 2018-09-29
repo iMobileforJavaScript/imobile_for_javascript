@@ -60,6 +60,6 @@ exports.getPathListByFilter = async function (path, {name = '', type = ''}) {
 exports.unZipFile = async function (zipfile,targetdir) {
   return await util.unZipFile(zipfile, targetdir);
 }
-exports.deleteZip = async function (zipfile) {
-  return await util.deleteZip(zipfile);
+exports.deleteFile = async function (file) {
+  return await util.deleteFile(file);
 }
