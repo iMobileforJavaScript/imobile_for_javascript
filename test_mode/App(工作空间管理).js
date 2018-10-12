@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import{
     SMWorkspaceManagerView,
-} from 'imobile_for_javascript';
+} from 'imobile_for_reactnative';
 
 export default class App extends Component<{}> {
     constructor(props){

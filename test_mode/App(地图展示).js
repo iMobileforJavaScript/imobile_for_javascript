@@ -14,7 +14,7 @@ import{
     Workspace,
     SMMapView,
     Utility,
-} from 'imobile_for_javascript';
+} from 'imobile_for_reactnative';
 
 export default class App extends Component<{}> {
 
