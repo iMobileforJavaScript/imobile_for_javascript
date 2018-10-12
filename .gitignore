@@ -4,7 +4,7 @@ ios/iPhoneOS.sdk
 ios/iPhoneSimulator.sdk
 ios/MessageQueue.sdk
 
-android/imobile_for_javascript.iml
+android/imobile_for_reactnative.iml
 android/local.properties
 android/rnsupermap.iml
 android/android.iml

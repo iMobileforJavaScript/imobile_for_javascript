@@ -10,7 +10,7 @@
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "12E16490-121E-45FE-8429-656F3C7E3269",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
-    "EEDD288248AFE34171E79F9FFC6BAA3AAA690844" : "imobile_for_javascript\/",
+    "EEDD288248AFE34171E79F9FFC6BAA3AAA690844" : "imobile_for_reactnative\/",
     "02E1B325DAC0BE0D60EB3666CF9F4169C3849300" : "SuperMap_Package_for_Publish\/",
     "FF42AD07298E107555F31721F0D07A1279DB38DB" : ""
   },
@@ -24,7 +24,7 @@
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "02E1B325DAC0BE0D60EB3666CF9F4169C3849300"
     },
     {
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:Wangzihao5325\/imobile_for_javascript.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:Wangzihao5325\/imobile_for_reactnative.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "EEDD288248AFE34171E79F9FFC6BAA3AAA690844"
     },

@@ -21,6 +21,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:iMobileforJavaScript/imobile_for_javascript.git"
+    "url": "git+ssh://git@github.com:iMobileforJavaScript/imobile_for_reactnative.git"
   }
 }

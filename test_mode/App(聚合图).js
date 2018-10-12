@@ -25,7 +25,7 @@ import{
     PieChartData,
     SMBarChartView,
     PolymerChart,
-} from 'imobile_for_javascript';
+} from 'imobile_for_reactnative';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' +
