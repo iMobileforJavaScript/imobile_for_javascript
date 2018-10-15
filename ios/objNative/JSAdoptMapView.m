@@ -565,7 +565,7 @@ RCT_REMAP_METHOD(appointEditGeometry,appointEditGeometryById:(NSString*)Id geoId
 RCT_REMAP_METHOD(dispose, disposeById:(NSString*)Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         MapControl* mapControl = [JSObjManager getObjWithKey:Id];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
             [mapControl dispose];
         });
         resolve([NSNumber numberWithBool:YES]);

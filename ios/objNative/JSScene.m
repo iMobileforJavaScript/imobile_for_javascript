@@ -40,9 +40,9 @@ RCT_REMAP_METHOD(getWorkspace,getWorkspaceBySceneId:(NSString*)sceneId resolver:
 static BOOL bMapOPen = false;
 RCT_REMAP_METHOD(open, openBySceneId:(NSString*)sceneId sceneName:(NSString*)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Scene* scene = [JSObjManager getObjWithKey:sceneId];
-    if(bMapOPen){
-        resolve(@{@"opened":@(1)});
-    }
+//    if(bMapOPen){
+//        resolve(@{@"opened":@(0)});
+//    }
     if (scene) {
         BOOL isOpen = [scene open:name];
         if(isOpen){
@@ -50,8 +50,8 @@ RCT_REMAP_METHOD(open, openBySceneId:(NSString*)sceneId sceneName:(NSString*)nam
             view.sceneCtrl.isRender = true;
         }
         bMapOPen = isOpen;
-        NSNumber* nsBool = [NSNumber numberWithBool:isOpen];
-        resolve(@{@"opened":nsBool});
+        //NSNumber* nsBool = [NSNumber numberWithBool:isOpen];
+        resolve(@{@"opened":@(isOpen)});
     }else{
         reject(@"scene",@"scene open failed",nil);
     }
@@ -140,16 +140,19 @@ RCT_REMAP_METHOD(zoom, zoomBySceneId:(NSString*)sceneId ratio:(double)ratio reso
 
 RCT_REMAP_METHOD(close, closeBySceneId:(NSString*)sceneId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
 
-    @try {
-        Scene* scene = [JSObjManager getObjWithKey:sceneId];
-        JSSceneView* view = [SceneViewManager getSceneControl];
-        view.sceneCtrl.isRender = false;
-        [scene close];
-        bMapOPen = false;
-        resolve(@"done");
-    } @catch (NSException *exception) {
-        reject(@"scene", exception.reason, nil);
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @try {
+            Scene* scene = [JSObjManager getObjWithKey:sceneId];
+            JSSceneView* view = [SceneViewManager getSceneControl];
+            view.sceneCtrl.isRender = false;
+            [scene close];
+           // [scene dispose];
+            bMapOPen = false;
+            resolve(@"done");
+        } @catch (NSException *exception) {
+            reject(@"scene", exception.reason, nil);
+        }
+    });
 }
 
 RCT_REMAP_METHOD(dispose, disposeBySceneId:(NSString*)sceneId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
