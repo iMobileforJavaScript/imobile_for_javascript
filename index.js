@@ -78,9 +78,15 @@ import PieChartData from './NativeModule/PieChartData.js';
 
 import Resoures from './NativeModule/Resources';
 import Symbol from './NativeModule/Symbol';
+import SymbolLibrary from './NativeModule/SymbolLibrary';
 import SymbolFill from './NativeModule/SymbolFill';
+import SymbolFillLibrary from './NativeModule/SymbolFillLibrary';
 import SymbolLine from './NativeModule/SymbolLine';
+import SymbolLineLibrary from './NativeModule/SymbolLineLibrary';
 import SymbolMarker from './NativeModule/SymbolMarker';
+import SymbolMarkerLibrary from './NativeModule/SymbolMarkerLibrary';
+import SymbolGroup from './NativeModule/SymbolGroup';
+import SymbolGroups from './NativeModule/SymbolGroups';
 
 // import HotChart from './NativeModule/HotChart.js';
 import GridHotChart from './NativeModule/GridHotChart.js';
@@ -316,10 +322,16 @@ export {
 
   Resoures,
   Symbol,
+  SymbolLibrary,
   SymbolFill,
+  SymbolFillLibrary,
   SymbolLine,
+  SymbolLineLibrary,
   SymbolMarker,
+  SymbolMarkerLibrary,
   SymbolType,
+  SymbolGroup,
+  SymbolGroups,
   /*
    Datasets,
    Datasources,
