@@ -52,6 +52,7 @@ RCT_REMAP_METHOD(dispose,dispose:(NSString*)geoTextId resolver:(RCTPromiseResolv
     @try {
         GeoText* geoText =  [JSObjManager getObjWithKey:geoTextId];
         [geoText dispose];
+        [JSObjManager removeObj:geoTextId];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"JSGeoText",@"dispose expection",nil);

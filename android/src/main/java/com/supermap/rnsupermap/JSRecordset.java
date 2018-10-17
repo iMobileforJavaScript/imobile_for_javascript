@@ -74,6 +74,7 @@ public class JSRecordset extends ReactContextBaseJavaModule {
         try{
             Recordset recordset = m_RecordsetList.get(recordsetId);
             recordset.dispose();
+            m_RecordsetList.remove(recordsetId);
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);

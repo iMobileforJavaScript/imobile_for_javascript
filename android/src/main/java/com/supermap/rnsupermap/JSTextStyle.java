@@ -86,6 +86,7 @@ public class JSTextStyle extends ReactContextBaseJavaModule {
         try{
             TextStyle textStyle = getObjFromList(textStyleId);
             textStyle.dispose();
+            m_TextStyleList.remove(textStyleId);
 
             promise.resolve(true);
         }catch (Exception e){

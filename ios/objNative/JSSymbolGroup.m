@@ -19,6 +19,7 @@ RCT_REMAP_METHOD(dispose, disposeById:(NSString *)groupId resolver:(RCTPromiseRe
     @try {
         SymbolGroup* group = [JSObjManager getObjWithKey:groupId];
 //        group dispose
+        [JSObjManager removeObj:groupId];
         
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {

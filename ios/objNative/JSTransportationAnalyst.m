@@ -40,6 +40,7 @@ RCT_REMAP_METHOD(dispose,dispose:(NSString*)transportationAnalystId resolver:(RC
     @try {
         TransportationAnalyst* transportationAnalyst =  [JSObjManager getObjWithKey:transportationAnalystId];
         [transportationAnalyst dispose];
+        [JSObjManager removeObj:transportationAnalystId];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"JSTransportationAnalyst",@"dispose expection",nil);

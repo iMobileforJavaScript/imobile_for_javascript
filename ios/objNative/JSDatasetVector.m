@@ -277,7 +277,8 @@ RCT_REMAP_METHOD(setFieldValueByName, setFieldValueByNameId:(NSString*)dsVectorI
             }
         }
         updateResult = [recordSet update];
-         [recordSet dispose];
+        [recordSet dispose];
+        
         resolve(@{@"result":@(result),
                   @"editResult":@(editResult),
                   @"updateResult":@(updateResult),

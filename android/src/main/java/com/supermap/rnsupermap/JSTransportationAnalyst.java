@@ -80,6 +80,7 @@ public class JSTransportationAnalyst extends ReactContextBaseJavaModule {
         try {
             m_TransportationAnalyst = getObjFromList(transportationAnalystId);
             m_TransportationAnalyst.dispose();
+            m_TransportationAnalystList.remove(transportationAnalystId);
 
             promise.resolve(true);
         } catch (Exception e) {

@@ -78,6 +78,7 @@ public class JSFieldInfos extends ReactContextBaseJavaModule {
             FieldInfos fieldInfos = getObjFromList(fieldInfosId);
 
             fieldInfos.dispose();
+            m_FieldInfosList.remove(fieldInfosId);
 
             promise.resolve(true);
         }catch(Exception e){

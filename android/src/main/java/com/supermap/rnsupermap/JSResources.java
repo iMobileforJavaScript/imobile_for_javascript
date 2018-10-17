@@ -21,6 +21,10 @@ public class JSResources extends ReactContextBaseJavaModule {
 
     public static Resources getObjFromList(String id) { return m_ResourcesList.get(id); }
 
+    public static void removeObjFromList(String id) {
+        m_ResourcesList.remove(id);
+    }
+
     @Override
     public String getName() { return REACT_CLASS; }
 
@@ -59,7 +63,7 @@ public class JSResources extends ReactContextBaseJavaModule {
         try{
             Resources resources = getObjFromList(resourcesId);
             resources.dispose();
-
+            removeObjFromList(resourcesId);
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);

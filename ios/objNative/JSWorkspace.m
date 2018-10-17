@@ -44,9 +44,9 @@ RCT_REMAP_METHOD(createObj,resolver:(RCTPromiseResolveBlock)resolve rejecter:(RC
 RCT_REMAP_METHOD(destroyObj,destroyJSObjKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   Workspace* workspace = [JSObjManager getObjWithKey:key];
   if(workspace){
-    [JSObjManager removeObj:key];
     [workspace close];
     [workspace dispose];
+    [JSObjManager removeObj:key];
     resolve(@"1");
   }else{
     reject(@"workspace",@"workspace destroy obj failed!!!",nil);
@@ -358,8 +358,8 @@ RCT_REMAP_METHOD(closeWorkspace,closeWorkspaceByKey:(NSString*)key resolver:(RCT
         Workspace* workspace = [JSObjManager getObjWithKey:key];
         if(workspace){
             [workspace close];
-            [JSObjManager removeObj:key];
             [workspace dispose];
+            [JSObjManager removeObj:key];
             NSNumber* nsClosed = [NSNumber numberWithBool:TRUE];
             resolve(@{@"closed":nsClosed});
         }

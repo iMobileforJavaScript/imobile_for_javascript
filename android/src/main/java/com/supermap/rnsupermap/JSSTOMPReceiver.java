@@ -82,8 +82,8 @@ public class JSSTOMPReceiver extends ReactContextBaseJavaModule {
     public void dispose(String receiverId, Promise promise){
         try{
             mReceiver = mReceiverList.get(receiverId);
-            mReceiverList.remove(receiverId);
             mReceiver.dispose();
+            mReceiverList.remove(receiverId);
             promise.resolve("dispose");
         }catch (Exception e){
             promise.reject(e);

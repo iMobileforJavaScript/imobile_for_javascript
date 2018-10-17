@@ -567,6 +567,7 @@ RCT_REMAP_METHOD(dispose, disposeById:(NSString*)Id resolver:(RCTPromiseResolveB
         MapControl* mapControl = [JSObjManager getObjWithKey:Id];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [mapControl dispose];
+            [JSObjManager removeObj:Id];
         });
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {

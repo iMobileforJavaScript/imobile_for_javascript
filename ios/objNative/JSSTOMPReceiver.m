@@ -56,8 +56,8 @@ RCT_REMAP_METHOD(receiveMessage,receiveById:(NSString*)receiverId queueName:(NSS
 RCT_REMAP_METHOD(dispose,disposeById:(NSString*)receiverId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         STOMPReceiver* receiver = [JSObjManager getObjWithKey:receiverId];
-        [JSObjManager removeObj:receiverId];
         BOOL isDispose = [receiver dispose];
+        [JSObjManager removeObj:receiverId];
         NSNumber* num = [NSNumber numberWithBool:isDispose];
         resolve(@{@"isDispose":num});
     } @catch (NSException *exception) {

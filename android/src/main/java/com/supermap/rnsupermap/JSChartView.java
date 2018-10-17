@@ -151,8 +151,8 @@ public class JSChartView extends ReactContextBaseJavaModule{
     public void dispose(String id, Promise promise){
         try {
             ChartView chartView = getObjFromList(id);
-            m_ChartViewList.remove(id);
             chartView.dispose();
+            m_ChartViewList.remove(id);
 
             promise.resolve(true);
         }catch (Exception e){

@@ -25,8 +25,9 @@ RCT_REMAP_METHOD(getRecordCount,getRecordCountById:(NSString*)recordsetId resolv
 }
 
 RCT_REMAP_METHOD(dispose,disposeById:(NSString*)recordsetId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-  Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
-  [recordSet dispose];
+    Recordset* recordSet = [JSObjManager getObjWithKey:recordsetId];
+    [recordSet dispose];
+    [JSObjManager removeObj:recordsetId];
     resolve(@(1));
 }
 

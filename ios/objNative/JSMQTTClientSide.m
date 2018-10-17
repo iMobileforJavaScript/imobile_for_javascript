@@ -119,8 +119,8 @@ RCT_REMAP_METHOD(resume,resumeWithId:(NSString*)sideId resolver:(RCTPromiseResol
 RCT_REMAP_METHOD(dispose,disposeWithId:(NSString*)sideId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         MQTTClientSide* side = [JSObjManager getObjWithKey:sideId];
-        [JSObjManager removeObj:sideId];
         [side dispose];
+        [JSObjManager removeObj:sideId];
         resolve(@"dispose");
     } @catch (NSException *exception) {
         reject(@"MQTTClientSide",@"dispose expection",nil);

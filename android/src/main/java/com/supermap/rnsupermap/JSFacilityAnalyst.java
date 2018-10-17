@@ -89,6 +89,7 @@ public class JSFacilityAnalyst extends ReactContextBaseJavaModule {
         try {
             m_FacilityAnalyst = getObjFromList(ficilityAnalystId);
             m_FacilityAnalyst.dispose();
+            m_FacilityAnalystList.remove(ficilityAnalystId);
 
             promise.resolve(true);
         } catch (Exception e) {

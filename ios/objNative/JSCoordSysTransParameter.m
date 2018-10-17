@@ -54,6 +54,7 @@ RCT_REMAP_METHOD(dispose,dispose:(NSString*)coordSysTransParamId resolver:(RCTPr
     @try {
         CoordSysTransParameter *param = [JSObjManager getObjWithKey:coordSysTransParamId];
         [param dispose];
+        [JSObjManager removeObj:coordSysTransParamId];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"JSCoordSysTransParameter",@"dispose expection",nil);

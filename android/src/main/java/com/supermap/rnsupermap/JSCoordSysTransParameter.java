@@ -30,6 +30,10 @@ public class JSCoordSysTransParameter extends ReactContextBaseJavaModule {
         return m_CoordSysTransParameterList.get(id);
     }
 
+    public static void removeObjFromList(String id) {
+        m_CoordSysTransParameterList.remove(id);
+    }
+
     @Override
     public String getName() {
         return REACT_CLASS;
@@ -90,7 +94,7 @@ public class JSCoordSysTransParameter extends ReactContextBaseJavaModule {
         try {
             CoordSysTransParameter coordSysTransParameter = getObjFromList(coordSysTransParameterId);
             coordSysTransParameter.dispose();
-
+            removeObjFromList(coordSysTransParameterId);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

@@ -37,6 +37,7 @@ RCT_REMAP_METHOD(dispose,disposeById:(NSString*)themeRangeId resolver:(RCTPromis
     @try {
         ThemeRange* theme = [JSObjManager getObjWithKey:themeRangeId];
         [theme dispose];
+        [JSObjManager removeObj:themeRangeId];
         NSNumber* number = [NSNumber numberWithBool:YES];
         resolve(number);
     } @catch (NSException *exception) {

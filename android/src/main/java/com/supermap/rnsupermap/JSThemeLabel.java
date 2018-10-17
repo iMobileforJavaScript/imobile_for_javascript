@@ -63,6 +63,7 @@ public class JSThemeLabel extends JSTheme {
         try{
             m_ThemeLabel = (ThemeLabel)getObjFromList(themeLabelId);
             m_ThemeLabel.dispose();
+            removeObjFromList(themeLabelId);
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);

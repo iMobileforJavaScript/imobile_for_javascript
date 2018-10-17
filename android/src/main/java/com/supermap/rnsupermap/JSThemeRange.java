@@ -61,6 +61,7 @@ public class JSThemeRange extends JSTheme {
         try{
             m_ThemeRange = (ThemeRange)getObjFromList(themeRangeId);
             m_ThemeRange.dispose();
+            m_ThemeRangeList.remove(themeRangeId);
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);

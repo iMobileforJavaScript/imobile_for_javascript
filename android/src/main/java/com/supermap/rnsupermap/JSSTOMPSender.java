@@ -57,8 +57,8 @@ public class JSSTOMPSender extends ReactContextBaseJavaModule {
         try{
 
             mSender = mSenderList.get(senderId);
-            mSenderList.remove(senderId);
             mSender.dispose();
+            mSenderList.remove(senderId);
             promise.resolve("dispose");
         }catch (Exception e){
             promise.reject(e);

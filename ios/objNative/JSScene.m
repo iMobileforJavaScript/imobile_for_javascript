@@ -155,8 +155,8 @@ RCT_REMAP_METHOD(close, closeBySceneId:(NSString*)sceneId resolver:(RCTPromiseRe
 RCT_REMAP_METHOD(dispose, disposeBySceneId:(NSString*)sceneId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Scene* scene = [JSObjManager getObjWithKey:sceneId];
     if (scene) {
-        [JSObjManager removeObj:sceneId];
         [scene dispose];
+        [JSObjManager removeObj:sceneId];
         resolve(@"done");
     }else{
         reject(@"scene",@"dispose failed",nil);

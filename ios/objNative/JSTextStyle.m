@@ -52,7 +52,8 @@ RCT_REMAP_METHOD(clone,clone:(NSString*)textStyleId resolver:(RCTPromiseResolveB
 RCT_REMAP_METHOD(dispose,dispose:(NSString*)textStyleId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         TextStyle* textStyle = [JSObjManager getObjWithKey:textStyleId];
-        //没有dispose方法
+        [textStyle dispose];
+        [JSObjManager removeObj:textStyleId];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"JSTextStyle",@"dispose expection",nil);

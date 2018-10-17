@@ -33,6 +33,10 @@ public class JSTheme extends ReactContextBaseJavaModule {
         return m_ThemeList.get(id);
     }
 
+    public static void removeObjFromList(String id) {
+        m_ThemeList.remove(id);
+    }
+
     @Override
     public String getName() {
         return REACT_CLASS;

@@ -48,6 +48,7 @@ RCT_REMAP_METHOD(dispose,disposeById:(NSString*)ficilityAnalystId resolver:(RCTP
     @try {
         m_FacilityAnalyst = [JSObjManager getObjWithKey:ficilityAnalystId];
         [m_FacilityAnalyst dispose];
+        [JSObjManager removeObj:ficilityAnalystId];
         NSNumber* number = [NSNumber numberWithBool:YES];
         
         resolve(number);

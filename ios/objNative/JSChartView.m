@@ -96,8 +96,8 @@ RCT_REMAP_METHOD(removeAllData, removeChartDataById:(NSString*)chartviewId resol
 RCT_REMAP_METHOD(dispose, disposeById:(NSString*)chartviewId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     ChartView* chartview = [JSObjManager getObjWithKey:chartviewId];
     if (chartview) {
-        [JSObjManager removeObj:chartviewId];
         [chartview dispose];
+        [JSObjManager removeObj:chartviewId];
         resolve(@"disposed");
     }else{
         reject(@"chartview",@"dispose failed",nil);

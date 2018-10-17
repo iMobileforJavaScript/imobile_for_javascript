@@ -185,8 +185,8 @@ public class JSMQTTClientSide extends ReactContextBaseJavaModule {
     public void dispose(String clientSideId,Promise promise){
         try{
             mClient = mClientList.get(clientSideId);
-            mClientList.remove(clientSideId);
             mClient.dispose();
+            mClientList.remove(clientSideId);
 
             promise.resolve("dispose");
         }catch (Exception e){

@@ -76,7 +76,7 @@ public class JSTextPart extends ReactContextBaseJavaModule {
         try{
             TextPart textPart = getObjFromList(textPartId);
             textPart.dispose();
-
+            m_TextPartList.remove(textPartId);
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);

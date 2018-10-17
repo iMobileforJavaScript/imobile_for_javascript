@@ -63,6 +63,7 @@ public class JSThemeUnique extends JSTheme {
         try{
             m_ThemeUnique = (ThemeUnique)getObjFromList(themeUniqueId);
             m_ThemeUnique.dispose();
+            removeObjFromList(themeUniqueId);
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);

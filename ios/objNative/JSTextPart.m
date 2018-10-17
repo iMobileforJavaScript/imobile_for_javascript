@@ -55,6 +55,7 @@ RCT_REMAP_METHOD(dispose,dispose:(NSString*)textPartId resolver:(RCTPromiseResol
     @try {
         TextPart* textPart = [JSObjManager getObjWithKey:textPartId];
         [textPart dispose];
+        [JSObjManager removeObj:textPartId];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"JSTextPart",@"dispose expection",nil);

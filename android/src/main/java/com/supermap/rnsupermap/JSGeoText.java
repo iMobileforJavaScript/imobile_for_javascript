@@ -77,7 +77,7 @@ public class JSGeoText extends ReactContextBaseJavaModule {
         try{
             GeoText geoText = getObjFromList(geoTextId);
             geoText.dispose();
-
+            m_GeoTextList.remove(geoTextId);
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
