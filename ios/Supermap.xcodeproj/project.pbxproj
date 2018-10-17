@@ -153,6 +153,18 @@
 		D877B5B22133D5C00044AE61 /* JSOnlineService.m in Sources */ = {isa = PBXBuildFile; fileRef = D877B5B12133D5C00044AE61 /* JSOnlineService.m */; };
 		D877B5C42133F21E0044AE61 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = D877B5C32133F21E0044AE61 /* Constants.m */; };
 		D8C61D7C2151E2AE00560362 /* JSFieldType.m in Sources */ = {isa = PBXBuildFile; fileRef = D8C61D7B2151E2AD00560362 /* JSFieldType.m */; };
+		D8DD4209217471EF009D80E9 /* JSSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD4208217471EF009D80E9 /* JSSymbol.m */; };
+		D8DD420C2174874D009D80E9 /* JSSymbolType.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD420B2174874D009D80E9 /* JSSymbolType.m */; };
+		D8DD420F21748894009D80E9 /* JSSymbolGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD420E21748894009D80E9 /* JSSymbolGroup.m */; };
+		D8DD421221748AB5009D80E9 /* JSSymbolGroups.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD421121748AB5009D80E9 /* JSSymbolGroups.m */; };
+		D8DD422421757443009D80E9 /* JSSymbolLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD422321757443009D80E9 /* JSSymbolLibrary.m */; };
+		D8DD422721757C8D009D80E9 /* JSSymbolFill.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD422621757C8D009D80E9 /* JSSymbolFill.m */; };
+		D8DD422A2175830E009D80E9 /* JSSymbolLine.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD42292175830E009D80E9 /* JSSymbolLine.m */; };
+		D8DD422D21758371009D80E9 /* JSSymbolMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD422C21758371009D80E9 /* JSSymbolMarker.m */; };
+		D8DD42302175BB69009D80E9 /* JSResources.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD422F2175BB69009D80E9 /* JSResources.m */; };
+		D8DD42332175CC32009D80E9 /* JSSymbolLineLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD42322175CC32009D80E9 /* JSSymbolLineLibrary.m */; };
+		D8DD42362175D025009D80E9 /* JSSymbolMarkerLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD42352175D025009D80E9 /* JSSymbolMarkerLibrary.m */; };
+		D8DD42392175D06C009D80E9 /* JSSymbolFillLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD42382175D06C009D80E9 /* JSSymbolFillLibrary.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -461,6 +473,30 @@
 		D877B5C32133F21E0044AE61 /* Constants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = Constants.m; path = objNative/Constants.m; sourceTree = "<group>"; };
 		D8C61D7A2151E2AD00560362 /* JSFieldType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSFieldType.h; path = objNative/JSFieldType.h; sourceTree = "<group>"; };
 		D8C61D7B2151E2AD00560362 /* JSFieldType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSFieldType.m; path = objNative/JSFieldType.m; sourceTree = "<group>"; };
+		D8DD4207217471EF009D80E9 /* JSSymbol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSSymbol.h; path = objNative/JSSymbol.h; sourceTree = "<group>"; };
+		D8DD4208217471EF009D80E9 /* JSSymbol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSSymbol.m; path = objNative/JSSymbol.m; sourceTree = "<group>"; };
+		D8DD420A2174874D009D80E9 /* JSSymbolType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSSymbolType.h; path = objNative/JSSymbolType.h; sourceTree = "<group>"; };
+		D8DD420B2174874D009D80E9 /* JSSymbolType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSSymbolType.m; path = objNative/JSSymbolType.m; sourceTree = "<group>"; };
+		D8DD420D21748894009D80E9 /* JSSymbolGroup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSSymbolGroup.h; path = objNative/JSSymbolGroup.h; sourceTree = "<group>"; };
+		D8DD420E21748894009D80E9 /* JSSymbolGroup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSSymbolGroup.m; path = objNative/JSSymbolGroup.m; sourceTree = "<group>"; };
+		D8DD421021748AB5009D80E9 /* JSSymbolGroups.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSSymbolGroups.h; path = objNative/JSSymbolGroups.h; sourceTree = "<group>"; };
+		D8DD421121748AB5009D80E9 /* JSSymbolGroups.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSSymbolGroups.m; path = objNative/JSSymbolGroups.m; sourceTree = "<group>"; };
+		D8DD422221757443009D80E9 /* JSSymbolLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSSymbolLibrary.h; path = objNative/JSSymbolLibrary.h; sourceTree = "<group>"; };
+		D8DD422321757443009D80E9 /* JSSymbolLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSSymbolLibrary.m; path = objNative/JSSymbolLibrary.m; sourceTree = "<group>"; };
+		D8DD422521757C8D009D80E9 /* JSSymbolFill.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSSymbolFill.h; path = objNative/JSSymbolFill.h; sourceTree = "<group>"; };
+		D8DD422621757C8D009D80E9 /* JSSymbolFill.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSSymbolFill.m; path = objNative/JSSymbolFill.m; sourceTree = "<group>"; };
+		D8DD42282175830E009D80E9 /* JSSymbolLine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSSymbolLine.h; path = objNative/JSSymbolLine.h; sourceTree = "<group>"; };
+		D8DD42292175830E009D80E9 /* JSSymbolLine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSSymbolLine.m; path = objNative/JSSymbolLine.m; sourceTree = "<group>"; };
+		D8DD422B21758371009D80E9 /* JSSymbolMarker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSSymbolMarker.h; path = objNative/JSSymbolMarker.h; sourceTree = "<group>"; };
+		D8DD422C21758371009D80E9 /* JSSymbolMarker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSSymbolMarker.m; path = objNative/JSSymbolMarker.m; sourceTree = "<group>"; };
+		D8DD422E2175BB69009D80E9 /* JSResources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSResources.h; path = objNative/JSResources.h; sourceTree = "<group>"; };
+		D8DD422F2175BB69009D80E9 /* JSResources.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSResources.m; path = objNative/JSResources.m; sourceTree = "<group>"; };
+		D8DD42312175CC32009D80E9 /* JSSymbolLineLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSSymbolLineLibrary.h; path = objNative/JSSymbolLineLibrary.h; sourceTree = "<group>"; };
+		D8DD42322175CC32009D80E9 /* JSSymbolLineLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSSymbolLineLibrary.m; path = objNative/JSSymbolLineLibrary.m; sourceTree = "<group>"; };
+		D8DD42342175D025009D80E9 /* JSSymbolMarkerLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSSymbolMarkerLibrary.h; path = objNative/JSSymbolMarkerLibrary.h; sourceTree = "<group>"; };
+		D8DD42352175D025009D80E9 /* JSSymbolMarkerLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSSymbolMarkerLibrary.m; path = objNative/JSSymbolMarkerLibrary.m; sourceTree = "<group>"; };
+		D8DD42372175D06C009D80E9 /* JSSymbolFillLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSSymbolFillLibrary.h; path = objNative/JSSymbolFillLibrary.h; sourceTree = "<group>"; };
+		D8DD42382175D06C009D80E9 /* JSSymbolFillLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSSymbolFillLibrary.m; path = objNative/JSSymbolFillLibrary.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -485,6 +521,30 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				D8DD42372175D06C009D80E9 /* JSSymbolFillLibrary.h */,
+				D8DD42382175D06C009D80E9 /* JSSymbolFillLibrary.m */,
+				D8DD42342175D025009D80E9 /* JSSymbolMarkerLibrary.h */,
+				D8DD42352175D025009D80E9 /* JSSymbolMarkerLibrary.m */,
+				D8DD42312175CC32009D80E9 /* JSSymbolLineLibrary.h */,
+				D8DD42322175CC32009D80E9 /* JSSymbolLineLibrary.m */,
+				D8DD422E2175BB69009D80E9 /* JSResources.h */,
+				D8DD422F2175BB69009D80E9 /* JSResources.m */,
+				D8DD422B21758371009D80E9 /* JSSymbolMarker.h */,
+				D8DD422C21758371009D80E9 /* JSSymbolMarker.m */,
+				D8DD42282175830E009D80E9 /* JSSymbolLine.h */,
+				D8DD42292175830E009D80E9 /* JSSymbolLine.m */,
+				D8DD422521757C8D009D80E9 /* JSSymbolFill.h */,
+				D8DD422621757C8D009D80E9 /* JSSymbolFill.m */,
+				D8DD422221757443009D80E9 /* JSSymbolLibrary.h */,
+				D8DD422321757443009D80E9 /* JSSymbolLibrary.m */,
+				D8DD421021748AB5009D80E9 /* JSSymbolGroups.h */,
+				D8DD421121748AB5009D80E9 /* JSSymbolGroups.m */,
+				D8DD420D21748894009D80E9 /* JSSymbolGroup.h */,
+				D8DD420E21748894009D80E9 /* JSSymbolGroup.m */,
+				D8DD420A2174874D009D80E9 /* JSSymbolType.h */,
+				D8DD420B2174874D009D80E9 /* JSSymbolType.m */,
+				D8DD4207217471EF009D80E9 /* JSSymbol.h */,
+				D8DD4208217471EF009D80E9 /* JSSymbol.m */,
 				D8C61D7A2151E2AD00560362 /* JSFieldType.h */,
 				D8C61D7B2151E2AD00560362 /* JSFieldType.m */,
 				D85975F9214BA46700E39A7E /* JSLayerGroup.h */,
@@ -843,11 +903,13 @@
 				0A332E06211D623E00F56F26 /* JSDatasets.m in Sources */,
 				0A332E18211D623E00F56F26 /* JSGeometry.m in Sources */,
 				0A332DF0211D623E00F56F26 /* JSBarChartData.m in Sources */,
+				D8DD42302175BB69009D80E9 /* JSResources.m in Sources */,
 				0A332E5B211D623E00F56F26 /* JSTextStyle.m in Sources */,
 				0A332E51211D623E00F56F26 /* JSSpeechManager.m in Sources */,
 				0A332DED211D623E00F56F26 /* JSAMQPReceiver.m in Sources */,
 				0A332E4A211D623E00F56F26 /* JSScene.m in Sources */,
 				0A332E25211D623E00F56F26 /* JSLayerSettingVector.m in Sources */,
+				D8DD420F21748894009D80E9 /* JSSymbolGroup.m in Sources */,
 				0A332E31211D623E00F56F26 /* JSNavigation.m in Sources */,
 				0A332E07211D623E00F56F26 /* JSDatasetType.m in Sources */,
 				0A332DEA211D623E00F56F26 /* JSAction.m in Sources */,
@@ -867,6 +929,7 @@
 				0A332DF1211D623E00F56F26 /* JSBarChartDataItem.m in Sources */,
 				0A332E61211D623E00F56F26 /* JSThemeUnique.m in Sources */,
 				0A332E21211D623E00F56F26 /* JSLayer3Ds.m in Sources */,
+				D8DD421221748AB5009D80E9 /* JSSymbolGroups.m in Sources */,
 				0A332E2E211D623E00F56F26 /* JSMaps.m in Sources */,
 				0A332E01211D623E00F56F26 /* JSCoordSysTranslator.m in Sources */,
 				0A332E42211D623E00F56F26 /* JSQueryParameter.m in Sources */,
@@ -888,12 +951,15 @@
 				0A332E65211D623E00F56F26 /* JSTrackingLayer.m in Sources */,
 				0A332E1A211D623E00F56F26 /* JSGeoRegion.m in Sources */,
 				0A332E3F211D623E00F56F26 /* JSPrjCoordSys.m in Sources */,
+				D8DD420C2174874D009D80E9 /* JSSymbolType.m in Sources */,
 				0A332E1D211D623E00F56F26 /* JSGridHotChart.m in Sources */,
+				D8DD42392175D06C009D80E9 /* JSSymbolFillLibrary.m in Sources */,
 				0A332E35211D623E00F56F26 /* JSOverlayAnalyst.m in Sources */,
 				0A332DF5211D623E00F56F26 /* JSBufferAnalystParameter.m in Sources */,
 				0A332E1B211D623E00F56F26 /* JSGeoStyle.m in Sources */,
 				0A332E08211D623E00F56F26 /* JSDatasetVector.m in Sources */,
 				0A332E50211D623E00F56F26 /* JSSize2D.m in Sources */,
+				D8DD422721757C8D009D80E9 /* JSSymbolFill.m in Sources */,
 				0A332E30211D623E00F56F26 /* JSMQTTClientSide.m in Sources */,
 				0A332DEF211D623E00F56F26 /* JSBarChart.m in Sources */,
 				0A332E48211D623E00F56F26 /* JSRelationalPointChart.m in Sources */,
@@ -914,9 +980,11 @@
 				0A332E23211D623E00F56F26 /* JSLayers.m in Sources */,
 				0A332E2F211D623E00F56F26 /* JSMapView.m in Sources */,
 				0A332E46211D623E00F56F26 /* JSRectangle2D.m in Sources */,
+				D8DD42362175D025009D80E9 /* JSSymbolMarkerLibrary.m in Sources */,
 				0A332E03211D623E00F56F26 /* JSCoordSysTransParameter.m in Sources */,
 				0A332E6E211D623E00F56F26 /* RCTConvert+Action.m in Sources */,
 				0A332E38211D623E00F56F26 /* JSPieChartData.m in Sources */,
+				D8DD42332175CC32009D80E9 /* JSSymbolLineLibrary.m in Sources */,
 				D877B5B22133D5C00044AE61 /* JSOnlineService.m in Sources */,
 				0A332DFC211D623E00F56F26 /* JSCollector.m in Sources */,
 				0A332E60211D623E00F56F26 /* JSThemeType.m in Sources */,
@@ -930,9 +998,11 @@
 				0A332E19211D623E00F56F26 /* JSGeoPoint.m in Sources */,
 				0A332E3A211D623E00F56F26 /* JSPoint.m in Sources */,
 				0A332E13211D623E00F56F26 /* JSFacilityAnalystSetting.m in Sources */,
+				D8DD4209217471EF009D80E9 /* JSSymbol.m in Sources */,
 				D82C65AB214208DC00E9EEC5 /* JSWorkspaceType.m in Sources */,
 				0A332E10211D623E00F56F26 /* JSEncodeType.m in Sources */,
 				0A332E71211D623E00F56F26 /* RCTConvert+EncodeType.m in Sources */,
+				D8DD422D21758371009D80E9 /* JSSymbolMarker.m in Sources */,
 				0A332E17211D623E00F56F26 /* JSGeoLineM.m in Sources */,
 				0A332E32211D623E00F56F26 /* JSNavigation2.m in Sources */,
 				0A332E02211D623E00F56F26 /* JSCoordSysTransMethod.m in Sources */,
@@ -954,6 +1024,7 @@
 				0A332DF3211D623E00F56F26 /* JSBufferAnalyst.m in Sources */,
 				0A332E28211D623E00F56F26 /* JSLineChartData.m in Sources */,
 				0A332E34211D623E00F56F26 /* JsonUtil.m in Sources */,
+				D8DD422421757443009D80E9 /* JSSymbolLibrary.m in Sources */,
 				0A332E1C211D623E00F56F26 /* JSGeoText.m in Sources */,
 				0A332E0C211D623E00F56F26 /* JSDatasources.m in Sources */,
 				0A332E14211D623E00F56F26 /* JSFeature.m in Sources */,
@@ -965,6 +1036,7 @@
 				0A332E1F211D623E00F56F26 /* JSInstrumentChartViewManager.m in Sources */,
 				0A332E33211D623E00F56F26 /* JSObjManager.m in Sources */,
 				0A332E55211D623E00F56F26 /* JSSupplyCenter.m in Sources */,
+				D8DD422A2175830E009D80E9 /* JSSymbolLine.m in Sources */,
 				0A332DF4211D623E00F56F26 /* JSBufferAnalystGeometry.m in Sources */,
 				0A332E43211D623E00F56F26 /* JSQueryService.m in Sources */,
 				0A332E62211D623E00F56F26 /* JSThemeUniqueItem.m in Sources */,

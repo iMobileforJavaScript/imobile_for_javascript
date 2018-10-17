@@ -17,6 +17,8 @@
 @property(nonatomic,strong) Point2D *origin;
 // 计算点符号显示尺寸
 -(int) computeDisplaySize:(int)nSymbolSize;
+// 计算出传入的显示大小对应设置的符号大小
+-(int) computeSymbolSize:(int)displaySize;
 // 获得点符号构成笔画数
 -(int)getStrokeCount;
 // 获得点符号构成笔画

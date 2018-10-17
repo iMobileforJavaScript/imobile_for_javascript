@@ -7,9 +7,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.data.Enum;
-import com.supermap.data.GeoLine;
-import com.supermap.data.GeoPoint;
-import com.supermap.data.GeoRegion;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
 import com.supermap.data.GeometryType;
@@ -22,7 +19,6 @@ import java.util.Map;
 public class JSGeometry extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "JSGeometry";
     protected static Map<String, Geometry> m_GeometryList = new HashMap<String, Geometry>();
-    Geometry m_Geometry;
 
     public JSGeometry(ReactApplicationContext context) {
         super(context);

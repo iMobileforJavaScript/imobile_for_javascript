@@ -14,6 +14,7 @@ let ColorGradientType = NativeModules.JSColorGradientType;
 let GPSElementType = NativeModules.JSGPSElementType;
 let ThemeType = NativeModules.JSThemeType;
 let WorkspaceType = NativeModules.JSWorkspaceType;
+let SymbolType = NativeModules.JSSymbolType;
 
 import BufferAnalyst from './NativeModule/BufferAnalyst.js';
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js';
@@ -74,6 +75,12 @@ import BarChartData from './NativeModule/BarChartData.js';
 import BarChartDataItem from './NativeModule/BarChartDataItem.js';
 import LineChartData from './NativeModule/LineChartData.js';
 import PieChartData from './NativeModule/PieChartData.js';
+
+import Resoures from './NativeModule/Resources';
+import Symbol from './NativeModule/Symbol';
+import SymbolFill from './NativeModule/SymbolFill';
+import SymbolLine from './NativeModule/SymbolLine';
+import SymbolMarker from './NativeModule/SymbolMarker';
 
 // import HotChart from './NativeModule/HotChart.js';
 import GridHotChart from './NativeModule/GridHotChart.js';
@@ -306,6 +313,13 @@ export {
   WorkspaceType,
   OnlineService,
   Environment,
+
+  Resoures,
+  Symbol,
+  SymbolFill,
+  SymbolLine,
+  SymbolMarker,
+  SymbolType,
   /*
    Datasets,
    Datasources,

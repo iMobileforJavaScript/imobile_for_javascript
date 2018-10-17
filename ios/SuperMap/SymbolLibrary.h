@@ -92,6 +92,7 @@
  */
 -(NSString*)getLibPath;
 
+-(void)clear;
 -(void)dispose;
 
 @end
