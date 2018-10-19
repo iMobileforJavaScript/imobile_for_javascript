@@ -276,4 +276,18 @@ RCT_REMAP_METHOD(deleteById, deleteById:(NSString*)recordsetId targetId:(int)id 
         reject(@"JSRecordset deleteById", exception.reason,nil);
     }
 }
+RCT_REMAP_METHOD(addNew, addNewById:(NSString*)recordsetId geometryId:(NSString *)geometryId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        Recordset* recordset = [JSObjManager getObjWithKey:recordsetId];
+        Geometry* geo = [JSObjManager getObjWithKey:geometryId];
+        bool reuslt = [recordset addNew:geo];
+        [recordset update];
+        
+        NSNumber* num = [NSNumber numberWithBool:reuslt];
+        resolve(num);
+    }
+    @catch(NSException *exception){
+        reject(@"JSRecordset deleteById", exception.reason,nil);
+    }
+}
 @end

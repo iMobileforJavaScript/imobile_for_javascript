@@ -55,4 +55,15 @@ RCT_REMAP_METHOD(getType,getTypeId:(NSString*)geometryId resolver:(RCTPromiseRes
         reject(@"geometry",@"geometry getType failed!!!",nil);
     }
 }
+
+RCT_REMAP_METHOD(dispose, disposeId:(NSString*)geometryId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Geometry* geo = [JSObjManager getObjWithKey:geometryId];
+        [geo dispose];
+        [JSObjManager removeObj:geometryId];
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"geometry",@"geometry getType failed!!!",nil);
+    }
+}
 @end

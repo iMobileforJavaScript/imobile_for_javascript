@@ -170,6 +170,9 @@ import Environment from './NativeModule/Environment'
  import Maps from './NativeModule/Maps.js';
  import Recordset from './NativeModule/Recordset.js';
  */
+
+import Analyst from './NativeModule/Analyst'
+
 export {
   SMMapView,
   SMCallOut,
@@ -339,4 +342,6 @@ export {
    Maps,
    Recordset,
    */
+
+  Analyst,
 };

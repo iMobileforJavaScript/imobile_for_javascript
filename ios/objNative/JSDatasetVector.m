@@ -15,6 +15,7 @@
 #import "SuperMap/FieldInfos.h"
 #import "SuperMap/FieldInfo.h"
 #import "JSObjManager.h"
+#import "NativeUtil.h"
 
 @implementation JSDatasetVector
 RCT_EXPORT_MODULE();
@@ -484,5 +485,84 @@ RCT_REMAP_METHOD(getName, getNameById:(NSString*)dsVectorId resolver:(RCTPromise
     }
 }
 
+/************************ Recordset *******************************/
+RCT_REMAP_METHOD(getRecordCount, getRecordCountById:(NSString*)dsVectorId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        Recordset* recordSet = [dsVector recordset:false cursorType:DYNAMIC];
+        NSInteger count = recordSet.recordCount;
+        NSNumber* num = [NSNumber numberWithInteger:count];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"datasetVector", exception.reason, nil);
+    }
+}
 
+RCT_REMAP_METHOD(getGeometry, getGeometryById:(NSString*)dsVectorId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        Recordset* recordSet = [dsVector recordset:false cursorType:DYNAMIC];
+        Geometry* geo = recordSet.geometry;
+        resolve([JSObjManager addObj:geo]);
+    } @catch (NSException *exception) {
+        reject(@"datasetVector", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(addNewRecord, addNewRecordById:(NSString*)dsVectorId geometryId:(NSString *)geometryId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        Recordset* recordSet = [dsVector recordset:false cursorType:DYNAMIC];
+        Geometry* geo = [JSObjManager getObjWithKey:geometryId];
+        bool reuslt = [recordSet addNew:geo];
+        [recordSet update];
+        [recordSet dispose];
+        
+        resolve([NSNumber numberWithBool:reuslt]);
+    } @catch (NSException *exception) {
+        reject(@"datasetVector", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(getFieldCount, getFieldCountById:(NSString*)dsVectorId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        Recordset* recordSet = [dsVector recordset:false cursorType:DYNAMIC];
+        int count = [recordSet fieldCount];
+        [recordSet dispose];
+        
+        resolve([NSNumber numberWithInt:count]);
+    } @catch (NSException *exception) {
+        reject(@"datasetVector", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(getFieldInfosArray, getFieldInfosArrayById:(NSString*)dsVectorId count:(NSInteger)count size:(NSInteger)size resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        Recordset* recordSet = [dsVector recordset:false cursorType:DYNAMIC];
+        [recordSet moveFirst];
+        NSMutableArray* recordsetArray = [NativeUtil recordsetToJsonArray:recordSet count:count size:size];
+        resolve(recordsetArray);
+        [recordSet dispose];
+        
+        resolve([NSNumber numberWithInt:count]);
+    } @catch (NSException *exception) {
+        reject(@"datasetVector", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(deleteRecordById, deleteRecordById:(NSString*)dsVectorId targetId:(int)id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+        Recordset* recordSet = [dsVector recordset:false cursorType:DYNAMIC];
+        [recordSet seekID:id];
+        bool result = [recordSet delete];
+        [recordSet dispose];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"datasetVector", exception.reason, nil);
+    }
+}
 @end

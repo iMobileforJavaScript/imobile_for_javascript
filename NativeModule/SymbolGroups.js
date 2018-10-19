@@ -16,16 +16,16 @@ import SymbolGroup from './SymbolGroup'
  */
 export default class SymbolGroups {
 
-  async createObj() {
-    try {
-      let id = await SGS.createObj()
-      let groups = new SymbolGroups()
-      groups._SMSymbolGroupsId = id
-      return groups
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  // async createObj() {
+  //   try {
+  //     let id = await SGS.createObj()
+  //     let groups = new SymbolGroups()
+  //     groups._SMSymbolGroupsId = id
+  //     return groups
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
 
   async dispose() {
     try {

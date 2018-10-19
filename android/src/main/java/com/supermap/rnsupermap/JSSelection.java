@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.data.DatasetVector;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Recordset;
 import com.supermap.mapping.Selection;
@@ -159,6 +160,20 @@ public class JSSelection extends ReactContextBaseJavaModule {
             int result = selection.removeRange(index, count);
 
             promise.resolve(result);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getDataset(String selectionId, Promise promise){
+        try{
+            Selection selection = getObjFromList(selectionId);
+            DatasetVector dv = selection.getDataset();
+
+            String id = JSDatasetVector.registerId(dv);
+
+            promise.resolve(id);
         }catch (Exception e){
             promise.reject(e);
         }

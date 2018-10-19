@@ -13,15 +13,15 @@
 @implementation JSSymbolGroups
 RCT_EXPORT_MODULE();
 
-RCT_REMAP_METHOD(createObj, createObjWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        SymbolGroups* groups = [[SymbolGroups alloc]init];
-        NSString* key = [JSObjManager addObj:groups];
-        resolve(key);
-    } @catch (NSException *exception) {
-        reject(@"JSSymbolGroups", exception.reason, nil);
-    }
-}
+//RCT_REMAP_METHOD(createObj, createObjWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        SymbolGroups* groups = [[SymbolGroups alloc]init];
+//        NSString* key = [JSObjManager addObj:groups];
+//        resolve(key);
+//    } @catch (NSException *exception) {
+//        reject(@"JSSymbolGroups", exception.reason, nil);
+//    }
+//}
 
 #pragma mark 测试指定的名称在分组集合中是否已经存在
 RCT_REMAP_METHOD(contains, containsById:(NSString *)groupsId name:(NSString *)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

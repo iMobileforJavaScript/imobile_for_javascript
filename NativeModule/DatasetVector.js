@@ -10,7 +10,7 @@ let DV = NativeModules.JSDatasetVector;
 import Dataset from './Dataset.js';
 import Recordset from  './Recordset.js';
 import QueryParameter from './QueryParameter.js';
-
+import Geometry from './Geometry'
 
 /**
  * @class DatasetVector
@@ -367,6 +367,57 @@ export default class DatasetVector {
         return dataset
       }
       return null
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async getRecordCount() {
+    try {
+      return await DV.getRecordCount(this._SMDatasetVectorId)
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async getGeometry() {
+    try {
+      let id = await DV.getGeometry(this._SMDatasetVectorId);
+      let geo = new Geometry()
+      geo._SMGeometryId = id
+      return geo
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async addNewRecord(geo) {
+    try {
+      return await DV.getChildDataset(this._SMDatasetVectorId, geo._SMGeometryId);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async getFieldCount() {
+    try {
+      return await DV.getFieldCount(this._SMDatasetVectorId);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async getFieldInfosArray() {
+    try {
+      return await DV.getFieldInfosArray(this._SMDatasetVectorId);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async deleteRecordById(id) {
+    try {
+      return await DV.deleteRecordById(this._SMDatasetVectorId, id);
     } catch (e) {
       console.error(e);
     }

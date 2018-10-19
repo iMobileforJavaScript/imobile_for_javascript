@@ -17,6 +17,7 @@
 #import "JSPoint.h"
 #import "SuperMap/Theme.h"
 #import "SuperMap/LayerGroup.h"
+#import "SuperMap/TrackingLayer.h"
 
 @implementation JSMap
 //所有导出方法名
@@ -721,6 +722,16 @@ RCT_REMAP_METHOD(getPrjCoordSys,getPrjCoordSysKey:(NSString*)key resolver:(RCTPr
         reject(@"Map",@"getProjSys failed!!!",nil);
     }
 }
- 
+
+RCT_REMAP_METHOD(clearTrackingLayer, clearTrackingLayerById:(NSString*)mapId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Map* map = [JSObjManager getObjWithKey:mapId];
+        [map.trackingLayer clear];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"Map", exception.reason, nil);
+    }
+}
 
 @end

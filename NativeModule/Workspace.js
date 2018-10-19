@@ -112,6 +112,22 @@ export default class Workspace {
       console.error(e);
     }
   }
+
+  async getDatasourcesCount() {
+    try {
+      return await W.getDatasourcesCount(this._SMWorkspaceId);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async getDatasourceAlias(index) {
+    try {
+      return await W.getDatasourceAlias(this._SMWorkspaceId, index);
+    } catch (e) {
+      console.error(e);
+    }
+  }
   
   /**
    * 根据定义好的工作空间连接信息对象，打开工作空间。

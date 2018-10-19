@@ -188,9 +188,9 @@ public class JSRecordset extends ReactContextBaseJavaModule {
         try{
             Recordset recordset = getObjFromList(recordsetId);
             Geometry geometry = JSGeometry.getObjFromList(geometryId);
-            recordset.addNew(geometry);
+            boolean result = recordset.addNew(geometry);
 
-            promise.resolve(true);
+            promise.resolve(result);
         }catch (Exception e){
             promise.reject(e);
         }

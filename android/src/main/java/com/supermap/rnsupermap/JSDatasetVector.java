@@ -167,6 +167,7 @@ public class JSDatasetVector extends JSDataset {
                 returnMap.putString("queryParameterId", queryParameterId);
                 returnMap.putInt("counts", totalCount);
                 returnMap.putInt("batch", batch);
+                returnMap.putInt("batches", batches);
                 returnMap.putInt("size", size);
                 returnMap.putString("recordsetId", recordsetId);
 
@@ -858,6 +859,108 @@ public class JSDatasetVector extends JSDataset {
         }
 
         return fieldInfosArray;
+    }
+
+    /************************ Recordset ************************/
+    @ReactMethod
+    public void getRecordCount(String dataVectorId, Promise promise){
+        try{
+            Recordset recordset = getObjFromList(dataVectorId).getRecordset(false, CursorType.DYNAMIC);
+            int recordCount = recordset.getRecordCount();
+
+            recordset.dispose();
+
+            promise.resolve(recordCount);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getGeometry(String dataVectorId,Promise promise){
+        try{
+            Recordset recordset = getObjFromList(dataVectorId).getRecordset(false, CursorType.DYNAMIC);
+            Geometry geometry = recordset.getGeometry();
+            String geometryId = JSGeometry.registerId(geometry);
+
+            recordset.dispose();
+
+            promise.resolve(geometryId);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void addNewRecord(String dataVectorId, String geometryId,Promise promise){
+        try{
+            Recordset recordset = getObjFromList(dataVectorId).getRecordset(false, CursorType.DYNAMIC);
+            Geometry geometry = JSGeometry.getObjFromList(geometryId);
+            boolean result = recordset.addNew(geometry);
+            recordset.update();
+
+            geometry.dispose();
+            recordset.dispose();
+
+            promise.resolve(result);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getFieldCount(String dataVectorId,Promise promise){
+        try{
+            Recordset recordset = getObjFromList(dataVectorId).getRecordset(false, CursorType.DYNAMIC);
+            int count = recordset.getFieldCount();
+
+            recordset.dispose();
+            promise.resolve(count);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取记录集recordset的中的FieldInfos，promise返回array
+     * @param dataVectorId
+     * @param count 计数器
+     * @param size 记录数
+     * @param promise
+     */
+    @ReactMethod
+    public void getFieldInfosArray(String dataVectorId, int count, int size, Promise promise){
+        try{
+            Recordset recordset = getObjFromList(dataVectorId).getRecordset(false, CursorType.DYNAMIC);
+
+            recordset.moveFirst();
+
+            WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, count, size);
+            recordset.dispose();
+            promise.resolve(recordArray);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 删除当前记录集指定id的记录
+     * @param dataVectorId
+     * @param id
+     * @param promise
+     */
+    @ReactMethod
+    public void deleteRecordById(String dataVectorId, int id, Promise promise) {
+        try {
+            Recordset recordset = getObjFromList(dataVectorId).getRecordset(false, CursorType.DYNAMIC);
+            recordset.seekID(id);
+            boolean result = recordset.delete();
+
+            recordset.dispose();
+            promise.resolve(result);
+        } catch (Exception e){
+            promise.reject(e);
+        }
     }
 }
 

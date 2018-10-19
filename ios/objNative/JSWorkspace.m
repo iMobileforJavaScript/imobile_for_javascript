@@ -11,6 +11,7 @@
 #import "SuperMap/Workspace.h"
 #import "SuperMap/WorkspaceConnectionInfo.h"
 #import "SuperMap/Datasources.h"
+#import "SuperMap/Datasource.h"
 #import "SuperMap/DatasourceConnectionInfo.h"
 #import "SuperMap/Rectangle2D.h"
 #import "SuperMap/Maps.h"
@@ -158,6 +159,28 @@ RCT_REMAP_METHOD(renameDatasource,renameDatasourceKey:(NSString*)key oldName:(NS
         }
     } @catch (NSException *exception) {
         reject(@"workspace",@"workspace renameDatasourcefailed!",nil);
+    }
+}
+
+RCT_REMAP_METHOD(getDatasourcesCount, getDatasourcesCountKey:(NSString*)key resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        NSInteger count = workspace.datasources.count;
+        NSNumber* countNum = [NSNumber numberWithInteger:count];
+        resolve(countNum);
+    } @catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(getDatasourceAlias, getDatasourceAliasKey:(NSString*)key index:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        Datasource* datasource = [workspace.datasources get:index];
+        NSString* alias = datasource.alias;
+        resolve(alias);
+    } @catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
     }
 }
 

@@ -912,6 +912,18 @@ public class JSMap extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void clearTrackingLayer(String mapId, Promise promise){
+        try{
+            Map map = mapList.get(mapId);
+            map.getTrackingLayer().clear();
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
 /*****************************************LayerGroup***********************************************/
 
     @ReactMethod
@@ -964,5 +976,4 @@ public class JSMap extends ReactContextBaseJavaModule {
 //            promise.reject(e);
 //        }
 //    }
-
 }

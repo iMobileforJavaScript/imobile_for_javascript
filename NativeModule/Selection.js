@@ -7,6 +7,7 @@
 import { NativeModules } from 'react-native';
 let S = NativeModules.JSSelection;
 import Recordset from './Recordset.js';
+import DatasetVector from './DatasetVector';
 
 /**
  * @class Selection
@@ -140,6 +141,17 @@ export default class Selection {
     try {
       let count = await S.removeRange(this._SMSelectionId, index, count)
       return count
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async getDataset() {
+    try {
+      let id = await S.getDataset(this._SMSelectionId)
+      let dv = new DatasetVector()
+      dv._SMDatasetVectorId = id
+      return dv
     } catch (e) {
       console.log(e);
     }

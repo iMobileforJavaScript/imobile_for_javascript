@@ -6,13 +6,27 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.supermap.analyst.BufferAnalyst;
+import com.supermap.analyst.BufferAnalystGeometry;
 import com.supermap.analyst.BufferAnalystParameter;
+import com.supermap.analyst.BufferEndType;
 import com.supermap.analyst.BufferRadiusUnit;
+import com.supermap.data.Color;
+import com.supermap.data.CursorType;
+import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.Enum;
+import com.supermap.data.GeoRegion;
+import com.supermap.data.GeoStyle;
+import com.supermap.data.Geometry;
+import com.supermap.data.PrjCoordSys;
+import com.supermap.data.Recordset;
+import com.supermap.data.Size2D;
+import com.supermap.mapping.Selection;
+import com.supermap.mapping.TrackingLayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,6 +116,87 @@ public class JSBufferAnalyst extends ReactContextBaseJavaModule {
             map.putBoolean("isCreate",isCreate);
             promise.resolve(map);
         }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void analyst(String mapId, String selectionId, ReadableMap params, Promise promise){
+        try{
+            com.supermap.mapping.Map map = JSMap.getObjFromList(mapId);
+            Selection selection = JSSelection.getObjFromList(selectionId);
+            Recordset recordset = selection.toRecordset();
+
+            TrackingLayer layer = map.getTrackingLayer();
+
+            layer.clear();
+            while (!recordset.isEOF()) {
+
+                Geometry geoForBuffer = recordset.getGeometry();
+                Dataset queryDataset = recordset.getDataset();
+
+                PrjCoordSys prjCoordSys = queryDataset.getPrjCoordSys();
+
+                GeoStyle geoStyle = new GeoStyle();
+
+                BufferAnalystParameter bufferAnalystParameter = new BufferAnalystParameter();
+                ReadableMap parameter = params.getMap("parameter");
+
+                if (params.hasKey("parameter")) {
+                    if (parameter.hasKey("endType")) {
+                        BufferEndType endType = (BufferEndType) Enum.parse(BufferEndType.class, parameter.getInt("endType"));
+                        bufferAnalystParameter.setEndType(endType);
+                    }
+                    if (parameter.hasKey("leftDistance")) {
+                        bufferAnalystParameter.setLeftDistance(parameter.getInt("leftDistance"));
+                    }
+                    if (parameter.hasKey("rightDistance")) {
+                        bufferAnalystParameter.setRightDistance(parameter.getInt("rightDistance"));
+                    }
+                }
+
+                if (params.hasKey("geoStyle")) {
+                    ReadableMap geoStyleMap = params.getMap("geoStyle");
+
+                    if (geoStyleMap.hasKey("lineWidth")) {
+                        geoStyle.setLineWidth(geoStyleMap.getInt("lineWidth"));
+                    }
+                    if (geoStyleMap.hasKey("fillForeColor")) {
+                        ReadableMap fillForeColor = geoStyleMap.getMap("fillForeColor");
+                        geoStyle.setFillForeColor(new Color(fillForeColor.getInt("r"), fillForeColor.getInt("g"), fillForeColor.getInt("b")));
+                    }
+                    if (geoStyleMap.hasKey("lineColor")) {
+                        ReadableMap lineColor = geoStyleMap.getMap("lineColor");
+                        geoStyle.setLineColor(new Color(lineColor.getInt("r"), lineColor.getInt("g"), lineColor.getInt("b")));
+                    }
+                    if (geoStyleMap.hasKey("lineSymbolID")) {
+                        geoStyle.setLineSymbolID(geoStyleMap.getInt("lineSymbolID"));
+                    }
+                    if (geoStyleMap.hasKey("markerSymbolID")) {
+                        geoStyle.setMarkerSymbolID(geoStyleMap.getInt("markerSymbolID"));
+                    }
+                    if (geoStyleMap.hasKey("markerSize")) {
+                        ReadableMap markerSize = geoStyleMap.getMap("markerSize");
+                        geoStyle.setMarkerSize(new Size2D(markerSize.getInt("w"), markerSize.getInt("h")));
+                    }
+                    if (geoStyleMap.hasKey("fillOpaqueRate")) {
+                        geoStyle.setMarkerSymbolID(geoStyleMap.getInt("fillOpaqueRate"));
+                    }
+                }
+
+                GeoRegion geoRegion = BufferAnalystGeometry.createBuffer(geoForBuffer, bufferAnalystParameter, prjCoordSys);
+                geoRegion.setStyle(geoStyle);
+
+                layer.add(geoRegion, "");
+
+                recordset.moveNext();
+            }
+            recordset.dispose();
+
+            map.refresh();
+            promise.resolve(true);
+        }catch (Exception e){
+            e.printStackTrace();
             promise.reject(e);
         }
     }

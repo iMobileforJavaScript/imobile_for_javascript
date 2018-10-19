@@ -98,5 +98,19 @@ public class JSGeometry extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void dispose(String geometryId, Promise promise) {
+        try {
+            Geometry geometry = getObjFromList(geometryId);
+            geometry.dispose();
+            m_GeometryList.remove(geometryId);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 }
 

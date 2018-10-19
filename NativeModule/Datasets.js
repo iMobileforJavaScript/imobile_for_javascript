@@ -12,6 +12,7 @@ import Recordset from './Recordset.js';
 
 /**
  * @class Datasets
+ * @deprecated 从Datasource中获取这些方法
  * @description 数据集集合类。提供对数据集的管理功能，如创建、删除、重命名等操作。
  */
 export default class Datasets{

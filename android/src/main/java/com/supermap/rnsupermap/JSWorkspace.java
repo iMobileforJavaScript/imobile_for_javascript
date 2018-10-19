@@ -78,6 +78,7 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
         }
     }
 
+    @Deprecated
     @ReactMethod
     public void getDatasources(String workspaceId,Promise promise){
         try{
@@ -285,6 +286,32 @@ public class JSWorkspace extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void getDatasourcesCount(String workspaceId, Promise promise){
+        try{
+            Workspace workspace = getObjById(workspaceId);
+            int count = workspace.getDatasources().getCount();
+
+            promise.resolve(count);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getDatasourceAlias(String workspaceId, int index, Promise promise){
+        try{
+            Workspace workspace = getObjById(workspaceId);
+            Datasource datasource = workspace.getDatasources().get(index);
+            String alias = datasource.getAlias();
+
+            promise.resolve(alias);
+        }catch(Exception e){
+            promise.reject(e);
+        }
+    }
+
 /*
     @ReactMethod
     public void openWMSDatasource(String workspaceId, String server, int engineType, String driver,
