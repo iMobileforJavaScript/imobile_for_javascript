@@ -25,6 +25,7 @@ import com.supermap.data.Geometry;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.Recordset;
 import com.supermap.data.Size2D;
+import com.supermap.mapping.Layer;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.TrackingLayer;
 
@@ -121,15 +122,16 @@ public class JSBufferAnalyst extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void analyst(String mapId, String selectionId, ReadableMap params, Promise promise){
+    public void analyst(String mapId, String layerId, ReadableMap params, Promise promise){
         try{
             com.supermap.mapping.Map map = JSMap.getObjFromList(mapId);
-            Selection selection = JSSelection.getObjFromList(selectionId);
+            Layer layer = JSLayer.getLayer(layerId);
+            Selection selection = layer.getSelection();
             Recordset recordset = selection.toRecordset();
 
-            TrackingLayer layer = map.getTrackingLayer();
+            TrackingLayer trackingLayer = map.getTrackingLayer();
 
-            layer.clear();
+            trackingLayer.clear();
             while (!recordset.isEOF()) {
 
                 Geometry geoForBuffer = recordset.getGeometry();
@@ -187,7 +189,7 @@ public class JSBufferAnalyst extends ReactContextBaseJavaModule {
                 GeoRegion geoRegion = BufferAnalystGeometry.createBuffer(geoForBuffer, bufferAnalystParameter, prjCoordSys);
                 geoRegion.setStyle(geoStyle);
 
-                layer.add(geoRegion, "");
+                trackingLayer.add(geoRegion, "");
 
                 recordset.moveNext();
             }

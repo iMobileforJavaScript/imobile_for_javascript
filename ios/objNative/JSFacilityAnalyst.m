@@ -645,4 +645,16 @@ RCT_REMAP_METHOD(load,loadById:(NSString*)ficilityAnalystId resolver:(RCTPromise
         reject(@"JSFacilityAnalyst",@"load expection",nil);
     }
 }
+
+
+RCT_REMAP_METHOD(loadModel, loadModelById:(NSString*)ficilityAnalystId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        m_FacilityAnalyst = [JSObjManager getObjWithKey:ficilityAnalystId];
+        BOOL result = m_FacilityAnalyst.load;
+        NSNumber* number = [NSNumber numberWithBool:result];
+        resolve(number);
+    } @catch (NSException *exception) {
+        reject(@"JSFacilityAnalyst",@"load expection",nil);
+    }
+}
 @end

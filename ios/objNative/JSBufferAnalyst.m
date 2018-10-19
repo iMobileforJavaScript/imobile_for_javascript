@@ -19,6 +19,7 @@
 #import "SuperMap/Color.h"
 #import "SuperMap/Size2D.h"
 #import "SuperMap/GeoRegion.h"
+#import "SuperMap/Layer.h"
 
 
 #import "JSObjManager.h"
@@ -62,10 +63,11 @@ RCT_REMAP_METHOD(createMultiBuffer,createMultiBufferBySourceId:(NSString*)source
     }
 }
 
-RCT_REMAP_METHOD(analyst, analystByMapId:(NSString*)mapId selectionId:(NSString*)selectionId params:(NSDictionary*)params  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(analyst, analystByMapId:(NSString*)mapId layerId:(NSString*)layerId params:(NSDictionary*)params  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         Map* map = [JSObjManager getObjWithKey:mapId];
-        Selection* selection = [JSObjManager getObjWithKey:selectionId];
+        Layer* layer = [JSObjManager getObjWithKey:layerId];
+        Selection* selection = [layer getSelection];
         Recordset* recordset = [selection toRecordset];
         TrackingLayer* trackingLayer = map.trackingLayer;
         
