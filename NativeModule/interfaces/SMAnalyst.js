@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-let Analyst = NativeModules.JSAnalyst;
+let Analyst = NativeModules.SMAnalyst;
 let M = NativeModules.JSMap;
 
 async function bufferAnalyst(map, layer, params) {
@@ -21,4 +21,5 @@ async function clear(map) {
 
 export default {
   bufferAnalyst,
+  clear,
 }
