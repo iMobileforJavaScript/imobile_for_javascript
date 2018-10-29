@@ -17,6 +17,7 @@ import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
+import com.supermap.interfaces.SMap;
 import com.supermap.mapping.CallOut;
 import com.supermap.mapping.CalloutAlignment;
 import com.supermap.mapping.MapControl;
@@ -30,10 +31,11 @@ import java.util.Map;
  * Created by will on 2016/6/16.
  */
 public class JSMapView extends ReactContextBaseJavaModule {
-    private static MapView curMapView=null;
+    private static MapView mapView = null;
     private static Map<String,MapView> mapViewList=new HashMap<String,MapView>();
+    private static MapControl mapControl = null;
     Context m_Context = null;
-    MapView m_mapView;
+//    MapView mapView;
     CallOut m_callout;
     String m_PointName;
 
@@ -54,16 +56,49 @@ public class JSMapView extends ReactContextBaseJavaModule {
      * @return
      */
     public static MapView createInstance(ThemedReactContext reactContext){
-        curMapView=new MapView(reactContext.getBaseContext());
-        return curMapView;
+        mapView = new MapView(reactContext.getBaseContext());
+        mapControl = mapView.getMapControl();
+        return mapView;
+    }
+
+    public static MapView getMapView(){
+        return mapView;
+    }
+
+    public static MapControl getMapControl(){
+        return mapControl;
+    }
+
+    public static void setInstance(MapView mMapView){
+        mapView = mMapView;
+        mapControl = mapView.getMapControl();
+        SMap.setInstance(mapControl);
+    }
+
+    public void disposeMapControl(){
+        getCurrentActivity().runOnUiThread(new DisposeThread());
+    }
+
+    class DisposeThread implements Runnable {
+
+        public DisposeThread() {
+        }
+
+        @Override
+        public void run() {
+            if (mapControl != null) {
+                mapControl.dispose();
+                mapControl = null;
+            }
+        }
     }
 
     /**
-     * 在native层注册一个MapView的Id，并返回该ID供JS层调用；
-     * 注册前先判断该MapView是否已经存在，如果存在，返回已经存在的ID，如果不存在，创建新的ID以返回。
-     * @param mapView
-     * @return
-     */
+//     * 在native层注册一个MapView的Id，并返回该ID供JS层调用；
+//     * 注册前先判断该MapView是否已经存在，如果存在，返回已经存在的ID，如果不存在，创建新的ID以返回。
+//     * @param mapView
+//     * @return
+//     */
     public static String registerId(MapView mapView){
         for(Map.Entry entry:mapViewList.entrySet()){
             if(mapView.equals(entry.getValue())){
@@ -86,29 +121,29 @@ public class JSMapView extends ReactContextBaseJavaModule {
         return mapViewList.get(id);
     }
 
-    /**
-     * 获取MapControl实例id。
-     * @param promise
-     */
-    @ReactMethod
-    public void getMapControl(String mapViewId, Promise promise){
-        try{
-            MapView mapView = mapViewList.get(mapViewId);
-            MapControl mapControl=mapView.getMapControl();
-            String mapControlId=JSMapControl.registerId(mapControl);
-            WritableMap map= Arguments.createMap();
-            map.putString("mapControlId",mapControlId);
-            promise.resolve(map);
-        }catch(Exception e){
-            promise.reject(e);
-        }
-    }
+//    /**
+//     * 获取MapControl实例id。
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void getMapControl( Promise promise){
+//        try{
+//            MapView mapView = mapViewList.get(mapViewId);
+//            MapControl mapControl=mapView.getMapControl();
+//            String mapControlId=JSMapControl.registerId(mapControl);
+//            WritableMap map= Arguments.createMap();
+//            map.putString("mapControlId",mapControlId);
+//            promise.resolve(map);
+//        }catch(Exception e){
+//            promise.reject(e);
+//        }
+//    }
 
     @ReactMethod
-    public void refresh(String mapViewId,Promise promise){
+    public void refresh(Promise promise){
         try{
-            m_mapView = mapViewList.get(mapViewId);
-            m_mapView.refresh();
+//            mapView = mapViewList.get(mapViewId);
+            mapView.refresh();
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
@@ -116,10 +151,10 @@ public class JSMapView extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void addPoint(String mapViewId,String point2DId,String pointName,Promise promise){
+    public void addPoint(String point2DId,String pointName,Promise promise){
         try{
             int idDrawable = 0;
-            MapView mapView = mapViewList.get(mapViewId);
+//            MapView mapView = mapViewList.get(mapViewId);
             com.supermap.mapping.Map map= mapView.getMapControl().getMap();
             Point2D point2D = JSPoint2D.m_Point2DList.get(point2DId);
 
@@ -162,12 +197,12 @@ public class JSMapView extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void addCallOut(String mapViewId,String callOutId,String pointName,Promise promise){
+    public void addCallOut(String callOutId,String pointName,Promise promise){
         try{
-            m_mapView = mapViewList.get(mapViewId);
+//            mapView = mapViewList.get(mapViewId);
             m_callout = JSCallOut.getObjFromList(callOutId);
             m_PointName = pointName;
-//            m_mapView.addCallout(m_callout,pointName);
+//            mapView.addCallout(m_callout,pointName);
             getCurrentActivity().runOnUiThread(addCallOutThread);
 
             promise.resolve(true);
@@ -177,9 +212,9 @@ public class JSMapView extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void showCallOut(String mapViewId,Promise promise){
+    public void showCallOut(Promise promise){
         try{
-            m_mapView = mapViewList.get(mapViewId);
+//            mapView = mapViewList.get(mapViewId);
             getCurrentActivity().runOnUiThread(showCallOutThread);
             promise.resolve(true);
         }catch (Exception e){
@@ -197,7 +232,7 @@ public class JSMapView extends ReactContextBaseJavaModule {
         imageView.setBackgroundResource(idDrawable);
         callOut.setContentView(imageView);
         m_callout = callOut;
-        m_mapView = mapView;
+        mapView = mapView;
         m_PointName = pointName;
 
         getCurrentActivity().runOnUiThread(addCallOutThread);
@@ -211,7 +246,7 @@ public class JSMapView extends ReactContextBaseJavaModule {
 //
 //        m_callout.setStyle(CalloutAlignment.BOTTOM);
 //        m_callout.setLocation(ptInner.getX(), ptInner.getY());
-//        m_mapView.removeAllCallOut();
+//        mapView.removeAllCallOut();
 //        getCurrentActivity().runOnUiThread(addCallOutThread);
 
     }
@@ -220,12 +255,12 @@ public class JSMapView extends ReactContextBaseJavaModule {
         @Override
         public void run(){
             if (m_PointName != null && !m_PointName.equals("")) {
-                m_mapView.addCallout(m_callout, m_PointName);
+                mapView.addCallout(m_callout, m_PointName);
             } else {
-                m_mapView.addCallout(m_callout);
+                mapView.addCallout(m_callout);
             }
 
-            m_mapView.showCallOut();
+            mapView.showCallOut();
         }
     };
 
@@ -233,7 +268,7 @@ public class JSMapView extends ReactContextBaseJavaModule {
     Runnable showCallOutThread = new Runnable(){
         @Override
         public void run(){
-            m_mapView.showCallOut();
+            mapView.showCallOut();
         }
     };
 }

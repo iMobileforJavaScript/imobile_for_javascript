@@ -1,7 +1,702 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="52760a13-1fb3-4ef7-ab6f-c3316017cf08" name="Default" comment="" />
+    <list default="true" id="52760a13-1fb3-4ef7-ab6f-c3316017cf08" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/AMQPManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/AMQPReceiver.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/AMQPSender.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ARControl.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Action.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Action3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/AggreatePointsOnline.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/AlongLineDirection.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/AlphaAnimator.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/AltitudeMode3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/AnalysisQuality.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Analyst.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Animator.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/BarChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/BoxClipPart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/BufferAnalyst.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/BufferAnalystGeometry.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/BufferAnalystOnline.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/BufferAnalystParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/BufferEndType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/BufferRadiusUnit.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Callout.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Camera.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Charset.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ChartData.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ChartLegend.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ChartOnSelectedDelagate.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ChartPoint.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ChartView.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/CloudLicenseManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ColElementLine.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ColElementPoint.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ColElementPolygon.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Collector.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/CollectorElement.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Color.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ColorDictionary.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ColorGradientType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ColorLegendItem.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ColorSpaceType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Colors.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/CoordSysTransMethod.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/CoordSysTransParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/CoordSysTranslator.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/CoordinateConvert.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/CoordinateConvertParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/CoordinateType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/CursorType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Data.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DataConversion.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DataDownloadService.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DataFlowOnline.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DataUploadService.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Dataset.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DatasetGrid.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DatasetGridInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DatasetImage.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DatasetType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DatasetVector.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DatasetVectorInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Datasets.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Datasource.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DatasourceConnectionInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Datasources.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DensityAnalystOnLine.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DirectionType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DistributeAnalyst.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DownloadManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DynamicAlignment.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DynamicElement.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DynamicLine.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DynamicPoint.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DynamicPolygon.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DynamicStyle.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DynamicText.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/DynamicView.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/EncodeType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/EngineType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Environment.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FacilityAnalyst.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FacilityAnalyst3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FacilityAnalystCheckResult3d.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FacilityAnalystResult.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FacilityAnalystResult3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FacilityAnalystSetting.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FacilityAnalystSetting3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Feature.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Feature3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Feature3DSearchOption.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Feature3Ds.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FeatureJoinOnline.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FeatureSet.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FieldInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FieldInfos.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FieldType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FillGradientMode.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FloorListView.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FloorListView3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FlyEvent.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FlyManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/FlyStatus.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoBox.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoCircle.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoCoordSys.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoCoordSysType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoDatum.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoDatumType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoGraphicObject.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoLine.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoLine3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoLineM.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoModel.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoPlacemark.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoPoint.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoPoint3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoPrimeMeridian.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoPrimeMeridianType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoRegion.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoRegion3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoSpatialRefType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoSpheroid.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoSpheroidType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoStyle.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoStyle3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoText.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeoText3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Geocoding.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeocodingData.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeocodingParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Geometry.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Geometry3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GeometryType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GlobalImage.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GridHotChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/GridIndexOnline.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/HeatChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/HypsometricSetting.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/HypsometricSettingDisplayMode.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ImageFormatType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ImageStretchOption.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/InstrumentChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/IntelligentSpeechDelegate.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/JoinItem.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/JoinItems.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/JoinType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LabelBackShape.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LabelMatrix.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Layer.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Layer3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Layer3DOSGBFile.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Layer3DServicesList.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Layer3DType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Layer3DVectorFile.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Layer3DVectorFileDataType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Layer3Ds.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LayerGroup.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LayerManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LayerSetting.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LayerSettingGrid.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LayerSettingImage.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LayerSettingType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LayerSettingVector.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LayerSettingVectorCache.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Layers.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Legend.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LegendItem.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LegendView.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LicenseStatus.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LineChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LocationAnalystParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LocationData.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LocationManagePlugin.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/LookAt.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/MDataCollector.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/MQTTClientSide.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Map.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/MapCacheService.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/MapControl.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/MapControlGroup.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Mapping.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Maps.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/MixedTextStyle.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/MultiViewportMode.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/NSObject+SpaceConvertor.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Navi.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/NaviDelegate.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/NaviInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/NaviStep.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Navigation.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Navigation2.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Navigation3.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Navigation3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/NavigationOnline.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/NavigationOnlineData.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/NavigationOnlineParamater.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/NodeAnimation.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/NodeAnimationPlayMode.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OLAccountManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OnlineAddress.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OnlinePOIInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OnlinePOIQuery.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OnlinePOIQueryParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OnlinePOIQueryResult.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OnlinePathInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OnlineService.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OnlineService3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OnlineStreetNumber.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OnlineTileServer.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OverLengthLabelMode.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OverlayAnalyst.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OverlayAnalystOnline.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/OverlayAnalystParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/PathGuide.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/PathGuideItem.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/PieChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/PixelFormat.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/PixelToGlobeMode.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Point2D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Point2Ds.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Point3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Point3Ds.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/PointDensityChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/PointM.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/PolymerChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/PrjCoordSys.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/PrjCoordSysType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/PrjFileType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/PrjFileVersion.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/PrjParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Projection.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ProjectionType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/QueryMode.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/QueryOnline.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/QueryOption.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/QueryParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/QueryService.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/QueryType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/RangeMode.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/RasterClip.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Realspace.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Recordset.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Rect2D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Rectangle2D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/RecycleLicenseManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/RelationalPointChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Resources.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Route.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/RouteStop.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/RouteStops.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Routes.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/STOMPManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/STOMPReceiver.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/STOMPSender.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ScaleView.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ScatterChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Scene.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SceneControl.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SceneServicesList.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SceneType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Scenes.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ScreenLayer.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Selection.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Selection3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SelectionMode.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ServiceAreaResult.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ServiceBase.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ServiceQueryParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ShadowVisibilityQuery.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SideType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Sightline.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Size2D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SnapSetting.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SpatialIndexInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SpatialQueryMode.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SpatialRelationType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SpeechManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SpinAnimatior.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/StatisticMode.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/StatisticsResult.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/StrokeType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SummaryRegionOnline.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SuperMap.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SupplyCenter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SupplyCenters.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Symbol.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SymbolFill.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SymbolFillLibrary.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SymbolGroup.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SymbolGroups.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SymbolLibrary.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SymbolLine.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SymbolLineBase.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SymbolLineLibrary.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SymbolMarker.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SymbolMarkerLibrary.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/SymbolMarkerStroke.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TerrainLayer.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TerrainLayers.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TextAlignment.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TextPart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TextPart3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TextStyle.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Theme.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ThemeLabel.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ThemeLabelItem.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ThemeRange.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ThemeRangeItem.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ThemeType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ThemeUnique.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ThemeUniqueItem.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TimeLine.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Toast.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Toolkit.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TopoBuild.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TopologyValidatorOnline.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Track.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Tracked3DEvent.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Tracking3DEvent.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TrackingLayer.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TrackingLayer3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TrafficLineItem.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TrafficLineItemArray.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TrafficPositionInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TrafficSolutionItem.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TrafficTransferOnline.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TrafficTransferOnlineData.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TrafficTransferParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TrafficWalkInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TranslateAnimator.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TransportationAnalyst.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TransportationAnalyst3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TransportationAnalystCheckResult3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TransportationAnalystParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TransportationAnalystParameter3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TransportationAnalystResult.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TransportationAnalystResult3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TransportationAnalystSetting.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TransportationAnalystSetting3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/TurnType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Unit.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/VectorClipAnalystOnline.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Viewshed3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/WebParams.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/WebRestParams.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/WeightFieldInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/WeightFieldInfo3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/WeightFieldInfos.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/WeightFieldInfos3D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/Workspace.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/WorkspaceConnectionInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/WorkspaceType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/WorkspaceVersion.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/ZoomAnimator.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/SuperMap/iServer.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/Supermap.xcodeproj/project.pbxproj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/Supermap.xcodeproj/project.xcworkspace/contents.xcworkspacedata" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/Supermap.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/Supermap.xcodeproj/project.xcworkspace/xcshareddata/Supermap.xcscmblueprint" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/Supermap.xcodeproj/project.xcworkspace/xcuserdata/Dragon.xcuserdatad/UserInterfaceState.xcuserstate" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/Supermap.xcodeproj/project.xcworkspace/xcuserdata/Myself.xcuserdatad/UserInterfaceState.xcuserstate" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/Supermap.xcodeproj/xcuserdata/Dragon.xcuserdatad/xcschemes/xcschememanagement.plist" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/Supermap.xcodeproj/xcuserdata/Myself.xcuserdatad/xcschemes/Supermap.xcscheme" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/Supermap.xcodeproj/xcuserdata/Myself.xcuserdatad/xcschemes/xcschememanagement.plist" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/Supermap.xcodeproj/xcuserdata/imobile-xzy.xcuserdatad/xcschemes/Supermap.xcscheme" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/Supermap.xcodeproj/xcuserdata/imobile-xzy.xcuserdatad/xcschemes/xcschememanagement.plist" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/Constants.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/Constants.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSAMQPManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSAMQPManager.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSAMQPReceiver.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSAMQPReceiver.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSAMQPSender.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSAMQPSender.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSAction.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSAction.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSAdoptMapView.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSAdoptMapView.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBarChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBarChart.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBarChartData.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBarChartData.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBarChartDataItem.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBarChartDataItem.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBarChartViewManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBarChartViewManager.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBufferAnalyst.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBufferAnalyst.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBufferAnalystGeometry.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBufferAnalystGeometry.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBufferAnalystParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBufferAnalystParameter.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBufferEndType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSBufferEndType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSCallOut.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSCallOut.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSChartData.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSChartData.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSChartLegend.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSChartLegend.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSChartPoint.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSChartPoint.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSChartView.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSChartView.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSCollector.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSCollector.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSCollectorElement.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSCollectorElement.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSCollectorLine.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSCollectorLine.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSColorGradientType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSColorGradientType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSColorScheme.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSColorScheme.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSCoordSysTransMethod.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSCoordSysTransMethod.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSCoordSysTransParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSCoordSysTransParameter.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSCoordSysTranslator.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSCoordSysTranslator.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDataDownloadService.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDataDownloadService.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDataUploadService.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDataUploadService.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDataset.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDataset.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDatasetType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDatasetType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDatasetVector.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDatasetVector.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDatasetVectorInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDatasetVectorInfo.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDatasets.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDatasets.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDatasource.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDatasource.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDatasourceConnectionInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDatasourceConnectionInfo.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDatasources.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSDatasources.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSElementPoint.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSElementPoint.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSElementPolygon.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSElementPolygon.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSEncodeType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSEncodeType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSEnvironment.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSEnvironment.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSFacilityAnalyst.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSFacilityAnalyst.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSFacilityAnalystSetting.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSFacilityAnalystSetting.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSFeature.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSFeature.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSFeatureSet.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSFeatureSet.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSFieldType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSFieldType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGPSElementType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGPSElementType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGeoLine.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGeoLine.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGeoLineM.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGeoLineM.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGeoPoint.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGeoPoint.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGeoRegion.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGeoRegion.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGeoStyle.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGeoStyle.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGeoText.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGeoText.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGeometry.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGeometry.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGridHotChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSGridHotChart.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSHotChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSHotChart.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSInstrumentChartViewManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSInstrumentChartViewManager.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLayer.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLayer.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLayer3Ds.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLayer3Ds.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLayerGroup.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLayerGroup.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLayerManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLayerManager.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLayerSetting.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLayerSetting.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLayerSettingVector.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLayerSettingVector.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLayers.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLayers.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLegendViewManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLegendViewManager.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLineChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLineChart.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLineChartData.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLineChartData.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLineChartViewManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLineChartViewManager.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLocationAnalystParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLocationAnalystParameter.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLocationManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSLocationManager.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSMQTTClientSide.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSMQTTClientSide.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSMap.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSMap.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSMapControl.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSMapControl.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSMapView.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSMapView.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSMaps.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSMaps.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSNavigation.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSNavigation.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSNavigation2.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSNavigation2.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSObjManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSObjManager.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSOnlineService.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSOnlineService.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSOverlayAnalyst.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSOverlayAnalyst.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSOverlayAnalystParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSOverlayAnalystParameter.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPieChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPieChart.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPieChartData.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPieChartData.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPieChartViewManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPieChartViewManager.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPoint.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPoint.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPoint2D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPoint2D.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPointDensityChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPointDensityChart.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPointM.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPointM.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPolymerChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPolymerChart.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPrjCoordSys.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPrjCoordSys.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPrjCoordSysType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSPrjCoordSysType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSProjectionType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSProjectionType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSQueryParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSQueryParameter.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSQueryService.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSQueryService.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSRadiusUnit.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSRadiusUnit.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSRangeMode.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSRangeMode.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSRecordset.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSRecordset.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSRectangle2D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSRectangle2D.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSRelationalChartPoint.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSRelationalChartPoint.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSRelationalPointChart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSRelationalPointChart.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSResources.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSResources.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSTOMPManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSTOMPManager.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSTOMPReceiver.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSTOMPReceiver.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSTOMPSender.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSTOMPSender.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSScaleViewManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSScaleViewManager.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSScene.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSScene.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSceneControl.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSceneControl.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSceneView.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSceneView.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSelection.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSelection.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSServiceBase.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSServiceBase.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSServiceQueryParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSServiceQueryParameter.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSize2D.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSize2D.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSpeechManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSpeechManager.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSupplyCenter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSupplyCenter.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSupplyCenterType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSupplyCenterType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSupplyCenters.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSupplyCenters.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbol.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbol.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolFill.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolFill.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolFillLibrary.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolFillLibrary.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolGroup.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolGroup.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolGroups.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolGroups.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolLibrary.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolLibrary.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolLine.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolLine.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolLineLibrary.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolLineLibrary.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolMarker.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolMarker.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolMarkerLibrary.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolMarkerLibrary.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSymbolType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSystemUtil.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSSystemUtil.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTextAlignment.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTextAlignment.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTextPart.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTextPart.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTextStyle.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTextStyle.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTheme.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTheme.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSThemeLabel.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSThemeLabel.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSThemeLabelItem.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSThemeLabelItem.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSThemeRange.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSThemeRange.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSThemeRangeItem.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSThemeRangeItem.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSThemeType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSThemeType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSThemeUnique.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSThemeUnique.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSThemeUniqueItem.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSThemeUniqueItem.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTimeLine.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTimeLine.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTrack.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTrack.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTrackingLayer.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTrackingLayer.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTransportationAnalyst.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTransportationAnalyst.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTransportationAnalystParameter.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTransportationAnalystParameter.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTransportationAnalystSetting.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSTransportationAnalystSetting.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSWeightFieldInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSWeightFieldInfo.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSWeightFieldInfos.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSWeightFieldInfos.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSWorkspace.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSWorkspace.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSWorkspaceConnectionInfo.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSWorkspaceConnectionInfo.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSWorkspaceType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JSWorkspaceType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JsonUtil.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/JsonUtil.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/MQTTClientSide.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/NativeUtil.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/NativeUtil.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/RCTConvert+Action.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/RCTConvert+Action.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/RCTConvert+BufferEndType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/RCTConvert+BufferEndType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/RCTConvert+DatasetType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/RCTConvert+DatasetType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/RCTConvert+EncodeType.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/RCTConvert+EncodeType.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/RCTConvert+RadiusUnit.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/RCTConvert+RadiusUnit.m" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/SceneViewManager.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/objNative/SceneViewManager.m" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/NativeModule/Analyst.js" afterPath="$PROJECT_DIR$/NativeModule/interfaces/Analyst.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NativeModule/GeoStyle.js" afterPath="$PROJECT_DIR$/NativeModule/GeoStyle.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NativeModule/MapView.js" afterPath="$PROJECT_DIR$/NativeModule/MapView.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NativeModule/components/SMMapViewUI.js" afterPath="$PROJECT_DIR$/NativeModule/components/SMMapViewUI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/android/imobile_for_reactnative.iml" afterPath="$PROJECT_DIR$/android/imobile_for_reactnative.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/JSCollector.java" afterPath="$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/JSCollector.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/JSMapControl.java" afterPath="$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/JSMapControl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/JSMapView.java" afterPath="$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/JSMapView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/MapViewManager.java" afterPath="$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/MapViewManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.js" afterPath="$PROJECT_DIR$/index.js" />
+    </list>
     <ignored path="Deployment3.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -14,7 +709,6 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
@@ -27,9 +721,17 @@
       <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2500">
-              <caret line="100" column="15" selection-start-line="100" selection-start-column="15" selection-end-line="100" selection-end-column="15" />
-              <folding />
+            <state relative-caret-position="450">
+              <caret line="100" column="15" lean-forward="false" selection-start-line="100" selection-start-column="15" selection-end-line="100" selection-end-column="15" />
+              <folding>
+                <marker date="1540539391497" expanded="false" signature="863:4848" ph="..." />
+                <marker date="1540539391497" expanded="true" signature="4911:7587" ph="..." />
+                <marker date="1540539391497" expanded="false" signature="7670:8912" ph="..." />
+                <marker date="1540539391497" expanded="true" signature="8913:9175" ph="/*...*/" />
+                <marker date="1540539391497" expanded="true" signature="9177:9241" ph="/** Version 1.6.3 ...*/" />
+                <marker date="1540539391497" expanded="false" signature="9249:9304" ph="..." />
+                <marker date="1540539391497" expanded="true" signature="11788:11859" ph="/*...*/" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -37,8 +739,8 @@
       <file leaf-file-name="build.gradle" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/android/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="325">
-              <caret line="13" column="17" selection-start-line="13" selection-start-column="17" selection-end-line="13" selection-end-column="17" />
+            <state relative-caret-position="240">
+              <caret line="16" column="28" lean-forward="true" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="28" />
               <folding />
             </state>
           </provider>
@@ -48,7 +750,7 @@
         <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/RNUtils/RNLegendView.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -57,8 +759,8 @@
       <file leaf-file-name="JS_EngineType.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/JS_EngineType.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
-              <caret line="19" column="31" selection-start-line="19" selection-start-column="31" selection-end-line="19" selection-end-column="31" />
+            <state relative-caret-position="285">
+              <caret line="19" column="31" lean-forward="false" selection-start-line="19" selection-start-column="31" selection-end-line="19" selection-end-column="31" />
               <folding />
             </state>
           </provider>
@@ -67,14 +769,23 @@
       <file leaf-file-name="SupermapPackage.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/SupermapPackage.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="24" column="48" selection-start-line="24" selection-start-column="48" selection-end-line="24" selection-end-column="48" />
+            <state relative-caret-position="360">
+              <caret line="24" column="48" lean-forward="false" selection-start-line="24" selection-start-column="48" selection-end-line="24" selection-end-column="48" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>JSGridHotChart</find>
+      <find>D854D63D2182E4720075B5F8</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GradleLocalSettings">
     <option name="externalProjectsViewState">
@@ -99,23 +810,15 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1456" />
-    <option name="height" value="876" />
+    <option name="y" value="23" />
+    <option name="width" value="1280" />
+    <option name="height" value="777" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
-    <OptionsSetting value="true" id="Add" />
-    <OptionsSetting value="true" id="Remove" />
-    <OptionsSetting value="true" id="Checkout" />
-    <OptionsSetting value="true" id="Update" />
-    <OptionsSetting value="true" id="Status" />
-    <OptionsSetting value="true" id="Edit" />
-    <ConfirmationsSetting value="0" id="Add" />
-    <ConfirmationsSetting value="0" id="Remove" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
+    <navigator currentView="ColorIdeProjectViewPane" proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -129,6 +832,22 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="ColorIdeProjectViewPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="imobile_for_reactnative" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="imobile_for_reactnative" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -163,14 +882,12 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="AndroidView" />
       <pane id="Scratches" />
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/android" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="nodejs_interpreter_path" value="E:/Program Files/nodejs/node" />
     <property name="settings.editor.selected.configurable" value="Settings.JavaScript" />
@@ -178,6 +895,7 @@
     <property name="JavaScriptWeakerCompletionTypeGuess" value="true" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="js-jscs-nodeInterpreter" value="E:\Program Files\nodejs\node.exe" />
+    <property name="HbShouldOpenHtmlAsHb" value="" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -186,7 +904,79 @@
       <recent name="F:\test\Deployment3\android\src\main\java\com\supermap" />
     </key>
   </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
   <component name="RunManager">
+    <configuration default="true" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <method />
+    </configuration>
+    <configuration default="true" type="DartTestRunConfigurationType" factoryName="Dart Test">
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerJest" factoryName="Jest">
+      <node-interpreter value="project" />
+      <working-dir value="" />
+      <envs />
+      <scope-kind value="ALL" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerKarma" factoryName="Karma">
+      <config-file value="" />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerProtractor" factoryName="Protractor">
+      <config-file value="" />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" working-dir="">
+      <method />
+    </configuration>
+    <configuration default="true" type="cucumber.js" factoryName="Cucumber.js">
+      <option name="cucumberJsArguments" value="" />
+      <option name="executablePath" />
+      <option name="filePath" />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
+      <command value="run" />
+      <scripts />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="mocha-javascript-test-runner" factoryName="Mocha">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <working-directory />
+      <pass-parent-env>true</pass-parent-env>
+      <envs />
+      <ui />
+      <extra-mocha-options />
+      <test-kind>DIRECTORY</test-kind>
+      <test-directory />
+      <recursive>false</recursive>
+      <method />
+    </configuration>
     <configuration name="&lt;template&gt;" type="Applet" default="true" selected="false">
       <option name="MAIN_CLASS_NAME" />
       <option name="HTML_FILE_NAME" />
@@ -217,43 +1007,47 @@
       <workItem from="1472453752713" duration="2357000" />
       <workItem from="1475913685522" duration="3841000" />
       <workItem from="1475978398540" duration="944000" />
+      <workItem from="1540542938934" duration="1128000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7627000" />
+    <option name="totallyTimeSpent" value="8755000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1456" height="876" extended-state="6" />
-    <editor active="false" />
+    <frame x="0" y="23" width="1280" height="777" extended-state="6" />
+    <editor active="true" />
     <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2494043" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2496474" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="processedProjectFiles" value="true" />
   </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.gradle" />
@@ -276,16 +1070,72 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1000">
-          <caret line="40" column="22" selection-start-line="40" selection-start-column="22" selection-end-line="40" selection-end-column="22" />
+        <state relative-caret-position="450">
+          <caret line="100" column="15" lean-forward="false" selection-start-line="100" selection-start-column="15" selection-end-line="100" selection-end-column="15" />
+          <folding>
+            <marker date="1540539391497" expanded="false" signature="863:4848" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="4911:7587" ph="..." />
+            <marker date="1540539391497" expanded="false" signature="7670:8912" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="8913:9175" ph="/*...*/" />
+            <marker date="1540539391497" expanded="true" signature="9177:9241" ph="/** Version 1.6.3 ...*/" />
+            <marker date="1540539391497" expanded="false" signature="9249:9304" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="11788:11859" ph="/*...*/" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/RNUtils/RNLegendView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/JS_EngineType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="19" column="31" lean-forward="false" selection-start-line="19" selection-start-column="31" selection-end-line="19" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/SupermapPackage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="24" column="48" lean-forward="false" selection-start-line="24" selection-start-column="48" selection-end-line="24" selection-end-column="48" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/android/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="9" lean-forward="true" selection-start-line="13" selection-start-column="9" selection-end-line="13" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1000">
+          <caret line="40" column="22" lean-forward="false" selection-start-line="40" selection-start-column="22" selection-end-line="40" selection-end-column="22" />
+          <folding>
+            <marker date="1540539391497" expanded="false" signature="863:4848" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="4911:7587" ph="..." />
+            <marker date="1540539391497" expanded="false" signature="7670:8912" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="8913:9175" ph="/*...*/" />
+            <marker date="1540539391497" expanded="true" signature="9177:9241" ph="/** Version 1.6.3 ...*/" />
+            <marker date="1540539391497" expanded="false" signature="9249:9304" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="11788:11859" ph="/*...*/" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/android/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -293,7 +1143,7 @@
     <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/RNUtils/RNLegendView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -301,7 +1151,7 @@
     <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/JS_EngineType.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="400">
-          <caret line="19" column="31" selection-start-line="19" selection-start-column="31" selection-end-line="19" selection-end-column="31" />
+          <caret line="19" column="31" lean-forward="false" selection-start-line="19" selection-start-column="31" selection-end-line="19" selection-end-column="31" />
           <folding />
         </state>
       </provider>
@@ -309,7 +1159,7 @@
     <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/SupermapPackage.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
-          <caret line="24" column="48" selection-start-line="24" selection-start-column="48" selection-end-line="24" selection-end-column="48" />
+          <caret line="24" column="48" lean-forward="false" selection-start-line="24" selection-start-column="48" selection-end-line="24" selection-end-column="48" />
           <folding />
         </state>
       </provider>
@@ -317,15 +1167,23 @@
     <entry file="file://$PROJECT_DIR$/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1540539391497" expanded="false" signature="863:4848" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="4911:7587" ph="..." />
+            <marker date="1540539391497" expanded="false" signature="7670:8912" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="8913:9175" ph="/*...*/" />
+            <marker date="1540539391497" expanded="true" signature="9177:9241" ph="/** Version 1.6.3 ...*/" />
+            <marker date="1540539391497" expanded="false" signature="9249:9304" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="11788:11859" ph="/*...*/" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/RNUtils/RNLegendView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -333,7 +1191,7 @@
     <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/JS_EngineType.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="361">
-          <caret line="19" column="31" selection-start-line="19" selection-start-column="31" selection-end-line="19" selection-end-column="31" />
+          <caret line="19" column="31" lean-forward="false" selection-start-line="19" selection-start-column="31" selection-end-line="19" selection-end-column="31" />
           <folding />
         </state>
       </provider>
@@ -341,7 +1199,7 @@
     <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/SupermapPackage.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="456">
-          <caret line="24" column="48" selection-start-line="24" selection-start-column="48" selection-end-line="24" selection-end-column="48" />
+          <caret line="24" column="48" lean-forward="false" selection-start-line="24" selection-start-column="48" selection-end-line="24" selection-end-column="48" />
           <folding />
         </state>
       </provider>
@@ -349,22 +1207,30 @@
     <entry file="file://$PROJECT_DIR$/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="304">
-          <caret line="16" column="44" selection-start-line="16" selection-start-column="44" selection-end-line="16" selection-end-column="44" />
-          <folding />
+          <caret line="16" column="44" lean-forward="false" selection-start-line="16" selection-start-column="44" selection-end-line="16" selection-end-column="44" />
+          <folding>
+            <marker date="1540539391497" expanded="false" signature="863:4848" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="4911:7587" ph="..." />
+            <marker date="1540539391497" expanded="false" signature="7670:8912" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="8913:9175" ph="/*...*/" />
+            <marker date="1540539391497" expanded="true" signature="9177:9241" ph="/** Version 1.6.3 ...*/" />
+            <marker date="1540539391497" expanded="false" signature="9249:9304" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="11788:11859" ph="/*...*/" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/android/src/main/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="95">
-          <caret line="5" column="2" selection-start-line="5" selection-start-column="2" selection-end-line="5" selection-end-column="2" />
+          <caret line="5" column="2" lean-forward="false" selection-start-line="5" selection-start-column="2" selection-end-line="5" selection-end-column="2" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/android/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -372,22 +1238,30 @@
     <entry file="file://$PROJECT_DIR$/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="16" column="44" selection-start-line="16" selection-start-column="44" selection-end-line="16" selection-end-column="44" />
-          <folding />
+          <caret line="16" column="44" lean-forward="false" selection-start-line="16" selection-start-column="44" selection-end-line="16" selection-end-column="44" />
+          <folding>
+            <marker date="1540539391497" expanded="false" signature="863:4848" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="4911:7587" ph="..." />
+            <marker date="1540539391497" expanded="false" signature="7670:8912" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="8913:9175" ph="/*...*/" />
+            <marker date="1540539391497" expanded="true" signature="9177:9241" ph="/** Version 1.6.3 ...*/" />
+            <marker date="1540539391497" expanded="false" signature="9249:9304" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="11788:11859" ph="/*...*/" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/android/src/main/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="5" column="2" selection-start-line="5" selection-start-column="2" selection-end-line="5" selection-end-column="2" />
+          <caret line="5" column="2" lean-forward="false" selection-start-line="5" selection-start-column="2" selection-end-line="5" selection-end-column="2" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/android/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -395,51 +1269,61 @@
     <entry file="file://$PROJECT_DIR$/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="16" column="44" selection-start-line="16" selection-start-column="44" selection-end-line="16" selection-end-column="44" />
-          <folding />
+          <caret line="16" column="44" lean-forward="false" selection-start-line="16" selection-start-column="44" selection-end-line="16" selection-end-column="44" />
+          <folding>
+            <marker date="1540539391497" expanded="false" signature="863:4848" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="4911:7587" ph="..." />
+            <marker date="1540539391497" expanded="false" signature="7670:8912" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="8913:9175" ph="/*...*/" />
+            <marker date="1540539391497" expanded="true" signature="9177:9241" ph="/** Version 1.6.3 ...*/" />
+            <marker date="1540539391497" expanded="false" signature="9249:9304" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="11788:11859" ph="/*...*/" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/android/src/main/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1540539391497" expanded="false" signature="863:4848" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="4911:7587" ph="..." />
+            <marker date="1540539391497" expanded="false" signature="7670:8912" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="8913:9175" ph="/*...*/" />
+            <marker date="1540539391497" expanded="true" signature="9177:9241" ph="/** Version 1.6.3 ...*/" />
+            <marker date="1540539391497" expanded="false" signature="9249:9304" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="11788:11859" ph="/*...*/" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/NativeModule/SMMapViewUI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="16" column="41" selection-start-line="16" selection-start-column="41" selection-end-line="16" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/NativeModule/SMMapViewUI.js" />
     <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/JSDatasourceConnectionInfo.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="399">
-          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+          <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/JSBufferAnalystGeometry.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="228">
-          <caret line="12" column="33" selection-start-line="12" selection-start-column="33" selection-end-line="12" selection-end-column="33" />
+          <caret line="12" column="33" lean-forward="false" selection-start-line="12" selection-start-column="33" selection-end-line="12" selection-end-column="33" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/SupermapPackage.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="24" column="48" selection-start-line="24" selection-start-column="48" selection-end-line="24" selection-end-column="48" />
+        <state relative-caret-position="360">
+          <caret line="24" column="48" lean-forward="false" selection-start-line="24" selection-start-column="48" selection-end-line="24" selection-end-column="48" />
           <folding />
         </state>
       </provider>
@@ -447,7 +1331,7 @@
     <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/SupermapFullPackage.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="114">
-          <caret line="27" column="10" selection-start-line="27" selection-start-column="10" selection-end-line="27" selection-end-column="10" />
+          <caret line="27" column="10" lean-forward="false" selection-start-line="27" selection-start-column="10" selection-end-line="27" selection-end-column="10" />
         </state>
       </provider>
     </entry>
@@ -455,29 +1339,29 @@
     <entry file="file://$PROJECT_DIR$/android/src/main/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="95">
-          <caret line="5" column="2" selection-start-line="5" selection-start-column="2" selection-end-line="5" selection-end-column="2" />
+          <caret line="5" column="2" lean-forward="false" selection-start-line="5" selection-start-column="2" selection-end-line="5" selection-end-column="2" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/JSPrjCoordSys.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="361">
-          <caret line="19" column="46" selection-start-line="19" selection-start-column="46" selection-end-line="19" selection-end-column="46" />
+          <caret line="19" column="46" lean-forward="false" selection-start-line="19" selection-start-column="46" selection-end-line="19" selection-end-column="46" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/RNUtils/RNLegendView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/rnsupermap/JS_EngineType.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="19" column="31" selection-start-line="19" selection-start-column="31" selection-end-line="19" selection-end-column="31" />
+        <state relative-caret-position="285">
+          <caret line="19" column="31" lean-forward="false" selection-start-line="19" selection-start-column="31" selection-end-line="19" selection-end-column="31" />
           <folding />
         </state>
       </provider>
@@ -485,36 +1369,44 @@
     <entry file="file://$PROJECT_DIR$/NativeModule/BufferAnalystGeometry.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/NativeModule/GeoStyle.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/NativeModule/LayerSetting.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2500">
-          <caret line="100" column="15" selection-start-line="100" selection-start-column="15" selection-end-line="100" selection-end-column="15" />
-          <folding />
+        <state relative-caret-position="450">
+          <caret line="100" column="15" lean-forward="false" selection-start-line="100" selection-start-column="15" selection-end-line="100" selection-end-column="15" />
+          <folding>
+            <marker date="1540539391497" expanded="false" signature="863:4848" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="4911:7587" ph="..." />
+            <marker date="1540539391497" expanded="false" signature="7670:8912" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="8913:9175" ph="/*...*/" />
+            <marker date="1540539391497" expanded="true" signature="9177:9241" ph="/** Version 1.6.3 ...*/" />
+            <marker date="1540539391497" expanded="false" signature="9249:9304" ph="..." />
+            <marker date="1540539391497" expanded="true" signature="11788:11859" ph="/*...*/" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/android/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="325">
-          <caret line="13" column="17" selection-start-line="13" selection-start-column="17" selection-end-line="13" selection-end-column="17" />
+        <state relative-caret-position="240">
+          <caret line="16" column="28" lean-forward="true" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="28" />
           <folding />
         </state>
       </provider>

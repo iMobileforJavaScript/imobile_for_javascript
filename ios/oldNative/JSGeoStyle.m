@@ -12,6 +12,14 @@
 #import "JSObjManager.h"
 @implementation JSGeoStyle
 RCT_EXPORT_MODULE();
+
++(GeoStyle *)createByObj:(NSString *)dataJson {
+    GeoStyle* style = [[GeoStyle alloc] init];
+    [style fromJson:dataJson];
+    return style;
+}
+
+
 RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
   GeoStyle* style = [[GeoStyle alloc]init];
   if(style){

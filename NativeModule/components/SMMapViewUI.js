@@ -58,49 +58,49 @@ class SMMapView extends Component{
         this.mapView._SMMapViewId = event.nativeEvent.mapViewId;
         this.props.onGetInstance(this.mapView);
 
-        (async function () {
-            try{
-                this.mapControl = await this.mapView.getMapControl();
-                this.map = await this.mapControl.getMap();
-
-                this.mapControl.setRefreshListener(
-                    //刷新地图重绘callouts
-                    async () => {
-                        if(this.state.callouts.length !== 0) {
-                            var arr = this.state.callouts;
-                            for(var i = 0 ; i < arr.length; i++){
-                                var Point2DFac = new Point2D();
-                                console.log("SMMapViewUI:mapPoint:" + arr[i].mapX + "," + arr[i].mapY);
-                                var point2D = await Point2DFac.createObj(arr[i].mapX,arr[i].mapY);
-                                var pixalPoint = await this.map.mapToPixel(point2D);
-                                console.log("SMMapViewUI:pixalPoint:" + pixalPoint.x + "," + pixalPoint.y);
-                                //转布局坐标
-                                arr[i].top = pixalPoint.y / PixelRatio.get();
-                                arr[i].left = pixalPoint.x / PixelRatio.get();
-
-                                //调整图标锚点位置
-                                const sourceBody = resolveAssetSource(arr[i].uri);
-                                let {width,height} = sourceBody;
-                                var offY = arr[i].top - height;
-                                var offX = arr[i].left - width/2;
-
-                                var indexer = "callout" + i;
-                                this.refs[indexer].setNativeProps({
-                                    style:{
-                                        top:offY,
-                                        left:offX,
-                                    }
-                                });
-                            }
-                        }
-                    }
-                );
-
-
-            }catch (e){
-                console.log(e);
-            }
-        }).bind(this)();
+        // (async function () {
+        //     try{
+        //         this.mapControl = await this.mapView.getMapControl();
+        //         this.map = await this.mapControl.getMap();
+        //
+        //         this.mapControl.setRefreshListener(
+        //             //刷新地图重绘callouts
+        //             async () => {
+        //                 if(this.state.callouts.length !== 0) {
+        //                     var arr = this.state.callouts;
+        //                     for(var i = 0 ; i < arr.length; i++){
+        //                         var Point2DFac = new Point2D();
+        //                         console.log("SMMapViewUI:mapPoint:" + arr[i].mapX + "," + arr[i].mapY);
+        //                         var point2D = await Point2DFac.createObj(arr[i].mapX,arr[i].mapY);
+        //                         var pixalPoint = await this.map.mapToPixel(point2D);
+        //                         console.log("SMMapViewUI:pixalPoint:" + pixalPoint.x + "," + pixalPoint.y);
+        //                         //转布局坐标
+        //                         arr[i].top = pixalPoint.y / PixelRatio.get();
+        //                         arr[i].left = pixalPoint.x / PixelRatio.get();
+        //
+        //                         //调整图标锚点位置
+        //                         const sourceBody = resolveAssetSource(arr[i].uri);
+        //                         let {width,height} = sourceBody;
+        //                         var offY = arr[i].top - height;
+        //                         var offX = arr[i].left - width/2;
+        //
+        //                         var indexer = "callout" + i;
+        //                         this.refs[indexer].setNativeProps({
+        //                             style:{
+        //                                 top:offY,
+        //                                 left:offX,
+        //                             }
+        //                         });
+        //                     }
+        //                 }
+        //             }
+        //         );
+        //
+        //
+        //     }catch (e){
+        //         console.log(e);
+        //     }
+        // }).bind(this)();
     }
 
     /**

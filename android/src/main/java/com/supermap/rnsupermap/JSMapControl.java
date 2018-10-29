@@ -128,17 +128,17 @@ public class JSMapControl extends ReactContextBaseJavaModule {
         mReactContext = reactContext;
     }
 
-    public static String registerId(MapControl mapControl) {
-        for (Map.Entry entry : mapControlList.entrySet()) {
-            if (mapControl.equals(entry.getValue())) {
-                return (String) entry.getKey();
-            }
-        }
-        Calendar calendar = Calendar.getInstance();
-        String id = Long.toString(calendar.getTimeInMillis());
-        mapControlList.put(id, mapControl);
-        return id;
-    }
+//    public static String registerId(MapControl mapControl) {
+//        for (Map.Entry entry : mapControlList.entrySet()) {
+//            if (mapControl.equals(entry.getValue())) {
+//                return (String) entry.getKey();
+//            }
+//        }
+//        Calendar calendar = Calendar.getInstance();
+//        String id = Long.toString(calendar.getTimeInMillis());
+//        mapControlList.put(id, mapControl);
+//        return id;
+//    }
 
     public static MapControl getObjFromList(String id) {
         return mapControlList.get(id);
@@ -149,9 +149,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getMap(String mapControlId, Promise promise) {
+    public void getMap(Promise promise) {
         try {
-            MapControl mapControl = mapControlList.get(mapControlId);
+            MapControl mapControl = JSMapView.getMapControl();
             com.supermap.mapping.Map map = mapControl.getMap();
 
 //            写入map及其ID，返回ID，如果已经map已经存在，返回已存在的Id
@@ -168,11 +168,10 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     /**
      * 监听编辑行为的变更事件
      *
-     * @param mapControlId mapControl实例ID
      * @param promise      JS层的promise对象
      */
     @ReactMethod
-    public void addActionChangedListener(String mapControlId, Promise promise) {
+    public void addActionChangedListener(Promise promise) {
         try {
             mActionChangedListener = new ActionChangedListener() {
                 @Override
@@ -184,7 +183,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                             .emit(ACTION_CHANGE, n_r_eventSender.createSender());
                 }
             };
-            MapControl mapControl = mapControlList.get(mapControlId);
+            MapControl mapControl = JSMapView.getMapControl();
             mapControl.addActionChangedListener(mActionChangedListener);
             promise.resolve(true);
         } catch (Exception e) {
@@ -193,9 +192,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removeActionChangedListener(String mapControlId, Promise promise) {
+    public void removeActionChangedListener(Promise promise) {
         try {
-            MapControl mapControl = mapControlList.get(mapControlId);
+            MapControl mapControl = JSMapView.getMapControl();
             mapControl.removeActionChangedListener(mActionChangedListener);
             promise.resolve(true);
         } catch (Exception e) {
@@ -207,11 +206,10 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     /**
      * 监听长按动作和滚动动作
      *
-     * @param mapControlId
      * @param promise
      */
     @ReactMethod
-    public void setGestureDetector(String mapControlId, final Promise promise) {
+    public void setGestureDetector(final Promise promise) {
         try {
             mGestureDetector = new GestureDetector(mReactContext, new GestureDetector.SimpleOnGestureListener() {
 
@@ -286,7 +284,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                     return false;
                 }
             });
-            MapControl mapControl = mapControlList.get(mapControlId);
+            MapControl mapControl = JSMapView.getMapControl();
             mapControl.setGestureDetector(mGestureDetector);
             promise.resolve(true);
         } catch (Exception e) {
@@ -296,9 +294,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void deleteCurrentGeometry(String mapControlId, Promise promise) {
+    public void deleteCurrentGeometry(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             boolean deleted = mMapControl.deleteCurrentGeometry();
 
             WritableMap map = Arguments.createMap();
@@ -312,11 +310,10 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     /**
      * 监听原生map刷新事件
      *
-     * @param mapControlId
      * @param promise
      */
     @ReactMethod
-    public void setRefreshListener(String mapControlId, Promise promise) {
+    public void setRefreshListener(Promise promise) {
         try {
             mRefreshListener = new RefreshListener() {
                 @Override
@@ -325,7 +322,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                             .emit(REFRESH_EVENT, null);
                 }
             };
-            MapControl mapControl = mapControlList.get(mapControlId);
+            MapControl mapControl = JSMapView.getMapControl();
             mapControl.setRefreshListener(mRefreshListener);
             promise.resolve(true);
         } catch (Exception e) {
@@ -334,9 +331,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setAction(String mapControlId, int actionType, Promise promise) {
+    public void setAction(int actionType, Promise promise) {
         try {
-            MapControl mapControl = mapControlList.get(mapControlId);
+            MapControl mapControl = JSMapView.getMapControl();
             mapControl.setAction((Action) Enum.parse(Action.class, actionType));
             promise.resolve(true);
         } catch (Exception e) {
@@ -345,9 +342,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void submit(String mapControlId, Promise promise) {
+    public void submit(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             Boolean b = mMapControl.submit();
 
             promise.resolve(b);
@@ -357,9 +354,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getNavigation2(String mapControlId, Promise promise) {
+    public void getNavigation2(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mNavigation2 = mMapControl.getNavigation2();
 //            getCurrentActivity().runOnUiThread(updateThread);
             String navigation2Id = JSNavigation2.registerId(mNavigation2);
@@ -375,11 +372,10 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     /**
      * 监听地图参数变化
      *
-     * @param mapControlId
      * @param promise
      */
     @ReactMethod
-    public void setMapParamChangedListener(String mapControlId, Promise promise) {
+    public void setMapParamChangedListener(Promise promise) {
         try {
             mMapParamChangedListener = new MapParameterChangedListener() {
 
@@ -417,7 +413,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                             .emit(SIZECHANGED, map);
                 }
             };
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.setMapParamChangedListener(mMapParamChangedListener);
             promise.resolve(true);
         } catch (Exception e) {
@@ -426,9 +422,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getCurrentGeometry(String mapControlId, Promise promise) {
+    public void getCurrentGeometry(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             Geometry geometry = mMapControl.getCurrentGeometry();
             String geometryId = JSGeometry.registerId(geometry);
 
@@ -452,9 +448,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setConfigurationChangedListener(String mapControlId, Promise promise) {
+    public void setConfigurationChangedListener(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.setConfigurationChangedListener(new ConfigurationChangedListener() {
                 @Override
                 public void toHorizontalScreen() {
@@ -476,9 +472,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getTraditionalNavi(String mapControlId, Promise promise) {
+    public void getTraditionalNavi(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             Navigation traditionalNavi = mMapControl.getNavigation();
             String traditionalNaviId = JSNavigation.registerId(traditionalNavi);
 
@@ -491,9 +487,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getAction(String mapControlId, Promise promise) {
+    public void getAction(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             Action action = mMapControl.getAction();
             int actionType = Enum.getValueByName(Action.class, action.toString());
 
@@ -506,9 +502,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void redo(String mapControlId, Promise promise) {
+    public void redo(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             boolean redone = mMapControl.redo();
 
             WritableMap map = Arguments.createMap();
@@ -520,9 +516,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void undo(String mapControlId, Promise promise) {
+    public void undo(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             boolean undone = mMapControl.undo();
 
             WritableMap map = Arguments.createMap();
@@ -534,9 +530,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void cancel(String mapControlId, Promise promise) {
+    public void cancel(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             boolean canceled = mMapControl.cancel();
 
             WritableMap map = Arguments.createMap();
@@ -549,9 +545,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void getEditLayer(String mapControlId, Promise promise) {
+    public void getEditLayer(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             Layer layer = mMapControl.getEditLayer();
             String layerId = JSLayer.registerId(layer);
 
@@ -564,9 +560,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void deleteGestureDetector(String mapControlId, Promise promise) {
+    public void deleteGestureDetector(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.deleteGestureDetector();
 
             promise.resolve(true);
@@ -576,7 +572,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void addGeometryDeletedListener(String mapControlId, Promise promise) {
+    public void addGeometryDeletedListener(Promise promise) {
         try {
             mGeometryDeleted = new GeometryDeletedListener() {
                 @Override
@@ -595,7 +591,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                             .emit(GEOMETRYDELETED, map);
                 }
             };
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.addGeometryDeletedListener(mGeometryDeleted);
 
             promise.resolve(true);
@@ -605,9 +601,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removeGeometryDeletedListener(String mapControlId, Promise promise) {
+    public void removeGeometryDeletedListener(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.removeGeometryDeletedListener(mGeometryDeleted);
 
             promise.resolve(true);
@@ -617,7 +613,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void addGeometryAddedListener(String mapControlId, Promise promise) {
+    public void addGeometryAddedListener(Promise promise) {
         try {
             mGeometryAdded = new GeometryAddedListener() {
                 @Override
@@ -637,7 +633,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                             .emit(GEOMETRYADDED, map);
                 }
             };
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.addGeometryAddedListener(mGeometryAdded);
 
             promise.resolve(true);
@@ -647,9 +643,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removeGeometryAddedListener(String mapControlId, Promise promise) {
+    public void removeGeometryAddedListener(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.removeGeometryAddedListener(mGeometryAdded);
 
             promise.resolve(true);
@@ -659,7 +655,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void addGeometryDeletingListener(String mapControlId, Promise promise) {
+    public void addGeometryDeletingListener(Promise promise) {
         try {
             mGeometryDeletingListener = new GeometryDeletingListener() {
                 @Override
@@ -678,7 +674,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                             .emit(GEOMETRYDELETING, map);
                 }
             };
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.addGeometryDeletingListener(mGeometryDeletingListener);
 
             promise.resolve(true);
@@ -688,9 +684,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removeGeometryDeletingListener(String mapControlId, Promise promise) {
+    public void removeGeometryDeletingListener(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.removeGeometryDeletingListener(mGeometryDeletingListener);
 
             promise.resolve(true);
@@ -700,7 +696,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void addGeometryModifiedListener(String mapControlId, Promise promise) {
+    public void addGeometryModifiedListener(Promise promise) {
         try {
             mGeometryModifiedListener = new GeometryModifiedListener() {
                 @Override
@@ -719,7 +715,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                             .emit(GEOMETRYMODIFIED, map);
                 }
             };
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.addGeometryModifiedListener(mGeometryModifiedListener);
 
             promise.resolve(true);
@@ -729,9 +725,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removeGeometryModifiedListener(String mapControlId, Promise promise) {
+    public void removeGeometryModifiedListener(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.removeGeometryModifiedListener(mGeometryModifiedListener);
 
             promise.resolve(true);
@@ -741,7 +737,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void addGeometryModifyingListener(String mapControlId, Promise promise) {
+    public void addGeometryModifyingListener(Promise promise) {
         try {
             mGeometryModifyingListener = new GeometryModifyingListener() {
                 @Override
@@ -760,7 +756,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                             .emit(GEOMETRYMODIFYING, map);
                 }
             };
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.addGeometryModifyingListener(mGeometryModifyingListener);
             promise.resolve(true);
         } catch (Exception e) {
@@ -769,9 +765,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removeGeometryModifyingListener(String mapControlId, Promise promise) {
+    public void removeGeometryModifyingListener(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.addGeometryModifyingListener(mGeometryModifyingListener);
             promise.resolve(true);
         } catch (Exception e) {
@@ -780,7 +776,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void addGeometrySelectedListener(String mapControlId, Promise promise) {
+    public void addGeometrySelectedListener(Promise promise) {
         try {
             mGeometrySelectedListener = new GeometrySelectedListener() {
                 @Override
@@ -818,7 +814,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                             .emit(GEOMETRYMULTISELECTED, geometries);
                 }
             };
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.addGeometrySelectedListener(mGeometrySelectedListener);
             promise.resolve(true);
         } catch (Exception e) {
@@ -827,9 +823,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removeGeometrySelectedListener(String mapControlId, Promise promise) {
+    public void removeGeometrySelectedListener(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.removeGeometrySelectedListener(mGeometrySelectedListener);
             promise.resolve(true);
         } catch (Exception e) {
@@ -838,7 +834,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void addMeasureListener(String mapControlId, Promise promise) {
+    public void addMeasureListener(Promise promise) {
         try {
             mMeasureListener = new MeasureListener() {
                 @Override
@@ -880,7 +876,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                             .emit(ANGLEMEASURED, map);
                 }
             };
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.addMeasureListener(mMeasureListener);
             promise.resolve(true);
         } catch (Exception e) {
@@ -889,9 +885,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removeMeasureListener(String mapControlId, Promise promise) {
+    public void removeMeasureListener(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.removeMeasureListener(mMeasureListener);
             promise.resolve(true);
         } catch (Exception e) {
@@ -900,7 +896,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void addUndoStateChangeListener(String mapControlId, Promise promise) {
+    public void addUndoStateChangeListener(Promise promise) {
         try {
             mUndoStateChangeListener = new UndoStateChangeListener() {
                 @Override
@@ -913,7 +909,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
                             .emit(UNDOSTATECHANGE, map);
                 }
             };
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.addUndoStateChangeListener(mUndoStateChangeListener);
             promise.resolve(true);
         } catch (Exception e) {
@@ -922,9 +918,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removeUndoStateChangeListener(String mapControlId, Promise promise) {
+    public void removeUndoStateChangeListener(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.removeUndoStateChangeListener(mUndoStateChangeListener);
             promise.resolve(true);
         } catch (Exception e) {
@@ -933,7 +929,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setEditStatusListener(String mapControlId, Promise promise) {
+    public void setEditStatusListener(Promise promise) {
         try {
             mEditStatusListener = new EditStatusListener() {
                 @Override
@@ -965,7 +961,7 @@ public class JSMapControl extends ReactContextBaseJavaModule {
 
                 }
             };
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.setEditStatusListener(mEditStatusListener);
             promise.resolve(true);
         } catch (Exception e) {
@@ -974,9 +970,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removeEditStatusListener(String mapControlId, Promise promise) {
+    public void removeEditStatusListener(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.removeEditStatusListener(mEditStatusListener);
             promise.resolve(true);
         } catch (Exception e) {
@@ -985,13 +981,13 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void addPlotLibrary(final String mapControlId, final String url, final Promise promise) {
+    public void addPlotLibrary(final String url, final Promise promise) {
         try {
             Handler plotHandler = new Handler();
             plotHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mMapControl = mapControlList.get(mapControlId);
+                    mMapControl = JSMapView.getMapControl();
                     int libId = (int) mMapControl.addPlotLibrary(android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + url);
                     promise.resolve(libId);
                 }
@@ -1002,9 +998,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removePlotLibrary(String mapControlId, long libId, Promise promise) {
+    public void removePlotLibrary(long libId, Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.removePlotLibrary(libId);
             promise.resolve(true);
         } catch (Exception e) {
@@ -1014,9 +1010,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setPlotSymbol(String mapControlId, int libId, int symbolCode, Promise promise) {
+    public void setPlotSymbol(int libId, int symbolCode, Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             mMapControl.setPlotSymbol(libId, symbolCode);
             promise.resolve(true);
         } catch (Exception e) {
@@ -1026,9 +1022,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getCollector(String mapControlId, Promise promise) {
+    public void getCollector(Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             Collector collector = mMapControl.getCollector();
             String id = JSCollector.registerId(collector);
             promise.resolve(id);
@@ -1041,15 +1037,14 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     /**
      * 指定编辑几何对象
      *
-     * @param mapControlId
      * @param GeoID
      * @param layerId
      * @param promise
      */
     @ReactMethod
-    public void appointEditGeometry(String mapControlId, int GeoID, String layerId, Promise promise) {
+    public void appointEditGeometry(int GeoID, String layerId, Promise promise) {
         try {
-            mMapControl = mapControlList.get(mapControlId);
+            mMapControl = JSMapView.getMapControl();
             Layer layer = JSLayer.getLayer(layerId);
             boolean result = mMapControl.appointEditGeometry(GeoID, layer);
             promise.resolve(result);
@@ -1058,54 +1053,51 @@ public class JSMapControl extends ReactContextBaseJavaModule {
         }
     }
 
-    /**
-     * 释放对象
-     *
-     * @param mapControlId
-     * @param promise
-     */
-    @ReactMethod
-    public void dispose(String mapControlId, Promise promise) {
-        try {
-//            mMapControl = mapControlList.get(mapControlId);
-//            mMapControl.dispose();
-//            removeObjFromList(mapControlId);
+//    /**
+//     * 释放对象
+//     *
+//     * @param mapControlId
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void dispose(Promise promise) {
+//        try {
+////            mMapControl = JSMapView.getMapControl();
+////            mMapControl.dispose();
+////            removeObjFromList(mapControlId);
+////
+////            promise.resolve(true);
+//            getCurrentActivity().runOnUiThread(new DisposeThread(mapControlId, promise));
 //
-//            promise.resolve(true);
-            getCurrentActivity().runOnUiThread(new DisposeThread(mapControlId, promise));
-
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    class DisposeThread implements Runnable {
-
-        private String mapControlId;
-        private Promise promise;
-
-        public DisposeThread(String mapControlId, Promise promise) {
-            this.mapControlId = mapControlId;
-            this.promise = promise;
-        }
-
-        @Override
-        public void run() {
-            try {
-                mMapControl = mapControlList.get(mapControlId);
-                mMapControl.dispose();
-                removeObjFromList(mapControlId);
-                promise.resolve(true);
-            } catch (Exception e) {
-                promise.resolve(e);
-            }
-        }
-    }
+//        } catch (Exception e) {
+//            promise.reject(e);
+//        }
+//    }
+//
+//    class DisposeThread implements Runnable {
+//
+//        private String mapControlId;
+//        private Promise promise;
+//
+//        public DisposeThread(Promise promise) {
+//            this.promise = promise;
+//        }
+//
+//        @Override
+//        public void run() {
+//            try {
+//                JSMapView.disposeMapControl();
+//                mMapControl = null;
+//                promise.resolve(true);
+//            } catch (Exception e) {
+//                promise.resolve(e);
+//            }
+//        }
+//    }
 
     /**
      * 将当前显示内容绘制到指定位图上
      *
-     * @param mapControlId
      * @param width
      * @param height
      * @param quality
@@ -1113,9 +1105,9 @@ public class JSMapControl extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void outputMap(String mapControlId, String mapViewId, int width, int height, int quality, String type, Promise promise) {
+    public void outputMap( int width, int height, int quality, String type, Promise promise) {
         try {
-            getCurrentActivity().runOnUiThread(new OutputMapThread(mapControlId, mapViewId, width, height, quality, type, promise));
+            getCurrentActivity().runOnUiThread(new OutputMapThread(width, height, quality, type, promise));
 
         } catch (Exception e) {
             promise.reject(e);
@@ -1124,17 +1116,13 @@ public class JSMapControl extends ReactContextBaseJavaModule {
 
     class OutputMapThread implements Runnable {
 
-        private String mapControlId;
-        private String mapViewId;
         private int width;
         private int height;
         private int quality;
         private String type;
         private Promise promise;
 
-        public OutputMapThread(String mapControlId, String mapViewId, int width, int height, int quality, String type, Promise promise) {
-            this.mapControlId = mapControlId;
-            this.mapViewId = mapViewId;
+        public OutputMapThread(int width, int height, int quality, String type, Promise promise) {
             this.width = width;
             this.height = height;
             this.quality = quality;
@@ -1145,16 +1133,14 @@ public class JSMapControl extends ReactContextBaseJavaModule {
         @Override
         public void run() {
             try {
-                mMapControl = mapControlList.get(mapControlId);
+                mMapControl = JSMapView.getMapControl();
                 MapView mapView;
                 int imgHeight = height;
                 int imgWidth = width;
 
-                if (!mapControlId.equals("")) {
-                    mapView = JSMapView.getObjById(mapViewId);
-                    imgHeight = mapView.getHeight();
-                    imgWidth = mapView.getWidth();
-                }
+                mapView = JSMapView.getMapView();
+                imgHeight = mapView.getHeight();
+                imgWidth = mapView.getWidth();
                 Bitmap bitmap = Bitmap.createBitmap(imgWidth, imgHeight, Bitmap.Config.ARGB_8888);
                 boolean result = mMapControl.outputMap(bitmap);
                 File externalCacheDir = getReactApplicationContext().getExternalCacheDir();

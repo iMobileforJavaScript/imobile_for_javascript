@@ -63,7 +63,9 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 {
   MapControl* mapControl = [[MapControl alloc]init];
   mapControl.jsMapControl = self;
-  [JSObjManager addObj:mapControl];
+    
+    [SMap setInstance:mapControl];
+//  [JSObjManager addObj:mapControl];
 
   return mapControl;
 }

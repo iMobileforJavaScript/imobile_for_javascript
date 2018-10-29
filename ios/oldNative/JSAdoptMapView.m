@@ -322,8 +322,8 @@ RCT_REMAP_METHOD(getCollector,getCollectorId:(NSString*)Id resolver:(RCTPromiseR
     MapControl* mapControl = [JSObjManager getObjWithKey:Id];
     Collector* collector = [mapControl getCollector];
     if(collector){
-        NSInteger key = (NSInteger)collector;
-        [JSObjManager addObj:collector];
+        NSString* key = @("Collector");
+        [JSObjManager addObjWithKey:collector key:key];
         resolve([JSObjManager addObj:collector]);
     }else{
         reject(@"MapControl",@"getCollector() failed.",nil);

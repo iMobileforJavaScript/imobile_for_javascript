@@ -171,7 +171,11 @@ import Environment from './NativeModule/Environment'
  import Recordset from './NativeModule/Recordset.js';
  */
 
-import Analyst from './NativeModule/Analyst'
+/***********************Version 1.6.3**************************/
+import {
+  SMap,
+  SMAnalyst,
+} from './NativeModule/interfaces'
 
 export {
   SMMapView,
@@ -343,5 +347,6 @@ export {
    Recordset,
    */
 
-  Analyst,
+  SMap,
+  SMAnalyst,
 };

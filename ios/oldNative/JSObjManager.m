@@ -61,4 +61,14 @@ static NSMutableDictionary* mDict=nil;// = //[[NSMutableDictionary alloc]initWit
   objId = key.stringValue;
   return objId;
 }
+
+#pragma mark 自定义key值，若有相同的则覆盖(非特殊情况，用addObj)
++(NSString*)addObjWithKey:(id)obj id:(NSString *)key{
+    if(!mDict)
+    mDict = [[NSMutableDictionary alloc]initWithCapacity:30];
+    
+    NSString* objId;
+    mDict[key] = obj;
+    return key;
+}
 @end

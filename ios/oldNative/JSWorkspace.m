@@ -21,6 +21,7 @@
 #import "JSDatasourceConnectionInfo.h"
 #import "JSDatasources.h"
 #import "JSMaps.h"
+#import "SMap.h"
 
 @implementation JSWorkspace
 @synthesize bridge = _bridge;
@@ -223,26 +224,25 @@ RCT_REMAP_METHOD(openDatasource,openDatasourceByKey:(NSString*)key andPath:(NSSt
 }
 */
 
-RCT_REMAP_METHOD(openDatasource,openDatasourceByKey:(NSString*)key jsonObject:(NSDictionary*)jsObj resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    
+- (Datasource *)openDatasource:(NSDictionary*)params{
     @try{
-        Workspace* workspace = [JSObjManager getObjWithKey:key];
+        Workspace* workspace = [SMap singletonInstance].smWorkspace.workspace;
         Datasources* dataSources = workspace.datasources;
         DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
-        if(jsObj&&info){
-            NSArray* keyArr = [jsObj allKeys];
+        if(params&&info){
+            NSArray* keyArr = [params allKeys];
             BOOL bDefault = YES;
             if ([keyArr containsObject:@"alias"]){
-                info.alias = [jsObj objectForKey:@"alias"];
+                info.alias = [params objectForKey:@"alias"];
                 bDefault = NO;
             }
             if ([keyArr containsObject:@"engineType"]){
-                NSNumber* num = [jsObj objectForKey:@"engineType"];
+                NSNumber* num = [params objectForKey:@"engineType"];
                 long type = num.floatValue;
                 info.engineType = (EngineType)type;
             }
             if ([keyArr containsObject:@"server"]){
-                NSString* path = [jsObj objectForKey:@"server"];
+                NSString* path = [params objectForKey:@"server"];
                 info.server = path;
                 if(bDefault){
                     info.alias = [[path lastPathComponent] stringByDeletingPathExtension];
@@ -251,27 +251,25 @@ RCT_REMAP_METHOD(openDatasource,openDatasourceByKey:(NSString*)key jsonObject:(N
             if([workspace.datasources indexOf:info.alias]!=-1){
                 [workspace.datasources closeAlias:info.alias];
             }
-            if ([keyArr containsObject:@"driver"]) info.driver = [jsObj objectForKey:@"driver"];
-            if ([keyArr containsObject:@"user"]) info.user = [jsObj objectForKey:@"user"];
-            if ([keyArr containsObject:@"readOnly"]) info.readOnly = ((NSNumber*)[jsObj objectForKey:@"readOnly"]).boolValue;
-            if ([keyArr containsObject:@"password"]) info.password = [jsObj objectForKey:@"password"];
-            if ([keyArr containsObject:@"webCoordinate"]) info.webCoordinate = [jsObj objectForKey:@"webCoordinate"];
-            if ([keyArr containsObject:@"webVersion"]) info.webVersion = [jsObj objectForKey:@"webVersion"];
-            if ([keyArr containsObject:@"webFormat"]) info.webFormat = [jsObj objectForKey:@"webFormat"];
-            if ([keyArr containsObject:@"webVisibleLayers"]) info.webVisibleLayers = [jsObj objectForKey:@"webVisibleLayers"];
-            if ([keyArr containsObject:@"webExtendParam"]) info.webExtendParam = [jsObj objectForKey:@"webExtendParam"];
+            if ([keyArr containsObject:@"driver"]) info.driver = [params objectForKey:@"driver"];
+            if ([keyArr containsObject:@"user"]) info.user = [params objectForKey:@"user"];
+            if ([keyArr containsObject:@"readOnly"]) info.readOnly = ((NSNumber*)[params objectForKey:@"readOnly"]).boolValue;
+            if ([keyArr containsObject:@"password"]) info.password = [params objectForKey:@"password"];
+            if ([keyArr containsObject:@"webCoordinate"]) info.webCoordinate = [params objectForKey:@"webCoordinate"];
+            if ([keyArr containsObject:@"webVersion"]) info.webVersion = [params objectForKey:@"webVersion"];
+            if ([keyArr containsObject:@"webFormat"]) info.webFormat = [params objectForKey:@"webFormat"];
+            if ([keyArr containsObject:@"webVisibleLayers"]) info.webVisibleLayers = [params objectForKey:@"webVisibleLayers"];
+            if ([keyArr containsObject:@"webExtendParam"]) info.webExtendParam = [params objectForKey:@"webExtendParam"];
             if ([keyArr containsObject:@"webBBox"]){
-                Rectangle2D* rect2d = [JSObjManager getObjWithKey:[jsObj objectForKey:@"webBBox"]];
+                Rectangle2D* rect2d = [JSObjManager getObjWithKey:[params objectForKey:@"webBBox"]];
                 info.webBBox = rect2d;
             }
             Datasource* dataSource = [dataSources open:info];
-            NSInteger nsDSource = (NSInteger)dataSource;
-            [JSObjManager addObj:dataSource];
-            resolve(@{@"datasourceId":@(nsDSource).stringValue});
+            return dataSource;
         }
     }@catch (NSException *exception) {
-    
-        reject(@"workspace",@"open LocalDatasource failed!",nil);
+        @throw exception;
+//        reject(@"workspace",@"open LocalDatasource failed!",nil);
     }
 }
 /*

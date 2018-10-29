@@ -1,0 +1,1239 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D854D7B8218302AE0075B5F8 /* SMWorkspace.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D7412182FD320075B5F8 /* SMWorkspace.m */; };
+		D854D7B9218302B20075B5F8 /* SMap.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D7442182FD3E0075B5F8 /* SMap.m */; };
+		D854D7BB218304290075B5F8 /* JSAction.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5E92182E4710075B5F8 /* JSAction.m */; };
+		D854D7BC218304420075B5F8 /* JSSymbolLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5EB2182E4710075B5F8 /* JSSymbolLibrary.m */; };
+		D854D7BD218304450075B5F8 /* JSGeoText.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5EC2182E4710075B5F8 /* JSGeoText.m */; };
+		D854D7BE218304470075B5F8 /* JSLayerGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5ED2182E4710075B5F8 /* JSLayerGroup.m */; };
+		D854D7BF2183044A0075B5F8 /* JSMap.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5EF2182E4710075B5F8 /* JSMap.m */; };
+		D854D7C02183044C0075B5F8 /* JSPolymerChart.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5F02182E4710075B5F8 /* JSPolymerChart.m */; };
+		D854D7C12183044E0075B5F8 /* JSPointM.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5F22182E4710075B5F8 /* JSPointM.m */; };
+		D854D7C2218304510075B5F8 /* JSRelationalChartPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5F42182E4710075B5F8 /* JSRelationalChartPoint.m */; };
+		D854D7C3218304530075B5F8 /* JSInstrumentChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5F52182E4710075B5F8 /* JSInstrumentChartViewManager.m */; };
+		D854D7C4218304560075B5F8 /* SceneViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5F62182E4710075B5F8 /* SceneViewManager.m */; };
+		D854D7C52183045B0075B5F8 /* JSPieChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5FB2182E4710075B5F8 /* JSPieChartData.m */; };
+		D854D7C62183045D0075B5F8 /* JSTextStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5FC2182E4710075B5F8 /* JSTextStyle.m */; };
+		D854D7C72183045F0075B5F8 /* JSDataset.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5FD2182E4710075B5F8 /* JSDataset.m */; };
+		D854D7C8218304610075B5F8 /* JSChartLegend.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5FE2182E4710075B5F8 /* JSChartLegend.m */; };
+		D854D7C9218304640075B5F8 /* JSSymbolMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D5FF2182E4710075B5F8 /* JSSymbolMarker.m */; };
+		D854D7CA2183046A0075B5F8 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6002182E4710075B5F8 /* Constants.m */; };
+		D854D7CB2183046E0075B5F8 /* JSDataDownloadService.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6022182E4710075B5F8 /* JSDataDownloadService.m */; };
+		D854D7CC218304700075B5F8 /* JSAMQPSender.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6042182E4710075B5F8 /* JSAMQPSender.m */; };
+		D854D7CD218304720075B5F8 /* JSPrjCoordSysType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6052182E4710075B5F8 /* JSPrjCoordSysType.m */; };
+		D854D7CE218304C10075B5F8 /* JSAMQPReceiver.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6062182E4710075B5F8 /* JSAMQPReceiver.m */; };
+		D854D7CF218304C10075B5F8 /* JSTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6082182E4710075B5F8 /* JSTrack.m */; };
+		D854D7D0218304C80075B5F8 /* JSThemeLabelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D60A2182E4720075B5F8 /* JSThemeLabelItem.m */; };
+		D854D7D1218304C80075B5F8 /* JSSTOMPSender.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D60B2182E4720075B5F8 /* JSSTOMPSender.m */; };
+		D854D7D2218304C80075B5F8 /* JSThemeUnique.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D60C2182E4720075B5F8 /* JSThemeUnique.m */; };
+		D854D7D3218304DE0075B5F8 /* JSFacilityAnalystSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D60E2182E4720075B5F8 /* JSFacilityAnalystSetting.m */; };
+		D854D7D4218304DE0075B5F8 /* JSDatasetType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6122182E4720075B5F8 /* JSDatasetType.m */; };
+		D854D7D5218304DE0075B5F8 /* JSChartPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6152182E4720075B5F8 /* JSChartPoint.m */; };
+		D854D7D6218304DE0075B5F8 /* JSDataUploadService.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6172182E4720075B5F8 /* JSDataUploadService.m */; };
+		D854D7D7218304DE0075B5F8 /* RCTConvert+EncodeType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6182182E4720075B5F8 /* RCTConvert+EncodeType.m */; };
+		D854D7D8218304DE0075B5F8 /* RCTConvert+DatasetType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6192182E4720075B5F8 /* RCTConvert+DatasetType.m */; };
+		D854D7D9218304DE0075B5F8 /* JSElementPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D61A2182E4720075B5F8 /* JSElementPoint.m */; };
+		D854D7DA218304DE0075B5F8 /* JSNavigation2.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D61C2182E4720075B5F8 /* JSNavigation2.m */; };
+		D854D7DB218304DE0075B5F8 /* JSRectangle2D.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6202182E4720075B5F8 /* JSRectangle2D.m */; };
+		D854D7DC218304DE0075B5F8 /* JSSceneControl.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6272182E4720075B5F8 /* JSSceneControl.m */; };
+		D854D7DD218304DE0075B5F8 /* JSLocationAnalystParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D62D2182E4720075B5F8 /* JSLocationAnalystParameter.m */; };
+		D854D7DE218304FF0075B5F8 /* JSDatasources.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D62E2182E4720075B5F8 /* JSDatasources.m */; };
+		D854D7DF218304FF0075B5F8 /* JSSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D62F2182E4720075B5F8 /* JSSelection.m */; };
+		D854D7E0218304FF0075B5F8 /* JSBarChart.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6312182E4720075B5F8 /* JSBarChart.m */; };
+		D854D7E1218304FF0075B5F8 /* JsonUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6322182E4720075B5F8 /* JsonUtil.m */; };
+		D854D7E2218304FF0075B5F8 /* JSBarChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6332182E4720075B5F8 /* JSBarChartViewManager.m */; };
+		D854D7E3218304FF0075B5F8 /* JSCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6342182E4720075B5F8 /* JSCollector.m */; };
+		D854D7E4218304FF0075B5F8 /* JSTrackingLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6352182E4720075B5F8 /* JSTrackingLayer.m */; };
+		D854D7E5218304FF0075B5F8 /* JSGeoLineM.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6362182E4720075B5F8 /* JSGeoLineM.m */; };
+		D854D7E6218304FF0075B5F8 /* JSMQTTClientSide.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6372182E4720075B5F8 /* JSMQTTClientSide.m */; };
+		D854D7E7218304FF0075B5F8 /* JSCollectorLine.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6392182E4720075B5F8 /* JSCollectorLine.m */; };
+		D854D7E8218304FF0075B5F8 /* JSGridHotChart.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D63D2182E4720075B5F8 /* JSGridHotChart.m */; };
+		D854D7E9218304FF0075B5F8 /* JSChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6422182E4720075B5F8 /* JSChartView.m */; };
+		D854D7EA218304FF0075B5F8 /* JSSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6432182E4720075B5F8 /* JSSymbol.m */; };
+		D854D7EB218304FF0075B5F8 /* JSAMQPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6442182E4720075B5F8 /* JSAMQPManager.m */; };
+		D854D7EC218304FF0075B5F8 /* JSSTOMPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6452182E4720075B5F8 /* JSSTOMPManager.m */; };
+		D854D7ED218304FF0075B5F8 /* JSTimeLine.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6462182E4720075B5F8 /* JSTimeLine.m */; };
+		D854D7EE218304FF0075B5F8 /* JSMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6472182E4720075B5F8 /* JSMapView.m */; };
+		D854D7EF218304FF0075B5F8 /* JSWeightFieldInfos.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6482182E4720075B5F8 /* JSWeightFieldInfos.m */; };
+		D854D7F0218304FF0075B5F8 /* JSOnlineService.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6492182E4720075B5F8 /* JSOnlineService.m */; };
+		D854D7F1218304FF0075B5F8 /* JSDatasetVectorInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D64B2182E4720075B5F8 /* JSDatasetVectorInfo.m */; };
+		D854D7F2218304FF0075B5F8 /* JSPoint2D.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D64D2182E4720075B5F8 /* JSPoint2D.m */; };
+		D854D7F3218304FF0075B5F8 /* JSLayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D64E2182E4720075B5F8 /* JSLayerManager.m */; };
+		D854D7F42183051E0075B5F8 /* JSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D64F2182E4720075B5F8 /* JSGeometry.m */; };
+		D854D7F52183051E0075B5F8 /* JSBarChartDataItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6502182E4720075B5F8 /* JSBarChartDataItem.m */; };
+		D854D7F62183051E0075B5F8 /* JSServiceBase.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6522182E4720075B5F8 /* JSServiceBase.m */; };
+		D854D7F72183051E0075B5F8 /* JSWorkspace.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6562182E4720075B5F8 /* JSWorkspace.m */; };
+		D854D7F82183051E0075B5F8 /* JSBarChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6592182E4720075B5F8 /* JSBarChartData.m */; };
+		D854D7F92183051E0075B5F8 /* JSSupplyCenterType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D65A2182E4720075B5F8 /* JSSupplyCenterType.m */; };
+		D854D7FA2183051E0075B5F8 /* JSWorkspaceConnectionInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D65B2182E4720075B5F8 /* JSWorkspaceConnectionInfo.m */; };
+		D854D7FB2183051E0075B5F8 /* JSDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D65F2182E4720075B5F8 /* JSDatasource.m */; };
+		D854D7FC2183051E0075B5F8 /* JSRangeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6602182E4720075B5F8 /* JSRangeMode.m */; };
+		D854D7FD2183051E0075B5F8 /* JSLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6612182E4720075B5F8 /* JSLocationManager.m */; };
+		D854D7FE2183051E0075B5F8 /* JSThemeRangeItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6622182E4720075B5F8 /* JSThemeRangeItem.m */; };
+		D854D7FF2183051E0075B5F8 /* JSDatasetVector.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6632182E4720075B5F8 /* JSDatasetVector.m */; };
+		D854D8002183051E0075B5F8 /* JSThemeType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6652182E4720075B5F8 /* JSThemeType.m */; };
+		D854D8012183051E0075B5F8 /* JSServiceQueryParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6672182E4720075B5F8 /* JSServiceQueryParameter.m */; };
+		D854D8022183051E0075B5F8 /* JSOverlayAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6682182E4720075B5F8 /* JSOverlayAnalyst.m */; };
+		D854D8032183051E0075B5F8 /* JSDatasets.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6692182E4720075B5F8 /* JSDatasets.m */; };
+		D854D8042183051E0075B5F8 /* JSScene.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D66B2182E4720075B5F8 /* JSScene.m */; };
+		D854D8052183051E0075B5F8 /* JSTransportationAnalystParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D66C2182E4720075B5F8 /* JSTransportationAnalystParameter.m */; };
+		D854D8062183051E0075B5F8 /* NativeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D66D2182E4720075B5F8 /* NativeUtil.m */; };
+		D854D8072183053B0075B5F8 /* JSSymbolFill.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6712182E4720075B5F8 /* JSSymbolFill.m */; };
+		D854D8082183053B0075B5F8 /* JSFacilityAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6722182E4720075B5F8 /* JSFacilityAnalyst.m */; };
+		D854D8092183053B0075B5F8 /* JSSymbolType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6752182E4720075B5F8 /* JSSymbolType.m */; };
+		D854D80A2183053B0075B5F8 /* JSMaps.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6762182E4720075B5F8 /* JSMaps.m */; };
+		D854D80B2183053B0075B5F8 /* JSColorScheme.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D67C2182E4720075B5F8 /* JSColorScheme.m */; };
+		D854D80C2183053B0075B5F8 /* JSWeightFieldInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D67D2182E4720075B5F8 /* JSWeightFieldInfo.m */; };
+		D854D80D2183053B0075B5F8 /* JSChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D67E2182E4720075B5F8 /* JSChartData.m */; };
+		D854D80E2183053B0075B5F8 /* JSRadiusUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D67F2182E4720075B5F8 /* JSRadiusUnit.m */; };
+		D854D80F2183053B0075B5F8 /* JSCoordSysTransParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6802182E4720075B5F8 /* JSCoordSysTransParameter.m */; };
+		D854D8102183053B0075B5F8 /* JSTextAlignment.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6822182E4720075B5F8 /* JSTextAlignment.m */; };
+		D854D8112183053B0075B5F8 /* JSElementPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6832182E4720075B5F8 /* JSElementPolygon.m */; };
+		D854D8122183053B0075B5F8 /* JSSupplyCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6852182E4720075B5F8 /* JSSupplyCenter.m */; };
+		D854D8132183053B0075B5F8 /* JSProjectionType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6882182E4720075B5F8 /* JSProjectionType.m */; };
+		D854D8142183053B0075B5F8 /* JSCollectorElement.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6892182E4720075B5F8 /* JSCollectorElement.m */; };
+		D854D8152183053B0075B5F8 /* JSEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D68B2182E4720075B5F8 /* JSEnvironment.m */; };
+		D854D8162183053B0075B5F8 /* JSTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D68D2182E4720075B5F8 /* JSTheme.m */; };
+		D854D8172183053B0075B5F8 /* JSLayers.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6902182E4720075B5F8 /* JSLayers.m */; };
+		D854D8182183053B0075B5F8 /* JSSymbolFillLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6932182E4720075B5F8 /* JSSymbolFillLibrary.m */; };
+		D854D819218305540075B5F8 /* JSDatasourceConnectionInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6952182E4720075B5F8 /* JSDatasourceConnectionInfo.m */; };
+		D854D81A218305540075B5F8 /* JSCoordSysTransMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D69A2182E4720075B5F8 /* JSCoordSysTransMethod.m */; };
+		D854D81B218305540075B5F8 /* JSSpeechManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6A02182E4720075B5F8 /* JSSpeechManager.m */; };
+		D854D81C218305540075B5F8 /* JSEncodeType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6A12182E4720075B5F8 /* JSEncodeType.m */; };
+		D854D81D218305540075B5F8 /* JSLegendViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6A32182E4720075B5F8 /* JSLegendViewManager.m */; };
+		D854D81E218305540075B5F8 /* JSObjManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6A42182E4720075B5F8 /* JSObjManager.m */; };
+		D854D81F218305540075B5F8 /* JSScaleViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6A82182E4720075B5F8 /* JSScaleViewManager.m */; };
+		D854D820218305540075B5F8 /* JSQueryParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6A92182E4720075B5F8 /* JSQueryParameter.m */; };
+		D854D821218305540075B5F8 /* JSBufferAnalystParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6AB2182E4720075B5F8 /* JSBufferAnalystParameter.m */; };
+		D854D822218305540075B5F8 /* JSPieChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6B02182E4720075B5F8 /* JSPieChartViewManager.m */; };
+		D854D823218305540075B5F8 /* JSSymbolGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6B22182E4720075B5F8 /* JSSymbolGroup.m */; };
+		D854D824218305540075B5F8 /* JSPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6B32182E4720075B5F8 /* JSPoint.m */; };
+		D854D825218305540075B5F8 /* JSSystemUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6B52182E4720075B5F8 /* JSSystemUtil.m */; };
+		D854D826218305720075B5F8 /* RCTConvert+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6B92182E4720075B5F8 /* RCTConvert+Action.m */; };
+		D854D827218305720075B5F8 /* JSGeoStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6BF2182E4720075B5F8 /* JSGeoStyle.m */; };
+		D854D828218305720075B5F8 /* JSLineChart.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6C22182E4720075B5F8 /* JSLineChart.m */; };
+		D854D829218305720075B5F8 /* JSLineChartData.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6C32182E4720075B5F8 /* JSLineChartData.m */; };
+		D854D82A218305720075B5F8 /* JSCallOut.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6C42182E4720075B5F8 /* JSCallOut.m */; };
+		D854D82B218305720075B5F8 /* JSColorGradientType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6C52182E4720075B5F8 /* JSColorGradientType.m */; };
+		D854D82C218305720075B5F8 /* JSMapControl.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6C72182E4720075B5F8 /* JSMapControl.m */; };
+		D854D82D218305720075B5F8 /* JSGeoPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6C82182E4720075B5F8 /* JSGeoPoint.m */; };
+		D854D82E218305720075B5F8 /* JSSymbolLine.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6CA2182E4720075B5F8 /* JSSymbolLine.m */; };
+		D854D82F218305720075B5F8 /* JSRelationalPointChart.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6CB2182E4720075B5F8 /* JSRelationalPointChart.m */; };
+		D854D830218305720075B5F8 /* JSWorkspaceType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6CC2182E4720075B5F8 /* JSWorkspaceType.m */; };
+		D854D831218305720075B5F8 /* RCTConvert+BufferEndType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6CD2182E4720075B5F8 /* RCTConvert+BufferEndType.m */; };
+		D854D832218305720075B5F8 /* JSSymbolGroups.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6CF2182E4720075B5F8 /* JSSymbolGroups.m */; };
+		D854D833218305720075B5F8 /* JSGPSElementType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6D02182E4720075B5F8 /* JSGPSElementType.m */; };
+		D854D834218305720075B5F8 /* JSTransportationAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6D52182E4720075B5F8 /* JSTransportationAnalyst.m */; };
+		D854D835218305720075B5F8 /* JSPointDensityChart.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6D62182E4720075B5F8 /* JSPointDensityChart.m */; };
+		D854D836218305720075B5F8 /* JSLineChartViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6D72182E4720075B5F8 /* JSLineChartViewManager.m */; };
+		D854D837218305720075B5F8 /* JSSymbolMarkerLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6DA2182E4720075B5F8 /* JSSymbolMarkerLibrary.m */; };
+		D854D8382183058F0075B5F8 /* JSSceneView.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6DB2182E4720075B5F8 /* JSSceneView.m */; };
+		D854D8392183058F0075B5F8 /* JSCoordSysTranslator.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6DC2182E4720075B5F8 /* JSCoordSysTranslator.m */; };
+		D854D83A2183058F0075B5F8 /* RCTConvert+RadiusUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6DD2182E4720075B5F8 /* RCTConvert+RadiusUnit.m */; };
+		D854D83B2183058F0075B5F8 /* JSAdoptMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6E22182E4720075B5F8 /* JSAdoptMapView.m */; };
+		D854D83C2183058F0075B5F8 /* JSNavigation.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6E42182E4720075B5F8 /* JSNavigation.m */; };
+		D854D83D2183058F0075B5F8 /* JSThemeUniqueItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6E52182E4720075B5F8 /* JSThemeUniqueItem.m */; };
+		D854D83E2183058F0075B5F8 /* JSLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6E82182E4720075B5F8 /* JSLayer.m */; };
+		D854D83F2183058F0075B5F8 /* JSOverlayAnalystParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6EA2182E4720075B5F8 /* JSOverlayAnalystParameter.m */; };
+		D854D8402183058F0075B5F8 /* JSSymbolLineLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6EB2182E4720075B5F8 /* JSSymbolLineLibrary.m */; };
+		D854D8412183058F0075B5F8 /* JSLayer3Ds.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6F12182E4720075B5F8 /* JSLayer3Ds.m */; };
+		D854D8422183058F0075B5F8 /* JSFieldType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6F22182E4720075B5F8 /* JSFieldType.m */; };
+		D854D8432183058F0075B5F8 /* JSQueryService.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6FB2182E4720075B5F8 /* JSQueryService.m */; };
+		D854D8442183058F0075B5F8 /* JSFeature.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6FC2182E4720075B5F8 /* JSFeature.m */; };
+		D854D845218305A60075B5F8 /* JSPrjCoordSys.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6FE2182E4720075B5F8 /* JSPrjCoordSys.m */; };
+		D854D846218305A60075B5F8 /* JSBufferAnalystGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D6FF2182E4720075B5F8 /* JSBufferAnalystGeometry.m */; };
+		D854D847218305A60075B5F8 /* JSBufferAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D7002182E4720075B5F8 /* JSBufferAnalyst.m */; };
+		D854D848218305A60075B5F8 /* JSFeatureSet.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D7022182E4720075B5F8 /* JSFeatureSet.m */; };
+		D854D849218305A60075B5F8 /* JSTextPart.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D7032182E4720075B5F8 /* JSTextPart.m */; };
+		D854D84A218305A60075B5F8 /* JSBufferEndType.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D7072182E4720075B5F8 /* JSBufferEndType.m */; };
+		D854D84B218305A60075B5F8 /* JSSTOMPReceiver.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D70C2182E4720075B5F8 /* JSSTOMPReceiver.m */; };
+		D854D84C218305A60075B5F8 /* JSLayerSettingVector.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D70D2182E4720075B5F8 /* JSLayerSettingVector.m */; };
+		D854D84D218305A60075B5F8 /* JSGeoLine.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D70E2182E4720075B5F8 /* JSGeoLine.m */; };
+		D854D84E218305A60075B5F8 /* JSThemeRange.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D7102182E4720075B5F8 /* JSThemeRange.m */; };
+		D854D84F218305A60075B5F8 /* JSSize2D.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D7112182E4720075B5F8 /* JSSize2D.m */; };
+		D854D850218305A60075B5F8 /* JSThemeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D7122182E4720075B5F8 /* JSThemeLabel.m */; };
+		D854D851218305A60075B5F8 /* JSSupplyCenters.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D7142182E4720075B5F8 /* JSSupplyCenters.m */; };
+		D854D852218305A60075B5F8 /* JSGeoRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D7182182E4720075B5F8 /* JSGeoRegion.m */; };
+		D854D853218305A60075B5F8 /* JSResources.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D7192182E4720075B5F8 /* JSResources.m */; };
+		D854D854218305A60075B5F8 /* JSHotChart.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D71A2182E4720075B5F8 /* JSHotChart.m */; };
+		D854D855218305A60075B5F8 /* JSLayerSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D71B2182E4720075B5F8 /* JSLayerSetting.m */; };
+		D854D856218305B00075B5F8 /* JSRecordset.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D7222182E4720075B5F8 /* JSRecordset.m */; };
+		D854D857218305B00075B5F8 /* JSPieChart.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D7232182E4720075B5F8 /* JSPieChart.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		58B511D91A9E6C8500147676 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		134814201AA4EA6300B7C361 /* libSupermap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSupermap.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D854D5E92182E4710075B5F8 /* JSAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSAction.m; sourceTree = "<group>"; };
+		D854D5EA2182E4710075B5F8 /* JSPieChartViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSPieChartViewManager.h; sourceTree = "<group>"; };
+		D854D5EB2182E4710075B5F8 /* JSSymbolLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolLibrary.m; sourceTree = "<group>"; };
+		D854D5EC2182E4710075B5F8 /* JSGeoText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSGeoText.m; sourceTree = "<group>"; };
+		D854D5ED2182E4710075B5F8 /* JSLayerGroup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSLayerGroup.m; sourceTree = "<group>"; };
+		D854D5EE2182E4710075B5F8 /* JSQueryParameter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSQueryParameter.h; sourceTree = "<group>"; };
+		D854D5EF2182E4710075B5F8 /* JSMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSMap.m; sourceTree = "<group>"; };
+		D854D5F02182E4710075B5F8 /* JSPolymerChart.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSPolymerChart.m; sourceTree = "<group>"; };
+		D854D5F12182E4710075B5F8 /* JSBufferAnalystParameter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSBufferAnalystParameter.h; sourceTree = "<group>"; };
+		D854D5F22182E4710075B5F8 /* JSPointM.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSPointM.m; sourceTree = "<group>"; };
+		D854D5F32182E4710075B5F8 /* JSScaleViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSScaleViewManager.h; sourceTree = "<group>"; };
+		D854D5F42182E4710075B5F8 /* JSRelationalChartPoint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSRelationalChartPoint.m; sourceTree = "<group>"; };
+		D854D5F52182E4710075B5F8 /* JSInstrumentChartViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSInstrumentChartViewManager.m; sourceTree = "<group>"; };
+		D854D5F62182E4710075B5F8 /* SceneViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneViewManager.m; sourceTree = "<group>"; };
+		D854D5F72182E4710075B5F8 /* JSLegendViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSLegendViewManager.h; sourceTree = "<group>"; };
+		D854D5F82182E4710075B5F8 /* JSObjManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSObjManager.h; sourceTree = "<group>"; };
+		D854D5F92182E4710075B5F8 /* JSSpeechManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSpeechManager.h; sourceTree = "<group>"; };
+		D854D5FA2182E4710075B5F8 /* JSEncodeType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSEncodeType.h; sourceTree = "<group>"; };
+		D854D5FB2182E4710075B5F8 /* JSPieChartData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSPieChartData.m; sourceTree = "<group>"; };
+		D854D5FC2182E4710075B5F8 /* JSTextStyle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSTextStyle.m; sourceTree = "<group>"; };
+		D854D5FD2182E4710075B5F8 /* JSDataset.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSDataset.m; sourceTree = "<group>"; };
+		D854D5FE2182E4710075B5F8 /* JSChartLegend.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSChartLegend.m; sourceTree = "<group>"; };
+		D854D5FF2182E4710075B5F8 /* JSSymbolMarker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolMarker.m; sourceTree = "<group>"; };
+		D854D6002182E4710075B5F8 /* Constants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
+		D854D6012182E4710075B5F8 /* JSDatasourceConnectionInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSDatasourceConnectionInfo.h; sourceTree = "<group>"; };
+		D854D6022182E4710075B5F8 /* JSDataDownloadService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSDataDownloadService.m; sourceTree = "<group>"; };
+		D854D6032182E4710075B5F8 /* JSCoordSysTransMethod.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSCoordSysTransMethod.h; sourceTree = "<group>"; };
+		D854D6042182E4710075B5F8 /* JSAMQPSender.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSAMQPSender.m; sourceTree = "<group>"; };
+		D854D6052182E4710075B5F8 /* JSPrjCoordSysType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSPrjCoordSysType.m; sourceTree = "<group>"; };
+		D854D6062182E4710075B5F8 /* JSAMQPReceiver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSAMQPReceiver.m; sourceTree = "<group>"; };
+		D854D6072182E4710075B5F8 /* JSSymbolFillLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSymbolFillLibrary.h; sourceTree = "<group>"; };
+		D854D6082182E4710075B5F8 /* JSTrack.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSTrack.m; sourceTree = "<group>"; };
+		D854D6092182E4710075B5F8 /* JSLayers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSLayers.h; sourceTree = "<group>"; };
+		D854D60A2182E4720075B5F8 /* JSThemeLabelItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSThemeLabelItem.m; sourceTree = "<group>"; };
+		D854D60B2182E4720075B5F8 /* JSSTOMPSender.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSTOMPSender.m; sourceTree = "<group>"; };
+		D854D60C2182E4720075B5F8 /* JSThemeUnique.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSThemeUnique.m; sourceTree = "<group>"; };
+		D854D60D2182E4720075B5F8 /* JSTheme.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSTheme.h; sourceTree = "<group>"; };
+		D854D60E2182E4720075B5F8 /* JSFacilityAnalystSetting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSFacilityAnalystSetting.m; sourceTree = "<group>"; };
+		D854D60F2182E4720075B5F8 /* JSEnvironment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSEnvironment.h; sourceTree = "<group>"; };
+		D854D6102182E4720075B5F8 /* JSProjectionType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSProjectionType.h; sourceTree = "<group>"; };
+		D854D6112182E4720075B5F8 /* JSCollectorElement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSCollectorElement.h; sourceTree = "<group>"; };
+		D854D6122182E4720075B5F8 /* JSDatasetType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSDatasetType.m; sourceTree = "<group>"; };
+		D854D6132182E4720075B5F8 /* MQTTClientSide.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MQTTClientSide.h; sourceTree = "<group>"; };
+		D854D6142182E4720075B5F8 /* JSSymbolMarkerLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSymbolMarkerLibrary.h; sourceTree = "<group>"; };
+		D854D6152182E4720075B5F8 /* JSChartPoint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSChartPoint.m; sourceTree = "<group>"; };
+		D854D6162182E4720075B5F8 /* JSLineChartViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSLineChartViewManager.h; sourceTree = "<group>"; };
+		D854D6172182E4720075B5F8 /* JSDataUploadService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSDataUploadService.m; sourceTree = "<group>"; };
+		D854D6182182E4720075B5F8 /* RCTConvert+EncodeType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+EncodeType.m"; sourceTree = "<group>"; };
+		D854D6192182E4720075B5F8 /* RCTConvert+DatasetType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+DatasetType.m"; sourceTree = "<group>"; };
+		D854D61A2182E4720075B5F8 /* JSElementPoint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSElementPoint.m; sourceTree = "<group>"; };
+		D854D61B2182E4720075B5F8 /* JSGPSElementType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSGPSElementType.h; sourceTree = "<group>"; };
+		D854D61C2182E4720075B5F8 /* JSNavigation2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSNavigation2.m; sourceTree = "<group>"; };
+		D854D61D2182E4720075B5F8 /* JSTransportationAnalyst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSTransportationAnalyst.h; sourceTree = "<group>"; };
+		D854D61E2182E4720075B5F8 /* JSPointDensityChart.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSPointDensityChart.h; sourceTree = "<group>"; };
+		D854D61F2182E4720075B5F8 /* RCTConvert+BufferEndType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+BufferEndType.h"; sourceTree = "<group>"; };
+		D854D6202182E4720075B5F8 /* JSRectangle2D.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSRectangle2D.m; sourceTree = "<group>"; };
+		D854D6212182E4720075B5F8 /* JSSymbolGroups.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSymbolGroups.h; sourceTree = "<group>"; };
+		D854D6222182E4720075B5F8 /* JSTransportationAnalystSetting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSTransportationAnalystSetting.m; sourceTree = "<group>"; };
+		D854D6232182E4720075B5F8 /* JSWorkspaceType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSWorkspaceType.h; sourceTree = "<group>"; };
+		D854D6242182E4720075B5F8 /* JSSymbolLine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSymbolLine.h; sourceTree = "<group>"; };
+		D854D6252182E4720075B5F8 /* JSRelationalPointChart.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSRelationalPointChart.h; sourceTree = "<group>"; };
+		D854D6262182E4720075B5F8 /* JSGeoPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSGeoPoint.h; sourceTree = "<group>"; };
+		D854D6272182E4720075B5F8 /* JSSceneControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSceneControl.m; sourceTree = "<group>"; };
+		D854D6282182E4720075B5F8 /* JSCallOut.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSCallOut.h; sourceTree = "<group>"; };
+		D854D6292182E4720075B5F8 /* JSLineChartData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSLineChartData.h; sourceTree = "<group>"; };
+		D854D62A2182E4720075B5F8 /* JSLineChart.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSLineChart.h; sourceTree = "<group>"; };
+		D854D62B2182E4720075B5F8 /* JSColorGradientType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSColorGradientType.h; sourceTree = "<group>"; };
+		D854D62C2182E4720075B5F8 /* JSMapControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSMapControl.h; sourceTree = "<group>"; };
+		D854D62D2182E4720075B5F8 /* JSLocationAnalystParameter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSLocationAnalystParameter.m; sourceTree = "<group>"; };
+		D854D62E2182E4720075B5F8 /* JSDatasources.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSDatasources.m; sourceTree = "<group>"; };
+		D854D62F2182E4720075B5F8 /* JSSelection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSelection.m; sourceTree = "<group>"; };
+		D854D6302182E4720075B5F8 /* JSGeoStyle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSGeoStyle.h; sourceTree = "<group>"; };
+		D854D6312182E4720075B5F8 /* JSBarChart.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSBarChart.m; sourceTree = "<group>"; };
+		D854D6322182E4720075B5F8 /* JsonUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JsonUtil.m; sourceTree = "<group>"; };
+		D854D6332182E4720075B5F8 /* JSBarChartViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSBarChartViewManager.m; sourceTree = "<group>"; };
+		D854D6342182E4720075B5F8 /* JSCollector.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSCollector.m; sourceTree = "<group>"; };
+		D854D6352182E4720075B5F8 /* JSTrackingLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSTrackingLayer.m; sourceTree = "<group>"; };
+		D854D6362182E4720075B5F8 /* JSGeoLineM.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSGeoLineM.m; sourceTree = "<group>"; };
+		D854D6372182E4720075B5F8 /* JSMQTTClientSide.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSMQTTClientSide.m; sourceTree = "<group>"; };
+		D854D6382182E4720075B5F8 /* RCTConvert+Action.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+Action.h"; sourceTree = "<group>"; };
+		D854D6392182E4720075B5F8 /* JSCollectorLine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSCollectorLine.m; sourceTree = "<group>"; };
+		D854D63A2182E4720075B5F8 /* JSSymbolGroup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSymbolGroup.h; sourceTree = "<group>"; };
+		D854D63B2182E4720075B5F8 /* JSPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSPoint.h; sourceTree = "<group>"; };
+		D854D63C2182E4720075B5F8 /* JSSystemUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSystemUtil.h; sourceTree = "<group>"; };
+		D854D63D2182E4720075B5F8 /* JSGridHotChart.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSGridHotChart.m; sourceTree = "<group>"; };
+		D854D63E2182E4720075B5F8 /* JSPrjCoordSys.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSPrjCoordSys.h; sourceTree = "<group>"; };
+		D854D63F2182E4720075B5F8 /* JSBufferAnalystGeometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSBufferAnalystGeometry.h; sourceTree = "<group>"; };
+		D854D6402182E4720075B5F8 /* JSFeature.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSFeature.h; sourceTree = "<group>"; };
+		D854D6412182E4720075B5F8 /* JSQueryService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSQueryService.h; sourceTree = "<group>"; };
+		D854D6422182E4720075B5F8 /* JSChartView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSChartView.m; sourceTree = "<group>"; };
+		D854D6432182E4720075B5F8 /* JSSymbol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbol.m; sourceTree = "<group>"; };
+		D854D6442182E4720075B5F8 /* JSAMQPManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSAMQPManager.m; sourceTree = "<group>"; };
+		D854D6452182E4720075B5F8 /* JSSTOMPManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSTOMPManager.m; sourceTree = "<group>"; };
+		D854D6462182E4720075B5F8 /* JSTimeLine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSTimeLine.m; sourceTree = "<group>"; };
+		D854D6472182E4720075B5F8 /* JSMapView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSMapView.m; sourceTree = "<group>"; };
+		D854D6482182E4720075B5F8 /* JSWeightFieldInfos.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSWeightFieldInfos.m; sourceTree = "<group>"; };
+		D854D6492182E4720075B5F8 /* JSOnlineService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSOnlineService.m; sourceTree = "<group>"; };
+		D854D64A2182E4720075B5F8 /* JSFieldType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSFieldType.h; sourceTree = "<group>"; };
+		D854D64B2182E4720075B5F8 /* JSDatasetVectorInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSDatasetVectorInfo.m; sourceTree = "<group>"; };
+		D854D64C2182E4720075B5F8 /* JSLayer3Ds.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSLayer3Ds.h; sourceTree = "<group>"; };
+		D854D64D2182E4720075B5F8 /* JSPoint2D.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSPoint2D.m; sourceTree = "<group>"; };
+		D854D64E2182E4720075B5F8 /* JSLayerManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSLayerManager.m; sourceTree = "<group>"; };
+		D854D64F2182E4720075B5F8 /* JSGeometry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSGeometry.m; sourceTree = "<group>"; };
+		D854D6502182E4720075B5F8 /* JSBarChartDataItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSBarChartDataItem.m; sourceTree = "<group>"; };
+		D854D6512182E4720075B5F8 /* JSSymbolLineLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSymbolLineLibrary.h; sourceTree = "<group>"; };
+		D854D6522182E4720075B5F8 /* JSServiceBase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSServiceBase.m; sourceTree = "<group>"; };
+		D854D6532182E4720075B5F8 /* JSLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSLayer.h; sourceTree = "<group>"; };
+		D854D6542182E4720075B5F8 /* JSOverlayAnalystParameter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSOverlayAnalystParameter.h; sourceTree = "<group>"; };
+		D854D6552182E4720075B5F8 /* JSAdoptMapView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSAdoptMapView.h; sourceTree = "<group>"; };
+		D854D6562182E4720075B5F8 /* JSWorkspace.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSWorkspace.m; sourceTree = "<group>"; };
+		D854D6572182E4720075B5F8 /* JSThemeUniqueItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSThemeUniqueItem.h; sourceTree = "<group>"; };
+		D854D6582182E4720075B5F8 /* JSNavigation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSNavigation.h; sourceTree = "<group>"; };
+		D854D6592182E4720075B5F8 /* JSBarChartData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSBarChartData.m; sourceTree = "<group>"; };
+		D854D65A2182E4720075B5F8 /* JSSupplyCenterType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSupplyCenterType.m; sourceTree = "<group>"; };
+		D854D65B2182E4720075B5F8 /* JSWorkspaceConnectionInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSWorkspaceConnectionInfo.m; sourceTree = "<group>"; };
+		D854D65C2182E4720075B5F8 /* JSSceneView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSceneView.h; sourceTree = "<group>"; };
+		D854D65D2182E4720075B5F8 /* RCTConvert+RadiusUnit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+RadiusUnit.h"; sourceTree = "<group>"; };
+		D854D65E2182E4720075B5F8 /* JSCoordSysTranslator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSCoordSysTranslator.h; sourceTree = "<group>"; };
+		D854D65F2182E4720075B5F8 /* JSDatasource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSDatasource.m; sourceTree = "<group>"; };
+		D854D6602182E4720075B5F8 /* JSRangeMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSRangeMode.m; sourceTree = "<group>"; };
+		D854D6612182E4720075B5F8 /* JSLocationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSLocationManager.m; sourceTree = "<group>"; };
+		D854D6622182E4720075B5F8 /* JSThemeRangeItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSThemeRangeItem.m; sourceTree = "<group>"; };
+		D854D6632182E4720075B5F8 /* JSDatasetVector.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSDatasetVector.m; sourceTree = "<group>"; };
+		D854D6642182E4720075B5F8 /* JSPieChart.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSPieChart.h; sourceTree = "<group>"; };
+		D854D6652182E4720075B5F8 /* JSThemeType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSThemeType.m; sourceTree = "<group>"; };
+		D854D6662182E4720075B5F8 /* JSRecordset.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSRecordset.h; sourceTree = "<group>"; };
+		D854D6672182E4720075B5F8 /* JSServiceQueryParameter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSServiceQueryParameter.m; sourceTree = "<group>"; };
+		D854D6682182E4720075B5F8 /* JSOverlayAnalyst.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSOverlayAnalyst.m; sourceTree = "<group>"; };
+		D854D6692182E4720075B5F8 /* JSDatasets.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSDatasets.m; sourceTree = "<group>"; };
+		D854D66A2182E4720075B5F8 /* JSLayerSetting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSLayerSetting.h; sourceTree = "<group>"; };
+		D854D66B2182E4720075B5F8 /* JSScene.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSScene.m; sourceTree = "<group>"; };
+		D854D66C2182E4720075B5F8 /* JSTransportationAnalystParameter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSTransportationAnalystParameter.m; sourceTree = "<group>"; };
+		D854D66D2182E4720075B5F8 /* NativeUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NativeUtil.m; sourceTree = "<group>"; };
+		D854D66E2182E4720075B5F8 /* JSResources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSResources.h; sourceTree = "<group>"; };
+		D854D66F2182E4720075B5F8 /* JSGeoRegion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSGeoRegion.h; sourceTree = "<group>"; };
+		D854D6702182E4720075B5F8 /* JSHotChart.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSHotChart.h; sourceTree = "<group>"; };
+		D854D6712182E4720075B5F8 /* JSSymbolFill.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolFill.m; sourceTree = "<group>"; };
+		D854D6722182E4720075B5F8 /* JSFacilityAnalyst.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSFacilityAnalyst.m; sourceTree = "<group>"; };
+		D854D6732182E4720075B5F8 /* JSThemeLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSThemeLabel.h; sourceTree = "<group>"; };
+		D854D6742182E4720075B5F8 /* JSSupplyCenters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSupplyCenters.h; sourceTree = "<group>"; };
+		D854D6752182E4720075B5F8 /* JSSymbolType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolType.m; sourceTree = "<group>"; };
+		D854D6762182E4720075B5F8 /* JSMaps.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSMaps.m; sourceTree = "<group>"; };
+		D854D6772182E4720075B5F8 /* JSGeoLine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSGeoLine.h; sourceTree = "<group>"; };
+		D854D6782182E4720075B5F8 /* JSThemeRange.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSThemeRange.h; sourceTree = "<group>"; };
+		D854D6792182E4720075B5F8 /* JSSize2D.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSize2D.h; sourceTree = "<group>"; };
+		D854D67A2182E4720075B5F8 /* JSSTOMPReceiver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSTOMPReceiver.h; sourceTree = "<group>"; };
+		D854D67B2182E4720075B5F8 /* JSLayerSettingVector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSLayerSettingVector.h; sourceTree = "<group>"; };
+		D854D67C2182E4720075B5F8 /* JSColorScheme.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSColorScheme.m; sourceTree = "<group>"; };
+		D854D67D2182E4720075B5F8 /* JSWeightFieldInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSWeightFieldInfo.m; sourceTree = "<group>"; };
+		D854D67E2182E4720075B5F8 /* JSChartData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSChartData.m; sourceTree = "<group>"; };
+		D854D67F2182E4720075B5F8 /* JSRadiusUnit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSRadiusUnit.m; sourceTree = "<group>"; };
+		D854D6802182E4720075B5F8 /* JSCoordSysTransParameter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSCoordSysTransParameter.m; sourceTree = "<group>"; };
+		D854D6812182E4720075B5F8 /* JSBufferEndType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSBufferEndType.h; sourceTree = "<group>"; };
+		D854D6822182E4720075B5F8 /* JSTextAlignment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSTextAlignment.m; sourceTree = "<group>"; };
+		D854D6832182E4720075B5F8 /* JSElementPolygon.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSElementPolygon.m; sourceTree = "<group>"; };
+		D854D6842182E4720075B5F8 /* JSTextPart.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSTextPart.h; sourceTree = "<group>"; };
+		D854D6852182E4720075B5F8 /* JSSupplyCenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSupplyCenter.m; sourceTree = "<group>"; };
+		D854D6862182E4720075B5F8 /* JSBufferAnalyst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSBufferAnalyst.h; sourceTree = "<group>"; };
+		D854D6872182E4720075B5F8 /* JSFeatureSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSFeatureSet.h; sourceTree = "<group>"; };
+		D854D6882182E4720075B5F8 /* JSProjectionType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSProjectionType.m; sourceTree = "<group>"; };
+		D854D6892182E4720075B5F8 /* JSCollectorElement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSCollectorElement.m; sourceTree = "<group>"; };
+		D854D68A2182E4720075B5F8 /* JSDatasetType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSDatasetType.h; sourceTree = "<group>"; };
+		D854D68B2182E4720075B5F8 /* JSEnvironment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSEnvironment.m; sourceTree = "<group>"; };
+		D854D68C2182E4720075B5F8 /* JSThemeUnique.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSThemeUnique.h; sourceTree = "<group>"; };
+		D854D68D2182E4720075B5F8 /* JSTheme.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSTheme.m; sourceTree = "<group>"; };
+		D854D68E2182E4720075B5F8 /* JSFacilityAnalystSetting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSFacilityAnalystSetting.h; sourceTree = "<group>"; };
+		D854D68F2182E4720075B5F8 /* JSTrack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSTrack.h; sourceTree = "<group>"; };
+		D854D6902182E4720075B5F8 /* JSLayers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSLayers.m; sourceTree = "<group>"; };
+		D854D6912182E4720075B5F8 /* JSThemeLabelItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSThemeLabelItem.h; sourceTree = "<group>"; };
+		D854D6922182E4720075B5F8 /* JSSTOMPSender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSTOMPSender.h; sourceTree = "<group>"; };
+		D854D6932182E4720075B5F8 /* JSSymbolFillLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolFillLibrary.m; sourceTree = "<group>"; };
+		D854D6942182E4720075B5F8 /* JSDataDownloadService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSDataDownloadService.h; sourceTree = "<group>"; };
+		D854D6952182E4720075B5F8 /* JSDatasourceConnectionInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSDatasourceConnectionInfo.m; sourceTree = "<group>"; };
+		D854D6962182E4720075B5F8 /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		D854D6972182E4720075B5F8 /* JSAMQPReceiver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSAMQPReceiver.h; sourceTree = "<group>"; };
+		D854D6982182E4720075B5F8 /* JSAMQPSender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSAMQPSender.h; sourceTree = "<group>"; };
+		D854D6992182E4720075B5F8 /* JSPrjCoordSysType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSPrjCoordSysType.h; sourceTree = "<group>"; };
+		D854D69A2182E4720075B5F8 /* JSCoordSysTransMethod.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSCoordSysTransMethod.m; sourceTree = "<group>"; };
+		D854D69B2182E4720075B5F8 /* JSSymbolMarker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSymbolMarker.h; sourceTree = "<group>"; };
+		D854D69C2182E4720075B5F8 /* JSPieChartData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSPieChartData.h; sourceTree = "<group>"; };
+		D854D69D2182E4720075B5F8 /* JSTextStyle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSTextStyle.h; sourceTree = "<group>"; };
+		D854D69E2182E4720075B5F8 /* JSChartLegend.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSChartLegend.h; sourceTree = "<group>"; };
+		D854D69F2182E4720075B5F8 /* JSDataset.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSDataset.h; sourceTree = "<group>"; };
+		D854D6A02182E4720075B5F8 /* JSSpeechManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSpeechManager.m; sourceTree = "<group>"; };
+		D854D6A12182E4720075B5F8 /* JSEncodeType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSEncodeType.m; sourceTree = "<group>"; };
+		D854D6A22182E4720075B5F8 /* SceneViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneViewManager.h; sourceTree = "<group>"; };
+		D854D6A32182E4720075B5F8 /* JSLegendViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSLegendViewManager.m; sourceTree = "<group>"; };
+		D854D6A42182E4720075B5F8 /* JSObjManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSObjManager.m; sourceTree = "<group>"; };
+		D854D6A52182E4720075B5F8 /* JSRelationalChartPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSRelationalChartPoint.h; sourceTree = "<group>"; };
+		D854D6A62182E4720075B5F8 /* JSInstrumentChartViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSInstrumentChartViewManager.h; sourceTree = "<group>"; };
+		D854D6A72182E4720075B5F8 /* JSPointM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSPointM.h; sourceTree = "<group>"; };
+		D854D6A82182E4720075B5F8 /* JSScaleViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSScaleViewManager.m; sourceTree = "<group>"; };
+		D854D6A92182E4720075B5F8 /* JSQueryParameter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSQueryParameter.m; sourceTree = "<group>"; };
+		D854D6AA2182E4720075B5F8 /* JSLayerGroup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSLayerGroup.h; sourceTree = "<group>"; };
+		D854D6AB2182E4720075B5F8 /* JSBufferAnalystParameter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSBufferAnalystParameter.m; sourceTree = "<group>"; };
+		D854D6AC2182E4720075B5F8 /* JSPolymerChart.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSPolymerChart.h; sourceTree = "<group>"; };
+		D854D6AD2182E4720075B5F8 /* JSMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSMap.h; sourceTree = "<group>"; };
+		D854D6AE2182E4720075B5F8 /* JSSymbolLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSymbolLibrary.h; sourceTree = "<group>"; };
+		D854D6AF2182E4720075B5F8 /* JSGeoText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSGeoText.h; sourceTree = "<group>"; };
+		D854D6B02182E4720075B5F8 /* JSPieChartViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSPieChartViewManager.m; sourceTree = "<group>"; };
+		D854D6B12182E4720075B5F8 /* JSAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSAction.h; sourceTree = "<group>"; };
+		D854D6B22182E4720075B5F8 /* JSSymbolGroup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolGroup.m; sourceTree = "<group>"; };
+		D854D6B32182E4720075B5F8 /* JSPoint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSPoint.m; sourceTree = "<group>"; };
+		D854D6B42182E4720075B5F8 /* JSCollectorLine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSCollectorLine.h; sourceTree = "<group>"; };
+		D854D6B52182E4720075B5F8 /* JSSystemUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSystemUtil.m; sourceTree = "<group>"; };
+		D854D6B62182E4720075B5F8 /* JSGeoLineM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSGeoLineM.h; sourceTree = "<group>"; };
+		D854D6B72182E4720075B5F8 /* JSTrackingLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSTrackingLayer.h; sourceTree = "<group>"; };
+		D854D6B82182E4720075B5F8 /* JSMQTTClientSide.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSMQTTClientSide.h; sourceTree = "<group>"; };
+		D854D6B92182E4720075B5F8 /* RCTConvert+Action.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+Action.m"; sourceTree = "<group>"; };
+		D854D6BA2182E4720075B5F8 /* JsonUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JsonUtil.h; sourceTree = "<group>"; };
+		D854D6BB2182E4720075B5F8 /* JSBarChartViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSBarChartViewManager.h; sourceTree = "<group>"; };
+		D854D6BC2182E4720075B5F8 /* JSCollector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSCollector.h; sourceTree = "<group>"; };
+		D854D6BD2182E4720075B5F8 /* JSSelection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSelection.h; sourceTree = "<group>"; };
+		D854D6BE2182E4720075B5F8 /* JSBarChart.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSBarChart.h; sourceTree = "<group>"; };
+		D854D6BF2182E4720075B5F8 /* JSGeoStyle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSGeoStyle.m; sourceTree = "<group>"; };
+		D854D6C02182E4720075B5F8 /* JSDatasources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSDatasources.h; sourceTree = "<group>"; };
+		D854D6C12182E4720075B5F8 /* JSSceneControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSceneControl.h; sourceTree = "<group>"; };
+		D854D6C22182E4720075B5F8 /* JSLineChart.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSLineChart.m; sourceTree = "<group>"; };
+		D854D6C32182E4720075B5F8 /* JSLineChartData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSLineChartData.m; sourceTree = "<group>"; };
+		D854D6C42182E4720075B5F8 /* JSCallOut.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSCallOut.m; sourceTree = "<group>"; };
+		D854D6C52182E4720075B5F8 /* JSColorGradientType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSColorGradientType.m; sourceTree = "<group>"; };
+		D854D6C62182E4720075B5F8 /* JSLocationAnalystParameter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSLocationAnalystParameter.h; sourceTree = "<group>"; };
+		D854D6C72182E4720075B5F8 /* JSMapControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSMapControl.m; sourceTree = "<group>"; };
+		D854D6C82182E4720075B5F8 /* JSGeoPoint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSGeoPoint.m; sourceTree = "<group>"; };
+		D854D6C92182E4720075B5F8 /* JSTransportationAnalystSetting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSTransportationAnalystSetting.h; sourceTree = "<group>"; };
+		D854D6CA2182E4720075B5F8 /* JSSymbolLine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolLine.m; sourceTree = "<group>"; };
+		D854D6CB2182E4720075B5F8 /* JSRelationalPointChart.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSRelationalPointChart.m; sourceTree = "<group>"; };
+		D854D6CC2182E4720075B5F8 /* JSWorkspaceType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSWorkspaceType.m; sourceTree = "<group>"; };
+		D854D6CD2182E4720075B5F8 /* RCTConvert+BufferEndType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+BufferEndType.m"; sourceTree = "<group>"; };
+		D854D6CE2182E4720075B5F8 /* JSRectangle2D.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSRectangle2D.h; sourceTree = "<group>"; };
+		D854D6CF2182E4720075B5F8 /* JSSymbolGroups.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolGroups.m; sourceTree = "<group>"; };
+		D854D6D02182E4720075B5F8 /* JSGPSElementType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSGPSElementType.m; sourceTree = "<group>"; };
+		D854D6D12182E4720075B5F8 /* RCTConvert+DatasetType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+DatasetType.h"; sourceTree = "<group>"; };
+		D854D6D22182E4720075B5F8 /* JSElementPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSElementPoint.h; sourceTree = "<group>"; };
+		D854D6D32182E4720075B5F8 /* RCTConvert+EncodeType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+EncodeType.h"; sourceTree = "<group>"; };
+		D854D6D42182E4720075B5F8 /* JSNavigation2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSNavigation2.h; sourceTree = "<group>"; };
+		D854D6D52182E4720075B5F8 /* JSTransportationAnalyst.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSTransportationAnalyst.m; sourceTree = "<group>"; };
+		D854D6D62182E4720075B5F8 /* JSPointDensityChart.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSPointDensityChart.m; sourceTree = "<group>"; };
+		D854D6D72182E4720075B5F8 /* JSLineChartViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSLineChartViewManager.m; sourceTree = "<group>"; };
+		D854D6D82182E4720075B5F8 /* JSChartPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSChartPoint.h; sourceTree = "<group>"; };
+		D854D6D92182E4720075B5F8 /* JSDataUploadService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSDataUploadService.h; sourceTree = "<group>"; };
+		D854D6DA2182E4720075B5F8 /* JSSymbolMarkerLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolMarkerLibrary.m; sourceTree = "<group>"; };
+		D854D6DB2182E4720075B5F8 /* JSSceneView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSceneView.m; sourceTree = "<group>"; };
+		D854D6DC2182E4720075B5F8 /* JSCoordSysTranslator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSCoordSysTranslator.m; sourceTree = "<group>"; };
+		D854D6DD2182E4720075B5F8 /* RCTConvert+RadiusUnit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RadiusUnit.m"; sourceTree = "<group>"; };
+		D854D6DE2182E4720075B5F8 /* JSDatasource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSDatasource.h; sourceTree = "<group>"; };
+		D854D6DF2182E4720075B5F8 /* JSLocationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSLocationManager.h; sourceTree = "<group>"; };
+		D854D6E02182E4720075B5F8 /* JSRangeMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSRangeMode.h; sourceTree = "<group>"; };
+		D854D6E12182E4720075B5F8 /* JSWorkspace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSWorkspace.h; sourceTree = "<group>"; };
+		D854D6E22182E4720075B5F8 /* JSAdoptMapView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSAdoptMapView.m; sourceTree = "<group>"; };
+		D854D6E32182E4720075B5F8 /* JSBarChartData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSBarChartData.h; sourceTree = "<group>"; };
+		D854D6E42182E4720075B5F8 /* JSNavigation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSNavigation.m; sourceTree = "<group>"; };
+		D854D6E52182E4720075B5F8 /* JSThemeUniqueItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSThemeUniqueItem.m; sourceTree = "<group>"; };
+		D854D6E62182E4720075B5F8 /* JSSupplyCenterType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSupplyCenterType.h; sourceTree = "<group>"; };
+		D854D6E72182E4720075B5F8 /* JSWorkspaceConnectionInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSWorkspaceConnectionInfo.h; sourceTree = "<group>"; };
+		D854D6E82182E4720075B5F8 /* JSLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSLayer.m; sourceTree = "<group>"; };
+		D854D6E92182E4720075B5F8 /* JSServiceBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSServiceBase.h; sourceTree = "<group>"; };
+		D854D6EA2182E4720075B5F8 /* JSOverlayAnalystParameter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSOverlayAnalystParameter.m; sourceTree = "<group>"; };
+		D854D6EB2182E4720075B5F8 /* JSSymbolLineLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolLineLibrary.m; sourceTree = "<group>"; };
+		D854D6EC2182E4720075B5F8 /* JSBarChartDataItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSBarChartDataItem.h; sourceTree = "<group>"; };
+		D854D6ED2182E4720075B5F8 /* JSGeometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSGeometry.h; sourceTree = "<group>"; };
+		D854D6EE2182E4720075B5F8 /* JSLayerManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSLayerManager.h; sourceTree = "<group>"; };
+		D854D6EF2182E4720075B5F8 /* JSPoint2D.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSPoint2D.h; sourceTree = "<group>"; };
+		D854D6F02182E4720075B5F8 /* JSDatasetVectorInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSDatasetVectorInfo.h; sourceTree = "<group>"; };
+		D854D6F12182E4720075B5F8 /* JSLayer3Ds.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSLayer3Ds.m; sourceTree = "<group>"; };
+		D854D6F22182E4720075B5F8 /* JSFieldType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSFieldType.m; sourceTree = "<group>"; };
+		D854D6F32182E4720075B5F8 /* JSOnlineService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSOnlineService.h; sourceTree = "<group>"; };
+		D854D6F42182E4720075B5F8 /* JSWeightFieldInfos.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSWeightFieldInfos.h; sourceTree = "<group>"; };
+		D854D6F52182E4720075B5F8 /* JSSTOMPManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSTOMPManager.h; sourceTree = "<group>"; };
+		D854D6F62182E4720075B5F8 /* JSMapView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSMapView.h; sourceTree = "<group>"; };
+		D854D6F72182E4720075B5F8 /* JSTimeLine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSTimeLine.h; sourceTree = "<group>"; };
+		D854D6F82182E4720075B5F8 /* JSChartView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSChartView.h; sourceTree = "<group>"; };
+		D854D6F92182E4720075B5F8 /* JSAMQPManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSAMQPManager.h; sourceTree = "<group>"; };
+		D854D6FA2182E4720075B5F8 /* JSSymbol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSymbol.h; sourceTree = "<group>"; };
+		D854D6FB2182E4720075B5F8 /* JSQueryService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSQueryService.m; sourceTree = "<group>"; };
+		D854D6FC2182E4720075B5F8 /* JSFeature.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSFeature.m; sourceTree = "<group>"; };
+		D854D6FD2182E4720075B5F8 /* JSGridHotChart.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSGridHotChart.h; sourceTree = "<group>"; };
+		D854D6FE2182E4720075B5F8 /* JSPrjCoordSys.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSPrjCoordSys.m; sourceTree = "<group>"; };
+		D854D6FF2182E4720075B5F8 /* JSBufferAnalystGeometry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSBufferAnalystGeometry.m; sourceTree = "<group>"; };
+		D854D7002182E4720075B5F8 /* JSBufferAnalyst.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSBufferAnalyst.m; sourceTree = "<group>"; };
+		D854D7012182E4720075B5F8 /* JSSupplyCenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSupplyCenter.h; sourceTree = "<group>"; };
+		D854D7022182E4720075B5F8 /* JSFeatureSet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSFeatureSet.m; sourceTree = "<group>"; };
+		D854D7032182E4720075B5F8 /* JSTextPart.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSTextPart.m; sourceTree = "<group>"; };
+		D854D7042182E4720075B5F8 /* JSCoordSysTransParameter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSCoordSysTransParameter.h; sourceTree = "<group>"; };
+		D854D7052182E4720075B5F8 /* JSElementPolygon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSElementPolygon.h; sourceTree = "<group>"; };
+		D854D7062182E4720075B5F8 /* JSTextAlignment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSTextAlignment.h; sourceTree = "<group>"; };
+		D854D7072182E4720075B5F8 /* JSBufferEndType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSBufferEndType.m; sourceTree = "<group>"; };
+		D854D7082182E4720075B5F8 /* JSWeightFieldInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSWeightFieldInfo.h; sourceTree = "<group>"; };
+		D854D7092182E4720075B5F8 /* JSChartData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSChartData.h; sourceTree = "<group>"; };
+		D854D70A2182E4720075B5F8 /* JSRadiusUnit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSRadiusUnit.h; sourceTree = "<group>"; };
+		D854D70B2182E4720075B5F8 /* JSColorScheme.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSColorScheme.h; sourceTree = "<group>"; };
+		D854D70C2182E4720075B5F8 /* JSSTOMPReceiver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSTOMPReceiver.m; sourceTree = "<group>"; };
+		D854D70D2182E4720075B5F8 /* JSLayerSettingVector.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSLayerSettingVector.m; sourceTree = "<group>"; };
+		D854D70E2182E4720075B5F8 /* JSGeoLine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSGeoLine.m; sourceTree = "<group>"; };
+		D854D70F2182E4720075B5F8 /* JSMaps.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSMaps.h; sourceTree = "<group>"; };
+		D854D7102182E4720075B5F8 /* JSThemeRange.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSThemeRange.m; sourceTree = "<group>"; };
+		D854D7112182E4720075B5F8 /* JSSize2D.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSize2D.m; sourceTree = "<group>"; };
+		D854D7122182E4720075B5F8 /* JSThemeLabel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSThemeLabel.m; sourceTree = "<group>"; };
+		D854D7132182E4720075B5F8 /* JSSymbolType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSymbolType.h; sourceTree = "<group>"; };
+		D854D7142182E4720075B5F8 /* JSSupplyCenters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSupplyCenters.m; sourceTree = "<group>"; };
+		D854D7152182E4720075B5F8 /* JSSymbolFill.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSymbolFill.h; sourceTree = "<group>"; };
+		D854D7162182E4720075B5F8 /* JSFacilityAnalyst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSFacilityAnalyst.h; sourceTree = "<group>"; };
+		D854D7172182E4720075B5F8 /* NativeUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NativeUtil.h; sourceTree = "<group>"; };
+		D854D7182182E4720075B5F8 /* JSGeoRegion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSGeoRegion.m; sourceTree = "<group>"; };
+		D854D7192182E4720075B5F8 /* JSResources.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSResources.m; sourceTree = "<group>"; };
+		D854D71A2182E4720075B5F8 /* JSHotChart.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSHotChart.m; sourceTree = "<group>"; };
+		D854D71B2182E4720075B5F8 /* JSLayerSetting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSLayerSetting.m; sourceTree = "<group>"; };
+		D854D71C2182E4720075B5F8 /* JSScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSScene.h; sourceTree = "<group>"; };
+		D854D71D2182E4720075B5F8 /* JSTransportationAnalystParameter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSTransportationAnalystParameter.h; sourceTree = "<group>"; };
+		D854D71E2182E4720075B5F8 /* JSOverlayAnalyst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSOverlayAnalyst.h; sourceTree = "<group>"; };
+		D854D71F2182E4720075B5F8 /* JSDatasets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSDatasets.h; sourceTree = "<group>"; };
+		D854D7202182E4720075B5F8 /* JSThemeType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSThemeType.h; sourceTree = "<group>"; };
+		D854D7212182E4720075B5F8 /* JSServiceQueryParameter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSServiceQueryParameter.h; sourceTree = "<group>"; };
+		D854D7222182E4720075B5F8 /* JSRecordset.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSRecordset.m; sourceTree = "<group>"; };
+		D854D7232182E4720075B5F8 /* JSPieChart.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSPieChart.m; sourceTree = "<group>"; };
+		D854D7242182E4720075B5F8 /* JSThemeRangeItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSThemeRangeItem.h; sourceTree = "<group>"; };
+		D854D7252182E4720075B5F8 /* JSDatasetVector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSDatasetVector.h; sourceTree = "<group>"; };
+		D854D7412182FD320075B5F8 /* SMWorkspace.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMWorkspace.m; sourceTree = "<group>"; };
+		D854D7422182FD320075B5F8 /* SMWorkspace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMWorkspace.h; sourceTree = "<group>"; };
+		D854D7442182FD3E0075B5F8 /* SMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMap.m; sourceTree = "<group>"; };
+		D854D7452182FD3E0075B5F8 /* SMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMap.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		58B511D81A9E6C8500147676 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		134814211AA4EA7D00B7C361 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				134814201AA4EA6300B7C361 /* libSupermap.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		58B511D21A9E6C8500147676 = {
+			isa = PBXGroup;
+			children = (
+				D854D7432182FD3E0075B5F8 /* interfaces */,
+				D854D7402182FD320075B5F8 /* native */,
+				D854D5E82182E4710075B5F8 /* objNative */,
+				134814211AA4EA7D00B7C361 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D854D5E82182E4710075B5F8 /* objNative */ = {
+			isa = PBXGroup;
+			children = (
+				D854D5E92182E4710075B5F8 /* JSAction.m */,
+				D854D5EA2182E4710075B5F8 /* JSPieChartViewManager.h */,
+				D854D5EB2182E4710075B5F8 /* JSSymbolLibrary.m */,
+				D854D5EC2182E4710075B5F8 /* JSGeoText.m */,
+				D854D5ED2182E4710075B5F8 /* JSLayerGroup.m */,
+				D854D5EE2182E4710075B5F8 /* JSQueryParameter.h */,
+				D854D5EF2182E4710075B5F8 /* JSMap.m */,
+				D854D5F02182E4710075B5F8 /* JSPolymerChart.m */,
+				D854D5F12182E4710075B5F8 /* JSBufferAnalystParameter.h */,
+				D854D5F22182E4710075B5F8 /* JSPointM.m */,
+				D854D5F32182E4710075B5F8 /* JSScaleViewManager.h */,
+				D854D5F42182E4710075B5F8 /* JSRelationalChartPoint.m */,
+				D854D5F52182E4710075B5F8 /* JSInstrumentChartViewManager.m */,
+				D854D5F62182E4710075B5F8 /* SceneViewManager.m */,
+				D854D5F72182E4710075B5F8 /* JSLegendViewManager.h */,
+				D854D5F82182E4710075B5F8 /* JSObjManager.h */,
+				D854D5F92182E4710075B5F8 /* JSSpeechManager.h */,
+				D854D5FA2182E4710075B5F8 /* JSEncodeType.h */,
+				D854D5FB2182E4710075B5F8 /* JSPieChartData.m */,
+				D854D5FC2182E4710075B5F8 /* JSTextStyle.m */,
+				D854D5FD2182E4710075B5F8 /* JSDataset.m */,
+				D854D5FE2182E4710075B5F8 /* JSChartLegend.m */,
+				D854D5FF2182E4710075B5F8 /* JSSymbolMarker.m */,
+				D854D6002182E4710075B5F8 /* Constants.m */,
+				D854D6012182E4710075B5F8 /* JSDatasourceConnectionInfo.h */,
+				D854D6022182E4710075B5F8 /* JSDataDownloadService.m */,
+				D854D6032182E4710075B5F8 /* JSCoordSysTransMethod.h */,
+				D854D6042182E4710075B5F8 /* JSAMQPSender.m */,
+				D854D6052182E4710075B5F8 /* JSPrjCoordSysType.m */,
+				D854D6062182E4710075B5F8 /* JSAMQPReceiver.m */,
+				D854D6072182E4710075B5F8 /* JSSymbolFillLibrary.h */,
+				D854D6082182E4710075B5F8 /* JSTrack.m */,
+				D854D6092182E4710075B5F8 /* JSLayers.h */,
+				D854D60A2182E4720075B5F8 /* JSThemeLabelItem.m */,
+				D854D60B2182E4720075B5F8 /* JSSTOMPSender.m */,
+				D854D60C2182E4720075B5F8 /* JSThemeUnique.m */,
+				D854D60D2182E4720075B5F8 /* JSTheme.h */,
+				D854D60E2182E4720075B5F8 /* JSFacilityAnalystSetting.m */,
+				D854D60F2182E4720075B5F8 /* JSEnvironment.h */,
+				D854D6102182E4720075B5F8 /* JSProjectionType.h */,
+				D854D6112182E4720075B5F8 /* JSCollectorElement.h */,
+				D854D6122182E4720075B5F8 /* JSDatasetType.m */,
+				D854D6132182E4720075B5F8 /* MQTTClientSide.h */,
+				D854D6142182E4720075B5F8 /* JSSymbolMarkerLibrary.h */,
+				D854D6152182E4720075B5F8 /* JSChartPoint.m */,
+				D854D6162182E4720075B5F8 /* JSLineChartViewManager.h */,
+				D854D6172182E4720075B5F8 /* JSDataUploadService.m */,
+				D854D6182182E4720075B5F8 /* RCTConvert+EncodeType.m */,
+				D854D6192182E4720075B5F8 /* RCTConvert+DatasetType.m */,
+				D854D61A2182E4720075B5F8 /* JSElementPoint.m */,
+				D854D61B2182E4720075B5F8 /* JSGPSElementType.h */,
+				D854D61C2182E4720075B5F8 /* JSNavigation2.m */,
+				D854D61D2182E4720075B5F8 /* JSTransportationAnalyst.h */,
+				D854D61E2182E4720075B5F8 /* JSPointDensityChart.h */,
+				D854D61F2182E4720075B5F8 /* RCTConvert+BufferEndType.h */,
+				D854D6202182E4720075B5F8 /* JSRectangle2D.m */,
+				D854D6212182E4720075B5F8 /* JSSymbolGroups.h */,
+				D854D6222182E4720075B5F8 /* JSTransportationAnalystSetting.m */,
+				D854D6232182E4720075B5F8 /* JSWorkspaceType.h */,
+				D854D6242182E4720075B5F8 /* JSSymbolLine.h */,
+				D854D6252182E4720075B5F8 /* JSRelationalPointChart.h */,
+				D854D6262182E4720075B5F8 /* JSGeoPoint.h */,
+				D854D6272182E4720075B5F8 /* JSSceneControl.m */,
+				D854D6282182E4720075B5F8 /* JSCallOut.h */,
+				D854D6292182E4720075B5F8 /* JSLineChartData.h */,
+				D854D62A2182E4720075B5F8 /* JSLineChart.h */,
+				D854D62B2182E4720075B5F8 /* JSColorGradientType.h */,
+				D854D62C2182E4720075B5F8 /* JSMapControl.h */,
+				D854D62D2182E4720075B5F8 /* JSLocationAnalystParameter.m */,
+				D854D62E2182E4720075B5F8 /* JSDatasources.m */,
+				D854D62F2182E4720075B5F8 /* JSSelection.m */,
+				D854D6302182E4720075B5F8 /* JSGeoStyle.h */,
+				D854D6312182E4720075B5F8 /* JSBarChart.m */,
+				D854D6322182E4720075B5F8 /* JsonUtil.m */,
+				D854D6332182E4720075B5F8 /* JSBarChartViewManager.m */,
+				D854D6342182E4720075B5F8 /* JSCollector.m */,
+				D854D6352182E4720075B5F8 /* JSTrackingLayer.m */,
+				D854D6362182E4720075B5F8 /* JSGeoLineM.m */,
+				D854D6372182E4720075B5F8 /* JSMQTTClientSide.m */,
+				D854D6382182E4720075B5F8 /* RCTConvert+Action.h */,
+				D854D6392182E4720075B5F8 /* JSCollectorLine.m */,
+				D854D63A2182E4720075B5F8 /* JSSymbolGroup.h */,
+				D854D63B2182E4720075B5F8 /* JSPoint.h */,
+				D854D63C2182E4720075B5F8 /* JSSystemUtil.h */,
+				D854D63D2182E4720075B5F8 /* JSGridHotChart.m */,
+				D854D63E2182E4720075B5F8 /* JSPrjCoordSys.h */,
+				D854D63F2182E4720075B5F8 /* JSBufferAnalystGeometry.h */,
+				D854D6402182E4720075B5F8 /* JSFeature.h */,
+				D854D6412182E4720075B5F8 /* JSQueryService.h */,
+				D854D6422182E4720075B5F8 /* JSChartView.m */,
+				D854D6432182E4720075B5F8 /* JSSymbol.m */,
+				D854D6442182E4720075B5F8 /* JSAMQPManager.m */,
+				D854D6452182E4720075B5F8 /* JSSTOMPManager.m */,
+				D854D6462182E4720075B5F8 /* JSTimeLine.m */,
+				D854D6472182E4720075B5F8 /* JSMapView.m */,
+				D854D6482182E4720075B5F8 /* JSWeightFieldInfos.m */,
+				D854D6492182E4720075B5F8 /* JSOnlineService.m */,
+				D854D64A2182E4720075B5F8 /* JSFieldType.h */,
+				D854D64B2182E4720075B5F8 /* JSDatasetVectorInfo.m */,
+				D854D64C2182E4720075B5F8 /* JSLayer3Ds.h */,
+				D854D64D2182E4720075B5F8 /* JSPoint2D.m */,
+				D854D64E2182E4720075B5F8 /* JSLayerManager.m */,
+				D854D64F2182E4720075B5F8 /* JSGeometry.m */,
+				D854D6502182E4720075B5F8 /* JSBarChartDataItem.m */,
+				D854D6512182E4720075B5F8 /* JSSymbolLineLibrary.h */,
+				D854D6522182E4720075B5F8 /* JSServiceBase.m */,
+				D854D6532182E4720075B5F8 /* JSLayer.h */,
+				D854D6542182E4720075B5F8 /* JSOverlayAnalystParameter.h */,
+				D854D6552182E4720075B5F8 /* JSAdoptMapView.h */,
+				D854D6562182E4720075B5F8 /* JSWorkspace.m */,
+				D854D6572182E4720075B5F8 /* JSThemeUniqueItem.h */,
+				D854D6582182E4720075B5F8 /* JSNavigation.h */,
+				D854D6592182E4720075B5F8 /* JSBarChartData.m */,
+				D854D65A2182E4720075B5F8 /* JSSupplyCenterType.m */,
+				D854D65B2182E4720075B5F8 /* JSWorkspaceConnectionInfo.m */,
+				D854D65C2182E4720075B5F8 /* JSSceneView.h */,
+				D854D65D2182E4720075B5F8 /* RCTConvert+RadiusUnit.h */,
+				D854D65E2182E4720075B5F8 /* JSCoordSysTranslator.h */,
+				D854D65F2182E4720075B5F8 /* JSDatasource.m */,
+				D854D6602182E4720075B5F8 /* JSRangeMode.m */,
+				D854D6612182E4720075B5F8 /* JSLocationManager.m */,
+				D854D6622182E4720075B5F8 /* JSThemeRangeItem.m */,
+				D854D6632182E4720075B5F8 /* JSDatasetVector.m */,
+				D854D6642182E4720075B5F8 /* JSPieChart.h */,
+				D854D6652182E4720075B5F8 /* JSThemeType.m */,
+				D854D6662182E4720075B5F8 /* JSRecordset.h */,
+				D854D6672182E4720075B5F8 /* JSServiceQueryParameter.m */,
+				D854D6682182E4720075B5F8 /* JSOverlayAnalyst.m */,
+				D854D6692182E4720075B5F8 /* JSDatasets.m */,
+				D854D66A2182E4720075B5F8 /* JSLayerSetting.h */,
+				D854D66B2182E4720075B5F8 /* JSScene.m */,
+				D854D66C2182E4720075B5F8 /* JSTransportationAnalystParameter.m */,
+				D854D66D2182E4720075B5F8 /* NativeUtil.m */,
+				D854D66E2182E4720075B5F8 /* JSResources.h */,
+				D854D66F2182E4720075B5F8 /* JSGeoRegion.h */,
+				D854D6702182E4720075B5F8 /* JSHotChart.h */,
+				D854D6712182E4720075B5F8 /* JSSymbolFill.m */,
+				D854D6722182E4720075B5F8 /* JSFacilityAnalyst.m */,
+				D854D6732182E4720075B5F8 /* JSThemeLabel.h */,
+				D854D6742182E4720075B5F8 /* JSSupplyCenters.h */,
+				D854D6752182E4720075B5F8 /* JSSymbolType.m */,
+				D854D6762182E4720075B5F8 /* JSMaps.m */,
+				D854D6772182E4720075B5F8 /* JSGeoLine.h */,
+				D854D6782182E4720075B5F8 /* JSThemeRange.h */,
+				D854D6792182E4720075B5F8 /* JSSize2D.h */,
+				D854D67A2182E4720075B5F8 /* JSSTOMPReceiver.h */,
+				D854D67B2182E4720075B5F8 /* JSLayerSettingVector.h */,
+				D854D67C2182E4720075B5F8 /* JSColorScheme.m */,
+				D854D67D2182E4720075B5F8 /* JSWeightFieldInfo.m */,
+				D854D67E2182E4720075B5F8 /* JSChartData.m */,
+				D854D67F2182E4720075B5F8 /* JSRadiusUnit.m */,
+				D854D6802182E4720075B5F8 /* JSCoordSysTransParameter.m */,
+				D854D6812182E4720075B5F8 /* JSBufferEndType.h */,
+				D854D6822182E4720075B5F8 /* JSTextAlignment.m */,
+				D854D6832182E4720075B5F8 /* JSElementPolygon.m */,
+				D854D6842182E4720075B5F8 /* JSTextPart.h */,
+				D854D6852182E4720075B5F8 /* JSSupplyCenter.m */,
+				D854D6862182E4720075B5F8 /* JSBufferAnalyst.h */,
+				D854D6872182E4720075B5F8 /* JSFeatureSet.h */,
+				D854D6882182E4720075B5F8 /* JSProjectionType.m */,
+				D854D6892182E4720075B5F8 /* JSCollectorElement.m */,
+				D854D68A2182E4720075B5F8 /* JSDatasetType.h */,
+				D854D68B2182E4720075B5F8 /* JSEnvironment.m */,
+				D854D68C2182E4720075B5F8 /* JSThemeUnique.h */,
+				D854D68D2182E4720075B5F8 /* JSTheme.m */,
+				D854D68E2182E4720075B5F8 /* JSFacilityAnalystSetting.h */,
+				D854D68F2182E4720075B5F8 /* JSTrack.h */,
+				D854D6902182E4720075B5F8 /* JSLayers.m */,
+				D854D6912182E4720075B5F8 /* JSThemeLabelItem.h */,
+				D854D6922182E4720075B5F8 /* JSSTOMPSender.h */,
+				D854D6932182E4720075B5F8 /* JSSymbolFillLibrary.m */,
+				D854D6942182E4720075B5F8 /* JSDataDownloadService.h */,
+				D854D6952182E4720075B5F8 /* JSDatasourceConnectionInfo.m */,
+				D854D6962182E4720075B5F8 /* Constants.h */,
+				D854D6972182E4720075B5F8 /* JSAMQPReceiver.h */,
+				D854D6982182E4720075B5F8 /* JSAMQPSender.h */,
+				D854D6992182E4720075B5F8 /* JSPrjCoordSysType.h */,
+				D854D69A2182E4720075B5F8 /* JSCoordSysTransMethod.m */,
+				D854D69B2182E4720075B5F8 /* JSSymbolMarker.h */,
+				D854D69C2182E4720075B5F8 /* JSPieChartData.h */,
+				D854D69D2182E4720075B5F8 /* JSTextStyle.h */,
+				D854D69E2182E4720075B5F8 /* JSChartLegend.h */,
+				D854D69F2182E4720075B5F8 /* JSDataset.h */,
+				D854D6A02182E4720075B5F8 /* JSSpeechManager.m */,
+				D854D6A12182E4720075B5F8 /* JSEncodeType.m */,
+				D854D6A22182E4720075B5F8 /* SceneViewManager.h */,
+				D854D6A32182E4720075B5F8 /* JSLegendViewManager.m */,
+				D854D6A42182E4720075B5F8 /* JSObjManager.m */,
+				D854D6A52182E4720075B5F8 /* JSRelationalChartPoint.h */,
+				D854D6A62182E4720075B5F8 /* JSInstrumentChartViewManager.h */,
+				D854D6A72182E4720075B5F8 /* JSPointM.h */,
+				D854D6A82182E4720075B5F8 /* JSScaleViewManager.m */,
+				D854D6A92182E4720075B5F8 /* JSQueryParameter.m */,
+				D854D6AA2182E4720075B5F8 /* JSLayerGroup.h */,
+				D854D6AB2182E4720075B5F8 /* JSBufferAnalystParameter.m */,
+				D854D6AC2182E4720075B5F8 /* JSPolymerChart.h */,
+				D854D6AD2182E4720075B5F8 /* JSMap.h */,
+				D854D6AE2182E4720075B5F8 /* JSSymbolLibrary.h */,
+				D854D6AF2182E4720075B5F8 /* JSGeoText.h */,
+				D854D6B02182E4720075B5F8 /* JSPieChartViewManager.m */,
+				D854D6B12182E4720075B5F8 /* JSAction.h */,
+				D854D6B22182E4720075B5F8 /* JSSymbolGroup.m */,
+				D854D6B32182E4720075B5F8 /* JSPoint.m */,
+				D854D6B42182E4720075B5F8 /* JSCollectorLine.h */,
+				D854D6B52182E4720075B5F8 /* JSSystemUtil.m */,
+				D854D6B62182E4720075B5F8 /* JSGeoLineM.h */,
+				D854D6B72182E4720075B5F8 /* JSTrackingLayer.h */,
+				D854D6B82182E4720075B5F8 /* JSMQTTClientSide.h */,
+				D854D6B92182E4720075B5F8 /* RCTConvert+Action.m */,
+				D854D6BA2182E4720075B5F8 /* JsonUtil.h */,
+				D854D6BB2182E4720075B5F8 /* JSBarChartViewManager.h */,
+				D854D6BC2182E4720075B5F8 /* JSCollector.h */,
+				D854D6BD2182E4720075B5F8 /* JSSelection.h */,
+				D854D6BE2182E4720075B5F8 /* JSBarChart.h */,
+				D854D6BF2182E4720075B5F8 /* JSGeoStyle.m */,
+				D854D6C02182E4720075B5F8 /* JSDatasources.h */,
+				D854D6C12182E4720075B5F8 /* JSSceneControl.h */,
+				D854D6C22182E4720075B5F8 /* JSLineChart.m */,
+				D854D6C32182E4720075B5F8 /* JSLineChartData.m */,
+				D854D6C42182E4720075B5F8 /* JSCallOut.m */,
+				D854D6C52182E4720075B5F8 /* JSColorGradientType.m */,
+				D854D6C62182E4720075B5F8 /* JSLocationAnalystParameter.h */,
+				D854D6C72182E4720075B5F8 /* JSMapControl.m */,
+				D854D6C82182E4720075B5F8 /* JSGeoPoint.m */,
+				D854D6C92182E4720075B5F8 /* JSTransportationAnalystSetting.h */,
+				D854D6CA2182E4720075B5F8 /* JSSymbolLine.m */,
+				D854D6CB2182E4720075B5F8 /* JSRelationalPointChart.m */,
+				D854D6CC2182E4720075B5F8 /* JSWorkspaceType.m */,
+				D854D6CD2182E4720075B5F8 /* RCTConvert+BufferEndType.m */,
+				D854D6CE2182E4720075B5F8 /* JSRectangle2D.h */,
+				D854D6CF2182E4720075B5F8 /* JSSymbolGroups.m */,
+				D854D6D02182E4720075B5F8 /* JSGPSElementType.m */,
+				D854D6D12182E4720075B5F8 /* RCTConvert+DatasetType.h */,
+				D854D6D22182E4720075B5F8 /* JSElementPoint.h */,
+				D854D6D32182E4720075B5F8 /* RCTConvert+EncodeType.h */,
+				D854D6D42182E4720075B5F8 /* JSNavigation2.h */,
+				D854D6D52182E4720075B5F8 /* JSTransportationAnalyst.m */,
+				D854D6D62182E4720075B5F8 /* JSPointDensityChart.m */,
+				D854D6D72182E4720075B5F8 /* JSLineChartViewManager.m */,
+				D854D6D82182E4720075B5F8 /* JSChartPoint.h */,
+				D854D6D92182E4720075B5F8 /* JSDataUploadService.h */,
+				D854D6DA2182E4720075B5F8 /* JSSymbolMarkerLibrary.m */,
+				D854D6DB2182E4720075B5F8 /* JSSceneView.m */,
+				D854D6DC2182E4720075B5F8 /* JSCoordSysTranslator.m */,
+				D854D6DD2182E4720075B5F8 /* RCTConvert+RadiusUnit.m */,
+				D854D6DE2182E4720075B5F8 /* JSDatasource.h */,
+				D854D6DF2182E4720075B5F8 /* JSLocationManager.h */,
+				D854D6E02182E4720075B5F8 /* JSRangeMode.h */,
+				D854D6E12182E4720075B5F8 /* JSWorkspace.h */,
+				D854D6E22182E4720075B5F8 /* JSAdoptMapView.m */,
+				D854D6E32182E4720075B5F8 /* JSBarChartData.h */,
+				D854D6E42182E4720075B5F8 /* JSNavigation.m */,
+				D854D6E52182E4720075B5F8 /* JSThemeUniqueItem.m */,
+				D854D6E62182E4720075B5F8 /* JSSupplyCenterType.h */,
+				D854D6E72182E4720075B5F8 /* JSWorkspaceConnectionInfo.h */,
+				D854D6E82182E4720075B5F8 /* JSLayer.m */,
+				D854D6E92182E4720075B5F8 /* JSServiceBase.h */,
+				D854D6EA2182E4720075B5F8 /* JSOverlayAnalystParameter.m */,
+				D854D6EB2182E4720075B5F8 /* JSSymbolLineLibrary.m */,
+				D854D6EC2182E4720075B5F8 /* JSBarChartDataItem.h */,
+				D854D6ED2182E4720075B5F8 /* JSGeometry.h */,
+				D854D6EE2182E4720075B5F8 /* JSLayerManager.h */,
+				D854D6EF2182E4720075B5F8 /* JSPoint2D.h */,
+				D854D6F02182E4720075B5F8 /* JSDatasetVectorInfo.h */,
+				D854D6F12182E4720075B5F8 /* JSLayer3Ds.m */,
+				D854D6F22182E4720075B5F8 /* JSFieldType.m */,
+				D854D6F32182E4720075B5F8 /* JSOnlineService.h */,
+				D854D6F42182E4720075B5F8 /* JSWeightFieldInfos.h */,
+				D854D6F52182E4720075B5F8 /* JSSTOMPManager.h */,
+				D854D6F62182E4720075B5F8 /* JSMapView.h */,
+				D854D6F72182E4720075B5F8 /* JSTimeLine.h */,
+				D854D6F82182E4720075B5F8 /* JSChartView.h */,
+				D854D6F92182E4720075B5F8 /* JSAMQPManager.h */,
+				D854D6FA2182E4720075B5F8 /* JSSymbol.h */,
+				D854D6FB2182E4720075B5F8 /* JSQueryService.m */,
+				D854D6FC2182E4720075B5F8 /* JSFeature.m */,
+				D854D6FD2182E4720075B5F8 /* JSGridHotChart.h */,
+				D854D6FE2182E4720075B5F8 /* JSPrjCoordSys.m */,
+				D854D6FF2182E4720075B5F8 /* JSBufferAnalystGeometry.m */,
+				D854D7002182E4720075B5F8 /* JSBufferAnalyst.m */,
+				D854D7012182E4720075B5F8 /* JSSupplyCenter.h */,
+				D854D7022182E4720075B5F8 /* JSFeatureSet.m */,
+				D854D7032182E4720075B5F8 /* JSTextPart.m */,
+				D854D7042182E4720075B5F8 /* JSCoordSysTransParameter.h */,
+				D854D7052182E4720075B5F8 /* JSElementPolygon.h */,
+				D854D7062182E4720075B5F8 /* JSTextAlignment.h */,
+				D854D7072182E4720075B5F8 /* JSBufferEndType.m */,
+				D854D7082182E4720075B5F8 /* JSWeightFieldInfo.h */,
+				D854D7092182E4720075B5F8 /* JSChartData.h */,
+				D854D70A2182E4720075B5F8 /* JSRadiusUnit.h */,
+				D854D70B2182E4720075B5F8 /* JSColorScheme.h */,
+				D854D70C2182E4720075B5F8 /* JSSTOMPReceiver.m */,
+				D854D70D2182E4720075B5F8 /* JSLayerSettingVector.m */,
+				D854D70E2182E4720075B5F8 /* JSGeoLine.m */,
+				D854D70F2182E4720075B5F8 /* JSMaps.h */,
+				D854D7102182E4720075B5F8 /* JSThemeRange.m */,
+				D854D7112182E4720075B5F8 /* JSSize2D.m */,
+				D854D7122182E4720075B5F8 /* JSThemeLabel.m */,
+				D854D7132182E4720075B5F8 /* JSSymbolType.h */,
+				D854D7142182E4720075B5F8 /* JSSupplyCenters.m */,
+				D854D7152182E4720075B5F8 /* JSSymbolFill.h */,
+				D854D7162182E4720075B5F8 /* JSFacilityAnalyst.h */,
+				D854D7172182E4720075B5F8 /* NativeUtil.h */,
+				D854D7182182E4720075B5F8 /* JSGeoRegion.m */,
+				D854D7192182E4720075B5F8 /* JSResources.m */,
+				D854D71A2182E4720075B5F8 /* JSHotChart.m */,
+				D854D71B2182E4720075B5F8 /* JSLayerSetting.m */,
+				D854D71C2182E4720075B5F8 /* JSScene.h */,
+				D854D71D2182E4720075B5F8 /* JSTransportationAnalystParameter.h */,
+				D854D71E2182E4720075B5F8 /* JSOverlayAnalyst.h */,
+				D854D71F2182E4720075B5F8 /* JSDatasets.h */,
+				D854D7202182E4720075B5F8 /* JSThemeType.h */,
+				D854D7212182E4720075B5F8 /* JSServiceQueryParameter.h */,
+				D854D7222182E4720075B5F8 /* JSRecordset.m */,
+				D854D7232182E4720075B5F8 /* JSPieChart.m */,
+				D854D7242182E4720075B5F8 /* JSThemeRangeItem.h */,
+				D854D7252182E4720075B5F8 /* JSDatasetVector.h */,
+			);
+			path = objNative;
+			sourceTree = "<group>";
+		};
+		D854D7402182FD320075B5F8 /* native */ = {
+			isa = PBXGroup;
+			children = (
+				D854D7412182FD320075B5F8 /* SMWorkspace.m */,
+				D854D7422182FD320075B5F8 /* SMWorkspace.h */,
+			);
+			path = native;
+			sourceTree = "<group>";
+		};
+		D854D7432182FD3E0075B5F8 /* interfaces */ = {
+			isa = PBXGroup;
+			children = (
+				D854D7442182FD3E0075B5F8 /* SMap.m */,
+				D854D7452182FD3E0075B5F8 /* SMap.h */,
+			);
+			path = interfaces;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		58B511DA1A9E6C8500147676 /* Supermap */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "Supermap" */;
+			buildPhases = (
+				58B511D71A9E6C8500147676 /* Sources */,
+				58B511D81A9E6C8500147676 /* Frameworks */,
+				58B511D91A9E6C8500147676 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Supermap;
+			productName = RCTDataManager;
+			productReference = 134814201AA4EA6300B7C361 /* libSupermap.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		58B511D31A9E6C8500147676 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = Facebook;
+				TargetAttributes = {
+					58B511DA1A9E6C8500147676 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "Supermap" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 58B511D21A9E6C8500147676;
+			productRefGroup = 58B511D21A9E6C8500147676;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				58B511DA1A9E6C8500147676 /* Supermap */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		58B511D71A9E6C8500147676 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D854D8062183051E0075B5F8 /* NativeUtil.m in Sources */,
+				D854D820218305540075B5F8 /* JSQueryParameter.m in Sources */,
+				D854D7DB218304DE0075B5F8 /* JSRectangle2D.m in Sources */,
+				D854D81B218305540075B5F8 /* JSSpeechManager.m in Sources */,
+				D854D7BC218304420075B5F8 /* JSSymbolLibrary.m in Sources */,
+				D854D81D218305540075B5F8 /* JSLegendViewManager.m in Sources */,
+				D854D7D1218304C80075B5F8 /* JSSTOMPSender.m in Sources */,
+				D854D7BF2183044A0075B5F8 /* JSMap.m in Sources */,
+				D854D7D7218304DE0075B5F8 /* RCTConvert+EncodeType.m in Sources */,
+				D854D7C02183044C0075B5F8 /* JSPolymerChart.m in Sources */,
+				D854D832218305720075B5F8 /* JSSymbolGroups.m in Sources */,
+				D854D8132183053B0075B5F8 /* JSProjectionType.m in Sources */,
+				D854D8392183058F0075B5F8 /* JSCoordSysTranslator.m in Sources */,
+				D854D81E218305540075B5F8 /* JSObjManager.m in Sources */,
+				D854D848218305A60075B5F8 /* JSFeatureSet.m in Sources */,
+				D854D7FA2183051E0075B5F8 /* JSWorkspaceConnectionInfo.m in Sources */,
+				D854D856218305B00075B5F8 /* JSRecordset.m in Sources */,
+				D854D7FE2183051E0075B5F8 /* JSThemeRangeItem.m in Sources */,
+				D854D7EA218304FF0075B5F8 /* JSSymbol.m in Sources */,
+				D854D8422183058F0075B5F8 /* JSFieldType.m in Sources */,
+				D854D80D2183053B0075B5F8 /* JSChartData.m in Sources */,
+				D854D834218305720075B5F8 /* JSTransportationAnalyst.m in Sources */,
+				D854D7E6218304FF0075B5F8 /* JSMQTTClientSide.m in Sources */,
+				D854D7C3218304530075B5F8 /* JSInstrumentChartViewManager.m in Sources */,
+				D854D7F82183051E0075B5F8 /* JSBarChartData.m in Sources */,
+				D854D83E2183058F0075B5F8 /* JSLayer.m in Sources */,
+				D854D82D218305720075B5F8 /* JSGeoPoint.m in Sources */,
+				D854D822218305540075B5F8 /* JSPieChartViewManager.m in Sources */,
+				D854D7F1218304FF0075B5F8 /* JSDatasetVectorInfo.m in Sources */,
+				D854D81A218305540075B5F8 /* JSCoordSysTransMethod.m in Sources */,
+				D854D7DC218304DE0075B5F8 /* JSSceneControl.m in Sources */,
+				D854D835218305720075B5F8 /* JSPointDensityChart.m in Sources */,
+				D854D7C2218304510075B5F8 /* JSRelationalChartPoint.m in Sources */,
+				D854D7F42183051E0075B5F8 /* JSGeometry.m in Sources */,
+				D854D7FC2183051E0075B5F8 /* JSRangeMode.m in Sources */,
+				D854D8402183058F0075B5F8 /* JSSymbolLineLibrary.m in Sources */,
+				D854D7F62183051E0075B5F8 /* JSServiceBase.m in Sources */,
+				D854D81F218305540075B5F8 /* JSScaleViewManager.m in Sources */,
+				D854D8002183051E0075B5F8 /* JSThemeType.m in Sources */,
+				D854D827218305720075B5F8 /* JSGeoStyle.m in Sources */,
+				D854D7C72183045F0075B5F8 /* JSDataset.m in Sources */,
+				D854D837218305720075B5F8 /* JSSymbolMarkerLibrary.m in Sources */,
+				D854D8122183053B0075B5F8 /* JSSupplyCenter.m in Sources */,
+				D854D7E8218304FF0075B5F8 /* JSGridHotChart.m in Sources */,
+				D854D7B9218302B20075B5F8 /* SMap.m in Sources */,
+				D854D8172183053B0075B5F8 /* JSLayers.m in Sources */,
+				D854D854218305A60075B5F8 /* JSHotChart.m in Sources */,
+				D854D7CD218304720075B5F8 /* JSPrjCoordSysType.m in Sources */,
+				D854D7D9218304DE0075B5F8 /* JSElementPoint.m in Sources */,
+				D854D82C218305720075B5F8 /* JSMapControl.m in Sources */,
+				D854D8442183058F0075B5F8 /* JSFeature.m in Sources */,
+				D854D855218305A60075B5F8 /* JSLayerSetting.m in Sources */,
+				D854D8012183051E0075B5F8 /* JSServiceQueryParameter.m in Sources */,
+				D854D7DF218304FF0075B5F8 /* JSSelection.m in Sources */,
+				D854D8182183053B0075B5F8 /* JSSymbolFillLibrary.m in Sources */,
+				D854D7E1218304FF0075B5F8 /* JsonUtil.m in Sources */,
+				D854D819218305540075B5F8 /* JSDatasourceConnectionInfo.m in Sources */,
+				D854D8102183053B0075B5F8 /* JSTextAlignment.m in Sources */,
+				D854D7BE218304470075B5F8 /* JSLayerGroup.m in Sources */,
+				D854D7E3218304FF0075B5F8 /* JSCollector.m in Sources */,
+				D854D84F218305A60075B5F8 /* JSSize2D.m in Sources */,
+				D854D7E4218304FF0075B5F8 /* JSTrackingLayer.m in Sources */,
+				D854D8072183053B0075B5F8 /* JSSymbolFill.m in Sources */,
+				D854D82A218305720075B5F8 /* JSCallOut.m in Sources */,
+				D854D83A2183058F0075B5F8 /* RCTConvert+RadiusUnit.m in Sources */,
+				D854D828218305720075B5F8 /* JSLineChart.m in Sources */,
+				D854D7C8218304610075B5F8 /* JSChartLegend.m in Sources */,
+				D854D824218305540075B5F8 /* JSPoint.m in Sources */,
+				D854D80A2183053B0075B5F8 /* JSMaps.m in Sources */,
+				D854D7D4218304DE0075B5F8 /* JSDatasetType.m in Sources */,
+				D854D7F0218304FF0075B5F8 /* JSOnlineService.m in Sources */,
+				D854D7EF218304FF0075B5F8 /* JSWeightFieldInfos.m in Sources */,
+				D854D821218305540075B5F8 /* JSBufferAnalystParameter.m in Sources */,
+				D854D853218305A60075B5F8 /* JSResources.m in Sources */,
+				D854D852218305A60075B5F8 /* JSGeoRegion.m in Sources */,
+				D854D7D3218304DE0075B5F8 /* JSFacilityAnalystSetting.m in Sources */,
+				D854D8042183051E0075B5F8 /* JSScene.m in Sources */,
+				D854D82F218305720075B5F8 /* JSRelationalPointChart.m in Sources */,
+				D854D7D2218304C80075B5F8 /* JSThemeUnique.m in Sources */,
+				D854D7E5218304FF0075B5F8 /* JSGeoLineM.m in Sources */,
+				D854D7BB218304290075B5F8 /* JSAction.m in Sources */,
+				D854D7D8218304DE0075B5F8 /* RCTConvert+DatasetType.m in Sources */,
+				D854D8432183058F0075B5F8 /* JSQueryService.m in Sources */,
+				D854D7C9218304640075B5F8 /* JSSymbolMarker.m in Sources */,
+				D854D82B218305720075B5F8 /* JSColorGradientType.m in Sources */,
+				D854D7E7218304FF0075B5F8 /* JSCollectorLine.m in Sources */,
+				D854D850218305A60075B5F8 /* JSThemeLabel.m in Sources */,
+				D854D81C218305540075B5F8 /* JSEncodeType.m in Sources */,
+				D854D7CE218304C10075B5F8 /* JSAMQPReceiver.m in Sources */,
+				D854D7FB2183051E0075B5F8 /* JSDatasource.m in Sources */,
+				D854D7F72183051E0075B5F8 /* JSWorkspace.m in Sources */,
+				D854D83C2183058F0075B5F8 /* JSNavigation.m in Sources */,
+				D854D8032183051E0075B5F8 /* JSDatasets.m in Sources */,
+				D854D7CB2183046E0075B5F8 /* JSDataDownloadService.m in Sources */,
+				D854D8382183058F0075B5F8 /* JSSceneView.m in Sources */,
+				D854D8162183053B0075B5F8 /* JSTheme.m in Sources */,
+				D854D7FF2183051E0075B5F8 /* JSDatasetVector.m in Sources */,
+				D854D84A218305A60075B5F8 /* JSBufferEndType.m in Sources */,
+				D854D7EE218304FF0075B5F8 /* JSMapView.m in Sources */,
+				D854D836218305720075B5F8 /* JSLineChartViewManager.m in Sources */,
+				D854D8052183051E0075B5F8 /* JSTransportationAnalystParameter.m in Sources */,
+				D854D7F92183051E0075B5F8 /* JSSupplyCenterType.m in Sources */,
+				D854D8022183051E0075B5F8 /* JSOverlayAnalyst.m in Sources */,
+				D854D7DD218304DE0075B5F8 /* JSLocationAnalystParameter.m in Sources */,
+				D854D80F2183053B0075B5F8 /* JSCoordSysTransParameter.m in Sources */,
+				D854D80B2183053B0075B5F8 /* JSColorScheme.m in Sources */,
+				D854D83B2183058F0075B5F8 /* JSAdoptMapView.m in Sources */,
+				D854D8412183058F0075B5F8 /* JSLayer3Ds.m in Sources */,
+				D854D8092183053B0075B5F8 /* JSSymbolType.m in Sources */,
+				D854D7C52183045B0075B5F8 /* JSPieChartData.m in Sources */,
+				D854D823218305540075B5F8 /* JSSymbolGroup.m in Sources */,
+				D854D7C62183045D0075B5F8 /* JSTextStyle.m in Sources */,
+				D854D847218305A60075B5F8 /* JSBufferAnalyst.m in Sources */,
+				D854D7EB218304FF0075B5F8 /* JSAMQPManager.m in Sources */,
+				D854D845218305A60075B5F8 /* JSPrjCoordSys.m in Sources */,
+				D854D7ED218304FF0075B5F8 /* JSTimeLine.m in Sources */,
+				D854D82E218305720075B5F8 /* JSSymbolLine.m in Sources */,
+				D854D8152183053B0075B5F8 /* JSEnvironment.m in Sources */,
+				D854D831218305720075B5F8 /* RCTConvert+BufferEndType.m in Sources */,
+				D854D84E218305A60075B5F8 /* JSThemeRange.m in Sources */,
+				D854D7B8218302AE0075B5F8 /* SMWorkspace.m in Sources */,
+				D854D825218305540075B5F8 /* JSSystemUtil.m in Sources */,
+				D854D7C4218304560075B5F8 /* SceneViewManager.m in Sources */,
+				D854D829218305720075B5F8 /* JSLineChartData.m in Sources */,
+				D854D7EC218304FF0075B5F8 /* JSSTOMPManager.m in Sources */,
+				D854D7E2218304FF0075B5F8 /* JSBarChartViewManager.m in Sources */,
+				D854D8112183053B0075B5F8 /* JSElementPolygon.m in Sources */,
+				D854D7F3218304FF0075B5F8 /* JSLayerManager.m in Sources */,
+				D854D7F2218304FF0075B5F8 /* JSPoint2D.m in Sources */,
+				D854D851218305A60075B5F8 /* JSSupplyCenters.m in Sources */,
+				D854D7CF218304C10075B5F8 /* JSTrack.m in Sources */,
+				D854D7DE218304FF0075B5F8 /* JSDatasources.m in Sources */,
+				D854D7E9218304FF0075B5F8 /* JSChartView.m in Sources */,
+				D854D80C2183053B0075B5F8 /* JSWeightFieldInfo.m in Sources */,
+				D854D7C12183044E0075B5F8 /* JSPointM.m in Sources */,
+				D854D7D0218304C80075B5F8 /* JSThemeLabelItem.m in Sources */,
+				D854D833218305720075B5F8 /* JSGPSElementType.m in Sources */,
+				D854D84C218305A60075B5F8 /* JSLayerSettingVector.m in Sources */,
+				D854D7BD218304450075B5F8 /* JSGeoText.m in Sources */,
+				D854D7CC218304700075B5F8 /* JSAMQPSender.m in Sources */,
+				D854D7F52183051E0075B5F8 /* JSBarChartDataItem.m in Sources */,
+				D854D7FD2183051E0075B5F8 /* JSLocationManager.m in Sources */,
+				D854D7E0218304FF0075B5F8 /* JSBarChart.m in Sources */,
+				D854D8142183053B0075B5F8 /* JSCollectorElement.m in Sources */,
+				D854D846218305A60075B5F8 /* JSBufferAnalystGeometry.m in Sources */,
+				D854D7D6218304DE0075B5F8 /* JSDataUploadService.m in Sources */,
+				D854D857218305B00075B5F8 /* JSPieChart.m in Sources */,
+				D854D83D2183058F0075B5F8 /* JSThemeUniqueItem.m in Sources */,
+				D854D8082183053B0075B5F8 /* JSFacilityAnalyst.m in Sources */,
+				D854D830218305720075B5F8 /* JSWorkspaceType.m in Sources */,
+				D854D80E2183053B0075B5F8 /* JSRadiusUnit.m in Sources */,
+				D854D84D218305A60075B5F8 /* JSGeoLine.m in Sources */,
+				D854D84B218305A60075B5F8 /* JSSTOMPReceiver.m in Sources */,
+				D854D7DA218304DE0075B5F8 /* JSNavigation2.m in Sources */,
+				D854D7D5218304DE0075B5F8 /* JSChartPoint.m in Sources */,
+				D854D83F2183058F0075B5F8 /* JSOverlayAnalystParameter.m in Sources */,
+				D854D7CA2183046A0075B5F8 /* Constants.m in Sources */,
+				D854D849218305A60075B5F8 /* JSTextPart.m in Sources */,
+				D854D826218305720075B5F8 /* RCTConvert+Action.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		58B511ED1A9E6C8500147676 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		58B511EE1A9E6C8500147676 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		58B511F01A9E6C8500147676 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_BITCODE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(BUILT_PRODUCTS_DIR)/include/React/**",
+					"$(SRCROOT)/../../react-native/React",
+					"$(SRCROOT)",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = Supermap;
+				SKIP_INSTALL = YES;
+				VALID_ARCHS = "arm64 armv7";
+			};
+			name = Debug;
+		};
+		58B511F11A9E6C8500147676 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_BITCODE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(BUILT_PRODUCTS_DIR)/include/React/**",
+					"$(SRCROOT)/../../react-native/React",
+					"$(SRCROOT)",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = Supermap;
+				SKIP_INSTALL = YES;
+				VALID_ARCHS = "arm64 armv7";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "Supermap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58B511ED1A9E6C8500147676 /* Debug */,
+				58B511EE1A9E6C8500147676 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "Supermap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58B511F01A9E6C8500147676 /* Debug */,
+				58B511F11A9E6C8500147676 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 58B511D31A9E6C8500147676 /* Project object */;
+}

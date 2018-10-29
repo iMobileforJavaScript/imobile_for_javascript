@@ -1,10 +1,10 @@
 import { NativeModules } from 'react-native';
-let BA = NativeModules.JSBufferAnalyst;
+let Analyst = NativeModules.JSAnalyst;
 let M = NativeModules.JSMap;
 
 async function bufferAnalyst(map, layer, params) {
   try {
-    return await BA.analyst(map._SMMapId, layer._SMLayerId, params);
+    return await Analyst.analystBuffer(map._SMMapId, layer._SMLayerId, params);
   } catch (e) {
     console.error(e);
   }

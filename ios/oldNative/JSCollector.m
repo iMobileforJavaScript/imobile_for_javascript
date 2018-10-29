@@ -10,6 +10,7 @@
 #import "SuperMap/Collector.h"
 #import "JSObjManager.h"
 #import "SuperMap/Map.h"
+#import "SuperMap/GeoStyle.h"
 
 @implementation JSCollector
 RCT_EXPORT_MODULE();
@@ -198,15 +199,13 @@ RCT_REMAP_METHOD(getGPSPoint,getGPSPointId:(NSString*)senderId  resolver:(RCTPro
 RCT_REMAP_METHOD(getStyle,getStyleId:(NSString*)senderId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         Collector* sender = [JSObjManager getObjWithKey:senderId];
-        GeoStyle* w =  sender.style ;
-        NSInteger nsKey = (NSInteger)w;
+        GeoStyle* style =  sender.style ;
+        NSString* styleJson = [style toJson];
         
-        [JSObjManager addObj:w];
-        
-        resolve(@(nsKey).stringValue);
+        resolve(styleJson);
         
     } @catch (NSException *exception) {
-        reject(@"JSCollector",@"getStyle expection",nil);
+        reject(@"JSCollector", exception.reason, nil);
     }
 }
 
@@ -406,17 +405,19 @@ RCT_REMAP_METHOD(setSingleTapEnable,setSingleTapEnableId:(NSString*)senderId bVa
  * @param styleId
  * @param promise
  */
-RCT_REMAP_METHOD(setStyle,setStyleId:(NSString*)senderId style:(NSString*)style resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setStyle,setStyleId:(NSString*)collectorId style:(NSString*)style resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
-        Collector* sender = [JSObjManager getObjWithKey:senderId];
-        GeoStyle* style = [JSObjManager getObjWithKey:style];
-        sender.style = style;
+        Collector* collector = [JSObjManager getObjWithKey:collectorId];
+        GeoStyle* style = [[GeoStyle alloc] init];
+        [style fromJson:style];
+        
+        collector.style = style;
+        
         resolve([[NSNumber alloc] initWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"JSCollector",@"redo expection",nil);
     }
-    
 }
 
 /**

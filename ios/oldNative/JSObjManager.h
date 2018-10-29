@@ -13,5 +13,6 @@
 
 +(id)getObjWithKey:(id)key;
 +(NSString*)addObj:(id)obj;
++(NSString*)addObjWithKey:(id)obj key:(NSString*)key;
 +(void)removeObj:(id)key;
 @end

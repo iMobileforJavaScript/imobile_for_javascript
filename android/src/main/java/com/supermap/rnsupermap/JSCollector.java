@@ -531,14 +531,16 @@ public class JSCollector extends ReactContextBaseJavaModule {
      * 设置采集对象的绘制风格
      *
      * @param collectorId
-     * @param styleId
+     * @param styleJson
      * @param promise
      */
     @ReactMethod
-    public void setStyle(String collectorId, String styleId, Promise promise) {
+    public void setStyle(String collectorId, String styleJson, Promise promise) {
         try {
             Collector collector = mCollectorList.get(collectorId);
-            GeoStyle style = JSGeoStyle.getObjFromList(styleId);
+            GeoStyle style = new GeoStyle();
+            style.fromJson(styleJson);
+
             collector.setStyle(style);
 
             promise.resolve(true);

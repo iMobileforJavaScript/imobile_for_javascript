@@ -31,8 +31,8 @@ public class MapViewManager extends SimpleViewManager<MapView> {
         m_ThemedReactContext=reactContext;
         m_MapView = new MapView(reactContext.getBaseContext());
 
-        String mapViewId = JSMapView.registerId(m_MapView);
-        n_r_eventSender.putString("mapViewId",mapViewId);
+        JSMapView.setInstance(m_MapView);
+//        n_r_eventSender.putString("mapViewId",mapViewId);
 
         return m_MapView;
     }
