@@ -24,7 +24,7 @@
     Scene *_scene;
     BOOL _statusBarVisible;
     Action3D _action3D;
-  //  BOOL _isRender;
+    BOOL _isRender;
 }
 
 /// 返回或设置三维场景是否渲染，当设置为false时，场景将不再绘制。

@@ -45,8 +45,8 @@
 }
 
 - (Datasource *)openDatasource:(NSDictionary*)params{
-    @try{
-         DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
+    @try {
+        DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
         if(params&&info){
             NSArray* keyArr = [params allKeys];
             BOOL bDefault = YES;
@@ -91,4 +91,62 @@
         @throw exception;
     }
 }
+
+- (Dataset *)addDatasetByName:(NSString*)name type:(DatasetType)type datasourceName:(NSString *)datasourceName datasourcePath:(NSString *)datasourcePath {
+    @try {
+        NSString* dsName = name;
+        if (name == nil || [name isEqualToString:@""]) {
+            switch (type) {
+                    case POINT:
+                    dsName = @"COL_POINT";
+                    break;
+                    case LINE:
+                    dsName = @"COL_LINE";
+                    break;
+                    case REGION:
+                    dsName = @"COL_REGION";
+                    break;
+                default:
+                    dsName = @"COL_POINT";
+                    break;
+            }
+        }
+        
+        Datasource* datasource = [_workspace.datasources getAlias:datasourceName];
+        if (datasource == nil || datasource.isReadOnly) {
+            DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc] init];
+            NSString* dsType = @"udb";
+            
+            info.alias = datasourceName;
+            info.engineType = ET_UDB;
+            info.server = [NSString stringWithFormat:@"%@/%@.%@", datasourcePath, datasourceName, dsType];
+            datasource = [_workspace.datasources create:info];
+            if (datasource == nil) {
+//                NSDate* currentDate = [NSDate date];
+//                NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
+//                [dateformatter setDateFormat:@"YYYYMMddHHmmss"];
+//                NSString *currentString = [dateformatter stringFromDate:currentDate];
+//                
+//                info.alias = [NSString stringWithFormat:@"%@%@", datasourceName, currentString];
+//                info.engineType = ET_UDB;
+//                info.server = [NSString stringWithFormat:@"%@/%@.%@", datasourcePath, info.alias, dsType];
+//                datasource = [_workspace.datasources create:info];
+                
+                datasource = [_workspace.datasources open:info];
+            }
+        }
+        
+        Datasets* datasets = datasource.datasets;
+        Dataset* ds = [datasets getWithName:dsName];
+        if (ds == nil) {
+            NSString* dsAvailableName = [datasets availableDatasetName:dsName];
+            DatasetVectorInfo* info = [[DatasetVectorInfo alloc]initWithName:dsAvailableName datasetType:type];
+            ds = [datasets create:info];
+        }
+        return ds;
+    } @catch (NSException *exception) {
+        @throw exception;
+    }
+}
+
 @end

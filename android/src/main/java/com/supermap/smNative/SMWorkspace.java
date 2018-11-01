@@ -1,7 +1,11 @@
 package com.supermap.smNative;
 
+import com.supermap.data.Dataset;
+import com.supermap.data.DatasetVectorInfo;
+import com.supermap.data.Datasets;
 import com.supermap.data.Datasource;
 import com.supermap.data.DatasourceConnectionInfo;
+import com.supermap.data.Datasources;
 import com.supermap.data.EngineType;
 import com.supermap.data.Enum;
 import com.supermap.data.Workspace;
@@ -9,8 +13,11 @@ import com.supermap.data.WorkspaceConnectionInfo;
 import com.supermap.data.WorkspaceType;
 import com.supermap.data.WorkspaceVersion;
 import com.supermap.mapping.MapControl;
+import com.supermap.data.DatasetType;
 
 import java.util.Map;
+
+import static android.graphics.drawable.GradientDrawable.LINE;
 
 public class SMWorkspace {
     Workspace workspace;
@@ -99,6 +106,51 @@ public class SMWorkspace {
             info.dispose();
 
             return dataSource;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public Dataset addDatasetByName(String name, int datasetType, String datasourceName, String datasourcePath) {
+        try {
+            String dsName = name;
+            if (dsName.equals("")) {
+                switch (datasetType) {
+                    case 1: // POINT
+                        dsName = "COL_POINT";
+                        break;
+                    case 3: // LINE
+                        dsName = "COL_LINE";
+                        break;
+                    case 5: // REGION
+                        dsName = "COL_REGION";
+                        break;
+                    default:
+                        dsName = "COL_POINT";
+                        break;
+                }
+            }
+
+            Datasource datasource = workspace.getDatasources().get(datasourceName);
+            if (datasource == null || datasource.isReadOnly()) {
+                DatasourceConnectionInfo info = new DatasourceConnectionInfo();
+                info.setAlias(datasourceName);
+                info.setEngineType(EngineType.UDB);
+                info.setServer(datasourcePath + "/" + datasourceName + ".udb");
+
+                datasource = workspace.getDatasources().create(info);
+            }
+
+            Datasets datasets = datasource.getDatasets();
+            Dataset dataset = datasets.get(dsName);
+
+            if (dataset == null) {
+                String dsAvailableName = datasets.getAvailableDatasetName(dsName);
+                DatasetVectorInfo info = new DatasetVectorInfo(dsAvailableName, (DatasetType)Enum.parse(DatasetType.class, datasetType));
+                dataset = datasets.create(info);
+            }
+
+            return dataset;
         } catch (Exception e) {
             throw e;
         }

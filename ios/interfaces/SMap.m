@@ -7,6 +7,7 @@
 //
 
 #import "SMap.h"
+#import "Constants.h"
 #import "JSMapView.h"
 #import "SuperMap/Dataset.h"
 #import "SuperMap/Datasets.h"
@@ -17,6 +18,15 @@ static SMap *sMap = nil;
 
 @implementation SMap
 RCT_EXPORT_MODULE();
+- (NSArray<NSString *> *)supportedEvents
+{
+    return @[
+             MEASURE_LENGTH,
+             MEASURE_AREA,
+             MEASURE_ANGLE,
+             COLLECTION_SENSOR_CHANGE,
+             ];
+}
 
 + (instancetype)singletonInstance{
     
@@ -193,4 +203,100 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
         
     }
 }
+
+#pragma mark 设置MapControl的Action
+RCT_REMAP_METHOD(setAction, setActionByActionType:(int)actionType resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smWorkspace.mapControl;
+        mapControl.action = actionType;
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+        
+    }
+}
+
+#pragma mark MapControl的undo
+RCT_REMAP_METHOD(undo, undoWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smWorkspace.mapControl;
+        [mapControl undo];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+        
+    }
+}
+
+#pragma mark MapControl的redo
+RCT_REMAP_METHOD(redo, redoWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smWorkspace.mapControl;
+        [mapControl redo];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+        
+    }
+}
+
+#pragma mark 添加量算监听
+RCT_REMAP_METHOD(addMeasureListener, addMeasureListenerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smWorkspace.mapControl;
+        if (mapControl.mapMeasureDelegate == nil) {
+            mapControl.mapMeasureDelegate = self;
+        }
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+        
+    }
+}
+
+#pragma mark 移除量算监听
+RCT_REMAP_METHOD(removeMeasureListener, removeMeasureListenerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smWorkspace.mapControl;
+        mapControl.mapMeasureDelegate = nil;
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+        
+    }
+}
+
+#pragma mark 量算监听
+-(void)getMeasureResult:(double)result lastPoint:(Point2D *)lastPoint type:(int)type{
+    NSNumber *nsResult = [NSNumber numberWithDouble:result];
+    double x = lastPoint.x;
+    double y = lastPoint.y;
+    NSNumber* nsX = [NSNumber numberWithDouble:x];
+    NSNumber* nsY = [NSNumber numberWithDouble:y];
+    
+    if(type == 0){
+        [self sendEventWithName:MEASURE_LENGTH
+                           body:@{@"curResult":nsResult,
+                                  @"curPoint":@{@"x":nsX,@"y":nsY}
+                                  }];
+    }
+    
+    if(type == 1){
+        [self sendEventWithName:MEASURE_AREA
+                           body:@{@"curResult":nsResult,
+                                  @"curPoint":@{@"x":nsX,@"y":nsY}
+                                  }];
+    }
+    
+    if(type == 2){
+        [self sendEventWithName:MEASURE_ANGLE
+                           body:@{@"curAngle":nsResult,
+                                  @"curPoint":@{@"x":nsX,@"y":nsY}
+                                  }];
+    }
+}
+
 @end

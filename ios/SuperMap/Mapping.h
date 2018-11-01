@@ -75,4 +75,6 @@
 
 #import "SpeechManager.h"
 #import "IntelligentSpeechDelegate.h"
+
+#import "SymbolLibLegend.h"
 #endif

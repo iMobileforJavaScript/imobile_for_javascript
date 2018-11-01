@@ -1,7 +1,9 @@
 import SMap from './SMap'
-import SMAnalyst from './SMAnalyst'
+import SAnalyst from './SAnalyst'
+import SCollector from './SCollector'
 
 export {
   SMap,
-  SMAnalyst,
+  SAnalyst,
+  SCollector,
 }

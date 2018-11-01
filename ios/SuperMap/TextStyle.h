@@ -256,6 +256,6 @@
  */
 - (void)setFontScale:(double)value;
 
-- (void)dispose;
+-(void) dispose;
 
 @end

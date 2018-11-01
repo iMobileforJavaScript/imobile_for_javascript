@@ -174,8 +174,10 @@ import Environment from './NativeModule/Environment'
 /***********************Version 1.6.3**************************/
 import {
   SMap,
-  SMAnalyst,
+  SAnalyst,
+  SCollector,
 } from './NativeModule/interfaces'
+let SMCollectorType = NativeModules.SMCollectorType;
 
 export {
   SMMapView,
@@ -348,5 +350,7 @@ export {
    */
 
   SMap,
-  SMAnalyst,
+  SAnalyst,
+  SCollector,
+  SMCollectorType,
 };

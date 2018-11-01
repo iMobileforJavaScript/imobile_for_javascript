@@ -17,6 +17,7 @@ export default class GeoStyle {
 
   constructor(props) {
     // this.x2j = new xml2json()
+    this.geoStyle = {}
   }
 
   /**
@@ -27,9 +28,9 @@ export default class GeoStyle {
    * @param a
    */
   setLineColor(r, g, b, a = 1) {
-    const rgba = (a << 24 | b << 16 | g << 8 | a * 255) & 0xff
+    const rgba = a << 24 | b << 16 | g << 8 | a * 255
     Object.assign(this.geoStyle, {
-      lineColor: rgba,
+      LineColor: rgba,
     })
   }
 
@@ -83,7 +84,7 @@ export default class GeoStyle {
    * @param a
    */
   setFillForeColor(r, g, b, a = 1) {
-    const rgba = (a << 24 | b << 16 | g << 8 | a * 255) & 0xff
+    const rgba = a << 24 | b << 16 | g << 8 | a * 255
     Object.assign(this.geoStyle, {
       FillForeColor: rgba,
     })
@@ -107,7 +108,7 @@ export default class GeoStyle {
    * @param a
    */
   setPointColor(r, g, b, a = 1) {
-    const rgba = (a << 24 | b << 16 | g << 8 | a * 255) & 0xff
+    const rgba = a << 24 | b << 16 | g << 8 | a * 255
     Object.assign(this.geoStyle, {
       PointColor: rgba,
     })
@@ -123,9 +124,9 @@ export default class GeoStyle {
     }
     const rgba = this.geoStyle['LineColor']
     const r = rgba & 0xff
-    const g = rgba >> 8 & 0xff
-    const b = rgba >> 16 & 0xff
-    const a = (rgba >> 24 & 0xff) / 255
+    const g = (rgba >> 8) & 0xff
+    const b = (rgba >> 16) & 0xff
+    const a = ((rgba >> 24) & 0xff) / 255
     return {
       r, g, b, a,
     }
@@ -185,9 +186,9 @@ export default class GeoStyle {
     }
     const rgba = this.geoStyle['FillForeColor']
     const r = rgba & 0xff
-    const g = rgba >> 8 & 0xff
-    const b = rgba >> 16 & 0xff
-    const a = (rgba >> 24 & 0xff) / 255
+    const g = (rgba >> 8) & 0xff
+    const b = (rgba >> 16) & 0xff
+    const a = ((rgba >> 24) & 0xff) / 255
     return {
       r, g, b, a,
     }
@@ -214,9 +215,9 @@ export default class GeoStyle {
     }
     const rgba = this.geoStyle['PointColor']
     const r = rgba & 0xff
-    const g = rgba >> 8 & 0xff
-    const b = rgba >> 16 & 0xff
-    const a = (rgba >> 24 & 0xff) / 255
+    const g = (rgba >> 8) & 0xff
+    const b = (rgba >> 16) & 0xff
+    const a = ((rgba >> 24) & 0xff) / 255
     return {
       r, g, b, a,
     }

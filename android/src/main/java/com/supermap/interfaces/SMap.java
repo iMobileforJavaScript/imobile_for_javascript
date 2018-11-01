@@ -1,17 +1,25 @@
 package com.supermap.interfaces;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.supermap.containts.EventConst;
 import com.supermap.data.Dataset;
 import com.supermap.data.Datasource;
+import com.supermap.data.Enum;
 import com.supermap.data.Maps;
+import com.supermap.data.Point;
 import com.supermap.data.Point2D;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.MapControl;
+import com.supermap.mapping.MeasureListener;
+import com.supermap.rnsupermap.JSMapView;
 import com.supermap.smNative.SMWorkspace;
 
 import java.util.Map;
@@ -20,9 +28,9 @@ public class SMap extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SMap";
     private static SMap sMap;
     private static ReactApplicationContext context;
+    private static MeasureListener mMeasureListener;
 
     private SMWorkspace smWorkspace;
-    private MapControl mapControl;
 
     public SMap(ReactApplicationContext context) {
         super(context);
@@ -57,6 +65,10 @@ public class SMap extends ReactContextBaseJavaModule {
         if (sMap.smWorkspace.getWorkspace() == null) {
             sMap.smWorkspace.setWorkspace(new Workspace());
         }
+    }
+
+    public static SMWorkspace getSMWorkspace() {
+        return getInstance().smWorkspace;
     }
 
     /**
@@ -253,6 +265,106 @@ public class SMap extends ReactContextBaseJavaModule {
             } catch (Exception e) {
                 promise.resolve(e);
             }
+        }
+    }
+
+    @ReactMethod
+    public void setAction(int actionType, Promise promise) {
+        try {
+            sMap = getInstance();
+            Action action = (Action) Enum.parse(Action.class, actionType);
+            sMap.smWorkspace.getMapControl().setAction(action);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void undo(Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smWorkspace.getMapControl().undo();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void redo(Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smWorkspace.getMapControl().redo();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void addMeasureListener(Promise promise) {
+        try {
+            sMap = getInstance();
+            mMeasureListener = new MeasureListener() {
+                @Override
+                public void lengthMeasured(double curResult, Point curPoint) {
+                    WritableMap map = Arguments.createMap();
+                    map.putDouble("curResult", curResult);
+                    WritableMap point = Arguments.createMap();
+                    point.putDouble("x", curPoint.getX());
+                    point.putDouble("y", curPoint.getY());
+                    map.putMap("curPoint", point);
+
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MEASURE_LENGTH, map);
+                }
+
+                @Override
+                public void areaMeasured(double curResult, Point curPoint) {
+                    WritableMap map = Arguments.createMap();
+                    map.putDouble("curResult", curResult);
+                    WritableMap point = Arguments.createMap();
+                    point.putDouble("x", curPoint.getX());
+                    point.putDouble("y", curPoint.getY());
+                    map.putMap("curPoint", point);
+
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MEASURE_AREA, map);
+                }
+
+                @Override
+                public void angleMeasured(double curAngle, Point curPoint) {
+                    WritableMap map = Arguments.createMap();
+                    map.putDouble("curAngle", curAngle);
+                    WritableMap point = Arguments.createMap();
+                    point.putDouble("x", curPoint.getX());
+                    point.putDouble("y", curPoint.getY());
+                    map.putMap("curPoint", point);
+
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MEASURE_ANGLE, map);
+                }
+            };
+
+            sMap.smWorkspace.getMapControl().addMeasureListener(mMeasureListener);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void removeMeasureListener(Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smWorkspace.getMapControl().removeMeasureListener(mMeasureListener);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
         }
     }
 }

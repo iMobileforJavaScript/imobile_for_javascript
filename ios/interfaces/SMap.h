@@ -8,12 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 #import "SuperMap/MapControl.h"
 #import "SuperMap/Workspace.h"
 #import "JSMapControl.h"
 #import "SMWorkspace.h"
 
-@interface SMap : NSObject<RCTBridgeModule,MapMeasureDelegate,GeometrySelectedDelegate,MapEditDelegate,TouchableViewDelegate>
+@interface SMap : RCTEventEmitter<RCTBridgeModule,MapMeasureDelegate,GeometrySelectedDelegate,MapEditDelegate,TouchableViewDelegate>
 @property (strong, nonatomic) SMWorkspace* smWorkspace;
 //@property (strong, nonatomic) MapControl* mapControl;
 

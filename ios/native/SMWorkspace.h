@@ -14,12 +14,18 @@
 #import "SuperMap/Datasource.h"
 #import "SuperMap/Datasources.h"
 #import "SuperMap/DatasourceConnectionInfo.h"
+#import "SuperMap/Dataset.h"
+#import "SuperMap/Datasets.h"
+#import "SuperMap/DatasetType.h"
+#import "SuperMap/DatasetVectorInfo.h"
+#import "SuperMap/EngineType.h"
 
 @interface SMWorkspace : NSObject
 
 @property (strong, nonatomic) Workspace* workspace;
 @property (strong, nonatomic) MapControl* mapControl;
 
-- (BOOL)openWorkspace:(NSDictionary*)infoDic;
-- (Datasource *)openDatasource:(NSDictionary*)params;
+- (BOOL)openWorkspace:(NSDictionary *)infoDic;
+- (Datasource *)openDatasource:(NSDictionary *)params;
+- (Dataset *)addDatasetByName:(NSString *)name type:(DatasetType)type datasourceName:(NSString *)datasourceName datasourcePath:(NSString *)datasourcePath;
 @end

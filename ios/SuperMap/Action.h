@@ -27,7 +27,7 @@ typedef enum {
     
     /// 在可编辑图层中为对象添加节点。
     VERTEXADD = 55,
-    DRAW_HOLLOW_REGION = 213,
+    
     /// 在可编辑图层中删除对象的节点。
     DELETENODE= 56,
     
@@ -120,6 +120,10 @@ typedef enum {
      */
     CREATE_POSITIONAL_REGION = 210,
     
+    /**
+     *手绘导洞面
+     */
+    DRAW_HOLLOW_REGION = 213,
     
     /**
      * 面被线分割（手绘式）
