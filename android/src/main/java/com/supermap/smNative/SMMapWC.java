@@ -17,9 +17,7 @@ import com.supermap.data.DatasetType;
 
 import java.util.Map;
 
-import static android.graphics.drawable.GradientDrawable.LINE;
-
-public class SMWorkspace {
+public class SMMapWC {
     Workspace workspace;
     MapControl mapControl;
 

@@ -19,8 +19,7 @@ import com.supermap.data.Workspace;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
-import com.supermap.rnsupermap.JSMapView;
-import com.supermap.smNative.SMWorkspace;
+import com.supermap.smNative.SMMapWC;
 
 import java.util.Map;
 
@@ -30,7 +29,7 @@ public class SMap extends ReactContextBaseJavaModule {
     private static ReactApplicationContext context;
     private static MeasureListener mMeasureListener;
 
-    private SMWorkspace smWorkspace;
+    private SMMapWC smMapWC;
 
     public SMap(ReactApplicationContext context) {
         super(context);
@@ -58,17 +57,17 @@ public class SMap extends ReactContextBaseJavaModule {
 
     public static void setInstance(MapControl mapControl) {
         sMap = getInstance();
-        if (sMap.smWorkspace == null) {
-            sMap.smWorkspace = new SMWorkspace();
+        if (sMap.smMapWC == null) {
+            sMap.smMapWC = new SMMapWC();
         }
-        sMap.smWorkspace.setMapControl(mapControl);
-        if (sMap.smWorkspace.getWorkspace() == null) {
-            sMap.smWorkspace.setWorkspace(new Workspace());
+        sMap.smMapWC.setMapControl(mapControl);
+        if (sMap.smMapWC.getWorkspace() == null) {
+            sMap.smMapWC.setWorkspace(new Workspace());
         }
     }
 
-    public static SMWorkspace getSMWorkspace() {
-        return getInstance().smWorkspace;
+    public static SMMapWC getSMWorkspace() {
+        return getInstance().smMapWC;
     }
 
     /**
@@ -82,7 +81,7 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             Map params = data.toHashMap();
-            boolean result = sMap.smWorkspace.openWorkspace(params);
+            boolean result = sMap.smMapWC.openWorkspace(params);
 
             promise.resolve(result);
         } catch (Exception e) {
@@ -102,12 +101,12 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             Map params = data.toHashMap();
-            Datasource datasource = sMap.smWorkspace.openDatasource(params);
-            sMap.smWorkspace.getMapControl().getMap().setWorkspace(sMap.smWorkspace.getWorkspace());
+            Datasource datasource = sMap.smMapWC.openDatasource(params);
+            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
 
             if (datasource != null && defaultIndex >= 0) {
                 Dataset ds = datasource.getDatasets().get(defaultIndex);
-                sMap.smWorkspace.getMapControl().getMap().getLayers().add(ds, true);
+                sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, true);
             }
 
             promise.resolve(true);
@@ -128,12 +127,12 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             Map params = data.toHashMap();
-            Datasource datasource = sMap.smWorkspace.openDatasource(params);
-            sMap.smWorkspace.getMapControl().getMap().setWorkspace(sMap.smWorkspace.getWorkspace());
+            Datasource datasource = sMap.smMapWC.openDatasource(params);
+            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
 
             if (datasource != null && defaultName.equals("")) {
                 Dataset ds = datasource.getDatasets().get(defaultName);
-                sMap.smWorkspace.getMapControl().getMap().getLayers().add(ds, true);
+                sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, true);
             }
 
             promise.resolve(true);
@@ -154,8 +153,8 @@ public class SMap extends ReactContextBaseJavaModule {
     public void openMapByName(String name, boolean viewEntire, ReadableMap center, Promise promise) {
         try {
             sMap = getInstance();
-            com.supermap.mapping.Map map = sMap.smWorkspace.getMapControl().getMap();
-            Maps maps = sMap.smWorkspace.getWorkspace().getMaps();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            Maps maps = sMap.smMapWC.getWorkspace().getMaps();
 
             if (maps.getCount() > 0) {
                 String mapName = name;
@@ -177,7 +176,7 @@ public class SMap extends ReactContextBaseJavaModule {
                     map.setCenter(point2D);
                 }
 
-                sMap.smWorkspace.getMapControl().setAction(Action.PAN);
+                sMap.smMapWC.getMapControl().setAction(Action.PAN);
                 map.refresh();
             }
 
@@ -199,8 +198,8 @@ public class SMap extends ReactContextBaseJavaModule {
     public void openMapByIndex(int index, boolean viewEntire, ReadableMap center, Promise promise) {
         try {
             sMap = getInstance();
-            com.supermap.mapping.Map map = sMap.smWorkspace.getMapControl().getMap();
-            Maps maps = sMap.smWorkspace.getWorkspace().getMaps();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            Maps maps = sMap.smMapWC.getWorkspace().getMaps();
 
             if (maps.getCount() > 0) {
                 String name = maps.get(index);
@@ -217,7 +216,7 @@ public class SMap extends ReactContextBaseJavaModule {
                     map.setCenter(point2D);
                 }
 
-                sMap.smWorkspace.getMapControl().setAction(Action.PAN);
+                sMap.smMapWC.getMapControl().setAction(Action.PAN);
                 map.refresh();
 
                 promise.resolve(true);
@@ -255,12 +254,18 @@ public class SMap extends ReactContextBaseJavaModule {
         public void run() {
             try {
                 sMap = getInstance();
-                sMap.smWorkspace.getMapControl().dispose();
-                sMap.smWorkspace.getWorkspace().close();
-                sMap.smWorkspace.getWorkspace().dispose();
+                MapControl mapControl = sMap.smMapWC.getMapControl();
+                Workspace workspace = sMap.smMapWC.getWorkspace();
+                com.supermap.mapping.Map map = mapControl.getMap();
 
-                sMap.smWorkspace.setMapControl(null);
-                sMap.smWorkspace.setWorkspace(null);
+                map.close();
+                map.dispose();
+                mapControl.dispose();
+                workspace.close();
+                workspace.dispose();
+
+                sMap.smMapWC.setMapControl(null);
+                sMap.smMapWC.setWorkspace(null);
                 promise.resolve(true);
             } catch (Exception e) {
                 promise.resolve(e);
@@ -273,7 +278,7 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             Action action = (Action) Enum.parse(Action.class, actionType);
-            sMap.smWorkspace.getMapControl().setAction(action);
+            sMap.smMapWC.getMapControl().setAction(action);
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -285,7 +290,7 @@ public class SMap extends ReactContextBaseJavaModule {
     public void undo(Promise promise) {
         try {
             sMap = getInstance();
-            sMap.smWorkspace.getMapControl().undo();
+            sMap.smMapWC.getMapControl().undo();
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -297,7 +302,7 @@ public class SMap extends ReactContextBaseJavaModule {
     public void redo(Promise promise) {
         try {
             sMap = getInstance();
-            sMap.smWorkspace.getMapControl().redo();
+            sMap.smMapWC.getMapControl().redo();
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -350,7 +355,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 }
             };
 
-            sMap.smWorkspace.getMapControl().addMeasureListener(mMeasureListener);
+            sMap.smMapWC.getMapControl().addMeasureListener(mMeasureListener);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -361,7 +366,7 @@ public class SMap extends ReactContextBaseJavaModule {
     public void removeMeasureListener(Promise promise) {
         try {
             sMap = getInstance();
-            sMap.smWorkspace.getMapControl().removeMeasureListener(mMeasureListener);
+            sMap.smMapWC.getMapControl().removeMeasureListener(mMeasureListener);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

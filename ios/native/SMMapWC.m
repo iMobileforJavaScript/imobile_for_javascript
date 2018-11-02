@@ -1,14 +1,14 @@
 //
-//  SMWorkspace.m
+//  SMMapWC.m
 //  Supermap
 //
-//  Created by Yang Shang Long on 2018/10/26.
+//  Created by Yang Shang Long on 2018/11/2.
 //  Copyright © 2018年 Facebook. All rights reserved.
 //
 
-#import "SMWorkspace.h"
+#import "SMMapWC.h"
 
-@implementation SMWorkspace
+@implementation SMMapWC
 
 - (BOOL)openWorkspace:(NSDictionary*)infoDic {
     @try {
@@ -79,10 +79,10 @@
             if ([keyArr containsObject:@"webFormat"]) info.webFormat = [params objectForKey:@"webFormat"];
             if ([keyArr containsObject:@"webVisibleLayers"]) info.webVisibleLayers = [params objectForKey:@"webVisibleLayers"];
             if ([keyArr containsObject:@"webExtendParam"]) info.webExtendParam = [params objectForKey:@"webExtendParam"];
-//            if ([keyArr containsObject:@"webBBox"]){
-//                Rectangle2D* rect2d = [JSObjManager getObjWithKey:[params objectForKey:@"webBBox"]];
-//                info.webBBox = rect2d;
-//            }
+            //            if ([keyArr containsObject:@"webBBox"]){
+            //                Rectangle2D* rect2d = [JSObjManager getObjWithKey:[params objectForKey:@"webBBox"]];
+            //                info.webBBox = rect2d;
+            //            }
             Datasource* dataSource = [_workspace.datasources open:info];
             [info dispose];
             return dataSource;
@@ -97,13 +97,13 @@
         NSString* dsName = name;
         if (name == nil || [name isEqualToString:@""]) {
             switch (type) {
-                    case POINT:
+                case POINT:
                     dsName = @"COL_POINT";
                     break;
-                    case LINE:
+                case LINE:
                     dsName = @"COL_LINE";
                     break;
-                    case REGION:
+                case REGION:
                     dsName = @"COL_REGION";
                     break;
                 default:
@@ -122,15 +122,15 @@
             info.server = [NSString stringWithFormat:@"%@/%@.%@", datasourcePath, datasourceName, dsType];
             datasource = [_workspace.datasources create:info];
             if (datasource == nil) {
-//                NSDate* currentDate = [NSDate date];
-//                NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
-//                [dateformatter setDateFormat:@"YYYYMMddHHmmss"];
-//                NSString *currentString = [dateformatter stringFromDate:currentDate];
-//                
-//                info.alias = [NSString stringWithFormat:@"%@%@", datasourceName, currentString];
-//                info.engineType = ET_UDB;
-//                info.server = [NSString stringWithFormat:@"%@/%@.%@", datasourcePath, info.alias, dsType];
-//                datasource = [_workspace.datasources create:info];
+                //                NSDate* currentDate = [NSDate date];
+                //                NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
+                //                [dateformatter setDateFormat:@"YYYYMMddHHmmss"];
+                //                NSString *currentString = [dateformatter stringFromDate:currentDate];
+                //
+                //                info.alias = [NSString stringWithFormat:@"%@%@", datasourceName, currentString];
+                //                info.engineType = ET_UDB;
+                //                info.server = [NSString stringWithFormat:@"%@/%@.%@", datasourcePath, info.alias, dsType];
+                //                datasource = [_workspace.datasources create:info];
                 
                 datasource = [_workspace.datasources open:info];
             }
@@ -148,5 +148,4 @@
         @throw exception;
     }
 }
-
 @end

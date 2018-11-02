@@ -1,8 +1,8 @@
 //
-//  SMWorkspace.h
+//  SMMapWC.h
 //  Supermap
 //
-//  Created by Yang Shang Long on 2018/10/26.
+//  Created by Yang Shang Long on 2018/11/2.
 //  Copyright © 2018年 Facebook. All rights reserved.
 //
 
@@ -20,7 +20,7 @@
 #import "SuperMap/DatasetVectorInfo.h"
 #import "SuperMap/EngineType.h"
 
-@interface SMWorkspace : NSObject
+@interface SMMapWC : NSObject
 
 @property (strong, nonatomic) Workspace* workspace;
 @property (strong, nonatomic) MapControl* mapControl;
@@ -28,4 +28,5 @@
 - (BOOL)openWorkspace:(NSDictionary *)infoDic;
 - (Datasource *)openDatasource:(NSDictionary *)params;
 - (Dataset *)addDatasetByName:(NSString *)name type:(DatasetType)type datasourceName:(NSString *)datasourceName datasourcePath:(NSString *)datasourcePath;
+
 @end

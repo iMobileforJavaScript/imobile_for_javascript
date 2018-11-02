@@ -9,7 +9,7 @@ import com.supermap.data.GeoStyle;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMCollector;
-import com.supermap.smNative.SMWorkspace;
+import com.supermap.smNative.SMMapWC;
 
 public class SCollector extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SCollector";
@@ -28,8 +28,8 @@ public class SCollector extends ReactContextBaseJavaModule {
 
     public Collector getCollector() {
         try {
-            SMWorkspace smWorkspace = SMap.getSMWorkspace();
-            collector = smWorkspace.getMapControl().getCollector();
+            SMMapWC smMapWC = SMap.getSMWorkspace();
+            collector = smMapWC.getMapControl().getCollector();
             return collector;
         } catch (Exception e) {
             throw e;
@@ -91,17 +91,17 @@ public class SCollector extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setDataset(String name, int datasetType, String datasourceName, String datasourcePath, Promise promise) {
         try {
-            SMWorkspace smWorkspace = SMap.getSMWorkspace();
+            SMMapWC smMapWC = SMap.getSMWorkspace();
             collector = getCollector();
 
             Dataset ds;
             Layer layer = null;
 
             if (!name.equals("")) {
-                layer = smWorkspace.getMapControl().getMap().getLayers().get(name);
+                layer = smMapWC.getMapControl().getMap().getLayers().get(name);
             }
             if (layer == null) {
-                ds = smWorkspace.addDatasetByName(name, datasetType, datasourceName, datasourcePath);
+                ds = smMapWC.addDatasetByName(name, datasetType, datasourceName, datasourcePath);
             } else {
                 ds = layer.getDataset();
             }

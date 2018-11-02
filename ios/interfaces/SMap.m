@@ -41,28 +41,28 @@ RCT_EXPORT_MODULE();
 
 + (void)setInstance:(MapControl*) mapControl {
     sMap = [self singletonInstance];
-    if (sMap.smWorkspace == nil) {
-        sMap.smWorkspace = [[SMWorkspace alloc] init];
+    if (sMap.smMapWC == nil) {
+        sMap.smMapWC = [[SMMapWC alloc] init];
     }
-    sMap.smWorkspace.mapControl = mapControl;
-    if (sMap.smWorkspace.workspace == nil) {
-        sMap.smWorkspace.workspace = [[Workspace alloc] init];
+    sMap.smMapWC.mapControl = mapControl;
+    if (sMap.smMapWC.workspace == nil) {
+        sMap.smMapWC.workspace = [[Workspace alloc] init];
     }
     
     [sMap setDelegate];
 }
 
 - (void)setDelegate {
-    sMap.smWorkspace.mapControl.mapMeasureDelegate = self;
-    sMap.smWorkspace.mapControl.delegate = self;
-    sMap.smWorkspace.mapControl.geometrySelectedDelegate = self;
+    sMap.smMapWC.mapControl.mapMeasureDelegate = self;
+    sMap.smMapWC.mapControl.delegate = self;
+    sMap.smMapWC.mapControl.geometrySelectedDelegate = self;
 }
 
 #pragma mark 打开工作空间
 RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        BOOL result = [sMap.smWorkspace openWorkspace:infoDic];
+        BOOL result = [sMap.smMapWC openWorkspace:infoDic];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"Resources", exception.reason, nil);
@@ -73,12 +73,12 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
 RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)params defaultIndex:(int)defaultIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try{
-        Datasource* dataSource = [sMap.smWorkspace openDatasource:params];
-        [sMap.smWorkspace.mapControl.map setWorkspace:sMap.smWorkspace.workspace];
+        Datasource* dataSource = [sMap.smMapWC openDatasource:params];
+        [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
         
         if (dataSource && defaultIndex >= 0) {
             Dataset* ds = [dataSource.datasets get:defaultIndex];
-            [sMap.smWorkspace.mapControl.map.layers addDataset:ds ToHead:YES];
+            [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
         }
         
         resolve([NSNumber numberWithBool:YES]);
@@ -93,12 +93,12 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
     
     @try{
         if(params){
-            Datasource* dataSource = [sMap.smWorkspace openDatasource:params];
-            [sMap.smWorkspace.mapControl.map setWorkspace:sMap.smWorkspace.workspace];
+            Datasource* dataSource = [sMap.smMapWC openDatasource:params];
+            [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
             
             if (defaultName != nil && defaultName.length > 0) {
                 Dataset* ds = [dataSource.datasets getWithName:defaultName];
-                [sMap.smWorkspace.mapControl.map.layers addDataset:ds ToHead:YES];
+                [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
             }
             
             resolve([NSNumber numberWithBool:YES]);
@@ -113,12 +113,14 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
 RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try{
-        [sMap.smWorkspace.mapControl dispose];
-        [sMap.smWorkspace.workspace close];
-        [sMap.smWorkspace.workspace dispose];
+        [sMap.smMapWC.mapControl.map close];
+        [sMap.smMapWC.mapControl.map dispose];
+        [sMap.smMapWC.mapControl dispose];
+        [sMap.smMapWC.workspace close];
+        [sMap.smMapWC.workspace dispose];
         
-        sMap.smWorkspace.mapControl = nil;
-        sMap.smWorkspace.workspace = nil;
+        sMap.smMapWC.mapControl = nil;
+        sMap.smMapWC.workspace = nil;
         
         resolve([NSNumber numberWithBool:YES]);
     }@catch (NSException *exception) {
@@ -131,8 +133,8 @@ RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBl
 RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)viewEntire center:(NSDictionary *)center resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        Map* map = sMap.smWorkspace.mapControl.map;
-        Maps* maps = sMap.smWorkspace.workspace.maps;
+        Map* map = sMap.smMapWC.mapControl.map;
+        Maps* maps = sMap.smMapWC.workspace.maps;
         
         if (maps.count > 0) {
             NSString* mapName = name;
@@ -156,7 +158,7 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
                 [map setCenter:point];
             }
             
-            [sMap.smWorkspace.mapControl setAction:PAN];
+            [sMap.smMapWC.mapControl setAction:PAN];
             [map refresh];
         }
         
@@ -172,8 +174,8 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
 RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)viewEntire center:(NSDictionary *)center resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        Map* map = sMap.smWorkspace.mapControl.map;
-        Maps* maps = sMap.smWorkspace.workspace.maps;
+        Map* map = sMap.smMapWC.mapControl.map;
+        Maps* maps = sMap.smMapWC.workspace.maps;
         
         if (maps.count > 0) {
             NSString* mapName = [maps get:index];
@@ -191,7 +193,7 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
                 [map setCenter:point];
             }
             
-            [sMap.smWorkspace.mapControl setAction:PAN];
+            [sMap.smMapWC.mapControl setAction:PAN];
             [map refresh];
             
             resolve([NSNumber numberWithBool:YES]);
@@ -208,7 +210,7 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
 RCT_REMAP_METHOD(setAction, setActionByActionType:(int)actionType resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        MapControl* mapControl = sMap.smWorkspace.mapControl;
+        MapControl* mapControl = sMap.smMapWC.mapControl;
         mapControl.action = actionType;
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
@@ -221,7 +223,7 @@ RCT_REMAP_METHOD(setAction, setActionByActionType:(int)actionType resolver:(RCTP
 RCT_REMAP_METHOD(undo, undoWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        MapControl* mapControl = sMap.smWorkspace.mapControl;
+        MapControl* mapControl = sMap.smMapWC.mapControl;
         [mapControl undo];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
@@ -234,7 +236,7 @@ RCT_REMAP_METHOD(undo, undoWithResolver:(RCTPromiseResolveBlock)resolve rejecter
 RCT_REMAP_METHOD(redo, redoWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        MapControl* mapControl = sMap.smWorkspace.mapControl;
+        MapControl* mapControl = sMap.smMapWC.mapControl;
         [mapControl redo];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
@@ -246,7 +248,7 @@ RCT_REMAP_METHOD(redo, redoWithResolver:(RCTPromiseResolveBlock)resolve rejecter
 #pragma mark 添加量算监听
 RCT_REMAP_METHOD(addMeasureListener, addMeasureListenerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        MapControl* mapControl = [SMap singletonInstance].smWorkspace.mapControl;
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
         if (mapControl.mapMeasureDelegate == nil) {
             mapControl.mapMeasureDelegate = self;
         }
@@ -260,7 +262,7 @@ RCT_REMAP_METHOD(addMeasureListener, addMeasureListenerWithResolver:(RCTPromiseR
 #pragma mark 移除量算监听
 RCT_REMAP_METHOD(removeMeasureListener, removeMeasureListenerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        MapControl* mapControl = [SMap singletonInstance].smWorkspace.mapControl;
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
         mapControl.mapMeasureDelegate = nil;
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {

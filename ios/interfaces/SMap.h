@@ -12,10 +12,10 @@
 #import "SuperMap/MapControl.h"
 #import "SuperMap/Workspace.h"
 #import "JSMapControl.h"
-#import "SMWorkspace.h"
+#import "SMMapWC.h"
 
 @interface SMap : RCTEventEmitter<RCTBridgeModule,MapMeasureDelegate,GeometrySelectedDelegate,MapEditDelegate,TouchableViewDelegate>
-@property (strong, nonatomic) SMWorkspace* smWorkspace;
+@property (strong, nonatomic) SMMapWC* smMapWC;
 //@property (strong, nonatomic) MapControl* mapControl;
 
 + (instancetype)singletonInstance;
