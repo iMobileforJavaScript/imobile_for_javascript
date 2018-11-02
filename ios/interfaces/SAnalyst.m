@@ -30,7 +30,7 @@ RCT_EXPORT_MODULE();
 
 RCT_REMAP_METHOD(analystBuffer, analystBufferByLayerName:(NSString*)layerName params:(NSDictionary*)params  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        Map* map = [SMap singletonInstance].smWorkspace.mapControl.map;
+        Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
         Layer* layer = [map.layers getLayerWithName:layerName];
         Selection* selection = [layer getSelection];
         Recordset* recordset = [selection toRecordset];

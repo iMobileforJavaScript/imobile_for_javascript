@@ -33,7 +33,7 @@ RCT_EXPORT_MODULE();
 
 - (Collector *)getCollector {
     @try {
-        return [[SMap singletonInstance].smWorkspace.mapControl getCollector];
+        return [[SMap singletonInstance].smMapWC.mapControl getCollector];
     } @catch (NSException *exception) {
         @throw exception;
     }
@@ -77,10 +77,10 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSString*)name type:(DatasetType
         Dataset* ds;
         Layer* layer;
         if (name != nil && ![name isEqualToString:@""]) {
-            layer = [sMap.smWorkspace.mapControl.map.layers getLayerWithName:name];
+            layer = [sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
         }
         if (layer == nil) {
-            ds = [sMap.smWorkspace addDatasetByName:name type:type datasourceName:datasourceName datasourcePath:datasourcePath];
+            ds = [sMap.smMapWC addDatasetByName:name type:type datasourceName:datasourceName datasourcePath:datasourcePath];
         } else {
             ds = layer.dataset;
         }
@@ -97,7 +97,7 @@ RCT_REMAP_METHOD(startCollect, startCollectWithType:(int)type resolver:(RCTPromi
     @try {
         SMap* sMap = [SMap singletonInstance];
         Collector* collector = [self getCollector];
-        BOOL result = [SMCollector setCollector:collector mapControl:sMap.smWorkspace.mapControl type:type];
+        BOOL result = [SMCollector setCollector:collector mapControl:sMap.smMapWC.mapControl type:type];
         //        [SMCollector openGPS:collector];
         
         resolve([NSNumber numberWithBool:result]);
@@ -124,7 +124,7 @@ RCT_REMAP_METHOD(undo, undoWithType:(int)type resolver:(RCTPromiseResolveBlock)r
     @try {
         if (type == LINE_HAND_PATH || type == REGION_HAND_PATH) {
             SMap* sMap = [SMap singletonInstance];
-            [sMap.smWorkspace.mapControl undo];
+            [sMap.smMapWC.mapControl undo];
         } else {
             Collector* collector = [self getCollector];
             [collector undo];
@@ -141,7 +141,7 @@ RCT_REMAP_METHOD(redo, redoWithType:(int)type resolver:(RCTPromiseResolveBlock)r
     @try {
         if (type == LINE_HAND_PATH || type == REGION_HAND_PATH) {
             SMap* sMap = [SMap singletonInstance];
-            [sMap.smWorkspace.mapControl redo];
+            [sMap.smMapWC.mapControl redo];
         } else {
             Collector* collector = [self getCollector];
             [collector redo];
@@ -157,7 +157,7 @@ RCT_REMAP_METHOD(submit, submitWithType:(int)type resolver:(RCTPromiseResolveBlo
     @try {
         if (type == LINE_HAND_PATH || type == REGION_HAND_PATH) {
             SMap* sMap = [SMap singletonInstance];
-            [sMap.smWorkspace.mapControl submit];
+            [sMap.smMapWC.mapControl submit];
         } else {
             Collector* collector = [self getCollector];
             [collector submit];
@@ -172,7 +172,7 @@ RCT_REMAP_METHOD(submit, submitWithType:(int)type resolver:(RCTPromiseResolveBlo
 RCT_REMAP_METHOD(cancel, cancelWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
-        [sMap.smWorkspace.mapControl cancel];
+        [sMap.smMapWC.mapControl cancel];
         resolve([[NSNumber alloc] initWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"SCollector",@"submit expection",nil);

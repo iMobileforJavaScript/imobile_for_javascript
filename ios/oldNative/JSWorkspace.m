@@ -226,7 +226,7 @@ RCT_REMAP_METHOD(openDatasource,openDatasourceByKey:(NSString*)key andPath:(NSSt
 
 - (Datasource *)openDatasource:(NSDictionary*)params{
     @try{
-        Workspace* workspace = [SMap singletonInstance].smWorkspace.workspace;
+        Workspace* workspace = [SMap singletonInstance].smMapWC.workspace;
         Datasources* dataSources = workspace.datasources;
         DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
         if(params&&info){
