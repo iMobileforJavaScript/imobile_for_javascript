@@ -19,6 +19,7 @@ import com.supermap.data.Workspace;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
+import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMMapWC;
 
 import java.util.Map;
@@ -367,6 +368,42 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             sMap.smMapWC.getMapControl().removeMeasureListener(mMeasureListener);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 放大缩小
+     * @param scale
+     * @param promise
+     */
+    @ReactMethod
+    public void zoom(double scale, Promise promise) {
+        try {
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            map.zoom(scale);
+            map.refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 移动到当前位置
+     * @param promise
+     */
+    @ReactMethod
+    public void moveToCurrent(Promise promise) {
+        try {
+            sMap = getInstance();
+            Collector collector = sMap.smMapWC.getMapControl().getCollector();
+            collector.openGPS();
+            collector.moveToCurrent();
+            sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

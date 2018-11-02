@@ -14,6 +14,7 @@
 #import "SuperMap/Layers.h"
 #import "SuperMap/Maps.h"
 #import "SuperMap/Point2D.h"
+#import "SuperMap/Collector.h"
 static SMap *sMap = nil;
 
 @implementation SMap
@@ -63,6 +64,7 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
     @try {
         sMap = [SMap singletonInstance];
         BOOL result = [sMap.smMapWC openWorkspace:infoDic];
+        [self openGPS];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"Resources", exception.reason, nil);
@@ -72,7 +74,7 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
 #pragma mark 以数据源形式打开工作空间, 默认根据Map 图层索引显示图层
 RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)params defaultIndex:(int)defaultIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
-    @try{
+    @try {
         Datasource* dataSource = [sMap.smMapWC openDatasource:params];
         [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
         
@@ -80,10 +82,9 @@ RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)
             Dataset* ds = [dataSource.datasets get:defaultIndex];
             [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
         }
-        
+        [self openGPS];
         resolve([NSNumber numberWithBool:YES]);
-    }@catch (NSException *exception) {
-        
+    } @catch (NSException *exception) {
         reject(@"workspace", exception.reason, nil);
     }
 }
@@ -91,7 +92,7 @@ RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)
 #pragma mark 以数据源形式打开工作空间, 默认根据Map 图层名称显示图层
 RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)params defaultName:(NSString *)defaultName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
-    @try{
+    @try {
         if(params){
             Datasource* dataSource = [sMap.smMapWC openDatasource:params];
             [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
@@ -100,11 +101,10 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
                 Dataset* ds = [dataSource.datasets getWithName:defaultName];
                 [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
             }
-            
+            [self openGPS];
             resolve([NSNumber numberWithBool:YES]);
         }
-    }@catch (NSException *exception) {
-        
+    } @catch (NSException *exception) {
         reject(@"workspace", exception.reason, nil);
     }
 }
@@ -112,7 +112,7 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
 #pragma mark 关闭工作空间及地图控件
 RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
-    @try{
+    @try {
         [sMap.smMapWC.mapControl.map close];
         [sMap.smMapWC.mapControl.map dispose];
         [sMap.smMapWC.mapControl dispose];
@@ -124,7 +124,6 @@ RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBl
         
         resolve([NSNumber numberWithBool:YES]);
     }@catch (NSException *exception) {
-        
         reject(@"workspace", exception.reason, nil);
     }
 }
@@ -162,11 +161,9 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
             [map refresh];
         }
         
-        
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
-        
     }
 }
 
@@ -202,7 +199,6 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
         }
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
-        
     }
 }
 
@@ -215,7 +211,6 @@ RCT_REMAP_METHOD(setAction, setActionByActionType:(int)actionType resolver:(RCTP
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
-        
     }
 }
 
@@ -228,7 +223,6 @@ RCT_REMAP_METHOD(undo, undoWithResolver:(RCTPromiseResolveBlock)resolve rejecter
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
-        
     }
 }
 
@@ -241,7 +235,6 @@ RCT_REMAP_METHOD(redo, redoWithResolver:(RCTPromiseResolveBlock)resolve rejecter
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
-        
     }
 }
 
@@ -255,7 +248,6 @@ RCT_REMAP_METHOD(addMeasureListener, addMeasureListenerWithResolver:(RCTPromiseR
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
-        
     }
 }
 
@@ -267,7 +259,6 @@ RCT_REMAP_METHOD(removeMeasureListener, removeMeasureListenerWithResolver:(RCTPr
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
-        
     }
 }
 
@@ -299,6 +290,41 @@ RCT_REMAP_METHOD(removeMeasureListener, removeMeasureListenerWithResolver:(RCTPr
                                   @"curPoint":@{@"x":nsX,@"y":nsY}
                                   }];
     }
+}
+
+#pragma mark 将地图放大缩小到指定比例
+RCT_REMAP_METHOD(zoom, zoomByScale:(double)scale resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [mapControl.map zoom:scale];
+        [mapControl.map refresh];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 移动到当前位置
+RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        Collector* collector = [mapControl getCollector];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [collector moveToCurrentPos];
+            [mapControl.map refresh];
+        });
+        [collector moveToCurrentPos];
+        [mapControl.map refresh];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+-(void)openGPS {
+    MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+    Collector* collector = [mapControl getCollector];
+    [collector openGPS];
 }
 
 @end
