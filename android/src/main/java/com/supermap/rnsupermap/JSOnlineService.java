@@ -95,13 +95,23 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
     public void upload(String filepath, String filename, final Promise promise) {
         try {
             final OnlineService onlineService = getInstance();
-//            onlineService.UpLoadFile(filepath,filename,new UpLoadFile.UpLoadListener(){
-//                @Override
-//                public void getProgress(int progeress) {
-//                    Log.e("++++++++++++", "+" + progeress);
-//                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING, progeress);
-//                }
-//            });
+            onlineService.UpLoadFile(filepath,filename,new UpLoadFile.UpLoadListener(){
+                @Override
+                public void getProgress(int progeress) {
+                    Log.e("++++++++++++", "+" + progeress);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING, progeress);
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+
+                @Override
+                public void onFailure() {
+
+                }
+            });
         } catch (Exception e) {
             promise.resolve(e);
         }

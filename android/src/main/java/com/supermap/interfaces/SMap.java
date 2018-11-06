@@ -405,13 +405,9 @@ public class SMap extends ReactContextBaseJavaModule {
     @ReactMethod
     public void moveToCurrent(Promise promise) {
         try {
-
-
             MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(promise);
             moveToCurrentThread.run();
 
-            collector.moveToCurrent();
-            sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

@@ -20,6 +20,7 @@
 #import "SuperMap/CoordSysTranslator.h"
 #import "SuperMap/CoordSysTransMethod.h"
 #import "SuperMap/PrjCoordSys.h"
+#import "SuperMap/Collector.h"
 static SMap *sMap = nil;
 
 @implementation SMap
