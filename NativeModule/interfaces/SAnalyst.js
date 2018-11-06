@@ -1,6 +1,5 @@
 import { NativeModules } from 'react-native';
 let Analyst = NativeModules.SAnalyst;
-let M = NativeModules.JSMap;
 
 async function bufferAnalyst(layerName, params) {
   try {
@@ -19,7 +18,33 @@ async function clear(map) {
   }
 }
 
+async function setMeasureLineAnalyst() {
+  try {
+    await Analyst.setMeasureLineAnalyst()
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function setMeasureSquareAnalyst() {
+  try {
+    await Analyst.setMeasureSquareAnalyst()
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function closeAnalysis() {
+  try {
+    await Analyst.closeAnalysis()
+  } catch (e) {
+    console.error(e);
+  }
+}
 export default {
   bufferAnalyst,
   clear,
+  setMeasureLineAnalyst,
+  setMeasureSquareAnalyst,
+  closeAnalysis,
 }

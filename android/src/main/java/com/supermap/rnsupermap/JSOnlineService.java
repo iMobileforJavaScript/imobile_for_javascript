@@ -101,6 +101,16 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
                     Log.e("++++++++++++", "+" + progeress);
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING, progeress);
                 }
+
+                @Override
+                public void onComplete() {
+
+                }
+
+                @Override
+                public void onFailure() {
+
+                }
             });
         } catch (Exception e) {
             promise.resolve(e);

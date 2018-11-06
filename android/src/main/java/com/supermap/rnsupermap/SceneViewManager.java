@@ -6,7 +6,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.supermap.RNUtils.N_R_EventSender;
 import com.supermap.data.Environment;
-import com.supermap.realspace.Scene;
+import com.supermap.interfaces.SScene;
 import com.supermap.realspace.SceneControl;
 
 /**
@@ -35,11 +35,10 @@ public class SceneViewManager extends SimpleViewManager<SceneControl> {
         if (mSceneControl == null) {
             mSceneControl = new SceneControl(m_ThemedReactContext);
         }
-
-        final String sceneControlId = JSSceneControl.registerId(mSceneControl);
-
-        n_r_eventSender.putString("sceneControlId",sceneControlId);
-
+        SScene.setInstance(mSceneControl);
+//
+//        final String scenControlId=JSSceneControl.registerId(mSceneControl);
+//        n_r_eventSender.putString("scenControlId",scenControlId);
         return mSceneControl;
     }
 
