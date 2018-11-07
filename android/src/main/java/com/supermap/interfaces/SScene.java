@@ -3,17 +3,23 @@ package com.supermap.interfaces;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.supermap.containts.Map3DEventConst;
 import com.supermap.data.Workspace;
+import com.supermap.map3D.PoiSearchHelper;
+import com.supermap.map3D.toolKit.PoiGsonBean;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.realspace.Scene;
 import com.supermap.realspace.SceneControl;
 import com.supermap.smNative.SMSceneWC;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class SScene extends ReactContextBaseJavaModule {
@@ -22,9 +28,11 @@ public class SScene extends ReactContextBaseJavaModule {
     private static ReactApplicationContext context;
     private static MeasureListener mMeasureListener;
     private SMSceneWC smSceneWc;
+    ReactContext mReactContext;
     public SScene(ReactApplicationContext context) {
         super(context);
         this.context = context;
+        mReactContext=context;
     }
 
     @Override
@@ -140,9 +148,11 @@ public class SScene extends ReactContextBaseJavaModule {
                 for (int i = 0; i <scene.getLayers().getCount() ; i++) {
                     String name=scene.getLayers().get(i).getName();
                     boolean visible=scene.getLayers().get(i).isVisible();
+                    boolean selectable=scene.getLayers().get(i).isSelectable();
                     WritableMap map = Arguments.createMap();
                     map.putString("name", name);
                     map.putBoolean("visible", visible);
+                    map.putBoolean("selectable", selectable);
                     arr.pushMap(map);
                 }
             }
@@ -153,7 +163,7 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 获取场景图层是否可见
+     * 设置场景图层是否可见
      *
      * @param promise
      */
@@ -171,6 +181,71 @@ public class SScene extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 设置场景图层是否可选择
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public  void setSelectable(String name,boolean value,Promise promise){
+        try {
+            sScene = getInstance();
+            Scene scene=sScene.smSceneWc.getSceneControl().getScene();
+            WritableArray arr = Arguments.createArray();
+            if (scene.getLayers().getCount() > 0) {
+                scene.getLayers().get(name).setSelectable(value);
+            }
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     *搜索关键字显示有关信息
+     * @param promise
+     */
+    @ReactMethod
+    public  void pointSearch(String name, final Promise promise){
+        try {
+
+             PoiSearchHelper.getInstence().poiSearch(name, new PoiSearchHelper.PoiSearchCallBack() {
+                 @Override
+                 public void poiSearchInfos(ArrayList<PoiGsonBean.PoiInfos> poiInfos) {
+                     WritableArray arr = Arguments.createArray();
+                     for (int i = 0; i <poiInfos.size() ; i++) {
+                          String pointName =poiInfos.get(i).getName();
+                         WritableMap map = Arguments.createMap();
+                         map.putString("pointName", pointName);
+                         arr.pushMap(map);
+                     }
+                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(Map3DEventConst.POINTSEARCH_KEYWORDS, arr);
+                 }
+             });
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     *初始化位置搜索
+     * @param promise
+     */
+    @ReactMethod
+    public  void pointSearch(Promise promise){
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+            String dataPath=getReactApplicationContext().getFilesDir().getAbsolutePath();
+            PoiSearchHelper.getInstence().init(sceneControl,dataPath);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+
 
     /**
      * 关闭工作空间及地图控件

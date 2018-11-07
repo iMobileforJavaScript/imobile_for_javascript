@@ -36,9 +36,11 @@ public class SAnalyst extends ReactContextBaseJavaModule {
     private static SAnalyst analyst;
     private static ReactApplicationContext context;
     ReactContext mReactContext;
+
     public SAnalyst(ReactApplicationContext context) {
         super(context);
         this.context = context;
+        mReactContext = context;
     }
 
     @Override
@@ -48,8 +50,8 @@ public class SAnalyst extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void analystBuffer(String mapId, String layerId, ReadableMap params, Promise promise){
-        try{
+    public void analystBuffer(String mapId, String layerId, ReadableMap params, Promise promise) {
+        try {
             com.supermap.mapping.Map map = JSMap.getObjFromList(mapId);
             Layer layer = JSLayer.getLayer(layerId);
             Selection selection = layer.getSelection();
@@ -123,7 +125,7 @@ public class SAnalyst extends ReactContextBaseJavaModule {
 
             map.refresh();
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             promise.reject(e);
         }
@@ -135,14 +137,14 @@ public class SAnalyst extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setMeasureLineAnalyst( Promise promise) {
+    public void setMeasureLineAnalyst(Promise promise) {
         try {
-            SceneControl sceneControl=SScene.getSMWorkspace().getSceneControl();
+            SceneControl sceneControl = SScene.getSMWorkspace().getSceneControl();
             AnalysisHelper.getInstence().initSceneControl(sceneControl);
             AnalysisHelper.getInstence().setMeasureDisCallBack(new AnalysisHelper.DistanceCallBack() {
                 @Override
                 public void distanceResult(double distance) {
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(Map3DEventConst.ANALYST_MEASURELINE,distance);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(Map3DEventConst.ANALYST_MEASURELINE, distance);
                 }
             }).startMeasureAnalysis();
         } catch (Exception e) {
@@ -156,14 +158,14 @@ public class SAnalyst extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setMeasureSquareAnalyst( Promise promise) {
+    public void setMeasureSquareAnalyst(Promise promise) {
         try {
-            SceneControl sceneControl=SScene.getSMWorkspace().getSceneControl();
+            SceneControl sceneControl = SScene.getSMWorkspace().getSceneControl();
             AnalysisHelper.getInstence().initSceneControl(sceneControl);
             AnalysisHelper.getInstence().setMeasureAreaCallBack(new AnalysisHelper.AreaCallBack() {
                 @Override
                 public void areaResult(double area) {
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(Map3DEventConst.ANALYST_MEASURESQUARE,area);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(Map3DEventConst.ANALYST_MEASURESQUARE, area);
                 }
 
             }).startSureArea();
@@ -177,9 +179,10 @@ public class SAnalyst extends ReactContextBaseJavaModule {
      *
      * @param promise
      */
-    public void closeAnalysis( Promise promise) {
+    @ReactMethod
+    public void closeAnalysis(Promise promise) {
         try {
-            SceneControl sceneControl=SScene.getSMWorkspace().getSceneControl();
+            SceneControl sceneControl = SScene.getSMWorkspace().getSceneControl();
             AnalysisHelper.getInstence().initSceneControl(sceneControl);
             AnalysisHelper.getInstence().closeAnalysis();
             promise.resolve(true);
