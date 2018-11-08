@@ -9,6 +9,7 @@ android {
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
+        useLibrary 'org.apache.http.legacy'
         ndk {
             abiFilters "armeabi-v7a"
         }
