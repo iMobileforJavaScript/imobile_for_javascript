@@ -1,5 +1,8 @@
 package com.supermap.interfaces;
 
+import android.view.MotionEvent;
+import android.view.View;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -15,6 +18,7 @@ import com.supermap.data.Workspace;
 import com.supermap.map3D.FlyHelper;
 import com.supermap.map3D.PoiSearchHelper;
 import com.supermap.map3D.toolKit.PoiGsonBean;
+import com.supermap.map3D.toolKit.TouchUtil;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.realspace.Scene;
 import com.supermap.realspace.SceneControl;
@@ -391,10 +395,30 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void getAttribute(Promise promise){
+          sScene=getInstance();
+          final SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+          sceneControl.setOnTouchListener(new View.OnTouchListener() {
+              @Override
+              public boolean onTouch(View v, MotionEvent event) {
+                  switch (event.getAction()){
+                      case (MotionEvent.ACTION_UP):
+                          WritableMap map = Arguments.createMap();
+                          Map<String,String> attributeMap=TouchUtil.getAttribute(sceneControl,event);
+                          for (String key:attributeMap.keySet()
+                               ) {
+                              map.putString(key,key);
+                          }
+                          mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(Map3DEventConst.SSCENE_ATTRIBUTE, map);
+                  }
+                  return false;
+              }
+          });
+    }
+
     /**
      * 关闭工作空间及地图控件
-     *
-     * @param promise
      */
     @ReactMethod
     public void closeWorkspace(Promise promise) {

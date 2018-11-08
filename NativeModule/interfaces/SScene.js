@@ -150,6 +150,27 @@ export default (function () {
             console.log(error)
         }
     }
+
+    function getAttribute(handlers){
+        try {
+            if (Platform.OS === 'ios' && handlers) {
+                if (typeof handlers.callback === 'function') {
+                  nativeEvt.addListener(Map3DEventConst.SSCENE_ATTRIBUTE, function (e) {
+                    handlers.callback(e)
+                  })
+                }
+              } else if (Platform.OS === 'android' && handlers) {
+                if (typeof handlers.callback === "function") {
+                  DeviceEventEmitter.addListener(Map3DEventConst.SSCENE_ATTRIBUTE, function (e) {
+                     handlers.callback(e);
+                  });
+                }
+              }
+            return SScene.getAttribute()
+        } catch (error) {
+            console.log(error)
+        }
+    }
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -195,6 +216,7 @@ export default (function () {
         flyStop,
         getFlyProgress,
         zoom,
+        getAttribute,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
