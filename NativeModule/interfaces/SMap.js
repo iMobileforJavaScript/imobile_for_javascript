@@ -4,7 +4,7 @@
  E-mail: yangshanglong@supermap.com
  Description: 工作空间操作类
  **********************************************************************************/
-import { NativeModules, Platform } from 'react-native'
+import { NativeModules } from 'react-native'
 import * as MapTool from './SMapTool'
 let SMap = NativeModules.SMap
 

@@ -1,9 +1,13 @@
 import {
     NativeModules,
+    DeviceEventEmitter, 
+    NativeEventEmitter,
     Platform
 } from 'react-native'
+import { Map3DEventConst } from '../constains'
 import SSceneTool from './SSceneTool'
 let SScene = NativeModules.SScene
+const nativeEvt = new NativeEventEmitter(SScene);
 export default (function () {
     /**
      * 打开工作空间
@@ -11,7 +15,6 @@ export default (function () {
      * @returns {Promise}
      */
     function openWorkspace(infoDic) {
-        debugger
         try {
             const type = infoDic.server.split('.').pop()
             Object.assign(infoDic, {
@@ -24,7 +27,6 @@ export default (function () {
     }
 
     function openMap(name) {
-        debugger
         try {
             return SScene.openMap(name)
         } catch (error) {
@@ -33,7 +35,6 @@ export default (function () {
     }
 
     function getMapList() {
-        debugger
         try {
             return SScene.getMapList()
         } catch (error) {
@@ -56,9 +57,116 @@ export default (function () {
             console.log(error)
         }
     }
+
+    function setSelectable(name,value) {
+        try {
+            return SScene.setSelectable(name,value)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     function closeWorkspace(){
         try {
             return SScene.closeWorkspace()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function getFlyRouteNames(){
+        try {
+            return SScene. getFlyRouteNames()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function setPosition(index){
+        try {
+            return SScene.setPosition(index)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
+    function flyStart (){
+        try {
+            return SScene.flyStart()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function flyPause(){
+        try {
+            return SScene.flyPause()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    function flyPauseOrStart(){
+        try {
+            return SScene.flyPauseOrStart()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function flyStop(){
+        try {
+            return SScene.flyStop()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function getFlyProgress(handlers){
+        try {
+            if (Platform.OS === 'ios' && handlers) {
+                if (typeof handlers.callback === 'function') {
+                  nativeEvt.addListener(Map3DEventConst.SSCENE_FLY, function (e) {
+                    handlers.callback(e)
+                  })
+                }
+              } else if (Platform.OS === 'android' && handlers) {
+                if (typeof handlers.callback === "function") {
+                  DeviceEventEmitter.addListener(Map3DEventConst.SSCENE_FLY, function (e) {
+                     handlers.callback(e);
+                  });
+                }
+              }
+              return SScene.getFlyProgress()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function zoom(scale){
+        try {
+            debugger
+            return SScene.zoom(scale)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function getAttribute(handlers){
+        try {
+            if (Platform.OS === 'ios' && handlers) {
+                if (typeof handlers.callback === 'function') {
+                  nativeEvt.addListener(Map3DEventConst.SSCENE_ATTRIBUTE, function (e) {
+                    handlers.callback(e)
+                  })
+                }
+              } else if (Platform.OS === 'android' && handlers) {
+                if (typeof handlers.callback === "function") {
+                  DeviceEventEmitter.addListener(Map3DEventConst.SSCENE_ATTRIBUTE, function (e) {
+                     handlers.callback(e);
+                  });
+                }
+              }
+            return SScene.getAttribute()
         } catch (error) {
             console.log(error)
         }
@@ -99,6 +207,16 @@ export default (function () {
         getLayerList,
         getMapList,
         openMap,
+        setSelectable,
+        getFlyRouteNames,
+        setPosition,
+        flyStart,
+        flyPause,
+        flyPauseOrStart,
+        flyStop,
+        getFlyProgress,
+        zoom,
+        getAttribute,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
