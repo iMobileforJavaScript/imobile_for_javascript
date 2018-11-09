@@ -13,7 +13,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.supermap.containts.Map3DEventConst;
+import com.supermap.containts.EventConst;
 import com.supermap.data.Workspace;
 import com.supermap.map3D.FlyHelper;
 import com.supermap.map3D.PoiSearchHelper;
@@ -173,6 +173,53 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取当前场景地形图层列表
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getTerrainLayerList(Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            WritableArray arr = Arguments.createArray();
+            if (scene.getTerrainLayers().getCount() > 0) {
+                for (int i = 0; i < scene.getTerrainLayers().getCount(); i++) {
+                    String name = scene.getTerrainLayers().get(i).getName();
+                    boolean visible = scene.getTerrainLayers().get(i).isVisible();
+                    WritableMap map = Arguments.createMap();
+                    map.putString("name", name);
+                    map.putBoolean("visible", visible);
+                    arr.pushMap(map);
+                }
+            }
+            promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置场景地形图层是否可见
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setTerrainLayerListVisible(String name, boolean value, Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            WritableArray arr = Arguments.createArray();
+            if (scene.getTerrainLayers().getCount() > 0) {
+                scene.getTerrainLayers().get(name).setVisible(value);
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置场景图层是否可见
      *
      * @param promise
@@ -231,7 +278,7 @@ public class SScene extends ReactContextBaseJavaModule {
                         map.putString("pointName", pointName);
                         arr.pushMap(map);
                     }
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(Map3DEventConst.POINTSEARCH_KEYWORDS, arr);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.POINTSEARCH_KEYWORDS, arr);
                 }
             });
         } catch (Exception e) {
@@ -267,8 +314,8 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
-            String path=sScene.smSceneWc.getWorkspace().getConnectionInfo().getServer();
-            String result= path.substring(0,path.lastIndexOf("/"))+"/";
+            String path = sScene.smSceneWc.getWorkspace().getConnectionInfo().getServer();
+            String result = path.substring(0, path.lastIndexOf("/")) + "/";
             FlyHelper.getInstence().init(sceneControl);
             ArrayList arrayList = FlyHelper.getInstence().getFlyRouteNames(result);
             WritableArray arr = Arguments.createArray();
@@ -362,7 +409,8 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
-     *获取飞行进度
+     * 获取飞行进度
+     *
      * @param promise
      */
     @ReactMethod
@@ -371,7 +419,7 @@ public class SScene extends ReactContextBaseJavaModule {
             FlyHelper.getInstence().setFlyProgress(new FlyHelper.FlyProgress() {
                 @Override
                 public void flyProgress(int progress) {
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(Map3DEventConst.SSCENE_FLY, progress);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_FLY, progress);
                 }
             });
         } catch (Exception e) {
@@ -380,11 +428,12 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
-     *场景放大缩小
+     * 场景放大缩小
+     *
      * @param promise
      */
     @ReactMethod
-    public void zoom(double scale,Promise promise) {
+    public void zoom(double scale, Promise promise) {
         try {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
@@ -395,26 +444,55 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 设置触控器获取对象属性
+     *
+     * @param promise
+     */
     @ReactMethod
-    public void getAttribute(Promise promise){
-          sScene=getInstance();
-          final SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
-          sceneControl.setOnTouchListener(new View.OnTouchListener() {
-              @Override
-              public boolean onTouch(View v, MotionEvent event) {
-                  switch (event.getAction()){
-                      case (MotionEvent.ACTION_UP):
-                          WritableMap map = Arguments.createMap();
-                          Map<String,String> attributeMap=TouchUtil.getAttribute(sceneControl,event);
-                          for (String key:attributeMap.keySet()
-                               ) {
-                              map.putString(key,key);
-                          }
-                          mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(Map3DEventConst.SSCENE_ATTRIBUTE, map);
-                  }
-                  return false;
-              }
-          });
+    public void getAttribute(Promise promise) {
+        try {
+            sScene = getInstance();
+            final SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            sceneControl.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case (MotionEvent.ACTION_UP):
+                            WritableMap map = Arguments.createMap();
+                            Map<String, String> attributeMap = TouchUtil.getAttribute(sceneControl, event);
+                            for (Map.Entry<String, String> entry : attributeMap.entrySet()) {
+                                map.putString(entry.getKey(), entry.getValue());
+                            }
+                            mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_ATTRIBUTE, map);
+                            break;
+//                      case(MotionEvent.ACTION_SCROLL):
+//                          mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_REMOVE_ATTRIBUTE, false);
+//                          break;
+                    }
+                    return false;
+                }
+            });
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 移除触控器
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void removeOnTouchListener(Promise promise) {
+        try {
+            sScene = getInstance();
+            final SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            sceneControl.setOnTouchListener(null);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
     }
 
     /**
