@@ -110,4 +110,6 @@
  * 提交
  */
 -(BOOL)submit;
+
+-(GPSData*)getGPSData;
 @end

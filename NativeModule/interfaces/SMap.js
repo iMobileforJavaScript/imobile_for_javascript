@@ -4,7 +4,7 @@
  E-mail: yangshanglong@supermap.com
  Description: 工作空间操作类
  **********************************************************************************/
-import { NativeModules, Platform } from 'react-native'
+import { NativeModules } from 'react-native'
 import * as MapTool from './SMapTool'
 let SMap = NativeModules.SMap
 
@@ -85,6 +85,28 @@ export default (function () {
     }
   }
 
+  /**
+   * 地图放大缩小
+   */
+  function zoom(scale = 2) {
+    try {
+      return SMap.zoom(scale)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 地图放大缩小
+   */
+  function moveToCurrent() {
+    try {
+      return SMap.moveToCurrent()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   getWorkspaceType = (type) => {
     var value
     switch (type) {
@@ -121,6 +143,8 @@ export default (function () {
     closeWorkspace,
     setAction,
     openMap,
+    zoom,
+    moveToCurrent,
   }
   Object.assign(SMapExp, MapTool)
 

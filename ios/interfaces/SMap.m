@@ -14,6 +14,13 @@
 #import "SuperMap/Layers.h"
 #import "SuperMap/Maps.h"
 #import "SuperMap/Point2D.h"
+#import "SuperMap/Point2Ds.h"
+#import "SuperMap/Collector.h"
+#import "SuperMap/CoordSysTransParameter.h"
+#import "SuperMap/CoordSysTranslator.h"
+#import "SuperMap/CoordSysTransMethod.h"
+#import "SuperMap/PrjCoordSys.h"
+#import "SuperMap/Collector.h"
 static SMap *sMap = nil;
 
 @implementation SMap
@@ -63,6 +70,7 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
     @try {
         sMap = [SMap singletonInstance];
         BOOL result = [sMap.smMapWC openWorkspace:infoDic];
+        [self openGPS];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"Resources", exception.reason, nil);
@@ -80,7 +88,7 @@ RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)
             Dataset* ds = [dataSource.datasets get:defaultIndex];
             [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
         }
-        
+        [self openGPS];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"workspace", exception.reason, nil);
@@ -99,7 +107,7 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
                 Dataset* ds = [dataSource.datasets getWithName:defaultName];
                 [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
             }
-            
+            [self openGPS];
             resolve([NSNumber numberWithBool:YES]);
         }
     } @catch (NSException *exception) {
@@ -295,14 +303,47 @@ RCT_REMAP_METHOD(zoom, zoomByScale:(double)scale resolver:(RCTPromiseResolveBloc
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
         [mapControl.map zoom:scale];
+        [mapControl.map refresh];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
 }
 
-- (NSDictionary *)constantsToExport
-{
-    return @{ @"firstDayOfTheWeek": @"Monday" };
+#pragma mark 移动到当前位置
+RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        Collector* collector = [mapControl getCollector];
+        dispatch_async(dispatch_get_main_queue(), ^{
+//            [collector moveToCurrentPos];
+            Point2D* pt = [[Point2D alloc]initWithPoint2D:[collector getGPSPoint]];
+            if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+                Point2Ds *points = [[Point2Ds alloc]init];
+                [points add:pt];
+                PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+                [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+                CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+                
+                //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+                [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+                pt = [points getItem:0];
+            }
+            
+            mapControl.map.center = pt;
+            
+            [mapControl.map refresh];
+        });
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
 }
+
+-(void)openGPS {
+    MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+    Collector* collector = [mapControl getCollector];
+    [collector openGPS];
+}
+
 @end

@@ -9,16 +9,23 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
+import com.supermap.data.CoordSysTransMethod;
+import com.supermap.data.CoordSysTransParameter;
+import com.supermap.data.CoordSysTranslator;
 import com.supermap.data.Dataset;
 import com.supermap.data.Datasource;
 import com.supermap.data.Enum;
 import com.supermap.data.Maps;
 import com.supermap.data.Point;
 import com.supermap.data.Point2D;
+import com.supermap.data.Point2Ds;
+import com.supermap.data.PrjCoordSys;
+import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
+import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMMapWC;
 
 import java.util.Map;
@@ -370,6 +377,77 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
+        }
+    }
+
+    /**
+     * 放大缩小
+     * @param scale
+     * @param promise
+     */
+    @ReactMethod
+    public void zoom(double scale, Promise promise) {
+        try {
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            map.zoom(scale);
+            map.refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 移动到当前位置
+     * @param promise
+     */
+    @ReactMethod
+    public void moveToCurrent(Promise promise) {
+        try {
+            MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(promise);
+            moveToCurrentThread.run();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    class MoveToCurrentThread implements Runnable {
+
+        private Promise promise;
+
+        public MoveToCurrentThread(Promise promise) {
+            this.promise = promise;
+        }
+
+        @Override
+        public void run() {
+            try {
+                sMap = getInstance();
+                MapControl mapControl = sMap.smMapWC.getMapControl();
+                Collector collector = mapControl.getCollector();
+
+                collector.openGPS();
+                Point2D point2D = new Point2D(collector.getGPSPoint());
+                if (mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+                    Point2Ds point2Ds = new Point2Ds();
+                    point2Ds.add(point2D);
+                    PrjCoordSys prjCoordSys = new PrjCoordSys();
+                    prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                    CoordSysTransParameter parameter = new CoordSysTransParameter();
+
+                    CoordSysTranslator.convert(point2Ds, prjCoordSys, mapControl.getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                    point2D = point2Ds.getItem(0);
+                }
+
+                mapControl.getMap().setCenter(point2D);
+                mapControl.getMap().refresh();
+                promise.resolve(true);
+            } catch (Exception e) {
+                promise.resolve(e);
+            }
         }
     }
 }
