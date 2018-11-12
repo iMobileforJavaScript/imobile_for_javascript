@@ -25,4 +25,12 @@ public class EventConst {
     public static final String MAP_GEOMETRY_SELECTED = "com.supermap.RN.Mapcontrol.geometry_selected";
     public static final String MAP_SCALE_CHANGED = "Supermap.MapControl.MapParamChanged.ScaleChanged";
     public static final String MAP_BOUNDS_CHANGED = "Supermap.MapControl.MapParamChanged.BoundsChanged";
+
+    /* 三维模块*/
+    public static final String ANALYST_MEASURELINE = "com.supermap.RN.SMSceneControl.Analyst_measureLine";
+    public static final String ANALYST_MEASURESQUARE = "com.supermap.RN.SMSceneControl.Analyst_measureSquare";
+    public static final String POINTSEARCH_KEYWORDS = "com.supermap.RN.SMSceneControl.PointSearch_keyWords";
+    public static final String SSCENE_FLY = "com.supermap.RN.SMSceneControl.Scene_fly";
+    public static final String SSCENE_ATTRIBUTE = "com.supermap.RN.SMSceneControl.Scene_attribute";
+    public static final String SSCENE_REMOVE_ATTRIBUTE = "com.supermap.RN.SMSceneControl.Scene_removeAttribute";
 }

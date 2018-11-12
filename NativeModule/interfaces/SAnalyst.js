@@ -1,6 +1,6 @@
 
 import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform } from 'react-native';
-import { Map3DEventConst } from '../constains'
+import { EventConst } from '../constains'
 let Analyst = NativeModules.SAnalyst;
 const nativeEvt = new NativeEventEmitter(Analyst);
 async function bufferAnalyst(layerName, params) {
@@ -24,13 +24,13 @@ async function setMeasureLineAnalyst(handlers) {
     try {
       if (Platform.OS === 'ios' && handlers) {
         if (typeof handlers.callback === 'function') {
-          nativeEvt.addListener(Map3DEventConst.ANALYST_MEASURELINE, function (e) {
+          nativeEvt.addListener(EventConst.ANALYST_MEASURELINE, function (e) {
             handlers.callback(e)
           })
         }
       } else if (Platform.OS === 'android' && handlers) {
         if (typeof handlers.callback === "function") {
-          DeviceEventEmitter.addListener(Map3DEventConst.ANALYST_MEASURELINE, function (e) {
+          DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURELINE, function (e) {
              handlers.callback(e);
           });
         }
@@ -45,13 +45,13 @@ async function setMeasureSquareAnalyst(handlers) {
   try {
     if (Platform.OS === 'ios' && handlers) {
       if (typeof handlers.callback === 'function') {
-        nativeEvt.addListener(Map3DEventConst.ANALYST_MEASURESQUARE, function (e) {
+        nativeEvt.addListener(EventConst.ANALYST_MEASURESQUARE, function (e) {
           handlers.callback(e)
         })
       }
     } else if (Platform.OS === 'android' && handlers) {
       if (typeof handlers.callback === "function") {
-        DeviceEventEmitter.addListener(Map3DEventConst.ANALYST_MEASURESQUARE, function (e) {
+        DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURESQUARE, function (e) {
            handlers.callback(e);
         });
       }

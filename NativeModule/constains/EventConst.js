@@ -28,4 +28,11 @@ export default {
   MAP_SCALE_CHANGED: "Supermap.MapControl.MapParamChanged.ScaleChanged",
   MAP_BOUNDS_CHANGED: "Supermap.MapControl.MapParamChanged.BoundsChanged",
 
+ /** 三维模块 */
+  ANALYST_MEASURELINE : "com.supermap.RN.SMSceneControl.Analyst_measureLine",
+  ANALYST_MEASURESQUARE : "com.supermap.RN.SMSceneControl.Analyst_measureSquare",
+  POINTSEARCH_KEYWORDS : "com.supermap.RN.SMSceneControl.PointSearch_keyWords",
+  SSCENE_FLY : "com.supermap.RN.SMSceneControl.Scene_fly",
+  SSCENE_ATTRIBUTE : "com.supermap.RN.SMSceneControl.Scene_attribute",
+  // SSCENE_REMOVE_ATTRIBUTE : "com.supermap.RN.SMSceneControl.Scene_removeAttribute",
 }
