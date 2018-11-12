@@ -64,6 +64,31 @@
     return result;
 }
 
++ (BOOL)stopCollector:(Collector *)collector mapControl:(MapControl *)mapControl type:(int)type {
+    BOOL result = NO;
+    switch (type) {
+        case POINT_GPS: // POINT_GPS
+        case POINT_HAND: // POINT_HAND
+        case LINE_GPS_POINT: // LINE_GPS_POINT
+        case LINE_GPS_PATH: // LINE_GPS_PATH
+        case LINE_HAND_POINT: // LINE_HAND_POINT
+        case REGION_GPS_POINT: // REGION_GPS_POINT
+        case REGION_GPS_PATH: // REGION_GPS_PATH
+        case REGION_HAND_POINT: // REGION_HAND_POINT
+            [collector setIsSingleTapEnable:NO];
+            result = YES;
+            break;
+        case LINE_HAND_PATH: // LINE_HAND_PATH
+        case REGION_HAND_PATH: // REGION_HAND_PATH
+            [mapControl setAction:PAN];
+            result = YES;
+            break;
+        default:
+            result = NO;
+            break;
+    }
+    return result;
+}
 + (void)openGPS:(Collector *)collector {
     [collector openGPS];
 }

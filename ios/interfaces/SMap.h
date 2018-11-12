@@ -14,7 +14,7 @@
 #import "JSMapControl.h"
 #import "SMMapWC.h"
 
-@interface SMap : RCTEventEmitter<RCTBridgeModule,MapMeasureDelegate,GeometrySelectedDelegate,MapEditDelegate,TouchableViewDelegate>
+@interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate>
 @property (strong, nonatomic) SMMapWC* smMapWC;
 //@property (strong, nonatomic) MapControl* mapControl;
 

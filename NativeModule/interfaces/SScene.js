@@ -144,7 +144,6 @@ export default (function () {
 
     function zoom(scale){
         try {
-            debugger
             return SScene.zoom(scale)
         } catch (error) {
             console.log(error)

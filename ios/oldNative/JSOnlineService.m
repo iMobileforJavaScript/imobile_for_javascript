@@ -71,7 +71,7 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
         float progress = [written floatValue] / [total floatValue] * 100;
 //        float progress = totalBytesWritten / totalBytesExpectedToWrite;
         NSLog(@"downloading: %f", progress);
-        [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.online_service_downloading"
+        [self sendEventWithName:@"com.supermap.RN.Mapcontrol.online_service_downloading"
                            body:@{
                                   @"progress": [NSNumber numberWithFloat:progress],
                                   @"downloaded": [NSNumber numberWithLongLong:totalBytesWritten],

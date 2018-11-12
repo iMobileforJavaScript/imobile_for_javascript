@@ -122,16 +122,6 @@
             info.server = [NSString stringWithFormat:@"%@/%@.%@", datasourcePath, datasourceName, dsType];
             datasource = [_workspace.datasources create:info];
             if (datasource == nil) {
-                //                NSDate* currentDate = [NSDate date];
-                //                NSDateFormatter *dateformatter = [[NSDateFormatter alloc] init];
-                //                [dateformatter setDateFormat:@"YYYYMMddHHmmss"];
-                //                NSString *currentString = [dateformatter stringFromDate:currentDate];
-                //
-                //                info.alias = [NSString stringWithFormat:@"%@%@", datasourceName, currentString];
-                //                info.engineType = ET_UDB;
-                //                info.server = [NSString stringWithFormat:@"%@/%@.%@", datasourcePath, info.alias, dsType];
-                //                datasource = [_workspace.datasources create:info];
-                
                 datasource = [_workspace.datasources open:info];
             }
         }
@@ -141,7 +131,7 @@
         if (ds == nil) {
             NSString* dsAvailableName = [datasets availableDatasetName:dsName];
             DatasetVectorInfo* info = [[DatasetVectorInfo alloc]initWithName:dsAvailableName datasetType:type];
-            ds = [datasets create:info];
+            ds = (Dataset*)[datasets create:info];
         }
         return ds;
     } @catch (NSException *exception) {

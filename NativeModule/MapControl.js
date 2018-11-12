@@ -4,7 +4,7 @@
  E-mail: pridehao@gmail.com
  
  **********************************************************************************/
-const LONGPRESS_EVENT = "com.supermap.RN.JSMapcontrol.long_press_event";
+const LONGPRESS_EVENT = "com.supermap.RN.Mapcontrol.long_press_event";
 
 import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform, Dimensions } from 'react-native';
 let MC = NativeModules.JSMapControl;
@@ -149,75 +149,75 @@ export default class MapControl {
       //差异化
       if (Platform.OS === 'ios') {
         if (typeof handlers.longPressHandler === "function") {
-          nativeEvt.addListener("com.supermap.RN.JSMapcontrol.long_press_event", function (e) {
+          nativeEvt.addListener("com.supermap.RN.Mapcontrol.long_press_event", function (e) {
             // longPressHandler && longPressHandler(e);
             handlers.longPressHandler(e);
           });
         }
         
         if (typeof handlers.singleTapHandler === "function") {
-          nativeEvt.addListener("com.supermap.RN.JSMapcontrol.single_tap_event", function (e) {
+          nativeEvt.addListener("com.supermap.RN.Mapcontrol.single_tap_event", function (e) {
             handlers.singleTapHandler(e);
           });
         }
         
         if (typeof handlers.doubleTapHandler === "function") {
-          nativeEvt.addListener("com.supermap.RN.JSMapcontrol.double_tap_event", function (e) {
+          nativeEvt.addListener("com.supermap.RN.Mapcontrol.double_tap_event", function (e) {
             handlers.doubleTapHandler(e);
           });
         }
         
         if (typeof handlers.touchBeganHandler === "function") {
-          nativeEvt.addListener('com.supermap.RN.JSMapcontrol.touch_began_event', function (e) {
+          nativeEvt.addListener('com.supermap.RN.Mapcontrol.touch_began_event', function (e) {
             handlers.touchBeganHandler(e);
           });
         }
         
         if (typeof handlers.touchEndHandler === "function") {
-          nativeEvt.addListener('com.supermap.RN.JSMapcontrol.touch_end_event', function (e) {
+          nativeEvt.addListener('com.supermap.RN.Mapcontrol.touch_end_event', function (e) {
             handlers.touchEndHandler(e);
           });
         }
         
         if (typeof handlers.scrollHandler === "function") {
-          nativeEvt.addListener('com.supermap.RN.JSMapcontrol.scroll_event', function (e) {
+          nativeEvt.addListener('com.supermap.RN.Mapcontrol.scroll_event', function (e) {
             handlers.scrollHandler(e);
           });
         }
       } else {
         if (typeof handlers.longPressHandler === "function") {
-          DeviceEventEmitter.addListener("com.supermap.RN.JSMapcontrol.long_press_event", function (e) {
+          DeviceEventEmitter.addListener("com.supermap.RN.Mapcontrol.long_press_event", function (e) {
             // longPressHandler && longPressHandler(e);
             handlers.longPressHandler(e);
           });
         }
         
         if (typeof handlers.singleTapHandler === "function") {
-          DeviceEventEmitter.addListener("com.supermap.RN.JSMapcontrol.single_tap_event", function (e) {
+          DeviceEventEmitter.addListener("com.supermap.RN.Mapcontrol.single_tap_event", function (e) {
             handlers.singleTapHandler(e);
           });
         }
         
         if (typeof handlers.doubleTapHandler === "function") {
-          DeviceEventEmitter.addListener("com.supermap.RN.JSMapcontrol.double_tap_event", function (e) {
+          DeviceEventEmitter.addListener("com.supermap.RN.Mapcontrol.double_tap_event", function (e) {
             handlers.doubleTapHandler(e);
           });
         }
         
         if (typeof handlers.touchBeganHandler === "function") {
-          DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.touch_began_event', function (e) {
+          DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.touch_began_event', function (e) {
             handlers.touchBeganHandler(e);
           });
         }
         
         if (typeof handlers.touchEndHandler === "function") {
-          DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.touch_end_event', function (e) {
+          DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.touch_end_event', function (e) {
             handlers.touchEndHandler(e);
           });
         }
         
         if (typeof handlers.scrollHandler === "function") {
-          DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.scroll_event', function (e) {
+          DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.scroll_event', function (e) {
             handlers.scrollHandler(e);
           });
         }
@@ -323,7 +323,7 @@ export default class MapControl {
       var success = await MC.setRefreshListener(this._SMMapControlId);
       console.log("MapControl:test result:", success);
       if (success) {
-        DeviceEventEmitter.addListener("com.supermap.RN.JSMapcontrol.refresh_event", function (e) {
+        DeviceEventEmitter.addListener("com.supermap.RN.Mapcontrol.refresh_event", function (e) {
           // console.log("MapControl:监听到地图刷新");
           if (typeof callback === 'function') {
             callback(e);
@@ -394,14 +394,14 @@ export default class MapControl {
    var success = await MC. setConfigurationChangedListener();
    if(!success) return ;
    
-   DeviceEventEmitter.addListener('com.supermap.RN.JSMapControl.to_horizontal_screen',function (e) {
+   DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.to_horizontal_screen',function (e) {
    if(typeof events.toHorizontal_screen == 'function'){
    events.toHorizontalScreen();
    }else{
    console.error("Please set a callback to the property 'toHorizontalScreen' in the first argument.");
    }
    });
-   DeviceEventEmitter.addListener('com.supermap.RN.JSMapControl.to_verticalscreen',function (e) {
+   DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.to_verticalscreen',function (e) {
    if(typeof events.toVerticalScreen == 'function'){
    events.toVerticalScreen();
    }else{
@@ -627,7 +627,7 @@ export default class MapControl {
    var success = await MC.addGeometryDeletedListener(this._SMMapControlId);
    if(!success) return ;
    
-   DeviceEventEmitter.addListener('com.supermap.RN.JSMapControl.geometry_deleted',function (e) {
+   DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.geometry_deleted',function (e) {
    if(typeof event.geometryDeleted === 'function'){
    var layer = new Layer();
    layer._SMLayerId = e.layerId;
@@ -670,7 +670,7 @@ export default class MapControl {
       var success = await MC.addGeometryAddedListener(this._SMMapControlId);
       if (!success) return;
       
-      DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.grometry_added', function (e) {
+      DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.grometry_added', function (e) {
         if (typeof event.geometryAdded === 'function') {
           var layer = new Layer();
           layer._SMLayerId = e.layerId;
@@ -711,7 +711,7 @@ export default class MapControl {
    var success = await MC.addGeometryDeletingListener(this._SMMapControlId);
    if(!success) return ;
    
-   DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.geometry_deleting',function (e) {
+   DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.geometry_deleting',function (e) {
    if(typeof event.geometryDeleting === 'function'){
    var layer = new Layer();
    layer._SMLayerId = e.layerId;
@@ -755,7 +755,7 @@ export default class MapControl {
    var success = await MC.addGeometryModifiedListener(this._SMMapControlId);
    if(!success) return ;
    
-   DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.geometry_modified',function (e) {
+   DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.geometry_modified',function (e) {
    if(typeof event.geometryModified === 'function'){
    var layer = new Layer();
    layer._SMLayerId = e.layerId;
@@ -799,7 +799,7 @@ export default class MapControl {
    var success = await MC.addGeometryModifyingListener(this._SMMapControlId);
    if(!success) return ;
    
-   DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.geometry_modifying',function (e) {
+   DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.geometry_modifying',function (e) {
    if(typeof event.geometryModifying === 'function'){
    var layer = new Layer();
    layer._SMLayerId = e.layerId;
@@ -845,7 +845,7 @@ export default class MapControl {
       if (!success) return;
       //差异化
       if (Platform.OS === 'ios') {
-        nativeEvt.addListener('com.supermap.RN.JSMapcontrol.geometry_selected', function (e) {
+        nativeEvt.addListener('com.supermap.RN.Mapcontrol.geometry_selected', function (e) {
           if (typeof events.geometrySelected === 'function') {
             var layer = new Layer();
             layer._SMLayerId = e.layerId;
@@ -855,7 +855,7 @@ export default class MapControl {
             console.error("Please set a callback to the first argument.");
           }
         });
-        nativeEvt.addListener('com.supermap.RN.JSMapcontrol.geometry_multi_selected', function (e) {
+        nativeEvt.addListener('com.supermap.RN.Mapcontrol.geometry_multi_selected', function (e) {
           if (typeof events.geometryMultiSelected === 'function') {
             e.geometries.map(function (geometry) {
               var layer = new Layer();
@@ -868,7 +868,7 @@ export default class MapControl {
           }
         });
       } else {
-        DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.geometry_selected', function (e) {
+        DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.geometry_selected', function (e) {
           if (typeof events.geometrySelected === 'function') {
             var layer = new Layer();
             layer._SMLayerId = e.layerId;
@@ -878,7 +878,7 @@ export default class MapControl {
             console.error("Please set a callback to the first argument.");
           }
         });
-        DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.geometry_multi_selected', function (e) {
+        DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.geometry_multi_selected', function (e) {
           if (typeof events.geometryMultiSelected === 'function') {
             e.geometries.map(function (geometry) {
               var layer = new Layer();
@@ -925,33 +925,33 @@ export default class MapControl {
       if (!success) return;
       if (Platform.OS === 'ios') {
         if (typeof events.lengthMeasured === 'function') {
-          nativeEvt.addListener('com.supermap.RN.JSMapcontrol.length_measured', function (e) {
+          nativeEvt.addListener('com.supermap.RN.Mapcontrol.length_measured', function (e) {
             events.lengthMeasured(e);
           });
         }
         if (typeof events.areaMeasured === 'function') {
-          nativeEvt.addListener('com.supermap.RN.JSMapcontrol.area_measured', function (e) {
+          nativeEvt.addListener('com.supermap.RN.Mapcontrol.area_measured', function (e) {
             events.areaMeasured(e);
           });
         }
         if (typeof events.angleMeasured === 'function') {
-          nativeEvt.addListener('com.supermap.RN.JSMapcontrol.angle_measured', function (e) {
+          nativeEvt.addListener('com.supermap.RN.Mapcontrol.angle_measured', function (e) {
             events.angleMeasured(e);
           });
         }
       } else {
         if (typeof events.lengthMeasured === 'function') {
-          DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.length_measured', function (e) {
+          DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.length_measured', function (e) {
             events.lengthMeasured(e);
           });
         }
         if (typeof events.areaMeasured === 'function') {
-          DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.area_measured', function (e) {
+          DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.area_measured', function (e) {
             events.areaMeasured(e);
           });
         }
         if (typeof events.angleMeasured === 'function') {
-          DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.angle_measured', function (e) {
+          DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.angle_measured', function (e) {
             events.angleMeasured(e);
           });
         }
@@ -988,7 +988,7 @@ export default class MapControl {
    var success = await MC.addUndoStateChangeListener(this._SMMapControlId);
    if(!success) return ;
    
-   DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.undo_state_change',function (e) {
+   DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.undo_state_change',function (e) {
    if(typeof event.undoStateChange === 'function'){
    event.undo_state_change(e);
    }else{
@@ -1030,14 +1030,14 @@ export default class MapControl {
       var success = await MC.setEditStatusListener(this._SMMapControlId);
       if (!success) return;
       
-      DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.add_node_enable', function (e) {
+      DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.add_node_enable', function (e) {
         if (typeof events.addNodeEnable === 'function') {
           events.addNodeEnable(e);
         } else {
           console.error("Please set a callback to the first argument.");
         }
       });
-      DeviceEventEmitter.addListener('com.supermap.RN.JSMapcontrol.delete_node_enable', function (e) {
+      DeviceEventEmitter.addListener('com.supermap.RN.Mapcontrol.delete_node_enable', function (e) {
         if (typeof events.deleteNodeEnable === 'function') {
           events.deleteNodeEnable(e);
         } else {
@@ -1173,7 +1173,7 @@ export default class MapControl {
   //   try {
   //     let success = await MC.setOnTouchListener(this._SMMapControlId);
   //     if (!success) return;
-  //     nativeEvt.addListener('com.supermap.RN.JSMapcontrol.touch_up', function (e) {
+  //     nativeEvt.addListener('com.supermap.RN.Mapcontrol.touch_up', function (e) {
   //       if (typeof events.onTouchUp === 'function') {
   //         events.onTouchUp(e);
   //       } else {

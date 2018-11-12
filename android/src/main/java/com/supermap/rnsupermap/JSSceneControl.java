@@ -23,8 +23,8 @@ public class JSSceneControl extends ReactContextBaseJavaModule {
     protected static Map<String, SceneControl> m_SceneControlList = new HashMap<String, SceneControl>();
     SceneControl m_SceneControl;
     ReactContext mReactContext;
-    private static final String LONGPRESS_EVENT = "com.supermap.RN.JSMapcontrol.long_press_event";
-    private static final String SCROLL_EVENT = "com.supermap.RN.JSMapcontrol.scroll_event";
+    private static final String LONGPRESS_EVENT = "com.supermap.RN.Mapcontrol.long_press_event";
+    private static final String SCROLL_EVENT = "com.supermap.RN.Mapcontrol.scroll_event";
 
     public JSSceneControl(ReactApplicationContext context) {
         super(context);

@@ -234,7 +234,7 @@ export default class Collector {
         throw new Error("setGestureDetector need callback functions as first two argument!")
       }
       if(typeof handlers.collectionChanged === "function"){
-        nativeEvt.addListener("com.supermap.RN.JSMapcontrol.collection_change",function (e) {
+        nativeEvt.addListener("com.supermap.RN.Mapcontrol.collection_change",function (e) {
           let point2D = new Point2D()
           point2D._SMPoint2DId = e.pointId
           handlers.collectionChanged({
@@ -244,7 +244,7 @@ export default class Collector {
         })
       }
       if(typeof handlers.onSensorChanged === "function"){
-        nativeEvt.addListener("com.supermap.RN.JSMapcontrol.collection_sensor_change",function (e) {
+        nativeEvt.addListener("com.supermap.RN.Mapcontrol.collection_sensor_change",function (e) {
           handlers.onSensorChanged(e)
         })
       }
