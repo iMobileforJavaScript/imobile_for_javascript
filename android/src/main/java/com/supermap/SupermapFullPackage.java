@@ -173,6 +173,8 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new SMap(reactContext));
         modules.add(new SAnalyst(reactContext));
         modules.add(new SScene(reactContext));
+        modules.add(new JSLayer3DType(reactContext));
+        modules.add(new JSImageFormatType(reactContext));
         return modules;
     }
 }

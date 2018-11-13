@@ -14,16 +14,20 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
+import com.supermap.data.ImageFormatType;
 import com.supermap.data.Workspace;
 import com.supermap.map3D.FlyHelper;
 import com.supermap.map3D.PoiSearchHelper;
 import com.supermap.map3D.toolKit.PoiGsonBean;
 import com.supermap.map3D.toolKit.TouchUtil;
 import com.supermap.mapping.MeasureListener;
+import com.supermap.realspace.Camera;
+import com.supermap.realspace.Layer3DType;
 import com.supermap.realspace.Scene;
 import com.supermap.realspace.SceneControl;
 import com.supermap.smNative.SMSceneWC;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -154,8 +158,9 @@ public class SScene extends ReactContextBaseJavaModule {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
             WritableArray arr = Arguments.createArray();
+            int count=scene.getLayers().getCount();
             if (scene.getLayers().getCount() > 0) {
-                for (int i = 0; i < scene.getLayers().getCount(); i++) {
+                for (int i = 0; i <count; i++) {
                     String name = scene.getLayers().get(i).getName();
                     boolean visible = scene.getLayers().get(i).isVisible();
                     boolean selectable = scene.getLayers().get(i).isSelectable();
@@ -163,6 +168,9 @@ public class SScene extends ReactContextBaseJavaModule {
                     map.putString("name", name);
                     map.putBoolean("visible", visible);
                     map.putBoolean("selectable", selectable);
+                    if(i == count - 1){
+                        map.putBoolean("basemap",true);
+                    }
                     arr.pushMap(map);
                 }
             }
@@ -170,6 +178,73 @@ public class SScene extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             promise.reject(e);
         }
+    }
+
+
+    @ReactMethod
+    public  void  changeBaseMap(String oldLayer, String Url, String Layer3DType,String layerName,String imageFormatType,double dpi, Boolean addToHead){
+        sScene = getInstance();
+        Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+        if(oldLayer!=null){
+            scene.getLayers().removeLayerWithName(oldLayer);
+        }
+        com.supermap.realspace.Layer3DType layer3DType = null;
+        com.supermap.data.ImageFormatType imageFormatType1=null;
+         switch (Layer3DType){
+             case "IMAGEFILE":
+                     layer3DType=com.supermap.realspace.Layer3DType.IMAGEFILE;
+                 break;
+             case "KML":
+                 layer3DType=com.supermap.realspace.Layer3DType.KML;
+                 break;
+
+             case "l3dBingMaps":
+                 layer3DType=com.supermap.realspace.Layer3DType.l3dBingMaps;
+                 break;
+
+             case "OSGBFILE":
+                 layer3DType=com.supermap.realspace.Layer3DType.OSGBFILE;
+                 break;
+
+             case "VECTORFILE":
+                 layer3DType=com.supermap.realspace.Layer3DType.VECTORFILE;
+                 break;
+             case "WMTS":
+                 layer3DType=com.supermap.realspace.Layer3DType.WMTS;
+                 break;
+         }
+
+         switch (imageFormatType){
+             case "BMP":
+                 imageFormatType1=ImageFormatType.BMP;
+                 break;
+             case "DXTZ":
+                 imageFormatType1=ImageFormatType.DXTZ;
+                 break;
+
+             case "GIF":
+                 imageFormatType1=ImageFormatType.GIF;
+                 break;
+
+             case "JPG":
+                 imageFormatType1=ImageFormatType.JPG;
+                 break;
+
+             case "JPG_PNG":
+                 imageFormatType1=ImageFormatType.JPG_PNG;
+                 break;
+             case "NONE":
+                 imageFormatType1=ImageFormatType.NONE;
+                 break;
+             case "PNG":
+                 imageFormatType1=ImageFormatType.PNG;
+                 break;
+         }
+         if(dpi == Double.parseDouble(null)&&imageFormatType==null){
+             scene.getLayers().add(Url,layer3DType,layerName,addToHead);
+         }else {
+             scene.getLayers().add(Url,layer3DType,layerName,imageFormatType1,dpi,addToHead);
+         }
     }
 
     /**
@@ -445,6 +520,24 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 指北针
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setHeading(Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            Camera camera=scene.getCamera();
+            camera.setHeading(0);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置触控器获取对象属性
      *
      * @param promise
@@ -479,6 +572,27 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 清除对象列表属性
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void clearAttribute(Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            int count =scene.getLayers().getCount();
+            for (int i = 0; i <count ; i++) {
+                scene.getLayers().get(i).getSelection().clear();
+            }
+          promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
      * 移除触控器
      *
      * @param promise
@@ -494,6 +608,8 @@ public class SScene extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+
 
     /**
      * 关闭工作空间及地图控件

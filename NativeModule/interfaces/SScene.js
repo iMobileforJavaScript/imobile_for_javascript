@@ -180,6 +180,14 @@ export default (function () {
         }
     }
 
+    function clearAttribute(){
+        try {
+            return SScene.clearAttribute()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     function addListener(handlers){
         let listen
         if (Platform.OS === 'ios' && handlers) {
@@ -201,6 +209,14 @@ export default (function () {
     function removeOnTouchListener() {
         try {
             return SScene.removeOnTouchListener()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function setHeading(){
+        try {
+            return SScene.setHeading()
         } catch (error) {
             console.log(error)
         }
@@ -255,6 +271,8 @@ export default (function () {
         getTerrainLayerList,
         removeOnTouchListener,
         addListener,
+        setHeading,
+        clearAttribute,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
