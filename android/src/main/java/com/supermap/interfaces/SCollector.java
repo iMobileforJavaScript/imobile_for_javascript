@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.supermap.data.Dataset;
 import com.supermap.data.GeoStyle;
+import com.supermap.mapping.Action;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMCollector;
@@ -13,7 +14,7 @@ import com.supermap.smNative.SMMapWC;
 
 public class SCollector extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SCollector";
-    private static Collector collector;
+    private static Collector collector = null;
     private static ReactApplicationContext context;
 
     public SCollector(ReactApplicationContext context) {
@@ -28,14 +29,15 @@ public class SCollector extends ReactContextBaseJavaModule {
 
     public Collector getCollector() {
         try {
-            SMMapWC smMapWC = SMap.getSMWorkspace();
-            collector = smMapWC.getMapControl().getCollector();
+            if (collector == null) {
+                SMMapWC smMapWC = SMap.getSMWorkspace();
+                collector = smMapWC.getMapControl().getCollector();
+            }
             return collector;
         } catch (Exception e) {
             throw e;
         }
     }
-
 
     /**
      * 设置采集对象的绘制风格
@@ -58,7 +60,6 @@ public class SCollector extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
-
 
     /**
      * 获取采集对象的绘制风格
@@ -130,6 +131,25 @@ public class SCollector extends ReactContextBaseJavaModule {
             boolean result = SMCollector.setCollector(collector, sMap.getSMWorkspace().getMapControl(), type);
 
             promise.resolve(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 停止采集
+     * @param promise
+     */
+    @ReactMethod
+    public void stopCollect(Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            collector = getCollector();
+            collector.setSingleTapEnable(false);
+            sMap.getSMWorkspace().getMapControl().setAction(Action.PAN);
+
+            promise.resolve(true);
         } catch (Exception e) {
             e.printStackTrace();
             promise.reject(e);
@@ -220,7 +240,11 @@ public class SCollector extends ReactContextBaseJavaModule {
     public void cancel(int type, Promise promise) {
         try {
             SMap.getSMWorkspace().getMapControl().cancel();
-            promise.resolve(true);
+            if (type == SCollectorType.REGION_HAND_PATH || type == SCollectorType.LINE_HAND_PATH) {
+                startCollect(type, promise);
+            } else {
+                promise.resolve(true);
+            }
         } catch (Exception e) {
             promise.reject(e);
         }

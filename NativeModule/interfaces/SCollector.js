@@ -53,6 +53,15 @@ async function startCollect(type) {
   }
 }
 
+async function stopCollect() {
+  try {
+    currentType = -1
+    return Collector.stopCollect()
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 async function undo(type) {
   try {
     type = type >= 0 ? type : currentType
@@ -74,8 +83,12 @@ async function redo(type) {
 async function submit(type) {
   try {
     type = type >= 0 ? type : currentType
-    currentType = -1
-    return Collector.submit(type)
+    // currentType = -1
+    let result = Collector.submit(type)
+    if (result) {
+      Collector.startCollect(type)
+    }
+    return result
   } catch (e) {
     console.error(e)
   }
@@ -83,7 +96,7 @@ async function submit(type) {
 
 async function cancel(type) {
   try {
-    type = type >= 0 ? type : currentType
+    // type = type >= 0 ? type : currentType
     return Collector.cancel(type)
   } catch (e) {
     console.error(e)
@@ -103,6 +116,7 @@ export default {
   setStyle,
   getStyle,
   startCollect,
+  stopCollect,
   setDataset,
   undo,
   redo,

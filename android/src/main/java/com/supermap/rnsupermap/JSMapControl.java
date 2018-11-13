@@ -73,34 +73,34 @@ public class JSMapControl extends ReactContextBaseJavaModule {
     private static final String SCALECHANGED = "Supermap.MapControl.MapParamChanged.ScaleChanged";
     private static final String ANGLECHANGED = "Supermap.MapControl.MapParamChanged.AngleChanged";
     private static final String SIZECHANGED = "Supermap.MapControl.MapParamChanged.SizeChanged";
-    private static final String TOHORIZONTALSCREEN = "com.supermap.RN.JSMapControl.to_horizontal_screen";
-    private static final String TOVERTICALSCREEN = "com.supermap.RN.JSMapControl.to_verticalscreen";
+    private static final String TOHORIZONTALSCREEN = "com.supermap.RN.Mapcontrol.to_horizontal_screen";
+    private static final String TOVERTICALSCREEN = "com.supermap.RN.Mapcontrol.to_verticalscreen";
 
 
-    private static final String LONGPRESS_EVENT = "com.supermap.RN.JSMapcontrol.long_press_event";
-    private static final String SCROLL_EVENT = "com.supermap.RN.JSMapcontrol.scroll_event";
-    private static final String TOUCH_BEGAN_EVENT = "com.supermap.RN.JSMapcontrol.touch_began_event";
-    private static final String TOUCH_END_EVENT = "com.supermap.RN.JSMapcontrol.touch_end_event";
-    private static final String SINGLE_TAP_EVENT = "com.supermap.RN.JSMapcontrol.single_tap_event";
-    private static final String DOUBLE_TAP_EVENT = "com.supermap.RN.JSMapcontrol.double_tap_event";
+    private static final String LONGPRESS_EVENT = "com.supermap.RN.Mapcontrol.long_press_event";
+    private static final String SCROLL_EVENT = "com.supermap.RN.Mapcontrol.scroll_event";
+    private static final String TOUCH_BEGAN_EVENT = "com.supermap.RN.Mapcontrol.touch_began_event";
+    private static final String TOUCH_END_EVENT = "com.supermap.RN.Mapcontrol.touch_end_event";
+    private static final String SINGLE_TAP_EVENT = "com.supermap.RN.Mapcontrol.single_tap_event";
+    private static final String DOUBLE_TAP_EVENT = "com.supermap.RN.Mapcontrol.double_tap_event";
 
-    private static final String ACTION_CHANGE = "com.supermap.RN.JSMapControl.action_change";
-    private static final String GEOMETRYDELETED = "com.supermap.RN.JSMapControl.geometry_deleted";
-    private static final String REFRESH_EVENT = "com.supermap.RN.JSMapcontrol.refresh_event";
-    private static final String GEOMETRYADDED = "com.supermap.RN.JSMapcontrol.grometry_added";
-    private static final String GEOMETRYDELETING = "com.supermap.RN.JSMapcontrol.geometry_deleting";
-    private static final String GEOMETRYMODIFIED = "com.supermap.RN.JSMapcontrol.geometry_modified";
-    private static final String GEOMETRYMODIFYING = "com.supermap.RN.JSMapcontrol.geometry_modifying";
-    private static final String GEOMETRYSELECTED = "com.supermap.RN.JSMapcontrol.geometry_selected";
-    private static final String GEOMETRYMULTISELECTED = "com.supermap.RN.JSMapcontrol.geometry_multi_selected";
-    private static final String LENGTHMEASURED = "com.supermap.RN.JSMapcontrol.length_measured";
-    private static final String AREAMEASURED = "com.supermap.RN.JSMapcontrol.area_measured";
-    private static final String ANGLEMEASURED = "com.supermap.RN.JSMapcontrol.angle_measured";
-    private static final String UNDOSTATECHANGE = "com.supermap.RN.JSMapcontrol.undo_state_change";
-    private static final String ADDNODEENABLE = "com.supermap.RN.JSMapcontrol.add_node_enable";
-    private static final String DELETENODEENABLE = "com.supermap.RN.JSMapcontrol.delete_node_enable";
+    private static final String ACTION_CHANGE = "com.supermap.RN.Mapcontrol.action_change";
+    private static final String GEOMETRYDELETED = "com.supermap.RN.Mapcontrol.geometry_deleted";
+    private static final String REFRESH_EVENT = "com.supermap.RN.Mapcontrol.refresh_event";
+    private static final String GEOMETRYADDED = "com.supermap.RN.Mapcontrol.grometry_added";
+    private static final String GEOMETRYDELETING = "com.supermap.RN.Mapcontrol.geometry_deleting";
+    private static final String GEOMETRYMODIFIED = "com.supermap.RN.Mapcontrol.geometry_modified";
+    private static final String GEOMETRYMODIFYING = "com.supermap.RN.Mapcontrol.geometry_modifying";
+    private static final String GEOMETRYSELECTED = "com.supermap.RN.Mapcontrol.geometry_selected";
+    private static final String GEOMETRYMULTISELECTED = "com.supermap.RN.Mapcontrol.geometry_multi_selected";
+    private static final String LENGTHMEASURED = "com.supermap.RN.Mapcontrol.length_measured";
+    private static final String AREAMEASURED = "com.supermap.RN.Mapcontrol.area_measured";
+    private static final String ANGLEMEASURED = "com.supermap.RN.Mapcontrol.angle_measured";
+    private static final String UNDOSTATECHANGE = "com.supermap.RN.Mapcontrol.undo_state_change";
+    private static final String ADDNODEENABLE = "com.supermap.RN.Mapcontrol.add_node_enable";
+    private static final String DELETENODEENABLE = "com.supermap.RN.Mapcontrol.delete_node_enable";
 
-//    private static final String TOUCH_UP_EVENT = "com.supermap.RN.JSMapcontrol.touch_up";
+//    private static final String TOUCH_UP_EVENT = "com.supermap.RN.Mapcontrol.touch_up";
 
     //    Listeners
     private ActionChangedListener mActionChangedListener;

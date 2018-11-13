@@ -4,9 +4,12 @@
  E-mail: yangshanglong@supermap.com
  Description: 工作空间操作类
  **********************************************************************************/
-import { NativeModules, Platform } from 'react-native'
+import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform } from 'react-native'
 import * as MapTool from './SMapTool'
+import { EventConst } from '../constains'
 let SMap = NativeModules.SMap
+
+const nativeEvt = new NativeEventEmitter(SMap);
 
 export default (function () {
   /**
@@ -169,7 +172,7 @@ export default (function () {
   }
 
   getWorkspaceType = (type) => {
-    var value
+    let value
     switch (type) {
       case 'SMWU':
       case 'smwu':
@@ -198,6 +201,200 @@ export default (function () {
     return value
   }
 
+  submit = () => {
+    SMap.submit()
+  }
+
+  getLayers = () => {
+    SMap.getLayers()
+  }
+
+  /**
+   * 手势监听
+   * @memberOf MapControl
+   * @param {object} events - 传入一个对象作为参数，该对象可以包含两个属性：longPressHandler和scrollHandler。两个属性的值均为function类型，分部作为长按与滚动监听事件的处理函数。
+   * @returns {Promise.<void>}
+   */
+  setGestureDetector = handlers => {
+    try {
+      if (handlers) {
+        SMap.setGestureDetector()
+      } else {
+        throw new Error("setGestureDetector need callback functions as first two argument!")
+      }
+      //差异化
+      if (Platform.OS === 'ios') {
+        if (typeof handlers.longPressHandler === "function") {
+          nativeEvt.addListener(EventConst.MAP_LONG_PRESS, function (e) {
+            // longPressHandler && longPressHandler(e)
+            handlers.longPressHandler(e)
+          })
+        }
+
+        if (typeof handlers.singleTapHandler === "function") {
+          nativeEvt.addListener(EventConst.MAP_SINGLE_TAP, function (e) {
+            handlers.singleTapHandler(e)
+          })
+        }
+
+        if (typeof handlers.doubleTapHandler === "function") {
+          nativeEvt.addListener(EventConst.MAP_DOUBLE_TAP, function (e) {
+            handlers.doubleTapHandler(e)
+          })
+        }
+
+        if (typeof handlers.touchBeganHandler === "function") {
+          nativeEvt.addListener(EventConst.MAP_TOUCH_BEGAN, function (e) {
+            handlers.touchBeganHandler(e)
+          })
+        }
+
+        if (typeof handlers.touchEndHandler === "function") {
+          nativeEvt.addListener(EventConst.MAP_TOUCH_END, function (e) {
+            handlers.touchEndHandler(e)
+          })
+        }
+
+        if (typeof handlers.scrollHandler === "function") {
+          nativeEvt.addListener(EventConst.MAP_SCROLL, function (e) {
+            handlers.scrollHandler(e)
+          })
+        }
+      } else {
+        if (typeof handlers.longPressHandler === "function") {
+          DeviceEventEmitter.addListener(EventConst.MAP_LONG_PRESS, function (e) {
+            // longPressHandler && longPressHandler(e)
+            handlers.longPressHandler(e)
+          })
+        }
+
+        if (typeof handlers.singleTapHandler === "function") {
+          DeviceEventEmitter.addListener(EventConst.MAP_SINGLE_TAP, function (e) {
+            handlers.singleTapHandler(e)
+          })
+        }
+
+        if (typeof handlers.doubleTapHandler === "function") {
+          DeviceEventEmitter.addListener(EventConst.MAP_DOUBLE_TAP, function (e) {
+            handlers.doubleTapHandler(e)
+          })
+        }
+
+        if (typeof handlers.touchBeganHandler === "function") {
+          DeviceEventEmitter.addListener(EventConst.MAP_TOUCH_BEGAN, function (e) {
+            handlers.touchBeganHandler(e)
+          })
+        }
+
+        if (typeof handlers.touchEndHandler === "function") {
+          DeviceEventEmitter.addListener(EventConst.MAP_TOUCH_END, function (e) {
+            handlers.touchEndHandler(e)
+          })
+        }
+
+        if (typeof handlers.scrollHandler === "function") {
+          DeviceEventEmitter.addListener(EventConst.MAP_SCROLL, function (e) {
+            handlers.scrollHandler(e)
+          })
+        }
+      }
+
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移除手势监听
+   * @memberOf MapControl
+   * @returns {Promise.<void>}
+   */
+  deleteGestureDetector = () => {
+    try {
+      SMap.deleteGestureDetector()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 添加对象修改前监听器
+   * @memberOf MapControl
+   * @param events - events:{geometrySelected: e => {...},geometryMultiSelected e => {...}}
+   * geometrySelected 单个集合对象被选中事件的回调函数，参数e为获取结果 e:{layer:--, id:--} layer:操作的图层，操作对象id.
+   * geometryMultiSelected 多个集合对象被选中事件的回调函数，参数e为获取结果数组：e:{geometries:[layer:--,id:--]}
+   * @returns {Promise.<*>}
+   */
+  addGeometrySelectedListener = events => {
+    (async function () {
+      try {
+        let success = await SMap.addGeometrySelectedListener()
+        if (!success) return
+        //差异化
+        if (Platform.OS === 'ios') {
+          nativeEvt.addListener(EventConst.MAP_GEOMETRY_SELECTED, function (e) {
+            if (typeof events.geometrySelected === 'function') {
+              events.geometrySelected(e)
+            } else {
+              console.error("Please set a callback to the first argument.")
+            }
+          })
+          nativeEvt.addListener(EventConst.MAP_GEOMETRY_MULTI_SELECTED, function (e) {
+            if (typeof events.geometryMultiSelected === 'function') {
+              events.geometryMultiSelected(e)
+            } else {
+              console.error("Please set a callback to the first argument.")
+            }
+          })
+        } else {
+          DeviceEventEmitter.addListener(EventConst.MAP_GEOMETRY_SELECTED, function (e) {
+            if (typeof events.geometrySelected === 'function') {
+              events.geometrySelected(e)
+            } else {
+              console.error("Please set a callback to the first argument.")
+            }
+          })
+          DeviceEventEmitter.addListener(EventConst.MAP_GEOMETRY_MULTI_SELECTED, function (e) {
+            if (typeof events.geometryMultiSelected === 'function') {
+              events.geometryMultiSelected(e)
+            } else {
+              console.error("Please set a callback to the first argument.")
+            }
+          })
+        }
+        return success
+      } catch (e) {
+        console.error(e)
+      }
+    })()
+  }
+
+  /**
+   * 移除对象选中监听器。
+   * @memberOf MapControl
+   * @returns {Promise.<void>}
+   */
+  removeGeometrySelectedListener = () => {
+    try {
+      SMap.removeGeometrySelectedListener()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 指定编辑几何对象
+   * @param geoID
+   * @param layerName
+   */
+  appointEditGeometry = (geoID, layerName) => {
+    try {
+      SMap.appointEditGeometry(geoID, layerName)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
   let SMapExp = {
     openWorkspace,
     openDatasource,
@@ -210,6 +407,13 @@ export default (function () {
     closeMap,
     openUDBDatasource,
     getUDBName,
+    getLayers,
+    submit,
+    setGestureDetector,
+    deleteGestureDetector,
+    addGeometrySelectedListener,
+    removeGeometrySelectedListener,
+    appointEditGeometry,
   }
   Object.assign(SMapExp, MapTool)
 

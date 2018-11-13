@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		005693B62191693F00AEC46E /* SMOnlineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 005693B52191693F00AEC46E /* SMOnlineService.m */; };
+		005693BA2191696C00AEC46E /* SOnlineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 005693B92191696C00AEC46E /* SOnlineService.m */; };
 		0A0118A52122BC5600BC4AAB /* JSThemeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0118A42122BC5600BC4AAB /* JSThemeLabel.m */; };
 		0A01192E212412C500BC4AAB /* JSRangeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A01192D212412C500BC4AAB /* JSRangeMode.m */; };
 		0A17279F212E88AC00CF978C /* JSGPSElementType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A17279E212E88AC00CF978C /* JSGPSElementType.m */; };
@@ -171,6 +173,7 @@
 		D8DD42332175CC32009D80E9 /* JSSymbolLineLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD42322175CC32009D80E9 /* JSSymbolLineLibrary.m */; };
 		D8DD42362175D025009D80E9 /* JSSymbolMarkerLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD42352175D025009D80E9 /* JSSymbolMarkerLibrary.m */; };
 		D8DD42392175D06C009D80E9 /* JSSymbolFillLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD42382175D06C009D80E9 /* JSSymbolFillLibrary.m */; };
+		D8FB9CF6219510C800597AE5 /* SScene.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FB9CF5219510C800597AE5 /* SScene.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -186,6 +189,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		005693B42191693F00AEC46E /* SMOnlineService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMOnlineService.h; sourceTree = "<group>"; };
+		005693B52191693F00AEC46E /* SMOnlineService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMOnlineService.m; sourceTree = "<group>"; };
+		005693B82191696C00AEC46E /* SOnlineService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SOnlineService.h; sourceTree = "<group>"; };
+		005693B92191696C00AEC46E /* SOnlineService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SOnlineService.m; sourceTree = "<group>"; };
 		0A0118A32122BC5600BC4AAB /* JSThemeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSThemeLabel.h; sourceTree = "<group>"; };
 		0A0118A42122BC5600BC4AAB /* JSThemeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSThemeLabel.m; sourceTree = "<group>"; };
 		0A01192C212412C500BC4AAB /* JSRangeMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSRangeMode.h; sourceTree = "<group>"; };
@@ -515,6 +522,8 @@
 		D8DD42352175D025009D80E9 /* JSSymbolMarkerLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolMarkerLibrary.m; sourceTree = "<group>"; };
 		D8DD42372175D06C009D80E9 /* JSSymbolFillLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSymbolFillLibrary.h; sourceTree = "<group>"; };
 		D8DD42382175D06C009D80E9 /* JSSymbolFillLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolFillLibrary.m; sourceTree = "<group>"; };
+		D8FB9CF4219510C800597AE5 /* SScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SScene.h; sourceTree = "<group>"; };
+		D8FB9CF5219510C800597AE5 /* SScene.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SScene.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -528,6 +537,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		005693B3219168CE00AEC46E /* iServer */ = {
+			isa = PBXGroup;
+			children = (
+				005693B42191693F00AEC46E /* SMOnlineService.h */,
+				005693B52191693F00AEC46E /* SMOnlineService.m */,
+			);
+			path = iServer;
+			sourceTree = "<group>";
+		};
+		005693B72191694E00AEC46E /* iServer */ = {
+			isa = PBXGroup;
+			children = (
+				005693B82191696C00AEC46E /* SOnlineService.h */,
+				005693B92191696C00AEC46E /* SOnlineService.m */,
+			);
+			path = iServer;
+			sourceTree = "<group>";
+		};
 		134814211AA4EA7D00B7C361 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -550,6 +577,7 @@
 		D854D867218310720075B5F8 /* interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				005693B72191694E00AEC46E /* iServer */,
 				D854D868218310720075B5F8 /* SMap.m */,
 				D854D869218310720075B5F8 /* SMap.h */,
 				D854DA3A2186F9AF0075B5F8 /* SCollector.h */,
@@ -558,6 +586,8 @@
 				D854DA7F218834510075B5F8 /* SAnalyst.m */,
 				D82F37782189ABEF00F85267 /* SCollectorType.h */,
 				D82F37792189ABEF00F85267 /* SCollectorType.m */,
+				D8FB9CF4219510C800597AE5 /* SScene.h */,
+				D8FB9CF5219510C800597AE5 /* SScene.m */,
 			);
 			path = interfaces;
 			sourceTree = "<group>";
@@ -565,6 +595,7 @@
 		D854D86A218310730075B5F8 /* native */ = {
 			isa = PBXGroup;
 			children = (
+				005693B3219168CE00AEC46E /* iServer */,
 				D854DA4F2187F5FD0075B5F8 /* SMCollector.h */,
 				D854DA502187F5FD0075B5F8 /* SMCollector.m */,
 				D83F3C40218BDA97001C56BE /* SMMapWC.h */,
@@ -1019,9 +1050,11 @@
 				D8DD420C2174874D009D80E9 /* JSSymbolType.m in Sources */,
 				0A332E1D211D623E00F56F26 /* JSGridHotChart.m in Sources */,
 				D8DD42392175D06C009D80E9 /* JSSymbolFillLibrary.m in Sources */,
+				D8FB9CF6219510C800597AE5 /* SScene.m in Sources */,
 				0A332E35211D623E00F56F26 /* JSOverlayAnalyst.m in Sources */,
 				0A332DF5211D623E00F56F26 /* JSBufferAnalystParameter.m in Sources */,
 				0A332E1B211D623E00F56F26 /* JSGeoStyle.m in Sources */,
+				005693BA2191696C00AEC46E /* SOnlineService.m in Sources */,
 				0A332E08211D623E00F56F26 /* JSDatasetVector.m in Sources */,
 				0A332E50211D623E00F56F26 /* JSSize2D.m in Sources */,
 				D8DD422721757C8D009D80E9 /* JSSymbolFill.m in Sources */,
@@ -1080,6 +1113,7 @@
 				0A332E52211D623E00F56F26 /* JSSTOMPManager.m in Sources */,
 				0A332E3C211D623E00F56F26 /* JSPointDensityChart.m in Sources */,
 				0A332DEE211D623E00F56F26 /* JSAMQPSender.m in Sources */,
+				005693B62191693F00AEC46E /* SMOnlineService.m in Sources */,
 				0A332DF8211D623E00F56F26 /* JSChartData.m in Sources */,
 				0A332E67211D623E00F56F26 /* JSTransportationAnalystParameter.m in Sources */,
 				0A332E5F211D623E00F56F26 /* JSThemeRangeItem.m in Sources */,

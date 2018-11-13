@@ -23,8 +23,8 @@ public class HttpUtils {
 
 	// httpClient Get
 	public static String connServerResult(String strUrl) {
-		// �����������URL��ַ
-		// ��������ת����String
+		// ???????????URL???
+		// ?????????????String
 		HttpGet httpRequest = new HttpGet(strUrl);
 
 		String strResult = null;
@@ -69,7 +69,7 @@ public class HttpUtils {
 					//Log.v("lzw", "connection.getResponseCode()="+connection.getResponseCode());
 					if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
 						result = new StringBuffer();
-						// ��ȡURL����Ӧ
+						// ???URL?????
 						in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 						String line;
 						while ((line = in.readLine()) != null) {

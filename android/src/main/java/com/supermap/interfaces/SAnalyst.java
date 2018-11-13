@@ -10,6 +10,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.analyst.BufferAnalystGeometry;
 import com.supermap.analyst.BufferAnalystParameter;
 import com.supermap.analyst.BufferEndType;
+import com.supermap.containts.EventConst;
 import com.supermap.containts.Map3DEventConst;
 import com.supermap.data.Color;
 import com.supermap.data.Dataset;
@@ -144,7 +145,7 @@ public class SAnalyst extends ReactContextBaseJavaModule {
             AnalysisHelper.getInstence().setMeasureDisCallBack(new AnalysisHelper.DistanceCallBack() {
                 @Override
                 public void distanceResult(double distance) {
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(Map3DEventConst.ANALYST_MEASURELINE, distance);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ANALYST_MEASURELINE, distance);
                 }
             }).startMeasureAnalysis();
         } catch (Exception e) {
@@ -165,7 +166,7 @@ public class SAnalyst extends ReactContextBaseJavaModule {
             AnalysisHelper.getInstence().setMeasureAreaCallBack(new AnalysisHelper.AreaCallBack() {
                 @Override
                 public void areaResult(double area) {
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(Map3DEventConst.ANALYST_MEASURESQUARE, area);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ANALYST_MEASURESQUARE, area);
                 }
 
             }).startSureArea();
