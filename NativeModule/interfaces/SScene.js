@@ -56,6 +56,13 @@ export default (function () {
             console.log(error)
         }
     }
+    function setSelectable(name,value) {
+        try {
+            return SScene.setSelectable(name,value)
+        } catch (error) {
+            console.log(error)
+        }
+    }
     function closeWorkspace(){
         try {
             return SScene.closeWorkspace()
@@ -99,6 +106,7 @@ export default (function () {
         getLayerList,
         getMapList,
         openMap,
+        setSelectable,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp

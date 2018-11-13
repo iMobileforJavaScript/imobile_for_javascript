@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
@@ -13,7 +14,10 @@ import com.supermap.data.CoordSysTransMethod;
 import com.supermap.data.CoordSysTransParameter;
 import com.supermap.data.CoordSysTranslator;
 import com.supermap.data.Dataset;
+import com.supermap.data.Datasets;
 import com.supermap.data.Datasource;
+import com.supermap.data.DatasourceConnectionInfo;
+import com.supermap.data.EngineType;
 import com.supermap.data.Enum;
 import com.supermap.data.Maps;
 import com.supermap.data.Point;
@@ -28,6 +32,7 @@ import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMMapWC;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class SMap extends ReactContextBaseJavaModule {
@@ -113,8 +118,107 @@ public class SMap extends ReactContextBaseJavaModule {
 
             if (datasource != null && defaultIndex >= 0) {
                 Dataset ds = datasource.getDatasets().get(defaultIndex);
-                sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, true);
+                com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                map.getLayers().add(ds, true);
             }
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 打开离线UDB数据
+     *
+     * @param data
+     * @param defaultIndex 默认显示Map 图层索引
+     * @param promise
+     */
+    @ReactMethod
+    public void openUDBDatasourceWithIndex(ReadableMap data, int defaultIndex, Promise promise) {
+        try {
+            sMap = getInstance();
+            Map params = data.toHashMap();
+            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
+            DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
+            datasourceconnection.setEngineType(EngineType.UDB);
+            if (params.containsKey("server")) {
+                datasourceconnection.setServer(params.get("server").toString());
+            }
+            String alias = params.get("alias").toString();
+            if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(alias) != -1) {
+                sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().close(alias);
+            }
+            datasourceconnection.setAlias(alias);
+            datasourceconnection.setPassword("");
+            Datasource datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
+
+
+            if (datasource != null && defaultIndex >= 0) {
+                Dataset ds = datasource.getDatasets().get(defaultIndex);
+                com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                map.getLayers().add(ds, true);
+            }
+
+            datasourceconnection.dispose();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 获取UDB中数据集名称
+     *  @param path UDB在内存中路径
+     * @param promise
+     */
+    @ReactMethod
+    public void getUDBName(String path, Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
+            DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
+            if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf("switchudb") != -1) {
+                sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().close("switchudb");
+            }
+            datasourceconnection.setEngineType(EngineType.UDB);
+            datasourceconnection.setServer(path);
+            datasourceconnection.setAlias("switchudb");
+            Datasource datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
+            Datasets datasets = datasource.getDatasets();
+            int count = datasets.getCount();
+
+            WritableArray arr = Arguments.createArray();
+            for (int i=0;i<count;i++){
+                Dataset dataset = datasets.get(i);
+                String name = dataset.getName();
+                WritableMap writeMap = Arguments.createMap();
+                writeMap.putString("title",name);
+                arr.pushMap(writeMap);
+            }
+            datasourceconnection.dispose();
+            promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+
+    /**
+     * 移除指定图层
+     *
+     * @param defaultIndex 默认显示Map 图层索引
+     * @param promise
+     */
+    @ReactMethod
+    public void removeLayerWithIndex(int defaultIndex, Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smMapWC.getMapControl().getMap().getLayers().remove(defaultIndex);
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -244,6 +348,25 @@ public class SMap extends ReactContextBaseJavaModule {
     public void closeWorkspace(Promise promise) {
         try {
             getCurrentActivity().runOnUiThread(new DisposeThread(promise));
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 关闭地图
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void closeMap(Promise promise) {
+        try {
+            sMap = getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            com.supermap.mapping.Map map = mapControl.getMap();
+
+            map.close();
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
