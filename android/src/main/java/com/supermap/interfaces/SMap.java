@@ -1,11 +1,15 @@
 package com.supermap.interfaces;
 
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
@@ -23,11 +27,17 @@ import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Action;
+import com.supermap.mapping.GeometrySelectedEvent;
+import com.supermap.mapping.GeometrySelectedListener;
+import com.supermap.mapping.Layer;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.collector.Collector;
+import com.supermap.rnsupermap.JSLayer;
+import com.supermap.rnsupermap.JSMapView;
 import com.supermap.smNative.SMMapWC;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class SMap extends ReactContextBaseJavaModule {
@@ -35,6 +45,8 @@ public class SMap extends ReactContextBaseJavaModule {
     private static SMap sMap;
     private static ReactApplicationContext context;
     private static MeasureListener mMeasureListener;
+    private GestureDetector mGestureDetector;
+    private GeometrySelectedListener mGeometrySelectedListener;
 
     private SMMapWC smMapWC;
 
@@ -398,6 +410,18 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void submit(Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smMapWC.getMapControl().submit();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     /**
      * 移动到当前位置
      * @param promise
@@ -448,6 +472,188 @@ public class SMap extends ReactContextBaseJavaModule {
             } catch (Exception e) {
                 promise.resolve(e);
             }
+        }
+    }
+
+    /**
+     * 监听长按动作和滚动动作
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setGestureDetector(final Promise promise) {
+        try {
+            mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+
+                public boolean onScroll(MotionEvent e1, MotionEvent e2,
+                                        float distanceX, float distanceY) {
+                    WritableMap mapE1 = Arguments.createMap();
+                    mapE1.putInt("x", (int) e1.getX());
+                    mapE1.putInt("y", (int) e1.getY());
+
+                    WritableMap mapE2 = Arguments.createMap();
+                    mapE2.putInt("x", (int) e2.getX());
+                    mapE2.putInt("y", (int) e2.getY());
+
+                    WritableMap map = Arguments.createMap();
+                    map.putMap("start", mapE1);
+                    map.putMap("end", mapE2);
+                    map.putDouble("dx", distanceX);
+                    map.putDouble("dy", distanceY);
+
+
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MAP_SCROLL, map);
+                    return false;
+                }
+
+                public boolean onDown(MotionEvent event) {
+                    WritableMap map = Arguments.createMap();
+                    map.putInt("x", (int) event.getX());
+                    map.putInt("y", (int) event.getY());
+
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MAP_TOUCH_BEGAN, map);
+                    return false;
+                }
+
+                public boolean onSingleTapUp(MotionEvent e) {
+                    WritableMap map = Arguments.createMap();
+                    map.putInt("x", (int) e.getX());
+                    map.putInt("y", (int) e.getY());
+
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MAP_SINGLE_TAP, map);
+                    return false;
+                }
+
+                public void onLongPress(MotionEvent event) {
+                    WritableMap map = Arguments.createMap();
+                    map.putInt("x", (int) event.getX());
+                    map.putInt("y", (int) event.getY());
+
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MAP_LONG_PRESS, map);
+                }
+
+                public boolean onSingleTapConfirmed(MotionEvent e) {
+                    WritableMap map = Arguments.createMap();
+                    map.putInt("x", (int) e.getX());
+                    map.putInt("y", (int) e.getY());
+
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MAP_SINGLE_TAP, map);
+                    return false;
+                }
+
+                public boolean onDoubleTap(MotionEvent e) {
+                    WritableMap map = Arguments.createMap();
+                    map.putInt("x", (int) e.getX());
+                    map.putInt("y", (int) e.getY());
+
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MAP_DOUBLE_TAP, map);
+                    return false;
+                }
+            });
+            sMap = getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.setGestureDetector(mGestureDetector);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void deleteGestureDetector(Promise promise) {
+        try {
+            sMap = getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.deleteGestureDetector();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void addGeometrySelectedListener(Promise promise) {
+        try {
+            mGeometrySelectedListener = new GeometrySelectedListener() {
+                @Override
+                public void geometrySelected(GeometrySelectedEvent event) {
+                    int id = event.getGeometryID();
+                    Layer layer = event.getLayer();
+                    String layerId = JSLayer.registerId(layer);
+
+                    WritableMap map = Arguments.createMap();
+                    map.putString("layerId", layerId);
+                    map.putInt("id", id);
+
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MAP_GEOMETRY_SELECTED, map);
+                }
+
+                @Override
+                public void geometryMultiSelected(ArrayList<GeometrySelectedEvent> events) {
+                    WritableArray array = Arguments.createArray();
+                    for (int i = 0; i < events.size(); i++) {
+                        GeometrySelectedEvent event = events.get(i);
+                        int id = event.getGeometryID();
+                        Layer layer = event.getLayer();
+                        String layerId = JSLayer.registerId(layer);
+
+                        WritableMap map = Arguments.createMap();
+                        map.putString("layerId", layerId);
+                        map.putInt("id", id);
+                        array.pushMap(map);
+                    }
+
+                    WritableMap geometries = Arguments.createMap();
+                    geometries.putArray("geometries", array);
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MAP_GEOMETRY_MULTI_SELECTED, geometries);
+                }
+            };
+            sMap = getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void removeGeometrySelectedListener(Promise promise) {
+        try {
+            sMap = getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.removeGeometrySelectedListener(mGeometrySelectedListener);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 指定编辑几何对象
+     *
+     * @param geoID
+     * @param layerName
+     * @param promise
+     */
+    @ReactMethod
+    public void appointEditGeometry(int geoID, String layerName, Promise promise) {
+        try {
+            sMap = getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            Layer layer = mapControl.getMap().getLayers().get(layerName);
+            boolean result = mapControl.appointEditGeometry(geoID, layer);
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
         }
     }
 }

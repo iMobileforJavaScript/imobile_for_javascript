@@ -21,6 +21,7 @@
 #import "SuperMap/CoordSysTransMethod.h"
 #import "SuperMap/PrjCoordSys.h"
 #import "SuperMap/Collector.h"
+#import "SuperMap/Layer.h"
 static SMap *sMap = nil;
 
 @implementation SMap
@@ -32,6 +33,16 @@ RCT_EXPORT_MODULE();
              MEASURE_AREA,
              MEASURE_ANGLE,
              COLLECTION_SENSOR_CHANGE,
+             MAP_LONG_PRESS,
+             MAP_SINGLE_TAP,
+             MAP_DOUBLE_TAP,
+             MAP_TOUCH_BEGAN,
+             MAP_TOUCH_END,
+             MAP_SCROLL,
+             MAP_GEOMETRY_MULTI_SELECTED,
+             MAP_GEOMETRY_SELECTED,
+             MAP_SCALE_CHANGED,
+             MAP_BOUNDS_CHANGED,
              ];
 }
 
@@ -56,7 +67,7 @@ RCT_EXPORT_MODULE();
         sMap.smMapWC.workspace = [[Workspace alloc] init];
     }
     
-    [sMap setDelegate];
+//    [sMap setDelegate];
 }
 
 - (void)setDelegate {
@@ -340,10 +351,209 @@ RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBloc
     }
 }
 
+#pragma mark 移动到当前位置
+RCT_REMAP_METHOD(getLayers, getLayersWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layers* layers = [SMap singletonInstance].smMapWC.mapControl.map.layers;
+        int count = [layers getCount];
+        NSMutableArray* nameArr = [[NSMutableArray alloc] init];
+        for (int i = 0; i < count; i++) {
+            Layer* layer = [layers getLayerAtIndex:i];
+            [nameArr addObject:[layers getLayerAtIndex:i]];
+            NSLog(@"%@ - %@ - %@", layer.name, [NSNumber numberWithBool:layer.editable], [NSNumber numberWithBool:layer.visible]);
+        }
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 -(void)openGPS {
     MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
     Collector* collector = [mapControl getCollector];
     [collector openGPS];
+}
+
+#pragma mark 移动到当前位置
+RCT_REMAP_METHOD(submit, submitWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        bool result = [mapControl submit];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 设置手势监听
+RCT_REMAP_METHOD(setGestureDetector, setGestureDetectorByResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [SMap singletonInstance].smMapWC.mapControl.delegate = self;
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 去除手势监听
+RCT_REMAP_METHOD(deleteGestureDetector,deleteGestureDetectorById:(NSString*)mapControlId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        mapControl.delegate = nil;
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(addGeometrySelectedListener, addGeometrySelectedListenerByResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        mapControl.geometrySelectedDelegate = self;
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 去除手势监听
+RCT_REMAP_METHOD(removeGeometrySelectedListener,removeGeometrySelectedListenerById:(NSString*)Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        mapControl.geometrySelectedDelegate = nil;
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 去除手势监听
+RCT_REMAP_METHOD(appointEditGeometry, appointEditGeometryByGeoId:(int)geoId layerName:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        Layer* layer = [mapControl.map.layers getLayerWithName:layerName];
+        bool result = [mapControl appointEditGeometryWithID:geoId Layer:layer];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+/************************************************ 监听事件 ************************************************/
+#pragma mark 监听事件
+-(void) boundsChanged:(Point2D*) newMapCenter{
+    double x = newMapCenter.x;
+    NSNumber* nsX = [NSNumber numberWithDouble:x];
+    double y = newMapCenter.y;
+    NSNumber* nsY = [NSNumber numberWithDouble:y];
+    [self sendEventWithName:MAP_BOUNDS_CHANGED
+                       body:@{@"x":nsX,
+                              @"y":nsY
+                              }];
+}
+
+-(void) scaleChanged:(double) newscale{
+    NSNumber* nsNewScale = [NSNumber numberWithDouble:newscale];
+    [self sendEventWithName:MAP_SCALE_CHANGED
+                       body:@{@"scale":nsNewScale
+                              }];
+}
+
+
+- (void)longpress:(CGPoint)pressedPos{
+    CGFloat x = pressedPos.x;
+    CGFloat y = pressedPos.y;
+    NSNumber* nsX = [NSNumber numberWithFloat:x];
+    NSNumber* nsY = [NSNumber numberWithFloat:y];
+    [self sendEventWithName:MAP_LONG_PRESS
+                       body:@{@"x":nsX,
+                              @"y":nsY
+                              }];
+}
+
+- (void)onDoubleTap:(CGPoint)onDoubleTapPos{
+    CGFloat x = onDoubleTapPos.x;
+    CGFloat y = onDoubleTapPos.y;
+    NSNumber* nsX = [NSNumber numberWithFloat:x];
+    NSNumber* nsY = [NSNumber numberWithFloat:y];
+    [self sendEventWithName:MAP_DOUBLE_TAP
+                       body:@{@"x":nsX,
+                              @"y":nsY
+                              }];
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    UITouch *touch = [touches anyObject];   //视图中的所有对象
+    CGPoint point = [touch locationInView:[touch view]]; //返回触摸点在视图中的当前坐标
+    CGFloat x = point.x;
+    CGFloat y = point.y;
+    NSNumber* nsX = [NSNumber numberWithFloat:x];
+    NSNumber* nsY = [NSNumber numberWithFloat:y];
+    [self sendEventWithName:MAP_TOUCH_BEGAN
+                       body:@{@"x":nsX,
+                              @"y":nsY
+                              }];
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+    UITouch *touch = [touches anyObject];   //视图中的所有对象
+    CGPoint point = [touch locationInView:[touch view]]; //返回触摸点在视图中的当前坐标
+    CGFloat x = point.x;
+    CGFloat y = point.y;
+    NSNumber* nsX = [NSNumber numberWithFloat:x];
+    NSNumber* nsY = [NSNumber numberWithFloat:y];
+    
+    [self sendEventWithName:MAP_TOUCH_END
+                       body:@{@"x":nsX,
+                              @"y":nsY
+                              }];
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
+    UITouch *touch1 = [touches anyObject];
+    CGPoint startPoint = [touch1 locationInView:[touch1 view]];
+    CGFloat x = startPoint.x;
+    CGFloat y = startPoint.y;
+    NSNumber* nsX = [NSNumber numberWithFloat:x];
+    NSNumber* nsY = [NSNumber numberWithFloat:y];
+    
+    [self sendEventWithName:MAP_SCROLL
+                       body:@{@"local":@{@"x":nsX,@"y":nsY}
+                              }];
+}
+
+-(void)geometrySelected:(int)geometryID Layer:(Layer*)layer{
+    NSNumber* nsId = [NSNumber numberWithInt:geometryID];
+    //    NSInteger nsLayer = (NSInteger)layer;
+    NSMutableDictionary *layerInfo = [[NSMutableDictionary alloc] init];
+    [layerInfo setObject:layer.name forKey:@"name"];
+    [layerInfo setObject:[NSNumber numberWithBool:layer.editable] forKey:@"editable"];
+    [layerInfo setObject:[NSNumber numberWithBool:layer.visible] forKey:@"visible"];
+    [layerInfo setObject:[NSNumber numberWithBool:layer.selectable] forKey:@"selectable"];
+    [self sendEventWithName:MAP_GEOMETRY_SELECTED body:@{@"layerInfo":layerInfo,
+                                                         @"id":nsId,
+                                                         }];
+}
+
+-(void)geometryMultiSelected:(NSArray*)layersAndIds{
+    NSMutableArray* layersIdAndIds = [[NSMutableArray alloc]initWithCapacity:10];
+    for (id layerAndId in layersAndIds) {
+        if ([layerAndId isKindOfClass:[NSArray class]] && [layerAndId[0] isKindOfClass:[Layer class]]) {
+            Layer*layer = layerAndId[0];
+            NSMutableDictionary *layerInfo = [[NSMutableDictionary alloc] init];
+            [layerInfo setObject:layer.name forKey:@"name"];
+            [layerInfo setObject:[NSNumber numberWithBool:layer.editable] forKey:@"editable"];
+            [layerInfo setObject:[NSNumber numberWithBool:layer.visible] forKey:@"visible"];
+            [layerInfo setObject:[NSNumber numberWithBool:layer.selectable] forKey:@"selectable"];
+            [layersIdAndIds addObject:@[layerInfo, layerAndId[1]]];
+        }
+    }
+    [self sendEventWithName:MAP_GEOMETRY_MULTI_SELECTED body:@{@"geometries":(NSArray*)layersIdAndIds}];
+}
+
+-(void)measureState{
+    
 }
 
 @end

@@ -180,7 +180,7 @@ import {
   SCollector,
   SScene,
 } from './NativeModule/interfaces'
-let SMCollectorType = NativeModules.SMCollectorType;
+let SMCollectorType = NativeModules.SCollectorType;
 
 export {
   SMMapView,

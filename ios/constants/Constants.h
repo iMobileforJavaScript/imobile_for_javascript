@@ -20,6 +20,23 @@ extern NSString* const ONLINE_SERVICE_UPLOADFAILURE;
 extern NSString* const MEASURE_LENGTH;
 extern NSString* const MEASURE_AREA;
 extern NSString* const MEASURE_ANGLE;
+extern NSString * const ANALYST_MEASURELINE;
+extern NSString * const ANALYST_MEASURESQUARE;
+extern NSString * const POINTSEARCH_KEYWORDS;
+extern NSString * const SSCENE_FLY;
+extern NSString * const SSCENE_ATTRIBUTE;
+
+extern NSString * const MAP_LONG_PRESS;
+extern NSString * const MAP_SINGLE_TAP;
+extern NSString * const MAP_DOUBLE_TAP;
+extern NSString * const MAP_TOUCH_BEGAN;
+extern NSString * const MAP_TOUCH_END;
+extern NSString * const MAP_SCROLL;
+
+extern NSString * const MAP_GEOMETRY_MULTI_SELECTED;
+extern NSString * const MAP_GEOMETRY_SELECTED;
+extern NSString * const MAP_SCALE_CHANGED;
+extern NSString * const MAP_BOUNDS_CHANGED;
 
 @interface Constants : NSObject
 

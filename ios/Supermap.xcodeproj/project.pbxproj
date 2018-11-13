@@ -173,6 +173,7 @@
 		D8DD42332175CC32009D80E9 /* JSSymbolLineLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD42322175CC32009D80E9 /* JSSymbolLineLibrary.m */; };
 		D8DD42362175D025009D80E9 /* JSSymbolMarkerLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD42352175D025009D80E9 /* JSSymbolMarkerLibrary.m */; };
 		D8DD42392175D06C009D80E9 /* JSSymbolFillLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD42382175D06C009D80E9 /* JSSymbolFillLibrary.m */; };
+		D8FB9CF6219510C800597AE5 /* SScene.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FB9CF5219510C800597AE5 /* SScene.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -521,6 +522,8 @@
 		D8DD42352175D025009D80E9 /* JSSymbolMarkerLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolMarkerLibrary.m; sourceTree = "<group>"; };
 		D8DD42372175D06C009D80E9 /* JSSymbolFillLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSymbolFillLibrary.h; sourceTree = "<group>"; };
 		D8DD42382175D06C009D80E9 /* JSSymbolFillLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolFillLibrary.m; sourceTree = "<group>"; };
+		D8FB9CF4219510C800597AE5 /* SScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SScene.h; sourceTree = "<group>"; };
+		D8FB9CF5219510C800597AE5 /* SScene.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SScene.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -583,6 +586,8 @@
 				D854DA7F218834510075B5F8 /* SAnalyst.m */,
 				D82F37782189ABEF00F85267 /* SCollectorType.h */,
 				D82F37792189ABEF00F85267 /* SCollectorType.m */,
+				D8FB9CF4219510C800597AE5 /* SScene.h */,
+				D8FB9CF5219510C800597AE5 /* SScene.m */,
 			);
 			path = interfaces;
 			sourceTree = "<group>";
@@ -1045,6 +1050,7 @@
 				D8DD420C2174874D009D80E9 /* JSSymbolType.m in Sources */,
 				0A332E1D211D623E00F56F26 /* JSGridHotChart.m in Sources */,
 				D8DD42392175D06C009D80E9 /* JSSymbolFillLibrary.m in Sources */,
+				D8FB9CF6219510C800597AE5 /* SScene.m in Sources */,
 				0A332E35211D623E00F56F26 /* JSOverlayAnalyst.m in Sources */,
 				0A332DF5211D623E00F56F26 /* JSBufferAnalystParameter.m in Sources */,
 				0A332E1B211D623E00F56F26 /* JSGeoStyle.m in Sources */,

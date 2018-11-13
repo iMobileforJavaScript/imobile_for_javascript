@@ -26,6 +26,8 @@
 @implementation SCollector
 RCT_EXPORT_MODULE();
 
+static Collector *sCollector = nil;
+
 - (NSArray<NSString *> *)supportedEvents
 {
     return @[COLLECTION_SENSOR_CHANGE];
@@ -33,7 +35,10 @@ RCT_EXPORT_MODULE();
 
 - (Collector *)getCollector {
     @try {
-        return [[SMap singletonInstance].smMapWC.mapControl getCollector];
+        if (sCollector == nil) {
+            sCollector = [[SMap singletonInstance].smMapWC.mapControl getCollector];
+        }
+        return sCollector;
     } @catch (NSException *exception) {
         @throw exception;
     }
@@ -51,7 +56,7 @@ RCT_REMAP_METHOD(setStyle, setStyleByJson:(NSString*)styleJson resolver:(RCTProm
         
         resolve([[NSNumber alloc] initWithBool:YES]);
     } @catch (NSException *exception) {
-        reject(@"SCollector",@"redo expection",nil);
+        reject(@"SCollector", exception.reason, nil);
     }
 }
 
@@ -65,7 +70,7 @@ RCT_REMAP_METHOD(getStyle, getStyleWithResolver:(RCTPromiseResolveBlock)resolve 
         
         resolve(styleJson);
     } @catch (NSException *exception) {
-        reject(@"SCollector",@"redo expection",nil);
+        reject(@"SCollector", exception.reason, nil);
     }
 }
 
@@ -81,9 +86,12 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSString*)name type:(DatasetType
         }
         if (layer == nil) {
             ds = [sMap.smMapWC addDatasetByName:name type:type datasourceName:datasourceName datasourcePath:datasourcePath];
+            layer = [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:true];
         } else {
             ds = layer.dataset;
         }
+        [layer setVisible:true];
+        [layer setEditable:true];
         [collector setDataset:ds];
 
         resolve([[NSNumber alloc] initWithBool:YES]);
@@ -101,6 +109,22 @@ RCT_REMAP_METHOD(startCollect, startCollectWithType:(int)type resolver:(RCTPromi
         //        [SMCollector openGPS:collector];
         
         resolve([NSNumber numberWithBool:result]);
+        
+    } @catch (NSException *exception) {
+        reject(@"SCollector", exception.reason, nil);
+    }
+}
+
+#pragma mark 停止采集
+RCT_REMAP_METHOD(stopCollect, stopCollectWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        Collector* collector = [self getCollector];
+        [collector setIsSingleTapEnable:NO];
+        [sMap.smMapWC.mapControl setAction:PAN];
+        [SMCollector closeGPS:collector];
+        
+        resolve([NSNumber numberWithBool:YES]);
         
     } @catch (NSException *exception) {
         reject(@"SCollector", exception.reason, nil);
@@ -155,25 +179,30 @@ RCT_REMAP_METHOD(redo, redoWithType:(int)type resolver:(RCTPromiseResolveBlock)r
 #pragma mark 提交
 RCT_REMAP_METHOD(submit, submitWithType:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+        bool result;
         if (type == LINE_HAND_PATH || type == REGION_HAND_PATH) {
             SMap* sMap = [SMap singletonInstance];
-            [sMap.smMapWC.mapControl submit];
+            result = [sMap.smMapWC.mapControl submit];
         } else {
             Collector* collector = [self getCollector];
-            [collector submit];
+            result = [collector submit];
         }
-        resolve([[NSNumber alloc] initWithBool:YES]);
+        resolve([[NSNumber alloc] initWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"SCollector",@"submit expection",nil);
     }
 }
 
 #pragma mark 取消
-RCT_REMAP_METHOD(cancel, cancelWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(cancel, cancelWithType:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
         [sMap.smMapWC.mapControl cancel];
-        resolve([[NSNumber alloc] initWithBool:YES]);
+        if (type == REGION_HAND_PATH || type == LINE_HAND_PATH) {
+            [self startCollectWithType:type resolver:resolve rejecter:reject];
+        } else {
+            resolve([[NSNumber alloc] initWithBool:YES]);
+        }
     } @catch (NSException *exception) {
         reject(@"SCollector",@"submit expection",nil);
     }

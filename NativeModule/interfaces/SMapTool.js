@@ -174,7 +174,7 @@ function patchHollowRegion() {
 /** 补充岛洞 **/
 function submit() {
   try {
-    SMap.setAction(Action.PATCH_HOLLOW_REGION)
+    SMap.submit()
   } catch (e) {
     console.error(e)
   }

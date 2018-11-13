@@ -21,17 +21,17 @@ RCT_EXPORT_MODULE(JSMapControl);
 {
     return @[@"Supermap.MapControl.MapParamChanged.BoundsChanged",
              @"Supermap.MapControl.MapParamChanged.ScaleChanged",
-             @"com.supermap.RN.JSMapcontrol.scroll_event",
-             @"com.supermap.RN.JSMapcontrol.single_tap_event",
-             @"com.supermap.RN.JSMapcontrol.double_tap_event",
-             @"com.supermap.RN.JSMapcontrol.touch_began_event",
-             @"com.supermap.RN.JSMapcontrol.touch_end_event",
-             @"com.supermap.RN.JSMapcontrol.long_press_event",
-             @"com.supermap.RN.JSMapcontrol.length_measured",
-             @"com.supermap.RN.JSMapcontrol.area_measured",
-             @"com.supermap.RN.JSMapcontrol.angle_measured",
-             @"com.supermap.RN.JSMapcontrol.geometry_selected",
-             @"com.supermap.RN.JSMapcontrol.geometry_multi_selected"];
+             @"com.supermap.RN.Mapcontrol.scroll_event",
+             @"com.supermap.RN.Mapcontrol.single_tap_event",
+             @"com.supermap.RN.Mapcontrol.double_tap_event",
+             @"com.supermap.RN.Mapcontrol.touch_began_event",
+             @"com.supermap.RN.Mapcontrol.touch_end_event",
+             @"com.supermap.RN.Mapcontrol.long_press_event",
+             @"com.supermap.RN.Mapcontrol.length_measured",
+             @"com.supermap.RN.Mapcontrol.area_measured",
+             @"com.supermap.RN.Mapcontrol.angle_measured",
+             @"com.supermap.RN.Mapcontrol.geometry_selected",
+             @"com.supermap.RN.Mapcontrol.geometry_multi_selected"];
 }
 
 -(void) boundsChanged:(Point2D*) newMapCenter{
@@ -58,7 +58,7 @@ RCT_EXPORT_MODULE(JSMapControl);
     CGFloat y = pressedPos.y;
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
-    [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.long_press_event"
+    [self sendEventWithName:@"com.supermap.RN.Mapcontrol.long_press_event"
                        body:@{@"x":nsX,
                               @"y":nsY
                               }];
@@ -69,7 +69,7 @@ RCT_EXPORT_MODULE(JSMapControl);
     CGFloat y = onDoubleTapPos.y;
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
-    [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.double_tap_event"
+    [self sendEventWithName:@"com.supermap.RN.Mapcontrol.double_tap_event"
                        body:@{@"x":nsX,
                               @"y":nsY
                               }];
@@ -82,7 +82,7 @@ RCT_EXPORT_MODULE(JSMapControl);
     CGFloat y = point.y;
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
-    [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.touch_began_event"
+    [self sendEventWithName:@"com.supermap.RN.Mapcontrol.touch_began_event"
                        body:@{@"x":nsX,
                               @"y":nsY
                               }];
@@ -96,7 +96,7 @@ RCT_EXPORT_MODULE(JSMapControl);
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
     
-    [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.touch_end_event"
+    [self sendEventWithName:@"com.supermap.RN.Mapcontrol.touch_end_event"
                        body:@{@"x":nsX,
                               @"y":nsY
                               }];
@@ -110,7 +110,7 @@ RCT_EXPORT_MODULE(JSMapControl);
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
 
-    [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.scroll_event"
+    [self sendEventWithName:@"com.supermap.RN.Mapcontrol.scroll_event"
                        body:@{@"local":@{@"x":nsX,@"y":nsY}
                               }];
 }
@@ -119,7 +119,7 @@ RCT_EXPORT_MODULE(JSMapControl);
     NSNumber* nsId = [NSNumber numberWithInt:geometryID];
 //    NSInteger nsLayer = (NSInteger)layer;
     NSString* nsLayer = [JSObjManager addObj:layer];
-    [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.geometry_selected" body:@{@"layerId":nsLayer,
+    [self sendEventWithName:@"com.supermap.RN.Mapcontrol.geometry_selected" body:@{@"layerId":nsLayer,
                                                                                      @"id":nsId
                                                                                      }];
 }
@@ -134,7 +134,7 @@ RCT_EXPORT_MODULE(JSMapControl);
             [layersIdAndIds addObject:@[@(nslayer).stringValue,layerAndId[1]]];
         }
     }
-    [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.geometry_multi_selected" body:@{@"geometries":(NSArray*)layersIdAndIds}];
+    [self sendEventWithName:@"com.supermap.RN.Mapcontrol.geometry_multi_selected" body:@{@"geometries":(NSArray*)layersIdAndIds}];
 }
 
 -(void)measureState{
@@ -150,21 +150,21 @@ RCT_EXPORT_MODULE(JSMapControl);
     //MapControl*mapCtrl = [JSObjManager getObjWithKey:@"com.supermap.mapControl"];
     //Action action = mapCtrl.action;
     if(type == 0){
-        [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.length_measured"
+        [self sendEventWithName:@"com.supermap.RN.Mapcontrol.length_measured"
                            body:@{@"curResult":nsResult,
                                   @"curPoint":@{@"x":nsX,@"y":nsY}
                                   }];
     }
     
     if(type == 1){
-        [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.area_measured"
+        [self sendEventWithName:@"com.supermap.RN.Mapcontrol.area_measured"
                            body:@{@"curResult":nsResult,
                                   @"curPoint":@{@"x":nsX,@"y":nsY}
                                   }];
     }
     
     if(type == 2){
-        [self sendEventWithName:@"com.supermap.RN.JSMapcontrol.angle_measured"
+        [self sendEventWithName:@"com.supermap.RN.Mapcontrol.angle_measured"
                            body:@{@"curAngle":nsResult,
                                   @"curPoint":@{@"x":nsX,@"y":nsY}
                                   }];
