@@ -11,14 +11,14 @@ import java.util.HashMap;
 public class JSLayer3DType extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "JSLayer3DType";
 
-    public JSLayer3DType(ReactApplicationContext context) {
-        super(context);
-    }
-
     @Override
     public String getName() {
         return REACT_CLASS;
     }
+    public JSLayer3DType(ReactApplicationContext context) {
+        super(context);
+    }
+
 
     @Override
     public Map<String, Object> getConstants() {
@@ -30,5 +30,6 @@ public class JSLayer3DType extends ReactContextBaseJavaModule {
         }
         return constants;
     }
+
 
 }
