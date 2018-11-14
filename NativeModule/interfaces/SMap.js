@@ -48,6 +48,56 @@ export default (function () {
   }
 
   /**
+   * 打开UDB数据源
+   * @param params
+   * @param value    图层 index / name
+   * @returns {*}
+   */
+  function openUDBDatasource(params, value) {
+    try {
+      if (typeof value === 'number') {
+        value = value >= 0 ? value : -1
+        return SMap.openUDBDatasourceWithIndex(params, value)
+      } else {
+        value = value || ''
+        return SMap.openUDBDatasourceWithIndex(params, value)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+
+  /**
+   * 获取UDB中数据集名称
+   * @param params
+   * @param value    UDB在内存中路径
+   * @returns {*}
+   */
+  function getUDBName(value) {
+    try {
+      return SMap.getUDBName(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+
+  /**
+   * 移除指定图层
+   * @param params
+   * @param value    图层 index
+   * @returns {*}
+   */
+  function removeLayer(value) {
+    try {
+      return SMap.removeLayerWithIndex(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    *
    * @param value       序号或名称
    * @param viewEntire  (option)
@@ -61,6 +111,17 @@ export default (function () {
       } else {
         return SMap.openMapByName(value, viewEntire, center)
       }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 关闭地图
+   */
+  function closeMap() {
+    try {
+      return SMap.closeMap()
     } catch (e) {
       console.error(e)
     }
@@ -342,6 +403,10 @@ export default (function () {
     openMap,
     zoom,
     moveToCurrent,
+    removeLayer,
+    closeMap,
+    openUDBDatasource,
+    getUDBName,
     getLayers,
     submit,
     setGestureDetector,
