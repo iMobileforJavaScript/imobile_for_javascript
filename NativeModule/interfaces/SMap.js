@@ -333,6 +333,27 @@ export default (function () {
       console.error(e)
     }
   }
+
+  getSymbolGroups = (type = '', path = '') => {
+    try {
+      return SMap.getSymbolGroups(type, path)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取指定SymbolGroup中所有的symbol
+   * @param type
+   * @param path
+   */
+  findSymbolsByGroups = (type = '', path = '') => {
+    try {
+      return SMap.findSymbolsByGroups(type, path)
+    } catch (e) {
+      console.error(e)
+    }
+  }
   
   let SMapExp = {
     openWorkspace,
@@ -349,6 +370,8 @@ export default (function () {
     addGeometrySelectedListener,
     removeGeometrySelectedListener,
     appointEditGeometry,
+    getSymbolGroups,
+    findSymbolsByGroups,
   }
   Object.assign(SMapExp, MapTool)
 

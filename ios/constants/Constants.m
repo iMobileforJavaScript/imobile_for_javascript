@@ -46,6 +46,9 @@ NSString * const MAP_GEOMETRY_SELECTED = @"com.supermap.RN.Mapcontrol.geometry_s
 NSString * const MAP_SCALE_CHANGED = @"Supermap.MapControl.MapParamChanged.ScaleChanged";
 NSString * const MAP_BOUNDS_CHANGED = @"Supermap.MapControl.MapParamChanged.BoundsChanged";
 
+/** 符号库 **/
+NSString * const SYMBOL_CLICK = @"Supermap.MapControl.SymbolLibLegend.symbol_click";
+
 @implementation Constants
 
 @end

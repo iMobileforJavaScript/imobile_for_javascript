@@ -32,11 +32,12 @@ extern NSString * const MAP_DOUBLE_TAP;
 extern NSString * const MAP_TOUCH_BEGAN;
 extern NSString * const MAP_TOUCH_END;
 extern NSString * const MAP_SCROLL;
-
 extern NSString * const MAP_GEOMETRY_MULTI_SELECTED;
 extern NSString * const MAP_GEOMETRY_SELECTED;
 extern NSString * const MAP_SCALE_CHANGED;
 extern NSString * const MAP_BOUNDS_CHANGED;
+
+extern NSString * const SYMBOL_CLICK;
 
 @interface Constants : NSObject
 

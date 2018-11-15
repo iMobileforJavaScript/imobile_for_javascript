@@ -174,6 +174,8 @@
 		D8DD42362175D025009D80E9 /* JSSymbolMarkerLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD42352175D025009D80E9 /* JSSymbolMarkerLibrary.m */; };
 		D8DD42392175D06C009D80E9 /* JSSymbolFillLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD42382175D06C009D80E9 /* JSSymbolFillLibrary.m */; };
 		D8FB9CF6219510C800597AE5 /* SScene.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FB9CF5219510C800597AE5 /* SScene.m */; };
+		D8FB9D40219AB0B800597AE5 /* SMSymbolTable.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FB9D3F219AB0B800597AE5 /* SMSymbolTable.m */; };
+		D8FB9D53219AD56800597AE5 /* SMSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FB9D52219AD56800597AE5 /* SMSymbol.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -524,6 +526,10 @@
 		D8DD42382175D06C009D80E9 /* JSSymbolFillLibrary.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSymbolFillLibrary.m; sourceTree = "<group>"; };
 		D8FB9CF4219510C800597AE5 /* SScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SScene.h; sourceTree = "<group>"; };
 		D8FB9CF5219510C800597AE5 /* SScene.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SScene.m; sourceTree = "<group>"; };
+		D8FB9D3E219AB0B800597AE5 /* SMSymbolTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMSymbolTable.h; sourceTree = "<group>"; };
+		D8FB9D3F219AB0B800597AE5 /* SMSymbolTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMSymbolTable.m; sourceTree = "<group>"; };
+		D8FB9D51219AD56800597AE5 /* SMSymbol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMSymbol.h; sourceTree = "<group>"; };
+		D8FB9D52219AD56800597AE5 /* SMSymbol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMSymbol.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -577,6 +583,7 @@
 		D854D867218310720075B5F8 /* interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				D8FB9D3D219AADF600597AE5 /* component */,
 				005693B72191694E00AEC46E /* iServer */,
 				D854D868218310720075B5F8 /* SMap.m */,
 				D854D869218310720075B5F8 /* SMap.h */,
@@ -600,6 +607,8 @@
 				D854DA502187F5FD0075B5F8 /* SMCollector.m */,
 				D83F3C40218BDA97001C56BE /* SMMapWC.h */,
 				D83F3C41218BDA97001C56BE /* SMMapWC.m */,
+				D8FB9D51219AD56800597AE5 /* SMSymbol.h */,
+				D8FB9D52219AD56800597AE5 /* SMSymbol.m */,
 			);
 			path = native;
 			sourceTree = "<group>";
@@ -934,6 +943,15 @@
 			path = constants;
 			sourceTree = "<group>";
 		};
+		D8FB9D3D219AADF600597AE5 /* component */ = {
+			isa = PBXGroup;
+			children = (
+				D8FB9D3E219AB0B800597AE5 /* SMSymbolTable.h */,
+				D8FB9D3F219AB0B800597AE5 /* SMSymbolTable.m */,
+			);
+			path = component;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1047,6 +1065,7 @@
 				0A332E65211D623E00F56F26 /* JSTrackingLayer.m in Sources */,
 				0A332E1A211D623E00F56F26 /* JSGeoRegion.m in Sources */,
 				0A332E3F211D623E00F56F26 /* JSPrjCoordSys.m in Sources */,
+				D8FB9D40219AB0B800597AE5 /* SMSymbolTable.m in Sources */,
 				D8DD420C2174874D009D80E9 /* JSSymbolType.m in Sources */,
 				0A332E1D211D623E00F56F26 /* JSGridHotChart.m in Sources */,
 				D8DD42392175D06C009D80E9 /* JSSymbolFillLibrary.m in Sources */,
@@ -1133,6 +1152,7 @@
 				0A332E0A211D623E00F56F26 /* JSDatasource.m in Sources */,
 				0A332E6A211D623E00F56F26 /* JSWeightFieldInfos.m in Sources */,
 				0A332E27211D623E00F56F26 /* JSLineChart.m in Sources */,
+				D8FB9D53219AD56800597AE5 /* SMSymbol.m in Sources */,
 				0A332E2D211D623E00F56F26 /* JSMapControl.m in Sources */,
 				D854DA80218834510075B5F8 /* SAnalyst.m in Sources */,
 				0A332E1F211D623E00F56F26 /* JSInstrumentChartViewManager.m in Sources */,

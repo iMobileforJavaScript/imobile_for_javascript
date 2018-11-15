@@ -25,6 +25,7 @@ import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
+import com.supermap.data.Resources;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.GeometrySelectedEvent;
@@ -36,6 +37,7 @@ import com.supermap.mapping.collector.Collector;
 import com.supermap.rnsupermap.JSLayer;
 import com.supermap.rnsupermap.JSMapView;
 import com.supermap.smNative.SMMapWC;
+import com.supermap.smNative.SMSymbol;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -652,6 +654,44 @@ public class SMap extends ReactContextBaseJavaModule {
             Layer layer = mapControl.getMap().getLayers().get(layerName);
             boolean result = mapControl.appointEditGeometry(geoID, layer);
             promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取指定SymbolGroup中所有的group
+     * @param type
+     * @param path
+     * @param promise
+     */
+    @ReactMethod
+    public void getSymbolGroups(String type, String path, Promise promise) {
+        try {
+            sMap = getInstance();
+            Resources resources = sMap.smMapWC.getWorkspace().getResources();
+            WritableArray groups = SMSymbol.getSymbolGroups(resources, type, path);
+
+            promise.resolve(groups);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取指定SymbolGroup中所有的symbol
+     * @param type
+     * @param path
+     * @param promise
+     */
+    @ReactMethod
+    public void findSymbolsByGroups(String type, String path, Promise promise) {
+        try {
+            sMap = getInstance();
+            Resources resources = sMap.smMapWC.getWorkspace().getResources();
+            WritableArray symbols = SMSymbol.findSymbolsByGroups(resources, type, path);
+
+            promise.resolve(symbols);
         } catch (Exception e) {
             promise.reject(e);
         }

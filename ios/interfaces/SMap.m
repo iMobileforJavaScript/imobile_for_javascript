@@ -7,21 +7,6 @@
 //
 
 #import "SMap.h"
-#import "Constants.h"
-#import "JSMapView.h"
-#import "SuperMap/Dataset.h"
-#import "SuperMap/Datasets.h"
-#import "SuperMap/Layers.h"
-#import "SuperMap/Maps.h"
-#import "SuperMap/Point2D.h"
-#import "SuperMap/Point2Ds.h"
-#import "SuperMap/Collector.h"
-#import "SuperMap/CoordSysTransParameter.h"
-#import "SuperMap/CoordSysTranslator.h"
-#import "SuperMap/CoordSysTransMethod.h"
-#import "SuperMap/PrjCoordSys.h"
-#import "SuperMap/Collector.h"
-#import "SuperMap/Layer.h"
 static SMap *sMap = nil;
 
 @implementation SMap
@@ -435,6 +420,30 @@ RCT_REMAP_METHOD(appointEditGeometry, appointEditGeometryByGeoId:(int)geoId laye
         Layer* layer = [mapControl.map.layers getLayerWithName:layerName];
         bool result = [mapControl appointEditGeometryWithID:geoId Layer:layer];
         resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取指定SymbolGroup中所有的group
+RCT_REMAP_METHOD(getSymbolGroups, getSymbolGroupsByType:(NSString *)type path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Resources* resoures = [SMap singletonInstance].smMapWC.workspace.resources;
+        NSArray* groups = [SMSymbol getSymbolGroups:resoures type:type path:path];
+        
+        resolve(groups);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取指定SymbolGroup中所有的symbol
+RCT_REMAP_METHOD(findSymbolsByGroups, findSymbolsByGroups:(NSString *)type path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Resources* resoures = [SMap singletonInstance].smMapWC.workspace.resources;
+        NSArray* symbols = [SMSymbol findSymbolsByGroups:resoures type:type path:path];
+        
+        resolve(symbols);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
