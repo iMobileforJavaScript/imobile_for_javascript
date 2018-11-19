@@ -150,6 +150,7 @@
 		0A332E71211D623E00F56F26 /* RCTConvert+EncodeType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE5211D623E00F56F26 /* RCTConvert+EncodeType.m */; };
 		0A332E72211D623E00F56F26 /* RCTConvert+RadiusUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE7211D623E00F56F26 /* RCTConvert+RadiusUnit.m */; };
 		0A332E73211D623E00F56F26 /* SceneViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE9211D623E00F56F26 /* SceneViewManager.m */; };
+		0A6DE64221A2CC4100CD27EA /* SMSceneWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */; };
 		D82C65AB214208DC00E9EEC5 /* JSWorkspaceType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */; };
 		D82F377A2189ABEF00F85267 /* SCollectorType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82F37792189ABEF00F85267 /* SCollectorType.m */; };
 		D83F3C42218BDA97001C56BE /* SMMapWC.m in Sources */ = {isa = PBXBuildFile; fileRef = D83F3C41218BDA97001C56BE /* SMMapWC.m */; };
@@ -475,6 +476,8 @@
 		0A332DE7211D623E00F56F26 /* RCTConvert+RadiusUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RadiusUnit.m"; sourceTree = "<group>"; };
 		0A332DE8211D623E00F56F26 /* SceneViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneViewManager.h; sourceTree = "<group>"; };
 		0A332DE9211D623E00F56F26 /* SceneViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SceneViewManager.m; sourceTree = "<group>"; };
+		0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSceneWC.m; sourceTree = "<group>"; };
+		0A6DE64121A2CC4000CD27EA /* SMSceneWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSceneWC.h; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libSupermap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSupermap.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSWorkspaceType.m; sourceTree = "<group>"; };
 		D82C65AA214208DB00E9EEC5 /* JSWorkspaceType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSWorkspaceType.h; sourceTree = "<group>"; };
@@ -600,6 +603,8 @@
 				D854DA502187F5FD0075B5F8 /* SMCollector.m */,
 				D83F3C40218BDA97001C56BE /* SMMapWC.h */,
 				D83F3C41218BDA97001C56BE /* SMMapWC.m */,
+				0A6DE64121A2CC4000CD27EA /* SMSceneWC.h */,
+				0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */,
 			);
 			path = native;
 			sourceTree = "<group>";
@@ -1109,6 +1114,7 @@
 				0A332E05211D623E00F56F26 /* JSDataset.m in Sources */,
 				0A332E39211D623E00F56F26 /* JSPieChartViewManager.m in Sources */,
 				0A332E2A211D623E00F56F26 /* JSLocationAnalystParameter.m in Sources */,
+				0A6DE64221A2CC4100CD27EA /* SMSceneWC.m in Sources */,
 				0A332E6F211D623E00F56F26 /* RCTConvert+BufferEndType.m in Sources */,
 				0A332E52211D623E00F56F26 /* JSSTOMPManager.m in Sources */,
 				0A332E3C211D623E00F56F26 /* JSPointDensityChart.m in Sources */,

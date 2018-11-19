@@ -9,6 +9,7 @@
 #import "SScene.h"
 #import "Constants.h"
 
+static SScene* sScene = nil;
 @implementation SScene
 RCT_EXPORT_MODULE();
 
