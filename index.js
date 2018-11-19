@@ -15,6 +15,8 @@ let GPSElementType = NativeModules.JSGPSElementType;
 let ThemeType = NativeModules.JSThemeType;
 let WorkspaceType = NativeModules.JSWorkspaceType;
 let SymbolType = NativeModules.JSSymbolType;
+let Layer3DType=NativeModules.JSLayer3DType;
+let ImageFormatType=NativeModules.JSImageFormatType;
 
 import BufferAnalyst from './NativeModule/BufferAnalyst.js';
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js';
@@ -237,6 +239,8 @@ export {
   DatasetType,
   FieldType,
   TextAlignment,
+  Layer3DType,
+  ImageFormatType,
   
   BufferAnalyst,
   BufferAnalystGeometry,
