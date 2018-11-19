@@ -10,3 +10,13 @@ android/rnsupermap.iml
 android/android.iml
 android/build
 android/gradle
+android/build.gradle
+android/gradle/wrapper/gradle-wrapper.jar
+android/gradle/wrapper/gradle-wrapper.properties
+android/src/.gradle/3.4.1/file-changes/last-build.bin
+android/src/.gradle/3.4.1/taskHistory/fileSnapshots.bin
+android/src/.gradle/3.4.1/taskHistory/taskHistory.bin
+android/src/.gradle/3.4.1/taskHistory/taskHistory.lock
+android/src/.gradle/buildOutputCleanup/built.bin
+android/src/.gradle/buildOutputCleanup/cache.properties
+android/src/.gradle/buildOutputCleanup/cache.properties.lock
