@@ -394,6 +394,17 @@ export default (function () {
       console.error(e)
     }
   }
+
+   /**
+    * 获取图层名字
+    */
+   getLayersNames = () => {
+     try {
+       return SMap.getLayersNames()
+     } catch (e) {
+       console.error(e)
+     }
+   }
   
   let SMapExp = {
     openWorkspace,
@@ -414,6 +425,7 @@ export default (function () {
     addGeometrySelectedListener,
     removeGeometrySelectedListener,
     appointEditGeometry,
+    getLayersNames,
   }
   Object.assign(SMapExp, MapTool)
 

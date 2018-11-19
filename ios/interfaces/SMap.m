@@ -98,6 +98,7 @@ RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)
         if (dataSource && defaultIndex >= 0) {
             Dataset* ds = [dataSource.datasets get:defaultIndex];
             [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
+            sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
         }
         [self openGPS];
         resolve([NSNumber numberWithBool:YES]);
@@ -117,6 +118,7 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
             if (defaultName != nil && defaultName.length > 0) {
                 Dataset* ds = [dataSource.datasets getWithName:defaultName];
                 [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
+                sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
             }
             [self openGPS];
             resolve([NSNumber numberWithBool:YES]);
@@ -175,6 +177,7 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
             }
             
             [sMap.smMapWC.mapControl setAction:PAN];
+            sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
             [map refresh];
         }
         
@@ -208,6 +211,7 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
             }
             
             [sMap.smMapWC.mapControl setAction:PAN];
+            sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
             [map refresh];
             
             resolve([NSNumber numberWithBool:YES]);
