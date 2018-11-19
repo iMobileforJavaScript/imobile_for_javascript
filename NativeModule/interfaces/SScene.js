@@ -221,6 +221,118 @@ export default (function () {
             console.log(error)
         }
     }
+
+    function changeBaseMap(oldLayer,Url,Layer3DType,layerName,imageFormatType,dpi,addToHead){
+        try {
+            return changeBaseMap(oldLayer,Url,Layer3DType,layerName,imageFormatType,dpi,addToHead)
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+
+    function clearSelection(){
+        try {
+            return SScene.clearSelection()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function initsymbol(){
+        try {
+            return SScene.initsymbol()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function startDrawPoint(){
+        try {
+            return SScene.startDrawPoint()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function startDrawLine(){
+        try {
+            return SScene.startDrawLine()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function startDrawArea(){
+        try {
+            return SScene.startDrawArea()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
+    function startDrawText(handlers){
+        try {
+            if (Platform.OS === 'ios' && handlers) {
+                if (typeof handlers.callback === 'function') {
+                    nativeEvt.addListener(EventConst.SSCENE_SYMBOL, function (e) {
+                        handlers.callback(e)
+                    })
+                }
+            } else if (Platform.OS === 'android' && handlers) {
+                if (typeof handlers.callback === "function") {
+                    DeviceEventEmitter.addListener(EventConst.SSCENE_SYMBOL, function (e) {
+                        handlers.callback(e);
+                    });
+                }
+            }
+            return startDrawText()
+        } catch (error) {
+            console.log(error) 
+        }
+    }
+
+    function addGeoText(x,y,text){
+        try {
+            return SScene.addGeoText(x,y,text)
+        } catch (error) {
+            console.log(error) 
+        }
+    }
+
+    function symbolback(){
+        try {
+            return SScene.symbolback()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function clearAllLabel(){
+        try {
+            return SScene.clearAllLabel()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
+    function save(){
+        try {
+            return SScene.save()
+        } catch (error) {
+            console.log(error) 
+        }
+    }
+
+    function back(){
+        try {
+            return SScene.back()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -273,6 +385,18 @@ export default (function () {
         addListener,
         setHeading,
         clearAttribute,
+        changeBaseMap,
+        clearSelection,
+        initsymbol,
+        startDrawPoint,
+        startDrawLine,
+        startDrawArea,
+        startDrawText,
+        addGeoText,
+        symbolback,
+        clearAllLabel,
+        save,
+        back,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp

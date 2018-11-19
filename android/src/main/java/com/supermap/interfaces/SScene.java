@@ -1,5 +1,6 @@
 package com.supermap.interfaces;
 
+import android.graphics.Point;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -17,6 +18,7 @@ import com.supermap.containts.EventConst;
 import com.supermap.data.ImageFormatType;
 import com.supermap.data.Workspace;
 import com.supermap.map3D.FlyHelper;
+import com.supermap.map3D.LabelHelper;
 import com.supermap.map3D.PoiSearchHelper;
 import com.supermap.map3D.toolKit.PoiGsonBean;
 import com.supermap.map3D.toolKit.TouchUtil;
@@ -158,9 +160,9 @@ public class SScene extends ReactContextBaseJavaModule {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
             WritableArray arr = Arguments.createArray();
-            int count=scene.getLayers().getCount();
+            int count = scene.getLayers().getCount();
             if (scene.getLayers().getCount() > 0) {
-                for (int i = 0; i <count; i++) {
+                for (int i = 0; i < count; i++) {
                     String name = scene.getLayers().get(i).getName();
                     boolean visible = scene.getLayers().get(i).isVisible();
                     boolean selectable = scene.getLayers().get(i).isSelectable();
@@ -168,8 +170,8 @@ public class SScene extends ReactContextBaseJavaModule {
                     map.putString("name", name);
                     map.putBoolean("visible", visible);
                     map.putBoolean("selectable", selectable);
-                    if(i == count - 1){
-                        map.putBoolean("basemap",true);
+                    if (i == count - 1) {
+                        map.putBoolean("basemap", true);
                     }
                     arr.pushMap(map);
                 }
@@ -182,69 +184,70 @@ public class SScene extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public  void  changeBaseMap(String oldLayer, String Url, String Layer3DType,String layerName,String imageFormatType,double dpi, Boolean addToHead){
+    public void changeBaseMap(String oldLayer, String Url, String Layer3DType, String layerName, String imageFormatType, double dpi, Boolean addToHead) {
         sScene = getInstance();
         Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-        if(oldLayer!=null){
+        if (oldLayer != null) {
             scene.getLayers().removeLayerWithName(oldLayer);
+//            scene.getLayers().get(oldLayer).setVisible(false);
         }
         com.supermap.realspace.Layer3DType layer3DType = null;
-        com.supermap.data.ImageFormatType imageFormatType1=null;
-         switch (Layer3DType){
-             case "IMAGEFILE":
-                     layer3DType=com.supermap.realspace.Layer3DType.IMAGEFILE;
-                 break;
-             case "KML":
-                 layer3DType=com.supermap.realspace.Layer3DType.KML;
-                 break;
+        com.supermap.data.ImageFormatType imageFormatType1 = null;
+        switch (Layer3DType) {
+            case "IMAGEFILE":
+                layer3DType = com.supermap.realspace.Layer3DType.IMAGEFILE;
+                break;
+            case "KML":
+                layer3DType = com.supermap.realspace.Layer3DType.KML;
+                break;
 
-             case "l3dBingMaps":
-                 layer3DType=com.supermap.realspace.Layer3DType.l3dBingMaps;
-                 break;
+            case "l3dBingMaps":
+                layer3DType = com.supermap.realspace.Layer3DType.l3dBingMaps;
+                break;
 
-             case "OSGBFILE":
-                 layer3DType=com.supermap.realspace.Layer3DType.OSGBFILE;
-                 break;
+            case "OSGBFILE":
+                layer3DType = com.supermap.realspace.Layer3DType.OSGBFILE;
+                break;
 
-             case "VECTORFILE":
-                 layer3DType=com.supermap.realspace.Layer3DType.VECTORFILE;
-                 break;
-             case "WMTS":
-                 layer3DType=com.supermap.realspace.Layer3DType.WMTS;
-                 break;
-         }
+            case "VECTORFILE":
+                layer3DType = com.supermap.realspace.Layer3DType.VECTORFILE;
+                break;
+            case "WMTS":
+                layer3DType = com.supermap.realspace.Layer3DType.WMTS;
+                break;
+        }
 
-         switch (imageFormatType){
-             case "BMP":
-                 imageFormatType1=ImageFormatType.BMP;
-                 break;
-             case "DXTZ":
-                 imageFormatType1=ImageFormatType.DXTZ;
-                 break;
+        switch (imageFormatType) {
+            case "BMP":
+                imageFormatType1 = ImageFormatType.BMP;
+                break;
+            case "DXTZ":
+                imageFormatType1 = ImageFormatType.DXTZ;
+                break;
 
-             case "GIF":
-                 imageFormatType1=ImageFormatType.GIF;
-                 break;
+            case "GIF":
+                imageFormatType1 = ImageFormatType.GIF;
+                break;
 
-             case "JPG":
-                 imageFormatType1=ImageFormatType.JPG;
-                 break;
+            case "JPG":
+                imageFormatType1 = ImageFormatType.JPG;
+                break;
 
-             case "JPG_PNG":
-                 imageFormatType1=ImageFormatType.JPG_PNG;
-                 break;
-             case "NONE":
-                 imageFormatType1=ImageFormatType.NONE;
-                 break;
-             case "PNG":
-                 imageFormatType1=ImageFormatType.PNG;
-                 break;
-         }
-         if(dpi == Double.parseDouble(null)&&imageFormatType==null){
-             scene.getLayers().add(Url,layer3DType,layerName,addToHead);
-         }else {
-             scene.getLayers().add(Url,layer3DType,layerName,imageFormatType1,dpi,addToHead);
-         }
+            case "JPG_PNG":
+                imageFormatType1 = ImageFormatType.JPG_PNG;
+                break;
+            case "NONE":
+                imageFormatType1 = ImageFormatType.NONE;
+                break;
+            case "PNG":
+                imageFormatType1 = ImageFormatType.PNG;
+                break;
+        }
+        if (dpi == Double.parseDouble(null) && imageFormatType == null) {
+            scene.getLayers().add(Url, layer3DType, layerName, addToHead);
+        } else {
+            scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
+        }
     }
 
     /**
@@ -398,7 +401,7 @@ public class SScene extends ReactContextBaseJavaModule {
                 String flyName = arrayList.get(i).toString();
                 int index = i;
                 WritableMap map = Arguments.createMap();
-                map.putString("flyName", flyName);
+                map.putString("title", flyName);
                 map.putInt("index", index);
                 arr.pushMap(map);
             }
@@ -529,7 +532,7 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-            Camera camera=scene.getCamera();
+            Camera camera = scene.getCamera();
             camera.setHeading(0);
             promise.resolve(true);
         } catch (Exception e) {
@@ -581,11 +584,11 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-            int count =scene.getLayers().getCount();
-            for (int i = 0; i <count ; i++) {
+            int count = scene.getLayers().getCount();
+            for (int i = 0; i < count; i++) {
                 scene.getLayers().get(i).getSelection().clear();
             }
-          promise.resolve(true);
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -609,7 +612,188 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 清除选择对象
+     */
+    @ReactMethod
+    public void clearSelection(Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            int count = scene.getLayers().getCount();
+            for (int i = 0; i < count; i++) {
+                scene.getLayers().get(i).getSelection().clear();
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 
+    /**
+     * 标注初始化
+     */
+    @ReactMethod
+    public void initsymbol(Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            Workspace workspace = sScene.smSceneWc.getWorkspace();
+            String path = workspace.getConnectionInfo().getServer();
+            String result = path.substring(0, path.lastIndexOf("/")) + "/files/";
+            String kmlname = "newKML.kml";
+            LabelHelper.getInstence().initSceneControl(mReactContext, sceneControl, result, kmlname);
+            promise.resolve(true);
+
+        } catch (Exception e) {
+//            promise.resolve(false);
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 标注打点
+     */
+    @ReactMethod
+    public void startDrawPoint(Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            LabelHelper.getInstence().startDrawPoint();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 标注点绘线
+     */
+    @ReactMethod
+    public void startDrawLine(Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            LabelHelper.getInstence().startDrawLine();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 标注点绘面
+     */
+    @ReactMethod
+    public void startDrawArea(Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            LabelHelper.getInstence().startDrawArea();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 标注撤销
+     */
+    @ReactMethod
+    public void symbolback(Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            LabelHelper.getInstence().back();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 清除所有标注
+     */
+    @ReactMethod
+    public void clearAllLabel(Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            LabelHelper.getInstence().clearAllLabel();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 保存所有标注
+     */
+    @ReactMethod
+    public void save(Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            LabelHelper.getInstence().save();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 标注绘制文本
+     */
+    @ReactMethod
+    public void startDrawText(Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            LabelHelper.getInstence().startDrawText();
+            LabelHelper.getInstence().setDrawTextListener(new LabelHelper.DrawTextListener() {
+                @Override
+                public void OnclickPoint(Point pnt) {
+                    WritableMap map = Arguments.createMap();
+                    map.putInt("pointX", pnt.x);
+                    map.putInt("pointY", pnt.y);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_SYMBOL, map);
+                }
+            });
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 标注添加文本
+     */
+    @ReactMethod
+    public void addGeoText(int x, int y, String text, Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            Point point = new Point(x, y);
+            LabelHelper.getInstence().addGeoText(point, text);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 标注添加文本
+     */
+    @ReactMethod
+    public void back(Promise promise) {
+        try {
+            sScene = getInstance();
+            LabelHelper.getInstence().back();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 
     /**
      * 关闭工作空间及地图控件
