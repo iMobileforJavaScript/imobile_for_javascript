@@ -13,28 +13,9 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
-import com.supermap.data.CoordSysTransMethod;
-import com.supermap.data.CoordSysTransParameter;
-import com.supermap.data.CoordSysTranslator;
-import com.supermap.data.Dataset;
-import com.supermap.data.Datasets;
-import com.supermap.data.Datasource;
-import com.supermap.data.DatasourceConnectionInfo;
-import com.supermap.data.EngineType;
+import com.supermap.data.*;
 import com.supermap.data.Enum;
-import com.supermap.data.Maps;
-import com.supermap.data.Point;
-import com.supermap.data.Point2D;
-import com.supermap.data.Point2Ds;
-import com.supermap.data.PrjCoordSys;
-import com.supermap.data.PrjCoordSysType;
-import com.supermap.data.Workspace;
-import com.supermap.mapping.Action;
-import com.supermap.mapping.GeometrySelectedEvent;
-import com.supermap.mapping.GeometrySelectedListener;
-import com.supermap.mapping.Layer;
-import com.supermap.mapping.MapControl;
-import com.supermap.mapping.MeasureListener;
+import com.supermap.mapping.*;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.rnsupermap.JSLayer;
 import com.supermap.rnsupermap.JSMapView;
@@ -774,6 +755,57 @@ public class SMap extends ReactContextBaseJavaModule {
             boolean result = mapControl.appointEditGeometry(geoID, layer);
             promise.resolve(result);
         } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取图层标题列表及对应的数据集类型
+     * @param promise
+     */
+    @ReactMethod
+    public void getLayersNames(Promise promise){
+        try{
+            sMap = getInstance();
+            Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
+            int count = layers.getCount();
+            WritableArray arr = Arguments.createArray();
+            for (int i=0;i<count;i++){
+                //获取图层标题（区别于图层的名称）
+                String caption = layers.get(i).getCaption();
+                WritableMap writeMap = Arguments.createMap();
+
+                //获取数据集类型
+                DatasetType type = layers.get(i).getDataset().getType();
+                String datasetType = "";
+                if (type == DatasetType.POINT) {
+                    datasetType = "POINT";
+                }
+                else if (type == DatasetType.LINE) {
+                    datasetType = "LINE";
+                }
+                else if (type == DatasetType.REGION) {
+                    datasetType = "REGION";
+                }
+                else if (type == DatasetType.GRID) {
+                    datasetType = "GRID";
+                }
+                else if (type == DatasetType.TEXT) {
+                    datasetType = "TEXT";
+                }
+                else if (type == DatasetType.IMAGE) {
+                    datasetType = "IMAGE";
+                }
+                else {
+                    datasetType = type.toString();
+                }
+
+                writeMap.putString("title",caption);
+                writeMap.putString("datasetType",datasetType);
+                arr.pushMap(writeMap);
+            }
+            promise.resolve(arr);
+        }catch(Exception e){
             promise.reject(e);
         }
     }
