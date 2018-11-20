@@ -179,6 +179,7 @@ import {
   SAnalyst,
   SCollector,
   SScene,
+  SMCartography,
 } from './NativeModule/interfaces'
 let SMCollectorType = NativeModules.SCollectorType;
 
@@ -359,4 +360,5 @@ export {
   SCollector,
   SScene,
   SMCollectorType,
+  SMCartography,
 };
