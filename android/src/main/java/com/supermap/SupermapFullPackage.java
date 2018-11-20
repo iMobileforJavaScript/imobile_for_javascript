@@ -9,6 +9,7 @@ import com.supermap.interfaces.SAnalyst;
 import com.supermap.interfaces.SCollectorType;
 import com.supermap.interfaces.SMap;
 import com.supermap.interfaces.SScene;
+import com.supermap.interfaces.iServer.SOnlineService;
 import com.supermap.rnsupermap.*;
 
 import java.util.ArrayList;
@@ -177,6 +178,11 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSLayer3DType(reactContext));
         modules.add(new JSImageFormatType(reactContext));
         modules.add(new SCollectorType(reactContext));
+
+        /*
+        * 在线模块功能
+        */
+        modules.add(new SOnlineService(reactContext));
         return modules;
     }
 }
