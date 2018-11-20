@@ -15,6 +15,8 @@ let GPSElementType = NativeModules.JSGPSElementType;
 let ThemeType = NativeModules.JSThemeType;
 let WorkspaceType = NativeModules.JSWorkspaceType;
 let SymbolType = NativeModules.JSSymbolType;
+let Layer3DType=NativeModules.JSLayer3DType;
+let ImageFormatType=NativeModules.JSImageFormatType;
 
 import BufferAnalyst from './NativeModule/BufferAnalyst.js';
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js';
@@ -177,6 +179,8 @@ import {
   SAnalyst,
   SCollector,
   SScene,
+  SMCartography,
+  SOnlineService,
 } from './NativeModule/interfaces'
 let SMCollectorType = NativeModules.SCollectorType;
 
@@ -237,6 +241,8 @@ export {
   DatasetType,
   FieldType,
   TextAlignment,
+  Layer3DType,
+  ImageFormatType,
   
   BufferAnalyst,
   BufferAnalystGeometry,
@@ -355,4 +361,7 @@ export {
   SCollector,
   SScene,
   SMCollectorType,
+  SMCartography,
+  /*在线模块*/
+  SOnlineService,
 };

@@ -423,6 +423,7 @@ export default (function () {
     }
   }
 
+<<<<<<< HEAD
   getSymbolGroups = (type = '', path = '') => {
     try {
       return SMap.getSymbolGroups(type, path)
@@ -443,6 +444,18 @@ export default (function () {
       console.error(e)
     }
   }
+=======
+   /**
+    * 获取图层名字
+    */
+   getLayersNames = () => {
+     try {
+       return SMap.getLayersNames()
+     } catch (e) {
+       console.error(e)
+     }
+   }
+>>>>>>> f8a954c1b690f8aeb2701f3806459f07eee91d9b
   
   let SMapExp = {
     openWorkspace,
@@ -465,8 +478,12 @@ export default (function () {
     addGeometrySelectedListener,
     removeGeometrySelectedListener,
     appointEditGeometry,
+<<<<<<< HEAD
     getSymbolGroups,
     findSymbolsByGroups,
+=======
+    getLayersNames,
+>>>>>>> f8a954c1b690f8aeb2701f3806459f07eee91d9b
   }
   Object.assign(SMapExp, MapTool, LayerManager)
 

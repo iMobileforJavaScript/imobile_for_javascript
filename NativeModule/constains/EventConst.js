@@ -34,5 +34,6 @@ export default {
   POINTSEARCH_KEYWORDS : "com.supermap.RN.SMSceneControl.PointSearch_keyWords",
   SSCENE_FLY : "com.supermap.RN.SMSceneControl.Scene_fly",
   SSCENE_ATTRIBUTE : "com.supermap.RN.SMSceneControl.Scene_attribute",
+  SSCENE_SYMBOL : "com.supermap.RN.SMSceneControl.Scene_symbol",
   // SSCENE_REMOVE_ATTRIBUTE : "com.supermap.RN.SMSceneControl.Scene_removeAttribute",
 }
