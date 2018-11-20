@@ -6,8 +6,6 @@ public class EventConst {
     public static final String ONLINE_SERVICE_DOWNLOADING = "com.supermap.RN.Mapcontrol.online_service_downloading";
     public static final String ONLINE_SERVICE_DOWNLOADED = "com.supermap.RN.Mapcontrol.online_service_downloaded";
     public static final String ONLINE_SERVICE_DOWNLOADFAILURE = "com.supermap.RN.Mapcontrol.online_service_downloadfailure";
-    public static final String ONLINE_SERVICE_LOGIN = "com.supermap.RN.Mapcontrol.online_service_login";
-    public static final String ONLINE_SERVICE_LOGOUT = "com.supermap.RN.Mapcontrol.online_service_logout";
     public static final String ONLINE_SERVICE_UPLOADING = "com.supermap.RN.Mapcontrol.online_service_uploading";
 
     public static final String MEASURE_LENGTH = "com.supermap.RN.Mapcontrol.length_measured";
@@ -19,12 +17,9 @@ public class EventConst {
     public static final String MAP_SINGLE_TAP = "com.supermap.RN.Mapcontrol.single_tap_event";
     public static final String MAP_DOUBLE_TAP = "com.supermap.RN.Mapcontrol.double_tap_event";
     public static final String MAP_TOUCH_BEGAN = "com.supermap.RN.Mapcontrol.touch_began_event";
-    public static final String MAP_TOUCH_END = "com.supermap.RN.Mapcontrol.touch_end_event";
     public static final String MAP_SCROLL = "com.supermap.RN.Mapcontrol.scroll_event";
     public static final String MAP_GEOMETRY_MULTI_SELECTED = "com.supermap.RN.Mapcontrol.geometry_multi_selected";
     public static final String MAP_GEOMETRY_SELECTED = "com.supermap.RN.Mapcontrol.geometry_selected";
-    public static final String MAP_SCALE_CHANGED = "Supermap.MapControl.MapParamChanged.ScaleChanged";
-    public static final String MAP_BOUNDS_CHANGED = "Supermap.MapControl.MapParamChanged.BoundsChanged";
 
     /* 三维模块*/
     public static final String ANALYST_MEASURELINE = "com.supermap.RN.SMSceneControl.Analyst_measureLine";
@@ -32,5 +27,6 @@ public class EventConst {
     public static final String POINTSEARCH_KEYWORDS = "com.supermap.RN.SMSceneControl.PointSearch_keyWords";
     public static final String SSCENE_FLY = "com.supermap.RN.SMSceneControl.Scene_fly";
     public static final String SSCENE_ATTRIBUTE = "com.supermap.RN.SMSceneControl.Scene_attribute";
-    public static final String SSCENE_REMOVE_ATTRIBUTE = "com.supermap.RN.SMSceneControl.Scene_removeAttribute";
+    public static final String SSCENE_SYMBOL = "com.supermap.RN.SMSceneControl.Scene_symbol";
+
 }
