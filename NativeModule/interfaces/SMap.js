@@ -21,7 +21,7 @@ export default (function () {
   function openWorkspace(infoDic) {
     try {
       const type = infoDic.server.split('.').pop()
-      Object.assign(infoDic, {type: getWorkspaceType(type)})
+      Object.assign(infoDic, { type: getWorkspaceType(type) })
       return SMap.openWorkspace(infoDic)
     } catch (e) {
       console.error(e)
@@ -423,7 +423,6 @@ export default (function () {
     }
   }
 
-<<<<<<< HEAD
   getSymbolGroups = (type = '', path = '') => {
     try {
       return SMap.getSymbolGroups(type, path)
@@ -444,19 +443,18 @@ export default (function () {
       console.error(e)
     }
   }
-=======
-   /**
-    * 获取图层名字
-    */
-   getLayersNames = () => {
-     try {
-       return SMap.getLayersNames()
-     } catch (e) {
-       console.error(e)
-     }
-   }
->>>>>>> f8a954c1b690f8aeb2701f3806459f07eee91d9b
-  
+
+  /**
+   * 获取图层名字
+   */
+  getLayersNames = () => {
+    try {
+      return SMap.getLayersNames()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   let SMapExp = {
     openWorkspace,
     openDatasource,
@@ -478,12 +476,9 @@ export default (function () {
     addGeometrySelectedListener,
     removeGeometrySelectedListener,
     appointEditGeometry,
-<<<<<<< HEAD
     getSymbolGroups,
     findSymbolsByGroups,
-=======
     getLayersNames,
->>>>>>> f8a954c1b690f8aeb2701f3806459f07eee91d9b
   }
   Object.assign(SMapExp, MapTool, LayerManager)
 

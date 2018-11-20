@@ -105,10 +105,6 @@ async function cancel(type) {
 
 async function addGPSPoint() {
   try {
-<<<<<<< HEAD
-    // type = type >= 0 ? type : currentType
-=======
->>>>>>> f8a954c1b690f8aeb2701f3806459f07eee91d9b
     return Collector.addGPSPoint()
   } catch (e) {
     console.error(e)

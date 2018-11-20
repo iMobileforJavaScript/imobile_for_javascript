@@ -816,7 +816,6 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
-<<<<<<< HEAD:android/src/main/java/com/supermap/interfaces/mapping/SMap.java
      * 获取指定SymbolGroup中所有的group
      * @param type
      * @param path

@@ -3,7 +3,9 @@ import SAnalyst from './SAnalyst'
 import SCollector from './SCollector'
 import SScene  from './SScene'
 import SMCartography from './SMCartography'
-import {SOnlineService} from './iServer'export {
+import {SOnlineService} from './iServer'
+
+export {
   SMap,
   SAnalyst,
   SCollector,

@@ -5,16 +5,13 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
-<<<<<<< HEAD
 import com.supermap.interfaces.SAnalyst;
 import com.supermap.interfaces.SCollectorType;
 import com.supermap.interfaces.mapping.SLayerManager;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.interfaces.SScene;
-=======
 import com.supermap.interfaces.*;
 import com.supermap.interfaces.iServer.SOnlineService;
->>>>>>> f8a954c1b690f8aeb2701f3806459f07eee91d9b
 import com.supermap.rnsupermap.*;
 
 import java.util.ArrayList;

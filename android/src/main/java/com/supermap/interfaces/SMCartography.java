@@ -9,6 +9,7 @@ import com.supermap.data.Environment;
 import com.supermap.data.FillGradientMode;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Size2D;
+import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.*;
 
 /**
