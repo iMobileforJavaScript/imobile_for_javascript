@@ -6,6 +6,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.supermap.interfaces.*;
+import com.supermap.interfaces.iServer.SOnlineService;
 import com.supermap.rnsupermap.*;
 
 import java.util.ArrayList;
@@ -174,7 +175,12 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSLayer3DType(reactContext));
         modules.add(new JSImageFormatType(reactContext));
         modules.add(new SCollectorType(reactContext));
-        modules.add(new SMCartography(reactContext));
+		modules.add(new SMCartography(reactContext));
+
+        /*
+        * 在线模块功能
+        */
+        modules.add(new SOnlineService(reactContext));
         return modules;
     }
 }
