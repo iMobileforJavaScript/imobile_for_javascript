@@ -39,6 +39,14 @@ RCT_EXPORT_MODULE();
         sMap = [[self alloc] init];
     });
     
+    if (sMap.smMapWC == nil) {
+        sMap.smMapWC = [[SMMapWC alloc] init];
+    }
+    
+    if (sMap.smMapWC.workspace == nil) {
+        sMap.smMapWC.workspace = [[Workspace alloc] init];
+    }
+    
     return sMap;
 }
 
@@ -48,11 +56,6 @@ RCT_EXPORT_MODULE();
         sMap.smMapWC = [[SMMapWC alloc] init];
     }
     sMap.smMapWC.mapControl = mapControl;
-    if (sMap.smMapWC.workspace == nil) {
-        sMap.smMapWC.workspace = [[Workspace alloc] init];
-    }
-    
-//    [sMap setDelegate];
 }
 
 - (void)setDelegate {
@@ -66,10 +69,15 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
     @try {
         sMap = [SMap singletonInstance];
         BOOL result = [sMap.smMapWC openWorkspace:infoDic];
+        if (result) {
+            [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
+        }
+        sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
+        [sMap.smMapWC.mapControl.map refresh];
         [self openGPS];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
-        reject(@"Resources", exception.reason, nil);
+        reject(@"workspace", exception.reason, nil);
     }
 }
 
@@ -83,7 +91,9 @@ RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)
         if (dataSource && defaultIndex >= 0) {
             Dataset* ds = [dataSource.datasets get:defaultIndex];
             [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
+            sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
         }
+        [sMap.smMapWC.mapControl.map refresh];
         [self openGPS];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
@@ -102,6 +112,7 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
             if (defaultName != nil && defaultName.length > 0) {
                 Dataset* ds = [dataSource.datasets getWithName:defaultName];
                 [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
+                sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
             }
             [self openGPS];
             resolve([NSNumber numberWithBool:YES]);
@@ -111,18 +122,66 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
     }
 }
 
-#pragma mark 关闭工作空间及地图控件
+#pragma mark 关闭工作空间
 RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try {
         [sMap.smMapWC.mapControl.map close];
         [sMap.smMapWC.mapControl.map dispose];
-        [sMap.smMapWC.mapControl dispose];
+//        [sMap.smMapWC.mapControl dispose];
         [sMap.smMapWC.workspace close];
-        [sMap.smMapWC.workspace dispose];
+//        [sMap.smMapWC.workspace dispose];
         
-        sMap.smMapWC.mapControl = nil;
-        sMap.smMapWC.workspace = nil;
+//        sMap.smMapWC.mapControl = nil;
+//        sMap.smMapWC.workspace = nil;
+        
+        resolve([NSNumber numberWithBool:YES]);
+    }@catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 保存工作空间
+RCT_REMAP_METHOD(saveWorkspace, saveWorkspaceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    @try {
+        BOOL result = [sMap.smMapWC saveWorkspace];
+        resolve([NSNumber numberWithBool:result]);
+    }@catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 根据工作空间连接信息保存工作空间
+RCT_REMAP_METHOD(saveWorkspaceWithInfo, saveWorkspaceWithInfoWithInfo:(NSDictionary *)info resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL result = [sMap.smMapWC saveWorkspaceWithInfo:info];
+        resolve([NSNumber numberWithBool:result]);
+    }@catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 关闭地图控件
+RCT_REMAP_METHOD(closeMapControl, closeMapControlWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    @try {
+        if (sMap.smMapWC.mapControl.map) {
+            [sMap.smMapWC.mapControl.map close];
+            [sMap.smMapWC.mapControl.map dispose];
+        }
+        //        [sMap.smMapWC.mapControl dispose];
+        if (sMap.smMapWC.mapControl) {
+//            [sMap.smMapWC.mapControl dispose];
+        }
+        if (sMap.smMapWC.workspace) {
+            [sMap.smMapWC.workspace close];
+//            [sMap.smMapWC.workspace dispose];
+        }
+        
+//        sMap.smMapWC.mapControl = nil;
+//        sMap.smMapWC.workspace = nil;
         
         resolve([NSNumber numberWithBool:YES]);
     }@catch (NSException *exception) {
@@ -160,6 +219,7 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
             }
             
             [sMap.smMapWC.mapControl setAction:PAN];
+            sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
             [map refresh];
         }
         
@@ -193,6 +253,7 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
             }
             
             [sMap.smMapWC.mapControl setAction:PAN];
+            sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
             [map refresh];
             
             resolve([NSNumber numberWithBool:YES]);

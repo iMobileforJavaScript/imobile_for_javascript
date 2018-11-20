@@ -40,7 +40,7 @@ public class JSSpeechManager extends ReactContextBaseJavaModule {
     Runnable initSpeechManager = new Runnable(){
         @Override
         public void run(){
-            SpeechManager.init(getCurrentActivity(),"110");
+            SpeechManager.init(getCurrentActivity());
         }
     };
 

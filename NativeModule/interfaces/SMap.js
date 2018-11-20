@@ -6,6 +6,7 @@
  **********************************************************************************/
 import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform } from 'react-native'
 import * as MapTool from './SMapTool'
+import * as LayerManager from './SLayerManager'
 import { EventConst } from '../constains'
 let SMap = NativeModules.SMap
 
@@ -67,6 +68,22 @@ export default (function () {
     }
   }
 
+  /**
+   * 保存工作空间
+   * @param info 保存工作空间连接信息
+   * @returns {*}
+   */
+  function saveWorkspace(info) {
+    try {
+      if (info === null) {
+        return SMap.saveWorkspace()
+      } else {
+        return SMap.saveWorkspaceWithInfo(info)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
    * 获取UDB中数据集名称
@@ -133,6 +150,17 @@ export default (function () {
   function closeWorkspace() {
     try {
       return SMap.closeWorkspace()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 关闭地图组件
+   */
+  function closeMapControl() {
+    try {
+      return SMap.closeMapControl()
     } catch (e) {
       console.error(e)
     }
@@ -419,7 +447,9 @@ export default (function () {
   let SMapExp = {
     openWorkspace,
     openDatasource,
+    saveWorkspace,
     closeWorkspace,
+    closeMapControl,
     setAction,
     openMap,
     zoom,
@@ -438,7 +468,7 @@ export default (function () {
     getSymbolGroups,
     findSymbolsByGroups,
   }
-  Object.assign(SMapExp, MapTool)
+  Object.assign(SMapExp, MapTool, LayerManager)
 
   return SMapExp
 })()

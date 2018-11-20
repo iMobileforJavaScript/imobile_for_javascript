@@ -33,6 +33,7 @@
 #import "JSMapControl.h"
 #import "SMMapWC.h"
 #import "SMSymbol.h"
+#import "SMLayer.h"
 
 @interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate>
 @property (strong, nonatomic) SMMapWC* smMapWC;

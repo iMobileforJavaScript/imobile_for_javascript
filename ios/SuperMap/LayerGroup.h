@@ -17,6 +17,8 @@
 -(NSUInteger)getCount;
 // 返回 图层集合中指定索引的图层对象。
 -(Layer*)getLayer:(int)index;
+// 返回 图层集合中指定名称的图层对象
+-(Layer*)getLayerWithName:(NSString*)name;
 //索引指定图层
 -(NSUInteger)indexOfLayer:(Layer*)layer;
 //添加图层

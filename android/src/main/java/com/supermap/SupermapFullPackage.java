@@ -7,7 +7,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.supermap.interfaces.SAnalyst;
 import com.supermap.interfaces.SCollectorType;
-import com.supermap.interfaces.SMap;
+import com.supermap.interfaces.mapping.SLayerManager;
+import com.supermap.interfaces.mapping.SMap;
 import com.supermap.interfaces.SScene;
 import com.supermap.rnsupermap.*;
 
@@ -172,6 +173,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSOnlineService(reactContext));
 
         modules.add(new SMap(reactContext));
+        modules.add(new SLayerManager(reactContext));
         modules.add(new SAnalyst(reactContext));
         modules.add(new SScene(reactContext));
         modules.add(new SCollectorType(reactContext));

@@ -1,4 +1,4 @@
-package com.supermap.interfaces;
+package com.supermap.interfaces.mapping;
 
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -38,7 +38,6 @@ import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.rnsupermap.JSLayer;
-import com.supermap.rnsupermap.JSMapView;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 
@@ -106,6 +105,11 @@ public class SMap extends ReactContextBaseJavaModule {
             sMap = getInstance();
             Map params = data.toHashMap();
             boolean result = sMap.smMapWC.openWorkspace(params);
+            if (result) {
+                sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
+            }
+            sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
+            sMap.smMapWC.getMapControl().getMap().refresh();
 
             promise.resolve(result);
         } catch (Exception e) {
@@ -133,6 +137,8 @@ public class SMap extends ReactContextBaseJavaModule {
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                 map.getLayers().add(ds, true);
             }
+            sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
+            sMap.smMapWC.getMapControl().getMap().refresh();
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -173,9 +179,42 @@ public class SMap extends ReactContextBaseJavaModule {
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                 map.getLayers().add(ds, true);
             }
+            sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
+            sMap.smMapWC.getMapControl().getMap().refresh();
 
             datasourceconnection.dispose();
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 保存工作空间
+     * @param promise
+     */
+    @ReactMethod
+    public void saveWorkspace(Promise promise) {
+        try {
+            sMap = getInstance();
+            boolean result = sMap.smMapWC.saveWorkspace();
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据工作空间连接信息保存工作空间
+     * @param data
+     * @param promise
+     */
+    @ReactMethod
+    public void saveWorkspaceWithInfo(Map data, Promise promise) {
+        try {
+            sMap = getInstance();
+            boolean result = sMap.smMapWC.saveWorkspaceWithInfo(data);
+            promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -300,6 +339,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 }
 
                 sMap.smMapWC.getMapControl().setAction(Action.PAN);
+                map.setVisibleScalesEnabled(false);
                 map.refresh();
             }
 
@@ -340,6 +380,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 }
 
                 sMap.smMapWC.getMapControl().setAction(Action.PAN);
+                map.setVisibleScalesEnabled(false);
                 map.refresh();
 
                 promise.resolve(true);
