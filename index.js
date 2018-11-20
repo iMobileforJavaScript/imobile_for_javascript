@@ -179,6 +179,7 @@ import {
   SAnalyst,
   SCollector,
   SScene,
+  SOnlineService,
 } from './NativeModule/interfaces'
 let SMCollectorType = NativeModules.SCollectorType;
 
@@ -359,4 +360,7 @@ export {
   SCollector,
   SScene,
   SMCollectorType,
+
+  /*在线模块*/
+  SOnlineService,
 };
