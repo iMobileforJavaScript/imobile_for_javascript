@@ -103,10 +103,9 @@ async function cancel(type) {
   }
 }
 
-async function addGPSPoint(type) {
+async function addGPSPoint() {
   try {
-    type = type >= 0 ? type : currentType
-    return Collector.addGPSPoint(type)
+    return Collector.addGPSPoint()
   } catch (e) {
     console.error(e)
   }

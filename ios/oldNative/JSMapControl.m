@@ -19,6 +19,8 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTWebView.h>
 
+static MapControl* mapControl = nil;
+
 @interface MapControl(ReactCategory)
 
 @property (nonatomic, strong) JSMapControl *jsMapControl;
@@ -59,15 +61,18 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
   }
   return self;
 }
+
 - (UIView *)view
 {
-  MapControl* mapControl = [[MapControl alloc]init];
-  mapControl.jsMapControl = self;
-    
+    if (mapControl == nil) {
+        mapControl = [[MapControl alloc]init];;
+        mapControl.jsMapControl = self;
+    }
+  
     [SMap setInstance:mapControl];
 //  [JSObjManager addObj:mapControl];
 
-  return mapControl;
+    return mapControl;
 }
 
 -(dispatch_queue_t)methodQueue{

@@ -11,5 +11,4 @@
 #import "SMap.h"
 
 @interface JSMapControl : RCTViewManager
-
 @end

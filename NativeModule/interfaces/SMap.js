@@ -6,6 +6,7 @@
  **********************************************************************************/
 import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform } from 'react-native'
 import * as MapTool from './SMapTool'
+import * as LayerManager from './SLayerManager'
 import { EventConst } from '../constains'
 let SMap = NativeModules.SMap
 
@@ -20,7 +21,7 @@ export default (function () {
   function openWorkspace(infoDic) {
     try {
       const type = infoDic.server.split('.').pop()
-      Object.assign(infoDic, {type: getWorkspaceType(type)})
+      Object.assign(infoDic, { type: getWorkspaceType(type) })
       return SMap.openWorkspace(infoDic)
     } catch (e) {
       console.error(e)
@@ -48,6 +49,22 @@ export default (function () {
   }
 
 
+  /**
+   * 保存工作空间
+   * @param info 保存工作空间连接信息
+   * @returns {*}
+   */
+  function saveWorkspace(info) {
+    try {
+      if (info === null) {
+        return SMap.saveWorkspace()
+      } else {
+        return SMap.saveWorkspaceWithInfo(info)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
    * 获取UDB中数据集名称
@@ -114,6 +131,17 @@ export default (function () {
   function closeWorkspace() {
     try {
       return SMap.closeWorkspace()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 关闭地图组件
+   */
+  function closeMapControl() {
+    try {
+      return SMap.closeMapControl()
     } catch (e) {
       console.error(e)
     }
@@ -375,11 +403,45 @@ export default (function () {
       console.error(e)
     }
   }
-  
+
+  getSymbolGroups = (type = '', path = '') => {
+    try {
+      return SMap.getSymbolGroups(type, path)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取指定SymbolGroup中所有的symbol
+   * @param type
+   * @param path
+   */
+  findSymbolsByGroups = (type = '', path = '') => {
+    try {
+      return SMap.findSymbolsByGroups(type, path)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取图层名字
+   */
+  getLayersNames = () => {
+    try {
+      return SMap.getLayersNames()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   let SMapExp = {
     openWorkspace,
     openDatasource,
+    saveWorkspace,
     closeWorkspace,
+    closeMapControl,
     setAction,
     openMap,
     zoom,
@@ -394,8 +456,11 @@ export default (function () {
     addGeometrySelectedListener,
     removeGeometrySelectedListener,
     appointEditGeometry,
+    getSymbolGroups,
+    findSymbolsByGroups,
+    getLayersNames,
   }
-  Object.assign(SMapExp, MapTool)
+  Object.assign(SMapExp, MapTool, LayerManager)
 
   return SMapExp
 })()
