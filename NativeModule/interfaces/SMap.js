@@ -47,25 +47,6 @@ export default (function () {
     }
   }
 
-  /**
-   * 打开UDB数据源
-   * @param params
-   * @param value    图层 index / name
-   * @returns {*}
-   */
-  function openUDBDatasource(params, value) {
-    try {
-      if (typeof value === 'number') {
-        value = value >= 0 ? value : -1
-        return SMap.openUDBDatasourceWithIndex(params, value)
-      } else {
-        value = value || ''
-        return SMap.openUDBDatasourceWithIndex(params, value)
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
 
 
   /**
@@ -405,7 +386,6 @@ export default (function () {
     moveToCurrent,
     removeLayer,
     closeMap,
-    openUDBDatasource,
     getUDBName,
     getLayers,
     submit,

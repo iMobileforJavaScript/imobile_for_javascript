@@ -140,47 +140,6 @@ public class SMap extends ReactContextBaseJavaModule {
 
 
     /**
-     * 打开离线UDB数据
-     *
-     * @param data
-     * @param defaultIndex 默认显示Map 图层索引
-     * @param promise
-     */
-    @ReactMethod
-    public void openUDBDatasourceWithIndex(ReadableMap data, int defaultIndex, Promise promise) {
-        try {
-            sMap = getInstance();
-            Map params = data.toHashMap();
-            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
-            DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
-            datasourceconnection.setEngineType(EngineType.UDB);
-            if (params.containsKey("server")) {
-                datasourceconnection.setServer(params.get("server").toString());
-            }
-            String alias = params.get("alias").toString();
-            if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(alias) != -1) {
-                sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().close(alias);
-            }
-            datasourceconnection.setAlias(alias);
-            datasourceconnection.setPassword("");
-            Datasource datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
-
-
-            if (datasource != null && defaultIndex >= 0) {
-                Dataset ds = datasource.getDatasets().get(defaultIndex);
-                com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                map.getLayers().add(ds, true);
-            }
-
-            datasourceconnection.dispose();
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-
-    /**
      * 获取UDB中数据集名称
      *  @param path UDB在内存中路径
      * @param promise
