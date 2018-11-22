@@ -168,6 +168,7 @@ export default (function () {
             console.log(error)
         }
     }
+
     function getAttribute() {
         try {
             // if(typeof handlers.remove==='boolean'&&handlers.remove){
@@ -180,7 +181,7 @@ export default (function () {
         }
     }
 
-    function clearAttribute(){
+    function clearAttribute() {
         try {
             return SScene.clearAttribute()
         } catch (error) {
@@ -188,17 +189,17 @@ export default (function () {
         }
     }
 
-    function addListener(handlers){
+    function addListener(handlers) {
         let listen
         if (Platform.OS === 'ios' && handlers) {
             if (typeof handlers.callback === 'function') {
-                listen= nativeEvt.addListener(EventConst.SSCENE_ATTRIBUTE, function (e) {
+                listen = nativeEvt.addListener(EventConst.SSCENE_ATTRIBUTE, function (e) {
                     handlers.callback(e)
                 })
             }
         } else if (Platform.OS === 'android' && handlers) {
             if (typeof handlers.callback === "function") {
-                listen= DeviceEventEmitter.addListener(EventConst.SSCENE_ATTRIBUTE,function (e) {
+                listen = DeviceEventEmitter.addListener(EventConst.SSCENE_ATTRIBUTE, function (e) {
                     handlers.callback(e)
                 });
             }
@@ -214,7 +215,7 @@ export default (function () {
         }
     }
 
-    function setHeading(){
+    function setHeading() {
         try {
             return SScene.setHeading()
         } catch (error) {
@@ -222,16 +223,16 @@ export default (function () {
         }
     }
 
-    function changeBaseMap(oldLayer,Url,Layer3DType,layerName,imageFormatType,dpi,addToHead){
+    function changeBaseMap(oldLayer, Url, Layer3DType, layerName, imageFormatType, dpi, addToHead) {
         try {
-            return changeBaseMap(oldLayer,Url,Layer3DType,layerName,imageFormatType,dpi,addToHead)
+            return SScene.changeBaseMap(oldLayer, Url, Layer3DType, layerName, imageFormatType, dpi, addToHead)
         } catch (error) {
             console.log(error)
         }
 
     }
 
-    function clearSelection(){
+    function clearSelection() {
         try {
             return SScene.clearSelection()
         } catch (error) {
@@ -239,7 +240,7 @@ export default (function () {
         }
     }
 
-    function initsymbol(){
+    function initsymbol() {
         try {
             return SScene.initsymbol()
         } catch (error) {
@@ -247,7 +248,7 @@ export default (function () {
         }
     }
 
-    function startDrawPoint(){
+    function startDrawPoint() {
         try {
             return SScene.startDrawPoint()
         } catch (error) {
@@ -255,7 +256,7 @@ export default (function () {
         }
     }
 
-    function startDrawLine(){
+    function startDrawLine() {
         try {
             return SScene.startDrawLine()
         } catch (error) {
@@ -263,15 +264,15 @@ export default (function () {
         }
     }
 
-    function startDrawArea(){
+    function startDrawArea() {
         try {
             return SScene.startDrawArea()
         } catch (error) {
             console.log(error)
         }
     }
-    
-    function startDrawText(handlers){
+
+    function startDrawText(handlers) {
         try {
             if (Platform.OS === 'ios' && handlers) {
                 if (typeof handlers.callback === 'function') {
@@ -286,21 +287,21 @@ export default (function () {
                     });
                 }
             }
-            return startDrawText()
+            return SScene.startDrawText()
         } catch (error) {
-            console.log(error) 
+            console.log(error)
         }
     }
 
-    function addGeoText(x,y,text){
+    function addGeoText(x, y, text) {
         try {
-            return SScene.addGeoText(x,y,text)
+            return SScene.addGeoText(x, y, text)
         } catch (error) {
-            console.log(error) 
+            console.log(error)
         }
     }
 
-    function symbolback(){
+    function symbolback() {
         try {
             return SScene.symbolback()
         } catch (error) {
@@ -308,30 +309,90 @@ export default (function () {
         }
     }
 
-    function clearAllLabel(){
+    function closeAllLabel() {
+        try {
+            return SScene.closeAllLabel()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function clearAllLabel() {
         try {
             return SScene.clearAllLabel()
         } catch (error) {
             console.log(error)
         }
     }
-    
-    function save(){
-        try {
-            return SScene.save()
-        } catch (error) {
-            console.log(error) 
-        }
-    }
 
-    function back(){
+    function clearcurrentLabel() {
         try {
-            return SScene.back()
+            return SScene.clearcurrentLabel()
         } catch (error) {
             console.log(error)
         }
     }
 
+    function save() {
+        try {
+            return SScene.save()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function setAllLayersSelection(value) {
+        try {
+            return SScene.setAllLayersSelection(value)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function addTerrainLayer(url, name) {
+        try {
+            return SScene.addTerrainLayer(url, name)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function addLayer3D() {
+        try {
+            return SScene.changeBaseMap()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function startDrawFavorite(handlers) {
+        try {
+            if (Platform.OS === 'ios' && handlers) {
+                if (typeof handlers.callback === 'function') {
+                    nativeEvt.addListener(EventConst.SSCENE_FAVORITE, function (e) {
+                        handlers.callback(e)
+                    })
+                }
+            } else if (Platform.OS === 'android' && handlers) {
+                if (typeof handlers.callback === "function") {
+                    DeviceEventEmitter.addListener(EventConst.SSCENE_FAVORITE, function (e) {
+                        handlers.callback(e);
+                    });
+                }
+            }
+            return SScene.startDrawFavorite()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function addFavoriteText(x, y, content) {
+        try {
+            return SScene.addFavoriteText(x, y, content)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     getWorkspaceType = (type) => {
         var value
@@ -394,9 +455,15 @@ export default (function () {
         startDrawText,
         addGeoText,
         symbolback,
+        closeAllLabel,
         clearAllLabel,
+        clearcurrentLabel,
         save,
-        back,
+        setAllLayersSelection,
+        addTerrainLayer,
+        addLayer3D,
+        startDrawFavorite,
+        addFavoriteText,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp

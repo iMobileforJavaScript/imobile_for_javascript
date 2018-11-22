@@ -1,6 +1,7 @@
 package com.supermap.interfaces;
 
 import android.graphics.Point;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -24,6 +25,7 @@ import com.supermap.map3D.toolKit.PoiGsonBean;
 import com.supermap.map3D.toolKit.TouchUtil;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.realspace.Camera;
+import com.supermap.realspace.Layer3D;
 import com.supermap.realspace.Layer3DType;
 import com.supermap.realspace.Scene;
 import com.supermap.realspace.SceneControl;
@@ -184,71 +186,106 @@ public class SScene extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void changeBaseMap(String oldLayer, String Url, String Layer3DType, String layerName, String imageFormatType, double dpi, Boolean addToHead) {
-        sScene = getInstance();
-        Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-        if (oldLayer != null) {
-            scene.getLayers().removeLayerWithName(oldLayer);
+    public void changeBaseMap(String oldLayer, String Url, String Layer3DType, String layerName, String imageFormatType, double dpi, Boolean addToHead,Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            if (oldLayer != null) {
+                scene.getLayers().removeLayerWithName(oldLayer);
 //            scene.getLayers().get(oldLayer).setVisible(false);
+            }
+            com.supermap.realspace.Layer3DType layer3DType = null;
+            com.supermap.data.ImageFormatType imageFormatType1 = null;
+            switch (Layer3DType) {
+                case "IMAGEFILE":
+                    layer3DType = com.supermap.realspace.Layer3DType.IMAGEFILE;
+                    break;
+                case "KML":
+                    layer3DType = com.supermap.realspace.Layer3DType.KML;
+                    break;
+
+                case "l3dBingMaps":
+                    layer3DType = com.supermap.realspace.Layer3DType.l3dBingMaps;
+                    break;
+
+                case "OSGBFILE":
+                    layer3DType = com.supermap.realspace.Layer3DType.OSGBFILE;
+                    break;
+
+                case "VECTORFILE":
+                    layer3DType = com.supermap.realspace.Layer3DType.VECTORFILE;
+                    break;
+                case "WMTS":
+                    layer3DType = com.supermap.realspace.Layer3DType.WMTS;
+                    break;
+            }
+
+            switch (imageFormatType) {
+                case "BMP":
+                    imageFormatType1 = ImageFormatType.BMP;
+                    break;
+                case "DXTZ":
+                    imageFormatType1 = ImageFormatType.DXTZ;
+                    break;
+
+                case "GIF":
+                    imageFormatType1 = ImageFormatType.GIF;
+                    break;
+
+                case "JPG":
+                    imageFormatType1 = ImageFormatType.JPG;
+                    break;
+
+                case "JPG_PNG":
+                    imageFormatType1 = ImageFormatType.JPG_PNG;
+                    break;
+                case "NONE":
+                    imageFormatType1 = ImageFormatType.NONE;
+                    break;
+                case "PNG":
+                    imageFormatType1 = ImageFormatType.PNG;
+                    break;
+            }
+            if (imageFormatType == null) {
+                scene.getLayers().add(Url, layer3DType, layerName, addToHead);
+
+            }
+            else {
+//                for (int i = 0; i <scene.getLayers().getCount() ; i++) {
+//                    scene.getLayers().removeLayerWithIndex(i);
+//                }
+               Layer3D layer3D= scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
+               Log.e("layer3D===============", String.valueOf(layer3D));
+            }
+            scene.refresh();
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
         }
-        com.supermap.realspace.Layer3DType layer3DType = null;
-        com.supermap.data.ImageFormatType imageFormatType1 = null;
-        switch (Layer3DType) {
-            case "IMAGEFILE":
-                layer3DType = com.supermap.realspace.Layer3DType.IMAGEFILE;
-                break;
-            case "KML":
-                layer3DType = com.supermap.realspace.Layer3DType.KML;
-                break;
 
-            case "l3dBingMaps":
-                layer3DType = com.supermap.realspace.Layer3DType.l3dBingMaps;
-                break;
+    }
 
-            case "OSGBFILE":
-                layer3DType = com.supermap.realspace.Layer3DType.OSGBFILE;
-                break;
-
-            case "VECTORFILE":
-                layer3DType = com.supermap.realspace.Layer3DType.VECTORFILE;
-                break;
-            case "WMTS":
-                layer3DType = com.supermap.realspace.Layer3DType.WMTS;
-                break;
-        }
-
-        switch (imageFormatType) {
-            case "BMP":
-                imageFormatType1 = ImageFormatType.BMP;
-                break;
-            case "DXTZ":
-                imageFormatType1 = ImageFormatType.DXTZ;
-                break;
-
-            case "GIF":
-                imageFormatType1 = ImageFormatType.GIF;
-                break;
-
-            case "JPG":
-                imageFormatType1 = ImageFormatType.JPG;
-                break;
-
-            case "JPG_PNG":
-                imageFormatType1 = ImageFormatType.JPG_PNG;
-                break;
-            case "NONE":
-                imageFormatType1 = ImageFormatType.NONE;
-                break;
-            case "PNG":
-                imageFormatType1 = ImageFormatType.PNG;
-                break;
-        }
-        if (dpi == Double.parseDouble(null) && imageFormatType == null) {
-            scene.getLayers().add(Url, layer3DType, layerName, addToHead);
-        } else {
-            scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
+    /**
+     * 添加地形图层
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void addTerrainLayer(String url,String name,Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            scene.getTerrainLayers().clear();
+            scene.getTerrainLayers().add(url,name);
+            scene.refresh();
+//            promise.resolve(true);
+            int i=scene.getTerrainLayers().getCount();
+            promise.resolve(i);
+        } catch (Exception e) {
+            promise.reject(e);
         }
     }
+
 
     /**
      * 获取当前场景地形图层列表
@@ -330,6 +367,28 @@ public class SScene extends ReactContextBaseJavaModule {
             WritableArray arr = Arguments.createArray();
             if (scene.getLayers().getCount() > 0) {
                 scene.getLayers().get(name).setSelectable(value);
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置场景所有图层是否可选择
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setAllLayersSelection( boolean value, Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            WritableArray arr = Arguments.createArray();
+            if (scene.getLayers().getCount() > 0) {
+                for (int i = 0; i < scene.getLayers().getCount(); i++) {
+                    scene.getLayers().get(i).setSelectable(value);
+                }
             }
             promise.resolve(true);
         } catch (Exception e) {
@@ -534,6 +593,7 @@ public class SScene extends ReactContextBaseJavaModule {
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
             Camera camera = scene.getCamera();
             camera.setHeading(0);
+            scene.setCamera(camera);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -666,6 +726,7 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+
     /**
      * 标注点绘线
      */
@@ -702,8 +763,6 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void symbolback(Promise promise) {
         try {
-            sScene = getInstance();
-            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
             LabelHelper.getInstence().back();
             promise.resolve(true);
         } catch (Exception e) {
@@ -712,19 +771,47 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 清除所有标注
+     * 关闭所有标注
      */
     @ReactMethod
-    public void clearAllLabel(Promise promise) {
+    public void closeAllLabel(Promise promise) {
         try {
             sScene = getInstance();
-            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
             LabelHelper.getInstence().clearAllLabel();
+            sScene.smSceneWc.getSceneControl().getScene().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
+
+
+    /**
+     * 清除所有标注
+     */
+    @ReactMethod
+    public void clearAllLabel(Promise promise) {
+        try {
+            LabelHelper.getInstence().reSet();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 清除当前编辑下的所有标注
+     */
+    @ReactMethod
+    public void clearcurrentLabel(Promise promise) {
+        try {
+            LabelHelper.getInstence().clearTrackingLayer();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
     /**
      * 保存所有标注
@@ -771,8 +858,6 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void addGeoText(int x, int y, String text, Promise promise) {
         try {
-            sScene = getInstance();
-            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
             Point point = new Point(x, y);
             LabelHelper.getInstence().addGeoText(point, text);
             promise.resolve(true);
@@ -782,13 +867,36 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 标注添加文本
+     * 标注兴趣点
      */
     @ReactMethod
-    public void back(Promise promise) {
+    public void startDrawFavorite( Promise promise) {
         try {
-            sScene = getInstance();
-            LabelHelper.getInstence().back();
+            LabelHelper.getInstence().startDrawFavorite();//SSCENE_FAVORITE
+            LabelHelper.getInstence().setDrawFavoriteListener(new LabelHelper.DrawFavoriteListener() {
+                @Override
+                public void OnclickPoint(Point pnt) {
+                    WritableMap map = Arguments.createMap();
+                    map.putInt("pointX", pnt.x);
+                    map.putInt("pointY", pnt.y);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_FAVORITE, map);
+                    LabelHelper.getInstence().addFavoriteText(pnt, "");
+                }
+            });
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 兴趣点添加文本
+     */
+    @ReactMethod
+    public void addFavoriteText(int x, int y, String text, Promise promise) {
+        try {
+            Point point = new Point(x, y);
+            LabelHelper.getInstence().addFavoriteText(point, text);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
