@@ -103,7 +103,7 @@ async function cancel(type) {
   }
 }
 
-async function addGPSPoint(type) {
+async function addGPSPoint() {
   try {
     return Collector.addGPSPoint()
   } catch (e) {

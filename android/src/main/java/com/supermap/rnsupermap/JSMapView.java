@@ -17,7 +17,7 @@ import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
-import com.supermap.interfaces.SMap;
+import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.CallOut;
 import com.supermap.mapping.CalloutAlignment;
 import com.supermap.mapping.MapControl;

@@ -1,4 +1,4 @@
-package com.supermap.interfaces;
+package com.supermap.interfaces.mapping;
 
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -15,11 +15,25 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
 import com.supermap.data.*;
 import com.supermap.data.Enum;
-import com.supermap.mapping.*;
+import com.supermap.data.Maps;
+import com.supermap.data.Point;
+import com.supermap.data.Point2D;
+import com.supermap.data.Point2Ds;
+import com.supermap.data.PrjCoordSys;
+import com.supermap.data.PrjCoordSysType;
+import com.supermap.data.Resources;
+import com.supermap.data.Workspace;
+import com.supermap.mapping.Action;
+import com.supermap.mapping.GeometrySelectedEvent;
+import com.supermap.mapping.GeometrySelectedListener;
+import com.supermap.mapping.Layer;
+import com.supermap.mapping.Layers;
+import com.supermap.mapping.MapControl;
+import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.rnsupermap.JSLayer;
-import com.supermap.rnsupermap.JSMapView;
 import com.supermap.smNative.SMMapWC;
+import com.supermap.smNative.SMSymbol;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -85,6 +99,11 @@ public class SMap extends ReactContextBaseJavaModule {
             sMap = getInstance();
             Map params = data.toHashMap();
             boolean result = sMap.smMapWC.openWorkspace(params);
+            if (result) {
+                sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
+            }
+            sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
+            sMap.smMapWC.getMapControl().getMap().refresh();
 
             promise.resolve(result);
         } catch (Exception e) {
@@ -112,6 +131,8 @@ public class SMap extends ReactContextBaseJavaModule {
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                 map.getLayers().add(ds, true);
             }
+            sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
+            sMap.smMapWC.getMapControl().getMap().refresh();
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -121,40 +142,31 @@ public class SMap extends ReactContextBaseJavaModule {
 
 
     /**
-     * 打开离线UDB数据
-     *
-     * @param data
-     * @param defaultIndex 默认显示Map 图层索引
+     * 保存工作空间
      * @param promise
      */
     @ReactMethod
-    public void openUDBDatasourceWithIndex(ReadableMap data, int defaultIndex, Promise promise) {
+    public void saveWorkspace(Promise promise) {
         try {
             sMap = getInstance();
-            Map params = data.toHashMap();
-            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
-            DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
-            datasourceconnection.setEngineType(EngineType.UDB);
-            if (params.containsKey("server")) {
-                datasourceconnection.setServer(params.get("server").toString());
-            }
-            String alias = params.get("alias").toString();
-            if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(alias) != -1) {
-                sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().close(alias);
-            }
-            datasourceconnection.setAlias(alias);
-            datasourceconnection.setPassword("");
-            Datasource datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
+            boolean result = sMap.smMapWC.saveWorkspace();
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 
-
-            if (datasource != null && defaultIndex >= 0) {
-                Dataset ds = datasource.getDatasets().get(defaultIndex);
-                com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                map.getLayers().add(ds, true);
-            }
-
-            datasourceconnection.dispose();
-            promise.resolve(true);
+    /**
+     * 根据工作空间连接信息保存工作空间
+     * @param data
+     * @param promise
+     */
+    @ReactMethod
+    public void saveWorkspaceWithInfo(Map data, Promise promise) {
+        try {
+            sMap = getInstance();
+            boolean result = sMap.smMapWC.saveWorkspaceWithInfo(data);
+            promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -279,6 +291,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 }
 
                 sMap.smMapWC.getMapControl().setAction(Action.PAN);
+                map.setVisibleScalesEnabled(false);
                 map.refresh();
             }
 
@@ -319,6 +332,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 }
 
                 sMap.smMapWC.getMapControl().setAction(Action.PAN);
+                map.setVisibleScalesEnabled(false);
                 map.refresh();
 
                 promise.resolve(true);
@@ -754,6 +768,44 @@ public class SMap extends ReactContextBaseJavaModule {
             Layer layer = mapControl.getMap().getLayers().get(layerName);
             boolean result = mapControl.appointEditGeometry(geoID, layer);
             promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取指定SymbolGroup中所有的group
+     * @param type
+     * @param path
+     * @param promise
+     */
+    @ReactMethod
+    public void getSymbolGroups(String type, String path, Promise promise) {
+        try {
+            sMap = getInstance();
+            Resources resources = sMap.smMapWC.getWorkspace().getResources();
+            WritableArray groups = SMSymbol.getSymbolGroups(resources, type, path);
+
+            promise.resolve(groups);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取指定SymbolGroup中所有的symbol
+     * @param type
+     * @param path
+     * @param promise
+     */
+    @ReactMethod
+    public void findSymbolsByGroups(String type, String path, Promise promise) {
+        try {
+            sMap = getInstance();
+            Resources resources = sMap.smMapWC.getWorkspace().getResources();
+            WritableArray symbols = SMSymbol.findSymbolsByGroups(resources, type, path);
+
+            promise.resolve(symbols);
         } catch (Exception e) {
             promise.reject(e);
         }

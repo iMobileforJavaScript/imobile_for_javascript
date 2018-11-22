@@ -11,9 +11,13 @@
 @class GeoStyle;
 
 typedef enum{
+    Symbol_NONE = -1,   // 未知符号 只用于查找
     Symbol_MARKER = 0,  // 点符号
     Symbol_Line = 1,    // 线填充符号
-    Symbol_Fill = 2     // 面填充符号
+    Symbol_Fill = 2,     // 面填充符号
+    Symbol_Marker_3D = 3,
+    Symbol_Line_3D = 4,
+    Symbol_Fill_3D = 5
 }SymbolType;
 
 

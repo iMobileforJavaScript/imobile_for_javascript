@@ -13,30 +13,10 @@
 - (BOOL)openWorkspace:(NSDictionary*)infoDic {
     @try {
         WorkspaceConnectionInfo* info = [[WorkspaceConnectionInfo alloc] init];
-        if ([infoDic objectForKey:@"name"]) {
-            info.name = [infoDic objectForKey:@"name"];
-        }
-        if ([infoDic objectForKey:@"password"]) {
-            info.password = [infoDic objectForKey:@"password"];
-        }
-        if ([infoDic objectForKey:@"server"]) {
-            info.server = [infoDic objectForKey:@"server"];
-        }
-        if ([infoDic objectForKey:@"type"]) {
-            NSNumber* type = [infoDic objectForKey:@"type"];
-            info.type = (int)type.integerValue;
-        }
-        if ([infoDic objectForKey:@"user"]) {
-            info.user = [infoDic objectForKey:@"user"];
-        }
-        if ([infoDic objectForKey:@"version"]) {
-            NSNumber* version = [infoDic objectForKey:@"version"];
-            info.version = (int)version.integerValue;
-        }
+        info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
         
         bool openWsResult = [_workspace open:info];
         [info dispose];
-        [_mapControl.map setWorkspace:_workspace];
         
         return openWsResult;
     } @catch (NSException *exception) {
@@ -138,4 +118,101 @@
         @throw exception;
     }
 }
+
+- (BOOL)saveWorkspace {
+    Workspace* workspace = _workspace;
+    if(workspace == nil) return NO;
+    
+    bool saved = [workspace save];
+    return saved;
+}
+
+- (BOOL)saveWorkspaceWithInfo:(NSDictionary*)infoDic{
+    Workspace* workspace = _workspace;
+    if(workspace == nil) return NO;
+    [self setWorkspaceConnectionInfo:infoDic workspace:workspace];
+    bool saved = [workspace save];
+    
+    return saved;
+}
+
+- (WorkspaceConnectionInfo *)setWorkspaceConnectionInfo:(NSDictionary *)infoDic workspace:(Workspace *)workspace {
+    WorkspaceConnectionInfo* info;
+    if (workspace == nil) {
+        info = [[WorkspaceConnectionInfo alloc] init];
+    } else {
+        info = workspace.connectionInfo;
+    }
+    NSString* caption = [infoDic objectForKey:@"caption"];
+    NSNumber* type = (NSNumber *)[infoDic objectForKey:@"type"];
+    type = type > 0 ? type : 0;
+    NSInteger version = (NSInteger)[infoDic objectForKey:@"version"];
+    NSString* server = [infoDic objectForKey:@"server"];
+    NSString* user = [infoDic objectForKey:@"user"];
+    NSString* password = [infoDic objectForKey:@"password"];
+    
+    //        [info setServer:path];
+    if (caption) {
+        [workspace setCaption:caption];
+    }
+    if (version) {
+        info.version = (WorkspaceVersion)version;
+    }
+    if (user) {
+        info.user = user;
+    }
+    if (password) {
+        info.password = password;
+    }
+    
+    if (server) {
+        switch (type.integerValue) {
+            case 4:
+                [info setType:SM_SXW];
+                if (![server hasSuffix:@".sxw"]) {
+                    server = [NSString stringWithFormat:@"%@/%@%@", server, caption, @".sxw"];
+                }
+                break;
+                
+                // SMW 工作空间信息设置
+            case 5:
+                [info setType:SM_SMW];
+                if (![server hasSuffix:@".smw"]) {
+                    server = [NSString stringWithFormat:@"%@/%@%@", server, caption, @".smw"];
+                }
+                [info setServer:[NSString stringWithFormat:@"%@/%@%@", server, caption, @".smw"]];
+                break;
+                
+                // SXWU 文件工作空间信息设置
+            case 8:
+                [info setType:SM_SXWU];
+                if (![server hasSuffix:@".sxwu"]) {
+                    server = [NSString stringWithFormat:@"%@/%@%@", server, caption, @".sxwu"];
+                }
+                [info setServer:[NSString stringWithFormat:@"%@/%@%@", server, caption, @".sxwu"]];
+                break;
+                
+                // SMWU 工作空间信息设置
+            case 9:
+                [info setType:SM_SMWU];
+                if (![server hasSuffix:@".smwu"]) {
+                    server = [NSString stringWithFormat:@"%@/%@%@", server, caption, @".smwu"];
+                }
+                [info setServer:[NSString stringWithFormat:@"%@/%@%@", server, caption, @".smwu"]];
+                break;
+                
+                // 其他情况
+            default:
+                [info setType:SM_SMWU];
+                if (![server hasSuffix:@".smwu"]) {
+                    server = [NSString stringWithFormat:@"%@/%@%@", server, caption, @".smwu"];
+                }
+                break;
+        }
+        [info setServer:server];
+    }
+    return info;
+}
+
+
 @end
