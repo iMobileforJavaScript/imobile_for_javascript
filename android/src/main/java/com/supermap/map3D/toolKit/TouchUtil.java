@@ -48,7 +48,7 @@ public class TouchUtil {
 
     /**
      * 触摸单体化建筑获取属性
-     * @param mSceneControl
+     * @param mSceneControlcloseWorkspace
      * @param event   触摸事件，虽然没有用还是要传MotionEvent，否则没有意义
      */
     public static Map<String, String> getAttribute(SceneControl mSceneControl, MotionEvent event) {
