@@ -265,6 +265,39 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
     }
 }
 
+#pragma mark MapControl的closeMap
+RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        [[mapControl map] close];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取UDB数据源的数据集列表
+RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)name:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[name,@219] forKeys:@[@"server",@"engineType"]];
+        Datasource* dataSource = [sMap.smMapWC openDatasource:params];
+        NSInteger count = [dataSource.datasets count];
+        NSString* name;
+        NSMutableArray* array = [[NSMutableArray alloc]init];
+        for(int i = 0; i < count; i++)
+        {
+            name = [[dataSource.datasets get:i] name];
+            NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
+            [info setObject:(name) forKey:(@"title")];
+            [array addObject:info];
+        }
+        resolve(array);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 #pragma mark 设置MapControl的Action
 RCT_REMAP_METHOD(setAction, setActionByActionType:(int)actionType resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
