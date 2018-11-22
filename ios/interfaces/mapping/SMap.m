@@ -7,21 +7,6 @@
 //
 
 #import "SMap.h"
-#import "Constants.h"
-#import "JSMapView.h"
-#import "SuperMap/Dataset.h"
-#import "SuperMap/Datasets.h"
-#import "SuperMap/Layers.h"
-#import "SuperMap/Maps.h"
-#import "SuperMap/Point2D.h"
-#import "SuperMap/Point2Ds.h"
-#import "SuperMap/Collector.h"
-#import "SuperMap/CoordSysTransParameter.h"
-#import "SuperMap/CoordSysTranslator.h"
-#import "SuperMap/CoordSysTransMethod.h"
-#import "SuperMap/PrjCoordSys.h"
-#import "SuperMap/Collector.h"
-#import "SuperMap/Layer.h"
 static SMap *sMap = nil;
 
 @implementation SMap
@@ -54,6 +39,14 @@ RCT_EXPORT_MODULE();
         sMap = [[self alloc] init];
     });
     
+    if (sMap.smMapWC == nil) {
+        sMap.smMapWC = [[SMMapWC alloc] init];
+    }
+    
+    if (sMap.smMapWC.workspace == nil) {
+        sMap.smMapWC.workspace = [[Workspace alloc] init];
+    }
+    
     return sMap;
 }
 
@@ -63,11 +56,6 @@ RCT_EXPORT_MODULE();
         sMap.smMapWC = [[SMMapWC alloc] init];
     }
     sMap.smMapWC.mapControl = mapControl;
-    if (sMap.smMapWC.workspace == nil) {
-        sMap.smMapWC.workspace = [[Workspace alloc] init];
-    }
-    
-//    [sMap setDelegate];
 }
 
 - (void)setDelegate {
@@ -81,10 +69,15 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
     @try {
         sMap = [SMap singletonInstance];
         BOOL result = [sMap.smMapWC openWorkspace:infoDic];
+        if (result) {
+            [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
+        }
+        sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
+        [sMap.smMapWC.mapControl.map refresh];
         [self openGPS];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
-        reject(@"Resources", exception.reason, nil);
+        reject(@"workspace", exception.reason, nil);
     }
 }
 
@@ -100,6 +93,7 @@ RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)
             [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
             sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
         }
+        [sMap.smMapWC.mapControl.map refresh];
         [self openGPS];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
@@ -128,18 +122,66 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
     }
 }
 
-#pragma mark 关闭工作空间及地图控件
+#pragma mark 关闭工作空间
 RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try {
         [sMap.smMapWC.mapControl.map close];
         [sMap.smMapWC.mapControl.map dispose];
-        [sMap.smMapWC.mapControl dispose];
+//        [sMap.smMapWC.mapControl dispose];
         [sMap.smMapWC.workspace close];
-        [sMap.smMapWC.workspace dispose];
+//        [sMap.smMapWC.workspace dispose];
         
-        sMap.smMapWC.mapControl = nil;
-        sMap.smMapWC.workspace = nil;
+//        sMap.smMapWC.mapControl = nil;
+//        sMap.smMapWC.workspace = nil;
+        
+        resolve([NSNumber numberWithBool:YES]);
+    }@catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 保存工作空间
+RCT_REMAP_METHOD(saveWorkspace, saveWorkspaceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    @try {
+        BOOL result = [sMap.smMapWC saveWorkspace];
+        resolve([NSNumber numberWithBool:result]);
+    }@catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 根据工作空间连接信息保存工作空间
+RCT_REMAP_METHOD(saveWorkspaceWithInfo, saveWorkspaceWithInfoWithInfo:(NSDictionary *)info resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL result = [sMap.smMapWC saveWorkspaceWithInfo:info];
+        resolve([NSNumber numberWithBool:result]);
+    }@catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 关闭地图控件
+RCT_REMAP_METHOD(closeMapControl, closeMapControlWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    @try {
+        if (sMap.smMapWC.mapControl.map) {
+            [sMap.smMapWC.mapControl.map close];
+            [sMap.smMapWC.mapControl.map dispose];
+        }
+        //        [sMap.smMapWC.mapControl dispose];
+        if (sMap.smMapWC.mapControl) {
+//            [sMap.smMapWC.mapControl dispose];
+        }
+        if (sMap.smMapWC.workspace) {
+            [sMap.smMapWC.workspace close];
+//            [sMap.smMapWC.workspace dispose];
+        }
+        
+//        sMap.smMapWC.mapControl = nil;
+//        sMap.smMapWC.workspace = nil;
         
         resolve([NSNumber numberWithBool:YES]);
     }@catch (NSException *exception) {
@@ -439,6 +481,30 @@ RCT_REMAP_METHOD(appointEditGeometry, appointEditGeometryByGeoId:(int)geoId laye
         Layer* layer = [mapControl.map.layers getLayerWithName:layerName];
         bool result = [mapControl appointEditGeometryWithID:geoId Layer:layer];
         resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取指定SymbolGroup中所有的group
+RCT_REMAP_METHOD(getSymbolGroups, getSymbolGroupsByType:(NSString *)type path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Resources* resoures = [SMap singletonInstance].smMapWC.workspace.resources;
+        NSArray* groups = [SMSymbol getSymbolGroups:resoures type:type path:path];
+        
+        resolve(groups);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取指定SymbolGroup中所有的symbol
+RCT_REMAP_METHOD(findSymbolsByGroups, findSymbolsByGroups:(NSString *)type path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Resources* resoures = [SMap singletonInstance].smMapWC.workspace.resources;
+        NSArray* symbols = [SMSymbol findSymbolsByGroups:resoures type:type path:path];
+        
+        resolve(symbols);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
