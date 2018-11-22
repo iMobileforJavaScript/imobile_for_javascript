@@ -28,5 +28,6 @@ public class EventConst {
     public static final String SSCENE_FLY = "com.supermap.RN.SMSceneControl.Scene_fly";
     public static final String SSCENE_ATTRIBUTE = "com.supermap.RN.SMSceneControl.Scene_attribute";
     public static final String SSCENE_SYMBOL = "com.supermap.RN.SMSceneControl.Scene_symbol";
+    public static final String SSCENE_FAVORITE = "com.supermap.RN.SMSceneControl.Scene_favorite";
 
 }

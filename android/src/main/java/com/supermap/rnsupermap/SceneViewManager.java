@@ -34,6 +34,7 @@ public class SceneViewManager extends SimpleViewManager<SceneControl> {
         m_ThemedReactContext = reactContext;
         if (mSceneControl == null) {
             mSceneControl = new SceneControl(m_ThemedReactContext);
+
         }
         SScene.setInstance(mSceneControl);
 //

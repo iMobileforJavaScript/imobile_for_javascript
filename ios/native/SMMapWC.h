@@ -19,6 +19,7 @@
 #import "SuperMap/DatasetType.h"
 #import "SuperMap/DatasetVectorInfo.h"
 #import "SuperMap/EngineType.h"
+#import "SMFileUtil.h"
 
 @interface SMMapWC : NSObject
 
@@ -28,5 +29,7 @@
 - (BOOL)openWorkspace:(NSDictionary *)infoDic;
 - (Datasource *)openDatasource:(NSDictionary *)params;
 - (Dataset *)addDatasetByName:(NSString *)name type:(DatasetType)type datasourceName:(NSString *)datasourceName datasourcePath:(NSString *)datasourcePath;
+- (BOOL)saveWorkspace;
+- (BOOL)saveWorkspaceWithInfo:(NSDictionary*)infoDic;
 
 @end

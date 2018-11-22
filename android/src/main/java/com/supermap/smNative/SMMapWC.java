@@ -39,27 +39,7 @@ public class SMMapWC {
 
     public boolean openWorkspace(Map data) {
         try {
-            WorkspaceConnectionInfo info = new WorkspaceConnectionInfo();
-            if (data.containsKey("name")) {
-                info.setName(data.get("name").toString());
-            }
-            if (data.containsKey("password")) {
-                info.setPassword(data.get("password").toString());
-            }
-            if (data.containsKey("server")) {
-                info.setServer(data.get("server").toString());
-            }
-            if (data.containsKey("type")) {
-                Double type = Double.parseDouble(data.get("type").toString());
-                info.setType((WorkspaceType) Enum.parse(WorkspaceType.class, type.intValue()));
-            }
-            if (data.containsKey("user")) {
-                info.setUser(data.get("user").toString());
-            }
-            if (data.containsKey("version")) {
-                Double version = Double.parseDouble(data.get("version").toString());
-                info.setVersion((WorkspaceVersion) Enum.parse(WorkspaceVersion.class, version.intValue()));
-            }
+            WorkspaceConnectionInfo info = setWorkspaceConnectionInfo(data, null);
 
             boolean result = this.workspace.open(info);
             info.dispose();
@@ -152,5 +132,57 @@ public class SMMapWC {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    public boolean saveWorkspace() {
+        try {
+            if (this.workspace == null) return false;
+            boolean saved = this.workspace.save();
+            return saved;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean saveWorkspaceWithInfo(Map data) {
+        try {
+            if (this.workspace == null) return false;
+            WorkspaceConnectionInfo info = setWorkspaceConnectionInfo(data, this.workspace);
+            boolean saved = this.workspace.save();
+            info.dispose();
+            return saved;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public WorkspaceConnectionInfo setWorkspaceConnectionInfo(Map data, Workspace workspace) {
+        WorkspaceConnectionInfo info;
+        if (workspace != null) {
+            info = workspace.getConnectionInfo();
+        } else {
+            info = new WorkspaceConnectionInfo();
+        }
+        if (data.containsKey("name")) {
+            info.setName(data.get("name").toString());
+        }
+        if (data.containsKey("password")) {
+            info.setPassword(data.get("password").toString());
+        }
+        if (data.containsKey("server")) {
+            info.setServer(data.get("server").toString());
+        }
+        if (data.containsKey("type")) {
+            Double type = Double.parseDouble(data.get("type").toString());
+            info.setType((WorkspaceType) Enum.parse(WorkspaceType.class, type.intValue()));
+        }
+        if (data.containsKey("user")) {
+            info.setUser(data.get("user").toString());
+        }
+        if (data.containsKey("version")) {
+            Double version = Double.parseDouble(data.get("version").toString());
+            info.setVersion((WorkspaceVersion) Enum.parse(WorkspaceVersion.class, version.intValue()));
+        }
+        return info;
     }
 }
