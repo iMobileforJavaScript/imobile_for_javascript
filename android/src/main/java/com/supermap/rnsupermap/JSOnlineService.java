@@ -39,24 +39,24 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
     public void download(final String path, final String filename, final Promise promise) {
         try {
             final OnlineService onlineService = getInstance();
-            onlineService.DownLoadFile(mReactContext.getApplicationContext(), filename, path, new DownLoadFile.DownLoadListener() {
-                @Override
-                public void getProgress(int progeress) {
-                    Log.e("++++++++++++", "+" + progeress);
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADING, progeress);
-                }
-
-                @Override
-                public void onComplete() {
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED, true);
-
-                }
-
-                @Override
-                public void onFailure() {
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, false);
-                }
-            });
+//            onlineService.downLoadFile(mReactContext.getApplicationContext(), filename, path, new DownLoadFile.DownLoadListener() {
+//                @Override
+//                public void getProgress(int progeress) {
+//                    Log.e("++++++++++++", "+" + progeress);
+//                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADING, progeress);
+//                }
+//
+//                @Override
+//                public void onComplete() {
+//                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED, true);
+//
+//                }
+//
+//                @Override
+//                public void onFailure() {
+//                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, false);
+//                }
+//            });
         } catch (Exception e) {
             promise.resolve(e);
         }
@@ -95,23 +95,23 @@ public class JSOnlineService extends ReactContextBaseJavaModule {
     public void upload(String filepath, String filename, final Promise promise) {
         try {
             final OnlineService onlineService = getInstance();
-            onlineService.UpLoadFile(filepath,filename,new UpLoadFile.UpLoadListener(){
-                @Override
-                public void getProgress(int progeress) {
-                    Log.e("++++++++++++", "+" + progeress);
-                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING, progeress);
-                }
-
-                @Override
-                public void onComplete() {
-
-                }
-
-                @Override
-                public void onFailure() {
-
-                }
-            });
+//            onlineService.upLoadFile(filepath,filename,new UpLoadFile.UpLoadListener(){
+//                @Override
+//                public void getProgress(int progeress) {
+//                    Log.e("++++++++++++", "+" + progeress);
+//                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING, progeress);
+//                }
+//
+//                @Override
+//                public void onComplete() {
+//
+//                }
+//
+//                @Override
+//                public void onFailure() {
+//
+//                }
+//            });
         } catch (Exception e) {
             promise.resolve(e);
         }
