@@ -155,6 +155,7 @@
 		0A332E72211D623E00F56F26 /* RCTConvert+RadiusUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE7211D623E00F56F26 /* RCTConvert+RadiusUnit.m */; };
 		0A332E73211D623E00F56F26 /* SceneViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE9211D623E00F56F26 /* SceneViewManager.m */; };
 		4AB9A1A621A54A9F008D87BD /* SMCartography.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AB9A1A521A54A9F008D87BD /* SMCartography.m */; };
+		4AB9A1BA21A7ABFD008D87BD /* SMSceneWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AB9A1B921A7ABFC008D87BD /* SMSceneWC.m */; };
 		D82C65AB214208DC00E9EEC5 /* JSWorkspaceType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */; };
 		D82F377A2189ABEF00F85267 /* SCollectorType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82F37792189ABEF00F85267 /* SCollectorType.m */; };
 		D83170CD21A39A5800DB5DC0 /* SMFileUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = D83170CB21A39A5800DB5DC0 /* SMFileUtil.m */; };
@@ -497,6 +498,8 @@
 		134814201AA4EA6300B7C361 /* libSupermap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSupermap.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AB9A1A421A54A68008D87BD /* SMCartography.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMCartography.h; sourceTree = "<group>"; };
 		4AB9A1A521A54A9F008D87BD /* SMCartography.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMCartography.m; sourceTree = "<group>"; };
+		4AB9A1B821A7ABFC008D87BD /* SMSceneWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSceneWC.h; sourceTree = "<group>"; };
+		4AB9A1B921A7ABFC008D87BD /* SMSceneWC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSceneWC.m; sourceTree = "<group>"; };
 		D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSWorkspaceType.m; sourceTree = "<group>"; };
 		D82C65AA214208DB00E9EEC5 /* JSWorkspaceType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSWorkspaceType.h; sourceTree = "<group>"; };
 		D82F37782189ABEF00F85267 /* SCollectorType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCollectorType.h; sourceTree = "<group>"; };
@@ -667,6 +670,8 @@
 			isa = PBXGroup;
 			children = (
 				00CCDFD721A7A03400008C81 /* Map3DToolKit */,
+				4AB9A1B821A7ABFC008D87BD /* SMSceneWC.h */,
+				4AB9A1B921A7ABFC008D87BD /* SMSceneWC.m */,
 				D854DA4F2187F5FD0075B5F8 /* SMCollector.h */,
 				D854DA502187F5FD0075B5F8 /* SMCollector.m */,
 				D83F3C40218BDA97001C56BE /* SMMapWC.h */,
@@ -1081,6 +1086,7 @@
 				0A332E06211D623E00F56F26 /* JSDatasets.m in Sources */,
 				0A332E18211D623E00F56F26 /* JSGeometry.m in Sources */,
 				0A332DF0211D623E00F56F26 /* JSBarChartData.m in Sources */,
+				4AB9A1BA21A7ABFD008D87BD /* SMSceneWC.m in Sources */,
 				D8DD42302175BB69009D80E9 /* JSResources.m in Sources */,
 				0A332E5B211D623E00F56F26 /* JSTextStyle.m in Sources */,
 				0A332E51211D623E00F56F26 /* JSSpeechManager.m in Sources */,
