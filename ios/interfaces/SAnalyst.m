@@ -25,8 +25,25 @@
 #import "SuperMap/Layer.h"
 #import "SuperMap/Layers.h"
 
+#import "Constants.h"
+#import "SScene.h"
+#import "SMSceneWC.h"
+#import "AnalysisHelper3D.h"
+
+@interface SAnalyst()<Analysis3DDelegate>
+
+@end
+
 @implementation SAnalyst
 RCT_EXPORT_MODULE();
+
+- (NSArray<NSString *> *)supportedEvents
+{
+    return @[
+                ANALYST_MEASURELINE,
+                ANALYST_MEASURESQUARE,
+             ];
+}
 
 RCT_REMAP_METHOD(analystBuffer, analystBufferByLayerName:(NSString*)layerName params:(NSDictionary*)params  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -129,4 +146,65 @@ RCT_REMAP_METHOD(analystBuffer, analystBufferByLayerName:(NSString*)layerName pa
         reject(@"BufferAnalyst", exception.reason, nil);
     }
 }
+
+
+
+/**
+ * 三维量算分析
+ *
+ * @param promise
+ */
+RCT_REMAP_METHOD(setMeasureLineAnalyst, setMeasureLineAnalystResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SceneControl* sceneControl = [[[SScene singletonInstance]smSceneWC] sceneControl];
+        [[AnalysisHelper3D sharedInstance] initializeWithSceneControl:sceneControl];
+        [AnalysisHelper3D sharedInstance].delegate = self;
+        [[AnalysisHelper3D sharedInstance] startMeasureAnalysis];
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+-(void)distanceResult:(double)distance{
+    [self sendEventWithName:ANALYST_MEASURELINE body:@(distance)];
+}
+
+/**
+ * 三维面积分析
+ *
+ * @param promise
+ */
+RCT_REMAP_METHOD(setMeasureSquareAnalyst, setMeasureSquareAnalystResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SceneControl* sceneControl = [[[SScene singletonInstance]smSceneWC] sceneControl];
+        [[AnalysisHelper3D sharedInstance] initializeWithSceneControl:sceneControl];
+        [AnalysisHelper3D sharedInstance].delegate = self;
+        [[AnalysisHelper3D sharedInstance] startSureArea];
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+-(void)areaResult:(double)area{
+    [self sendEventWithName:ANALYST_MEASURESQUARE body:@(area)];
+}
+
+/**
+ * 关闭所有分析
+ *
+ * @param promise
+ */
+RCT_REMAP_METHOD( closeAnalysis,  closeAnalysisResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SceneControl* sceneControl = [[[SScene singletonInstance]smSceneWC] sceneControl];
+        [[AnalysisHelper3D sharedInstance] initializeWithSceneControl:sceneControl];
+        [AnalysisHelper3D sharedInstance].delegate = nil;
+        [[AnalysisHelper3D sharedInstance] closeAnalysis];
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+
 @end

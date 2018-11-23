@@ -7,7 +7,8 @@
 //
 
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
-@interface SAnalyst : NSObject<RCTBridgeModule>
+@interface SAnalyst : RCTEventEmitter<RCTBridgeModule>
 
 @end

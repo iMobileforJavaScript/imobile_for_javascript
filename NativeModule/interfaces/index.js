@@ -2,7 +2,7 @@ import SMap from './SMap'
 import SAnalyst from './SAnalyst'
 import SCollector from './SCollector'
 import SScene  from './SScene'
-import SMCartography from './SMCartography'
+import SCartography from './SCartography'
 import {SOnlineService} from './iServer'
 
 export {
@@ -10,7 +10,7 @@ export {
   SAnalyst,
   SCollector,
   SScene,
-  SMCartography,
+  SCartography,
   /*在线模块功能*/
   SOnlineService,
 }

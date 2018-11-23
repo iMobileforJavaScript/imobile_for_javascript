@@ -9,5 +9,5 @@
 #import <React/RCTBridgeModule.h>
 
 @interface JSSystemUtil : NSObject<RCTBridgeModule>
-
++(BOOL)createFileDirectories:(NSString*)path;
 @end
