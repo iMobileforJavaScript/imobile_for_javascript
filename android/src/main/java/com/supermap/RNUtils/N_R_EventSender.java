@@ -39,14 +39,6 @@ public class N_R_EventSender {
     }
 
     public static void sendEvent(ReactContext reactContext,
-                           String eventName,
-                           @Nullable WritableMap params) {
-        reactContext
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit(eventName, params);
-    }
-
-    public static void sendEvent(ReactContext reactContext,
                                  String eventName,
                                  @Nullable WritableArray params) {
         reactContext

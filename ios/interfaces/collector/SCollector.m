@@ -22,6 +22,8 @@
 #import "SuperMap/DatasetVectorInfo.h"
 #import "SuperMap/Datasets.h"
 #import "SuperMap/Workspace.h"
+#import "SuperMap/LayerSetting.h"
+#import "SuperMap/LayerSettingVector.h"
 
 @implementation SCollector
 RCT_EXPORT_MODULE();
@@ -51,8 +53,9 @@ RCT_REMAP_METHOD(setStyle, setStyleByJson:(NSString*)styleJson resolver:(RCTProm
         Collector* collector = [self getCollector];
         GeoStyle* style = [[GeoStyle alloc] init];
         [style fromJson:styleJson];
-        
+        [style setFillSymbolID:8];
         collector.style = style;
+        NSString* styleJson = [collector.style toJson];
         
         resolve([[NSNumber alloc] initWithBool:YES]);
     } @catch (NSException *exception) {
@@ -75,21 +78,38 @@ RCT_REMAP_METHOD(getStyle, getStyleWithResolver:(RCTPromiseResolveBlock)resolve 
 }
 
 #pragma mark 设置用于存储采集数据的数据集，若数据源不可用，则自动创建
-RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSString*)name type:(DatasetType)type datasourceName:(NSString *)datasourceName datasourcePath:(NSString *)datasourcePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSString*)name type:(DatasetType)type datasourceName:(NSString *)datasourceName datasourcePath:(NSString *)datasourcePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
         Collector* collector = [self getCollector];
         Dataset* ds;
         Layer* layer;
+        
+        NSString* name = [info objectForKey:@"datasetName"];
+        NSNumber* type = [info objectForKey:@"datasetType"];
+        NSString* datasourceName = [info objectForKey:@"datasourceName"];
+        NSString* datasourcePath = [info objectForKey:@"datasourcePath"];
+        NSString* styleJson = [info objectForKey:@"style"];
+        GeoStyle* style = nil;
+        if (styleJson) {
+            style = [[GeoStyle alloc] init];
+            [style fromJson:styleJson];
+        }
+        
         if (name != nil && ![name isEqualToString:@""]) {
             layer = [sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
         }
         if (layer == nil) {
-            ds = [sMap.smMapWC addDatasetByName:name type:type datasourceName:datasourceName datasourcePath:datasourcePath];
+            ds = [sMap.smMapWC addDatasetByName:name type:type.intValue datasourceName:datasourceName datasourcePath:datasourcePath];
             layer = [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:true];
         } else {
             ds = layer.dataset;
         }
+        if (style) {
+            ((LayerSettingVector *)layer.layerSetting).geoStyle = style;
+        }
+        
         [layer setVisible:true];
         [layer setEditable:true];
         [collector setDataset:ds];

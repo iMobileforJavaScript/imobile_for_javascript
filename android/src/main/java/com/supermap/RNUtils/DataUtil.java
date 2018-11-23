@@ -110,4 +110,11 @@ public class DataUtil {
         return map;
     }
 
+    public static String getDataType(Object data) {
+        String typeName = data.getClass().getName();
+        int length= typeName.lastIndexOf(".");
+        String type = typeName.substring(length + 1);
+        return type;
+    }
+
 }

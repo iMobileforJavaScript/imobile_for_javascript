@@ -146,6 +146,7 @@ import SMLineChartView from './NativeModule/components/SMLineChartViewUI.js';
 import SMPieChartView from './NativeModule/components/SMPieChartViewUI.js';
 import SMInstrumentChartView from './NativeModule/components/SMInstrumentChartViewUI.js';
 import SMWorkspaceManagerView from './NativeModule/components/SMWorkspaceManagerComponent.js';
+import SMSymbolTable from './NativeModule/components/SMSymbolTable';
 
 import EngineType from './NativeModule/EngineType'
 import ThemeLabelItem from './NativeModule/ThemeLabelItem'
@@ -233,7 +234,8 @@ export {
   PolymerChart,
   RelationalPointChart,
   RelationalChartPoint,
-  
+  SMSymbolTable,
+
   Action,
   BufferEndType,
   RadiusUnit,

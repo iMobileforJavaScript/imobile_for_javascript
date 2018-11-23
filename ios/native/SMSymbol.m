@@ -132,4 +132,46 @@
     return symbols;
 }
 
++ (NSArray *)findSymbolsByIDs:(Resources *)resources type:(NSString *)type IDs:(NSArray *)IDs {
+    if (IDs == nil || IDs.count == 0) return nil;
+    NSMutableArray* symbols = [[NSMutableArray alloc] init];
+    
+    SymbolLibrary* lib;
+    if ([type isEqualToString:@"fill"]) {
+        lib = resources.fillLibrary;
+    } else if ([type isEqualToString:@"line"]) {
+        lib = resources.lineLibrary;
+    } else if ([type isEqualToString:@"marker"]) {
+        lib = resources.markerLibrary;
+    }
+    
+    for (int i = 0; i < IDs.count; i++) {
+        Symbol* symbol;
+        if (type == nil) {
+            symbol = [self findSymbolsByID:resources ID:[(NSNumber *)IDs[i] intValue]];
+        } else {
+            symbol = [lib findSymbolWithID:[(NSNumber *)IDs[i] intValue]];
+        }
+        [symbols addObject:symbol];
+    }
+    
+    return symbols;
+}
+
++ (Symbol *)findSymbolsByID:(Resources *)resources ID:(int)ID {
+    
+    Symbol* symbol;
+    symbol = [resources.fillLibrary findSymbolWithID:ID];
+    if (symbol) return symbol;
+    
+    symbol = [resources.lineLibrary findSymbolWithID:ID];
+    if (symbol) return symbol;
+    
+    symbol = [resources.markerLibrary findSymbolWithID:ID];
+    if (symbol) return symbol;
+    
+    return symbol;
+}
+
+
 @end

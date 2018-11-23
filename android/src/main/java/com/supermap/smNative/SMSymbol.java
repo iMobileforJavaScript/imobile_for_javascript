@@ -3,11 +3,15 @@ package com.supermap.smNative;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.RNUtils.DataUtil;
 import com.supermap.data.Resources;
 import com.supermap.data.Symbol;
 import com.supermap.data.SymbolGroup;
 import com.supermap.data.SymbolGroups;
 import com.supermap.data.SymbolLibrary;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SMSymbol {
 
@@ -21,7 +25,7 @@ public class SMSymbol {
             WritableMap fillGroup = Arguments.createMap();
             fillGroup.putString("name", rootGroup.getName());
             fillGroup.putInt("count", rootGroup.getCount());
-            fillGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, type, path));
+            fillGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, "fill", path));
             fillGroup.putString("path", rootGroup.getName());
             fillGroup.putString("type", "fill");
             groupArr.pushMap(fillGroup);
@@ -30,7 +34,7 @@ public class SMSymbol {
             WritableMap lineGroup = Arguments.createMap();
             lineGroup.putString("name", rootGroup.getName());
             lineGroup.putInt("count", rootGroup.getCount());
-            lineGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, type, path));
+            lineGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, "line", path));
             lineGroup.putString("path", rootGroup.getName());
             lineGroup.putString("type", "line");
             groupArr.pushMap(lineGroup);
@@ -39,7 +43,7 @@ public class SMSymbol {
             WritableMap markerGroup = Arguments.createMap();
             markerGroup.putString("name", rootGroup.getName());
             markerGroup.putInt("count", rootGroup.getCount());
-            markerGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, type, path));
+            markerGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, "marker", path));
             markerGroup.putString("path", rootGroup.getName());
             markerGroup.putString("type", "marker");
             groupArr.pushMap(markerGroup);
@@ -70,7 +74,7 @@ public class SMSymbol {
             groupInfo.putInt("count", group.getCount());
             groupInfo.putArray("childGroups", findAllSymbolGroups(group, type, _path));
             groupInfo.putString("path", _path);
-            groupInfo.putString("type", "line");
+            groupInfo.putString("type", type);
             groupArr.pushMap(groupInfo);
         }
 
@@ -141,5 +145,55 @@ public class SMSymbol {
             symbols.pushMap(symbolInfo);
         }
         return symbols;
+    }
+
+    public static List<Symbol> findSymbolsByIDs(Resources resources, String type, List IDs) {
+        List<Symbol> symbols = new ArrayList<>();
+
+        if (IDs.isEmpty()) {
+            return symbols;
+        }
+
+        SymbolLibrary lib;
+        if (type.equals("fill")) {
+            lib = resources.getFillLibrary();
+        } else if (type.equals("line")) {
+            lib = resources.getLineLibrary();
+        } else {
+            lib = resources.getMarkerLibrary();
+        }
+
+        for (int i = 0; i < IDs.size(); i++) {
+            Symbol symbol;
+            Object data = IDs.get(i);
+            int id;
+            if (DataUtil.getDataType(data).equals("Double")) {
+                id = ((Double) data).intValue();
+            } else {
+                id = (Integer) data;
+            }
+            if (type.equals("")) {
+                symbol = findSymbolsByID(resources, id);
+            } else {
+                symbol = lib.findSymbol(id);
+            }
+            symbols.add(symbol);
+        }
+
+        return symbols;
+    }
+
+  public static Symbol findSymbolsByID(Resources resources, int ID) {
+        Symbol symbol;
+        symbol = resources.getFillLibrary().findSymbol(ID);
+        if (symbol != null) return symbol;
+
+        symbol = resources.getLineLibrary().findSymbol(ID);
+        if (symbol != null) return symbol;
+
+        symbol = resources.getMarkerLibrary().findSymbol(ID);
+        if (symbol != null) return symbol;
+
+        return symbol;
     }
 }

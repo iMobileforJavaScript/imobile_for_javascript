@@ -4,11 +4,13 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.supermap.data.Dataset;
 import com.supermap.data.GeoStyle;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.Layer;
+import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMCollector;
 import com.supermap.smNative.SMMapWC;
@@ -83,15 +85,11 @@ public class SCollector extends ReactContextBaseJavaModule {
 
     /**
      * 设置用于存储采集数据的数据集，若数据源不可用，则自动创建
-     *
-     * @param name
-     * @param datasetType
-     * @param datasourceName
-     * @param datasourcePath
+     * @param data
      * @param promise
      */
     @ReactMethod
-    public void setDataset(String name, int datasetType, String datasourceName, String datasourcePath, Promise promise) {
+    public void setDataset(ReadableMap data, Promise promise) {
         try {
             SMMapWC smMapWC = SMap.getSMWorkspace();
             collector = getCollector();
@@ -99,15 +97,31 @@ public class SCollector extends ReactContextBaseJavaModule {
             Dataset ds;
             Layer layer = null;
 
+            String name = data.getString("datasetName");
+            int type = data.getInt("datasetType");
+            String datasourceName = data.getString("datasourceName");
+            String datasourcePath = data.getString("datasourcePath");
+            String style = data.getString("style");
+
+            GeoStyle geoStyle = null;
+            if (style != null) {
+                geoStyle = new GeoStyle();
+                geoStyle.fromJson(style);
+            }
+
             if (!name.equals("")) {
                 layer = smMapWC.getMapControl().getMap().getLayers().get(name);
             }
             if (layer == null) {
-                ds = smMapWC.addDatasetByName(name, datasetType, datasourceName, datasourcePath);
+                ds = smMapWC.addDatasetByName(name, type, datasourceName, datasourcePath);
+                layer = smMapWC.getMapControl().getMap().getLayers().add(ds, true);
             } else {
                 ds = layer.getDataset();
             }
 
+            if (geoStyle != null) {
+                ((LayerSettingVector)layer.getAdditionalSetting()).setStyle(geoStyle);
+            }
             collector.setDataset(ds);
 
             promise.resolve(true);
