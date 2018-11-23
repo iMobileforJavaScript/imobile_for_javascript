@@ -7,6 +7,7 @@
 //
 
 #import "JSSceneView.h"
+#import "SScene.h"
 
 @interface JSSceneView()
 {
@@ -34,6 +35,8 @@
                 }
             }
             [_sceneCtrl initSceneControl:(UIViewController*)target];
+            
+            [SScene setInstance:_sceneCtrl];
         }
     }
     timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(change) userInfo:nil repeats:YES];
