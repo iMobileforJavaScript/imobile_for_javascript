@@ -149,12 +149,7 @@
 		0A332E71211D623E00F56F26 /* RCTConvert+EncodeType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE5211D623E00F56F26 /* RCTConvert+EncodeType.m */; };
 		0A332E72211D623E00F56F26 /* RCTConvert+RadiusUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE7211D623E00F56F26 /* RCTConvert+RadiusUnit.m */; };
 		0A332E73211D623E00F56F26 /* SceneViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE9211D623E00F56F26 /* SceneViewManager.m */; };
-		0A6DE64221A2CC4100CD27EA /* SMSceneWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */; };
-		0AD1B26521A6AA55006E1B27 /* TouchUtil3D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD1B25A21A6AA54006E1B27 /* TouchUtil3D.m */; };
-		0AD1B26621A6AA55006E1B27 /* LableHelper3D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD1B25E21A6AA54006E1B27 /* LableHelper3D.m */; };
-		0AD1B26721A6AA55006E1B27 /* FlyHelper3D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD1B25F21A6AA54006E1B27 /* FlyHelper3D.m */; };
-		0AD1B26821A6AA55006E1B27 /* AnalysisHelper3D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD1B26121A6AA54006E1B27 /* AnalysisHelper3D.m */; };
-		0AD1B26921A6AA55006E1B27 /* Utils3D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD1B26221A6AA54006E1B27 /* Utils3D.m */; };
+		4AB9A1A621A54A9F008D87BD /* SMCartography.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AB9A1A521A54A9F008D87BD /* SMCartography.m */; };
 		D82C65AB214208DC00E9EEC5 /* JSWorkspaceType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */; };
 		D82F377A2189ABEF00F85267 /* SCollectorType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82F37792189ABEF00F85267 /* SCollectorType.m */; };
 		D83170CD21A39A5800DB5DC0 /* SMFileUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = D83170CB21A39A5800DB5DC0 /* SMFileUtil.m */; };
@@ -483,20 +478,9 @@
 		0A332DE7211D623E00F56F26 /* RCTConvert+RadiusUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RadiusUnit.m"; sourceTree = "<group>"; };
 		0A332DE8211D623E00F56F26 /* SceneViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneViewManager.h; sourceTree = "<group>"; };
 		0A332DE9211D623E00F56F26 /* SceneViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SceneViewManager.m; sourceTree = "<group>"; };
-		0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSceneWC.m; sourceTree = "<group>"; };
-		0A6DE64121A2CC4000CD27EA /* SMSceneWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSceneWC.h; sourceTree = "<group>"; };
-		0AD1B25A21A6AA54006E1B27 /* TouchUtil3D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchUtil3D.m; sourceTree = "<group>"; };
-		0AD1B25B21A6AA54006E1B27 /* FlyHelper3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlyHelper3D.h; sourceTree = "<group>"; };
-		0AD1B25C21A6AA54006E1B27 /* AnalysisHelper3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalysisHelper3D.h; sourceTree = "<group>"; };
-		0AD1B25D21A6AA54006E1B27 /* Utils3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils3D.h; sourceTree = "<group>"; };
-		0AD1B25E21A6AA54006E1B27 /* LableHelper3D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LableHelper3D.m; sourceTree = "<group>"; };
-		0AD1B25F21A6AA54006E1B27 /* FlyHelper3D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FlyHelper3D.m; sourceTree = "<group>"; };
-		0AD1B26021A6AA54006E1B27 /* TouchUtil3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchUtil3D.h; sourceTree = "<group>"; };
-		0AD1B26121A6AA54006E1B27 /* AnalysisHelper3D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnalysisHelper3D.m; sourceTree = "<group>"; };
-		0AD1B26221A6AA54006E1B27 /* Utils3D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils3D.m; sourceTree = "<group>"; };
-		0AD1B26321A6AA54006E1B27 /* SingletonObject_SuperMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SingletonObject_SuperMap.h; sourceTree = "<group>"; };
-		0AD1B26421A6AA55006E1B27 /* LableHelper3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LableHelper3D.h; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libSupermap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSupermap.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4AB9A1A421A54A68008D87BD /* SMCartography.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMCartography.h; sourceTree = "<group>"; };
+		4AB9A1A521A54A9F008D87BD /* SMCartography.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMCartography.m; sourceTree = "<group>"; };
 		D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSWorkspaceType.m; sourceTree = "<group>"; };
 		D82C65AA214208DB00E9EEC5 /* JSWorkspaceType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSWorkspaceType.h; sourceTree = "<group>"; };
 		D82F37782189ABEF00F85267 /* SCollectorType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCollectorType.h; sourceTree = "<group>"; };
@@ -577,24 +561,6 @@
 			path = iServer;
 			sourceTree = "<group>";
 		};
-		0AD1B25921A6AA54006E1B27 /* Map3DToolKit */ = {
-			isa = PBXGroup;
-			children = (
-				0AD1B25A21A6AA54006E1B27 /* TouchUtil3D.m */,
-				0AD1B25B21A6AA54006E1B27 /* FlyHelper3D.h */,
-				0AD1B25C21A6AA54006E1B27 /* AnalysisHelper3D.h */,
-				0AD1B25D21A6AA54006E1B27 /* Utils3D.h */,
-				0AD1B25E21A6AA54006E1B27 /* LableHelper3D.m */,
-				0AD1B25F21A6AA54006E1B27 /* FlyHelper3D.m */,
-				0AD1B26021A6AA54006E1B27 /* TouchUtil3D.h */,
-				0AD1B26121A6AA54006E1B27 /* AnalysisHelper3D.m */,
-				0AD1B26221A6AA54006E1B27 /* Utils3D.m */,
-				0AD1B26321A6AA54006E1B27 /* SingletonObject_SuperMap.h */,
-				0AD1B26421A6AA55006E1B27 /* LableHelper3D.h */,
-			);
-			path = Map3DToolKit;
-			sourceTree = "<group>";
-		};
 		134814211AA4EA7D00B7C361 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -657,6 +623,8 @@
 				D854DA7F218834510075B5F8 /* SAnalyst.m */,
 				D8FB9CF4219510C800597AE5 /* SScene.h */,
 				D8FB9CF5219510C800597AE5 /* SScene.m */,
+				4AB9A1A421A54A68008D87BD /* SMCartography.h */,
+				4AB9A1A521A54A9F008D87BD /* SMCartography.m */,
 			);
 			path = interfaces;
 			sourceTree = "<group>";
@@ -664,14 +632,14 @@
 		D854D86A218310730075B5F8 /* native */ = {
 			isa = PBXGroup;
 			children = (
-				0AD1B25921A6AA54006E1B27 /* Map3DToolKit */,
-				005693B3219168CE00AEC46E /* iServer */,
 				D854DA4F2187F5FD0075B5F8 /* SMCollector.h */,
 				D854DA502187F5FD0075B5F8 /* SMCollector.m */,
 				D83F3C40218BDA97001C56BE /* SMMapWC.h */,
 				D83F3C41218BDA97001C56BE /* SMMapWC.m */,
-				0A6DE64121A2CC4000CD27EA /* SMSceneWC.h */,
-				0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */,
+				D8FB9D51219AD56800597AE5 /* SMSymbol.h */,
+				D8FB9D52219AD56800597AE5 /* SMSymbol.m */,
+				D8FB9D81219E4D5300597AE5 /* SMLayer.h */,
+				D8FB9D82219E4D5300597AE5 /* SMLayer.m */,
 			);
 			path = native;
 			sourceTree = "<group>";
@@ -1072,9 +1040,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0AD1B26821A6AA55006E1B27 /* AnalysisHelper3D.m in Sources */,
 				0A332E57211D623E00F56F26 /* JSSupplyCenterType.m in Sources */,
 				0A332E2C211D623E00F56F26 /* JSMap.m in Sources */,
+				4AB9A1A621A54A9F008D87BD /* SMCartography.m in Sources */,
 				0A332E06211D623E00F56F26 /* JSDatasets.m in Sources */,
 				0A332E18211D623E00F56F26 /* JSGeometry.m in Sources */,
 				0A332DF0211D623E00F56F26 /* JSBarChartData.m in Sources */,
@@ -1125,7 +1093,6 @@
 				0A332E6B211D623E00F56F26 /* JSWorkspace.m in Sources */,
 				0A332E16211D623E00F56F26 /* JSGeoLine.m in Sources */,
 				0A332E45211D623E00F56F26 /* JSRecordset.m in Sources */,
-				0AD1B26921A6AA55006E1B27 /* Utils3D.m in Sources */,
 				0A332DF7211D623E00F56F26 /* JSCallOut.m in Sources */,
 				D854DA512187F5FD0075B5F8 /* SMCollector.m in Sources */,
 				0A332E65211D623E00F56F26 /* JSTrackingLayer.m in Sources */,
@@ -1195,10 +1162,8 @@
 				0A332E05211D623E00F56F26 /* JSDataset.m in Sources */,
 				0A332E39211D623E00F56F26 /* JSPieChartViewManager.m in Sources */,
 				0A332E2A211D623E00F56F26 /* JSLocationAnalystParameter.m in Sources */,
-				0A6DE64221A2CC4100CD27EA /* SMSceneWC.m in Sources */,
 				0A332E6F211D623E00F56F26 /* RCTConvert+BufferEndType.m in Sources */,
 				0A332E52211D623E00F56F26 /* JSSTOMPManager.m in Sources */,
-				0AD1B26621A6AA55006E1B27 /* LableHelper3D.m in Sources */,
 				0A332E3C211D623E00F56F26 /* JSPointDensityChart.m in Sources */,
 				0A332DEE211D623E00F56F26 /* JSAMQPSender.m in Sources */,
 				0A332DF8211D623E00F56F26 /* JSChartData.m in Sources */,
@@ -1217,7 +1182,6 @@
 				0A332E14211D623E00F56F26 /* JSFeature.m in Sources */,
 				D854DA3C2186F9AF0075B5F8 /* SCollector.m in Sources */,
 				0A332DFF211D623E00F56F26 /* JSColorGradientType.m in Sources */,
-				0AD1B26721A6AA55006E1B27 /* FlyHelper3D.m in Sources */,
 				0A332E0A211D623E00F56F26 /* JSDatasource.m in Sources */,
 				0A332E6A211D623E00F56F26 /* JSWeightFieldInfos.m in Sources */,
 				0A332E27211D623E00F56F26 /* JSLineChart.m in Sources */,
@@ -1243,7 +1207,6 @@
 				0A332DFA211D623E00F56F26 /* JSChartPoint.m in Sources */,
 				0A332E04211D623E00F56F26 /* JSDataDownloadService.m in Sources */,
 				0A332E64211D623E00F56F26 /* JSTrack.m in Sources */,
-				0AD1B26521A6AA55006E1B27 /* TouchUtil3D.m in Sources */,
 				0A332E15211D623E00F56F26 /* JSFeatureSet.m in Sources */,
 				0A0118A52122BC5600BC4AAB /* JSThemeLabel.m in Sources */,
 				0A17279F212E88AC00CF978C /* JSGPSElementType.m in Sources */,
