@@ -152,25 +152,30 @@
         } else {
             symbol = [lib findSymbolWithID:[(NSNumber *)IDs[i] intValue]];
         }
-        [symbols addObject:symbol];
+        if (symbol != nil) {
+            [symbols addObject:symbol];
+        }
     }
     
     return symbols;
 }
 
 + (Symbol *)findSymbolsByID:(Resources *)resources ID:(int)ID {
-    
-    Symbol* symbol;
-    symbol = [resources.fillLibrary findSymbolWithID:ID];
-    if (symbol) return symbol;
-    
-    symbol = [resources.lineLibrary findSymbolWithID:ID];
-    if (symbol) return symbol;
-    
-    symbol = [resources.markerLibrary findSymbolWithID:ID];
-    if (symbol) return symbol;
-    
-    return symbol;
+    @try {
+        Symbol* symbol;
+        symbol = [resources.fillLibrary findSymbolWithID:ID];
+        if (symbol) return symbol;
+        
+        symbol = [resources.lineLibrary findSymbolWithID:ID];
+        if (symbol) return symbol;
+        
+        symbol = [resources.markerLibrary findSymbolWithID:ID];
+        if (symbol) return symbol;
+        
+        return symbol;
+    } @catch (NSException *exception) {
+        return nil;
+    }
 }
 
 

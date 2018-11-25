@@ -17,6 +17,7 @@ import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.view.SymbolLibView;
 import com.supermap.smNative.SMSymbol;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

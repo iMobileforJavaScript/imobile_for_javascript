@@ -177,23 +177,29 @@ public class SMSymbol {
             } else {
                 symbol = lib.findSymbol(id);
             }
-            symbols.add(symbol);
+            if (symbol != null) {
+                symbols.add(symbol);
+            }
         }
 
         return symbols;
     }
 
   public static Symbol findSymbolsByID(Resources resources, int ID) {
-        Symbol symbol;
-        symbol = resources.getFillLibrary().findSymbol(ID);
-        if (symbol != null) return symbol;
+        try {
+            Symbol symbol;
+            symbol = resources.getFillLibrary().findSymbol(ID);
+            if (symbol != null) return symbol;
 
-        symbol = resources.getLineLibrary().findSymbol(ID);
-        if (symbol != null) return symbol;
+            symbol = resources.getLineLibrary().findSymbol(ID);
+            if (symbol != null) return symbol;
 
-        symbol = resources.getMarkerLibrary().findSymbol(ID);
-        if (symbol != null) return symbol;
+            symbol = resources.getMarkerLibrary().findSymbol(ID);
+            if (symbol != null) return symbol;
 
-        return symbol;
+            return symbol;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
