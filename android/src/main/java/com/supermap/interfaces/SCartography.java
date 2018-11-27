@@ -5,22 +5,21 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.supermap.data.Environment;
-import com.supermap.data.FillGradientMode;
-import com.supermap.data.GeoStyle;
-import com.supermap.data.Size2D;
+import com.supermap.data.*;
 import com.supermap.interfaces.mapping.SMap;
-import com.supermap.mapping.*;
+import com.supermap.mapping.LayerSettingGrid;
+import com.supermap.mapping.LayerSettingVector;
+import com.supermap.smNative.SMCartography;
 
 /**
  * 地图制图类
  */
-public class SMCartography extends ReactContextBaseJavaModule {
+public class SCartography extends ReactContextBaseJavaModule {
 
-    public static final String REACT_CLASS = "SMCartography";
+    public static final String REACT_CLASS = "SCartography";
     private static ReactApplicationContext context;
 
-    public SMCartography(ReactApplicationContext context) {
+    public SCartography(ReactApplicationContext context) {
         super(context);
         this.context = context;
     }
@@ -41,7 +40,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setMakerSymbolID(int makerSymbolID, int layerIndex, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
             if (layerSettingVector != null) {
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setMarkerSymbolID(makerSymbolID);
@@ -67,7 +66,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setMarkerSize(int mm, int layerIndex, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
             if (layerSettingVector != null) {
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setMarkerSize(new Size2D(mm, mm));
@@ -93,7 +92,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setMarkerColor(String color, int layerIndex, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
             if (layerSettingVector != null) {
                 int parseColor = Color.parseColor(color);
                 int[] rgb = getRGB(parseColor);
@@ -123,7 +122,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setMarkerAngle(int angle, int layerIndex, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
             if (layerSettingVector != null) {
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setMarkerAngle(angle);
@@ -149,7 +148,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setMarkerAlpha(int alpha, int layerIndex, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
             if (layerSettingVector != null) {
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setFillOpaqueRate(100 - alpha);
@@ -178,7 +177,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setLineSymbolID(int lineSymbolID, int layerIndex, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
             if (layerSettingVector != null) {
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setLineSymbolID(lineSymbolID);
@@ -204,7 +203,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setLineWidth(int mm, int layerIndex, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
             if (layerSettingVector != null) {
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 double width = (double) mm / 10;
@@ -231,7 +230,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setLineColor(String lineColor, int layerIndex, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
             if (layerSettingVector != null) {
                 int parseColor = Color.parseColor(lineColor);
                 int[] rgb = getRGB(parseColor);
@@ -261,7 +260,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
 //    @ReactMethod
 //    public void setLineAlpha(int alpha, int layerIndex, Promise promise)  {
 //        try {
-//            LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+//            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
 //            if (layerSettingVector != null) {
 //                GeoStyle geoStyle = layerSettingVector.getStyle();
 //
@@ -292,7 +291,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setFillSymbolID(int FillSymbolID, int layerIndex, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
             if (layerSettingVector != null) {
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setFillSymbolID(FillSymbolID);
@@ -318,7 +317,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setFillForeColor(String fillForeColor, int layerIndex, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
             if (layerSettingVector != null) {
                 int parseColor = android.graphics.Color.parseColor(fillForeColor);
                 int[] rgb = getRGB(parseColor);
@@ -348,7 +347,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setFillBackColor(String fillBackColor, int layerIndex, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
             if (layerSettingVector != null) {
                 int parseColor = android.graphics.Color.parseColor(fillBackColor);
                 int[] rgb = getRGB(parseColor);
@@ -378,7 +377,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setFillOpaqueRate(int fillOpaqueRate, int layerIndex, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
             if (layerSettingVector != null) {
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setFillOpaqueRate(100 - fillOpaqueRate);//此接口是设置不透明度
@@ -405,7 +404,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     public void setFillLinearGradient(int layerIndex, Promise promise) {
         try {
             if (!Environment.isOpenGLMode()) {
-                LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+                LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
                 if (layerSettingVector != null) {
                     GeoStyle geoStyle = layerSettingVector.getStyle();
                     geoStyle.setFillGradientMode(FillGradientMode.LINEAR);
@@ -436,7 +435,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     public void setFillRadialGradient(int layerIndex, Promise promise) {
         try {
             if (!Environment.isOpenGLMode()) {
-                LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+                LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
                 if (layerSettingVector != null) {
                     GeoStyle geoStyle = layerSettingVector.getStyle();
                     geoStyle.setFillGradientMode(FillGradientMode.RADIAL);
@@ -467,7 +466,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     public void setFillSquareGradient(int layerIndex, Promise promise) {
         try {
             if (!Environment.isOpenGLMode()) {
-                LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+                LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
                 if (layerSettingVector != null) {
                     GeoStyle geoStyle = layerSettingVector.getStyle();
                     geoStyle.setFillGradientMode(FillGradientMode.SQUARE);
@@ -498,7 +497,7 @@ public class SMCartography extends ReactContextBaseJavaModule {
     public void setFillNoneGradient(int layerIndex, Promise promise) {
         try {
             if (!Environment.isOpenGLMode()) {
-                LayerSettingVector layerSettingVector = getLayerSettingVector(layerIndex);
+                LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
                 if (layerSettingVector != null) {
                     GeoStyle geoStyle = layerSettingVector.getStyle();
                     geoStyle.setFillGradientMode(FillGradientMode.NONE);
@@ -525,53 +524,289 @@ public class SMCartography extends ReactContextBaseJavaModule {
 
     /*栅格风格
     * ********************************************************************************************/
-
-
-    /*文本风格
-    * ********************************************************************************************/
-
-
     /**
-     * 获取矢量图层设置类
+     * 设置透明度(0-100%)
      *
-     * @param layerIndex 图层索引
-     * @return
+     * @param promise
      */
-    private LayerSettingVector getLayerSettingVector(int layerIndex) {
+    @ReactMethod
+    public void setGridOpaqueRate(int gridOpaqueRate, int layerIndex, Promise promise) {
         try {
-            Layer layer = getLayerByIndex(layerIndex);
-            //判断是否是专题图
-            if (layer != null && layer.getTheme() == null) {
-                if (layer.getAdditionalSetting() != null && layer.getAdditionalSetting().getType() == LayerSettingType.VECTOR) {
-                    layer.setEditable(true);
-                    return (LayerSettingVector) layer.getAdditionalSetting();
-                } else {
-                    return null;
-                }
+            LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerIndex);
+            if (layerSettingGrid != null) {
+//                layerSettingGrid.setOpaqueRate(100 - gridOpaqueRate); //新增接口，待打开
+
+                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+                promise.resolve(true);
             } else {
-                return null;
+                promise.resolve(false);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            promise.reject(e);
         }
     }
 
     /**
-     * 根据图层索引获取图层对象
+     * 设置亮度(-100%-100%)
      *
-     * @return
+     * @param promise
      */
-    private Layer getLayerByIndex(int layerIndex) {
+    @ReactMethod
+    public void setGridContrast(int gridContrast, int layerIndex, Promise promise) {
         try {
-            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
-            Layers layers = mapControl.getMap().getLayers();
-            return layers.get(layerIndex);
+            LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerIndex);
+            if (layerSettingGrid != null) {
+//                layerSettingGrid.setContrast(gridContrast); //新增接口，待打开
+
+                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            promise.reject(e);
         }
     }
+
+    /**
+     * 设置对比度(-100%-100%)
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setGridBrightness(int gridBrightness, int layerIndex, Promise promise) {
+        try {
+            LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerIndex);
+            if (layerSettingGrid != null) {
+//                layerSettingGrid.setBrightness(gridBrightness); //新增接口，待打开
+
+                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /*文本风格
+    * ********************************************************************************************/
+    private boolean saveGeoText(Recordset recordset, Geometry geometry) {
+        recordset.edit();
+        recordset.setGeometry(geometry);
+        boolean update = recordset.update();
+
+        SMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+        recordset.close();
+        recordset.dispose();
+
+        return update;
+    }
+
+    /**
+     * 设置文本字体的名称
+     *
+     * @param fontName 字体名称，例如：“宋体”
+     * @param promise
+     */
+    @ReactMethod
+    public void  setTextFont(String fontName, int geometryID, int layerIndex, Promise promise) {
+        try {
+            Recordset recordset = SMCartography.getRecordset(geometryID, layerIndex);
+            Geometry geometry = SMCartography.getGeoText(recordset);
+            if (recordset != null && geometry != null) {
+                GeoText geoText = (GeoText) geometry;
+                TextStyle textStyle = geoText.getTextStyle();
+                textStyle.setFontName(fontName);
+                geoText.setTextStyle(textStyle);
+
+                boolean update = saveGeoText(recordset, geometry);
+
+                promise.resolve(update);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置字号
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void  setTextFontSize(int size, int geometryID, int layerIndex, Promise promise) {
+        try {
+            Recordset recordset = SMCartography.getRecordset(geometryID, layerIndex);
+            Geometry geometry = SMCartography.getGeoText(recordset);
+            if (recordset != null && geometry != null) {
+                GeoText geoText = (GeoText) geometry;
+                TextStyle textStyle = geoText.getTextStyle();
+                textStyle.setFontHeight((double) size);
+                geoText.setTextStyle(textStyle);
+
+                boolean update = saveGeoText(recordset, geometry);
+
+                promise.resolve(update);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置字体颜色
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void  setTextFontColor(String color, int geometryID, int layerIndex, Promise promise) {
+        try {
+            Recordset recordset = SMCartography.getRecordset(geometryID, layerIndex);
+            Geometry geometry = SMCartography.getGeoText(recordset);
+            if (recordset != null && geometry != null) {
+                int parseColor = Color.parseColor(color);
+                int[] rgb = getRGB(parseColor);
+                com.supermap.data.Color textColor = new com.supermap.data.Color(rgb[0], rgb[1], rgb[2]);
+
+                GeoText geoText = (GeoText) geometry;
+                TextStyle textStyle = geoText.getTextStyle();
+                textStyle.setForeColor(textColor);
+                geoText.setTextStyle(textStyle);
+
+                boolean update = saveGeoText(recordset, geometry);
+
+                promise.resolve(update);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置旋转角度
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void  setTextFontRotation(int angle, int geometryID, int layerIndex, Promise promise) {
+        try {
+            Recordset recordset = SMCartography.getRecordset(geometryID, layerIndex);
+            Geometry geometry = SMCartography.getGeoText(recordset);
+            if (recordset != null && geometry != null) {
+                GeoText geoText = (GeoText) geometry;
+                TextStyle textStyle = geoText.getTextStyle();
+                textStyle.setRotation(angle);
+                geoText.setTextStyle(textStyle);
+
+                boolean update = saveGeoText(recordset, geometry);
+
+                promise.resolve(update);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置位置
+     * @param textAlignment 例如:“TOPLEFT” “TOPCENTER” ...
+     * @param promise
+     */
+    @ReactMethod
+    public void  setTextFontPosition(String textAlignment, int geometryID, int layerIndex, Promise promise) {
+        try {
+            Recordset recordset = SMCartography.getRecordset(geometryID, layerIndex);
+            Geometry geometry = SMCartography.getGeoText(recordset);
+            if (recordset != null && geometry != null) {
+                GeoText geoText = (GeoText) geometry;
+                TextStyle textStyle = geoText.getTextStyle();
+                TextAlignment alignment = SMCartography.getTextAlignment(textAlignment);
+                if (alignment != null) {
+                    textStyle.setAlignment(alignment);
+                    geoText.setTextStyle(textStyle);
+                    boolean update = saveGeoText(recordset, geometry);
+                    promise.resolve(update);
+                } else {
+                    promise.resolve(false);
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置字体风格(加粗BOLD、斜体ITALIC、下划线UNDERLINE、删除线STRIKEOUT、轮廓OUTLINE、阴影SHADOW)
+     * @param style 例如:“BOLD” “ITALIC” ...
+     * @param whether  设置为true或false
+     * @param promise
+     */
+    @ReactMethod
+    public void  setTextStyle(String style, boolean whether, int geometryID, int layerIndex, Promise promise) {
+        try {
+            Recordset recordset = SMCartography.getRecordset(geometryID, layerIndex);
+            Geometry geometry = SMCartography.getGeoText(recordset);
+            if (recordset != null && geometry != null) {
+                GeoText geoText = (GeoText) geometry;
+                TextStyle textStyle = geoText.getTextStyle();
+                switch (style) {
+                    case "BOLD":
+                        textStyle.setBold(whether);
+                        break;
+                    case "ITALIC":
+                        textStyle.setItalic(whether);
+                        break;
+                    case "UNDERLINE":
+                        textStyle.setUnderline(whether);
+                        break;
+                    case "STRIKEOUT":
+                        textStyle.setStrikeout(whether);
+                        break;
+                    case "OUTLINE":
+                        textStyle.setOutline(whether);
+                        break;
+                    case "SHADOW":
+                        textStyle.setShadow(whether);
+                        break;
+                }
+                geoText.setTextStyle(textStyle);
+
+                boolean update = saveGeoText(recordset, geometry);
+
+                promise.resolve(update);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
 
     /**
      * 16进制颜色码转换为RGB

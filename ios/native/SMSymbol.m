@@ -16,31 +16,31 @@
     
     if ([type isEqualToString:@""] && [path isEqualToString:@""]) {
         [groupArr addObject:@{
-                              @"name": resources.fillLibrary.rootGroup.name,
-                              @"count": [NSNumber numberWithInteger:resources.fillLibrary.rootGroup.count],
-                              @"childGroups": [self findAllSymbolGroups:resources.fillLibrary.rootGroup type:@"fill" path:resources.fillLibrary.rootGroup.name],
-                              @"path": resources.fillLibrary.rootGroup.name,
-                              @"type": @"fill",
+                              @"name": @"点符号库",
+                              @"count": [NSNumber numberWithInteger:resources.lineLibrary.rootGroup.count],
+                              @"childGroups": [self findAllSymbolGroups:resources.markerLibrary.rootGroup type:@"marker" path:resources.markerLibrary.rootGroup.name],
+                              @"path": resources.markerLibrary.rootGroup.name,
+                              @"type": @"marker",
                               }];
         [groupArr addObject:@{
-                              @"name": resources.lineLibrary.rootGroup.name,
+                              @"name": @"线型符号库",
                               @"count": [NSNumber numberWithInteger:resources.lineLibrary.rootGroup.count],
                               @"childGroups": [self findAllSymbolGroups:resources.lineLibrary.rootGroup type:@"line" path:resources.lineLibrary.rootGroup.name],
                               @"path": resources.lineLibrary.rootGroup.name,
                               @"type": @"line",
                               }];
         [groupArr addObject:@{
-                              @"name": resources.markerLibrary.rootGroup.name,
-                              @"count": [NSNumber numberWithInteger:resources.lineLibrary.rootGroup.count],
-                              @"childGroups": [self findAllSymbolGroups:resources.markerLibrary.rootGroup type:@"marker" path:resources.markerLibrary.rootGroup.name],
-                              @"path": resources.markerLibrary.rootGroup.name,
-                              @"type": @"marker",
+                              @"name": @"填充符号库",
+                              @"count": [NSNumber numberWithInteger:resources.fillLibrary.rootGroup.count],
+                              @"childGroups": [self findAllSymbolGroups:resources.fillLibrary.rootGroup type:@"fill" path:resources.fillLibrary.rootGroup.name],
+                              @"path": resources.fillLibrary.rootGroup.name,
+                              @"type": @"fill",
                               }];
         NSLog(@"%@", resources.markerLibrary.rootGroup.name);
     } else if ([type isEqualToString:@""] && ![path isEqualToString:@""]) {
-        [groupArr addObject:[self findAllSymbolGroups:resources.fillLibrary.rootGroup type:@"fill" path:path]];
-        [groupArr addObject:[self findAllSymbolGroups:resources.lineLibrary.rootGroup type:@"line" path:path]];
         [groupArr addObject:[self findAllSymbolGroups:resources.markerLibrary.rootGroup type:@"marker" path:path]];
+        [groupArr addObject:[self findAllSymbolGroups:resources.lineLibrary.rootGroup type:@"line" path:path]];
+        [groupArr addObject:[self findAllSymbolGroups:resources.fillLibrary.rootGroup type:@"fill" path:path]];
     } else if (![type isEqualToString:@""]) {
         if ([type isEqualToString:@"fill"]) {
             symbolLib = resources.fillLibrary;
@@ -131,5 +131,52 @@
     
     return symbols;
 }
+
++ (NSArray *)findSymbolsByIDs:(Resources *)resources type:(NSString *)type IDs:(NSArray *)IDs {
+    if (IDs == nil || IDs.count == 0) return nil;
+    NSMutableArray* symbols = [[NSMutableArray alloc] init];
+    
+    SymbolLibrary* lib;
+    if ([type isEqualToString:@"fill"]) {
+        lib = resources.fillLibrary;
+    } else if ([type isEqualToString:@"line"]) {
+        lib = resources.lineLibrary;
+    } else if ([type isEqualToString:@"marker"]) {
+        lib = resources.markerLibrary;
+    }
+    
+    for (int i = 0; i < IDs.count; i++) {
+        Symbol* symbol;
+        if (type == nil) {
+            symbol = [self findSymbolsByID:resources ID:[(NSNumber *)IDs[i] intValue]];
+        } else {
+            symbol = [lib findSymbolWithID:[(NSNumber *)IDs[i] intValue]];
+        }
+        if (symbol != nil) {
+            [symbols addObject:symbol];
+        }
+    }
+    
+    return symbols;
+}
+
++ (Symbol *)findSymbolsByID:(Resources *)resources ID:(int)ID {
+    @try {
+        Symbol* symbol;
+        symbol = [resources.fillLibrary findSymbolWithID:ID];
+        if (symbol) return symbol;
+        
+        symbol = [resources.lineLibrary findSymbolWithID:ID];
+        if (symbol) return symbol;
+        
+        symbol = [resources.markerLibrary findSymbolWithID:ID];
+        if (symbol) return symbol;
+        
+        return symbol;
+    } @catch (NSException *exception) {
+        return nil;
+    }
+}
+
 
 @end

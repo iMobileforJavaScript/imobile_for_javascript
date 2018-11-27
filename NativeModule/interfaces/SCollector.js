@@ -29,16 +29,22 @@ async function getStyle() {
 
 /**
  * 设置数据集。若所在数据源不可用，则新建数据源后，再创建数据集
- * @param name
- * @param type
+ * @param datasetName
+ * @param datasetType
  * @param datasourceName
  * @param datasourcePath  数据源所在路径，不含文件名
  * @returns {Promise.<Promise|Promise.<void>>}
  */
-async function setDataset(name = '', type = DatasetType.POINT, datasourceName = 'Collection', datasourcePath = '') {
+async function setDataset(info = {}) {
   try {
-    let path = (datasourcePath ? datasourcePath : (await Utility.appendingHomeDirectory() + '/iTablet/data/local/'))
-    return Collector.setDataset(name, type, datasourceName, path)
+    // name = '', type = DatasetType.POINT, datasourceName = 'Collection', datasourcePath = ''
+    info.datasetName = info.datasetName || ''
+    info.datasetType = info.datasetType || DatasetType.POINT
+    info.datasourcePath = info.datasourcePath || (await Utility.appendingHomeDirectory() + '/iTablet/data/local/')
+    info.datasourceName = info.datasourceName || 'Collection'
+    info.datasourcePath = info.datasourcePath || ''
+    info.style = info.style ? JSON.stringify(info.style) : ''
+    return Collector.setDataset(info)
   } catch (e) {
     console.error(e)
   }

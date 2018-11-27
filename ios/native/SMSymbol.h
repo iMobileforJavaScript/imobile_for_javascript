@@ -22,4 +22,5 @@
 //+ (NSMutableArray *)findAllSymbolGroups:(SymbolGroup *)symbolGroup type:(NSString *)type path:(NSString *)path;
 + (SymbolGroup *)findSymbolGroups:(Resources *)resources type:(NSString *)type path:(NSString *)path;
 + (NSArray *)findSymbolsByGroups:(Resources *)resources type:(NSString *)type path:(NSString *)path;
++ (NSArray *)findSymbolsByIDs:(Resources *)resources type:(NSString *)type IDs:(NSArray *)IDs;
 @end

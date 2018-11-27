@@ -15,11 +15,6 @@ import xml2json from './utility/xml2json.min'
  */
 export default class GeoStyle {
 
-  constructor(props) {
-    // this.x2j = new xml2json()
-    this.geoStyle = {}
-  }
-
   /**
    * 设置线状符号型风格或点状符号的颜色
    * @param r
@@ -29,9 +24,10 @@ export default class GeoStyle {
    */
   setLineColor(r, g, b, a = 1) {
     const rgba = a << 24 | b << 16 | g << 8 | a * 255
-    Object.assign(this.geoStyle, {
-      LineColor: rgba,
-    })
+    // Object.assign(this.geoStyle, {
+    //   LineColor: rgba,
+    // })
+    this.LineColor = rgba
   }
 
   /**
@@ -39,10 +35,11 @@ export default class GeoStyle {
    线状符号可以用户自定义，也可以使用系统自带的符号库。使用系统自带符号库时，其相应的的编码参见开发指南 SuperMap Objects 资源库一览。
    * @param symbolId
    */
-  setLineSymbolID(symbolId) {
-    Object.assign(this.geoStyle, {
-      LineSymbolID: symbolId
-    })
+  setLineStyle(symbolId) {
+    // Object.assign(this.geoStyle, {
+    //   LineStyle: symbolId
+    // })
+    this.LineStyle = symbolId
   }
 
   /**
@@ -50,9 +47,10 @@ export default class GeoStyle {
    * @param lineWidth
    */
   setLineWidth(lineWidth) {
-    Object.assign(this.geoStyle, {
-      LineWidth: lineWidth,
-    })
+    // Object.assign(this.geoStyle, {
+    //   LineWidth: lineWidth,
+    // })
+    this.LineWidth = lineWidth
   }
 
   /**
@@ -60,10 +58,11 @@ export default class GeoStyle {
    点状符号可以用户自定义，也可以使用系统自带的符号库。使用系统自带符号库时，其相应的的编码参见开发指南 SuperMap Objects 资源库一览。
    * @param markerSymbolId
    */
-  setMarkerSymbolID(markerSymbolId) {
-    Object.assign(this.geoStyle, {
-      MarkerSymbolID: markerSymbolId,
-    })
+  setMarkerStyle(markerSymbolId) {
+    // Object.assign(this.geoStyle, {
+    //   MarkerStyle: markerSymbolId,
+    // })
+    this.MarkerStyle = markerSymbolId
   }
 
   /**
@@ -71,9 +70,21 @@ export default class GeoStyle {
    * @param size2D
    */
   setMarkerSize(size2D) {
-    Object.assign(this.geoStyle, {
-      MarkerSize: size2D,
-    })
+    // Object.assign(this.geoStyle, {
+    //   MarkerSize: size2D,
+    // })
+    this.MarkerSize = size2D
+  }
+
+  /**
+   * 设置填充符号ID
+   * @param id
+   */
+  setFillStyle(id) {
+    // Object.assign(this.geoStyle, {
+    //   FillStyle: id,
+    // })
+    this.FillStyle = id
   }
 
   /**
@@ -85,9 +96,10 @@ export default class GeoStyle {
    */
   setFillForeColor(r, g, b, a = 1) {
     const rgba = a << 24 | b << 16 | g << 8 | a * 255
-    Object.assign(this.geoStyle, {
-      FillForeColor: rgba,
-    })
+    // Object.assign(this.geoStyle, {
+    //   FillForeColor: rgba,
+    // })
+    this.FillForeColor = rgba
   }
 
   /**
@@ -95,9 +107,10 @@ export default class GeoStyle {
    * @param rate
    */
   setFillOpaqueRate(rate) {
-    Object.assign(this.geoStyle, {
-      FillOpaqueRate: rate,
-    })
+    // Object.assign(this.geoStyle, {
+    //   FillOpaqueRate: rate,
+    // })
+    this.FillOpaqueRate = rate
   }
 
   /**
@@ -109,9 +122,10 @@ export default class GeoStyle {
    */
   setPointColor(r, g, b, a = 1) {
     const rgba = a << 24 | b << 16 | g << 8 | a * 255
-    Object.assign(this.geoStyle, {
-      PointColor: rgba,
-    })
+    // Object.assign(this.geoStyle, {
+    //   PointColor: rgba,
+    // })
+    this.PointColor = rgba
   }
 
   /**
@@ -119,10 +133,12 @@ export default class GeoStyle {
    * @returns {*}
    */
   getLineColor() {
-    if (!this.geoStyle) {
-      return null
-    }
-    const rgba = this.geoStyle['LineColor']
+    // if (!this.geoStyle) {
+    //   return null
+    // }
+    // const rgba = this.geoStyle['LineColor']
+    if (!this.LineColor) return null
+    const rgba = this.LineColor
     const r = rgba & 0xff
     const g = (rgba >> 8) & 0xff
     const b = (rgba >> 16) & 0xff
@@ -136,11 +152,15 @@ export default class GeoStyle {
    * 返回线状符号的编码。此编码用于唯一标识各线状符号
    * @returns {*}
    */
-  getLineSymbolID() {
-    if (!this.geoStyle) {
+  getLineStyle() {
+    // if (!this.geoStyle) {
+    //   return null
+    // }
+    // return this.geoStyle['LineStyle']
+    if (!this.LineStyle) {
       return null
     }
-    return this.geoStyle['LineSymbolID']
+    return this.LineStyle
   }
 
   /**
@@ -148,21 +168,29 @@ export default class GeoStyle {
    * @returns {*}
    */
   getLineWidth() {
-    if (!this.geoStyle) {
+    // if (!this.geoStyle) {
+    //   return null
+    // }
+    // return this.geoStyle['LineWidth']
+    if (!this.LineWidth) {
       return null
     }
-    return this.geoStyle['LineWidth']
+    return this.LineWidth
   }
 
   /**
    * 返回点状符号的编码。此编码用于唯一标识各点状符号
    * @returns {*}
    */
-  getMarkerSymbolID() {
-    if (!this.geoStyle) {
+  getMarkerStyle() {
+    // if (!this.geoStyle) {
+    //   return null
+    // }
+    // return this.geoStyle['MarkerStyle']
+    if (!this.MarkerStyle) {
       return null
     }
-    return this.geoStyle['MarkerSymbolID']
+    return this.MarkerStyle
   }
 
   /**
@@ -170,10 +198,29 @@ export default class GeoStyle {
    * @returns {*}
    */
   getMarkerSize() {
-    if (!this.geoStyle) {
+    // if (!this.geoStyle) {
+    //   return null
+    // }
+    // return this.geoStyle['MarkerSize']
+    if (!this.MarkerSize) {
       return null
     }
-    return this.geoStyle['MarkerSize']
+    return this.MarkerSize
+  }
+
+  /**
+   * 返回填充符号的编码。此编码用于唯一标识各点状符号
+   * @returns {*}
+   */
+  getFillStyle() {
+    // if (!this.geoStyle) {
+    //   return null
+    // }
+    // return this.geoStyle['FillStyle']
+    if (!this.FillStyle) {
+      return null
+    }
+    return this.FillStyle
   }
 
   /**
@@ -181,10 +228,14 @@ export default class GeoStyle {
    * @returns {*}
    */
   getFillForeColor() {
-    if (!this.geoStyle) {
+    // if (!this.geoStyle) {
+    //   return null
+    // }
+    // const rgba = this.geoStyle['FillForeColor']
+    if (!this.FillForeColor) {
       return null
     }
-    const rgba = this.geoStyle['FillForeColor']
+    const rgba = this.FillForeColor
     const r = rgba & 0xff
     const g = (rgba >> 8) & 0xff
     const b = (rgba >> 16) & 0xff
@@ -199,10 +250,14 @@ export default class GeoStyle {
    * @returns {*}
    */
   getFillOpaqueRate() {
-    if (!this.geoStyle) {
+    // if (!this.geoStyle) {
+    //   return null
+    // }
+    // return this.geoStyle['FillOpaqueRate']
+    if (!this.FillOpaqueRate) {
       return null
     }
-    return this.geoStyle['FillOpaqueRate']
+    return this.FillOpaqueRate
   }
 
   /**
@@ -210,10 +265,14 @@ export default class GeoStyle {
    * @returns {*}
    */
   getPointColor() {
-    if (!this.geoStyle) {
+    // if (!this.geoStyle) {
+    //   return null
+    // }
+    // const rgba = this.geoStyle['PointColor']
+    if (!this.PointColor) {
       return null
     }
-    const rgba = this.geoStyle['PointColor']
+    const rgba = this.PointColor
     const r = rgba & 0xff
     const g = (rgba >> 8) & 0xff
     const b = (rgba >> 16) & 0xff

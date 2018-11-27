@@ -16,6 +16,7 @@
         info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
         
         bool openWsResult = [_workspace open:info];
+       // _workspace = 
         [info dispose];
         
         return openWsResult;
@@ -180,7 +181,6 @@
                 if (![server hasSuffix:@".smw"]) {
                     server = [NSString stringWithFormat:@"%@/%@%@", server, caption, @".smw"];
                 }
-                [info setServer:[NSString stringWithFormat:@"%@/%@%@", server, caption, @".smw"]];
                 break;
                 
                 // SXWU 文件工作空间信息设置
@@ -189,7 +189,6 @@
                 if (![server hasSuffix:@".sxwu"]) {
                     server = [NSString stringWithFormat:@"%@/%@%@", server, caption, @".sxwu"];
                 }
-                [info setServer:[NSString stringWithFormat:@"%@/%@%@", server, caption, @".sxwu"]];
                 break;
                 
                 // SMWU 工作空间信息设置
@@ -198,7 +197,6 @@
                 if (![server hasSuffix:@".smwu"]) {
                     server = [NSString stringWithFormat:@"%@/%@%@", server, caption, @".smwu"];
                 }
-                [info setServer:[NSString stringWithFormat:@"%@/%@%@", server, caption, @".smwu"]];
                 break;
                 
                 // 其他情况

@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-@class SymbolGroup,Color;
+@class SymbolGroup,Color,Symbol;
 //typedef enum {
 //    UISymbolGroupSrcollHorizontal,
 //    UISymbolGroupSrcollVertical
@@ -16,10 +16,9 @@
 @protocol SymbolLibLegendDelegate<NSObject>
 @optional
 /*
- @param symbolID 单元格中symbol符号的id
- @param symbolName 单元格中symbol符号的名称
+ @param symbol 单元格中symbol符号
  */
--(void)onCellViewClickEvent:(NSInteger)symbolID symbolName:(NSString*)symbolName;
+-(void)onSymbolClick:(Symbol*)symbol;
 @end
 
 @interface SymbolLibLegend : UIView

@@ -5,6 +5,7 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
+import com.supermap.component.SMSymbolTable;
 import com.supermap.interfaces.SAnalyst;
 import com.supermap.interfaces.SCollectorType;
 import com.supermap.interfaces.mapping.SLayerManager;
@@ -32,7 +33,7 @@ public class SupermapFullPackage implements ReactPackage {
         return Arrays.<ViewManager>asList(
                 new MapViewManager(),new LegendViewManager(),
                 new LayerListViewManager(),new ScaleViewManager(),new CallOutManager()
-                ,new SceneViewManager()
+                ,new SceneViewManager(), new SMSymbolTable()
         );
     }
 
@@ -180,8 +181,9 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new SScene(reactContext));
         modules.add(new JSLayer3DType(reactContext));
         modules.add(new JSImageFormatType(reactContext));
+        modules.add(new SCollector(reactContext));
         modules.add(new SCollectorType(reactContext));
-		modules.add(new SMCartography(reactContext));
+		modules.add(new SCartography(reactContext));
 
         /*
         * 在线模块功能
