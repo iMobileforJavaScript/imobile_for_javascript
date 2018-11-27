@@ -35,7 +35,7 @@
             info.version = (int)version.integerValue;
         }
         
-    
+        _workspace.resources;
         bool openWsResult = [_workspace open:info];
         [info dispose];
         [_sceneControl.scene setWorkspace:_workspace];

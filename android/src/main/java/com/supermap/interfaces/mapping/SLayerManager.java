@@ -11,12 +11,12 @@ import com.supermap.smNative.SMLayer;
 public class SLayerManager extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SLayerManager";
     private static SLayerManager analyst;
-    private static ReactApplicationContext context;
+//    private static ReactApplicationContext context;
     ReactContext mReactContext;
 
     public SLayerManager(ReactApplicationContext context) {
         super(context);
-        this.context = context;
+//        this.context = context;
         mReactContext = context;
     }
 

@@ -62,6 +62,10 @@ public class SMap extends ReactContextBaseJavaModule {
         if (sMap == null) {
             sMap = new SMap(context);
         }
+        if (sMap.smMapWC == null) {
+            sMap.smMapWC = new SMMapWC();
+        }
+        setWorkspace(null);
         return sMap;
     }
 
@@ -69,17 +73,26 @@ public class SMap extends ReactContextBaseJavaModule {
         if (sMap == null) {
             sMap = new SMap(context);
         }
+        if (sMap.smMapWC == null) {
+            sMap.smMapWC = new SMMapWC();
+        }
+        setWorkspace(null);
         return sMap;
     }
 
     public static void setInstance(MapControl mapControl) {
         sMap = getInstance();
-        if (sMap.smMapWC == null) {
-            sMap.smMapWC = new SMMapWC();
-        }
         sMap.smMapWC.setMapControl(mapControl);
+        setWorkspace(null);
+    }
+
+    public static void setWorkspace(Workspace workspace) {
         if (sMap.smMapWC.getWorkspace() == null) {
-            sMap.smMapWC.setWorkspace(new Workspace());
+            if (workspace == null) {
+                sMap.smMapWC.setWorkspace(new Workspace());
+            } else {
+                sMap.smMapWC.setWorkspace(workspace);
+            }
         }
     }
 
@@ -126,7 +139,7 @@ public class SMap extends ReactContextBaseJavaModule {
             Datasource datasource = sMap.smMapWC.openDatasource(params);
             sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
 
-            if (datasource != null && defaultIndex >= 0) {
+            if (datasource != null && defaultIndex >= 0 && datasource.getDatasets().getCount() > 0) {
                 Dataset ds = datasource.getDatasets().get(defaultIndex);
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                 map.getLayers().add(ds, true);
@@ -162,10 +175,11 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void saveWorkspaceWithInfo(Map data, Promise promise) {
+    public void saveWorkspaceWithInfo(ReadableMap data, Promise promise) {
         try {
             sMap = getInstance();
-            boolean result = sMap.smMapWC.saveWorkspaceWithInfo(data);
+            Map info = data.toHashMap();
+            boolean result = sMap.smMapWC.saveWorkspaceWithInfo(info);
             promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
@@ -316,7 +330,7 @@ public class SMap extends ReactContextBaseJavaModule {
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             Maps maps = sMap.smMapWC.getWorkspace().getMaps();
 
-            if (maps.getCount() > 0) {
+            if (maps.getCount() > 0 && index >= 0) {
                 String name = maps.get(index);
                 map.open(name);
 
@@ -334,11 +348,8 @@ public class SMap extends ReactContextBaseJavaModule {
                 sMap.smMapWC.getMapControl().setAction(Action.PAN);
                 map.setVisibleScalesEnabled(false);
                 map.refresh();
-
-                promise.resolve(true);
-            } else {
-                promise.reject("没有地图");
             }
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -702,10 +713,16 @@ public class SMap extends ReactContextBaseJavaModule {
                 public void geometrySelected(GeometrySelectedEvent event) {
                     int id = event.getGeometryID();
                     Layer layer = event.getLayer();
-                    String layerId = JSLayer.registerId(layer);
 
                     WritableMap map = Arguments.createMap();
-                    map.putString("layerId", layerId);
+                    WritableMap layerInfo = Arguments.createMap();
+                    layerInfo.putString("name", layer.getName());
+                    layerInfo.putString("caption", layer.getCaption());
+                    layerInfo.putBoolean("editable", layer.isEditable());
+                    layerInfo.putBoolean("visible", layer.isVisible());
+                    layerInfo.putBoolean("selectable", layer.isSelectable());
+
+                    map.putMap("layerInfo", layerInfo);
                     map.putInt("id", id);
 
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -735,6 +752,7 @@ public class SMap extends ReactContextBaseJavaModule {
             };
             sMap = getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.addGeometrySelectedListener(mGeometrySelectedListener);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

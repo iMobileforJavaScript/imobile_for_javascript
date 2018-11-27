@@ -117,6 +117,9 @@ public class SMMapWC {
                 info.setServer(datasourcePath + "/" + datasourceName + ".udb");
 
                 datasource = workspace.getDatasources().create(info);
+                if (datasource == null) {
+                    datasource = workspace.getDatasources().open(info);
+                }
             }
 
             Datasets datasets = datasource.getDatasets();
@@ -147,9 +150,8 @@ public class SMMapWC {
     public boolean saveWorkspaceWithInfo(Map data) {
         try {
             if (this.workspace == null) return false;
-            WorkspaceConnectionInfo info = setWorkspaceConnectionInfo(data, this.workspace);
+            setWorkspaceConnectionInfo(data, this.workspace);
             boolean saved = this.workspace.save();
-            info.dispose();
             return saved;
         } catch (Exception e) {
             return false;

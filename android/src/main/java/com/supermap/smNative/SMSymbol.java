@@ -22,35 +22,35 @@ public class SMSymbol {
 
         if (type.equals("") && path.equals("")) {
             SymbolGroup rootGroup = resources.getFillLibrary().getRootGroup();
-            WritableMap fillGroup = Arguments.createMap();
-            fillGroup.putString("name", rootGroup.getName());
-            fillGroup.putInt("count", rootGroup.getCount());
-            fillGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, "fill", path));
-            fillGroup.putString("path", rootGroup.getName());
-            fillGroup.putString("type", "fill");
-            groupArr.pushMap(fillGroup);
+            rootGroup = resources.getMarkerLibrary().getRootGroup();
+            WritableMap markerGroup = Arguments.createMap();
+            markerGroup.putString("name", "点符号库");
+            markerGroup.putInt("count", rootGroup.getCount());
+            markerGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, "marker", path));
+            markerGroup.putString("path", rootGroup.getName());
+            markerGroup.putString("type", "marker");
+            groupArr.pushMap(markerGroup);
 
             rootGroup = resources.getLineLibrary().getRootGroup();
             WritableMap lineGroup = Arguments.createMap();
-            lineGroup.putString("name", rootGroup.getName());
+            lineGroup.putString("name", "线型符号库");
             lineGroup.putInt("count", rootGroup.getCount());
             lineGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, "line", path));
             lineGroup.putString("path", rootGroup.getName());
             lineGroup.putString("type", "line");
             groupArr.pushMap(lineGroup);
 
-            rootGroup = resources.getMarkerLibrary().getRootGroup();
-            WritableMap markerGroup = Arguments.createMap();
-            markerGroup.putString("name", rootGroup.getName());
-            markerGroup.putInt("count", rootGroup.getCount());
-            markerGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, "marker", path));
-            markerGroup.putString("path", rootGroup.getName());
-            markerGroup.putString("type", "marker");
-            groupArr.pushMap(markerGroup);
+            WritableMap fillGroup = Arguments.createMap();
+            fillGroup.putString("name", "填充符号库");
+            fillGroup.putInt("count", rootGroup.getCount());
+            fillGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, "fill", path));
+            fillGroup.putString("path", rootGroup.getName());
+            fillGroup.putString("type", "fill");
+            groupArr.pushMap(fillGroup);
         } else if (type.equals("") && !path.equals("")) {
-            groupArr.pushArray(findAllSymbolGroups(resources.getFillLibrary().getRootGroup(), type, path));
-            groupArr.pushArray(findAllSymbolGroups(resources.getLineLibrary().getRootGroup(), type, path));
             groupArr.pushArray(findAllSymbolGroups(resources.getMarkerLibrary().getRootGroup(), type, path));
+            groupArr.pushArray(findAllSymbolGroups(resources.getLineLibrary().getRootGroup(), type, path));
+            groupArr.pushArray(findAllSymbolGroups(resources.getFillLibrary().getRootGroup(), type, path));
         } else if (!type.equals("")) {
             if (type.equals("fill")) {
                 symbolLibrary = resources.getFillLibrary();
