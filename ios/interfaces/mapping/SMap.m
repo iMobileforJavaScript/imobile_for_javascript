@@ -88,7 +88,7 @@ RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)
         Datasource* dataSource = [sMap.smMapWC openDatasource:params];
         [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
         
-        if (dataSource && defaultIndex >= 0) {
+        if (dataSource && defaultIndex >= 0 && dataSource.datasets.count > 0) {
             Dataset* ds = [dataSource.datasets get:defaultIndex];
             [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
             sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
@@ -236,7 +236,7 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
         Map* map = sMap.smMapWC.mapControl.map;
         Maps* maps = sMap.smMapWC.workspace.maps;
         
-        if (maps.count > 0) {
+        if (maps.count > 0 && index >= 0) {
             NSString* mapName = [maps get:index];
             [map open: mapName];
             if (viewEntire == YES) {
@@ -255,11 +255,8 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
             [sMap.smMapWC.mapControl setAction:PAN];
             sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
             [map refresh];
-            
-            resolve([NSNumber numberWithBool:YES]);
-        } else {
-            reject(@"MapControl", @"没有地图",nil);
         }
+        resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
@@ -507,7 +504,7 @@ RCT_REMAP_METHOD(removeGeometrySelectedListener,removeGeometrySelectedListenerBy
     }
 }
 
-#pragma mark 去除手势监听
+#pragma mark 制定可编辑图层
 RCT_REMAP_METHOD(appointEditGeometry, appointEditGeometryByGeoId:(int)geoId layerName:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
@@ -631,6 +628,7 @@ RCT_REMAP_METHOD(findSymbolsByGroups, findSymbolsByGroups:(NSString *)type path:
     //    NSInteger nsLayer = (NSInteger)layer;
     NSMutableDictionary *layerInfo = [[NSMutableDictionary alloc] init];
     [layerInfo setObject:layer.name forKey:@"name"];
+    [layerInfo setObject:layer.caption forKey:@"caption"];
     [layerInfo setObject:[NSNumber numberWithBool:layer.editable] forKey:@"editable"];
     [layerInfo setObject:[NSNumber numberWithBool:layer.visible] forKey:@"visible"];
     [layerInfo setObject:[NSNumber numberWithBool:layer.selectable] forKey:@"selectable"];
