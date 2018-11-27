@@ -122,6 +122,8 @@ public class SCollector extends ReactContextBaseJavaModule {
             if (geoStyle != null) {
                 ((LayerSettingVector)layer.getAdditionalSetting()).setStyle(geoStyle);
             }
+            layer.setVisible(true);
+            layer.setEditable(true);
             collector.setDataset(ds);
 
             promise.resolve(true);
@@ -240,6 +242,7 @@ public class SCollector extends ReactContextBaseJavaModule {
                 collector = getCollector();
                 collector.submit();
             }
+            SMap.getSMWorkspace().getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
