@@ -494,7 +494,7 @@ RCT_REMAP_METHOD(addGeometrySelectedListener, addGeometrySelectedListenerByResol
 }
 
 #pragma mark 去除手势监听
-RCT_REMAP_METHOD(removeGeometrySelectedListener,removeGeometrySelectedListenerById:(NSString*)Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(removeGeometrySelectedListener, resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
         mapControl.geometrySelectedDelegate = nil;

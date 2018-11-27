@@ -44,13 +44,6 @@ RCT_CUSTOM_VIEW_PROPERTY(tableStyle, NSDictionary, SymbolLibLegend) {
 }
 RCT_EXPORT_VIEW_PROPERTY(onSymbolClick, RCTBubblingEventBlock)
 
-- (NSArray<NSString *> *)supportedEvents
-{
-    return @[
-             SYMBOL_CLICK,
-             ];
-}
-
 - (UIView *)view
 {
     symbolLibLegend = [[SymbolLibLegend alloc] init];
@@ -89,6 +82,7 @@ RCT_EXPORT_VIEW_PROPERTY(onSymbolClick, RCTBubblingEventBlock)
 
 - (void)setStyle:(NSDictionary *)style view:(SymbolLibLegend *)view {
     if ([style objectForKey:@"orientation"]) {
+        
         view.isScrollDirectionVertical = [(NSNumber *)[style objectForKey:@"orientation"] intValue];
     }
     if ([style objectForKey:@"height"] || [style objectForKey:@"width"]) {
@@ -96,6 +90,8 @@ RCT_EXPORT_VIEW_PROPERTY(onSymbolClick, RCTBubblingEventBlock)
     }
     if ([style objectForKey:@"lineSpacing"] >= 0) {
         view.itemLineSpacing = [(NSNumber *)[style objectForKey:@"lineSpacing"] doubleValue];
+    } else {
+        view.itemLineSpacing = 10;
     }
     if ([style objectForKey:@"cellSpacing"] >= 0) {
         view.itemInteritemSpacing = [(NSNumber *)[style objectForKey:@"cellSpacing"] doubleValue];
@@ -115,7 +111,7 @@ RCT_EXPORT_VIEW_PROPERTY(onSymbolClick, RCTBubblingEventBlock)
         CGFloat g = [(NSNumber *)[textColor objectForKey:@"g"] doubleValue];
         CGFloat b = [(NSNumber *)[textColor objectForKey:@"b"] doubleValue];
         CGFloat a = [(NSNumber *)[textColor objectForKey:@"a"] doubleValue];
-        view.textColor = [[Color alloc] initWithR:r G:g B:b A:(a >= 0 ? a : 1)];
+        view.textColor = [[Color alloc] initWithR:r G:g B:b A:(a >= 0 ? a * 255 : 255)];
     }
     if ([style objectForKey:@"legendBackgroundColor"]) {
         NSDictionary* legendBackgroundColor = [style objectForKey:@"legendBackgroundColor"];
@@ -123,7 +119,7 @@ RCT_EXPORT_VIEW_PROPERTY(onSymbolClick, RCTBubblingEventBlock)
         CGFloat g = [(NSNumber *)[legendBackgroundColor objectForKey:@"g"] doubleValue];
         CGFloat b = [(NSNumber *)[legendBackgroundColor objectForKey:@"b"] doubleValue];
         CGFloat a = [(NSNumber *)[legendBackgroundColor objectForKey:@"a"] doubleValue];
-        view.legendBackgroundColor = [[Color alloc] initWithR:r G:g B:b A:(a >= 0 ? a : 1)];
+        view.legendBackgroundColor = [[Color alloc] initWithR:r G:g B:b A:(a >= 0 ? a * 255 : 255)];
     }
     [view reloadLegend];
 //    return symbols;
