@@ -105,7 +105,7 @@ public class SMSymbol {
 
     public static SymbolGroup findSymbolGroups(Resources resources, String type, String path) {
 
-        if (type.equals("") || path.equals("")) return null;
+        if (type.equals("")) return null;
 
         SymbolGroup group;
         String[] pathParams = path.split("/");
@@ -128,12 +128,30 @@ public class SMSymbol {
 
     public static WritableArray findSymbolsByGroups(Resources resources, String type, String path) {
 
-        if (type.equals("") || path.equals("")) return null;
+        if (type.equals("")) return null;
 
         WritableArray symbols = Arguments.createArray();
         SymbolGroup group = findSymbolGroups(resources, type, path);
+        if (path.equals("")) {
+            findSymbolsInGroup(symbols, group, type, path);
+        } else {
+            for (int i = 0; i< group.getCount(); i++) {
+                Symbol symbol = group.get(i);
+                WritableMap symbolInfo = Arguments.createMap();
 
-        for (int i = 0; i< group.getCount(); i++) {
+                symbolInfo.putString("groupPath", path);
+                symbolInfo.putString("name", symbol.getName());
+                symbolInfo.putInt("id", symbol.getID());
+                symbolInfo.putString("type", type);
+
+                symbols.pushMap(symbolInfo);
+            }
+        }
+        return symbols;
+    }
+
+    public static void findSymbolsInGroup(WritableArray symbols, SymbolGroup group, String type, String path) {
+        for (int i = 0; i < group.getCount(); i++) {
             Symbol symbol = group.get(i);
             WritableMap symbolInfo = Arguments.createMap();
 
@@ -144,7 +162,11 @@ public class SMSymbol {
 
             symbols.pushMap(symbolInfo);
         }
-        return symbols;
+        SymbolGroups groups = group.getChildGroups();
+        for (int i = 0; i < groups.getCount(); i++) {
+            SymbolGroup symbolGroup = groups.get(i);
+            findSymbolsInGroup(symbols, symbolGroup, type, path + '/' + symbolGroup.getName());
+        }
     }
 
     public static List<Symbol> findSymbolsByIDs(Resources resources, String type, List IDs) {

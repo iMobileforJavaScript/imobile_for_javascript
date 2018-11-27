@@ -24,6 +24,8 @@
 #import "SuperMap/Workspace.h"
 #import "SuperMap/LayerSetting.h"
 #import "SuperMap/LayerSettingVector.h"
+#import "SuperMap/PrjCoordSys.h"
+#import "SuperMap/PrjCoordSysType.h"
 
 @implementation SCollector
 RCT_EXPORT_MODULE();
@@ -82,6 +84,7 @@ RCT_REMAP_METHOD(getStyle, getStyleWithResolver:(RCTPromiseResolveBlock)resolve 
 RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
         Collector* collector = [self getCollector];
         Dataset* ds;
         Layer* layer;
@@ -100,6 +103,9 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
         if (name != nil && ![name isEqualToString:@""]) {
             layer = [sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
         }
+        
+        [mapControl.map setDynamicProjection:YES];
+        
         if (layer == nil) {
             ds = [sMap.smMapWC addDatasetByName:name type:type.intValue datasourceName:datasourceName datasourcePath:datasourcePath];
             layer = [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:true];
@@ -109,6 +115,8 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
         if (style) {
             ((LayerSettingVector *)layer.layerSetting).geoStyle = style;
         }
+        
+        ds.prjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
         
         [layer setVisible:true];
         [layer setEditable:true];
@@ -154,9 +162,26 @@ RCT_REMAP_METHOD(stopCollect, stopCollectWithResolver:(RCTPromiseResolveBlock)re
 #pragma mark 添加点,GPS获取的点
 RCT_REMAP_METHOD(addGPSPoint, addGPSPointWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        Collector* sender = [self getCollector];
-        BOOL result = [sender addGPSPoint];
-        
+        Collector* collector = [self getCollector];
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+////        dispatch_async(dispatch_get_main_queue(), ^{
+//            //            [collector moveToCurrentPos];
+//            Point2D* pt = [[Point2D alloc]initWithPoint2D:[collector getGPSPoint]];
+//            if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+//                Point2Ds *points = [[Point2Ds alloc]init];
+//                [points add:pt];
+//                PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+//                [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+//                CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+//
+//                //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+//                [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+//                pt = [points getItem:0];
+//            }
+////        });
+//        BOOL result = [collector addGPSPoint:pt];
+        BOOL result = [collector addGPSPoint];
+        [mapControl.map refresh];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"SCollector", exception.reason, nil);
