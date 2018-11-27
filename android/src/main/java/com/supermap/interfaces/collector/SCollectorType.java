@@ -1,4 +1,4 @@
-package com.supermap.interfaces;
+package com.supermap.interfaces.collector;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;

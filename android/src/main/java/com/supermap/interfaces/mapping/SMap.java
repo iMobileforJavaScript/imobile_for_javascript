@@ -30,6 +30,7 @@ import com.supermap.mapping.Layer;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
+import com.supermap.mapping.Selection;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.rnsupermap.JSLayer;
 import com.supermap.smNative.SMMapWC;
@@ -45,6 +46,24 @@ public class SMap extends ReactContextBaseJavaModule {
     private static MeasureListener mMeasureListener;
     private GestureDetector mGestureDetector;
     private GeometrySelectedListener mGeometrySelectedListener;
+
+    public Selection getSelection() {
+        return selection;
+    }
+
+    public void setSelection(Selection selection) {
+        this.selection = selection;
+    }
+
+    private Selection selection;
+
+    public SMMapWC getSmMapWC() {
+        return smMapWC;
+    }
+
+    public void setSmMapWC(SMMapWC smMapWC) {
+        this.smMapWC = smMapWC;
+    }
 
     private SMMapWC smMapWC;
 
@@ -724,6 +743,8 @@ public class SMap extends ReactContextBaseJavaModule {
 
                     map.putMap("layerInfo", layerInfo);
                     map.putInt("id", id);
+
+                    SMap.getInstance().setSelection(layer.getSelection());
 
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                             .emit(EventConst.MAP_GEOMETRY_SELECTED, map);

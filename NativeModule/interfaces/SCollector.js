@@ -117,6 +117,14 @@ async function addGPSPoint() {
   }
 }
 
+async function remove(id) {
+  try {
+    return Collector.remove(id)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 export default {
   setStyle,
   getStyle,
@@ -128,4 +136,5 @@ export default {
   submit,
   cancel,
   addGPSPoint,
+  remove,
 }

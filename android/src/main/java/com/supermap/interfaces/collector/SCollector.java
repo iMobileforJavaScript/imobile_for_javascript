@@ -1,4 +1,4 @@
-package com.supermap.interfaces;
+package com.supermap.interfaces.collector;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -7,10 +7,12 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.supermap.data.Dataset;
 import com.supermap.data.GeoStyle;
+import com.supermap.data.Recordset;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSettingVector;
+import com.supermap.mapping.Map;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMCollector;
 import com.supermap.smNative.SMMapWC;
@@ -293,6 +295,25 @@ public class SCollector extends ReactContextBaseJavaModule {
             collector = getCollector();
             SMCollector.closeGPS(collector);
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 删除对象
+     * @param id
+     * @param promise
+     */
+    @ReactMethod
+    public void remove(int id, Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            Recordset recordset = sMap.getSelection().toRecordset();
+            recordset.seekID(id);
+            boolean result = recordset.delete();
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
         }

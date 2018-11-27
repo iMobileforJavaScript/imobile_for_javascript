@@ -632,6 +632,9 @@ RCT_REMAP_METHOD(findSymbolsByGroups, findSymbolsByGroups:(NSString *)type path:
     [layerInfo setObject:[NSNumber numberWithBool:layer.editable] forKey:@"editable"];
     [layerInfo setObject:[NSNumber numberWithBool:layer.visible] forKey:@"visible"];
     [layerInfo setObject:[NSNumber numberWithBool:layer.selectable] forKey:@"selectable"];
+    
+    [SMap singletonInstance].selection = [layer getSelection];
+    
     [self sendEventWithName:MAP_GEOMETRY_SELECTED body:@{@"layerInfo":layerInfo,
                                                          @"id":nsId,
                                                          }];
