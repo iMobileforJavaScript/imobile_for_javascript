@@ -17,6 +17,9 @@
 #import "SuperMap/Point3Ds.h"
 #import "SuperMap/Scene.h"
 #import "JSSystemUtil.h"
+#import "SuperMap/GeoRegion3D.h"
+#import "SuperMap/Tracking3DEvent.h"
+#import "SuperMap/TextStyle.h"
 
 typedef enum{
     /**
@@ -45,6 +48,7 @@ static SceneControl* mSceneControl;
 static NSMutableArray* myPoint3DArrayList;
 // 声明一个全局的节点动画轨迹对象
 static GeoLine3D* geoline3d = nil;
+static GeoLine3D* geoArea3d;
 //    private boolean isDrawLine,isDrawArea,isPoint;
 static BOOL isEdit = false;
 static EnumLabelOperate labelOperate;
@@ -57,43 +61,52 @@ static NSMutableArray* geoTextStrList;
 
 
 @implementation LableHelper3D
+SUPERMAP_SIGLETON_IMP(LableHelper3D);
 
-+(void)initSceneControl:(SceneControl*)control path:(NSString*)path kml:(NSString*)kmlName{
+-(void)initSceneControl:(SceneControl*)control path:(NSString*)path kml:(NSString*)kmlName{
     mSceneControl = control;
     kmlName = path;
     myPoint3DArrayList = [[NSMutableArray alloc]init];
     geoTextStrList = [[NSMutableArray alloc]init];
     
-    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-    //使用一根手指双击时，才触发点按手势识别器
-    recognizer.numberOfTapsRequired = 1;
-    recognizer.numberOfTouchesRequired = 1;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [mSceneControl addGestureRecognizer:recognizer];
-    });
-    [LableHelper3D addKML];
+//    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+//    //使用一根手指双击时，才触发点按手势识别器
+//    recognizer.numberOfTapsRequired = 1;
+//    recognizer.numberOfTouchesRequired = 1;
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [mSceneControl addGestureRecognizer:recognizer];
+//    });
+    mSceneControl.tracking3DDelegate = self;
+    mSceneControl.action3D = CREATEPOINT3D;
+    [self addKML];
 }
-static id g_delegate;
-+(void)setDelegate:(id)delegate{
-    g_delegate = delegate;
-}
-+(void)handleTap:(UITapGestureRecognizer *)recognizer{
+
+
+static double dz = 0;
+- (void)tracking3DEvent:(Tracking3DEvent*)event{
     if (labelOperate == NONE) {
         return;
     }
     
     // 根据手指点击之后微调屏幕坐标
-    CGPoint point = [recognizer locationInView:recognizer.view];
-    double x = point.x - 28.1;
-    double y = point.y - 0.5;
+    //CGPoint point;// = [recognizer locationInView:recognizer.view];
+    double x = event.position.x ;
+    double y = event.position.y ;
+    double z = event.position.z;
+    dz = z;
+    CGPoint point = CGPointMake(x, y);
 //    final Point pnt = new Point();
 //    pnt.set((int) x, (int) y);
 
-    Point3D p3d = [mSceneControl.scene pixelToGlobeWith:point andPixelToGlobeMode:TerrainAndModel];
+    Point3D p3d = event.position;//[mSceneControl.scene pixelToGlobeWith:point andPixelToGlobeMode:TerrainAndModel];
    // pnt3d = mSceneControl.getScene().pixelToGlobe(pnt, PixelToGlobeMode.TERRAINANDMODEL);
 
 
     if(labelOperate==DRAWTEXT){
+        if (self.delegate!=nil && [self.delegate  respondsToSelector:@selector(drawTextAtPoint:)]) {
+            [self.delegate drawTextAtPoint:point];
+        }
+        return ;
        // g_delegate OnclickPoint
 //        [self sendEventWithName:SSCENE_ATTRIBUTE
 //                           body:info];
@@ -102,7 +115,11 @@ static id g_delegate;
 //        }
 //        return false;
     }
-    [myPoint3DArrayList addObject:[[GeoPoint3D alloc]initWithPoint3D:p3d]];
+    GeoPoint3D* geoP3 = [[GeoPoint3D alloc]initWithX:p3d.x Y:p3d.y Z:p3d.z];
+//    geoP3.x = p3d.x;
+//    geoP3.y = p3d.y;
+//    geoP3.z = p3d.z;
+    [myPoint3DArrayList addObject:geoP3];
     isEdit = true;
     
     [self show];
@@ -110,7 +127,7 @@ static id g_delegate;
 /**
  * 开始绘制面积
  */
-+(void)startDrawArea{
+-(void)startDrawArea{
     labelOperate = DRAWAREA;
     [myPoint3DArrayList removeAllObjects];
 }
@@ -118,15 +135,15 @@ static id g_delegate;
 /**
  * 开始绘制文本
  */
-+(void)startDrawText{
-    [LableHelper3D reset];
+-(void)startDrawText{
+    [self reset];
     labelOperate = DRAWTEXT;
 }
 
 /**
  * 开始绘制线段
  */
-+(void)startDrawLine{
+-(void)startDrawLine{
     labelOperate = DRAWLINE;
     [myPoint3DArrayList removeAllObjects];
 }
@@ -134,7 +151,7 @@ static id g_delegate;
 /**
  * 开始绘制点
  */
-+(void)startDrawPoint{
+-(void)startDrawPoint{
     labelOperate = DRAWPOINT;
     [myPoint3DArrayList removeAllObjects];
 }
@@ -142,7 +159,7 @@ static id g_delegate;
 /**
  * 返回
  */
-+(void)back{
+-(void)back{
     if (myPoint3DArrayList.count > 0) {
         isEdit = true;
     } else {
@@ -152,24 +169,24 @@ static id g_delegate;
     
     [myPoint3DArrayList removeLastObject];// remove(myPoint3DArrayList.size() - 1);
     
-    [LableHelper3D show];
+    [self show];
 }
 
 /**
  * 清除所有标注
  */
-+(void)clearAllLabel{
+-(void)clearAllLabel{
     [mSceneControl.scene.layers removeLayerWithName:@"NodeAnimation"];// getScene().getLayers().removeLayerWithName("NodeAnimation");
-    [LableHelper3D reset];
-    if ( [LableHelper3D deleteSingleFile: [kmlPath stringByAppendingString:kmlName]]){// deleteSingleFile(kmlPath + kmlName)) {
-        [LableHelper3D addKML];
+    [self reset];
+    if ( [self deleteSingleFile: [kmlPath stringByAppendingString:kmlName]]){// deleteSingleFile(kmlPath + kmlName)) {
+        [self addKML];
     }
 }
 
 /**
  * 保存
  */
-+(void)save{
+-(void)save{
     if (!isEdit) {
         return;
     }
@@ -204,7 +221,7 @@ static id g_delegate;
     }
     //保存
     [layer3d.feature3Ds toKMLFile:[kmlPath stringByAppendingString:kmlName]];// .toKMLFile(kmlPath + kmlName);
-    [LableHelper3D reset];
+    [self reset];
 }
 
 /**
@@ -212,18 +229,33 @@ static id g_delegate;
  * @param point
  * @param text
  */
-+(void)addGeoText:(CGPoint)point test:(NSString*)text{
-    Point3D pnt3d = [mSceneControl.scene pixelToGlobeWith:point andPixelToGlobeMode:TerrainAndModel];// getScene().pixelToGlobe(point, PixelToGlobeMode.TERRAINANDMODEL);
+-(void)addGeoText:(CGPoint)point test:(NSString*)text{
+    //Point3D pnt3d = [mSceneControl.scene pixelToGlobeWith:point andPixelToGlobeMode:TerrainAndModel];// getScene().pixelToGlobe(point, PixelToGlobeMode.TERRAINANDMODEL);
+    Point3D pnt3d = {point.x,point.y,dz};
     GeoPoint3D* p3d = [[GeoPoint3D alloc]initWithPoint3D:pnt3d];
     GeoPlacemark* geoPlacemark = [[GeoPlacemark alloc]initWithName:text andGeomentry: p3d];//new GeoPlacemark(text, new GeoPoint3D(pnt3d));
+    
+//    TextPart3D* part = [[TextPart3D alloc]initWithString:text x:point.x y:point.y z:dz];
+//    GeoText3D *geotext = [[GeoText3D alloc]initWithTextPart3D:part];
+    GeoStyle3D* textStyle3D = [[GeoStyle3D alloc]init];
+    textStyle3D.markerSize = 10;
+    textStyle3D.altitudeMode = Absolute3D; // setAltitudeMode(AltitudeMode.ABSOLUTE);
+    geoPlacemark.style3D = textStyle3D;
+    TextStyle* textStyle = [[TextStyle alloc]init];;
+    [textStyle setForeColor:[ [Color alloc]initWithR:255 G:0 B:0]];
+    [textStyle setBackColor:[ [Color alloc]initWithR:255 G:0 B:0]];
+    [textStyle setFontWidth:50];
+    [textStyle setFontHeight:50];
+    geoPlacemark.nameStyle = textStyle;;
+    
     [mSceneControl.scene.trackingLayer3D AddGeometry:geoPlacemark Tag:@"text"]; //getScene().getTrackingLayer().add(geoPlacemark, "text");
     
-    [myPoint3DArrayList addObject:p3d];// .add(pnt3d);
+    [myPoint3DArrayList addObject:geoPlacemark];// .add(pnt3d);
     [geoTextStrList addObject:text];//.add(text);
     isEdit = true;
 }
 
-+(void)reset{
+-(void)reset{
     [mSceneControl.scene.trackingLayer3D clear];
     labelOperate = NONE;
     [myPoint3DArrayList removeAllObjects];
@@ -231,14 +263,14 @@ static id g_delegate;
     isEdit = false;
 }
 
-+(void)addKML{
+-(void)addKML{
    // [LableHelper3D makeFilePath:kmlPath fileName:kmlName]; //(kmlPath, kmlName);
     [mSceneControl.scene.layers addLayerWith:[kmlPath stringByAppendingString:kmlName] Type:KML ToHead:true LayerName:@"NodeAnimation"];
    // mSceneControl.getScene().getLayers().addLayerWith(kmlPath + kmlName, Layer3DType.KML, true,
                                         //              "NodeAnimation");
 }
 
-+(void)show{
+-(void)show{
     [mSceneControl.scene.trackingLayer3D clear];
     int count = myPoint3DArrayList.count;
     if (count == 0) {
@@ -269,8 +301,8 @@ static id g_delegate;
 //            for (; i < count; i++) {
 //                points[i] = myPoint3DArrayList.get(i);
 //            }
-            [myPoint3DArrayList addObject:myPoint3DArrayList[0]];
-            [self drawLineByPoints:myPoint3DArrayList];
+           // [myPoint3DArrayList addObject:myPoint3DArrayList[0]];
+            [self drawAreaByPoints:myPoint3DArrayList];
            // points[i] = points[0];
             // drawLineByPoints(points);
             break;
@@ -292,14 +324,35 @@ static id g_delegate;
             break;
     }
 }
-
-+(void)drawLineByPoints:(NSArray*)points{
+-(void)drawAreaByPoints:(NSArray*)points{
+    if (points.count == 0) {
+        return;
+    }
+    Point3Ds* point3ds = [[Point3Ds alloc]init];
+    for(GeoPoint3D* geoP in points){
+        Point3D p3 = {geoP.x,geoP.y,geoP.z};
+        NSValue *value = [NSValue valueWithBytes:&p3 objCType:@encode(Point3D)];
+        [point3ds addPoint3D:p3];
+        //[m_point3DArray addObject:value];
+    }
+    
+    if (points.count > 1) {
+        GeoStyle3D* lineStyle3D = [[GeoStyle3D alloc]init];
+        lineStyle3D.fillForeColor = [[Color alloc] initWithR:255 G:0 B:0];// .setLineColor(new Color(255, 255, 0));
+        lineStyle3D.altitudeMode = Absolute3D; // setAltitudeMode(AltitudeMode.ABSOLUTE);
+        lineStyle3D.lineWidth = 5;// setLineWidth(5);
+        geoArea3d = [[GeoRegion3D alloc] initWithPoint3Ds:point3ds];
+        geoArea3d.style3D = lineStyle3D;// setStyle3D(lineStyle3D);
+        [mSceneControl.scene.trackingLayer3D AddGeometry:geoArea3d Tag:@"geoArea"]; // getScene().getTrackingLayer().add(geoline3d, "geoline");
+    }
+}
+-(void)drawLineByPoints:(NSArray*)points{
     if (points.count == 0) {
         return;
     }
      Point3Ds* point3ds = [[Point3Ds alloc]init];
     for(GeoPoint3D* geoP in points){
-        Point3D p3 = {geoP.x,geoP.y,geoP.y};
+        Point3D p3 = {geoP.x,geoP.y,geoP.z};
         NSValue *value = [NSValue valueWithBytes:&p3 objCType:@encode(Point3D)];
         [point3ds addPoint3D:p3];
         //[m_point3DArray addObject:value];
@@ -307,7 +360,7 @@ static id g_delegate;
    
     if (points.count > 1) {
         GeoStyle3D* lineStyle3D = [[GeoStyle3D alloc]init];
-        lineStyle3D.lineColor = [[Color alloc] initWithR:255 G:255 B:0];// .setLineColor(new Color(255, 255, 0));
+        lineStyle3D.lineColor = [[Color alloc] initWithR:255 G:0 B:0];// .setLineColor(new Color(255, 255, 0));
         lineStyle3D.altitudeMode = Absolute3D; // setAltitudeMode(AltitudeMode.ABSOLUTE);
         lineStyle3D.lineWidth = 5;// setLineWidth(5);
         geoline3d = [[GeoLine3D alloc] initWithPoint3Ds:point3ds];
@@ -316,17 +369,17 @@ static id g_delegate;
     }
 }
 
-+(void)makeFilePath:(NSString*)filePath fileName:(NSString*)fileName{
-    [LableHelper3D makeRootDirectory:filePath];
+-(void)makeFilePath:(NSString*)filePath fileName:(NSString*)fileName{
+    [self makeRootDirectory:filePath];
 //    [NSFileManager defaultManager]createFileAtPath:[filePath stringByAppendingFormat:@"/%@",fileName] contents: attributes:
 }
 
 
-+(void)makeRootDirectory:(NSString*)filePath{
+-(void)makeRootDirectory:(NSString*)filePath{
     [JSSystemUtil createFileDirectories:filePath];
 }
 
-+(BOOL)deleteSingleFile:(NSString*)filePathName{
+-(BOOL)deleteSingleFile:(NSString*)filePathName{
     NSError* error;
     BOOL b =[[NSFileManager defaultManager] removeItemAtPath:filePathName error:&error];
     NSLog(@"%b",b);

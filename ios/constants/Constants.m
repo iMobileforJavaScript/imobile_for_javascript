@@ -32,6 +32,7 @@ NSString * const ANALYST_MEASURESQUARE = @"com.supermap.RN.SMSceneControl.Analys
 NSString * const POINTSEARCH_KEYWORDS = @"com.supermap.RN.SMSceneControl.PointSearch_keyWords";
 NSString * const SSCENE_FLY = @"com.supermap.RN.SMSceneControl.Scene_fly";
 NSString * const SSCENE_ATTRIBUTE = @"com.supermap.RN.SMSceneControl.Scene_attribute";
+NSString * const SSCENE_SYMBOL = @"com.supermap.RN.SMSceneControl.Scene_symbol";
 
 /** 地图 **/
 NSString * const MAP_LONG_PRESS = @"com.supermap.RN.Mapcontrol.long_press_event";
@@ -45,9 +46,6 @@ NSString * const MAP_GEOMETRY_MULTI_SELECTED = @"com.supermap.RN.Mapcontrol.geom
 NSString * const MAP_GEOMETRY_SELECTED = @"com.supermap.RN.Mapcontrol.geometry_selected";
 NSString * const MAP_SCALE_CHANGED = @"Supermap.MapControl.MapParamChanged.ScaleChanged";
 NSString * const MAP_BOUNDS_CHANGED = @"Supermap.MapControl.MapParamChanged.BoundsChanged";
-
-/** 符号库 **/
-NSString * const SYMBOL_CLICK = @"Supermap.MapControl.SymbolLibLegend.symbol_click";
 
 @implementation Constants
 

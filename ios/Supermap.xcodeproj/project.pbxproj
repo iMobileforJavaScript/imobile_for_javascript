@@ -150,6 +150,8 @@
 		0A332E72211D623E00F56F26 /* RCTConvert+RadiusUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE7211D623E00F56F26 /* RCTConvert+RadiusUnit.m */; };
 		0A332E73211D623E00F56F26 /* SceneViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DE9211D623E00F56F26 /* SceneViewManager.m */; };
 		0A6DE64221A2CC4100CD27EA /* SMSceneWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */; };
+		0AB00D5621A6C8F800C35E4B /* SMSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB00D5421A6C8F700C35E4B /* SMSymbol.m */; };
+		0AB00D5A21A6C93A00C35E4B /* SMLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB00D5821A6C90F00C35E4B /* SMLayer.m */; };
 		0AD1B26521A6AA55006E1B27 /* TouchUtil3D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD1B25A21A6AA54006E1B27 /* TouchUtil3D.m */; };
 		0AD1B26621A6AA55006E1B27 /* LableHelper3D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD1B25E21A6AA54006E1B27 /* LableHelper3D.m */; };
 		0AD1B26721A6AA55006E1B27 /* FlyHelper3D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD1B25F21A6AA54006E1B27 /* FlyHelper3D.m */; };
@@ -182,8 +184,6 @@
 		D8DD42392175D06C009D80E9 /* JSSymbolFillLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D8DD42382175D06C009D80E9 /* JSSymbolFillLibrary.m */; };
 		D8FB9CF6219510C800597AE5 /* SScene.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FB9CF5219510C800597AE5 /* SScene.m */; };
 		D8FB9D40219AB0B800597AE5 /* SMSymbolTable.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FB9D3F219AB0B800597AE5 /* SMSymbolTable.m */; };
-		D8FB9D53219AD56800597AE5 /* SMSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FB9D52219AD56800597AE5 /* SMSymbol.m */; };
-		D8FB9D83219E4D5300597AE5 /* SMLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FB9D82219E4D5300597AE5 /* SMLayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -485,6 +485,10 @@
 		0A332DE9211D623E00F56F26 /* SceneViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SceneViewManager.m; sourceTree = "<group>"; };
 		0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSceneWC.m; sourceTree = "<group>"; };
 		0A6DE64121A2CC4000CD27EA /* SMSceneWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSceneWC.h; sourceTree = "<group>"; };
+		0AB00D5421A6C8F700C35E4B /* SMSymbol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSymbol.m; sourceTree = "<group>"; };
+		0AB00D5521A6C8F800C35E4B /* SMSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSymbol.h; sourceTree = "<group>"; };
+		0AB00D5721A6C90F00C35E4B /* SMLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLayer.h; sourceTree = "<group>"; };
+		0AB00D5821A6C90F00C35E4B /* SMLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMLayer.m; sourceTree = "<group>"; };
 		0AD1B25A21A6AA54006E1B27 /* TouchUtil3D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchUtil3D.m; sourceTree = "<group>"; };
 		0AD1B25B21A6AA54006E1B27 /* FlyHelper3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlyHelper3D.h; sourceTree = "<group>"; };
 		0AD1B25C21A6AA54006E1B27 /* AnalysisHelper3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalysisHelper3D.h; sourceTree = "<group>"; };
@@ -551,10 +555,6 @@
 		D8FB9CF5219510C800597AE5 /* SScene.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SScene.m; sourceTree = "<group>"; };
 		D8FB9D3E219AB0B800597AE5 /* SMSymbolTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMSymbolTable.h; sourceTree = "<group>"; };
 		D8FB9D3F219AB0B800597AE5 /* SMSymbolTable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMSymbolTable.m; sourceTree = "<group>"; };
-		D8FB9D51219AD56800597AE5 /* SMSymbol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMSymbol.h; sourceTree = "<group>"; };
-		D8FB9D52219AD56800597AE5 /* SMSymbol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMSymbol.m; sourceTree = "<group>"; };
-		D8FB9D81219E4D5300597AE5 /* SMLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMLayer.h; sourceTree = "<group>"; };
-		D8FB9D82219E4D5300597AE5 /* SMLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMLayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -577,20 +577,27 @@
 			path = iServer;
 			sourceTree = "<group>";
 		};
+		0AB00D2B21A6C6B600C35E4B /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		0AD1B25921A6AA54006E1B27 /* Map3DToolKit */ = {
 			isa = PBXGroup;
 			children = (
-				0AD1B25A21A6AA54006E1B27 /* TouchUtil3D.m */,
-				0AD1B25B21A6AA54006E1B27 /* FlyHelper3D.h */,
 				0AD1B25C21A6AA54006E1B27 /* AnalysisHelper3D.h */,
-				0AD1B25D21A6AA54006E1B27 /* Utils3D.h */,
-				0AD1B25E21A6AA54006E1B27 /* LableHelper3D.m */,
-				0AD1B25F21A6AA54006E1B27 /* FlyHelper3D.m */,
-				0AD1B26021A6AA54006E1B27 /* TouchUtil3D.h */,
 				0AD1B26121A6AA54006E1B27 /* AnalysisHelper3D.m */,
-				0AD1B26221A6AA54006E1B27 /* Utils3D.m */,
-				0AD1B26321A6AA54006E1B27 /* SingletonObject_SuperMap.h */,
+				0AD1B25B21A6AA54006E1B27 /* FlyHelper3D.h */,
+				0AD1B25F21A6AA54006E1B27 /* FlyHelper3D.m */,
 				0AD1B26421A6AA55006E1B27 /* LableHelper3D.h */,
+				0AD1B25E21A6AA54006E1B27 /* LableHelper3D.m */,
+				0AD1B26321A6AA54006E1B27 /* SingletonObject_SuperMap.h */,
+				0AD1B26021A6AA54006E1B27 /* TouchUtil3D.h */,
+				0AD1B25A21A6AA54006E1B27 /* TouchUtil3D.m */,
+				0AD1B25D21A6AA54006E1B27 /* Utils3D.h */,
+				0AD1B26221A6AA54006E1B27 /* Utils3D.m */,
 			);
 			path = Map3DToolKit;
 			sourceTree = "<group>";
@@ -611,6 +618,7 @@
 				D854D867218310720075B5F8 /* interfaces */,
 				D854D86A218310730075B5F8 /* native */,
 				134814211AA4EA7D00B7C361 /* Products */,
+				0AB00D2B21A6C6B600C35E4B /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -665,13 +673,16 @@
 			isa = PBXGroup;
 			children = (
 				0AD1B25921A6AA54006E1B27 /* Map3DToolKit */,
-				005693B3219168CE00AEC46E /* iServer */,
 				D854DA4F2187F5FD0075B5F8 /* SMCollector.h */,
 				D854DA502187F5FD0075B5F8 /* SMCollector.m */,
 				D83F3C40218BDA97001C56BE /* SMMapWC.h */,
 				D83F3C41218BDA97001C56BE /* SMMapWC.m */,
 				0A6DE64121A2CC4000CD27EA /* SMSceneWC.h */,
 				0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */,
+				0AB00D5521A6C8F800C35E4B /* SMSymbol.h */,
+				0AB00D5421A6C8F700C35E4B /* SMSymbol.m */,
+				0AB00D5721A6C90F00C35E4B /* SMLayer.h */,
+				0AB00D5821A6C90F00C35E4B /* SMLayer.m */,
 			);
 			path = native;
 			sourceTree = "<group>";
@@ -1164,6 +1175,7 @@
 				0A332E2F211D623E00F56F26 /* JSMapView.m in Sources */,
 				0A332E46211D623E00F56F26 /* JSRectangle2D.m in Sources */,
 				D8DD42362175D025009D80E9 /* JSSymbolMarkerLibrary.m in Sources */,
+				0AB00D5A21A6C93A00C35E4B /* SMLayer.m in Sources */,
 				0A332E03211D623E00F56F26 /* JSCoordSysTransParameter.m in Sources */,
 				0A332E6E211D623E00F56F26 /* RCTConvert+Action.m in Sources */,
 				0A332E38211D623E00F56F26 /* JSPieChartData.m in Sources */,
@@ -1188,11 +1200,11 @@
 				D8DD422D21758371009D80E9 /* JSSymbolMarker.m in Sources */,
 				0A332E17211D623E00F56F26 /* JSGeoLineM.m in Sources */,
 				0A332E32211D623E00F56F26 /* JSNavigation2.m in Sources */,
-				D8FB9D83219E4D5300597AE5 /* SMLayer.m in Sources */,
 				D83F3C42218BDA97001C56BE /* SMMapWC.m in Sources */,
 				0A332E02211D623E00F56F26 /* JSCoordSysTransMethod.m in Sources */,
 				0A332E41211D623E00F56F26 /* JSProjectionType.m in Sources */,
 				0A332E05211D623E00F56F26 /* JSDataset.m in Sources */,
+				0AB00D5621A6C8F800C35E4B /* SMSymbol.m in Sources */,
 				0A332E39211D623E00F56F26 /* JSPieChartViewManager.m in Sources */,
 				0A332E2A211D623E00F56F26 /* JSLocationAnalystParameter.m in Sources */,
 				0A6DE64221A2CC4100CD27EA /* SMSceneWC.m in Sources */,
@@ -1221,7 +1233,6 @@
 				0A332E0A211D623E00F56F26 /* JSDatasource.m in Sources */,
 				0A332E6A211D623E00F56F26 /* JSWeightFieldInfos.m in Sources */,
 				0A332E27211D623E00F56F26 /* JSLineChart.m in Sources */,
-				D8FB9D53219AD56800597AE5 /* SMSymbol.m in Sources */,
 				0A332E2D211D623E00F56F26 /* JSMapControl.m in Sources */,
 				D854DA80218834510075B5F8 /* SAnalyst.m in Sources */,
 				D835E5B0219EC726008910F0 /* SLayerManager.m in Sources */,

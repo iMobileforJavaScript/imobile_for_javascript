@@ -14,51 +14,60 @@
 #import "SuperMap/GeoLine3D.h"
 #import "SuperMap/PixelToGlobeMode.h"
 #import "SuperMap/TrackingLayer3D.h"
+#import "SingletonObject_SuperMap.h"
 
-@interface LableHelper3D : NSObject
-+(void)initSceneControl:(SceneControl*)control path:(NSString*)path kml:(NSString*)kmlName;
+@protocol LableHelper3DDelegate<NSObject>
+@optional
+-(void)drawTextAtPoint:(CGPoint)pnt;
+@end
+
+
+@interface LableHelper3D : NSObject<Tracking3DDelegate>
+SUPERMAP_SIGLETON_DEF(LableHelper3D);
+-(void)initSceneControl:(SceneControl*)control path:(NSString*)path kml:(NSString*)kmlName;
 
 /**
  * 开始绘制面积
  */
-+(void)startDrawArea;
+-(void)startDrawArea;
 
 /**
  * 开始绘制文本
  */
-+(void)startDrawText;
+-(void)startDrawText;
 
 /**
  * 开始绘制线段
  */
-+(void)startDrawLine;
+-(void)startDrawLine;
 
 /**
  * 开始绘制点
  */
-+(void)startDrawPoint;
+-(void)startDrawPoint;
 
 /**
  * 返回
  */
-+(void)back;
+-(void)back;
 
 /**
  * 清除所有标注
  */
-+(void)clearAllLabel;
+-(void)clearAllLabel;
 
 /**
  * 保存
  */
-+(void)save;
+-(void)save;
 
 /**
  * 添加文本标注
  * @param point
  * @param text
  */
-+(void)addGeoText:(CGPoint)point test:(NSString*)text;
+-(void)addGeoText:(CGPoint)point test:(NSString*)text;
 
-+(void)setDelegate:(id)delegate;
+@property (nonatomic,assign) id<LableHelper3DDelegate> delegate;
+
 @end
