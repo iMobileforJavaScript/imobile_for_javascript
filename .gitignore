@@ -20,3 +20,5 @@ android/src/.gradle/3.4.1/taskHistory/taskHistory.lock
 android/src/.gradle/buildOutputCleanup/built.bin
 android/src/.gradle/buildOutputCleanup/cache.properties
 android/src/.gradle/buildOutputCleanup/cache.properties.lock
+android/build.gradle
+android/build.gradle
