@@ -105,7 +105,7 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
             layer = [sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
         }
         
-        [mapControl.map setDynamicProjection:YES];
+       // [mapControl.map setDynamicProjection:YES];
         
         if (layer == nil) {
             ds = [sMap.smMapWC addDatasetByName:name type:type.intValue datasourceName:datasourceName datasourcePath:datasourcePath];
