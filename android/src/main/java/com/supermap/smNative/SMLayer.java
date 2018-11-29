@@ -25,7 +25,7 @@ public class SMLayer {
                 Layer layer = layers.get(i);
                 Dataset dataset = layer.getDataset();
 
-                if (dataset == null || dataset.getType() == Enum.parse(DatasetType.class, type) || type == -1) {
+                if (dataset == null || type == -1 || dataset.getType() == Enum.parse(DatasetType.class, type)) {
                     WritableMap info = getLayerInfo(layer, path);
                     arr.pushMap(info);
                 }

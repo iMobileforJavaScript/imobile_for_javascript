@@ -30,6 +30,7 @@
 #import "SuperMap/SymbolFillLibrary.h"
 #import "SuperMap/SymbolLineLibrary.h"
 #import "SuperMap/SymbolMarkerLibrary.h"
+#import "SuperMap/Selection.h"
 #import "JSMapControl.h"
 #import "SMMapWC.h"
 #import "SMSymbol.h"
@@ -37,7 +38,7 @@
 
 @interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate>
 @property (strong, nonatomic) SMMapWC* smMapWC;
-//@property (strong, nonatomic) MapControl* mapControl;
+@property (strong, nonatomic) Selection* selection;
 
 + (instancetype)singletonInstance;
 + (void)setInstance:(MapControl *)mapControl;

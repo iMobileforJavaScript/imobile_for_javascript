@@ -45,6 +45,7 @@ public class SMSymbolTable extends SimpleViewManager<SymbolLibView> {
 //        symbolLibView.setBackgroundColor(new Color(255, 0 ,0));
         symbolLibView.setImageSize(50);
         symbolLibView.setTextSize(15);
+        symbolLibView.setItemPadding(10);
         symbolLibView.setTextColor(new Color(255, 255, 255));
         symbolLibView.setOnItemClickListener(new SymbolLibView.OnItemClickListener() {
             @Override

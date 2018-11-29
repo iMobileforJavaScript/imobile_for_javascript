@@ -50,7 +50,7 @@ async function setDataset(info = {}) {
   }
 }
 
-async function startCollect(type) {
+async function startCollect(type = -1) {
   try {
     currentType = type
     return Collector.startCollect(type)
@@ -68,7 +68,7 @@ async function stopCollect() {
   }
 }
 
-async function undo(type) {
+async function undo(type = -1) {
   try {
     type = type >= 0 ? type : currentType
     return Collector.undo(type)
@@ -77,7 +77,7 @@ async function undo(type) {
   }
 }
 
-async function redo(type) {
+async function redo(type = -1) {
   try {
     type = type >= 0 ? type : currentType
     return Collector.redo(type)
@@ -86,7 +86,7 @@ async function redo(type) {
   }
 }
 
-async function submit(type) {
+async function submit(type = -1) {
   try {
     type = type >= 0 ? type : currentType
     // currentType = -1
@@ -100,7 +100,7 @@ async function submit(type) {
   }
 }
 
-async function cancel(type) {
+async function cancel(type = -1) {
   try {
     // type = type >= 0 ? type : currentType
     return Collector.cancel(type)
@@ -117,6 +117,14 @@ async function addGPSPoint() {
   }
 }
 
+async function remove(id) {
+  try {
+    return Collector.remove(id)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 export default {
   setStyle,
   getStyle,
@@ -128,4 +136,5 @@ export default {
   submit,
   cancel,
   addGPSPoint,
+  remove,
 }

@@ -22,35 +22,35 @@ public class SMSymbol {
 
         if (type.equals("") && path.equals("")) {
             SymbolGroup rootGroup = resources.getFillLibrary().getRootGroup();
-            WritableMap fillGroup = Arguments.createMap();
-            fillGroup.putString("name", rootGroup.getName());
-            fillGroup.putInt("count", rootGroup.getCount());
-            fillGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, "fill", path));
-            fillGroup.putString("path", rootGroup.getName());
-            fillGroup.putString("type", "fill");
-            groupArr.pushMap(fillGroup);
+            rootGroup = resources.getMarkerLibrary().getRootGroup();
+            WritableMap markerGroup = Arguments.createMap();
+            markerGroup.putString("name", "点符号库");
+            markerGroup.putInt("count", rootGroup.getCount());
+            markerGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, "marker", path));
+            markerGroup.putString("path", rootGroup.getName());
+            markerGroup.putString("type", "marker");
+            groupArr.pushMap(markerGroup);
 
             rootGroup = resources.getLineLibrary().getRootGroup();
             WritableMap lineGroup = Arguments.createMap();
-            lineGroup.putString("name", rootGroup.getName());
+            lineGroup.putString("name", "线型符号库");
             lineGroup.putInt("count", rootGroup.getCount());
             lineGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, "line", path));
             lineGroup.putString("path", rootGroup.getName());
             lineGroup.putString("type", "line");
             groupArr.pushMap(lineGroup);
 
-            rootGroup = resources.getMarkerLibrary().getRootGroup();
-            WritableMap markerGroup = Arguments.createMap();
-            markerGroup.putString("name", rootGroup.getName());
-            markerGroup.putInt("count", rootGroup.getCount());
-            markerGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, "marker", path));
-            markerGroup.putString("path", rootGroup.getName());
-            markerGroup.putString("type", "marker");
-            groupArr.pushMap(markerGroup);
+            WritableMap fillGroup = Arguments.createMap();
+            fillGroup.putString("name", "填充符号库");
+            fillGroup.putInt("count", rootGroup.getCount());
+            fillGroup.putArray("childGroups", findAllSymbolGroups(rootGroup, "fill", path));
+            fillGroup.putString("path", rootGroup.getName());
+            fillGroup.putString("type", "fill");
+            groupArr.pushMap(fillGroup);
         } else if (type.equals("") && !path.equals("")) {
-            groupArr.pushArray(findAllSymbolGroups(resources.getFillLibrary().getRootGroup(), type, path));
-            groupArr.pushArray(findAllSymbolGroups(resources.getLineLibrary().getRootGroup(), type, path));
             groupArr.pushArray(findAllSymbolGroups(resources.getMarkerLibrary().getRootGroup(), type, path));
+            groupArr.pushArray(findAllSymbolGroups(resources.getLineLibrary().getRootGroup(), type, path));
+            groupArr.pushArray(findAllSymbolGroups(resources.getFillLibrary().getRootGroup(), type, path));
         } else if (!type.equals("")) {
             if (type.equals("fill")) {
                 symbolLibrary = resources.getFillLibrary();
@@ -105,7 +105,7 @@ public class SMSymbol {
 
     public static SymbolGroup findSymbolGroups(Resources resources, String type, String path) {
 
-        if (type.equals("") || path.equals("")) return null;
+        if (type.equals("")) return null;
 
         SymbolGroup group;
         String[] pathParams = path.split("/");
@@ -128,12 +128,30 @@ public class SMSymbol {
 
     public static WritableArray findSymbolsByGroups(Resources resources, String type, String path) {
 
-        if (type.equals("") || path.equals("")) return null;
+        if (type.equals("")) return null;
 
         WritableArray symbols = Arguments.createArray();
         SymbolGroup group = findSymbolGroups(resources, type, path);
+        if (path.equals("")) {
+            findSymbolsInGroup(symbols, group, type, path);
+        } else {
+            for (int i = 0; i< group.getCount(); i++) {
+                Symbol symbol = group.get(i);
+                WritableMap symbolInfo = Arguments.createMap();
 
-        for (int i = 0; i< group.getCount(); i++) {
+                symbolInfo.putString("groupPath", path);
+                symbolInfo.putString("name", symbol.getName());
+                symbolInfo.putInt("id", symbol.getID());
+                symbolInfo.putString("type", type);
+
+                symbols.pushMap(symbolInfo);
+            }
+        }
+        return symbols;
+    }
+
+    public static void findSymbolsInGroup(WritableArray symbols, SymbolGroup group, String type, String path) {
+        for (int i = 0; i < group.getCount(); i++) {
             Symbol symbol = group.get(i);
             WritableMap symbolInfo = Arguments.createMap();
 
@@ -144,7 +162,11 @@ public class SMSymbol {
 
             symbols.pushMap(symbolInfo);
         }
-        return symbols;
+        SymbolGroups groups = group.getChildGroups();
+        for (int i = 0; i < groups.getCount(); i++) {
+            SymbolGroup symbolGroup = groups.get(i);
+            findSymbolsInGroup(symbols, symbolGroup, type, path + '/' + symbolGroup.getName());
+        }
     }
 
     public static List<Symbol> findSymbolsByIDs(Resources resources, String type, List IDs) {

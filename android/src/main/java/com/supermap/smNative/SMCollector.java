@@ -2,7 +2,7 @@ package com.supermap.smNative;
 
 import com.facebook.react.bridge.ReactContext;
 import com.supermap.RNUtils.LocationTencent;
-import com.supermap.interfaces.SCollectorType;
+import com.supermap.interfaces.collector.SCollectorType;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.collector.Collector;
