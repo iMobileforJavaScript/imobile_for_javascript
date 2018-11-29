@@ -13,7 +13,7 @@
 #import "Constants.h"
 #import "SMSceneWC.h"
 #import "FlyHelper3D.h"
-
+#import "AnalysisHelper3D.h"
 
 typedef enum{
     /**
@@ -25,13 +25,29 @@ typedef enum{
      */
     SS_Feature_Action = 0x1,
     /**
-     * 添加兴趣点
+     * 添加飞翔点
      */
-    SS_Label_Action = 0x2
+    SS_FlyPoint_Action = 0x2,
     
 }SSceneAction;
 
-@interface SScene()<FlyHelper3DProgressDelegate,LableHelper3DDelegate>
+typedef enum{
+    /**
+     * 自处理操作
+     */
+    SS_Normal_Event = 0x0,
+    /**
+     * LableHelper
+     */
+    SS_Label_Event = 0x1,
+    /**
+     * AnalysisHelper
+     */
+    SS_Analysis_Event = 0x2,
+    
+}SSceneTouchEvent;
+
+@interface SScene()<FlyHelper3DProgressDelegate,Analysis3DDelegate,LableHelper3DDelegate,Tracking3DDelegate>
 
 @end
 
@@ -39,15 +55,18 @@ static SScene* sScene = nil;
 @implementation SScene
 RCT_EXPORT_MODULE();
 
+
 - (NSArray<NSString *> *)supportedEvents
 {
     return @[
-//             ANALYST_MEASURELINE,
-//             ANALYST_MEASURESQUARE,
+             ANALYST_MEASURELINE,
+             ANALYST_MEASURESQUARE,
              POINTSEARCH_KEYWORDS,
              SSCENE_FLY,
              SSCENE_ATTRIBUTE,
              SSCENE_SYMBOL,
+             SSCENE_CIRCLEFLY,
+             SSCENE_FAVORITE
              ];
 }
 
@@ -87,10 +106,16 @@ RCT_EXPORT_MODULE();
     
 }
 
+#pragma mark-手势处理
+
+//常驻操作 int的每位代表一个操作
 int sSceneAction = SS_None_Action;
+//trackingTouch分发
+SSceneTouchEvent sSceneEvent = SS_Normal_Event;
+
 -(void)singleTap:(CGPoint)tapPoint{
-    NSLog(@"wnmng_______________");
-    if( sSceneAction & SS_Feature_Action ){
+    // 选择属性（有trackingTouch操作时不响应）
+    if( sSceneEvent == SS_Normal_Event && (sSceneAction & SS_Feature_Action)){
         sScene = [SScene singletonInstance];
         SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
         NSDictionary* info;
@@ -98,19 +123,43 @@ int sSceneAction = SS_None_Action;
         [self sendEventWithName:SSCENE_ATTRIBUTE
                            body:info];
     }
+    
 }
 
 -(void)doubleTap:(CGPoint)tapPoint{
-    NSLog(@"wnmngddddddddddddddd");
+
 }
 
 -(void)longPress:(CGPoint)longPressPoint{
-    NSLog(@"wnmnglllllllllllll");
-    if( sSceneAction & SS_Label_Action ){
-
+    // 长按操作
+    if( sSceneEvent == SS_Normal_Event && (sSceneAction & SS_FlyPoint_Action) ){
+        CGPoint point = longPressPoint;
+        point.x *= [UIScreen mainScreen].scale;
+        point.y *= [UIScreen mainScreen].scale;
+        
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        //Point3D pnt3D = [sceneControl.scene pixelToGlobe:longPressPoint];
+        Point3D pnt3D = [sceneControl.scene pixelToGlobeWith:point andPixelToGlobeMode:TerrainAndModel];
+        [[LableHelper3D sharedInstance]addCirclePoint:pnt3D];
+        
+        [self sendEventWithName:SSCENE_CIRCLEFLY
+                           body:@{@"pointX":@(longPressPoint.x),@"pointY":@(longPressPoint.y)}];
     }
 }
 
+-(void)tracking3DEvent:(Tracking3DEvent *)event{
+    switch (sSceneEvent) {
+        case SS_Label_Event:
+            [[LableHelper3D sharedInstance]tracking3DEvent:event];
+            break;
+        case SS_Analysis_Event:
+            [[AnalysisHelper3D sharedInstance]tracking3DEvent:event];
+            break;
+        default:
+            break;
+    }
+}
 
 BOOL bTouchBegin = NO;
 float dTap_x = 0;
@@ -118,7 +167,7 @@ float dTap_y = 0;
 #define SSceneTapTolerance 20*20
 //float tapTolerance = 30;
 NSTimeInterval tapDelaytime = 0.4;
-NSTimeInterval longPressDelaytime = 0.8;
+NSTimeInterval longPressDelaytime = 1.8;
 //BOOL bSinglePoint = true;
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
     
@@ -214,6 +263,32 @@ NSTimeInterval longPressDelaytime = 0.8;
     }
 }
 
+#pragma mark-初始化+打开场景
+RCT_REMAP_METHOD(setListener, setListener:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        
+        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        sceneControl.sceneControlDelegate = self;
+        sceneControl.tracking3DDelegate = self;
+        
+//        initLabelHelper();
+        NSString* path = sScene.smSceneWC.workspace.connectionInfo.server;
+        NSString* result = [path.stringByDeletingLastPathComponent stringByAppendingString:@"/files/"];
+        NSString* kmlname = @"newKML.kml";
+        
+        [[LableHelper3D sharedInstance] initSceneControl:sceneControl path:result kml:kmlname];
+        [LableHelper3D sharedInstance].delegate = self;
+//        initAnalysisHelper();
+        [[AnalysisHelper3D sharedInstance] initializeWithSceneControl:sceneControl];
+        [AnalysisHelper3D sharedInstance].delegate = self;
+        sSceneAction |= SS_FlyPoint_Action;
+       
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"Resources", exception.reason, nil);
+    }
+}
 RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sScene = [SScene singletonInstance];
@@ -455,7 +530,42 @@ RCT_REMAP_METHOD(setSelectable, name:(NSString*)name  bVisual:(BOOL)bVisual setS
         reject(@"SScene", exception.reason, nil);
     }
 }
+/**
+ * 场景放大缩小
+ *
+ * @param promise
+ */
+RCT_REMAP_METHOD(zoom,  scale:(double)scale zoom:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        Scene* scene = sScene.smSceneWC.sceneControl.scene;
+        [scene zoom:scale];
+        [scene refresh];
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
 
+/**
+ * 指北针
+ *
+ * @param promise
+ */
+RCT_REMAP_METHOD(setHeading,  setHeading:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        Scene* scene = sScene.smSceneWC.sceneControl.scene;
+        Camera camera = [scene camera];
+        camera.heading = 0;
+        scene.camera = camera;
+        [scene refresh];
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+#pragma mark-查找
 /**
  * 搜索关键字显示位置相关信息列表
  *
@@ -484,6 +594,7 @@ RCT_REMAP_METHOD(pointSearch, pointSearch:(RCTPromiseResolveBlock)resolve reject
     }
 }
 
+#pragma mark-飞行
 /**
  * 获取飞行列表
  *
@@ -604,42 +715,7 @@ RCT_REMAP_METHOD(getFlyProgress,  getFlyProgress:(RCTPromiseResolveBlock)resolve
     [self sendEventWithName:SSCENE_FLY body:@(percent)];
 }
 
-/**
- * 场景放大缩小
- *
- * @param promise
- */
-RCT_REMAP_METHOD(zoom,  scale:(double)scale zoom:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        sScene = [SScene singletonInstance];
-        Scene* scene = sScene.smSceneWC.sceneControl.scene;
-        [scene zoom:scale];
-        [scene refresh];
-        resolve(@(1));
-    } @catch (NSException *exception) {
-        reject(@"SScene", exception.reason, nil);
-    }
-}
-
-/**
- * 指北针
- *
- * @param promise
- */
-RCT_REMAP_METHOD(setHeading,  setHeading:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        sScene = [SScene singletonInstance];
-        Scene* scene = sScene.smSceneWC.sceneControl.scene;
-        Camera camera = [scene camera];
-        camera.heading = 0;
-        scene.camera = camera;
-        [scene refresh];
-        resolve(@(1));
-    } @catch (NSException *exception) {
-        reject(@"SScene", exception.reason, nil);
-    }
-}
-
+#pragma mark-属性
 /**
  * 设置触控器获取对象属性
  *
@@ -649,8 +725,9 @@ RCT_REMAP_METHOD(getAttribute,  getAttribute:(RCTPromiseResolveBlock)resolve rej
     @try {
         sScene = [SScene singletonInstance];
         SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
-         sceneControl.sceneControlDelegate = self;
+//         sceneControl.sceneControlDelegate = self;
         sSceneAction |= SS_Feature_Action;
+        [sceneControl setAction3D:PANSELECT3D];
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
@@ -693,47 +770,51 @@ RCT_REMAP_METHOD(removeOnTouchListener,  removeOnTouchListener:(RCTPromiseResolv
     }
 }
 
+#pragma mark-LabelHelper
 /**
  * 标注初始化
  */
-RCT_REMAP_METHOD(initsymbol,  initsymbol:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        sScene = [SScene singletonInstance];
-        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
-        Workspace* workspace = sScene.smSceneWC.workspace;
-        NSString* path = sScene.smSceneWC.workspace.connectionInfo.server;
-        NSString* result = [path.stringByDeletingLastPathComponent stringByAppendingString:@"/files/"];
-        NSString* kmlname = @"newKML.kml";
-        
-        [[LableHelper3D sharedInstance] initSceneControl:sceneControl path:result kml:kmlname];
-        resolve(@(1));
-    } @catch (NSException *exception) {
-        reject(@"SScene", exception.reason, nil);
-    }
-}
+//RCT_REMAP_METHOD(initsymbol,  initsymbol:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        sScene = [SScene singletonInstance];
+//        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+//        Workspace* workspace = sScene.smSceneWC.workspace;
+//        NSString* path = sScene.smSceneWC.workspace.connectionInfo.server;
+//        NSString* result = [path.stringByDeletingLastPathComponent stringByAppendingString:@"/files/"];
+//        NSString* kmlname = @"newKML.kml";
+//
+//        [[LableHelper3D sharedInstance] initSceneControl:sceneControl path:result kml:kmlname];
+//        [LableHelper3D sharedInstance].delegate = self;
+//
+//        resolve(@(1));
+//    } @catch (NSException *exception) {
+//        reject(@"SScene", exception.reason, nil);
+//    }
+//}
 
 /**
  * 标注打点
  */
-RCT_REMAP_METHOD(startDrawPoint,  startDrawPoint:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-       
-        sScene = [SScene singletonInstance];
-        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
-        [[LableHelper3D sharedInstance] startDrawPoint];
-        resolve(@(1));
-    } @catch (NSException *exception) {
-        reject(@"SScene", exception.reason, nil);
-    }
-}
+//RCT_REMAP_METHOD(startDrawPoint,  startDrawPoint:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        sSceneEvent = SS_Label_Event;
+////        sScene = [SScene singletonInstance];
+////        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+//        [[LableHelper3D sharedInstance] startDrawPoint];
+//        resolve(@(1));
+//    } @catch (NSException *exception) {
+//        reject(@"SScene", exception.reason, nil);
+//    }
+//}
 
 /**
  * 标注点绘线
  */
 RCT_REMAP_METHOD(startDrawLine,  startDrawLine:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        sScene = [SScene singletonInstance];
-        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        sSceneEvent = SS_Label_Event;
+//        sScene = [SScene singletonInstance];
+//        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
         [[LableHelper3D sharedInstance] startDrawLine];
         resolve(@(1));
     } @catch (NSException *exception) {
@@ -746,8 +827,9 @@ RCT_REMAP_METHOD(startDrawLine,  startDrawLine:(RCTPromiseResolveBlock)resolve r
  */
 RCT_REMAP_METHOD(startDrawArea,  startDrawArea:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        sScene = [SScene singletonInstance];
-        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        sSceneEvent = SS_Label_Event;
+//        sScene = [SScene singletonInstance];
+//        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
         [[LableHelper3D sharedInstance] startDrawArea];
         resolve(@(1));
     } @catch (NSException *exception) {
@@ -760,9 +842,8 @@ RCT_REMAP_METHOD(startDrawArea,  startDrawArea:(RCTPromiseResolveBlock)resolve r
  */
 RCT_REMAP_METHOD(symbolback,  symbolback:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        
-        sScene = [SScene singletonInstance];
-        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+//        sScene = [SScene singletonInstance];
+//        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
         [[LableHelper3D sharedInstance] back];
         resolve(@(1));
     } @catch (NSException *exception) {
@@ -770,30 +851,18 @@ RCT_REMAP_METHOD(symbolback,  symbolback:(RCTPromiseResolveBlock)resolve rejecte
     }
 }
 
-/**
- * 清除所有标注
- */
-RCT_REMAP_METHOD(clearAllLabel,  clearAllLabel:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        
-        sScene = [SScene singletonInstance];
-        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
-        [[LableHelper3D sharedInstance] clearAllLabel];
-        resolve(@(1));
-    } @catch (NSException *exception) {
-        reject(@"SScene", exception.reason, nil);
-    }
-}
+
 
 /**
  * 保存所有标注
  */
 RCT_REMAP_METHOD(save,  save:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        
-        sScene = [SScene singletonInstance];
-        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
-        [[LableHelper3D sharedInstance] save];
+//        sScene = [SScene singletonInstance];
+//        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[LableHelper3D sharedInstance] save];
+        });
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
@@ -805,9 +874,12 @@ RCT_REMAP_METHOD(save,  save:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromis
  */
 RCT_REMAP_METHOD(startDrawText,  startDrawText:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        
+        sSceneEvent = SS_Label_Event;
+//        sScene = [SScene singletonInstance];
+//        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+
         [[LableHelper3D sharedInstance] startDrawText];
-        [LableHelper3D sharedInstance].delegate = self;
+        
 
         resolve(@(1));
     } @catch (NSException *exception) {
@@ -815,22 +887,148 @@ RCT_REMAP_METHOD(startDrawText,  startDrawText:(RCTPromiseResolveBlock)resolve r
     }
 }
 
--(void)drawTextAtPoint:(CGPoint)pnt{
-    NSLog(@"wnmng:_%d__%d_",pnt.x,pnt.y);
+-(void)drawTextAtPoint:(Point3D)pnt{
             [self sendEventWithName:SSCENE_SYMBOL
-                               body:@{@"pointX":@(pnt.x),@"pointY":@(pnt.y)}];
+                               body:@{@"pointX":@(pnt.x),@"pointY":@(pnt.y),@"pointZ":@(pnt.z)}];
 }
 
 /**
  * 标注添加文本
  */
-RCT_REMAP_METHOD(addGeoText,  addGeoTextX:(int)x Y:(int)y Text:(NSString*)text resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addGeoText,  addGeoTextX:(double)x Y:(double)y Z:(double)z Text:(NSString*)text resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            NSLog(@"wnmng:xxxx_%d_xxxx_%d_%@",x,y,text);
-            [[LableHelper3D sharedInstance] addGeoText:CGPointMake(x, y) test:text];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            Point3D pnt = {x,y,z};
+            [[LableHelper3D sharedInstance] addGeoText:pnt test:text];
         });
         
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+/**
+ * 清除所有标注
+ */
+RCT_REMAP_METHOD(clearAllLabel,  clearAllLabel:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[LableHelper3D sharedInstance] clearAllLabel];
+        });
+        sSceneEvent = SS_Normal_Event;
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        [sceneControl setAction3D:PANSELECT3D];
+        
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+RCT_REMAP_METHOD(resetLableAction,  resetLableAction:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+
+        [[LableHelper3D sharedInstance] reset];
+        sSceneEvent = SS_Normal_Event;
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        [sceneControl setAction3D:PANSELECT3D];
+        
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+#pragma mark-兴趣点
+/**
+ * 开始绘制兴趣点
+ */
+RCT_REMAP_METHOD(startDrawFavorite,  startDrawFavorite:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sSceneEvent = SS_Label_Event;
+        
+        [[LableHelper3D sharedInstance] startDrawFavorite];
+//        sScene = [SScene singletonInstance];
+//        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        
+       
+        
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+-(void)drawFavoriteAtPoint:(Point3D)pnt{
+    sScene = [SScene singletonInstance];
+    SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+    CGPoint pixel = [sceneControl.scene globeToPixel:pnt];
+    [[LableHelper3D sharedInstance] setFavoriteText:@"兴趣点"];
+    [self sendEventWithName:SSCENE_FAVORITE
+                       body:@{@"pointX":@(pixel.x),@"pointY":@(pixel.y)}];
+}
+
+/**
+ * 设置兴趣点文本
+ */
+RCT_REMAP_METHOD(setFavoriteText,  setFavoriteText:(NSString*)text resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        //        sScene = [SScene singletonInstance];
+        //        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[LableHelper3D sharedInstance] setFavoriteText:text];
+        });
+        
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+
+#pragma mark-绕点飞行
+/**
+ * 添加环绕飞行的点
+ *
+ * @param point
+ */
+RCT_REMAP_METHOD(getFlyPoint,  getFlyPoint:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+//        sScene = [SScene singletonInstance];
+//        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+//        sceneControl.sceneControlDelegate = self;
+        sSceneAction |= SS_FlyPoint_Action;
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+/**
+ * 清除环绕飞行的点
+ */
+RCT_REMAP_METHOD(clearCirclePoint,  clearCirclePoint:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        //        sScene = [SScene singletonInstance];
+        //        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        
+        [[LableHelper3D sharedInstance]clearCirclePoint];
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+/**
+ * 环绕飞行
+ */
+RCT_REMAP_METHOD(circleFly,  circleFly:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        //        sScene = [SScene singletonInstance];
+        //        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        
+        [[LableHelper3D sharedInstance]circleFly];
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
@@ -859,4 +1057,72 @@ RCT_REMAP_METHOD(closeWorkspace,  closeWorkspace:(RCTPromiseResolveBlock)resolve
         reject(@"SScene", exception.reason, nil);
     }
 }
+
+#pragma mark-三维分析
+/**
+ * 三维量算分析
+ *
+ * @param promise
+ */
+RCT_REMAP_METHOD(setMeasureLineAnalyst, setMeasureLineAnalystResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+//        SceneControl* sceneControl = [[[SScene singletonInstance]smSceneWC] sceneControl];
+//        [[AnalysisHelper3D sharedInstance] initializeWithSceneControl:sceneControl];
+        [AnalysisHelper3D sharedInstance].delegate = self;
+//        sceneControl.tracking3DDelegate = self;
+        sSceneEvent = SS_Analysis_Event;
+
+        [[AnalysisHelper3D sharedInstance] startMeasureAnalysis];
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+-(void)distanceResult:(double)distance{
+    [self sendEventWithName:ANALYST_MEASURELINE body:@(distance)];
+}
+
+/**
+ * 三维面积分析
+ *
+ * @param promise
+ */
+RCT_REMAP_METHOD(setMeasureSquareAnalyst, setMeasureSquareAnalystResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+//        SceneControl* sceneControl = [[[SScene singletonInstance]smSceneWC] sceneControl];
+//        [[AnalysisHelper3D sharedInstance] initializeWithSceneControl:sceneControl];
+        [AnalysisHelper3D sharedInstance].delegate = self;
+//        sceneControl.tracking3DDelegate = self;
+        sSceneEvent = SS_Analysis_Event;
+
+        [[AnalysisHelper3D sharedInstance] startSureArea];
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+-(void)areaResult:(double)area{
+    [self sendEventWithName:ANALYST_MEASURESQUARE body:@(area)];
+}
+
+
+/**
+ * 关闭所有分析
+ *
+ * @param promise
+ */
+RCT_REMAP_METHOD( closeAnalysis,  closeAnalysisResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+//        SceneControl* sceneControl = [[[SScene singletonInstance]smSceneWC] sceneControl];
+//        [[AnalysisHelper3D sharedInstance] initializeWithSceneControl:sceneControl];
+        [AnalysisHelper3D sharedInstance].delegate = nil;
+        [[AnalysisHelper3D sharedInstance] closeAnalysis];
+        sSceneEvent = SS_Normal_Event;
+        
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
 @end

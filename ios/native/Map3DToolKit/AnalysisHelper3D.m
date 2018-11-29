@@ -14,7 +14,7 @@
 #import "SuperMap/GeoPoint3D.h"
 #import "SuperMap/GeoStyle3D.h"
 
-@interface AnalysisHelper3D()<Tracking3DDelegate>{
+@interface AnalysisHelper3D(){
     SceneControl*m_sceneControl;
     Sightline *m_sightLine;
 }
@@ -26,7 +26,7 @@
 
 -(void)initializeWithSceneControl:(SceneControl *)control{
     m_sceneControl = control;
-    m_sceneControl.tracking3DDelegate = self;
+    //m_sceneControl.tracking3DDelegate = self;
 }
 
 -(void)tracking3DEvent:(Tracking3DEvent *)event{

@@ -113,6 +113,32 @@ export default (function () {
       console.error(e)
     }
   }
+  
+  /**
+   * 检查地图是否有改动
+   * @param name
+   * @returns {*|Promise}
+   */
+  function mapIsModified() {
+    try {
+      return SMap.mapIsModified()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 保存地图
+   * @param name
+   * @returns {*|Promise}
+   */
+  function saveMap(name = '') {
+    try {
+      return SMap.saveMap(name)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
    * 关闭地图
@@ -444,6 +470,7 @@ export default (function () {
     closeMapControl,
     setAction,
     openMap,
+    saveMap,
     zoom,
     moveToCurrent,
     removeLayer,
