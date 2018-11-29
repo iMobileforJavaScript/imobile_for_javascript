@@ -43,7 +43,7 @@ export default class SOnlineService{
           handler.onResult(bResult);
         })
         callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE,function(strErrorInfo) {
-          handler.onRateChange(strErrorInfo);
+          handler.onResult(strErrorInfo);
         })
       }
     }
