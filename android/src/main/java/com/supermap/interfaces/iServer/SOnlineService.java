@@ -206,17 +206,17 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     @ReactMethod
     public void retrievePassword(final Promise promise){
         try {
-            OnlineService.retrievePassword(new OnlineCallBack.CallBackBitmap() {
-                @Override
-                public void onSucceed(Bitmap bitmap) {
-
-                }
-
-                @Override
-                public void onError(String s) {
-
-                }
-            });
+//            OnlineService.retrievePassword(new OnlineCallBack.CallBackBitmap() {
+//                @Override
+//                public void onSucceed(Bitmap bitmap) {
+//
+//                }
+//
+//                @Override
+//                public void onError(String s) {
+//
+//                }
+//            });
         }catch (Exception e){
 
         }

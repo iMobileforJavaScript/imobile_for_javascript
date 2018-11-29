@@ -569,6 +569,29 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 保存地图
+     * @param name
+     * @param promise
+     */
+    @ReactMethod
+    public void saveMap(String name, Promise promise) {
+        try {
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            boolean result = false;
+            if (name == null || name.equals("")) {
+                result = map.save();
+            } else {
+                result = map.save(name);
+            }
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 移动到当前位置
      * @param promise
      */
