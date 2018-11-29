@@ -1,7 +1,10 @@
 package com.supermap.interfaces;
 
 import android.graphics.Point;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -16,24 +19,32 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
+import com.supermap.data.GeoPoint3D;
 import com.supermap.data.ImageFormatType;
+import com.supermap.data.Point3D;
 import com.supermap.data.Workspace;
+import com.supermap.map3D.AnalysisHelper;
 import com.supermap.map3D.FlyHelper;
 import com.supermap.map3D.LabelHelper;
 import com.supermap.map3D.PoiSearchHelper;
 import com.supermap.map3D.toolKit.PoiGsonBean;
 import com.supermap.map3D.toolKit.TouchUtil;
 import com.supermap.mapping.MeasureListener;
+import com.supermap.realspace.Action3D;
 import com.supermap.realspace.Camera;
 import com.supermap.realspace.Layer3D;
-import com.supermap.realspace.Layer3DType;
 import com.supermap.realspace.Scene;
 import com.supermap.realspace.SceneControl;
+import com.supermap.realspace.Tracking3DEvent;
+import com.supermap.realspace.Tracking3DListener;
 import com.supermap.smNative.SMSceneWC;
-
+import android.os.Looper;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+//import java.util.logging.Handler;
 
 public class SScene extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SScene";
@@ -42,7 +53,11 @@ public class SScene extends ReactContextBaseJavaModule {
     private static MeasureListener mMeasureListener;
     private SMSceneWC smSceneWc;
     ReactContext mReactContext;
-
+    private static SingleTapUpAction singleTapUpAction=SingleTapUpAction.NULL;
+    private static LongPressAction longPressAction=LongPressAction.CIRCLEPOINT;
+    private TouchUtil.OsgbAttributeCallBack osgbAttributeCallBack;
+    private Tracking3DListener tracking3DListener;
+    private static gestureListener gestureListener;
     public SScene(ReactApplicationContext context) {
         super(context);
         this.context = context;
@@ -80,6 +95,250 @@ public class SScene extends ReactContextBaseJavaModule {
             sScene.smSceneWc.setWorkspace(new Workspace());
         }
     }
+
+
+
+    public void setSceneControl() {
+        setGestureDetector();
+        setTracking3DListener();
+        initLabelHelper();
+        initAnalysisHelper();
+    }
+
+    /**
+     * 设置手势监听
+     */
+    private void setGestureDetector() {
+        sScene=getInstance();
+        SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+        if(gestureListener==null){
+            gestureListener=new gestureListener();
+        }
+        GestureDetector gestureDetector1 = new GestureDetector(context, gestureListener);
+        sceneControl.setGestureDetector(gestureDetector1);
+
+    }
+
+    /**
+     * 设置Tracking3DListener监听的问题
+     * 1.返回的三维点在绘制的时候程序卡死，和iearth的通视卡死效果一样
+     */
+    private void setTracking3DListener() {
+        sScene=getInstance();
+        SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+        final Handler handler = new Handler(Looper.getMainLooper());
+        tracking3DListener = new Tracking3DListener() {
+            @Override
+            public void tracking(final Tracking3DEvent tracking3DEvent) {
+                sScene=getInstance();
+                final SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+                handler.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+//                        if (sceneControl.getAction() == Action3D.CREATEPOINT3D)
+                        switch (singleTapUpAction) {
+                            case NULL:
+                                break;
+                            case LABEL:
+                                LabelHelper.getInstence().labelOperate(tracking3DEvent);
+                                break;
+//                            case ATTRIBUTE:
+//                                if (osgbAttributeCallBack != null) {
+//                                    osgbAttributeCallBack.attributeInfo(TouchUtil.getAttribute(sceneControl));
+//                                }
+//                                break;
+                            case MEASURE:
+                                AnalysisHelper.getInstence().initAnalysis(sceneControl,tracking3DEvent);
+                                break;
+                        }
+                    }
+                });
+            }
+        };
+        sceneControl.addTrackingListener(tracking3DListener);
+    }
+
+    /**
+     * 初始化LabelHelper
+     */
+    private void initLabelHelper() {
+        sScene=getInstance();
+        Workspace workspace = sScene.smSceneWc.getWorkspace();
+        String path = workspace.getConnectionInfo().getServer();
+        String result = path.substring(0, path.lastIndexOf("/")) + "/files/";
+        final String kmlName = "NodeAnimation.kml";
+        sScene=getInstance();
+        SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+        LabelHelper.getInstence().initSceneControl(context, sceneControl, result, kmlName);
+    }
+
+    /**
+     * 初始化AnalysisHelper
+     */
+    private void initAnalysisHelper(){
+        sScene=getInstance();
+        SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+        AnalysisHelper.getInstence().initSceneControl(sceneControl);
+
+
+    }
+
+    class gestureListener implements GestureDetector.OnGestureListener {
+
+        @Override
+        public boolean onDown(MotionEvent event) {
+            // TODO Auto-generated method stub
+
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent arg0, MotionEvent arg1, float arg2, float arg3) {
+            // TODO Auto-generated method stub
+            // Log.v("MyGesture", "onFling()");
+            return true;
+        }
+
+        @Override
+        public void onLongPress(final MotionEvent event) {
+            // TODO Auto-generated method stub
+
+            switch (longPressAction) {
+                case NULL:
+                    break;
+                case CIRCLEPOINT:
+                    LabelHelper.getInstence().showCirclePoint(event);
+                    break;
+            }
+
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2, float arg3) {
+            // TODO Auto-generated method stub
+            return true;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent arg0) {
+            // TODO Auto-generated method stub
+
+
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent event) {
+            // TODO Auto-generated method stub
+            switch (singleTapUpAction) {
+                case NULL:
+                    break;
+                case LABEL:
+//                    LabelHelper.getInstence().labelOperate(event);
+                    break;
+                case ATTRIBUTE:
+                    if (osgbAttributeCallBack != null) {
+                        sScene=getInstance();
+                        SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+                        osgbAttributeCallBack.attributeInfo(TouchUtil.getAttribute(sceneControl));
+                    }
+                    break;
+            }
+            return false;
+        }
+    }
+
+    /**
+     * 回调属性值
+     */
+    public void callBackttribute() {
+        osgbAttributeCallBack = new TouchUtil.OsgbAttributeCallBack() {
+            @Override
+            public void attributeInfo(Map<String, String> attributeMap) {
+                WritableMap map = Arguments.createMap();
+                for (Map.Entry<String, String> entry : attributeMap.entrySet()) {
+                    map.putString(entry.getKey(), entry.getValue());
+                }
+                mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_ATTRIBUTE, map);
+            }
+        };
+    }
+
+    /**
+     * 开始旋转点
+     */
+    public void startShowCirclePoint() {
+        longPressAction=LongPressAction.CIRCLEPOINT;
+    }
+
+    /**
+     * 开始标注操作
+     */
+    public void startLabelOperate() {
+        sScene=getInstance();
+        SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+        sceneControl.setAction(Action3D.CREATEPOINT3D);
+        singleTapUpAction = SingleTapUpAction.LABEL;
+
+    }
+
+    public void endShowCirclePoint(){
+        longPressAction=LongPressAction.NULL;
+    }
+    /**
+     * 开始获取属性值
+     */
+    public void startTouchAttribute() {
+        sScene=getInstance();
+        sScene.smSceneWc.getSceneControl().setAction(Action3D.PANSELECT3D);
+        singleTapUpAction = SingleTapUpAction.ATTRIBUTE;
+    }
+
+    /**
+     * 开始测量
+     */
+    public void startMeasure(){
+        singleTapUpAction=SingleTapUpAction.MEASURE;
+    }
+
+    /**
+     * 清除单点手势监听
+     */
+    public void clearSingTapUpAction() {
+        singleTapUpAction = SingleTapUpAction.NULL;
+    }
+
+    enum LongPressAction {
+        /**
+         * 空操作
+         */
+        NULL,
+        /**
+         * 长按出现旋转点
+         */
+        CIRCLEPOINT
+    }
+
+
+    enum SingleTapUpAction {
+        /**
+         * 空操作
+         */
+        NULL,
+        /**
+         * 标注
+         */
+        LABEL,
+        /**
+         * 属性
+         */
+        ATTRIBUTE,
+        /**
+         * 测量
+         */
+        MEASURE
+    }
+
 
     public static SMSceneWC getSMWorkspace() {
         return getInstance().smSceneWc;
@@ -195,7 +454,7 @@ public class SScene extends ReactContextBaseJavaModule {
 //            scene.getLayers().get(oldLayer).setVisible(false);
             }
             com.supermap.realspace.Layer3DType layer3DType = null;
-            com.supermap.data.ImageFormatType imageFormatType1 = null;
+            ImageFormatType imageFormatType1 = null;
             switch (Layer3DType) {
                 case "IMAGEFILE":
                     layer3DType = com.supermap.realspace.Layer3DType.IMAGEFILE;
@@ -255,7 +514,6 @@ public class SScene extends ReactContextBaseJavaModule {
 //                    scene.getLayers().removeLayerWithIndex(i);
 //                }
                Layer3D layer3D= scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
-               Log.e("layer3D===============", String.valueOf(layer3D));
             }
             scene.refresh();
             promise.resolve(true);
@@ -601,6 +859,22 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 设置sceneControl手势监听
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setListener(Promise promise) {
+        try {
+            sScene=getInstance();
+            sScene.setSceneControl();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置触控器获取对象属性
      *
      * @param promise
@@ -609,68 +883,104 @@ public class SScene extends ReactContextBaseJavaModule {
     public void getAttribute(Promise promise) {
         try {
             sScene = getInstance();
-            final SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
-            sceneControl.setOnTouchListener(new View.OnTouchListener() {
+            sScene.startTouchAttribute();
+            sScene.callBackttribute();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置绕点飞行监听
+     * 获取绕点飞行的屏幕坐标
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getFlyPoint(Promise promise) {
+        try {
+            sScene = getInstance();
+            sScene.startShowCirclePoint();
+            LabelHelper.getInstence().setCircleFlyCallBack(new LabelHelper.CircleFlyCallBack() {
                 @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    switch (event.getAction()) {
-                        case (MotionEvent.ACTION_UP):
-                            WritableMap map = Arguments.createMap();
-                            Map<String, String> attributeMap = TouchUtil.getAttribute(sceneControl, event);
-                            for (Map.Entry<String, String> entry : attributeMap.entrySet()) {
-                                map.putString(entry.getKey(), entry.getValue());
-                            }
-                            mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_ATTRIBUTE, map);
-                            break;
-//                      case(MotionEvent.ACTION_SCROLL):
-//                          mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_REMOVE_ATTRIBUTE, false);
-//                          break;
-                    }
-                    return false;
+                public void circleFly(Point pnt) {
+                    WritableMap map = Arguments.createMap();
+                    map.putInt("pointX", pnt.x);
+                    map.putInt("pointY", pnt.y);
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_CIRCLEFLY, map);
                 }
             });
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    /**
-     * 清除对象列表属性
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void clearAttribute(Promise promise) {
-        try {
-            sScene = getInstance();
-            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-            int count = scene.getLayers().getCount();
-            for (int i = 0; i < count; i++) {
-                scene.getLayers().get(i).getSelection().clear();
-            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
 
-
     /**
-     * 移除触控器
+     * 开始环绕飞行
      *
      * @param promise
      */
     @ReactMethod
-    public void removeOnTouchListener(Promise promise) {
+    public void setCircleFly(Promise promise) {
         try {
             sScene = getInstance();
-            final SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
-            sceneControl.setOnTouchListener(null);
+            LabelHelper.getInstence().circleFly();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
+
+    /**
+     * 停止环绕飞行
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void stopCircleFly(Promise promise) {
+        try {
+            sScene = getInstance();
+            sScene.smSceneWc.getSceneControl().getScene().flyCircle(new GeoPoint3D(1,1,1),0);
+//            sScene.smSceneWc.getSceneControl().setAction(Action3D.PANSELECT3D);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 清除飞行点
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void clearCirclePoint(Promise promise) {
+        try {
+            sScene = getInstance();
+            LabelHelper.getInstence().clearCirclePoint();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 关闭绕点飞行
+     *
+     * @param promise
+     */
+//    @ReactMethod
+//    public void closeCircleFly(Promise promise) {
+//        try {
+//            sScene = getInstance();
+//            LabelHelper.getInstence().closeCircleFly();
+//            promise.resolve(true);
+//        } catch (Exception e) {
+//            promise.reject(e);
+//        }
+//    }
 
     /**
      * 清除选择对象
@@ -690,41 +1000,82 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+
     /**
-     * 标注初始化
+     * 切换手势监听
      */
     @ReactMethod
-    public void initsymbol(Promise promise) {
+    public void checkoutListener(String listenEvent,Promise promise) {
+        sScene=getInstance();
         try {
-            sScene = getInstance();
-            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
-            Workspace workspace = sScene.smSceneWc.getWorkspace();
-            String path = workspace.getConnectionInfo().getServer();
-            String result = path.substring(0, path.lastIndexOf("/")) + "/files/";
-            String kmlname = "newKML.kml";
-            LabelHelper.getInstence().initSceneControl(mReactContext, sceneControl, result, kmlname);
+            switch (listenEvent){
+                //切换到对象属性监听
+                case "startTouchAttribute":
+                    sScene.startTouchAttribute();
+                    sScene.startShowCirclePoint();
+                    break;
+                    //切换到量算监听
+                case "startMeasure":
+                    sScene.startMeasure();
+                    sScene.endShowCirclePoint();
+                    break;
+                    //切换到标注操作
+                case "startLabelOperate":
+                    sScene.startLabelOperate();
+                    sScene.endShowCirclePoint();
+                    break;
+                    //切换到绕点飞行
+                case "startShowCirclePoint":
+                    sScene.startShowCirclePoint();
+                    sScene.endShowCirclePoint();
+                    break;
+//                case "startDrawFavorite":
+//                    LabelHelper.getInstence().startDrawFavorite();
+//                    break;
+            }
             promise.resolve(true);
-
         } catch (Exception e) {
-//            promise.resolve(false);
             promise.reject(e);
         }
     }
 
-    /**
-     * 标注打点
-     */
-    @ReactMethod
-    public void startDrawPoint(Promise promise) {
-        try {
-            sScene = getInstance();
-            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
-            LabelHelper.getInstence().startDrawPoint();
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
+
+
+//    /**
+//     * 标注初始化
+//     */
+//    @ReactMethod
+//    public void initsymbol(Promise promise) {
+//        try {
+//            sScene = getInstance();
+//            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+//            Workspace workspace = sScene.smSceneWc.getWorkspace();
+//            String path = workspace.getConnectionInfo().getServer();
+//            String result = path.substring(0, path.lastIndexOf("/")) + "/files/";
+//            String kmlname = "newKML.kml";
+//            LabelHelper.getInstence().initSceneControl(mReactContext, sceneControl, result, kmlname);
+//            promise.resolve(true);
+//
+//        } catch (Exception e) {
+////            promise.resolve(false);
+//            promise.reject(e);
+//        }
+//    }
+
+//    /**
+//     * 标注打点
+//     */
+//    @ReactMethod
+//    public void startDrawPoint(Promise promise) {
+//        try {
+//            sScene = getInstance();
+//            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+//            LabelHelper.getInstence().startDrawPoint();
+//            promise.resolve(true);
+//        } catch (Exception e) {
+//            promise.reject(e);
+//        }
+//    }
 
 
     /**
@@ -733,8 +1084,6 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void startDrawLine(Promise promise) {
         try {
-            sScene = getInstance();
-            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
             LabelHelper.getInstence().startDrawLine();
             promise.resolve(true);
         } catch (Exception e) {
@@ -748,8 +1097,6 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void startDrawArea(Promise promise) {
         try {
-            sScene = getInstance();
-            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
             LabelHelper.getInstence().startDrawArea();
             promise.resolve(true);
         } catch (Exception e) {
@@ -764,6 +1111,7 @@ public class SScene extends ReactContextBaseJavaModule {
     public void symbolback(Promise promise) {
         try {
             LabelHelper.getInstence().back();
+
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -839,13 +1187,23 @@ public class SScene extends ReactContextBaseJavaModule {
             LabelHelper.getInstence().startDrawText();
             LabelHelper.getInstence().setDrawTextListener(new LabelHelper.DrawTextListener() {
                 @Override
-                public void OnclickPoint(Point pnt) {
+                public void OnclickPoint(Point3D pnt) {
                     WritableMap map = Arguments.createMap();
-                    map.putInt("pointX", pnt.x);
-                    map.putInt("pointY", pnt.y);
+                    map.putDouble("pointX", pnt.getX());
+                    map.putDouble("pointY", pnt.getY());
+                    map.putDouble("pointZ", pnt.getZ());
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_SYMBOL, map);
                 }
             });
+//            LabelHelper.getInstence().setDrawTextListener(new LabelHelper.DrawTextListener() {
+//                @Override
+//                public void OnclickPoint(Point pnt) {
+//                    WritableMap map = Arguments.createMap();
+//                    map.putInt("pointX", pnt.x);
+//                    map.putInt("pointY", pnt.y);
+//                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_SYMBOL, map);
+//                }
+//            });
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -856,10 +1214,10 @@ public class SScene extends ReactContextBaseJavaModule {
      * 标注添加文本
      */
     @ReactMethod
-    public void addGeoText(int x, int y, String text, Promise promise) {
+    public void addGeoText(double x, double y,double z, String text, Promise promise) {
         try {
-            Point point = new Point(x, y);
-            LabelHelper.getInstence().addGeoText(point, text);
+            Point3D point3D=new Point3D(x,y,z);
+            LabelHelper.getInstence().addGeoText(point3D, text);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -880,7 +1238,7 @@ public class SScene extends ReactContextBaseJavaModule {
                     map.putInt("pointX", pnt.x);
                     map.putInt("pointY", pnt.y);
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_FAVORITE, map);
-                    LabelHelper.getInstence().addFavoriteText(pnt, "");
+                  LabelHelper.getInstence().setFavoriteText("兴趣点");
                 }
             });
             promise.resolve(true);
@@ -890,14 +1248,15 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 兴趣点添加文本
+     * 获取指北角度
      */
     @ReactMethod
-    public void addFavoriteText(int x, int y, String text, Promise promise) {
+    public void getcompass( Promise promise) {
         try {
-            Point point = new Point(x, y);
-            LabelHelper.getInstence().addFavoriteText(point, text);
-            promise.resolve(true);
+            sScene = getInstance();
+            Scene scene=sScene.smSceneWc.getSceneControl().getScene();
+            double heading=scene.getCamera().getHeading();
+            promise.resolve(heading);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -909,7 +1268,8 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void closeWorkspace(Promise promise) {
         try {
-            getCurrentActivity().runOnUiThread(new SScene.DisposeThread(promise));
+            getCurrentActivity().runOnUiThread(new DisposeThread(promise));
+            LabelHelper.getInstence().closePage();
         } catch (Exception e) {
             promise.reject(e);
         }

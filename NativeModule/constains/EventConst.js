@@ -36,5 +36,6 @@ export default {
   SSCENE_ATTRIBUTE : "com.supermap.RN.SMSceneControl.Scene_attribute",
   SSCENE_SYMBOL : "com.supermap.RN.SMSceneControl.Scene_symbol",
   SSCENE_FAVORITE : "com.supermap.RN.SMSceneControl.Scene_favorite",
+  SSCENE_CIRCLEFLY : "com.supermap.RN.SMSceneControl.Scene_circleFly",
   // SSCENE_REMOVE_ATTRIBUTE : "com.supermap.RN.SMSceneControl.Scene_removeAttribute",
 }
