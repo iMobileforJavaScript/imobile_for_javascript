@@ -44,4 +44,6 @@
 // 关闭所有分析
 -(void)closeAnalysis;
 
+- (void)tracking3DEvent:(Tracking3DEvent*)event;
+
 @end

@@ -33,6 +33,8 @@ NSString * const POINTSEARCH_KEYWORDS = @"com.supermap.RN.SMSceneControl.PointSe
 NSString * const SSCENE_FLY = @"com.supermap.RN.SMSceneControl.Scene_fly";
 NSString * const SSCENE_ATTRIBUTE = @"com.supermap.RN.SMSceneControl.Scene_attribute";
 NSString * const SSCENE_SYMBOL = @"com.supermap.RN.SMSceneControl.Scene_symbol";
+NSString * const SSCENE_CIRCLEFLY = @"com.supermap.RN.SMSceneControl.Scene_circlefly";
+NSString * const SSCENE_FAVORITE = @"com.supermap.RN.SMSceneControl.Scene_favorite";
 
 /** 地图 **/
 NSString * const MAP_LONG_PRESS = @"com.supermap.RN.Mapcontrol.long_press_event";
