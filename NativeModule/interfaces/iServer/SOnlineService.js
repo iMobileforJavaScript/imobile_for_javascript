@@ -5,35 +5,54 @@ let OnlineServiceNative = NativeModules.SOnlineService;
 const callBackIOS = new NativeEventEmitter(OnlineServiceNative);
 export default class SOnlineService{
   constructor(){
-
+    // this.firstDownload =true;
     OnlineServiceNative.init();
   }
-  async download (path,fileName,handler){
+  uploadFile(path,dataName,handler){
+    debugger;
+    console.log("progress: 0");
     if(Platform.OS === 'ios' && handler){
-      callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING,function(value){
-        console.log("download progress = "+value.progress);
-      })
-      // if(typeof handler.onProgress === 'function'){
-      //   callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING,function(value){
-      //    console.log("download progress = "+value);
-      //   })
-      // }
-      // if(typeof handler.onComplete === 'function'){
-      //   callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED,function(value) {
-      //     console.log("完成下载"+value);
-      //   })
-      // }
-      // if (typeof handlers.onFailure === 'function') {
-      //   callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (e) {
-      //     handlers.onFailure(e)
-      //   })
-      // }
+      if(typeof handler.onProgress === 'function'){
+        callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADING,function(obj){
+          console.log("progress: "+obj.progress);
+          let downloadId = obj.id;
+          handler.onProgress(obj.progress);
+        })
+      }
+      if(typeof handler.onResult === 'function'){
+        callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADED,function(value) {
+          handler.onResult(value);
+        })
+      }
+    }
+    OnlineServiceNative.upload(path,dataName);
+  }
+  downloadFile (path,onlineDataName,handler){
+    if(Platform.OS === 'ios' && handler){
+      if(typeof handler.onProgress === 'function'){
+        callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING,function(obj){
+          console.log("progress:"+obj.progress);
+          let downloadId = obj.id;
+          if(downloadId === onlineDataName){
+            handler.onProgress(obj.progress);
+          }
+        })
+      }
+      if(typeof handler.onResult === 'function'){
+        callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED,function(bResult) {
+          handler.onResult(bResult);
+        })
+        callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE,function(strErrorInfo) {
+          handler.onRateChange(strErrorInfo);
+        })
+      }
     }
     else if(Platform.OS === 'android' && handler){
 
     }
 
-    OnlineServiceNative.download(path,fileName);
+
+    OnlineServiceNative.download(path,onlineDataName);
   }
   async login(userName,password) {
     if(userName === 'undefined' || password === 'undefined'){
@@ -41,12 +60,10 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.login(userName,password);
-    console.log(result);
     return result;
   }
   async logout(){
     let bLogoutResult = await OnlineServiceNative.logout();
-    console.log(result);
     return bLogoutResult;
   }
 
@@ -57,7 +74,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.getDataList(currentPage,pageSize);
-    console.log(result);
     return result;
   }
 
@@ -68,7 +84,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.getServiceList(currentPage,pageSize);
-    console.log(result);
     return result;
   }
 
@@ -80,7 +95,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.registerWithEmail(email,nickname,password);
-    console.log(result);
     return result;
   }
 
@@ -93,7 +107,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.registerWithPhone(phoneNumber,smsVerifyCode,nickname,password);
-    console.log(password);
     return result;
   }
   async sendSMSVerifyCode(phoneNumber){
@@ -102,7 +115,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.sendSMSVerifyCode(phoneNumber);
-    console.log(result);
     return result;
   }
   async upload(path,fileName){
@@ -112,7 +124,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.upload(path,fileName);
-    console.log(result);
     return result;
   }
   async verifyCodeImage(){
@@ -127,7 +138,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.retrievePassword(account,verifyCode,isPhoneAccount);
-    console.log(result);
     return result;
   }
   async retrievePasswordSecond(firstResult){
@@ -136,7 +146,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.retrievePasswordSecond(firstResult);
-    console.log(result);
     return result;
   }
   async retrievePasswordThrid(secondResult,safeCode){
@@ -146,7 +155,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.retrievePasswordThrid(secondResult,safeCode);
-    console.log(result);
     return result;
   }
   async retrievePasswordFourth(thridResult,newPassword){
@@ -156,7 +164,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.retrievePasswordFourth(thridResult,newPassword);
-    console.log(result);
     return result;
   }
   async deleteData(dataName){
@@ -165,7 +172,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.deleteData(dataName);
-    console.log(result);
     return result;
   }
   async deleteService(dataName){
@@ -173,7 +179,6 @@ export default class SOnlineService{
       console.log('params have undefined');
       return;
     }
-    console.log(result);
     let result = await OnlineServiceNative.deleteService(dataName);
   }
   async changeDataVisibility(dataName,isPublic){
@@ -183,7 +188,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.changeDataVisibility(dataName,isPublic);
-    console.log(result);
     return result;
   }
   async changeServiceVisibility(serviceName,isPublic){
@@ -193,7 +197,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.changeServiceVisibility(serviceName,isPublic);
-    console.log(result);
     return result;
   }
   async getAllUserDataList(currentPage){
@@ -202,7 +205,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.getAllUserDataList(currentPage);
-    console.log(result);
     return result;
   }
   async getAllUserSymbolLibList(currentPage){
@@ -211,7 +213,6 @@ export default class SOnlineService{
       return;
     }
     let result = await OnlineServiceNative.getAllUserSymbolLibList(currentPage);
-    console.log(result);
     return result;
   }
 
