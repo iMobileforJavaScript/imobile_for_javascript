@@ -115,6 +115,7 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
             }
             [self openGPS];
+            [sMap.smMapWC.mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         }
     } @catch (NSException *exception) {
@@ -531,7 +532,7 @@ RCT_REMAP_METHOD(removeGeometrySelectedListener, resolver:(RCTPromiseResolveBloc
     }
 }
 
-#pragma mark 制定可编辑图层
+#pragma mark 指定可编辑图层
 RCT_REMAP_METHOD(appointEditGeometry, appointEditGeometryByGeoId:(int)geoId layerName:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
