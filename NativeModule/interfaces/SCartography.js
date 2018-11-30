@@ -13,11 +13,11 @@ let SCartography = NativeModules.SCartography
  * 设置点符号的ID
  * 
  * @param makerSymbolID 点符号ID
- * @param layerIndex 图层索引
+ * @param layerName 图层名称
  */
-setMakerSymbolID = (makerSymbolID, layerIndex) => {
+setMakerSymbolID = (makerSymbolID, layerName) => {
     try {
-        return SCartography.setMakerSymbolID(makerSymbolID, layerIndex)
+        return SCartography.setMakerSymbolID(makerSymbolID, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -27,11 +27,11 @@ setMakerSymbolID = (makerSymbolID, layerIndex) => {
  * 设置点符号的大小： 1 - 100 mm
  * 
  * @param mm
- * @param layerIndex
+ * @param layerName
  */
-setMarkerSize = (mm, layerIndex) => {
+setMarkerSize = (mm, layerName) => {
   try {
-    return SCartography.setMarkerSize(mm, layerIndex)
+    return SCartography.setMarkerSize(mm, layerName)
   } catch (e) {
     console.error(e)
   }
@@ -41,11 +41,11 @@ setMarkerSize = (mm, layerIndex) => {
  * 设置点符号的颜色
  * 
  * @param color 十六进制颜色码
- * @param layerIndex
+ * @param layerName
  */
-setMarkerColor = (color, layerIndex) => {
+setMarkerColor = (color, layerName) => {
     try {
-        return SCartography.setMarkerColor(color, layerIndex)
+        return SCartography.setMarkerColor(color, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -55,11 +55,11 @@ setMarkerColor = (color, layerIndex) => {
  * 设置点符号的旋转角度： 0 - 360°
  * 
  * @param angle
- * @param layerIndex
+ * @param layerName
  */
-setMarkerAngle = (angle, layerIndex) => {
+setMarkerAngle = (angle, layerName) => {
     try {
-        return SCartography.setMarkerAngle(angle, layerIndex)
+        return SCartography.setMarkerAngle(angle, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -69,11 +69,11 @@ setMarkerAngle = (angle, layerIndex) => {
  * 设置点符号的透明度： 0 - 100 %
  * 
  * @param alpha
- * @param layerIndex
+ * @param layerName
  */
-setMarkerAlpha = (alpha, layerIndex) => {
+setMarkerAlpha = (alpha, layerName) => {
     try {
-        return SCartography.setMarkerAlpha(alpha, layerIndex)
+        return SCartography.setMarkerAlpha(alpha, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -83,11 +83,11 @@ setMarkerAlpha = (alpha, layerIndex) => {
  * 设置线符号的ID(设置边框符号的ID)
  * 
  * @param lineSymbolID
- * @param layerIndex
+ * @param layerName
  */
-setLineSymbolID = (lineSymbolID, layerIndex) => {
+setLineSymbolID = (lineSymbolID, layerName) => {
     try {
-        return SCartography.setLineSymbolID(lineSymbolID, layerIndex)
+        return SCartography.setLineSymbolID(lineSymbolID, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -97,11 +97,11 @@ setLineSymbolID = (lineSymbolID, layerIndex) => {
  * 设置线宽：1 - 10mm(边框符号宽度)
  * 
  * @param mm
- * @param layerIndex
+ * @param layerName
  */
-setLineWidth = (mm, layerIndex) => {
+setLineWidth = (mm, layerName) => {
     try {
-        return SCartography.setLineWidth(mm, layerIndex)
+        return SCartography.setLineWidth(mm, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -111,11 +111,11 @@ setLineWidth = (mm, layerIndex) => {
  * 设置线颜色(边框符号颜色)
  * 
  * @param lineColor
- * @param layerIndex
+ * @param layerName
  */
-setLineColor = (lineColor, layerIndex) => {
+setLineColor = (lineColor, layerName) => {
     try {
-        return SCartography.setLineColor(lineColor, layerIndex)
+        return SCartography.setLineColor(lineColor, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -125,11 +125,11 @@ setLineColor = (lineColor, layerIndex) => {
  * 设置面符号的ID
  * 
  * @param FillSymbolID
- * @param layerIndex
+ * @param layerName
  */
-setFillSymbolID = (FillSymbolID, layerIndex) => {
+setFillSymbolID = (FillSymbolID, layerName) => {
     try {
-        return SCartography.setFillSymbolID(FillSymbolID, layerIndex)
+        return SCartography.setFillSymbolID(FillSymbolID, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -139,11 +139,11 @@ setFillSymbolID = (FillSymbolID, layerIndex) => {
  * 设置前景色
  * 
  * @param fillForeColor
- * @param layerIndex
+ * @param layerName
  */
-setFillForeColor = (fillForeColor, layerIndex) => {
+setFillForeColor = (fillForeColor, layerName) => {
     try {
-        return SCartography.setFillForeColor(fillForeColor, layerIndex)
+        return SCartography.setFillForeColor(fillForeColor, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -153,11 +153,11 @@ setFillForeColor = (fillForeColor, layerIndex) => {
  * 设置背景色
  * 
  * @param fillBackColor
- * @param layerIndex
+ * @param layerName
  */
-setFillBackColor = (fillBackColor, layerIndex) => {
+setFillBackColor = (fillBackColor, layerName) => {
     try {
-        return SCartography.setFillBackColor(fillBackColor, layerIndex)
+        return SCartography.setFillBackColor(fillBackColor, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -167,11 +167,11 @@ setFillBackColor = (fillBackColor, layerIndex) => {
  * 设置透明度（0 - 100）
  * 
  * @param fillOpaqueRate
- * @param layerIndex
+ * @param layerName
  */
-setFillOpaqueRate = (fillOpaqueRate, layerIndex) => {
+setFillOpaqueRate = (fillOpaqueRate, layerName) => {
     try {
-        return SCartography.setFillOpaqueRate(fillOpaqueRate, layerIndex)
+        return SCartography.setFillOpaqueRate(fillOpaqueRate, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -180,11 +180,11 @@ setFillOpaqueRate = (fillOpaqueRate, layerIndex) => {
 /**
  * 设置线性渐变
  * 
- * @param layerIndex
+ * @param layerName
  */
-setFillLinearGradient = (layerIndex) => {
+setFillLinearGradient = (layerName) => {
     try {
-        return SCartography.setFillLinearGradient(layerIndex)
+        return SCartography.setFillLinearGradient(layerName)
     } catch (e) {
         console.error(e)
     }
@@ -193,11 +193,11 @@ setFillLinearGradient = (layerIndex) => {
 /**
  * 设置辐射渐变
  * 
- * @param layerIndex
+ * @param layerName
  */
-setFillRadialGradient = (layerIndex) => {
+setFillRadialGradient = (layerName) => {
     try {
-        return SCartography.setFillRadialGradient(layerIndex)
+        return SCartography.setFillRadialGradient(layerName)
     } catch (e) {
         console.error(e)
     }
@@ -206,11 +206,11 @@ setFillRadialGradient = (layerIndex) => {
 /**
  * 设置方形渐变
  * 
- * @param layerIndex
+ * @param layerName
  */
-setFillSquareGradient = (layerIndex) => {
+setFillSquareGradient = (layerName) => {
     try {
-        return SCartography.setFillSquareGradient(layerIndex)
+        return SCartography.setFillSquareGradient(layerName)
     } catch (e) {
         console.error(e)
     }
@@ -219,11 +219,11 @@ setFillSquareGradient = (layerIndex) => {
 /**
  * 设置无渐变
  * 
- * @param layerIndex
+ * @param layerName
  */
-setFillNoneGradient = (layerIndex) => {
+setFillNoneGradient = (layerName) => {
     try {
-        return SCartography.setFillNoneGradient(layerIndex)
+        return SCartography.setFillNoneGradient(layerName)
     } catch (e) {
         console.error(e)
     }
@@ -233,11 +233,11 @@ setFillNoneGradient = (layerIndex) => {
  * 设置透明度(0 - 100 % )
  * 
  * @param gridOpaqueRate
- * @param layerIndex
+ * @param layerName
  */
-setGridOpaqueRate = (gridOpaqueRate, layerIndex) => {
+setGridOpaqueRate = (gridOpaqueRate, layerName) => {
     try {
-        return SCartography.setGridOpaqueRate(gridOpaqueRate, layerIndex)
+        return SCartography.setGridOpaqueRate(gridOpaqueRate, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -247,11 +247,11 @@ setGridOpaqueRate = (gridOpaqueRate, layerIndex) => {
  * 设置亮度(-100 % -100 % )
  * 
  * @param gridContrast
- * @param layerIndex
+ * @param layerName
  */
-setGridContrast = (gridContrast, layerIndex) => {
+setGridContrast = (gridContrast, layerName) => {
     try {
-        return SCartography.setGridContrast(gridContrast, layerIndex)
+        return SCartography.setGridContrast(gridContrast, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -261,11 +261,11 @@ setGridContrast = (gridContrast, layerIndex) => {
  * 设置对比度(-100 % -100 % )
  * 
  * @param gridBrightness
- * @param layerIndex
+ * @param layerName
  */
-setGridBrightness = (gridBrightness, layerIndex) => {
+setGridBrightness = (gridBrightness, layerName) => {
     try {
-        return SCartography.setGridBrightness(gridBrightness, layerIndex)
+        return SCartography.setGridBrightness(gridBrightness, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -276,11 +276,11 @@ setGridBrightness = (gridBrightness, layerIndex) => {
  * 
  * @param fontName  字体名称,例如：“ 宋体”
  * @param geometryID 
- * @param layerIndex
+ * @param layerName
  */
-setTextFont = (fontName, geometryID, layerIndex) => {
+setTextFont = (fontName, geometryID, layerName) => {
     try {
-        return SCartography.setTextFont(fontName, geometryID, layerIndex)
+        return SCartography.setTextFont(fontName, geometryID, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -291,11 +291,11 @@ setTextFont = (fontName, geometryID, layerIndex) => {
  * 
  * @param size
  * @param geometryID 
- * @param layerIndex
+ * @param layerName
  */
-setTextFontSize = (size, geometryID, layerIndex) => {
+setTextFontSize = (size, geometryID, layerName) => {
     try {
-        return SCartography.setTextFontSize(size, geometryID, layerIndex)
+        return SCartography.setTextFontSize(size, geometryID, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -306,11 +306,11 @@ setTextFontSize = (size, geometryID, layerIndex) => {
  * 
  * @param color
  * @param geometryID 
- * @param layerIndex
+ * @param layerName
  */
-setTextFontColor = (color, geometryID, layerIndex) => {
+setTextFontColor = (color, geometryID, layerName) => {
     try {
-        return SCartography.setTextFontColor(color, geometryID, layerIndex)
+        return SCartography.setTextFontColor(color, geometryID, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -321,11 +321,11 @@ setTextFontColor = (color, geometryID, layerIndex) => {
  * 
  * @param angle
  * @param geometryID 
- * @param layerIndex
+ * @param layerName
  */
-setTextFontRotation = (angle, geometryID, layerIndex) => {
+setTextFontRotation = (angle, geometryID, layerName) => {
     try {
-        return SCartography.setTextFontRotation(angle, geometryID, layerIndex)
+        return SCartography.setTextFontRotation(angle, geometryID, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -336,11 +336,11 @@ setTextFontRotation = (angle, geometryID, layerIndex) => {
  * 
  * @param textAlignment 文本的对齐方式,例如: “TOPLEFT”,“ TOPCENTER”...
  * @param geometryID 
- * @param layerIndex
+ * @param layerName
  */
-setTextFontPosition = (textAlignment, geometryID, layerIndex) => {
+setTextFontPosition = (textAlignment, geometryID, layerName) => {
     try {
-        return SCartography.setTextFontPosition(textAlignment, geometryID, layerIndex)
+        return SCartography.setTextFontPosition(textAlignment, geometryID, layerName)
     } catch (e) {
         console.error(e)
     }
@@ -351,11 +351,11 @@ setTextFontPosition = (textAlignment, geometryID, layerIndex) => {
  * 
  * @param style (加粗:BOLD、 斜体:ITALIC、 下划线:UNDERLINE、 删除线:STRIKEOUT、 轮廓:OUTLINE、 阴影:SHADOW)
  * @param geometryID 
- * @param layerIndex
+ * @param layerName
  */
-setTextStyle = (style, whether, geometryID, layerIndex) => {
+setTextStyle = (style, whether, geometryID, layerName) => {
     try {
-        return SCartography.setTextStyle(style, whether, geometryID, layerIndex)
+        return SCartography.setTextStyle(style, whether, geometryID, layerName)
     } catch (e) {
         console.error(e)
     }
