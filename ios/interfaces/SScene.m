@@ -328,7 +328,7 @@ RCT_REMAP_METHOD(setListener, setListener:(RCTPromiseResolveBlock)resolve reject
         dispatch_async(dispatch_get_main_queue(), ^{
             
             UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGestureEvent:)];
-            longPressGesture.minimumPressDuration = 1.2;
+            longPressGesture.minimumPressDuration = 0.8;
             //        self.longPressGestureDelegate = [[LongPressGestureDelegate alloc] init];
             //        longPressGesture.delegate = self.longPressGestureDelegate;
             [sceneControl addGestureRecognizer:longPressGesture];
