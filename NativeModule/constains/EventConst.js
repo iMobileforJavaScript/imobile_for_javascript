@@ -4,12 +4,14 @@ export default {
   COLLECTION_SENSER_CHANGE: 'com.supermap.RN.Mapcontrol.collection_sensor_change',
 
   /** 在线服务 **/
-  ONLINE_SERVICE_DOWNLOADING: 'com.supermap.RN.Mapcontrol.online_service_downloading',
-  ONLINE_SERVICE_DOWNLOADED :'com.supermap.RN.Mapcontrol.online_service_downloaded',
   ONLINE_SERVICE_LOGIN: 'com.supermap.RN.Mapcontrol.online_service_login',
   ONLINE_SERVICE_LOGOUT: 'com.supermap.RN.Mapcontrol.online_service_logout',
+  ONLINE_SERVICE_DOWNLOADING: 'com.supermap.RN.Mapcontrol.online_service_downloading',
+  ONLINE_SERVICE_DOWNLOADED :'com.supermap.RN.Mapcontrol.online_service_downloaded',
   ONLINE_SERVICE_DOWNLOADFAILURE: 'com.supermap.RN.Mapcontrol.online_service_downloadfailure',
-
+  ONLINE_SERVICE_UPLOADING: 'com.supermap.RN.Mapcontrol.online_service_uploading',
+  ONLINE_SERVICE_UPLOADED:'com.supermap.RN.Mapcontrol.online_service_uploaded',
+  ONLINE_SERVICE_UPLOADFAILURE:'com.supermap.RN.Mapcontrol.online_service_uploadfailure',
   /** 量算 **/
   MEASURE_LENGTH: 'com.supermap.RN.Mapcontrol.length_measured',
   MEASURE_AREA: 'com.supermap.RN.Mapcontrol.area_measured',

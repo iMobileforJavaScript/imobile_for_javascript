@@ -155,6 +155,7 @@
 		0A51675121AD42B8003C77BE /* FlyHelper3D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD1B25F21A6AA54006E1B27 /* FlyHelper3D.m */; };
 		0A51675221AD42BA003C77BE /* AnalysisHelper3D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD1B26121A6AA54006E1B27 /* AnalysisHelper3D.m */; };
 		0A51675321AD437D003C77BE /* SMSceneWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */; };
+		0A51675621AF7EF7003C77BE /* MapTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A51675521AF7EF7003C77BE /* MapTool.m */; };
 		0AB00D5621A6C8F800C35E4B /* SMSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB00D5421A6C8F700C35E4B /* SMSymbol.m */; };
 		0AB00D5A21A6C93A00C35E4B /* SMLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB00D5821A6C90F00C35E4B /* SMLayer.m */; };
 		D82C65AB214208DC00E9EEC5 /* JSWorkspaceType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */; };
@@ -483,6 +484,8 @@
 		0A332DE7211D623E00F56F26 /* RCTConvert+RadiusUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RadiusUnit.m"; sourceTree = "<group>"; };
 		0A332DE8211D623E00F56F26 /* SceneViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneViewManager.h; sourceTree = "<group>"; };
 		0A332DE9211D623E00F56F26 /* SceneViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SceneViewManager.m; sourceTree = "<group>"; };
+		0A51675421AF7EF7003C77BE /* MapTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapTool.h; sourceTree = "<group>"; };
+		0A51675521AF7EF7003C77BE /* MapTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapTool.m; sourceTree = "<group>"; };
 		0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSceneWC.m; sourceTree = "<group>"; };
 		0A6DE64121A2CC4000CD27EA /* SMSceneWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSceneWC.h; sourceTree = "<group>"; };
 		0AB00D5421A6C8F700C35E4B /* SMSymbol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSymbol.m; sourceTree = "<group>"; };
@@ -669,6 +672,8 @@
 				D8FB9CF5219510C800597AE5 /* SScene.m */,
 				4AB9A1A421A54A68008D87BD /* SMCartography.h */,
 				4AB9A1A521A54A9F008D87BD /* SMCartography.m */,
+				0A51675421AF7EF7003C77BE /* MapTool.h */,
+				0A51675521AF7EF7003C77BE /* MapTool.m */,
 			);
 			path = interfaces;
 			sourceTree = "<group>";
@@ -1211,6 +1216,7 @@
 				0A332E41211D623E00F56F26 /* JSProjectionType.m in Sources */,
 				0A332E05211D623E00F56F26 /* JSDataset.m in Sources */,
 				0AB00D5621A6C8F800C35E4B /* SMSymbol.m in Sources */,
+				0A51675621AF7EF7003C77BE /* MapTool.m in Sources */,
 				0A332E39211D623E00F56F26 /* JSPieChartViewManager.m in Sources */,
 				0A332E2A211D623E00F56F26 /* JSLocationAnalystParameter.m in Sources */,
 				0A332E6F211D623E00F56F26 /* RCTConvert+BufferEndType.m in Sources */,

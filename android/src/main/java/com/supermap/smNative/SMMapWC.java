@@ -1,5 +1,6 @@
 package com.supermap.smNative;
 
+import com.supermap.RNUtils.FileUtil;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVectorInfo;
 import com.supermap.data.Datasets;
@@ -114,6 +115,7 @@ public class SMMapWC {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
                 info.setAlias(datasourceName);
                 info.setEngineType(EngineType.UDB);
+                FileUtil.createDirectory(datasourcePath);
                 info.setServer(datasourcePath + "/" + datasourceName + ".udb");
 
                 datasource = workspace.getDatasources().create(info);
