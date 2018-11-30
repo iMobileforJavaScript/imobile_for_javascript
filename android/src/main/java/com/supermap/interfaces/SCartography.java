@@ -307,7 +307,7 @@ public class SCartography extends ReactContextBaseJavaModule {
             e.printStackTrace();
             promise.reject(e);
         }
-    }
+  }
 
     /**
      * 设置前景色

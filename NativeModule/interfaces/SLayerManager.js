@@ -42,8 +42,22 @@ function setLayerVisible(path, value){
   }
 }
 
+/**
+ * 获取指定名字的图层索引
+ * @param name
+ * @param promise
+ */
+function getLayerIndexByName(name) {
+  try {
+    return LayerManager.getLayerIndexByName(name)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 export {
   getLayersByType,
   getLayersByGroupPath,
   setLayerVisible,
+  getLayerIndexByName,
 }
