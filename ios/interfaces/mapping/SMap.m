@@ -472,6 +472,7 @@ RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name resolver:(RCTPromiseR
         } else {
             result = [[SMap singletonInstance].smMapWC.mapControl.map save:name];
         }
+        result = [[SMap singletonInstance].smMapWC.workspace save];
         
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {

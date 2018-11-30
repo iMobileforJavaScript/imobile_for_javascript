@@ -13,33 +13,27 @@ import Point from '../Point';
 import SystemUtil from '../SystemUtil';
 const util = new SystemUtil();
 
-exports.Point2Map = async function (map,x, y) {
-    let pointFac = new Point();
-    let point = await pointFac.createObj(x,y);
-    let mapPoint = await map.pixelToMap(point);
-
-    return mapPoint;
+exports.Point2Map = async function (map, x, y) {
+  let pointFac = new Point();
+  let point = await pointFac.createObj(x, y);
+  return await map.pixelToMap(point);
 }
 
 exports.appendingHomeDirectory = async function (path = '') {
-    let homeDirectory = await util.getHomeDirectory();
-    let newPath = homeDirectory + path;
-    return newPath;
+  let homeDirectory = await util.getHomeDirectory();
+  return homeDirectory + path;
 }
 
 exports.getDirectoryContent = async function (path) {
-  let directories = await util.getDirectoryContent(path);
-  return directories;
+  return await util.getDirectoryContent(path);
 }
 
 exports.fileIsExist = async function (path) {
-  let isExist = await util.fileIsExist(path);
-  return isExist;
+  return await util.fileIsExist(path);
 }
 
 exports.fileIsExistInHomeDirectory = async function (path) {
-  let isExist = await util.fileIsExistInHomeDirectory(path);
-  return isExist;
+  return await util.fileIsExistInHomeDirectory(path);
 }
 
 exports.createDirectory = async function (path) {
@@ -57,9 +51,15 @@ exports.isDirectory = async function (path) {
 exports.getPathListByFilter = async function (path, {name = '', type = ''}) {
   return await util.getPathListByFilter(path, {name, type});
 }
-exports.unZipFile = async function (zipfile,targetdir) {
-  return await util.unZipFile(zipfile, targetdir);
+
+exports.zipFile = async function (filePath, targetPath) {
+  return await util.zipFile(filePath, targetPath);
 }
+
+exports.unZipFile = async function (zipFile, targetDir) {
+  return await util.unZipFile(zipFile, targetDir);
+}
+
 exports.deleteFile = async function (file) {
   return await util.deleteFile(file);
 }

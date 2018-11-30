@@ -35,7 +35,7 @@ async function getStyle() {
  * @param datasourcePath  数据源所在路径，不含文件名
  * @returns {Promise.<Promise|Promise.<void>>}
  */
-  async function setDataset(info = {}) {
+async function setDataset(info = {}) {
   try {
     // name = '', type = DatasetType.POINT, datasourceName = 'Collection', datasourcePath = ''
     info.datasetName = info.datasetName || ''

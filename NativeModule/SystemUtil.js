@@ -121,26 +121,42 @@ export default class SystemUtil {
       console.error(e);
     }
   }
-  async unZipFile(zipfile,targetdir) {
+  
+  async zipFile(filePath, targetDir) {
     try {
       let result;
       if (Platform.OS === 'ios') {
-        result = await ZA.unZipFile(zipfile,targetdir);
+        result = await ZA.zipFile(filePath, targetDir);
       } else {
-        result = await SU.unZipFile(zipfile,targetdir);
+        result = await SU.zipFile(filePath, targetDir);
       }
       return result;
     } catch (e) {
       console.error(e);
     }
   }
-  async deleteFile(zipfile) {
+  
+  async unzipFile(zipFile, targetDir) {
     try {
       let result;
       if (Platform.OS === 'ios') {
-        result = await ZA.deleteFile(zipfile);
+        result = await ZA.unzipFile(zipFile,targetDir);
       } else {
-        result = await SU.deleteFile(zipfile);
+        result = await SU.unzipFile(zipFile,targetDir);
+      }
+      return result;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  async deleteFile(zipFile) {
+    try {
+      let result;
+      if (Platform.OS === 'ios') {
+        result = await ZA.deleteFile(zipFile);
+      } else {
+        result = await SU.deleteFile(zipFile);
       }
       await result;
     } catch (e) {
