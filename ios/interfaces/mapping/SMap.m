@@ -115,6 +115,7 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
             }
             [self openGPS];
+            [sMap.smMapWC.mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         }
     } @catch (NSException *exception) {
@@ -462,6 +463,33 @@ RCT_REMAP_METHOD(submit, submitWithResolver:(RCTPromiseResolveBlock)resolve reje
     }
 }
 
+#pragma mark 保存地图
+RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BOOL result = NO;
+        if (name == nil || [name isEqualToString:@""]) {
+            result = [[SMap singletonInstance].smMapWC.mapControl.map save];
+        } else {
+            result = [[SMap singletonInstance].smMapWC.mapControl.map save:name];
+        }
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 检查地图是否有改动
+RCT_REMAP_METHOD(mapIsModified, mapIsModifiedWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BOOL result = [SMap singletonInstance].smMapWC.mapControl.map.isModified;
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 #pragma mark 设置手势监听
 RCT_REMAP_METHOD(setGestureDetector, setGestureDetectorByResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -494,7 +522,7 @@ RCT_REMAP_METHOD(addGeometrySelectedListener, addGeometrySelectedListenerByResol
 }
 
 #pragma mark 去除手势监听
-RCT_REMAP_METHOD(removeGeometrySelectedListener,removeGeometrySelectedListenerById:(NSString*)Id resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(removeGeometrySelectedListener, resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
         mapControl.geometrySelectedDelegate = nil;
@@ -504,7 +532,7 @@ RCT_REMAP_METHOD(removeGeometrySelectedListener,removeGeometrySelectedListenerBy
     }
 }
 
-#pragma mark 制定可编辑图层
+#pragma mark 指定可编辑图层
 RCT_REMAP_METHOD(appointEditGeometry, appointEditGeometryByGeoId:(int)geoId layerName:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
@@ -632,6 +660,9 @@ RCT_REMAP_METHOD(findSymbolsByGroups, findSymbolsByGroups:(NSString *)type path:
     [layerInfo setObject:[NSNumber numberWithBool:layer.editable] forKey:@"editable"];
     [layerInfo setObject:[NSNumber numberWithBool:layer.visible] forKey:@"visible"];
     [layerInfo setObject:[NSNumber numberWithBool:layer.selectable] forKey:@"selectable"];
+    
+    [SMap singletonInstance].selection = [layer getSelection];
+    
     [self sendEventWithName:MAP_GEOMETRY_SELECTED body:@{@"layerInfo":layerInfo,
                                                          @"id":nsId,
                                                          }];

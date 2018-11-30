@@ -26,6 +26,7 @@
 #import "SuperMap/LayerSettingVector.h"
 #import "SuperMap/PrjCoordSys.h"
 #import "SuperMap/PrjCoordSysType.h"
+#import "SuperMap/Recordset.h"
 
 @implementation SCollector
 RCT_EXPORT_MODULE();
@@ -99,12 +100,11 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
             style = [[GeoStyle alloc] init];
             [style fromJson:styleJson];
         }
-        
+
         if (name != nil && ![name isEqualToString:@""]) {
-            layer = [sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
+            NSString* layerName = [NSString stringWithFormat:@"%@@%@", name, datasourceName];
+            layer = [sMap.smMapWC.mapControl.map.layers getLayerWithName:layerName];
         }
-        
-        [mapControl.map setDynamicProjection:YES];
         
         if (layer == nil) {
             ds = [sMap.smMapWC addDatasetByName:name type:type.intValue datasourceName:datasourceName datasourcePath:datasourcePath];
@@ -164,23 +164,22 @@ RCT_REMAP_METHOD(addGPSPoint, addGPSPointWithResolver:(RCTPromiseResolveBlock)re
     @try {
         Collector* collector = [self getCollector];
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
-////        dispatch_async(dispatch_get_main_queue(), ^{
-//            //            [collector moveToCurrentPos];
-//            Point2D* pt = [[Point2D alloc]initWithPoint2D:[collector getGPSPoint]];
-//            if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
-//                Point2Ds *points = [[Point2Ds alloc]init];
-//                [points add:pt];
-//                PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-//                [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-//                CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-//
-//                //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-//                [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-//                pt = [points getItem:0];
-//            }
-////        });
-//        BOOL result = [collector addGPSPoint:pt];
-        BOOL result = [collector addGPSPoint];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+            //            [collector moveToCurrentPos];
+            Point2D* pt = [[Point2D alloc]initWithPoint2D:[collector getGPSPoint]];
+            if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+                Point2Ds *points = [[Point2Ds alloc]init];
+                [points add:pt];
+                PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+                [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+                CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+
+                //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+                [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+                pt = [points getItem:0];
+            }
+//        });
+        BOOL result = [collector addGPSPoint:pt];
         [mapControl.map refresh];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
@@ -191,7 +190,7 @@ RCT_REMAP_METHOD(addGPSPoint, addGPSPointWithResolver:(RCTPromiseResolveBlock)re
 #pragma mark 回退操作
 RCT_REMAP_METHOD(undo, undoWithType:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        if (type == LINE_HAND_PATH || type == REGION_HAND_PATH) {
+        if (type == LINE_HAND_PATH || type == REGION_HAND_PATH || type == -1) {
             SMap* sMap = [SMap singletonInstance];
             [sMap.smMapWC.mapControl undo];
         } else {
@@ -208,7 +207,7 @@ RCT_REMAP_METHOD(undo, undoWithType:(int)type resolver:(RCTPromiseResolveBlock)r
 #pragma mark 重做操作
 RCT_REMAP_METHOD(redo, redoWithType:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        if (type == LINE_HAND_PATH || type == REGION_HAND_PATH) {
+        if (type == LINE_HAND_PATH || type == REGION_HAND_PATH || type == -1) {
             SMap* sMap = [SMap singletonInstance];
             [sMap.smMapWC.mapControl redo];
         } else {
@@ -276,6 +275,22 @@ RCT_REMAP_METHOD(closeGPS, closeGPSWesolver:(RCTPromiseResolveBlock)resolve reje
     }
 }
 
+#pragma mark 关闭GPS
+RCT_REMAP_METHOD(remove, removeById:(int)geoId closeGPSWesolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        Recordset* recordset = sMap.selection.toRecordset;
+        [recordset seekID:geoId];
+        bool result = [recordset delete];
+        
+        [sMap.smMapWC.mapControl.map refresh];
+        
+        NSNumber* num = [NSNumber numberWithBool:result];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"SCollector", exception.reason, nil);
+    }
+}
 
 ///**
 // * 添加点,GPS获取的点

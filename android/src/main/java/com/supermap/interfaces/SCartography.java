@@ -33,14 +33,14 @@ public class SCartography extends ReactContextBaseJavaModule {
      /*点风格
     * ********************************************************************************************/
     /**
-     * 设置点符号的ID, layerIndex:图层索引
+     * 设置点符号的ID, layerName:图层名称
      *
      * @param promise
      */
     @ReactMethod
-    public void setMakerSymbolID(int makerSymbolID, int layerIndex, Promise promise) {
+    public void setMakerSymbolID(int makerSymbolID, String layerName, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setMarkerSymbolID(makerSymbolID);
@@ -64,9 +64,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setMarkerSize(int mm, int layerIndex, Promise promise) {
+    public void setMarkerSize(int mm, String layerName, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setMarkerSize(new Size2D(mm, mm));
@@ -90,9 +90,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setMarkerColor(String color, int layerIndex, Promise promise) {
+    public void setMarkerColor(String color, String layerName, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
                 int parseColor = Color.parseColor(color);
                 int[] rgb = getRGB(parseColor);
@@ -120,9 +120,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setMarkerAngle(int angle, int layerIndex, Promise promise) {
+    public void setMarkerAngle(int angle, String layerName, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setMarkerAngle(angle);
@@ -146,9 +146,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setMarkerAlpha(int alpha, int layerIndex, Promise promise) {
+    public void setMarkerAlpha(int alpha, String layerName, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setFillOpaqueRate(100 - alpha);
@@ -175,9 +175,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setLineSymbolID(int lineSymbolID, int layerIndex, Promise promise) {
+    public void setLineSymbolID(int lineSymbolID, String layerName, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setLineSymbolID(lineSymbolID);
@@ -201,9 +201,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setLineWidth(int mm, int layerIndex, Promise promise) {
+    public void setLineWidth(int mm, String layerName, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 double width = (double) mm / 10;
@@ -228,9 +228,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setLineColor(String lineColor, int layerIndex, Promise promise) {
+    public void setLineColor(String lineColor, String layerName, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
                 int parseColor = Color.parseColor(lineColor);
                 int[] rgb = getRGB(parseColor);
@@ -258,9 +258,9 @@ public class SCartography extends ReactContextBaseJavaModule {
 //     * @param promise
 //     */
 //    @ReactMethod
-//    public void setLineAlpha(int alpha, int layerIndex, Promise promise)  {
+//    public void setLineAlpha(int alpha, String layerName, Promise promise)  {
 //        try {
-//            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+//            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
 //            if (layerSettingVector != null) {
 //                GeoStyle geoStyle = layerSettingVector.getStyle();
 //
@@ -289,9 +289,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setFillSymbolID(int FillSymbolID, int layerIndex, Promise promise) {
+    public void setFillSymbolID(int FillSymbolID, String layerName, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setFillSymbolID(FillSymbolID);
@@ -315,9 +315,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setFillForeColor(String fillForeColor, int layerIndex, Promise promise) {
+    public void setFillForeColor(String fillForeColor, String layerName, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
                 int parseColor = android.graphics.Color.parseColor(fillForeColor);
                 int[] rgb = getRGB(parseColor);
@@ -345,9 +345,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setFillBackColor(String fillBackColor, int layerIndex, Promise promise) {
+    public void setFillBackColor(String fillBackColor, String layerName, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
                 int parseColor = android.graphics.Color.parseColor(fillBackColor);
                 int[] rgb = getRGB(parseColor);
@@ -375,9 +375,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setFillOpaqueRate(int fillOpaqueRate, int layerIndex, Promise promise) {
+    public void setFillOpaqueRate(int fillOpaqueRate, String layerName, Promise promise) {
         try {
-            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setFillOpaqueRate(100 - fillOpaqueRate);//此接口是设置不透明度
@@ -401,10 +401,10 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setFillLinearGradient(int layerIndex, Promise promise) {
+    public void setFillLinearGradient(String layerName, Promise promise) {
         try {
             if (!Environment.isOpenGLMode()) {
-                LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+                LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
                 if (layerSettingVector != null) {
                     GeoStyle geoStyle = layerSettingVector.getStyle();
                     geoStyle.setFillGradientMode(FillGradientMode.LINEAR);
@@ -432,10 +432,10 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setFillRadialGradient(int layerIndex, Promise promise) {
+    public void setFillRadialGradient(String layerName, Promise promise) {
         try {
             if (!Environment.isOpenGLMode()) {
-                LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+                LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
                 if (layerSettingVector != null) {
                     GeoStyle geoStyle = layerSettingVector.getStyle();
                     geoStyle.setFillGradientMode(FillGradientMode.RADIAL);
@@ -463,10 +463,10 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setFillSquareGradient(int layerIndex, Promise promise) {
+    public void setFillSquareGradient(String layerName, Promise promise) {
         try {
             if (!Environment.isOpenGLMode()) {
-                LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+                LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
                 if (layerSettingVector != null) {
                     GeoStyle geoStyle = layerSettingVector.getStyle();
                     geoStyle.setFillGradientMode(FillGradientMode.SQUARE);
@@ -494,10 +494,10 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setFillNoneGradient(int layerIndex, Promise promise) {
+    public void setFillNoneGradient(String layerName, Promise promise) {
         try {
             if (!Environment.isOpenGLMode()) {
-                LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerIndex);
+                LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
                 if (layerSettingVector != null) {
                     GeoStyle geoStyle = layerSettingVector.getStyle();
                     geoStyle.setFillGradientMode(FillGradientMode.NONE);
@@ -530,9 +530,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setGridOpaqueRate(int gridOpaqueRate, int layerIndex, Promise promise) {
+    public void setGridOpaqueRate(int gridOpaqueRate, String layerName, Promise promise) {
         try {
-            LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerIndex);
+            LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerName);
             if (layerSettingGrid != null) {
 //                layerSettingGrid.setOpaqueRate(100 - gridOpaqueRate); //新增接口，待打开
 
@@ -554,9 +554,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setGridContrast(int gridContrast, int layerIndex, Promise promise) {
+    public void setGridContrast(int gridContrast, String layerName, Promise promise) {
         try {
-            LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerIndex);
+            LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerName);
             if (layerSettingGrid != null) {
 //                layerSettingGrid.setContrast(gridContrast); //新增接口，待打开
 
@@ -578,9 +578,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setGridBrightness(int gridBrightness, int layerIndex, Promise promise) {
+    public void setGridBrightness(int gridBrightness, String layerName, Promise promise) {
         try {
-            LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerIndex);
+            LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerName);
             if (layerSettingGrid != null) {
 //                layerSettingGrid.setBrightness(gridBrightness); //新增接口，待打开
 
@@ -618,9 +618,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void  setTextFont(String fontName, int geometryID, int layerIndex, Promise promise) {
+    public void  setTextFont(String fontName, int geometryID, String layerName, Promise promise) {
         try {
-            Recordset recordset = SMCartography.getRecordset(geometryID, layerIndex);
+            Recordset recordset = SMCartography.getRecordset(geometryID, layerName);
             Geometry geometry = SMCartography.getGeoText(recordset);
             if (recordset != null && geometry != null) {
                 GeoText geoText = (GeoText) geometry;
@@ -646,9 +646,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void  setTextFontSize(int size, int geometryID, int layerIndex, Promise promise) {
+    public void  setTextFontSize(int size, int geometryID, String layerName, Promise promise) {
         try {
-            Recordset recordset = SMCartography.getRecordset(geometryID, layerIndex);
+            Recordset recordset = SMCartography.getRecordset(geometryID, layerName);
             Geometry geometry = SMCartography.getGeoText(recordset);
             if (recordset != null && geometry != null) {
                 GeoText geoText = (GeoText) geometry;
@@ -674,9 +674,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void  setTextFontColor(String color, int geometryID, int layerIndex, Promise promise) {
+    public void  setTextFontColor(String color, int geometryID, String layerName, Promise promise) {
         try {
-            Recordset recordset = SMCartography.getRecordset(geometryID, layerIndex);
+            Recordset recordset = SMCartography.getRecordset(geometryID, layerName);
             Geometry geometry = SMCartography.getGeoText(recordset);
             if (recordset != null && geometry != null) {
                 int parseColor = Color.parseColor(color);
@@ -706,9 +706,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void  setTextFontRotation(int angle, int geometryID, int layerIndex, Promise promise) {
+    public void  setTextFontRotation(int angle, int geometryID, String layerName, Promise promise) {
         try {
-            Recordset recordset = SMCartography.getRecordset(geometryID, layerIndex);
+            Recordset recordset = SMCartography.getRecordset(geometryID, layerName);
             Geometry geometry = SMCartography.getGeoText(recordset);
             if (recordset != null && geometry != null) {
                 GeoText geoText = (GeoText) geometry;
@@ -734,9 +734,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void  setTextFontPosition(String textAlignment, int geometryID, int layerIndex, Promise promise) {
+    public void  setTextFontPosition(String textAlignment, int geometryID, String layerName, Promise promise) {
         try {
-            Recordset recordset = SMCartography.getRecordset(geometryID, layerIndex);
+            Recordset recordset = SMCartography.getRecordset(geometryID, layerName);
             Geometry geometry = SMCartography.getGeoText(recordset);
             if (recordset != null && geometry != null) {
                 GeoText geoText = (GeoText) geometry;
@@ -766,9 +766,9 @@ public class SCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void  setTextStyle(String style, boolean whether, int geometryID, int layerIndex, Promise promise) {
+    public void  setTextStyle(String style, boolean whether, int geometryID, String layerName, Promise promise) {
         try {
-            Recordset recordset = SMCartography.getRecordset(geometryID, layerIndex);
+            Recordset recordset = SMCartography.getRecordset(geometryID, layerName);
             Geometry geometry = SMCartography.getGeoText(recordset);
             if (recordset != null && geometry != null) {
                 GeoText geoText = (GeoText) geometry;

@@ -26,6 +26,8 @@ extern NSString * const POINTSEARCH_KEYWORDS;
 extern NSString * const SSCENE_FLY;
 extern NSString * const SSCENE_ATTRIBUTE;
 extern NSString * const SSCENE_SYMBOL;
+extern NSString * const SSCENE_CIRCLEFLY;
+extern NSString * const SSCENE_FAVORITE;
 
 extern NSString * const MAP_LONG_PRESS;
 extern NSString * const MAP_SINGLE_TAP;

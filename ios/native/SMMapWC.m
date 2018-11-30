@@ -100,6 +100,7 @@
             
             info.alias = datasourceName;
             info.engineType = ET_UDB;
+            [SMFileUtil createFileDirectories:datasourcePath];
             info.server = [NSString stringWithFormat:@"%@/%@.%@", datasourcePath, datasourceName, dsType];
             datasource = [_workspace.datasources create:info];
             if (datasource == nil) {

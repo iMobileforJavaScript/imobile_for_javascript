@@ -1,3 +1,6 @@
+/**
+ *
+ */
 package com.supermap.interfaces.mapping;
 
 import android.view.GestureDetector;
@@ -30,6 +33,7 @@ import com.supermap.mapping.Layer;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
+import com.supermap.mapping.Selection;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.rnsupermap.JSLayer;
 import com.supermap.smNative.SMMapWC;
@@ -45,6 +49,24 @@ public class SMap extends ReactContextBaseJavaModule {
     private static MeasureListener mMeasureListener;
     private GestureDetector mGestureDetector;
     private GeometrySelectedListener mGeometrySelectedListener;
+
+    public Selection getSelection() {
+        return selection;
+    }
+
+    public void setSelection(Selection selection) {
+        this.selection = selection;
+    }
+
+    private Selection selection;
+
+    public SMMapWC getSmMapWC() {
+        return smMapWC;
+    }
+
+    public void setSmMapWC(SMMapWC smMapWC) {
+        this.smMapWC = smMapWC;
+    }
 
     private SMMapWC smMapWC;
 
@@ -153,6 +175,32 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 以数据源形式打开工作空间
+     *
+     * @param data
+     * @param defaultName 默认显示Map 图层名称
+     * @param promise
+     */
+    @ReactMethod
+    public void openDatasourceWithName(ReadableMap data, String defaultName, Promise promise) {
+        try {
+            sMap = getInstance();
+            Map params = data.toHashMap();
+            Datasource datasource = sMap.smMapWC.openDatasource(params);
+            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
+
+            if (datasource != null && defaultName.equals("")) {
+                Dataset ds = datasource.getDatasets().get(defaultName);
+                sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, true);
+            }
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 
     /**
      * 保存工作空间
@@ -236,32 +284,6 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             sMap.smMapWC.getMapControl().getMap().getLayers().remove(defaultIndex);
-
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    /**
-     * 以数据源形式打开工作空间
-     *
-     * @param data
-     * @param defaultName 默认显示Map 图层名称
-     * @param promise
-     */
-    @ReactMethod
-    public void openDatasourceWithName(ReadableMap data, String defaultName, Promise promise) {
-        try {
-            sMap = getInstance();
-            Map params = data.toHashMap();
-            Datasource datasource = sMap.smMapWC.openDatasource(params);
-            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
-
-            if (datasource != null && defaultName.equals("")) {
-                Dataset ds = datasource.getDatasets().get(defaultName);
-                sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, true);
-            }
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -550,6 +572,29 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 保存地图
+     * @param name
+     * @param promise
+     */
+    @ReactMethod
+    public void saveMap(String name, Promise promise) {
+        try {
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            boolean result = false;
+            if (name == null || name.equals("")) {
+                result = map.save();
+            } else {
+                result = map.save(name);
+            }
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 移动到当前位置
      * @param promise
      */
@@ -724,6 +769,8 @@ public class SMap extends ReactContextBaseJavaModule {
 
                     map.putMap("layerInfo", layerInfo);
                     map.putInt("id", id);
+
+                    SMap.getInstance().setSelection(layer.getSelection());
 
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                             .emit(EventConst.MAP_GEOMETRY_SELECTED, map);
