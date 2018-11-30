@@ -93,7 +93,8 @@ typedef enum{
 SUPERMAP_SIGLETON_IMP(LableHelper3D);
 
 -(void)initSceneControl:(SceneControl*)control path:(NSString*)strpath kml:(NSString*)strkmlName{
-
+    [self closePage];
+    
     mSceneControl = control;
     kmlName = strkmlName;
     kmlPath = strpath;
@@ -336,11 +337,11 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  *
  * @param point
  */
--(void)addCirclePoint:(CGPoint)longPressPoint{
+-(BOOL)addCirclePoint:(CGPoint)longPressPoint{
     if (favoriteLayer3d!=nil) {
         CGFloat scale = [UIScreen mainScreen].scale;
         if (longPressPoint.x * scale-56/2<0) {
-            return;
+            return false;
         }
         CGPoint point = CGPointMake( longPressPoint.x * scale-56/2, longPressPoint.y * scale);//  修正底层添加的点和实际不一致
     
@@ -382,9 +383,9 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
             //isEdit = true;
             mSceneControl.isRender = YES;
         }];
-        
-        
+        return true;
     }
+    return false;
 }
 - (void)applyAnimationToFavorites:(UIView *)favorites completion:(void(^)())completion {
     CGRect frame = favorites.frame;
@@ -643,7 +644,8 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
     
     if (points.count > 1) {
         GeoStyle3D* lineStyle3D = [[GeoStyle3D alloc]init];
-        lineStyle3D.fillForeColor = [[Color alloc] initWithR:255 G:0 B:0];// .setLineColor(new Color(255, 255, 0));
+        lineStyle3D.fillForeColor = [[Color alloc] initWithR:140 G:224 B:80];// .setLineColor(new Color(255, 255, 0));
+        lineStyle3D.lineColor = [[Color alloc] initWithR:18 G:183 B:245];
         lineStyle3D.altitudeMode = Absolute3D; // setAltitudeMode(AltitudeMode.ABSOLUTE);
         lineStyle3D.lineWidth = 5;// setLineWidth(5);
         geoArea3d = [[GeoRegion3D alloc] initWithPoint3Ds:point3ds];
@@ -665,9 +667,9 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
    
     if (points.count > 1) {
         GeoStyle3D* lineStyle3D = [[GeoStyle3D alloc]init];
-        lineStyle3D.lineColor = [[Color alloc] initWithR:255 G:0 B:0];// .setLineColor(new Color(255, 255, 0));
+        lineStyle3D.lineColor = [[Color alloc] initWithR:18 G:183 B:245];// .setLineColor(new Color(255, 255, 0));
         lineStyle3D.altitudeMode = Absolute3D; // setAltitudeMode(AltitudeMode.ABSOLUTE);
-        lineStyle3D.lineWidth = 5;// setLineWidth(5);
+        lineStyle3D.lineWidth = 15;// setLineWidth(5);
         geoline3d = [[GeoLine3D alloc] initWithPoint3Ds:point3ds];
         geoline3d.style3D = lineStyle3D;// setStyle3D(lineStyle3D);
         [mSceneControl.scene.trackingLayer3D AddGeometry:geoline3d Tag:@"geoline"]; // getScene().getTrackingLayer().add(geoline3d, "geoline");
@@ -692,6 +694,7 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
     mLayer3d = nil;
     [mSceneControl.scene.layers removeLayerWithName:@"Favorite"];
     favoriteLayer3d = nil;
+    mSceneControl = nil;
 }
 
 @end

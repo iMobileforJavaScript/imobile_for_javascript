@@ -63,7 +63,7 @@ SUPERMAP_SIGLETON_DEF(LableHelper3D);
  *
  * @param point
  */
--(void)addCirclePoint:(CGPoint)pnt2d;
+-(BOOL)addCirclePoint:(CGPoint)pnt2d;
 /**
  * 清除环绕飞行的点
  */
