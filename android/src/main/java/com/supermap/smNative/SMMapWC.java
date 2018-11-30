@@ -59,7 +59,10 @@ public class SMMapWC {
                 info.setAlias(alias);
 
                 if (this.workspace.getDatasources().indexOf(alias) != -1) {
-                    this.workspace.getDatasources().close(alias);
+                    Datasource dataSource = this.workspace.getDatasources().get(alias);
+                    info.dispose();
+
+                    return dataSource;
                 }
             }
             if (data.containsKey("engineType")){

@@ -33,7 +33,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     /**
      * 新建单值专题图层
      *
-     * @param readableMap (数据源的索引/数据源的别名、数据集名称、单值专题图字段表达式、默认样式)
+     * @param readableMap (数据源的索引/数据源的别名/打开本地数据源、数据集名称、单值专题图字段表达式、默认样式)
      * @param promise
      */
     @ReactMethod
@@ -47,13 +47,6 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             String uniqueExpression = null;
             ColorGradientType colorGradientType = ColorGradientType.TERRAIN;//默认
 
-            if (data.containsKey("DatasourceIndex")){
-                String index = data.get("DatasourceIndex").toString();
-                datasourceIndex = Integer.parseInt(index);
-            }
-            if (data.containsKey("DatasourceAlias")){
-                datasourceAlias = data.get("DatasourceAlias").toString();
-            }
             if (data.containsKey("DatasetName")){
                 datasetName = data.get("DatasetName").toString();
             }
@@ -65,11 +58,21 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 colorGradientType = SMThemeCartography.getColorGradientType(type);
             }
 
-            Dataset dataset;
-            if (datasourceAlias != null) {
-                dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
-            } else {
-                dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
+            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
+            if (dataset == null) {
+                if (data.containsKey("DatasourceIndex")){
+                    String index = data.get("DatasourceIndex").toString();
+                    datasourceIndex = Integer.parseInt(index);
+                }
+                if (data.containsKey("DatasourceAlias")){
+                    datasourceAlias = data.get("DatasourceAlias").toString();
+                }
+
+                if (datasourceAlias != null) {
+                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
+                }  else {
+                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
+                }
             }
 
             if (dataset != null && uniqueExpression != null) {

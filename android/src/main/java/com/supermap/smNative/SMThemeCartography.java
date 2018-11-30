@@ -3,6 +3,7 @@ package com.supermap.smNative;
 import android.util.Log;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.RNUtils.ColorParseUtil;
 import com.supermap.data.*;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
@@ -10,6 +11,7 @@ import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class SMThemeCartography {
     private static final String TAG = "SMThemeCartography";
@@ -42,6 +44,29 @@ public class SMThemeCartography {
             Datasource datasource = datasources.get(datasourceAlias);
             Dataset dataset = datasource.getDatasets().get(datasetName);
 
+            return dataset;
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 打开数据源路径，数据集名称获取数据集对象
+     * @return
+     */
+    public static Dataset getDataset(Map data, String datasetName) {
+        try {
+            if (!data.containsKey("server") || !data.containsKey("alias") || !data.containsKey("engineType")) {
+                return null;
+            }
+
+            Dataset dataset = null;
+            Datasource datasource = SMap.getSMWorkspace().openDatasource(data);
+            if (datasource != null) {
+                dataset= datasource.getDatasets().get(datasetName);
+            }
             return dataset;
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -107,7 +132,7 @@ public class SMThemeCartography {
             if (data.containsKey("MakerColor")){
                 //点符号的颜色
                 String MakerColor = data.get("MakerColor").toString();
-                style.setLineColor(getColor(MakerColor));
+                style.setLineColor(ColorParseUtil.getColor(MakerColor));
             }
             if (data.containsKey("MarkerAngle")){
                 //点符号的旋转角度
@@ -135,7 +160,7 @@ public class SMThemeCartography {
             if (data.containsKey("LineColor")){
                 //线颜色(边框符号颜色)
                 String LineColor = data.get("LineColor").toString();
-                style.setLineColor(getColor(LineColor));
+                style.setLineColor(ColorParseUtil.getColor(LineColor));
             }
 
             if (data.containsKey("FillSymbolID")){
@@ -146,12 +171,12 @@ public class SMThemeCartography {
             if (data.containsKey("FillForeColor")){
                 //前景色
                 String FillForeColor = data.get("FillForeColor").toString();
-                style.setFillForeColor(getColor(FillForeColor));
+                style.setFillForeColor(ColorParseUtil.getColor(FillForeColor));
             }
             if (data.containsKey("FillBackColor")){
                 //背景色
                 String FillBackColor = data.get("FillBackColor").toString();
-                style.setFillBackColor(getColor(FillBackColor));
+                style.setFillBackColor(ColorParseUtil.getColor(FillBackColor));
             }
             if (data.containsKey("FillOpaqueRate")){
                 //设置透明度（0-100）
@@ -267,30 +292,6 @@ public class SMThemeCartography {
             return null;
         }
 
-    }
-
-    private static Color getColor(String color) {
-        int parseColor = android.graphics.Color.parseColor(color);
-        int[] rgb = getRGB(parseColor);
-
-        return new com.supermap.data.Color(rgb[0], rgb[1], rgb[2]);
-    }
-
-    /**
-     * 16进制颜色码转换为RGB
-     */
-    private static int[] getRGB(int color) {
-        int[] rgb = new int[3];
-
-        int r = (color & 0xff0000) >> 16;
-        int g = (color & 0xff00) >> 8;
-        int b = color & 0xff;
-
-        rgb[0] = r;
-        rgb[1] = g;
-        rgb[2] = b;
-
-        return rgb;
     }
 
     /**
