@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.supermap.onlineservices.OnlineCallBack;
 import com.supermap.onlineservices.OnlineService;
+import com.supermap.onlineservices.UpLoadFile;
 import com.supermap.utils.EnumServiceType;
 
 import java.util.HashMap;
@@ -76,26 +77,50 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     @ReactMethod
     public void logout(final Promise promise){
         try{
+            OnlineService.logout(new OnlineCallBack.CallBackString() {
+                @Override
+                public void onSucceed(String s) {
+                    promise.resolve(s);
+                }
 
-            // 没回调 ???
+                @Override
+                public void onError(String error) {
+                    promise.reject(error);
+                }
+            });
         }catch (Exception e){
             promise.reject(e);
         }
     }
     @ReactMethod
-    public void download(final Promise promise){
+    public void download(String filePath,String onlineDataName,final Promise promise){
         try {
-//            OnlineService.UpLoadFile();
+//           OnlineService.downLoadFile();
         }catch (Exception e){
-
+            promise.reject(e);
         }
     }
     @ReactMethod
-    public void upload(final Promise promise){
+    public void upload(String filePath,String onlineDataName,final Promise promise){
         try {
-
+//            OnlineService.upLoadFile(filePath, onlineDataName, new UpLoadFile.UpLoadListener() {
+//                @Override
+//                public void getProgress(int i) {
+//
+//                }
+//
+//                @Override
+//                public void onComplete() {
+//
+//                }
+//
+//                @Override
+//                public void onFailure() {
+//
+//                }
+//            });
         }catch (Exception e){
-
+            promise.reject(e);
         }
     }
     @ReactMethod
@@ -197,26 +222,36 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     @ReactMethod
     public void verifyCodeImage(final Promise promise){
         try {
-//            OnlineService.
+            OnlineService.verifyCodeImage(new OnlineCallBack.CallBackBitmap() {
+                @Override
+                public void onSucceed(Bitmap bitmap) {
+
+                }
+
+                @Override
+                public void onError(String s) {
+
+                }
+            });
         }catch (Exception e){
 
         }
     }
 
     @ReactMethod
-    public void retrievePassword(final Promise promise){
+    public void retrievePassword(String account,String verifyCode,boolean isPhone,final Promise promise){
         try {
-//            OnlineService.retrievePassword(new OnlineCallBack.CallBackBitmap() {
-//                @Override
-//                public void onSucceed(Bitmap bitmap) {
-//
-//                }
-//
-//                @Override
-//                public void onError(String s) {
-//
-//                }
-//            });
+            OnlineService.retrievePassword(account, verifyCode, isPhone, new OnlineCallBack.CallBackString() {
+                @Override
+                public void onSucceed(String s) {
+
+                }
+
+                @Override
+                public void onError(String s) {
+
+                }
+            });
         }catch (Exception e){
 
         }
@@ -228,7 +263,17 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             if(!firstResult){
                 return;
             }
-//            OnlineService.retrievePasswordSecond();
+            OnlineService.retrievePasswordSecond(new OnlineCallBack.CallBackString() {
+                @Override
+                public void onSucceed(String s) {
+
+                }
+
+                @Override
+                public void onError(String s) {
+
+                }
+            });
         }catch (Exception e){
 
         }

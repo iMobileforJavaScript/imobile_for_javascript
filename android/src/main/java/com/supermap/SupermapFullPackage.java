@@ -185,6 +185,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new SCollector(reactContext));
         modules.add(new SCollectorType(reactContext));
 		modules.add(new SCartography(reactContext));
+        modules.add(new SThemeCartography(reactContext));
 
         /*
         * 在线模块功能

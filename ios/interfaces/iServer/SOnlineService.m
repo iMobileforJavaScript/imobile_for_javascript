@@ -13,7 +13,9 @@
 }
 @end
 @implementation SOnlineService
-static NSString* kTAG =  @"SOnlineService";;
+static NSString* kTAG =  @"SOnlineService";
+static NSString* downloadId = @"fileName";
+static NSString* uploadId = @"uploadId";
 #pragma mark -- 定义宏，让该类暴露给RN层
 RCT_EXPORT_MODULE();
 - (NSArray<NSString *> *)supportedEvents{
@@ -22,7 +24,8 @@ RCT_EXPORT_MODULE();
              ONLINE_SERVICE_DOWNLOADED,
              ONLINE_SERVICE_UPLOADED,
              ONLINE_SERVICE_UPLOADFAILURE,
-             ONLINE_SERVICE_DOWNLOADING];
+             ONLINE_SERVICE_DOWNLOADING,
+             ONLINE_SERVICE_UPLOADING];
 }
 
 #pragma mark -- 定义宏的方法，让该类的方法暴露给RN层
@@ -174,8 +177,10 @@ RCT_REMAP_METHOD(sendSMSVerifyCode,sendSMSVerifyCodePhoneNumber:(NSString*)phone
 RCT_REMAP_METHOD(download, downloadByPath:(NSString *)path fileName:(NSString *)fileName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
 //        OnlineService* m_onlineService = [OnlineService sharedService];
-        m_onlineService.downloadDelegate = self;
-        
+        if( m_onlineService.downloadDelegate == nil){
+             m_onlineService.downloadDelegate = self;
+        }
+        downloadId = fileName;
         if([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:nil]){
             [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
         }
@@ -193,9 +198,12 @@ RCT_REMAP_METHOD(download, downloadByPath:(NSString *)path fileName:(NSString *)
 RCT_REMAP_METHOD(upload, uploadByPath:(NSString *)path fileName:(NSString *)fileName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
 //        OnlineService* m_onlineService = [OnlineService sharedService];
-        m_onlineService.uploadDelegate = self;
+        if(m_onlineService.uploadDelegate == nil){
+             m_onlineService.uploadDelegate = self;
+        }
+       
         [m_onlineService uploadFilePath:path onlineFileName:fileName];
-        
+        uploadId = fileName;
         NSNumber* number =[NSNumber numberWithBool:YES];
         resolve(number);
     } @catch (NSException *exception) {
@@ -410,6 +418,7 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
                                   @"progress": [NSNumber numberWithFloat:progress],
                                   @"downloaded": [NSNumber numberWithLongLong:totalBytesWritten],
                                   @"total": [NSNumber numberWithLongLong:totalBytesExpectedToWrite],
+                                  @"id":downloadId
                                   }];
     } @catch (NSException *exception) {
         [self sendEventWithName:ONLINE_SERVICE_DOWNLOADFAILURE
@@ -433,6 +442,23 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
 }
 
 # pragma mark ---------------------------- 上传协议
+-(void)didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend{
+    @try {
+        float progress = 1.0 * totalBytesSent / totalBytesExpectedToSend * 100;
+        //        float progress = totalBytesWritten / totalBytesExpectedToWrite;
+        NSLog(@"uploading: %f", progress);
+        [self sendEventWithName:ONLINE_SERVICE_UPLOADING
+                           body:@{
+                                  @"progress": [NSNumber numberWithFloat:progress],
+                                  @"id":uploadId
+                                  }];
+    } @catch (NSException *exception) {
+        [self sendEventWithName:ONLINE_SERVICE_UPLOADFAILURE
+                           body:exception.reason];
+    }
+}
+
+
 - (void)uploadResult:(NSString*)error {
     @try {
         if (error != nil) {
