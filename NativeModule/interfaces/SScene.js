@@ -169,11 +169,28 @@ export default (function () {
         }
     }
 
+    function setListener(){
+        try {
+            return SScene.setListener()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     function getAttribute() {
         try {
-            // if(typeof handlers.remove==='boolean'&&handlers.remove){
-            //     DeviceEventEmitter.removeListener(EventConst.SSCENE_ATTRIBUTE,event)
-            //     return
+            // if (Platform.OS === 'ios' && handlers) {
+            //     if (typeof handlers.callback === 'function') {
+            //         nativeEvt.addListener(EventConst.SSCENE_ATTRIBUTE, function (e) {
+            //             handlers.callback(e)
+            //         })
+            //     }
+            // } else if (Platform.OS === 'android' && handlers) {
+            //     if (typeof handlers.callback === "function") {
+            //         DeviceEventEmitter.addListener(EventConst.SSCENE_ATTRIBUTE, function (e) {
+            //             handlers.callback(e)
+            //         });
+            //     }
             // }
             return SScene.getAttribute()
         } catch (error) {
@@ -181,15 +198,8 @@ export default (function () {
         }
     }
 
-    function clearAttribute() {
-        try {
-            return SScene.clearAttribute()
-        } catch (error) {
-            console.log(error)
-        }
-    }
 
-    function addListener(handlers) {
+    function addAttributeListener(handlers) {
         let listen
         if (Platform.OS === 'ios' && handlers) {
             if (typeof handlers.callback === 'function') {
@@ -207,13 +217,6 @@ export default (function () {
         return listen
     }
 
-    function removeOnTouchListener() {
-        try {
-            return SScene.removeOnTouchListener()
-        } catch (error) {
-            console.log(error)
-        }
-    }
 
     function setHeading() {
         try {
@@ -293,9 +296,9 @@ export default (function () {
         }
     }
 
-    function addGeoText(x, y, text) {
+    function addGeoText(x,y,z,text) {
         try {
-            return SScene.addGeoText(x, y, text)
+            return SScene.addGeoText(x, y,z,text)
         } catch (error) {
             console.log(error)
         }
@@ -386,13 +389,139 @@ export default (function () {
         }
     }
 
-    function addFavoriteText(x, y, content) {
+    function setFavoriteText(content) {
         try {
-            return SScene.addFavoriteText(x, y, content)
+            return SScene.setFavoriteText(content)
         } catch (error) {
             console.log(error)
         }
     }
+    
+    function getcompass(){
+        try {
+            return SScene.getcompass()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function checkoutListener(event){
+        try {
+            return SScene.checkoutListener(event)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
+    function setCircleFly(){
+        try {
+            return SScene.getFlyPoint()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function addCircleFlyListen(handlers){
+        let listen
+        if (Platform.OS === 'ios' && handlers) {
+            if (typeof handlers.callback === 'function') {
+                listen=nativeEvt.addListener(EventConst.SSCENE_CIRCLEFLY, function (e) {
+                    handlers.callback(e)
+                })
+            }
+        } else if (Platform.OS === 'android' && handlers) {
+            if (typeof handlers.callback === "function") {
+                listen= DeviceEventEmitter.addListener(EventConst.SSCENE_CIRCLEFLY, function (e) {
+                    handlers.callback(e);
+                });
+            }
+        }
+        return listen
+    }
+    
+    function startCircleFly(){
+        try {
+            return SScene.setCircleFly()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function stopCircleFly(){
+        try {
+            return SScene.stopCircleFly()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function clearCirclePoint(){
+        try {
+            return SScene.clearCirclePoint()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+     function clearLineAnalyst(){
+        return SScene.setMeasureLineAnalyst()
+      }
+      
+       function clearSquareAnalyst(){
+        return SScene.setMeasureSquareAnalyst()
+      }
+      
+       function setMeasureLineAnalyst(handlers) {
+        try {
+          if (Platform.OS === 'ios' && handlers) {
+            if (typeof handlers.callback === 'function') {
+               nativeEvt.addListener(EventConst.ANALYST_MEASURELINE, function (e) {
+                handlers.callback(e)
+              })
+            }
+          } else if (Platform.OS === 'android' && handlers) {
+            if (typeof handlers.callback === "function") {
+                DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURELINE, function (e) {
+                handlers.callback(e);
+              });
+            }
+          }
+          return SScene.setMeasureLineAnalyst()
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      
+      
+       function setMeasureSquareAnalyst(handlers) {
+        try {
+          if (Platform.OS === 'ios' && handlers) {
+            if (typeof handlers.callback === 'function') {
+              nativeEvt.addListener(EventConst.ANALYST_MEASURESQUARE, function (e) {
+                handlers.callback(e)
+              })
+            }
+          } else if (Platform.OS === 'android' && handlers) {
+            if (typeof handlers.callback === "function") {
+               DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURESQUARE, function (e) {
+                handlers.callback(e);
+              });
+            }
+          }
+          return SScene.setMeasureSquareAnalyst()
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      
+      
+       function closeAnalysis() {
+        try {
+            return SScene.closeAnalysis()
+        } catch (e) {
+          console.error(e);
+        }
+      }
 
     getWorkspaceType = (type) => {
         var value
@@ -439,13 +568,12 @@ export default (function () {
         flyStop,
         getFlyProgress,
         zoom,
+        setListener,
         getAttribute,
+        addAttributeListener,
         setTerrainLayerListVisible,
         getTerrainLayerList,
-        removeOnTouchListener,
-        addListener,
         setHeading,
-        clearAttribute,
         changeBaseMap,
         clearSelection,
         initsymbol,
@@ -463,7 +591,19 @@ export default (function () {
         addTerrainLayer,
         addLayer3D,
         startDrawFavorite,
-        addFavoriteText,
+        setFavoriteText,
+        getcompass,
+        checkoutListener,
+        setCircleFly,
+        startCircleFly,
+        stopCircleFly,
+        clearCirclePoint,
+        addCircleFlyListen,
+        setMeasureLineAnalyst,
+        setMeasureSquareAnalyst,
+        closeAnalysis,
+        clearLineAnalyst,
+        clearSquareAnalyst,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp

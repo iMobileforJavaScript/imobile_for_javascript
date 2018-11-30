@@ -119,6 +119,28 @@ public class SMCartography {
         }
     }
 
+    /**
+     * 根据图层索引获取矢量图层设置类
+     *
+     * @param layerIndex 图层索引
+     * @return
+     */
+    public static LayerSettingVector getLayerSettingVectorByIndex(int layerIndex) {
+        try {
+            Layer layer = getLayerByIndex(layerIndex);
+            //判断是否是专题图
+            if (layer != null && layer.getTheme() == null) {
+                if (layer.getAdditionalSetting() != null && layer.getAdditionalSetting().getType() == LayerSettingType.VECTOR) {
+                    return (LayerSettingVector) layer.getAdditionalSetting();
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     /**
      * 根据图层名称获取图层对象

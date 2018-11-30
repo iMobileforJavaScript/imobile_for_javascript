@@ -25,37 +25,14 @@ import java.util.Map;
 
 public class TouchUtil {
 
+
+
     /**
      * 触摸单体化建筑获取属性
-     * Desc:会和SceneControl的触摸事件冲突，确认没有其他方法是可以调用这个方法
      *
-     * @param sceneControl
-     * @param osgbAttribute 回调
+     * @param mSceneControl
      */
-    public static void getAttribute(final SceneControl sceneControl, final OsgbAttribute osgbAttribute) {
-        sceneControl.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case (MotionEvent.ACTION_UP):
-                        Map<String, String> attributeMap = TouchUtil.getAttribute(sceneControl, event);
-                        osgbAttribute.attributeInfo(attributeMap);
-                        break;
-                    default:
-                        break;
-
-                }
-                return false;
-            }
-        });
-    }
-
-    /**
-     * 触摸单体化建筑获取属性
-     * @param mSceneControlcloseWorkspace
-     * @param event   触摸事件，虽然没有用还是要传MotionEvent，否则没有意义
-     */
-    public static Map<String, String> getAttribute(SceneControl mSceneControl, MotionEvent event) {
+    public static Map<String, String> getAttribute(SceneControl mSceneControl) {
         Layer3Ds layer3ds = mSceneControl.getScene().getLayers();
         Map<String, String> attributeMap = new HashMap<>();
 
@@ -119,10 +96,9 @@ public class TouchUtil {
      * 获取被选中的兴趣点Feature3D
      *
      * @param mSceneControl
-     * @param event
      * @return
      */
-    public static Feature3D getSelectFeature3D(SceneControl mSceneControl, MotionEvent event) {
+    public static Feature3D getSelectFeature3D(SceneControl mSceneControl) {
         Layer3Ds layer3ds = mSceneControl.getScene().getLayers();
         // 返回给定的三维图层集合中三维图层对象的总数。
         int count = layer3ds.getCount();
@@ -198,7 +174,7 @@ public class TouchUtil {
     }
 
 
-    public interface OsgbAttribute {
+    public interface OsgbAttributeCallBack {
         void attributeInfo(Map<String, String> attributeMap);
     }
 }

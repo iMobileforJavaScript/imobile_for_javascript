@@ -274,7 +274,7 @@ public class Utils {
 							if (name.toLowerCase().startsWith("sm")) {
 								continue;
 							}
-							nameList.add(name + ":");
+							nameList.add(name);
 							String strValue;
 							Object value = recordset.getFieldValue(name);
 							if (value == null) {
@@ -285,7 +285,7 @@ public class Utils {
 							}
 
 							if (!nameList.contains(name)) {
-								attributeMap.put(name + ":", strValue);
+								attributeMap.put(name , strValue);
 							}
 
 						}
@@ -339,7 +339,7 @@ public class Utils {
 			} else {
 				strValue = value.toString();
 			}
-			attributeMap.put(name + ":",strValue);
+			attributeMap.put(name ,strValue);
 		}
 
 	}
@@ -354,8 +354,8 @@ public class Utils {
 			if (fer3d != null) {
 				String value = fer3d.getDescription();
 				String value1 = fer3d.getName();
-				attributeMap.put("name:",value1);
-				attributeMap.put("description:",value);
+				attributeMap.put("name",value1);
+				attributeMap.put("description",value);
 			}
 
 		}
@@ -404,7 +404,7 @@ public class Utils {
 				if (name.toLowerCase().startsWith("sm")) {
 					continue;
 				}
-				attributeMap.put(name + ":", fieldValuesJson);
+				attributeMap.put(name , fieldValuesJson);
 			}
 
 			fieldNames.dispose();

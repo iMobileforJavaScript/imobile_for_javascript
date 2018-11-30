@@ -5,6 +5,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.supermap.RNUtils.ColorParseUtil;
 import com.supermap.data.*;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.LayerSettingGrid;
@@ -94,9 +95,7 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
-                int parseColor = Color.parseColor(color);
-                int[] rgb = getRGB(parseColor);
-                com.supermap.data.Color makerColor = new com.supermap.data.Color(rgb[0], rgb[1], rgb[2]);
+                com.supermap.data.Color makerColor = ColorParseUtil.getColor(color);
 
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setLineColor(makerColor);
@@ -195,6 +194,35 @@ public class SCartography extends ReactContextBaseJavaModule {
         }
     }
 
+
+    /*线风格
+     * ********************************************************************************************/
+    /**
+     * 根据图层索引设置线符号的ID(设置边框符号的ID)
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setLineSymbolIDByIndex(int lineSymbolID, int layerIndex, Promise promise) {
+        try {
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVectorByIndex(layerIndex);
+            if (layerSettingVector != null) {
+                GeoStyle geoStyle = layerSettingVector.getStyle();
+                geoStyle.setLineSymbolID(lineSymbolID);
+                layerSettingVector.setStyle(geoStyle);
+
+                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
     /**
      * 设置线宽：1-10mm(边框符号宽度)
      *
@@ -223,6 +251,33 @@ public class SCartography extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 根据图层索引设置线宽：1-10mm(边框符号宽度)
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setLineWidthByIndex(int mm, int layerIndex, Promise promise) {
+        try {
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVectorByIndex(layerIndex);
+            if (layerSettingVector != null) {
+                GeoStyle geoStyle = layerSettingVector.getStyle();
+                double width = (double) mm / 10;
+                geoStyle.setLineWidth(width);
+                layerSettingVector.setStyle(geoStyle);
+
+                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置线颜色(边框符号颜色)
      *
      * @param promise
@@ -232,9 +287,7 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
-                int parseColor = Color.parseColor(lineColor);
-                int[] rgb = getRGB(parseColor);
-                com.supermap.data.Color color = new com.supermap.data.Color(rgb[0], rgb[1], rgb[2]);
+                com.supermap.data.Color color = ColorParseUtil.getColor(lineColor);
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setLineColor(color);
@@ -307,7 +360,7 @@ public class SCartography extends ReactContextBaseJavaModule {
             e.printStackTrace();
             promise.reject(e);
         }
-    }
+  }
 
     /**
      * 设置前景色
@@ -319,9 +372,7 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
-                int parseColor = android.graphics.Color.parseColor(fillForeColor);
-                int[] rgb = getRGB(parseColor);
-                com.supermap.data.Color color = new com.supermap.data.Color(rgb[0], rgb[1], rgb[2]);
+                com.supermap.data.Color color = ColorParseUtil.getColor(fillForeColor);
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setFillForeColor(color);
@@ -349,9 +400,7 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
-                int parseColor = android.graphics.Color.parseColor(fillBackColor);
-                int[] rgb = getRGB(parseColor);
-                com.supermap.data.Color color = new com.supermap.data.Color(rgb[0], rgb[1], rgb[2]);
+                com.supermap.data.Color color = ColorParseUtil.getColor(fillBackColor);
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setFillBackColor(color);
@@ -679,9 +728,7 @@ public class SCartography extends ReactContextBaseJavaModule {
             Recordset recordset = SMCartography.getRecordset(geometryID, layerName);
             Geometry geometry = SMCartography.getGeoText(recordset);
             if (recordset != null && geometry != null) {
-                int parseColor = Color.parseColor(color);
-                int[] rgb = getRGB(parseColor);
-                com.supermap.data.Color textColor = new com.supermap.data.Color(rgb[0], rgb[1], rgb[2]);
+                com.supermap.data.Color textColor = ColorParseUtil.getColor(color);
 
                 GeoText geoText = (GeoText) geometry;
                 TextStyle textStyle = geoText.getTextStyle();
@@ -805,24 +852,6 @@ public class SCartography extends ReactContextBaseJavaModule {
             e.printStackTrace();
             promise.reject(e);
         }
-    }
-
-
-    /**
-     * 16进制颜色码转换为RGB
-     */
-    private int[] getRGB(int color) {
-        int[] rgb = new int[3];
-
-        int r = (color & 0xff0000) >> 16;
-        int g = (color & 0xff00) >> 8;
-        int b = color & 0xff;
-
-        rgb[0] = r;
-        rgb[1] = g;
-        rgb[2] = b;
-
-        return rgb;
     }
 
 }

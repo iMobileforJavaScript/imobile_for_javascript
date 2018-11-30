@@ -74,4 +74,19 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 获取指定名字的图层索引
+     * @param name
+     * @param promise
+     */
+    @ReactMethod
+    public void getLayerIndexByName(String name, Promise promise) {
+        try {
+            int index = SMLayer.getLayerIndex(name);
+            promise.resolve(index);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 }
