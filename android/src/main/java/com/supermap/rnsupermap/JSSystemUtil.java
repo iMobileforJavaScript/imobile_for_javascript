@@ -16,11 +16,16 @@ import org.apache.tools.zip.ZipFile;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.zip.ZipException;
@@ -372,6 +377,54 @@ public class JSSystemUtil extends ReactContextBaseJavaModule {
         }
 
     }
+    //读文件
+    @ReactMethod
+    public static String readFile(String filePath, Promise promise){
 
+        File file = new File(filePath);
+        if(file.isFile() && file.exists()){
+            try {
+                FileInputStream fileInputStream = new FileInputStream(file);
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                StringBuffer sb = new StringBuffer();
+                String text = null;
+                while((text = bufferedReader.readLine()) != null){
+                    sb.append(text);
+                }
+                promise.resolve(sb.toString());
+
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * 以FileWriter方式写入txt文件。
+     *
+     */
+    @ReactMethod
+    public static void writeToFile(String filePath,String strJson, Promise promise){
+        try {
+
+            File file = new File(filePath);
+            if(file.exists()){
+                FileWriter fw = new FileWriter(file,false);
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(strJson);
+                bw.close();
+                fw.close();
+                promise.resolve(true);
+//                System.out.println("test1 done!");
+            }
+
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+    }
 }
 
