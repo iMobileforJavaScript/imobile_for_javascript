@@ -136,18 +136,12 @@ public class SScene extends ReactContextBaseJavaModule {
 
                     @Override
                     public void run() {
-//                        if (sceneControl.getAction() == Action3D.CREATEPOINT3D)
                         switch (singleTapUpAction) {
                             case NULL:
                                 break;
                             case LABEL:
                                 LabelHelper.getInstence().labelOperate(tracking3DEvent);
                                 break;
-//                            case ATTRIBUTE:
-//                                if (osgbAttributeCallBack != null) {
-//                                    osgbAttributeCallBack.attributeInfo(TouchUtil.getAttribute(sceneControl));
-//                                }
-//                                break;
                             case MEASURE:
                                 AnalysisHelper.getInstence().initAnalysis(sceneControl,tracking3DEvent);
                                 break;
@@ -451,7 +445,6 @@ public class SScene extends ReactContextBaseJavaModule {
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
             if (oldLayer != null) {
                 scene.getLayers().removeLayerWithName(oldLayer);
-//            scene.getLayers().get(oldLayer).setVisible(false);
             }
             com.supermap.realspace.Layer3DType layer3DType = null;
             ImageFormatType imageFormatType1 = null;
@@ -510,10 +503,7 @@ public class SScene extends ReactContextBaseJavaModule {
 
             }
             else {
-//                for (int i = 0; i <scene.getLayers().getCount() ; i++) {
-//                    scene.getLayers().removeLayerWithIndex(i);
-//                }
-               Layer3D layer3D= scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
+               scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
             }
             scene.refresh();
             promise.resolve(true);
@@ -536,7 +526,6 @@ public class SScene extends ReactContextBaseJavaModule {
             scene.getTerrainLayers().clear();
             scene.getTerrainLayers().add(url,name);
             scene.refresh();
-//            promise.resolve(true);
             int i=scene.getTerrainLayers().getCount();
             promise.resolve(i);
         } catch (Exception e) {
@@ -943,7 +932,6 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             sScene.smSceneWc.getSceneControl().getScene().flyCircle(new GeoPoint3D(1,1,1),0);
-//            sScene.smSceneWc.getSceneControl().setAction(Action3D.PANSELECT3D);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -960,27 +948,12 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             LabelHelper.getInstence().clearCirclePoint();
+            sScene.smSceneWc.getSceneControl().setAction(Action3D.PANSELECT3D);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
-
-    /**
-     * 关闭绕点飞行
-     *
-     * @param promise
-     */
-//    @ReactMethod
-//    public void closeCircleFly(Promise promise) {
-//        try {
-//            sScene = getInstance();
-//            LabelHelper.getInstence().closeCircleFly();
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
 
     /**
      * 清除选择对象
@@ -1029,54 +1002,12 @@ public class SScene extends ReactContextBaseJavaModule {
                     sScene.startShowCirclePoint();
                     sScene.endShowCirclePoint();
                     break;
-//                case "startDrawFavorite":
-//                    LabelHelper.getInstence().startDrawFavorite();
-//                    break;
             }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
-
-
-
-//    /**
-//     * 标注初始化
-//     */
-//    @ReactMethod
-//    public void initsymbol(Promise promise) {
-//        try {
-//            sScene = getInstance();
-//            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
-//            Workspace workspace = sScene.smSceneWc.getWorkspace();
-//            String path = workspace.getConnectionInfo().getServer();
-//            String result = path.substring(0, path.lastIndexOf("/")) + "/files/";
-//            String kmlname = "newKML.kml";
-//            LabelHelper.getInstence().initSceneControl(mReactContext, sceneControl, result, kmlname);
-//            promise.resolve(true);
-//
-//        } catch (Exception e) {
-////            promise.resolve(false);
-//            promise.reject(e);
-//        }
-//    }
-
-//    /**
-//     * 标注打点
-//     */
-//    @ReactMethod
-//    public void startDrawPoint(Promise promise) {
-//        try {
-//            sScene = getInstance();
-//            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
-//            LabelHelper.getInstence().startDrawPoint();
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-
 
     /**
      * 标注点绘线
@@ -1195,15 +1126,6 @@ public class SScene extends ReactContextBaseJavaModule {
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_SYMBOL, map);
                 }
             });
-//            LabelHelper.getInstence().setDrawTextListener(new LabelHelper.DrawTextListener() {
-//                @Override
-//                public void OnclickPoint(Point pnt) {
-//                    WritableMap map = Arguments.createMap();
-//                    map.putInt("pointX", pnt.x);
-//                    map.putInt("pointY", pnt.y);
-//                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_SYMBOL, map);
-//                }
-//            });
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

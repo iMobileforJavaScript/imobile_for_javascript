@@ -346,7 +346,7 @@ public class LabelHelper {
         final Point pnt = new Point();
         pnt.set((int) x, (int) y);
 
-//        mSceneControl.setAction(Action3D.PAN3D);
+        mSceneControl.setAction(Action3D.PAN3D);
         if (circleAnimImageView != null) {
             // 添加一个动画
             circleAnimImageView.setVisibility(View.VISIBLE);
