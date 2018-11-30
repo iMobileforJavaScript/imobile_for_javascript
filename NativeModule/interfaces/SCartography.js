@@ -94,6 +94,21 @@ setLineSymbolID = (lineSymbolID, layerName) => {
 }
 
 /**
+ * 根据图层索引设置线符号的ID(设置边框符号的ID)
+ *
+ * @param lineSymbolID
+ * @param layerIndex
+ */
+setLineSymbolIDByIndex = (lineSymbolID, layerIndex) => {
+  try {
+    return SCartography.setLineSymbolIDByIndex(lineSymbolID, layerIndex)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+
+/**
  * 设置线宽：1 - 10mm(边框符号宽度)
  * 
  * @param mm
@@ -105,6 +120,20 @@ setLineWidth = (mm, layerName) => {
     } catch (e) {
         console.error(e)
     }
+}
+
+/**
+ * 根据图层索引设置线宽：1 - 10mm(边框符号宽度)
+ *
+ * @param mm
+ * @param layerIndex
+ */
+setLineWidthByIndex = (mm, layerIndex) => {
+  try {
+    return SCartography.setLineWidthByIndex(mm, layerIndex)
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 /**
@@ -370,7 +399,9 @@ export default {
     setMarkerAlpha,
     //线风格
     setLineSymbolID,
+    setLineSymbolIDByIndex,
     setLineWidth,
+    setLineWidthByIndex,
     setLineColor,
     //面风格
     setFillSymbolID,

@@ -195,6 +195,35 @@ public class SCartography extends ReactContextBaseJavaModule {
         }
     }
 
+
+    /*线风格
+     * ********************************************************************************************/
+    /**
+     * 根据图层索引设置线符号的ID(设置边框符号的ID)
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setLineSymbolIDByIndex(int lineSymbolID, int layerIndex, Promise promise) {
+        try {
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVectorByIndex(layerIndex);
+            if (layerSettingVector != null) {
+                GeoStyle geoStyle = layerSettingVector.getStyle();
+                geoStyle.setLineSymbolID(lineSymbolID);
+                layerSettingVector.setStyle(geoStyle);
+
+                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
     /**
      * 设置线宽：1-10mm(边框符号宽度)
      *
@@ -204,6 +233,33 @@ public class SCartography extends ReactContextBaseJavaModule {
     public void setLineWidth(int mm, String layerName, Promise promise) {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
+            if (layerSettingVector != null) {
+                GeoStyle geoStyle = layerSettingVector.getStyle();
+                double width = (double) mm / 10;
+                geoStyle.setLineWidth(width);
+                layerSettingVector.setStyle(geoStyle);
+
+                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据图层索引设置线宽：1-10mm(边框符号宽度)
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setLineWidthByIndex(int mm, int layerIndex, Promise promise) {
+        try {
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVectorByIndex(layerIndex);
             if (layerSettingVector != null) {
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 double width = (double) mm / 10;
