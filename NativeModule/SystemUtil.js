@@ -163,5 +163,31 @@ export default class SystemUtil {
       console.error(e);
     }
   }
+    async readFile(filePath) {
+        try {
+            let {result} = {};
+            if (Platform.OS === 'ios') {
+                result = await ZA.readFile(filePath);
+            } else {
+                result = await SU.readFile(filePath);
+            }
+            return result;
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    async writeFile(filePath,strJson) {
+        try {
+            let result;
+            if (Platform.OS === 'ios') {
+                result = await ZA.writeToFile(filePath,strJson);
+            } else {
+                result = await SU.writeToFile(filePath,strJson);
+            }
+            return result;
+        } catch (e) {
+            console.error(e);
+        }
+    }
 }
 

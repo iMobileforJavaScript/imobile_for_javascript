@@ -461,7 +461,52 @@ export default (function () {
       console.error(e)
     }
   }
+  function isModified() {
+      try {
+          return SMap.isModified()
+      } catch (error) {
+          console.log(error)
+      }
+  }
+  function getMapName() {
+      try {
+          return SMap.getMapName()
+      } catch (error) {
+          console.log(error)
+      }
+  }
+  /**
+   * 保存地图为XML
+   */
+  function saveMapToXML(filePath) {
+    try {
+      return SMap.saveMapToXML(filePath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
+  /**
+   * 以xml方式加载地图
+   */
+  function openMapFromXML(filePath) {
+    try {
+      return SMap.openMapFromXML(filePath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取地图对应的数据源别名
+   */
+  function getMapDatasourcesAlias(){
+    try {
+      return SMap.getMapDatasourcesAlias()
+    } catch (e) {
+      console.error(e)
+    }
+  }
   let SMapExp = {
     openWorkspace,
     openDatasource,
@@ -485,7 +530,12 @@ export default (function () {
     appointEditGeometry,
     getSymbolGroups,
     findSymbolsByGroups,
+    isModified,
     getLayersNames,
+    getMapName,
+    saveMapToXML,
+    openMapFromXML,
+    getMapDatasourcesAlias,
   }
   Object.assign(SMapExp, MapTool, LayerManager)
 

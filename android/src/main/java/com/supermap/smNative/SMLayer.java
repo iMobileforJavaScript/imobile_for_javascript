@@ -143,4 +143,11 @@ public class SMLayer {
         }
         return layer;
     }
+
+    public static int getLayerIndex(String name){
+        Map map = SMap.getSMWorkspace().getMapControl().getMap();
+        Layers layers = map.getLayers();
+        int index = layers.indexOfByCaption(name);
+        return index;
+    }
 }

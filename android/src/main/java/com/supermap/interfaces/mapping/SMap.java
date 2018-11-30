@@ -39,6 +39,11 @@ import com.supermap.rnsupermap.JSLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -926,5 +931,151 @@ public class SMap extends ReactContextBaseJavaModule {
         }catch(Exception e){
             promise.reject(e);
         }
+    }
+	@ReactMethod
+    public void isModified(Promise promise){
+        try {
+            sMap = getInstance();
+            boolean bWorspaceModified = sMap.smMapWC.getWorkspace().isModified();
+            boolean bMapModified = sMap.smMapWC.getMapControl().getMap().isModified();
+            if(!bWorspaceModified && !bMapModified)
+                promise.resolve(false);
+            else
+                promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getMapName(Promise promise){
+        try {
+            sMap = getInstance();
+            String mapName = sMap.smMapWC.getMapControl().getMap().getName();
+            promise.resolve(mapName);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 保存地图为XML
+     */
+    @ReactMethod
+    public void saveMapToXML(String filePath,Promise promise) {
+        try {
+            sMap = getInstance();
+            String mapName = filePath.substring(filePath.lastIndexOf('/')+1,filePath.lastIndexOf('.'));
+
+            int count = sMap.smMapWC.getWorkspace().getMaps().getCount();
+            for (int i = 0; i < count; i++) {
+                String name = sMap.smMapWC.getWorkspace().getMaps().get(i);
+                if(mapName.equals(name)){
+                    sMap.smMapWC.getMapControl().getMap().save();
+                    break;
+                }
+                if(i == count - 1 ){
+                    sMap.smMapWC.getMapControl().getMap().saveAs(mapName);
+                }
+            }
+
+            if(count == 0){
+                sMap.smMapWC.getMapControl().getMap().saveAs(mapName);
+            }
+            String mapXML = sMap.smMapWC.getMapControl().getMap().toXML();
+
+
+            if(!mapXML.equals("")){
+                File file =new File(filePath);
+
+                FileWriter fileWritter = new FileWriter(file);
+                fileWritter.write(mapXML);
+                fileWritter.close();
+            }
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 加载地图XML，显示地图
+     * @param
+     */
+    @ReactMethod
+    public void openMapFromXML(String filePath,Promise promise) {
+        try {
+            sMap = getInstance();
+            String mapName = filePath.substring(filePath.lastIndexOf('/')+1,filePath.lastIndexOf('.'));
+            File file = new File(filePath);
+            Reader reader = null;
+
+            reader = new InputStreamReader(new FileInputStream(file));
+            char[] buffer = new char[1024];
+            int index = 0;
+            String strXML = "";
+            while ((index = reader.read(buffer)) != -1){
+                strXML += String.valueOf(buffer);
+            }
+
+            int count = sMap.smMapWC.getWorkspace().getMaps().getCount();
+            for (int i = 0; i < count; i++) {
+                String name = sMap.smMapWC.getWorkspace().getMaps().get(i);
+                if(mapName.equals(name)){
+                    break;
+                }
+                if(i == count - 1){
+                    sMap.smMapWC.getWorkspace().getMaps().add(mapName,strXML);
+                }
+            }
+            if(count == 0){
+                sMap.smMapWC.getWorkspace().getMaps().add(mapName,strXML);
+            }
+            sMap.smMapWC.getMapControl().getMap().open(mapName);
+            sMap.smMapWC.getMapControl().getMap().refresh();
+            promise.resolve(true);
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 获取地图对应的数据源
+     * @param
+     */
+    @ReactMethod
+    public void getMapDatasourcesAlias(Promise promise) {
+        try {
+            sMap = getInstance();
+            Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
+            int count = layers.getCount();
+
+            String datasourceName = "";
+            ArrayList<String> datasourceNamelist = new ArrayList<String>();
+            WritableArray arr = Arguments.createArray();
+            for(int i = 0 ;i < count ; i++){
+                 Dataset dataset = layers.get(i).getDataset();
+                if(dataset != null){
+                    String dataSourceAlias  = dataset.getDatasource().getAlias();
+
+                    if( !datasourceNamelist.contains(dataSourceAlias)) {
+                        datasourceNamelist.add(dataSourceAlias);
+
+                        WritableMap writeMap = Arguments.createMap();
+                        writeMap.putString("title", dataSourceAlias + ".udb");
+                        arr.pushMap(writeMap);
+                    }
+                }
+
+            }
+
+//            datasourceName.substring( 2,datasourceName.length()-2 );
+          promise.resolve(arr);
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+
     }
 }
