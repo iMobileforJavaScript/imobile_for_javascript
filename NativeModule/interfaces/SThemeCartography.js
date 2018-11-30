@@ -84,11 +84,11 @@ getThemeUniqueDefaultStyle = (layerName) => {
  * @param layerName 专题图层名称
  */
 getUniqueExpression = (layerName) => {
- try {
-     return SThemeCartography.getUniqueExpression(layerName)
- } catch (error) {
-     console.error(error)
- }
+   try {
+       return SThemeCartography.getUniqueExpression(layerName)
+   } catch (error) {
+       console.error(error)
+   }
 }
 
 export default {

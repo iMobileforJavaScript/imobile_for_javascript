@@ -5,6 +5,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.supermap.RNUtils.ColorParseUtil;
 import com.supermap.data.*;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.LayerSettingGrid;
@@ -94,9 +95,7 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
-                int parseColor = Color.parseColor(color);
-                int[] rgb = getRGB(parseColor);
-                com.supermap.data.Color makerColor = new com.supermap.data.Color(rgb[0], rgb[1], rgb[2]);
+                com.supermap.data.Color makerColor = ColorParseUtil.getColor(color);
 
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setLineColor(makerColor);
@@ -232,9 +231,7 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
-                int parseColor = Color.parseColor(lineColor);
-                int[] rgb = getRGB(parseColor);
-                com.supermap.data.Color color = new com.supermap.data.Color(rgb[0], rgb[1], rgb[2]);
+                com.supermap.data.Color color = ColorParseUtil.getColor(lineColor);
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setLineColor(color);
@@ -319,9 +316,7 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
-                int parseColor = android.graphics.Color.parseColor(fillForeColor);
-                int[] rgb = getRGB(parseColor);
-                com.supermap.data.Color color = new com.supermap.data.Color(rgb[0], rgb[1], rgb[2]);
+                com.supermap.data.Color color = ColorParseUtil.getColor(fillForeColor);
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setFillForeColor(color);
@@ -349,9 +344,7 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
-                int parseColor = android.graphics.Color.parseColor(fillBackColor);
-                int[] rgb = getRGB(parseColor);
-                com.supermap.data.Color color = new com.supermap.data.Color(rgb[0], rgb[1], rgb[2]);
+                com.supermap.data.Color color = ColorParseUtil.getColor(fillBackColor);
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setFillBackColor(color);
@@ -679,9 +672,7 @@ public class SCartography extends ReactContextBaseJavaModule {
             Recordset recordset = SMCartography.getRecordset(geometryID, layerName);
             Geometry geometry = SMCartography.getGeoText(recordset);
             if (recordset != null && geometry != null) {
-                int parseColor = Color.parseColor(color);
-                int[] rgb = getRGB(parseColor);
-                com.supermap.data.Color textColor = new com.supermap.data.Color(rgb[0], rgb[1], rgb[2]);
+                com.supermap.data.Color textColor = ColorParseUtil.getColor(color);
 
                 GeoText geoText = (GeoText) geometry;
                 TextStyle textStyle = geoText.getTextStyle();
@@ -805,24 +796,6 @@ public class SCartography extends ReactContextBaseJavaModule {
             e.printStackTrace();
             promise.reject(e);
         }
-    }
-
-
-    /**
-     * 16进制颜色码转换为RGB
-     */
-    private int[] getRGB(int color) {
-        int[] rgb = new int[3];
-
-        int r = (color & 0xff0000) >> 16;
-        int g = (color & 0xff00) >> 8;
-        int b = color & 0xff;
-
-        rgb[0] = r;
-        rgb[1] = g;
-        rgb[2] = b;
-
-        return rgb;
     }
 
 }
