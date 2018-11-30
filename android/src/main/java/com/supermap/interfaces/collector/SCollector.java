@@ -238,7 +238,7 @@ public class SCollector extends ReactContextBaseJavaModule {
     @ReactMethod
     public void submit(int type, Promise promise) {
         try {
-            if (type == SCollectorType.LINE_HAND_PATH || type == SCollectorType.REGION_HAND_PATH) {
+            if (type == SCollectorType.LINE_HAND_PATH || type == SCollectorType.REGION_HAND_PATH || type == -1) {
                 SMap.getSMWorkspace().getMapControl().submit();
             } else {
                 collector = getCollector();
@@ -260,7 +260,7 @@ public class SCollector extends ReactContextBaseJavaModule {
     public void cancel(int type, Promise promise) {
         try {
             SMap.getSMWorkspace().getMapControl().cancel();
-            if (type == SCollectorType.REGION_HAND_PATH || type == SCollectorType.LINE_HAND_PATH) {
+            if (type == SCollectorType.REGION_HAND_PATH || type == SCollectorType.LINE_HAND_PATH || type == -1) {
                 startCollect(type, promise);
             } else {
                 promise.resolve(true);

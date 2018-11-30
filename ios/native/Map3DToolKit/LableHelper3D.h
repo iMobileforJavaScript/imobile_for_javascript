@@ -18,11 +18,12 @@
 
 @protocol LableHelper3DDelegate<NSObject>
 @optional
--(void)drawTextAtPoint:(CGPoint)pnt;
+-(void)drawTextAtPoint:(Point3D)pnt;
+-(void)drawFavoriteAtPoint:(Point3D)pnt;
 @end
 
 
-@interface LableHelper3D : NSObject<Tracking3DDelegate>
+@interface LableHelper3D : NSObject
 SUPERMAP_SIGLETON_DEF(LableHelper3D);
 -(void)initSceneControl:(SceneControl*)control path:(NSString*)path kml:(NSString*)kmlName;
 
@@ -45,6 +46,32 @@ SUPERMAP_SIGLETON_DEF(LableHelper3D);
  * 开始绘制点
  */
 -(void)startDrawPoint;
+/**
+ * 开始绘制兴趣点
+ */
+-(void)startDrawFavorite;
+/**
+ * 设置兴趣点文本
+ */
+-(void)setFavoriteText:(NSString*)text;
+/**
+ * 保存兴趣点
+ */
+-(void)saveFavoritePoint;
+/**
+ * 添加环绕飞行的点
+ *
+ * @param point
+ */
+-(void)addCirclePoint:(Point3D)pnt3D;
+/**
+ * 清除环绕飞行的点
+ */
+-(void) clearCirclePoint;
+/**
+ * 环绕飞行
+ */
+-(void)circleFly;
 
 /**
  * 返回
@@ -66,8 +93,12 @@ SUPERMAP_SIGLETON_DEF(LableHelper3D);
  * @param point
  * @param text
  */
--(void)addGeoText:(CGPoint)point test:(NSString*)text;
+-(void)addGeoText:(Point3D)pnt test:(NSString*)text;
 
 @property (nonatomic,assign) id<LableHelper3DDelegate> delegate;
+
+- (void)tracking3DEvent:(Tracking3DEvent*)event;
+
+-(void)reset;
 
 @end
