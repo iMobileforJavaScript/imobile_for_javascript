@@ -1,3 +1,6 @@
+/**
+ *
+ */
 package com.supermap.interfaces.mapping;
 
 import android.view.GestureDetector;
@@ -172,6 +175,32 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 以数据源形式打开工作空间
+     *
+     * @param data
+     * @param defaultName 默认显示Map 图层名称
+     * @param promise
+     */
+    @ReactMethod
+    public void openDatasourceWithName(ReadableMap data, String defaultName, Promise promise) {
+        try {
+            sMap = getInstance();
+            Map params = data.toHashMap();
+            Datasource datasource = sMap.smMapWC.openDatasource(params);
+            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
+
+            if (datasource != null && defaultName.equals("")) {
+                Dataset ds = datasource.getDatasets().get(defaultName);
+                sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, true);
+            }
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 
     /**
      * 保存工作空间
@@ -255,32 +284,6 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             sMap.smMapWC.getMapControl().getMap().getLayers().remove(defaultIndex);
-
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    /**
-     * 以数据源形式打开工作空间
-     *
-     * @param data
-     * @param defaultName 默认显示Map 图层名称
-     * @param promise
-     */
-    @ReactMethod
-    public void openDatasourceWithName(ReadableMap data, String defaultName, Promise promise) {
-        try {
-            sMap = getInstance();
-            Map params = data.toHashMap();
-            Datasource datasource = sMap.smMapWC.openDatasource(params);
-            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
-
-            if (datasource != null && defaultName.equals("")) {
-                Dataset ds = datasource.getDatasets().get(defaultName);
-                sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, true);
-            }
 
             promise.resolve(true);
         } catch (Exception e) {
