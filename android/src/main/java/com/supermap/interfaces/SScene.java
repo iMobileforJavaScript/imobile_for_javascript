@@ -1185,6 +1185,61 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 三维量算分析
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setMeasureLineAnalyst(Promise promise) {
+        try {
+            AnalysisHelper.getInstence().setMeasureDisCallBack(new AnalysisHelper.DistanceCallBack() {
+                @Override
+                public void distanceResult(double distance) {
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ANALYST_MEASURELINE, distance);
+                }
+            }).startMeasureAnalysis();
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 三维面积分析
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setMeasureSquareAnalyst(Promise promise) {
+        try {
+            AnalysisHelper.getInstence().setMeasureAreaCallBack(new AnalysisHelper.AreaCallBack() {
+                @Override
+                public void areaResult(double area) {
+                    mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ANALYST_MEASURESQUARE, area);
+                }
+
+            }).startSureArea();
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 关闭所有分析
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void closeAnalysis(Promise promise) {
+        try {
+            AnalysisHelper.getInstence().closeAnalysis();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
      * 关闭工作空间及地图控件
      */
     @ReactMethod

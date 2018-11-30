@@ -463,6 +463,66 @@ export default (function () {
         }
     }
 
+     function clearLineAnalyst(){
+        return SScene.setMeasureLineAnalyst()
+      }
+      
+       function clearSquareAnalyst(){
+        return SScene.setMeasureSquareAnalyst()
+      }
+      
+       function setMeasureLineAnalyst(handlers) {
+        try {
+          if (Platform.OS === 'ios' && handlers) {
+            if (typeof handlers.callback === 'function') {
+               nativeEvt.addListener(EventConst.ANALYST_MEASURELINE, function (e) {
+                handlers.callback(e)
+              })
+            }
+          } else if (Platform.OS === 'android' && handlers) {
+            if (typeof handlers.callback === "function") {
+                let listener=DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURELINE, function (e) {
+                handlers.callback(e,listener);
+              });
+            }
+          }
+          return SScene.setMeasureLineAnalyst()
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      
+      
+       function setMeasureSquareAnalyst(handlers) {
+        try {
+          if (Platform.OS === 'ios' && handlers) {
+            if (typeof handlers.callback === 'function') {
+              nativeEvt.addListener(EventConst.ANALYST_MEASURESQUARE, function (e) {
+                handlers.callback(e)
+              })
+            }
+          } else if (Platform.OS === 'android' && handlers) {
+            if (typeof handlers.callback === "function") {
+              let listener= DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURESQUARE, function (e) {
+                handlers.callback(e,listener);
+              });
+            }
+          }
+          return SScene.setMeasureSquareAnalyst()
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      
+      
+       function closeAnalysis() {
+        try {
+            return SScene.closeAnalysis()
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -539,6 +599,11 @@ export default (function () {
         stopCircleFly,
         clearCirclePoint,
         addCircleFlyListen,
+        setMeasureLineAnalyst,
+        setMeasureSquareAnalyst,
+        closeAnalysis,
+        clearLineAnalyst,
+        clearSquareAnalyst,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
