@@ -481,8 +481,8 @@ export default (function () {
             }
           } else if (Platform.OS === 'android' && handlers) {
             if (typeof handlers.callback === "function") {
-                let listener=DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURELINE, function (e) {
-                handlers.callback(e,listener);
+                DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURELINE, function (e) {
+                handlers.callback(e);
               });
             }
           }
@@ -503,8 +503,8 @@ export default (function () {
             }
           } else if (Platform.OS === 'android' && handlers) {
             if (typeof handlers.callback === "function") {
-              let listener= DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURESQUARE, function (e) {
-                handlers.callback(e,listener);
+               DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURESQUARE, function (e) {
+                handlers.callback(e);
               });
             }
           }
