@@ -59,7 +59,7 @@ typedef enum{
     NSMutableArray* geoTextStrList;
     // 声明一个全局的节点动画轨迹对象
     GeoLine3D* geoline3d;
-    GeoLine3D* geoArea3d;
+    GeoRegion3D* geoArea3d;
     //    private boolean isDrawLine,isDrawArea,isPoint;
     BOOL isEdit;
     EnumLabelOperate labelOperate;
@@ -240,7 +240,7 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  * 保存
  */
 -(void)save{
-    if (DRAWFAVORITE) {
+    if (DRAWFAVORITE==labelOperate) {
         [self saveFavoritePoint];
         return;
     }
@@ -270,9 +270,9 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
             break;
         case DRAWAREA:
         {
-            Point3Ds *pnt3ds = [geoArea3d getPart:0];
-            GeoRegion3D *georegion3d = [[GeoRegion3D alloc] initWithPoint3Ds:pnt3ds];
-            [layer3d.feature3Ds addGeometry3D:georegion3d];
+//            Point3Ds *pnt3ds = [geoArea3d getPart:0];
+//            GeoRegion3D *georegion3d = [[GeoRegion3D alloc] initWithPoint3Ds:pnt3ds];
+            [layer3d.feature3Ds addGeometry3D:geoArea3d];
         }
             break;
         case DRAWTEXT:
@@ -282,12 +282,21 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
                 [layer3d.feature3Ds addGeometry3D:geoPlacemark];//add(geoPlacemark);
             }
             break;
-            
+        default:
+            break;
     }
     //保存
     [layer3d.feature3Ds toKMLFile:[kmlPath stringByAppendingString:kmlName]];// .toKMLFile(kmlPath + kmlName);
-    [self reset];
     mSceneControl.isRender = YES;
+    
+    geoline3d = nil;
+    geoArea3d = nil;
+    [mSceneControl.scene.trackingLayer3D clear];
+    [myPoint3DArrayList removeAllObjects];
+    [geoTextStrList removeAllObjects];
+    isEdit = false;
+    [self favoriteCancel];
+    
 }
 
 /**
@@ -327,36 +336,81 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  *
  * @param point
  */
--(void)addCirclePoint:(Point3D)pnt3d{
+-(void)addCirclePoint:(CGPoint)longPressPoint{
     if (favoriteLayer3d!=nil) {
-        GeoPoint3D *geopnt = [[GeoPoint3D alloc]initWithPoint3D:pnt3d];
+        CGFloat scale = [UIScreen mainScreen].scale;
+        if (longPressPoint.x * scale-56/2<0) {
+            return;
+        }
+        CGPoint point = CGPointMake( longPressPoint.x * scale-56/2, longPressPoint.y * scale);//  修正底层添加的点和实际不一致
+    
+        Point3D pnt3D = [mSceneControl.scene pixelToGlobeWith:point andPixelToGlobeMode:TerrainAndModel];
+
+        
+        GeoPoint3D *geopnt = [[GeoPoint3D alloc]initWithPoint3D:pnt3D];
         NSString *strBundlePath = [[NSBundle mainBundle] pathForResource:@"resources" ofType:@"bundle"];
         NSString *strMarkerPath = [strBundlePath stringByAppendingString:@"/icon_red.png"];
+
         //NSString *strMarkerPath = @"assert.bundle/icon_green.png";
-        geostyle = [[GeoStyle3D alloc]init];
+        GeoStyle3D *geostyle = [[GeoStyle3D alloc]init];
         
         [geostyle setMarkerFile:strMarkerPath];
         [geostyle setAltitudeMode:Absolute3D];
-        [geostyle setMarkerSize:1000];
+        
         [geopnt setStyle3D:geostyle];
         
+        //动画
+        UIImage *image = [UIImage imageNamed:@"resources.bundle/icon_red.png"];
+        UIImageView *favoritesView = [[UIImageView alloc] initWithImage:image];
+        favoritesView.layer.anchorPoint = longPressPoint;
+        favoritesView.frame = CGRectMake(longPressPoint.x - 56 / 2, longPressPoint.y - 56, 56, 56);
+        [mSceneControl addSubview:favoritesView];
+        [self applyAnimationToFavorites:favoritesView completion:^{
+            mSceneControl.isRender = NO;
+            GeoPlacemark *geoPlacemark = [[GeoPlacemark alloc]initWithName:@"" andGeomentry:geopnt];
+            TextStyle *textstyle = [[TextStyle alloc]init];
+            [geoPlacemark setNameStyle:textstyle];
+            
+            if (circleFeature3D==nil) {
+                circleFeature3D = [[favoriteLayer3d feature3Ds]addGeometry3D:geoPlacemark];
+            }else{
+                [[favoriteLayer3d feature3Ds]removeFeature3D:circleFeature3D];
+                circleFeature3D = nil;
+                circleFeature3D = [[favoriteLayer3d feature3Ds]addGeometry3D:geoPlacemark];
+                //[circleFeature3D setGeometry3D:geoPlacemark];
+            }
+            //isEdit = true;
+            mSceneControl.isRender = YES;
+        }];
         
-        mSceneControl.isRender = NO;
-        GeoPlacemark *geoPlacemark = [[GeoPlacemark alloc]initWithName:@"" andGeomentry:geopnt];
-        TextStyle *textstyle = [[TextStyle alloc]init];
-        [geoPlacemark setNameStyle:textstyle];
         
-        if (circleFeature3D==nil) {
-            circleFeature3D = [[favoriteLayer3d feature3Ds]addGeometry3D:geoPlacemark];
-        }else{
-            [[favoriteLayer3d feature3Ds]removeFeature3D:circleFeature3D];
-            circleFeature3D = nil;
-            circleFeature3D = [[favoriteLayer3d feature3Ds]addGeometry3D:geoPlacemark];
-            //[circleFeature3D setGeometry3D:geoPlacemark];
-        }
-        //isEdit = true;
-        mSceneControl.isRender = YES;
     }
+}
+- (void)applyAnimationToFavorites:(UIView *)favorites completion:(void(^)())completion {
+    CGRect frame = favorites.frame;
+    [UIView animateWithDuration:0.2
+                          delay:0
+         usingSpringWithDamping:0.5
+          initialSpringVelocity:10
+                        options:UIViewAnimationOptionLayoutSubviews
+                     animations:^{
+                         favorites.frame = CGRectMake(CGRectGetMinX(frame) - CGRectGetWidth(frame) / 2, CGRectGetMinY(frame) - CGRectGetHeight(frame), 2*CGRectGetWidth(frame), 2*CGRectGetHeight(frame));
+                     }
+                     completion:^(BOOL finished) {
+                         [UIView animateWithDuration:0.3
+                                               delay:0
+                              usingSpringWithDamping:0.8
+                               initialSpringVelocity:0.5
+                                             options:UIViewAnimationOptionLayoutSubviews
+                                          animations:^{
+                                              favorites.frame = frame;
+                                              if (completion) completion();
+                                              favorites.hidden = YES;
+                                          }
+                                          completion:^(BOOL finished) {
+                                              [favorites removeFromSuperview];
+                                          }];
+                     }];
 }
 /**
  * 清除环绕飞行的点
@@ -368,6 +422,12 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
     [[favoriteLayer3d feature3Ds]removeFeature3D:circleFeature3D];
     circleFeature3D = nil;
 }
+-(void)clearTrackingLayer{
+    [mSceneControl.scene.trackingLayer3D clear];
+    [myPoint3DArrayList removeAllObjects];
+    [geoTextStrList removeAllObjects];
+    isEdit = true;
+}
 /**
  * 环绕飞行
  */
@@ -378,6 +438,15 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
         GeoPoint3D * circlePoint = [[GeoPoint3D alloc]initWithX:gp.x Y:gp.y Z:gp.z+100];
         [mSceneControl.scene flyCircle:circlePoint SpeedRatio:2];
     }
+}
+/**
+ * 停止环绕飞行
+ */
+-(void)stopCircleFly{
+   
+    GeoPoint3D * circlePoint = [[GeoPoint3D alloc]initWithX:1 Y:1 Z:1];
+    [mSceneControl.scene flyCircle:circlePoint SpeedRatio:0];
+    
 }
 /**
  * 点击弹出兴趣点
@@ -407,7 +476,7 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  * @param pnt3d
  * @param text
  */
-static GeoStyle3D *geostyle;
+
 -(void)addFavoritePoint:(Point3D)pnt3d Text:(NSString*)text {
     if (favoriteLayer3d!=nil) {
         
@@ -416,7 +485,7 @@ static GeoStyle3D *geostyle;
         NSString *strBundlePath = [[NSBundle mainBundle] pathForResource:@"resources" ofType:@"bundle"];
         NSString *strMarkerPath = [strBundlePath stringByAppendingString:@"/icon_green.png"];
         //NSString *strMarkerPath = @"assert.bundle/icon_green.png";
-        geostyle = [[GeoStyle3D alloc]init];
+        GeoStyle3D *geostyle = [[GeoStyle3D alloc]init];
         
         [geostyle setMarkerFile:strMarkerPath];
         [geostyle setAltitudeMode:Absolute3D];
@@ -469,7 +538,14 @@ static GeoStyle3D *geostyle;
     [[layer3d feature3Ds]toKMLFile:[kmlPath stringByAppendingString:kmlName]];
     [[favoriteLayer3d feature3Ds]removeFeature3D:favoriteFeature3D];
     favoriteFeature3D = nil;
-    [self reset];
+    geoline3d = nil;
+    geoArea3d = nil;
+    [mSceneControl.scene.trackingLayer3D clear];
+    [myPoint3DArrayList removeAllObjects];
+    [geoTextStrList removeAllObjects];
+    isEdit = false;
+    [self favoriteCancel];
+
 }
 
 -(void)reset{
@@ -609,4 +685,13 @@ static GeoStyle3D *geostyle;
     NSLog(@"%b",b);
     return b;
 }
+
+-(void)closePage{
+    [self reset];
+    [mSceneControl.scene.layers removeLayerWithName:@"NodeAnimation"];
+    mLayer3d = nil;
+    [mSceneControl.scene.layers removeLayerWithName:@"Favorite"];
+    favoriteLayer3d = nil;
+}
+
 @end

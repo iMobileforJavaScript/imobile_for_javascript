@@ -15,6 +15,8 @@ import java.util.Enumeration;
 import java.util.zip.ZipException;
 
 public class FileUtil {
+    public static final String homeDirectory = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+
     public static boolean unZipFile(String archive, String decompressDir) throws IOException, FileNotFoundException, ZipException {
         Log.e("++++++++++++", "zipzipzipzipzipzipzipzipzipzipzipzip");
          try {
@@ -58,5 +60,67 @@ public class FileUtil {
          catch (Exception e){
              return false;
          }
+    }
+
+    public static boolean fileIsExist(String path) {
+        try {
+            Boolean isExist = false;
+            File file = new File(path);
+
+            if (file.exists()) {
+                isExist = true;
+            }
+
+            return isExist;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean fileIsExistInHomeDirectory(String path) {
+        try {
+            Boolean isExist = false;
+            File file = new File(homeDirectory + "/" + path);
+
+            if (file.exists()) {
+                isExist = true;
+            }
+
+            return isExist;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 创建文件目录
+     *
+     * @param path    - 绝对路径
+     */
+    public static boolean createDirectory(String path) {
+        try {
+            boolean result = false;
+            File file = new File(path);
+
+            if (!file.exists()) {
+                result = file.mkdirs();
+            } else {
+                result = true;
+            }
+
+            return result;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isDirectory(String path) {
+        try {
+            File file = new File(path);
+            boolean isDirectory = file.isDirectory();
+            return isDirectory;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
