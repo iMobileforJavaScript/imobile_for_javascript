@@ -523,6 +523,14 @@ export default (function () {
         }
       }
 
+      function removeKMLOfWorkcspace(){
+           try {
+               return SScene.removeKMLOfWorkcspace()
+           } catch (e) {
+            console.error(e);
+           }
+      }
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -604,6 +612,7 @@ export default (function () {
         closeAnalysis,
         clearLineAnalyst,
         clearSquareAnalyst,
+        removeKMLOfWorkcspace,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
