@@ -1223,23 +1223,6 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
-
-//    @ReactMethod
-//    public  void doZipFiles(ReadableArray array, String toPath, Promise promise) {
-//        try {
-//            int num=array.size();
-//            File[] files=new File[num];
-//            for (int i = 0; i < num; i++) {
-//                files[i]=new File(array.getString(i));
-//            }
-//            SMFileUtil.zipFiles(files,toPath);
-//            promise.resolve(true);
-//        }catch (Exception e){
-//            promise.reject(e);
-//        }
-//    }
-
-
     /**
      * 关闭所有分析
      *
