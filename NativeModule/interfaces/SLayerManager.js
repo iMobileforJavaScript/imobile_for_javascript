@@ -1,4 +1,4 @@
-import { NativeModules } from 'react-native'
+import { NativeModules, Platform } from 'react-native'
 const LayerManager = NativeModules.SLayerManager
 
 /**
@@ -49,7 +49,42 @@ function setLayerVisible(path, value){
  */
 function getLayerIndexByName(name) {
   try {
+    if (Platform.OS === 'ios') return
     return LayerManager.getLayerIndexByName(name)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 获取图层属性
+ * @param path
+ * @returns {*}
+ */
+function getLayerAttribute(path) {
+  try {
+    if (!path) {
+      console.warn('path is null')
+      return
+    }
+    return LayerManager.getLayerAttribute(path)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 获取Selection中对象的属性
+ * @param path
+ * @returns {*}
+ */
+function getSelectionAttributeByLayer(path) {
+  try {
+    if (!path) {
+      console.warn('path is null')
+      return
+    }
+    return LayerManager.getSelectionAttributeByLayer(path)
   } catch (e) {
     console.error(e)
   }
@@ -60,4 +95,6 @@ export {
   getLayersByGroupPath,
   setLayerVisible,
   getLayerIndexByName,
+  getLayerAttribute,
+  getSelectionAttributeByLayer,
 }

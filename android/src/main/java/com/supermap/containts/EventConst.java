@@ -1,12 +1,18 @@
 package com.supermap.containts;
 
 public class EventConst {
+
     public static final String COLLECTION_CHANGE = "com.supermap.RN.Mapcontrol.collection_change";
     public static final String COLLECTION_SENSER_CHANGE = "com.supermap.RN.Mapcontrol.collection_sensor_change";
+    /*
+     * 在线模块
+     */
     public static final String ONLINE_SERVICE_DOWNLOADING = "com.supermap.RN.Mapcontrol.online_service_downloading";
     public static final String ONLINE_SERVICE_DOWNLOADED = "com.supermap.RN.Mapcontrol.online_service_downloaded";
     public static final String ONLINE_SERVICE_DOWNLOADFAILURE = "com.supermap.RN.Mapcontrol.online_service_downloadfailure";
     public static final String ONLINE_SERVICE_UPLOADING = "com.supermap.RN.Mapcontrol.online_service_uploading";
+    public static final String ONLINE_SERVICE_UPLOAED = "com.supermap.RN.Mapcontrol.online_service_uploaded";
+    public static final String ONLINE_SERVICE_UPLOADFAILURE = "com.supermap.RN.Mapcontrol.online_service_uploadfailure";
 
     public static final String MEASURE_LENGTH = "com.supermap.RN.Mapcontrol.length_measured";
     public static final String MEASURE_AREA = "com.supermap.RN.Mapcontrol.area_measured";

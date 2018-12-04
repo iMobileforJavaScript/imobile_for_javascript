@@ -3,8 +3,20 @@ import {EventConst} from '../../constains'
 let OnlineServiceNative = NativeModules.SOnlineService;
 /*获取ios原生层的回调*/
 const callBackIOS = new NativeEventEmitter(OnlineServiceNative);
+let objDownloadCallBackResult;
+let bIsFirstDownload = true;
 function init() {
   OnlineServiceNative.init();
+  // if(Platform.OS === 'ios'){
+  //   callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (obj) {
+  //     objDownloadCallBackResult=obj;
+  //   });
+  // }
+
+}
+
+function objCallBack(){
+  return callBackIOS;
 }
 
 function uploadFile(path, dataName, handler) {
@@ -26,31 +38,31 @@ function uploadFile(path, dataName, handler) {
   OnlineServiceNative.upload(path, dataName);
 }
 
-function downloadFile(path, onlineDataName, handler) {
-  if (Platform.OS === 'ios' && handler) {
-    if (typeof handler.onProgress === 'function') {
-      callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (obj) {
-        console.log("progress:" + obj.progress);
-        let downloadId = obj.id;
-        if (downloadId === onlineDataName) {
-          handler.onProgress(obj.progress);
-        }
-      })
-    }
-    if (typeof handler.onResult === 'function') {
-      callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (bResult) {
-        handler.onResult(bResult);
-      })
-      callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (strErrorInfo) {
-        handler.onResult(strErrorInfo);
-      })
-    }
-  }
-  else if (Platform.OS === 'android' && handler) {
-  
-  }
-  
-  
+
+
+function downloadFile(path, onlineDataName) {
+  // if (Platform.OS === 'ios' && handler) {
+  //   if (typeof handler.onProgress === 'function') {
+  //     callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (obj) {
+  //       console.log("progress:" + obj.progress);
+  //       let downloadId = obj.id;
+  //       if (downloadId === onlineDataName) {
+  //         handler.onProgress(obj.progress);
+  //       }
+  //     })
+  //   }
+  //   if (typeof handler.onResult === 'function') {
+  //     callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (bResult) {
+  //       handler.onResult(bResult);
+  //     })
+  //     callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (strErrorInfo) {
+  //       handler.onResult(strErrorInfo);
+  //     })
+  //   }
+  // }
+  // else if (Platform.OS === 'android' && handler) {
+  //
+  // }
   OnlineServiceNative.download(path, onlineDataName);
 }
 
@@ -215,6 +227,7 @@ export default {
   init,
   uploadFile,
   downloadFile,
+  objCallBack,
   login,
   logout,
   getDataList,

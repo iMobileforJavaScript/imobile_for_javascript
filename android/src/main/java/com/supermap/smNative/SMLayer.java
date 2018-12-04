@@ -3,14 +3,19 @@ package com.supermap.smNative;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.RNUtils.JsonUtil;
+import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetType;
+import com.supermap.data.DatasetVector;
 import com.supermap.data.Enum;
+import com.supermap.data.Recordset;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerGroup;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.Map;
+import com.supermap.mapping.Selection;
 import com.supermap.mapping.Theme;
 
 public class SMLayer {
@@ -149,5 +154,23 @@ public class SMLayer {
         Layers layers = map.getLayers();
         int index = layers.indexOfByCaption(name);
         return index;
+    }
+
+    public static WritableArray getLayerAttribute(String path) {
+        Layer layer = findLayerByPath(path);
+        DatasetVector dv = (DatasetVector) layer.getDataset();
+
+        Recordset recordset = dv.getRecordset(false, CursorType.DYNAMIC);
+        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, 1);
+        return recordArray;
+    }
+
+    public static WritableArray getSelectionAttributeByLayer(String path) {
+        Layer layer = findLayerByPath(path);
+        Selection selection = layer.getSelection();
+
+        Recordset recordset = selection.toRecordset();
+        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, 1);
+        return recordArray;
     }
 }
