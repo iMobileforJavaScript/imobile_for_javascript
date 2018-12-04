@@ -128,7 +128,7 @@ export default class SystemUtil {
       if (Platform.OS === 'ios') {
         reFUlt = await FT.zipFile(filePath, targetDir);
       } else {
-        reFUlt = await FU.zipFile(filePath, targetDir);
+        reFUlt = await FU.doZipFiles([filePath], targetDir);
       }
       return reFUlt;
     } catch (e) {
@@ -136,7 +136,21 @@ export default class SystemUtil {
     }
   }
   
-  async unzipFile(zipFile, targetPath) {
+  async zipFiles(filePaths, targetDir) {
+    try {
+      let reFUlt;
+      if (Platform.OS === 'ios') {
+        reFUlt = await FT.zipFiles(filePaths, targetDir);
+      } else {
+        reFUlt = await FU.doZipFiles(filePaths, targetDir);
+      }
+      return reFUlt;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  async unZipFile(zipFile, targetPath) {
     try {
       let reFUlt;
       if (Platform.OS === 'ios') {

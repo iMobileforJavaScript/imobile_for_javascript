@@ -425,9 +425,6 @@ public class SScene extends ReactContextBaseJavaModule {
                     map.putString("name", name);
                     map.putBoolean("visible", visible);
                     map.putBoolean("selectable", selectable);
-                    if (i == count - 1) {
-                        map.putBoolean("basemap", true);
-                    }
                     arr.pushMap(map);
                 }
             }
@@ -1232,6 +1229,19 @@ public class SScene extends ReactContextBaseJavaModule {
     public void closeAnalysis(Promise promise) {
         try {
             AnalysisHelper.getInstence().closeAnalysis();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 移除当前工作空间的KML图层
+     */
+    @ReactMethod
+    public void removeKMLOfWorkcspace(Promise promise) {
+        try {
+            LabelHelper.getInstence().closePage();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
