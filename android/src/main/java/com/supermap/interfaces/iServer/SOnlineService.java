@@ -8,11 +8,18 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.supermap.containts.EventConst;
+import com.supermap.onlineservices.DownLoadFile;
 import com.supermap.onlineservices.OnlineCallBack;
 import com.supermap.onlineservices.OnlineService;
 import com.supermap.onlineservices.UpLoadFile;
 import com.supermap.utils.EnumServiceType;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +32,7 @@ import static com.supermap.utils.EnumServiceType.RESTMAP;
 public class SOnlineService extends ReactContextBaseJavaModule{
     private OnlineService mOnlineService = null;
     private static  final String TAG = "SOnlineService"; //
-    private Context mContext = null;
+    private ReactApplicationContext mContext = null;
     public SOnlineService(ReactApplicationContext reactContext) {
         super(reactContext);
         mContext = reactContext;
@@ -80,7 +87,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.logout(new OnlineCallBack.CallBackString() {
                 @Override
                 public void onSucceed(String s) {
-                    promise.resolve(s);
+                    promise.resolve(true);
                 }
 
                 @Override
@@ -95,7 +102,26 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     @ReactMethod
     public void download(String filePath,String onlineDataName,final Promise promise){
         try {
-//           OnlineService.downLoadFile();
+            Log.e("SOnlineService","progress = "+ filePath);
+            OnlineService.downloadFile(mContext, onlineDataName,filePath, new DownLoadFile.DownLoadListener() {
+                @Override
+                public void getProgress(int progress) {
+                    Log.e("SOnlineService","progress = "+ progress);
+                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADING,progress);
+                }
+
+                @Override
+                public void onComplete() {
+                    Log.e("SOnlineService","progress = success");
+                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED,true);
+                }
+
+                @Override
+                public void onFailure() {
+                    Log.e("SOnlineService","progress = failure");
+                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, false);
+                }
+            });
         }catch (Exception e){
             promise.reject(e);
         }
@@ -103,22 +129,22 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     @ReactMethod
     public void upload(String filePath,String onlineDataName,final Promise promise){
         try {
-//            OnlineService.upLoadFile(filePath, onlineDataName, new UpLoadFile.UpLoadListener() {
-//                @Override
-//                public void getProgress(int i) {
-//
-//                }
-//
-//                @Override
-//                public void onComplete() {
-//
-//                }
-//
-//                @Override
-//                public void onFailure() {
-//
-//                }
-//            });
+            OnlineService.uploadFile(filePath, onlineDataName, new UpLoadFile.UpLoadListener() {
+                @Override
+                public void getProgress(int progress) {
+                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING,progress);
+                }
+
+                @Override
+                public void onComplete() {
+                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED,true);
+                }
+
+                @Override
+                public void onFailure() {
+                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADFAILURE,false);
+                }
+            });
         }catch (Exception e){
             promise.reject(e);
         }
@@ -167,7 +193,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.registerWithEmail(email, nickname, password, new OnlineCallBack.CallBackString() {
                 @Override
                 public void onSucceed(String s) {
-                    promise.resolve(s);
+                    promise.resolve(true);
                 }
 
                 @Override
@@ -186,7 +212,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.registerWithPhone(phoneNumber, smsVerifyCode, nickname, password, new OnlineCallBack.CallBackString() {
                 @Override
                 public void onSucceed(String s) {
-                    promise.resolve(s);
+                    promise.resolve(true);
                 }
 
                 @Override
@@ -225,12 +251,39 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.verifyCodeImage(new OnlineCallBack.CallBackBitmap() {
                 @Override
                 public void onSucceed(Bitmap bitmap) {
-
+                    String rootPath = android.os.Environment.getExternalStorageDirectory().getPath().toString();
+                    String fileDirs = rootPath+"/tmp/";
+                    File file = new File(fileDirs);
+                    if(!file.exists()){
+                        file.mkdirs();
+                    }
+                    String filePath = fileDirs+ "verifyCodeImage.png";
+                    File file2= new File(filePath);
+                    if(!file2.exists()){
+                        file2.delete();
+                    }
+                    FileOutputStream fos = null;
+                    try {
+                        fos = new FileOutputStream(file2);
+                        bitmap.compress(Bitmap.CompressFormat.PNG,100,fos);
+                        promise.resolve(filePath);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }finally {
+                        try {
+                            if(fos != null) {
+                                fos.close();
+                                fos.flush();
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
 
                 @Override
                 public void onError(String s) {
-
+                    promise.resolve(s);
                 }
             });
         }catch (Exception e){
@@ -244,12 +297,12 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.retrievePassword(account, verifyCode, isPhone, new OnlineCallBack.CallBackString() {
                 @Override
                 public void onSucceed(String s) {
-
+                    promise.resolve(true);
                 }
 
                 @Override
                 public void onError(String s) {
-
+                    promise.resolve(s);
                 }
             });
         }catch (Exception e){
@@ -266,12 +319,12 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.retrievePasswordSecond(new OnlineCallBack.CallBackString() {
                 @Override
                 public void onSucceed(String s) {
-
+                    promise.resolve(true);
                 }
 
                 @Override
                 public void onError(String s) {
-
+                    promise.resolve(s);
                 }
             });
         }catch (Exception e){
@@ -289,12 +342,12 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.retrievePasswordThird(safeCode, new OnlineCallBack.CallBackString() {
                 @Override
                 public void onSucceed(String s) {
-
+                    promise.resolve(true);
                 }
 
                 @Override
                 public void onError(String s) {
-
+                    promise.resolve(s);
                 }
             });
         }catch (Exception e){
@@ -312,16 +365,16 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.retrievePasswordFourth(newPassword, new OnlineCallBack.CallBackString() {
                 @Override
                 public void onSucceed(String s) {
-
+                    promise.resolve(true);
                 }
 
                 @Override
                 public void onError(String s) {
-
+                    promise.resolve(s);
                 }
             });
         }catch (Exception e){
-
+            promise.reject(e);
         }
     }
 
@@ -331,7 +384,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.deleteData(dataName, new OnlineCallBack.CallBackString() {
                 @Override
                 public void onSucceed(String s) {
-                    promise.resolve(s);
+                    promise.resolve(true);
                 }
 
                 @Override
@@ -350,7 +403,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.deleteService(dataName, RESTMAP, new OnlineCallBack.CallBackString() {
                 @Override
                 public void onSucceed(String s) {
-                    promise.resolve(s);
+                    promise.resolve(true);
                 }
 
                 @Override
@@ -369,7 +422,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.changeDataVisiblity(id, isPublic, new OnlineCallBack.CallBackString() {
                 @Override
                 public void onSucceed(String s) {
-                    promise.resolve(s);
+                    promise.resolve(true);
                 }
 
                 @Override
@@ -388,7 +441,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.changeServiceVisiblity(id, isPublic, new OnlineCallBack.CallBackString() {
                 @Override
                 public void onSucceed(String s) {
-                    promise.resolve(s);
+                    promise.resolve(true);
                 }
 
                 @Override
@@ -445,7 +498,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.publishService(dataName, RESTMAP, new OnlineCallBack.CallBackString() {
                 @Override
                 public void onSucceed(String s) {
-                    promise.resolve(s);
+                    promise.resolve(true);
                 }
 
                 @Override
