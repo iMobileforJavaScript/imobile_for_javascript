@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 25
 
     buildToolsVersion '26.0.2'
 
@@ -35,7 +35,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:27.1.1'
+    compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.facebook.react:react-native:+'
     compile files('libs/TencentMapLBSApi_v3.0.jar')
 }
