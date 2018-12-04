@@ -1,9 +1,9 @@
 /**
  * Created by will on 2016/7/13.
  */
-import { NativeModules, Platform } from 'react-native';
+import {NativeModules, Platform} from 'react-native';
 let FU = NativeModules.SMFileUtil;
-let ZA = NativeModules.JSZipArchive;
+let FT = NativeModules.FileTools;
 
 /**
  * @class Point - 像素点类。用于标示移动设备屏幕的像素点。
@@ -15,7 +15,7 @@ export default class SystemUtil {
    */
   async getHomeDirectory() {
     try {
-      var { homeDirectory } = await FU.getHomeDirectory();
+      var {homeDirectory} = await FU.getHomeDirectory();
       return homeDirectory;
     } catch (e) {
       console.error(e);
@@ -43,7 +43,7 @@ export default class SystemUtil {
    */
   async fileIsExist(path) {
     try {
-      let { isExist } = await FU.fileIsExist(path);
+      let {isExist} = await FU.fileIsExist(path);
       return isExist;
     } catch (e) {
       console.error(e);
@@ -57,7 +57,7 @@ export default class SystemUtil {
    */
   async fileIsExistInHomeDirectory(path) {
     try {
-      let { isExist } = await FU.fileIsExistInHomeDirectory(path);
+      let {isExist} = await FU.fileIsExistInHomeDirectory(path);
       return isExist;
     } catch (e) {
       console.error(e);
@@ -126,7 +126,7 @@ export default class SystemUtil {
     try {
       let reFUlt;
       if (Platform.OS === 'ios') {
-        reFUlt = await ZA.zipFile(filePath, targetDir);
+        reFUlt = await FT.zipFile(filePath, targetDir);
       } else {
         reFUlt = await FU.zipFile(filePath, targetDir);
       }
@@ -140,9 +140,9 @@ export default class SystemUtil {
     try {
       let reFUlt;
       if (Platform.OS === 'ios') {
-        reFUlt = await ZA.unzipFile(zipFile,targetPath);
+        reFUlt = await FT.unzipFile(zipFile, targetPath);
       } else {
-        reFUlt = await FU.unzipFile(zipFile,targetPath);
+        reFUlt = await FU.unzipFile(zipFile, targetPath);
       }
       return reFUlt;
     } catch (e) {
@@ -154,7 +154,7 @@ export default class SystemUtil {
     try {
       let reFUlt;
       if (Platform.OS === 'ios') {
-        reFUlt = await ZA.deleteFile(zipFile);
+        reFUlt = await FT.deleteFile(zipFile);
       } else {
         reFUlt = await FU.deleteFile(zipFile);
       }
@@ -163,31 +163,46 @@ export default class SystemUtil {
       console.error(e);
     }
   }
-    async readFile(filePath) {
-        try {
-            let {reFUlt} = {};
-            if (Platform.OS === 'ios') {
-                reFUlt = await ZA.readFile(filePath);
-            } else {
-                reFUlt = await FU.readFile(filePath);
-            }
-            return reFUlt;
-        } catch (e) {
-            console.error(e);
-        }
+  
+  async readFile(filePath) {
+    try {
+      let {reFUlt} = {};
+      if (Platform.OS === 'ios') {
+        reFUlt = await FT.readFile(filePath);
+      } else {
+        reFUlt = await FU.readFile(filePath);
+      }
+      return reFUlt;
+    } catch (e) {
+      console.error(e);
     }
-    async writeFile(filePath,strJson) {
-        try {
-            let reFUlt;
-            if (Platform.OS === 'ios') {
-                reFUlt = await ZA.writeToFile(filePath,strJson);
-            } else {
-                reFUlt = await FU.writeToFile(filePath,strJson);
-            }
-            return reFUlt;
-        } catch (e) {
-            console.error(e);
-        }
+  }
+  
+  async writeFile(filePath, strJson) {
+    try {
+      let reFUlt;
+      if (Platform.OS === 'ios') {
+        reFUlt = await FT.writeToFile(filePath, strJson);
+      } else {
+        reFUlt = await FU.writeToFile(filePath, strJson);
+      }
+      return reFUlt;
+    } catch (e) {
+      console.error(e);
     }
+  }
+  
+  copyFile(fromPath, toPath) {
+    try {
+      if (!fromPath || !toPath) return false
+      if (Platform.OS === 'ios') {
+        return FT.copyFile(fromPath, toPath);
+      } else {
+        // return FU.writeToFile(filePath, strJson);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
 }
 

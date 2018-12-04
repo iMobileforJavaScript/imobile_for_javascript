@@ -81,6 +81,26 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
     }
 }
 
+#pragma mark 关闭工作空间
+RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    @try {
+        [sMap.smMapWC.mapControl.map close];
+        [sMap.smMapWC.mapControl.map dispose];
+        //        [sMap.smMapWC.mapControl dispose];
+        [sMap.smMapWC.workspace close];
+        //        [sMap.smMapWC.workspace dispose];
+        
+        //        sMap.smMapWC.mapControl = nil;
+        //        sMap.smMapWC.workspace = nil;
+        
+        resolve([NSNumber numberWithBool:YES]);
+    }@catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+
 #pragma mark 以数据源形式打开工作空间, 默认根据Map 图层索引显示图层
 RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)params defaultIndex:(int)defaultIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
@@ -122,26 +142,6 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
         reject(@"workspace", exception.reason, nil);
     }
 }
-
-#pragma mark 关闭工作空间
-RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    
-    @try {
-        [sMap.smMapWC.mapControl.map close];
-        [sMap.smMapWC.mapControl.map dispose];
-//        [sMap.smMapWC.mapControl dispose];
-        [sMap.smMapWC.workspace close];
-//        [sMap.smMapWC.workspace dispose];
-        
-//        sMap.smMapWC.mapControl = nil;
-//        sMap.smMapWC.workspace = nil;
-        
-        resolve([NSNumber numberWithBool:YES]);
-    }@catch (NSException *exception) {
-        reject(@"workspace", exception.reason, nil);
-    }
-}
-
 #pragma mark 保存工作空间
 RCT_REMAP_METHOD(saveWorkspace, saveWorkspaceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
@@ -197,8 +197,9 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
         Map* map = sMap.smMapWC.mapControl.map;
         Maps* maps = sMap.smMapWC.workspace.maps;
         
-        if (maps.count > 0) {
+        if (![map.name isEqualToString:name] && maps.count > 0) {
             NSString* mapName = name;
+            
             if ([name isEqualToString:@""]) {
                 NSString* mapName = [maps get:0];
                 [map open: mapName];
@@ -260,6 +261,23 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取工作空间地图列表
+RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Maps* maps = sMap.smMapWC.workspace.maps;
+        NSMutableArray* mapList = [NSMutableArray array];
+        for (int i = 0; i < maps.count; i++) {
+            NSString* mapName = [maps get:i];
+            NSMutableDictionary* mapInfo = [[NSMutableDictionary alloc] init];
+            [mapInfo setObject:mapName forKey:@"title"];
+            [mapList addObject:mapInfo];
+        }
+        resolve(mapList);
+    }@catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
     }
 }
 
