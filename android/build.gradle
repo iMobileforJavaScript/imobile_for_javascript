@@ -3,12 +3,12 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion 27
 
-    buildToolsVersion '28.0.2'
+    buildToolsVersion '26.0.2'
 
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
         useLibrary 'org.apache.http.legacy'
@@ -36,7 +36,6 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:27.1.1'
-    compile 'com.android.support:recyclerview-v7:27.1.1'
     compile 'com.facebook.react:react-native:+'
     compile files('libs/TencentMapLBSApi_v3.0.jar')
 }

@@ -80,6 +80,44 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
         reject(@"workspace", exception.reason, nil);
     }
 }
+#pragma mark 导入工作空间
+RCT_REMAP_METHOD(openWorkspace, inputWKPath:(NSString*)inPutWorkspace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Workspace* wk = [[Workspace alloc]init];
+        WorkspaceConnectionInfo* wkInfo = [[WorkspaceConnectionInfo alloc]init];
+        NSString* exten = [inPutWorkspace pathExtension];
+        if([exten.uppercaseString isEqualToString:@"SMWU"]){
+            wkInfo.type = SM_SMWU;
+        }else if ([exten.uppercaseString isEqualToString:@"SXWU"]){
+            wkInfo.type = SM_SXWU;
+        }
+        
+        wkInfo.server = inPutWorkspace;
+        BOOL bOPen = [wk open:wkInfo];
+        if(bOPen){
+//            wk.maps;
+//            NSMutableArray* mapArr = [NSMutableArray array];
+//            for(int i=0;i<wk.maps.count;i++){
+//                Map* map = [wk.maps get:i] ;
+//                map
+//            }
+        }
+       
+        
+//        BOOL result = [sMap.smMapWC openWorkspace:infoDic];
+//        if (result) {
+//            [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
+//        }
+//        sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
+//        [sMap.smMapWC.mapControl.map refresh];
+//        [self openGPS];
+//        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
 
 #pragma mark 以数据源形式打开工作空间, 默认根据Map 图层索引显示图层
 RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)params defaultIndex:(int)defaultIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -472,6 +510,7 @@ RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name resolver:(RCTPromiseR
         } else {
             result = [[SMap singletonInstance].smMapWC.mapControl.map save:name];
         }
+        result = [[SMap singletonInstance].smMapWC.workspace save];
         
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
@@ -661,7 +700,14 @@ RCT_REMAP_METHOD(findSymbolsByGroups, findSymbolsByGroups:(NSString *)type path:
     [layerInfo setObject:[NSNumber numberWithBool:layer.visible] forKey:@"visible"];
     [layerInfo setObject:[NSNumber numberWithBool:layer.selectable] forKey:@"selectable"];
     
-    [SMap singletonInstance].selection = [layer getSelection];
+    NSString* path = layer.name;
+    while (layer.parentGroup) {
+        path = [NSString stringWithFormat:@"%@/%@", layer.parentGroup.name, path];
+    }
+    [layerInfo setObject:path forKey:@"path"];
+    Recordset* r = [layer.getSelection.getDataset recordset:NO cursorType:STATIC];
+    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:r count:0 size:1];
+//    [SMap singletonInstance].selection = [layer getSelection];
     
     [self sendEventWithName:MAP_GEOMETRY_SELECTED body:@{@"layerInfo":layerInfo,
                                                          @"id":nsId,

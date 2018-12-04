@@ -1238,6 +1238,19 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 移除当前工作空间的KML图层
+     */
+    @ReactMethod
+    public void removeKMLOfWorkcspace(Promise promise) {
+        try {
+            LabelHelper.getInstence().closePage();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
     /**
      * 关闭工作空间及地图控件

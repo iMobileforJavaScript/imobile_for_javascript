@@ -119,15 +119,11 @@ const double SMOffSet = 28.0;
 -(void)singleTap:(CGPoint)tapPoint{
     // 选择属性（有trackingTouch操作时不响应）
     if( sSceneEvent == SS_Normal_Event && (sSceneAction & SS_Feature_Action)){
-        sScene = [SScene singletonInstance];
-        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
-        NSDictionary* info;
-        [TouchUtil3D getAttribute:sceneControl attribute:&info];
-        [self sendEventWithName:SSCENE_ATTRIBUTE
-                           body:info];
+        [self getSelectedAttribute:tapPoint];
     }
     
 }
+
 
 -(void)doubleTap:(CGPoint)tapPoint{
 
@@ -142,11 +138,8 @@ const double SMOffSet = 28.0;
 //        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
 //        Point3D pnt3D = [sceneControl.scene pixelToGlobeWith:point andPixelToGlobeMode:TerrainAndModel];
 //        [[LableHelper3D sharedInstance]addCirclePoint:pnt3D];
-        NSLog(@"wnmng+++asdasd");
-        [[LableHelper3D sharedInstance]addCirclePoint:longPressPoint];
-        
-        [self sendEventWithName:SSCENE_CIRCLEFLY
-                           body:@{@"pointX":@(longPressPoint.x),@"pointY":@(longPressPoint.y)}];
+
+        [self addCirclePoint:longPressPoint];
         
 //        CGFloat scale = [UIScreen mainScreen].scale;
 //        if (longPressPoint.x < SMOffSet * SMMarkerScale / scale) return;//    防止修正坐标导致调用pixelToGlobe崩溃
@@ -162,6 +155,7 @@ const double SMOffSet = 28.0;
 //                           body:@{@"pointX":@(longPressPoint.x-SMOffSet * SMMarkerScale / scale),@"pointY":@(longPressPoint.y)}];
     }
 }
+
 
 - (void)handleLongPressGestureEvent:(UILongPressGestureRecognizer *)gesture {
     if (gesture.state == UIGestureRecognizerStateBegan) {
@@ -207,7 +201,7 @@ float dTap_y = 0;
 #define SSceneTapTolerance 20*20
 //float tapTolerance = 30;
 NSTimeInterval tapDelaytime = 0.4;
-//NSTimeInterval longPressDelaytime = 1.8;
+NSTimeInterval longPressDelaytime = 0.8;
 //BOOL bSinglePoint = true;
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
     
@@ -328,7 +322,7 @@ RCT_REMAP_METHOD(setListener, setListener:(RCTPromiseResolveBlock)resolve reject
         dispatch_async(dispatch_get_main_queue(), ^{
             
             UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGestureEvent:)];
-            longPressGesture.minimumPressDuration = 1.2;
+            longPressGesture.minimumPressDuration = longPressDelaytime;
             //        self.longPressGestureDelegate = [[LongPressGestureDelegate alloc] init];
             //        longPressGesture.delegate = self.longPressGestureDelegate;
             [sceneControl addGestureRecognizer:longPressGesture];
@@ -471,15 +465,16 @@ RCT_REMAP_METHOD(changeBaseMap, oldLayer:(NSString*)oldLayer Url:(NSString*) Url
             imageFormatType1 = ImageFormatTypeNONE;
         }
         
+        Layer3D* layer3d = nil;
         if (dpi == 0 && imageFormatType == nil) {
-            [scene.layers addLayerWithURL:Url type:layer3DType dataLayerName:layerName toHead:addToHead];
+            layer3d = [scene.layers addLayerWithURL:Url type:nlayer3DType dataLayerName:layerName toHead:addToHead];
            // scene.getLayers().add(Url, layer3DType, layerName, addToHead);
         } else {
-            [scene.layers  addLayerWithTiandituURL:Url type:layer3DType dataLayerName:layerName imageFormatType:imageFormatType1 dpi:dpi toHead:dpi];
+           layer3d = [scene.layers  addLayerWithTiandituURL:Url type:nlayer3DType dataLayerName:layerName imageFormatType:imageFormatType1 dpi:dpi toHead:dpi];
            // scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
         }
         
-        resolve(@(1));
+        resolve(@(layer3d!=nil));
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
     }
@@ -588,35 +583,79 @@ RCT_REMAP_METHOD(setSelectable, name:(NSString*)name  bVisual:(BOOL)bVisual setS
  * @param promise
  */
 RCT_REMAP_METHOD(zoom,  scale:(double)scale zoom:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @try {
+            sScene = [SScene singletonInstance];
+            Scene* scene = sScene.smSceneWC.sceneControl.scene;
+            [scene zoom:scale];
+            [scene refresh];
+            resolve(@(1));
+        } @catch (NSException *exception) {
+            reject(@"SScene", exception.reason, nil);
+        }
+    });
+   
+}
+/**
+ * 关闭工作空间及地图控件
+ */
+RCT_REMAP_METHOD(closeWorkspace,  closeWorkspace:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        sScene = [SScene singletonInstance];
-        Scene* scene = sScene.smSceneWC.sceneControl.scene;
-        [scene zoom:scale];
-        [scene refresh];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [[LableHelper3D sharedInstance] closePage];
+            
+            sScene = [SScene singletonInstance];
+            Scene* scene = sScene.smSceneWC.sceneControl.scene;
+            Workspace *workspace = [scene workspace];
+            [scene close];
+            if (workspace!=nil) {
+                [workspace close];
+            }
+            //[sScene.smSceneWC setWorkspace:nil];
+            
+        });
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
     }
 }
-
+#pragma mark-指北
 /**
  * 指北针
  *
  * @param promise
  */
 RCT_REMAP_METHOD(setHeading,  setHeading:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @try {
+            sScene = [SScene singletonInstance];
+            Scene* scene = sScene.smSceneWC.sceneControl.scene;
+            Camera camera = [scene camera];
+            camera.heading = 0;
+            scene.camera = camera;
+            [scene refresh];
+            resolve(@(1));
+        } @catch (NSException *exception) {
+            reject(@"SScene", exception.reason, nil);
+        }
+    });
+   
+}
+/**
+ * 获取指北角度
+ */
+RCT_REMAP_METHOD( getcompass,  getcompassResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        sScene = [SScene singletonInstance];
-        Scene* scene = sScene.smSceneWC.sceneControl.scene;
-        Camera camera = [scene camera];
-        camera.heading = 0;
-        scene.camera = camera;
-        [scene refresh];
-        resolve(@(1));
+        SceneControl* sceneControl = [[[SScene singletonInstance]smSceneWC] sceneControl];
+        double heading = sceneControl.scene.camera.heading ;
+        resolve(@(heading));
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
     }
 }
+
 #pragma mark-查找
 /**
  * 搜索关键字显示位置相关信息列表
@@ -786,8 +825,6 @@ RCT_REMAP_METHOD(getAttribute,  getAttribute:(RCTPromiseResolveBlock)resolve rej
     }
 }
 
-
-
 /**
  * 清除对象列表属性
  *
@@ -819,6 +856,17 @@ RCT_REMAP_METHOD(removeOnTouchListener,  removeOnTouchListener:(RCTPromiseResolv
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
+    }
+}
+
+-(void)getSelectedAttribute:(CGPoint)tapPoint{
+    sScene = [SScene singletonInstance];
+    SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+    NSDictionary* info = nil;
+    [TouchUtil3D getAttribute:sceneControl attribute:&info];
+    if (info!=nil) {
+        [self sendEventWithName:SSCENE_ATTRIBUTE
+                           body:info];
     }
 }
 
@@ -1140,25 +1188,18 @@ RCT_REMAP_METHOD(stopCircleFly,  stopCircleFly:(RCTPromiseResolveBlock)resolve r
     }
 }
 
+-(void)addCirclePoint:(CGPoint)position{
+    BOOL res = [[LableHelper3D sharedInstance]addCirclePoint:position];
+    if (res) {
+        [self sendEventWithName:SSCENE_CIRCLEFLY
+                           body:@{@"pointX":@(position.x),@"pointY":@(position.y)}];
+    }
+}
+
 RCT_REMAP_METHOD(back,  back:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         
-        resolve(@(1));
-    } @catch (NSException *exception) {
-        reject(@"SScene", exception.reason, nil);
-    }
-}
-
-/**
- * 关闭工作空间及地图控件
- */
-RCT_REMAP_METHOD(closeWorkspace,  closeWorkspace:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[LableHelper3D sharedInstance] closePage];
-        });
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
@@ -1222,26 +1263,16 @@ RCT_REMAP_METHOD( closeAnalysis,  closeAnalysisResolver:(RCTPromiseResolveBlock)
     @try {
 //        SceneControl* sceneControl = [[[SScene singletonInstance]smSceneWC] sceneControl];
 //        [[AnalysisHelper3D sharedInstance] initializeWithSceneControl:sceneControl];
-        [AnalysisHelper3D sharedInstance].delegate = nil;
-        [[AnalysisHelper3D sharedInstance] closeAnalysis];
-        sSceneEvent = SS_Normal_Event;
-        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [AnalysisHelper3D sharedInstance].delegate = nil;
+            [[AnalysisHelper3D sharedInstance] closeAnalysis];
+            sSceneEvent = SS_Normal_Event;
+        });
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
     }
 }
-/**
- * 获取指北角度
- */
-RCT_REMAP_METHOD( getcompass,  getcompassResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        SceneControl* sceneControl = [[[SScene singletonInstance]smSceneWC] sceneControl];
-        double heading = sceneControl.scene.camera.heading ;
-        resolve(@(heading));
-    } @catch (NSException *exception) {
-        reject(@"SScene", exception.reason, nil);
-    }
-}
+
 
 @end

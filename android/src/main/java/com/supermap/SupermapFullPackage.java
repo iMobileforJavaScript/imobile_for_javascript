@@ -14,6 +14,7 @@ import com.supermap.interfaces.SScene;
 import com.supermap.interfaces.*;
 import com.supermap.interfaces.iServer.SOnlineService;
 import com.supermap.rnsupermap.*;
+import com.supermap.util.SMFileUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -184,6 +185,8 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new SCollectorType(reactContext));
 		modules.add(new SCartography(reactContext));
         modules.add(new SThemeCartography(reactContext));
+
+        modules.add(new SMFileUtil(reactContext));
 
         /*
         * 在线模块功能
