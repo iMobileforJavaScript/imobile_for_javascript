@@ -846,7 +846,7 @@ public class SScene extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
-
+R
     /**
      * 设置sceneControl手势监听
      *
