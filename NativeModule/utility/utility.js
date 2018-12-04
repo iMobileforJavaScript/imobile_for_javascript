@@ -56,6 +56,10 @@ exports.zipFile = async function (filePath, targetPath) {
   return await util.zipFile(filePath, targetPath);
 }
 
+exports.zipFiles = async function (filePaths, targetPath) {
+  return await util.zipFiles(filePaths, targetPath);
+}
+
 exports.unZipFile = async function (zipFile, targetDir) {
   return await util.unZipFile(zipFile, targetDir);
 }
