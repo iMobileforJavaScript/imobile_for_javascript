@@ -353,7 +353,7 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public  void doZipFiles(ReadableArray array,String toPath,Promise promise) {
+    public static void doZipFiles(ReadableArray array,String toPath,Promise promise) {
         try {
             int num=array.size();
             File[] files=new File[num];
