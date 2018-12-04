@@ -1,227 +1,250 @@
-import {NativeModules,Platform,NativeEventEmitter} from 'react-native';
-import { EventConst } from '../../constains'
+import {NativeModules, Platform, NativeEventEmitter} from 'react-native';
+import {EventConst} from '../../constains'
 let OnlineServiceNative = NativeModules.SOnlineService;
 /*获取ios原生层的回调*/
 const callBackIOS = new NativeEventEmitter(OnlineServiceNative);
-export default class SOnlineService{
-  constructor(){
-    // this.firstDownload =true;
-    OnlineServiceNative.init();
-  }
-  uploadFile(path,dataName,handler){
-    debugger;
-    console.log("progress: 0");
-    if(Platform.OS === 'ios' && handler){
-      if(typeof handler.onProgress === 'function'){
-        callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADING,function(obj){
-          console.log("progress: "+obj.progress);
-          let downloadId = obj.id;
-          handler.onProgress(obj.progress);
-        })
-      }
-      if(typeof handler.onResult === 'function'){
-        callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADED,function(value) {
-          handler.onResult(value);
-        })
-      }
-    }
-    OnlineServiceNative.upload(path,dataName);
-  }
-  downloadFile (path,onlineDataName,handler){
-    if(Platform.OS === 'ios' && handler){
-      if(typeof handler.onProgress === 'function'){
-        callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING,function(obj){
-          console.log("progress:"+obj.progress);
-          let downloadId = obj.id;
-          if(downloadId === onlineDataName){
-            handler.onProgress(obj.progress);
-          }
-        })
-      }
-      if(typeof handler.onResult === 'function'){
-        callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED,function(bResult) {
-          handler.onResult(bResult);
-        })
-        callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE,function(strErrorInfo) {
-          handler.onResult(strErrorInfo);
-        })
-      }
-    }
-    else if(Platform.OS === 'android' && handler){
+let objDownloadCallBackResult;
+let bIsFirstDownload = true;
+function init() {
+  OnlineServiceNative.init();
+  // if(Platform.OS === 'ios'){
+  //   callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (obj) {
+  //     objDownloadCallBackResult=obj;
+  //   });
+  // }
 
+}
+
+function objCallBack(){
+  return callBackIOS;
+}
+
+function uploadFile(path, dataName, handler) {
+  console.log("progress: 0");
+  if (Platform.OS === 'ios' && handler) {
+    if (typeof handler.onProgress === 'function') {
+      callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (obj) {
+        console.log("progress: " + obj.progress);
+        let downloadId = obj.id;
+        handler.onProgress(obj.progress);
+      })
     }
+    if (typeof handler.onResult === 'function') {
+      callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADED, function (value) {
+        handler.onResult(value);
+      })
+    }
+  }
+  OnlineServiceNative.upload(path, dataName);
+}
 
 
-    OnlineServiceNative.download(path,onlineDataName);
-  }
-  async login(userName,password) {
-    if(userName === 'undefined' || password === 'undefined'){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.login(userName,password);
-    return result;
-  }
-  async logout(){
-    let bLogoutResult = await OnlineServiceNative.logout();
-    return bLogoutResult;
-  }
 
-  async getDataList(currentPage,pageSize){
-    if(currentPage === undefined ||
-      pageSize === undefined){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.getDataList(currentPage,pageSize);
-    return result;
-  }
+function downloadFile(path, onlineDataName) {
+  // if (Platform.OS === 'ios' && handler) {
+  //   if (typeof handler.onProgress === 'function') {
+  //     callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (obj) {
+  //       console.log("progress:" + obj.progress);
+  //       let downloadId = obj.id;
+  //       if (downloadId === onlineDataName) {
+  //         handler.onProgress(obj.progress);
+  //       }
+  //     })
+  //   }
+  //   if (typeof handler.onResult === 'function') {
+  //     callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (bResult) {
+  //       handler.onResult(bResult);
+  //     })
+  //     callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (strErrorInfo) {
+  //       handler.onResult(strErrorInfo);
+  //     })
+  //   }
+  // }
+  // else if (Platform.OS === 'android' && handler) {
+  //
+  // }
+  OnlineServiceNative.download(path, onlineDataName);
+}
 
-  async getServiceList(currentPage,pageSize){
-    if(currentPage === undefined ||
-      pageSize === undefined){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.getServiceList(currentPage,pageSize);
-    return result;
+async function login(userName, password) {
+  if (userName === 'undefined' || password === 'undefined') {
+    console.log('params have undefined');
+    return;
   }
+  return OnlineServiceNative.login(userName, password);
+}
 
-  async registerWithEmail(email,nickname,password){
-    if(email === undefined ||
-      nickname === undefined ||
-      password === undefined){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.registerWithEmail(email,nickname,password);
-    return result;
-  }
+async function logout() {
+  return OnlineServiceNative.logout();
+}
 
-  async registerWithPhone(phoneNumber,smsVerifyCode,nickname,password){
-    if(phoneNumber === undefined ||
-       smsVerifyCode === undefined ||
-       nickname === undefined ||
-       password === undefined){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.registerWithPhone(phoneNumber,smsVerifyCode,nickname,password);
-    return result;
+async function getDataList(currentPage, pageSize) {
+  if (currentPage === undefined ||
+    pageSize === undefined) {
+    console.log('params have undefined');
+    return;
   }
-  async sendSMSVerifyCode(phoneNumber){
-    if(phoneNumber === undefined ){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.sendSMSVerifyCode(phoneNumber);
-    return result;
-  }
-  async upload(path,fileName){
-    if(path === undefined ||
-      fileName === undefined ){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.upload(path,fileName);
-    return result;
-  }
-  async verifyCodeImage(){
-    let result = await OnlineServiceNative.verifyCodeImage();
-    return result;
-  }
-  async retrievePassword(account,verifyCode,isPhoneAccount){
-    if(account === undefined ||
-      verifyCode === undefined ||
-      isPhoneAccount === undefined ){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.retrievePassword(account,verifyCode,isPhoneAccount);
-    return result;
-  }
-  async retrievePasswordSecond(firstResult){
-    if(firstResult === undefined){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.retrievePasswordSecond(firstResult);
-    return result;
-  }
-  async retrievePasswordThrid(secondResult,safeCode){
-    if(secondResult === undefined ||
-      safeCode === undefined ){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.retrievePasswordThrid(secondResult,safeCode);
-    return result;
-  }
-  async retrievePasswordFourth(thridResult,newPassword){
-    if(thridResult === undefined ||
-      newPassword === undefined){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.retrievePasswordFourth(thridResult,newPassword);
-    return result;
-  }
-  async deleteData(dataName){
-    if(dataName === undefined ){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.deleteData(dataName);
-    return result;
-  }
-  async deleteService(dataName){
-    if(dataName === undefined ){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.deleteService(dataName);
-  }
-  async changeDataVisibility(dataName,isPublic){
-    if(dataName === undefined ||
-      isPublic === undefined ){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.changeDataVisibility(dataName,isPublic);
-    return result;
-  }
-  async changeServiceVisibility(serviceName,isPublic){
-    if(serviceName === undefined ||
-      isPublic === undefined ){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.changeServiceVisibility(serviceName,isPublic);
-    return result;
-  }
-  async getAllUserDataList(currentPage){
-    if(currentPage === undefined ){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.getAllUserDataList(currentPage);
-    return result;
-  }
-  async getAllUserSymbolLibList(currentPage){
-    if(currentPage === undefined ){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.getAllUserSymbolLibList(currentPage);
-    return result;
-  }
+  return OnlineServiceNative.getDataList(currentPage, pageSize);
+}
 
-  async publishService(dataName){
-    if(dataName === undefined){
-      console.log('params have undefined');
-      return;
-    }
-    let result = await OnlineServiceNative.publishService(dataName);
-    return result;
+async function getServiceList(currentPage, pageSize) {
+  if (currentPage === undefined ||
+    pageSize === undefined) {
+    console.log('params have undefined');
+    return;
   }
+  return OnlineServiceNative.getServiceList(currentPage, pageSize);
+}
+
+async function registerWithEmail(email, nickname, password) {
+  if (email === undefined ||
+    nickname === undefined ||
+    password === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.registerWithEmail(email, nickname, password);
+}
+
+async function registerWithPhone(phoneNumber, smsVerifyCode, nickname, password) {
+  if (phoneNumber === undefined ||
+    smsVerifyCode === undefined ||
+    nickname === undefined ||
+    password === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.registerWithPhone(phoneNumber, smsVerifyCode, nickname, password);
+}
+
+async function sendSMSVerifyCode(phoneNumber) {
+  if (phoneNumber === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.sendSMSVerifyCode(phoneNumber);
+}
+
+async function verifyCodeImage() {
+  return OnlineServiceNative.verifyCodeImage();
+}
+
+async function retrievePassword(account, verifyCode, isPhoneAccount) {
+  if (account === undefined ||
+    verifyCode === undefined ||
+    isPhoneAccount === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.retrievePassword(account, verifyCode, isPhoneAccount);
+}
+
+async function retrievePasswordSecond(firstResult) {
+  if (firstResult === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.retrievePasswordSecond(firstResult);
+}
+
+async function retrievePasswordThrid(secondResult, safeCode) {
+  if (secondResult === undefined ||
+    safeCode === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.retrievePasswordThrid(secondResult, safeCode);
+}
+
+async function retrievePasswordFourth(thridResult, newPassword) {
+  if (thridResult === undefined ||
+    newPassword === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.retrievePasswordFourth(thridResult, newPassword);
+}
+
+async function deleteData(dataName) {
+  if (dataName === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.deleteData(dataName);
+}
+
+async function deleteService(dataName) {
+  if (dataName === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.deleteService(dataName);
+}
+
+async function changeDataVisibility(dataName, isPublic) {
+  if (dataName === undefined ||
+    isPublic === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.changeDataVisibility(dataName, isPublic);
+}
+
+async function changeServiceVisibility(serviceName, isPublic) {
+  if (serviceName === undefined ||
+    isPublic === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.changeServiceVisibility(serviceName, isPublic);
+}
+
+async function getAllUserDataList(currentPage) {
+  if (currentPage === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.getAllUserDataList(currentPage);
+}
+
+async function getAllUserSymbolLibList(currentPage) {
+  if (currentPage === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.getAllUserSymbolLibList(currentPage);
+}
+
+async function publishService(dataName) {
+  if (dataName === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.publishService(dataName);
+}
+
+export default {
+  init,
+  uploadFile,
+  downloadFile,
+  objCallBack,
+  login,
+  logout,
+  getDataList,
+  getServiceList,
+  registerWithEmail,
+  registerWithPhone,
+  sendSMSVerifyCode,
+  verifyCodeImage,
+  retrievePassword,
+  retrievePasswordSecond,
+  retrievePasswordThrid,
+  retrievePasswordFourth,
+  deleteData,
+  deleteService,
+  changeDataVisibility,
+  changeServiceVisibility,
+  getAllUserDataList,
+  getAllUserSymbolLibList,
+  publishService,
 }
