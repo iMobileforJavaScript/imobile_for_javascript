@@ -367,20 +367,20 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
         }
     }
 
-//    @ReactMethod
-//    public static void deleteFile(String zippath, Promise promise) {
-//        try {
-//            File file = new File(zippath);
-//            boolean result = false;
-//            if (file.exists()) {
-//                result = file.delete();
-//            }
-//            promise.resolve(result);
-//        }catch (Exception e){
-//            promise.reject(e);
-//        }
-//
-//    }
+    @ReactMethod
+    public static void deleteFile(String zippath, Promise promise) {
+        try {
+            File file = new File(zippath);
+            boolean result = false;
+            if (file.exists()) {
+                result = file.delete();
+            }
+            promise.resolve(result);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+
+    }
 
     //读文件
     @ReactMethod
