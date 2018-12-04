@@ -531,6 +531,14 @@ export default (function () {
            }
       }
 
+      function doZipFiles(fileList,toPath){
+          try {
+              return SScene.doZipFiles(fileList,toPath)
+          } catch (error) {
+            console.error(e);
+          }
+      }
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -613,6 +621,7 @@ export default (function () {
         clearLineAnalyst,
         clearSquareAnalyst,
         removeKMLOfWorkcspace,
+        doZipFiles,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
