@@ -14,7 +14,6 @@ import com.supermap.interfaces.SScene;
 import com.supermap.interfaces.*;
 import com.supermap.interfaces.iServer.SOnlineService;
 import com.supermap.rnsupermap.*;
-import com.supermap.util.SMFileUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;

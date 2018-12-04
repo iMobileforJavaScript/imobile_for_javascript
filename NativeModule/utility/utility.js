@@ -69,3 +69,6 @@ exports.writeFile = async function (filePath,strJson) {
 exports.readFile = async function (filePath) {
     return await util.readFile(filePath);
 }
+exports.doZipFiles = async function (filesList,toPath) {
+  return await util.doZipFiles(filesList,toPath);
+}

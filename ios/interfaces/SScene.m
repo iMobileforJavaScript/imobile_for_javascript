@@ -335,6 +335,18 @@ RCT_REMAP_METHOD(setListener, setListener:(RCTPromiseResolveBlock)resolve reject
         reject(@"Resources", exception.reason, nil);
     }
 }
+
+RCT_REMAP_METHOD(removeKMLOfWorkcspace,  removeKMLOfWorkcspaceResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+       
+        [[LableHelper3D sharedInstance] closePage];
+        // [self openGPS];
+        resolve([NSNumber numberWithBool:@1]);
+    } @catch (NSException *exception) {
+        reject(@"Resources", exception.reason, nil);
+    }
+}
+
 RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sScene = [SScene singletonInstance];
