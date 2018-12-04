@@ -383,6 +383,29 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取工作空间地图列表
+     * @param promise
+     */
+    @ReactMethod
+    public void getMaps(Promise promise) {
+        try {
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            Maps maps = sMap.smMapWC.getWorkspace().getMaps();
+            WritableArray mapList = Arguments.createArray();
+            for (int i = 0; i < maps.getCount(); i++) {
+                WritableMap mapInfo = Arguments.createMap();
+                String mapName = maps.get(i);
+                mapInfo.putString("title", mapName);
+                mapList.pushMap(mapInfo);
+            }
+            promise.resolve(mapList);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 关闭工作空间及地图控件
      *
      * @param promise
@@ -390,7 +413,21 @@ public class SMap extends ReactContextBaseJavaModule {
     @ReactMethod
     public void closeWorkspace(Promise promise) {
         try {
-            getCurrentActivity().runOnUiThread(new DisposeThread(promise));
+//            getCurrentActivity().runOnUiThread(new DisposeThread(promise));
+            sMap = getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            Workspace workspace = sMap.smMapWC.getWorkspace();
+            com.supermap.mapping.Map map = mapControl.getMap();
+
+            map.close();
+            map.dispose();
+//                mapControl.dispose();
+            workspace.close();
+//            workspace.dispose();
+
+//            sMap.smMapWC.setMapControl(null);
+//            sMap.smMapWC.setWorkspace(null);
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -433,11 +470,11 @@ public class SMap extends ReactContextBaseJavaModule {
 
                 map.close();
                 map.dispose();
-                mapControl.dispose();
+//                mapControl.dispose();
                 workspace.close();
                 workspace.dispose();
 
-                sMap.smMapWC.setMapControl(null);
+//                sMap.smMapWC.setMapControl(null);
                 sMap.smMapWC.setWorkspace(null);
                 promise.resolve(true);
             } catch (Exception e) {
