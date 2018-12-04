@@ -425,9 +425,6 @@ public class SScene extends ReactContextBaseJavaModule {
                     map.putString("name", name);
                     map.putBoolean("visible", visible);
                     map.putBoolean("selectable", selectable);
-                    if (i == count - 1) {
-                        map.putBoolean("basemap", true);
-                    }
                     arr.pushMap(map);
                 }
             }

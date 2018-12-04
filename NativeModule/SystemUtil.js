@@ -136,13 +136,13 @@ export default class SystemUtil {
     }
   }
   
-  async unzipFile(zipFile, targetPath) {
+  async unZipFile(zipFile, targetPath) {
     try {
       let reFUlt;
       if (Platform.OS === 'ios') {
-        reFUlt = await ZA.unzipFile(zipFile,targetPath);
+        reFUlt = await ZA.unZipFile(zipFile,targetPath);
       } else {
-        reFUlt = await FU.unzipFile(zipFile,targetPath);
+        reFUlt = await FU.unZipFile(zipFile,targetPath);
       }
       return reFUlt;
     } catch (e) {
@@ -188,6 +188,19 @@ export default class SystemUtil {
         } catch (e) {
             console.error(e);
         }
+    }
+    async doZipFiles(filesList,toPath){
+      try {
+        let reFUlt;
+        if (Platform.OS === 'ios') {
+            reFUlt = await ZA.doZipFiles(filesList,toPath);
+        } else {
+            reFUlt = await FU.doZipFiles(filesList,toPath);
+        }
+        return reFUlt;
+      } catch (error) {
+        console.error(error);
+      }
     }
 }
 

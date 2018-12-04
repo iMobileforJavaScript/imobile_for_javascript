@@ -270,7 +270,6 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public static void zipFile(String archive, String targetPath, Promise promise) throws IOException, FileNotFoundException, ZipException {
-        Log.w("++++++++++++", "zipFile" );
         try {
             ZipOutputStream zipout = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(
                     targetPath), BUFF_SIZE));
@@ -290,7 +289,6 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public static void zipFiles(ReadableArray archives, String targetPath, Promise promise) throws IOException, FileNotFoundException, ZipException {
-        Log.w("++++++++++++", "zipFiles" );
         try {
             ZipOutputStream zipout = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(
                     targetPath), BUFF_SIZE));
@@ -313,14 +311,10 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public static void unZipFile(String archive, String decompressDir, Promise promise) throws IOException, FileNotFoundException, ZipException {
-        Log.e("++++++++++++", "zipzipzipzipzipzipzipzipzipzipzipzip" );
         try {
-
             boolean isUnZiped = false;
             BufferedInputStream bi;
-            Log.e("++++++++++++", "GBKGBKGBKGBKGBKGBKGBKGBKGBKGBKGBKGBK" );
             ZipFile zf = new ZipFile(archive, "GBK");
-            Log.e("++++++++++++", "okokokokokokokokokokokokokokokokokok" );
             Enumeration e = zf.getEntries();
             while (e.hasMoreElements()) {
                 ZipEntry ze2 = (ZipEntry) e.nextElement();
@@ -358,22 +352,35 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
         }
     }
 
-
-
     @ReactMethod
-    public static void deleteFile(String zippath, Promise promise) {
+    public  void doZipFiles(ReadableArray array,String toPath,Promise promise) {
         try {
-            File file = new File(zippath);
-            boolean result = false;
-            if (file.exists()) {
-                result = file.delete();
+            int num=array.size();
+            File[] files=new File[num];
+            for (int i = 0; i < num; i++) {
+                files[i]=new File(array.getString(i));
             }
-            promise.resolve(result);
+            zipFiles(files,toPath);
+            promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
         }
-
     }
+
+//    @ReactMethod
+//    public static void deleteFile(String zippath, Promise promise) {
+//        try {
+//            File file = new File(zippath);
+//            boolean result = false;
+//            if (file.exists()) {
+//                result = file.delete();
+//            }
+//            promise.resolve(result);
+//        }catch (Exception e){
+//            promise.reject(e);
+//        }
+//
+//    }
 
     //读文件
     @ReactMethod
