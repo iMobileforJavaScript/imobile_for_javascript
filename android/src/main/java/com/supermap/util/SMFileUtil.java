@@ -7,6 +7,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
@@ -16,17 +17,25 @@ import org.apache.tools.zip.ZipFile;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.zip.ZipException;
+import java.util.zip.ZipOutputStream;
 
 public class SMFileUtil extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SMFileUtil";
+    private static final int BUFF_SIZE = 1024 * 1024; // 1M Byte
+
     private final String homeDirectory = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 
     public SMFileUtil(ReactApplicationContext context) {
@@ -256,58 +265,49 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
         }
     }
 
-    //    /**
-//     * 文件解压
-//     * @param
-//     * @param
-//     */
-//    @ReactMethod
-//    public static void UnZipFolder(String zipFile, String targetDir, Promise promise){
-//        boolean isUnZiped = false;
-//        java.util.zip.ZipInputStream inZip;
-//        try {
-//
-//            inZip = new java.util.zip.ZipInputStream(new java.io.FileInputStream(zipFile));
-//
-//            java.util.zip.ZipEntry zipEntry;
-//            String szName = "";
-//
-//            while ((zipEntry = inZip.getNextEntry()) != null) {
-//                szName = zipEntry.getName();
-//
-//                if (zipEntry.isDirectory()) {
-//
-//                    java.io.File folder = new java.io.File(targetDir + java.io.File.separator + szName);
-//                    folder.mkdirs();
-//
-//                } else {
-//
-//                    java.io.File file = new java.io.File(targetDir + java.io.File.separator + szName);
-//                    file.createNewFile();
-//                    // get the output stream of the file
-//                    java.io.FileOutputStream out = new java.io.FileOutputStream(file);
-//                    int len;
-//                    byte[] buffer = new byte[1024];
-//                    while ((len = inZip.read(buffer)) != -1) {
-//                        out.write(buffer, 0, len);
-//                        out.flush();
-//                    }
-//                    out.close();
-//                }
-//            }
-//            inZip.close();
-//            isUnZiped = true;
-//            WritableMap map = Arguments.createMap();
-//            map.putBoolean("isUnZiped", isUnZiped);
-//            promise.resolve(map);
-////            File file = new File(zipFile);
-////            file.delete();
-//        } catch (FileNotFoundException e) {
-//            promise.reject(e);
-//        } catch (IOException e) {
-//            promise.reject(e);
-//        }
-//    }
+    @ReactMethod
+    public static void zipFile(String archive, String targetPath, Promise promise) throws IOException, FileNotFoundException, ZipException {
+        Log.w("++++++++++++", "zipFile" );
+        try {
+            ZipOutputStream zipout = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(
+                    targetPath), BUFF_SIZE));
+            Boolean result = true;
+            File file = new File(archive);
+            if (file.exists()) {
+                zipFile(file, zipout, "");
+            } else {
+                result = false;
+            }
+            zipout.close();
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public static void zipFiles(ReadableArray archives, String targetPath, Promise promise) throws IOException, FileNotFoundException, ZipException {
+        Log.w("++++++++++++", "zipFiles" );
+        try {
+            ZipOutputStream zipout = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(
+                    targetPath), BUFF_SIZE));
+            Boolean result = true;
+            for (int i = 0; i < archives.size(); i++) {
+                File file = new File(archives.getString(i));
+                if (file.exists()) {
+                    zipFile(file, zipout, "");
+                } else {
+                    result = false;
+                    break;
+                }
+            }
+            zipout.close();
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     @ReactMethod
     public static void unZipFile(String archive, String decompressDir, Promise promise) throws IOException, FileNotFoundException, ZipException {
         Log.e("++++++++++++", "zipzipzipzipzipzipzipzipzipzipzipzip" );
@@ -349,13 +349,10 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
             }
             zf.close();
             isUnZiped = true;
-//            WritableMap map = Arguments.createMap();
-//            map.putBoolean("isUnZiped", isUnZiped);
             promise.resolve(isUnZiped);
         } catch (Exception e) {
             promise.reject(e);
         }
-
     }
 
     @ReactMethod
@@ -371,6 +368,81 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
 
+    }
+
+    //读文件
+    @ReactMethod
+    public static String readFile(String filePath, Promise promise){
+
+        File file = new File(filePath);
+        if(file.isFile() && file.exists()){
+            try {
+                FileInputStream fileInputStream = new FileInputStream(file);
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                StringBuffer sb = new StringBuffer();
+                String text = null;
+                while((text = bufferedReader.readLine()) != null){
+                    sb.append(text);
+                }
+                promise.resolve(sb.toString());
+
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * 以FileWriter方式写入txt文件。
+     *
+     */
+    @ReactMethod
+    public static void writeToFile(String filePath,String strJson, Promise promise){
+        try {
+
+            File file = new File(filePath);
+            if(file.exists()){
+                FileWriter fw = new FileWriter(file,false);
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(strJson);
+                bw.close();
+                fw.close();
+                promise.resolve(true);
+//                System.out.println("test1 done!");
+            }
+
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+    }
+
+    private static void zipFile(File resFile, ZipOutputStream zipout, String rootpath)
+            throws FileNotFoundException, IOException {
+        rootpath = rootpath + (rootpath.trim().length() == 0 ? "" : File.separator)
+                + resFile.getName();
+        rootpath = new String(rootpath.getBytes("8859_1"), "GB2312");
+        if (resFile.isDirectory()) {
+            File[] fileList = resFile.listFiles();
+            for (File file : fileList) {
+                zipFile(file, zipout, rootpath);
+            }
+        } else {
+            byte buffer[] = new byte[BUFF_SIZE];
+            BufferedInputStream in = new BufferedInputStream(new FileInputStream(resFile),
+                    BUFF_SIZE);
+            zipout.putNextEntry(new java.util.zip.ZipEntry(rootpath));
+            int realLength;
+            while ((realLength = in.read(buffer)) != -1) {
+                zipout.write(buffer, 0, realLength);
+            }
+            in.close();
+            zipout.flush();
+            zipout.closeEntry();
+        }
     }
 
 }

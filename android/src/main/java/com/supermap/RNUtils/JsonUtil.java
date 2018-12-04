@@ -130,6 +130,7 @@ public class JsonUtil {
     private static WritableArray parseRecordset(Recordset recordset, Map<String, Map<String, Object>> fields) {
 //        WritableMap map = Arguments.createMap();
         WritableArray array = Arguments.createArray();
+        ArrayList<WritableMap> list = new ArrayList();
 
         for (Map.Entry<String,  Map<String, Object>> field : fields.entrySet()) {
             WritableMap keyMap = Arguments.createMap();
@@ -198,9 +199,16 @@ public class JsonUtil {
             keyMap.putString("name", name);
 
 //            map.putMap(name, keyMap);
-            array.pushMap(keyMap);
+            if (name.toLowerCase().equals("smid")) {
+                list.add(0, keyMap);
+            } else {
+                list.add(keyMap);
+            }
         }
 
+        for (int i = 0; i < list.size(); i++) {
+            array.pushMap(list.get(i));
+        }
 
         return array;
     }

@@ -102,9 +102,6 @@
 
             [itemWMap setObject:values2[a] forKey:keyName2];
             if([keyName2 isEqualToString:@"type"]){
-//                FieldType type = (FieldType)(((NSString*)values2[a]).intValue);
-
-                
                 NSObject* object = [recordset getFieldValueWithString:keyName];
                 if(object == nil){
                     [keyMap setObject:@"" forKey:@"value"];
@@ -116,7 +113,13 @@
         [keyMap setObject:itemWMap forKey:@"fieldInfo"];
         [keyMap setObject:keyName forKey:@"name"];
         
-        [array addObject:keyMap];
+        if ([keyName.lowercaseString isEqualToString:@"smid"]) {
+            [array insertObject:keyMap atIndex:0];
+        } else {
+            [array addObject:keyMap];
+        }
+        
+        
 //        [map setObject:keyMap forKey:keyName];
     }
     return array;

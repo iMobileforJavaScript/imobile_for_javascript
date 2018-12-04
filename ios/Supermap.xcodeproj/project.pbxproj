@@ -682,6 +682,8 @@
 			isa = PBXGroup;
 			children = (
 				0AD1B25921A6AA54006E1B27 /* Map3DToolKit */,
+				0A332DDC211D623E00F56F26 /* NativeUtil.h */,
+				0A332DDD211D623E00F56F26 /* NativeUtil.m */,
 				D854DA4F2187F5FD0075B5F8 /* SMCollector.h */,
 				D854DA502187F5FD0075B5F8 /* SMCollector.m */,
 				D83F3C40218BDA97001C56BE /* SMMapWC.h */,
@@ -999,8 +1001,6 @@
 				0A332DD9211D623E00F56F26 /* JSWorkspace.m */,
 				0A332DDA211D623E00F56F26 /* JSWorkspaceConnectionInfo.h */,
 				0A332DDB211D623E00F56F26 /* JSWorkspaceConnectionInfo.m */,
-				0A332DDC211D623E00F56F26 /* NativeUtil.h */,
-				0A332DDD211D623E00F56F26 /* NativeUtil.m */,
 				0A332DDE211D623E00F56F26 /* RCTConvert+Action.h */,
 				0A332DDF211D623E00F56F26 /* RCTConvert+Action.m */,
 				0A332DE0211D623E00F56F26 /* RCTConvert+BufferEndType.h */,

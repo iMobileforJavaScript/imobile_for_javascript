@@ -662,7 +662,14 @@ RCT_REMAP_METHOD(findSymbolsByGroups, findSymbolsByGroups:(NSString *)type path:
     [layerInfo setObject:[NSNumber numberWithBool:layer.visible] forKey:@"visible"];
     [layerInfo setObject:[NSNumber numberWithBool:layer.selectable] forKey:@"selectable"];
     
-    [SMap singletonInstance].selection = [layer getSelection];
+    NSString* path = layer.name;
+    while (layer.parentGroup) {
+        path = [NSString stringWithFormat:@"%@/%@", layer.parentGroup.name, path];
+    }
+    [layerInfo setObject:path forKey:@"path"];
+    Recordset* r = [layer.getSelection.getDataset recordset:NO cursorType:STATIC];
+    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:r count:0 size:1];
+//    [SMap singletonInstance].selection = [layer getSelection];
     
     [self sendEventWithName:MAP_GEOMETRY_SELECTED body:@{@"layerInfo":layerInfo,
                                                          @"id":nsId,
