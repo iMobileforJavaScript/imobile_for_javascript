@@ -59,10 +59,10 @@ public class SMCartography {
         }
     }
 
-    public static Recordset getRecordset(int geometryID, int layerIndex) {
+    public static Recordset getRecordset(int geometryID, String layerName) {
         try {
             Layers layers = SMap.getSMWorkspace().getMapControl().getMap().getLayers();
-            Layer layer = layers.get(layerIndex);
+            Layer layer = layers.get(layerName);
             if (layer != null && layer.getDataset() instanceof DatasetVector) {
                 DatasetVector datasetVector = (DatasetVector) layer.getDataset();
                 int[] ids = {geometryID};
@@ -78,12 +78,12 @@ public class SMCartography {
     /**
      * 获取栅格图层设置类
      *
-     * @param layerIndex 图层索引
+     * @param layerName 图层名称
      * @return
      */
-    public static LayerSettingGrid getLayerSettingGrid(int layerIndex) {
+    public static LayerSettingGrid getLayerSettingGrid(String layerName) {
         try {
-            Layer layer = getLayerByIndex(layerIndex);
+            Layer layer = getLayerByName(layerName);
             //判断是否是专题图
             if (layer != null && layer.getTheme() == null) {
                 if (layer.getAdditionalSetting() != null && layer.getAdditionalSetting().getType() == LayerSettingType.GRID) {
@@ -100,10 +100,32 @@ public class SMCartography {
     /**
      * 获取矢量图层设置类
      *
+     * @param layerName 图层名称
+     * @return
+     */
+    public static LayerSettingVector getLayerSettingVector(String layerName) {
+        try {
+            Layer layer = getLayerByName(layerName);
+            //判断是否是专题图
+            if (layer != null && layer.getTheme() == null) {
+                if (layer.getAdditionalSetting() != null && layer.getAdditionalSetting().getType() == LayerSettingType.VECTOR) {
+                    return (LayerSettingVector) layer.getAdditionalSetting();
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 根据图层索引获取矢量图层设置类
+     *
      * @param layerIndex 图层索引
      * @return
      */
-    public static LayerSettingVector getLayerSettingVector(int layerIndex) {
+    public static LayerSettingVector getLayerSettingVectorByIndex(int layerIndex) {
         try {
             Layer layer = getLayerByIndex(layerIndex);
             //判断是否是专题图
@@ -113,6 +135,23 @@ public class SMCartography {
                 }
             }
             return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    /**
+     * 根据图层名称获取图层对象
+     *
+     * @return
+     */
+    public static Layer getLayerByName(String layerName) {
+        try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            Layers layers = mapControl.getMap().getLayers();
+            return layers.get(layerName);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

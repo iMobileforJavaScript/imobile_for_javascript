@@ -63,7 +63,6 @@ class SMSymbolTable extends React.Component {
   }
 
   render() {
-    console.warn(JSON.stringify(this.props.tableStyle))
     return (
       <View
         style={styles.container}

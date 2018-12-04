@@ -2,7 +2,7 @@
  * Created by will on 2016/7/13.
  */
 import { NativeModules, Platform } from 'react-native';
-let SU = NativeModules.JSSystemUtil;
+let FU = NativeModules.SMFileUtil;
 let ZA = NativeModules.JSZipArchive;
 
 /**
@@ -15,7 +15,7 @@ export default class SystemUtil {
    */
   async getHomeDirectory() {
     try {
-      var { homeDirectory } = await SU.getHomeDirectory();
+      var { homeDirectory } = await FU.getHomeDirectory();
       return homeDirectory;
     } catch (e) {
       console.error(e);
@@ -29,7 +29,7 @@ export default class SystemUtil {
    */
   async getDirectoryContent(path) {
     try {
-      let directoryContent = await SU.getDirectoryContent(path);
+      let directoryContent = await FU.getDirectoryContent(path);
       return directoryContent;
     } catch (e) {
       console.error(e);
@@ -43,7 +43,7 @@ export default class SystemUtil {
    */
   async fileIsExist(path) {
     try {
-      let { isExist } = await SU.fileIsExist(path);
+      let { isExist } = await FU.fileIsExist(path);
       return isExist;
     } catch (e) {
       console.error(e);
@@ -57,7 +57,7 @@ export default class SystemUtil {
    */
   async fileIsExistInHomeDirectory(path) {
     try {
-      let { isExist } = await SU.fileIsExistInHomeDirectory(path);
+      let { isExist } = await FU.fileIsExistInHomeDirectory(path);
       return isExist;
     } catch (e) {
       console.error(e);
@@ -71,7 +71,7 @@ export default class SystemUtil {
    */
   async createDirectory(path) {
     try {
-      return await SU.createDirectory(path);
+      return await FU.createDirectory(path);
     } catch (e) {
       console.error(e);
     }
@@ -84,7 +84,7 @@ export default class SystemUtil {
    */
   async getPathList(path) {
     try {
-      let fileList = await SU.getPathList(path);
+      let fileList = await FU.getPathList(path);
       return fileList;
       
     } catch (e) {
@@ -100,7 +100,7 @@ export default class SystemUtil {
    */
   async getPathListByFilter(path, filter) {
     try {
-      let fileList = await SU.getPathListByFilter(path, filter);
+      let fileList = await FU.getPathListByFilter(path, filter);
       return fileList;
       
     } catch (e) {
@@ -115,37 +115,79 @@ export default class SystemUtil {
    */
   async isDirectory(path) {
     try {
-      let result = await SU.isDirectory(path);
-      return result;
+      let reFUlt = await FU.isDirectory(path);
+      return reFUlt;
     } catch (e) {
       console.error(e);
     }
   }
-  async unZipFile(zipfile,targetdir) {
+  
+  async zipFile(filePath, targetDir) {
     try {
-      let result;
+      let reFUlt;
       if (Platform.OS === 'ios') {
-        result = await ZA.unZipFile(zipfile,targetdir);
+        reFUlt = await ZA.zipFile(filePath, targetDir);
       } else {
-        result = await SU.unZipFile(zipfile,targetdir);
+        reFUlt = await FU.zipFile(filePath, targetDir);
       }
-      return result;
+      return reFUlt;
     } catch (e) {
       console.error(e);
     }
   }
-  async deleteFile(zipfile) {
+  
+  async unzipFile(zipFile, targetPath) {
     try {
-      let result;
+      let reFUlt;
       if (Platform.OS === 'ios') {
-        result = await ZA.deleteFile(zipfile);
+        reFUlt = await ZA.unzipFile(zipFile,targetPath);
       } else {
-        result = await SU.deleteFile(zipfile);
+        reFUlt = await FU.unzipFile(zipFile,targetPath);
       }
-      await result;
+      return reFUlt;
     } catch (e) {
       console.error(e);
     }
   }
+  
+  async deleteFile(zipFile) {
+    try {
+      let reFUlt;
+      if (Platform.OS === 'ios') {
+        reFUlt = await ZA.deleteFile(zipFile);
+      } else {
+        reFUlt = await FU.deleteFile(zipFile);
+      }
+      await reFUlt;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+    async readFile(filePath) {
+        try {
+            let {reFUlt} = {};
+            if (Platform.OS === 'ios') {
+                reFUlt = await ZA.readFile(filePath);
+            } else {
+                reFUlt = await FU.readFile(filePath);
+            }
+            return reFUlt;
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    async writeFile(filePath,strJson) {
+        try {
+            let reFUlt;
+            if (Platform.OS === 'ios') {
+                reFUlt = await ZA.writeToFile(filePath,strJson);
+            } else {
+                reFUlt = await FU.writeToFile(filePath,strJson);
+            }
+            return reFUlt;
+        } catch (e) {
+            console.error(e);
+        }
+    }
 }
 

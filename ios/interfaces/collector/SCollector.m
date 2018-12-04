@@ -100,9 +100,10 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
             style = [[GeoStyle alloc] init];
             [style fromJson:styleJson];
         }
-        
+
         if (name != nil && ![name isEqualToString:@""]) {
-            layer = [sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
+            NSString* layerName = [NSString stringWithFormat:@"%@@%@", name, datasourceName];
+            layer = [sMap.smMapWC.mapControl.map.layers getLayerWithName:layerName];
         }
         
         if (layer == nil) {

@@ -63,7 +63,7 @@ SUPERMAP_SIGLETON_DEF(LableHelper3D);
  *
  * @param point
  */
--(void)addCirclePoint:(Point3D)pnt3D;
+-(BOOL)addCirclePoint:(CGPoint)pnt2d;
 /**
  * 清除环绕飞行的点
  */
@@ -72,7 +72,10 @@ SUPERMAP_SIGLETON_DEF(LableHelper3D);
  * 环绕飞行
  */
 -(void)circleFly;
-
+/**
+ * 停止环绕飞行
+ */
+-(void)stopCircleFly;
 /**
  * 返回
  */
@@ -82,7 +85,10 @@ SUPERMAP_SIGLETON_DEF(LableHelper3D);
  * 清除所有标注
  */
 -(void)clearAllLabel;
-
+/**
+ * 清除当前所有标注
+ */
+-(void)clearTrackingLayer;
 /**
  * 保存
  */
@@ -100,5 +106,7 @@ SUPERMAP_SIGLETON_DEF(LableHelper3D);
 - (void)tracking3DEvent:(Tracking3DEvent*)event;
 
 -(void)reset;
+
+-(void)closePage;
 
 @end

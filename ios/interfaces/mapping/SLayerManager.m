@@ -42,4 +42,35 @@ RCT_REMAP_METHOD(setLayerVisible, setLayerVisible:(NSString *)path value:(BOOL)v
         reject(@"LayerManager", exception.reason, nil);
     }
 }
+
+#pragma mark 设置制定名字图层是否可见
+RCT_REMAP_METHOD(getLayerIndex, getLayerIndex:(NSString *)name value:(BOOL)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
+        int index = [map.layers indexOf:name];
+        resolve([NSNumber numberWithInt:index]);
+    } @catch (NSException *exception) {
+        reject(@"LayerManager", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取图层属性
+RCT_REMAP_METHOD(getLayerAttribute, getLayerAttribute:(NSString *)layerPath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSDictionary* dic = [SMLayer getLayerAttribute:layerPath];
+        resolve(dic);
+    } @catch (NSException *exception) {
+        reject(@"LayerManager", exception.reason, nil);
+    }
+}
+
+#pragma mark - 获取Selection中对象的属性
+RCT_REMAP_METHOD(getSelectionAttributeByLayer, getSelectionAttributeByLayer:(NSString *)layerPath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSDictionary* dic = [SMLayer getSelectionAttributeByLayer:layerPath];
+        resolve(dic);
+    } @catch (NSException *exception) {
+        reject(@"LayerManager", exception.reason, nil);
+    }
+}
 @end

@@ -115,6 +115,7 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
             }
             [self openGPS];
+            [sMap.smMapWC.mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         }
     } @catch (NSException *exception) {
@@ -471,6 +472,7 @@ RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name resolver:(RCTPromiseR
         } else {
             result = [[SMap singletonInstance].smMapWC.mapControl.map save:name];
         }
+        result = [[SMap singletonInstance].smMapWC.workspace save];
         
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
@@ -531,7 +533,7 @@ RCT_REMAP_METHOD(removeGeometrySelectedListener, resolver:(RCTPromiseResolveBloc
     }
 }
 
-#pragma mark 制定可编辑图层
+#pragma mark 指定可编辑图层
 RCT_REMAP_METHOD(appointEditGeometry, appointEditGeometryByGeoId:(int)geoId layerName:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
@@ -660,7 +662,14 @@ RCT_REMAP_METHOD(findSymbolsByGroups, findSymbolsByGroups:(NSString *)type path:
     [layerInfo setObject:[NSNumber numberWithBool:layer.visible] forKey:@"visible"];
     [layerInfo setObject:[NSNumber numberWithBool:layer.selectable] forKey:@"selectable"];
     
-    [SMap singletonInstance].selection = [layer getSelection];
+    NSString* path = layer.name;
+    while (layer.parentGroup) {
+        path = [NSString stringWithFormat:@"%@/%@", layer.parentGroup.name, path];
+    }
+    [layerInfo setObject:path forKey:@"path"];
+    Recordset* r = [layer.getSelection.getDataset recordset:NO cursorType:STATIC];
+    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:r count:0 size:1];
+//    [SMap singletonInstance].selection = [layer getSelection];
     
     [self sendEventWithName:MAP_GEOMETRY_SELECTED body:@{@"layerInfo":layerInfo,
                                                          @"id":nsId,

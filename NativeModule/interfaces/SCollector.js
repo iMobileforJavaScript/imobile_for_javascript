@@ -40,9 +40,8 @@ async function setDataset(info = {}) {
     // name = '', type = DatasetType.POINT, datasourceName = 'Collection', datasourcePath = ''
     info.datasetName = info.datasetName || ''
     info.datasetType = info.datasetType || DatasetType.POINT
-    info.datasourcePath = info.datasourcePath || (await Utility.appendingHomeDirectory() + '/iTablet/data/local/')
+    info.datasourcePath = info.datasourcePath || (await Utility.appendingHomeDirectory() + '/iTablet/User/Customer/Data/Datasource/')
     info.datasourceName = info.datasourceName || 'Collection'
-    info.datasourcePath = info.datasourcePath || ''
     info.style = info.style ? JSON.stringify(info.style) : ''
     return Collector.setDataset(info)
   } catch (e) {

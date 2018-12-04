@@ -1,5 +1,9 @@
 package com.supermap.map3D;
 
+import android.os.Bundle;
+import android.os.Message;
+import android.util.Log;
+
 import com.supermap.data.GeoPoint3D;
 import com.supermap.data.GeoStyle3D;
 import com.supermap.data.Point3D;
@@ -39,19 +43,13 @@ public class AnalysisHelper {
 
     public AnalysisHelper initSceneControl(final SceneControl control){
         this.mSceneControl=control;
-        control.addTrackingListener(new Tracking3DListener() {
-            @Override
-            public void tracking(Tracking3DEvent tracking3DEvent) {
-                initAnalysis(control,tracking3DEvent);
-            }
-        });
         return this;
     }
 
-    private void initAnalysis(SceneControl sceneControl, Tracking3DEvent tracking3DEvent){
+    public void initAnalysis(SceneControl sceneControl, Tracking3DEvent tracking3DEvent){
 
         if(sceneControl.getAction() == Action3D.CREATEPOINT3D){
-
+            perspective(tracking3DEvent);
         }else if (sceneControl.getAction() == Action3D.MEASUREDISTANCE3D) {
             measureDistance(tracking3DEvent);
         } else if (sceneControl.getAction() == Action3D.MEASUREAREA3D) {
@@ -76,6 +74,16 @@ public class AnalysisHelper {
      */
     public AnalysisHelper setMeasureAreaCallBack(AreaCallBack areaCallBack){
         this.areaCallBack=areaCallBack;
+        return this;
+    }
+
+    /**
+     * 设置通视回调
+     * @param perspectiveCallBack
+     * @return
+     */
+    public AnalysisHelper setPerspectiveCallBack(PerspectiveCallBack perspectiveCallBack){
+        this.perspectiveCallBack=perspectiveCallBack;
         return this;
     }
 
@@ -179,8 +187,9 @@ public class AnalysisHelper {
             String LocationX = df.format(x);
             String LocationY = df.format(x);
             String LocationZ = df.format(z);
-
-            perspectiveCallBack.perspectiveResult(LocationX,LocationY,LocationZ,count);
+            if(perspectiveCallBack!=null) {
+                perspectiveCallBack.perspectiveResult(LocationX, LocationY, LocationZ, count);
+            }
 
         }
     }
@@ -199,6 +208,9 @@ public class AnalysisHelper {
         void areaResult(double area);
     }
 
+    /**
+     *  通视测量回调
+     */
     public interface PerspectiveCallBack{
         void perspectiveResult(String LocationX, String LocationY, String LocationZ, int count);
     }
