@@ -36,6 +36,7 @@ import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.rnsupermap.JSLayer;
+import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 
@@ -809,6 +810,8 @@ public class SMap extends ReactContextBaseJavaModule {
                     layerInfo.putBoolean("editable", layer.isEditable());
                     layerInfo.putBoolean("visible", layer.isVisible());
                     layerInfo.putBoolean("selectable", layer.isSelectable());
+                    layerInfo.putInt("type", layer.getDataset().getType().value());
+                    layerInfo.putString("path", SMLayer.getLayerPath(layer));
 
                     map.putMap("layerInfo", layerInfo);
                     map.putInt("id", id);
@@ -826,11 +829,18 @@ public class SMap extends ReactContextBaseJavaModule {
                         GeometrySelectedEvent event = events.get(i);
                         int id = event.getGeometryID();
                         Layer layer = event.getLayer();
-                        String layerId = JSLayer.registerId(layer);
 
                         WritableMap map = Arguments.createMap();
-                        map.putString("layerId", layerId);
+                        WritableMap layerInfo = Arguments.createMap();
+
                         map.putInt("id", id);
+                        layerInfo.putString("name", layer.getName());
+                        layerInfo.putString("caption", layer.getCaption());
+                        layerInfo.putBoolean("editable", layer.isEditable());
+                        layerInfo.putBoolean("visible", layer.isVisible());
+                        layerInfo.putBoolean("selectable", layer.isSelectable());
+                        layerInfo.putInt("type", layer.getDataset().getType().value());
+                        layerInfo.putString("path", SMLayer.getLayerPath(layer));
                         array.pushMap(map);
                     }
 

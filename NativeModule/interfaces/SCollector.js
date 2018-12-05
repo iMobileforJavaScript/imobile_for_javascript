@@ -116,9 +116,9 @@ async function addGPSPoint() {
   }
 }
 
-async function remove(id) {
+async function remove(id, layerPath) {
   try {
-    return Collector.remove(id)
+    return Collector.remove(id, layerPath)
   } catch (e) {
     console.error(e)
   }
