@@ -523,6 +523,22 @@ export default (function () {
         }
       }
 
+      function removeKMLOfWorkcspace(){
+           try {
+               return SScene.removeKMLOfWorkcspace()
+           } catch (e) {
+            console.error(e);
+           }
+      }
+
+      function doZipFiles(fileList,toPath){
+          try {
+              return SScene.doZipFiles(fileList,toPath)
+          } catch (error) {
+            console.error(e);
+          }
+      }
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -604,6 +620,8 @@ export default (function () {
         closeAnalysis,
         clearLineAnalyst,
         clearSquareAnalyst,
+        removeKMLOfWorkcspace,
+        doZipFiles,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp

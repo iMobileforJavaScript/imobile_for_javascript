@@ -22,3 +22,5 @@ android/src/.gradle/buildOutputCleanup/cache.properties
 android/src/.gradle/buildOutputCleanup/cache.properties.lock
 android/build.gradle
 android/build.gradle
+ios/Supermap.xcodeproj/project.xcworkspace/xcuserdata/xianglongli.xcuserdatad/
+ios/Supermap.xcodeproj/xcuserdata/xianglongli.xcuserdatad/

@@ -47,7 +47,18 @@ export default (function () {
       console.error(e)
     }
   }
-
+  
+  /**
+   * 获取工作空间地图列表
+   * @returns {*|Promise.<Maps>}
+   */
+  function getMaps() {
+    try {
+      return SMap.getMaps()
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
    * 保存工作空间
@@ -116,7 +127,7 @@ export default (function () {
    * @param center      (option)
    * @returns {*}
    */
-  function openMap(value, viewEntire = true, center = null) {
+  function openMap(value, viewEntire = false, center = null) {
     try {
       if (typeof value === 'number') {
         return SMap.openMapByIndex(value, viewEntire, center)
@@ -527,6 +538,7 @@ export default (function () {
     saveWorkspace,
     closeWorkspace,
     closeMapControl,
+    getMaps,
     setAction,
     openMap,
     saveMap,

@@ -35,7 +35,7 @@ import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.collector.Collector;
-import com.supermap.rnsupermap.JSLayer;
+import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 
@@ -403,6 +403,29 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取工作空间地图列表
+     * @param promise
+     */
+    @ReactMethod
+    public void getMaps(Promise promise) {
+        try {
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            Maps maps = sMap.smMapWC.getWorkspace().getMaps();
+            WritableArray mapList = Arguments.createArray();
+            for (int i = 0; i < maps.getCount(); i++) {
+                WritableMap mapInfo = Arguments.createMap();
+                String mapName = maps.get(i);
+                mapInfo.putString("title", mapName);
+                mapList.pushMap(mapInfo);
+            }
+            promise.resolve(mapList);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 关闭工作空间及地图控件
      *
      * @param promise
@@ -410,7 +433,21 @@ public class SMap extends ReactContextBaseJavaModule {
     @ReactMethod
     public void closeWorkspace(Promise promise) {
         try {
-            getCurrentActivity().runOnUiThread(new DisposeThread(promise));
+//            getCurrentActivity().runOnUiThread(new DisposeThread(promise));
+            sMap = getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            Workspace workspace = sMap.smMapWC.getWorkspace();
+            com.supermap.mapping.Map map = mapControl.getMap();
+
+            map.close();
+            map.dispose();
+//                mapControl.dispose();
+            workspace.close();
+//            workspace.dispose();
+
+//            sMap.smMapWC.setMapControl(null);
+//            sMap.smMapWC.setWorkspace(null);
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -453,11 +490,11 @@ public class SMap extends ReactContextBaseJavaModule {
 
                 map.close();
                 map.dispose();
-                mapControl.dispose();
+//                mapControl.dispose();
                 workspace.close();
                 workspace.dispose();
 
-                sMap.smMapWC.setMapControl(null);
+//                sMap.smMapWC.setMapControl(null);
                 sMap.smMapWC.setWorkspace(null);
                 promise.resolve(true);
             } catch (Exception e) {
@@ -606,13 +643,13 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            boolean result = false;
+            boolean result;
             if (name == null || name.equals("")) {
                 result = map.save();
             } else {
                 result = map.save(name);
             }
-            sMap.smMapWC.getWorkspace().save();
+            result = result && sMap.smMapWC.getWorkspace().save();
 
             promise.resolve(result);
         } catch (Exception e) {
@@ -792,6 +829,8 @@ public class SMap extends ReactContextBaseJavaModule {
                     layerInfo.putBoolean("editable", layer.isEditable());
                     layerInfo.putBoolean("visible", layer.isVisible());
                     layerInfo.putBoolean("selectable", layer.isSelectable());
+                    layerInfo.putInt("type", layer.getDataset().getType().value());
+                    layerInfo.putString("path", SMLayer.getLayerPath(layer));
 
                     map.putMap("layerInfo", layerInfo);
                     map.putInt("id", id);
@@ -809,11 +848,18 @@ public class SMap extends ReactContextBaseJavaModule {
                         GeometrySelectedEvent event = events.get(i);
                         int id = event.getGeometryID();
                         Layer layer = event.getLayer();
-                        String layerId = JSLayer.registerId(layer);
 
                         WritableMap map = Arguments.createMap();
-                        map.putString("layerId", layerId);
+                        WritableMap layerInfo = Arguments.createMap();
+
                         map.putInt("id", id);
+                        layerInfo.putString("name", layer.getName());
+                        layerInfo.putString("caption", layer.getCaption());
+                        layerInfo.putBoolean("editable", layer.isEditable());
+                        layerInfo.putBoolean("visible", layer.isVisible());
+                        layerInfo.putBoolean("selectable", layer.isSelectable());
+                        layerInfo.putInt("type", layer.getDataset().getType().value());
+                        layerInfo.putString("path", SMLayer.getLayerPath(layer));
                         array.pushMap(map);
                     }
 

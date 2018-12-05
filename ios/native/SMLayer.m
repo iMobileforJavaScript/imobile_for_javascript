@@ -124,4 +124,31 @@
     return layer;
 }
 
++ (NSDictionary *)getLayerAttribute:(NSString *)path {
+    Layer* layer = [self findLayerByPath:path];
+    DatasetVector* dv = (DatasetVector *)layer.dataset;
+    
+    Recordset* recordSet = [dv recordset:false cursorType:DYNAMIC];
+    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet count:0 size:1];
+    return dic;
+}
+
++ (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path {
+    Layer* layer = [self findLayerByPath:path];
+    Selection* selection = [layer getSelection];
+    Recordset* recordSet = selection.toRecordset;
+    
+    [recordSet moveFirst];
+    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet count:0 size:1];
+    return dic;
+}
+
++ (NSString *)getLayerPath:(Layer *)layer {
+    NSString* path = layer.name;
+    while (layer.parentGroup != nil) {
+        path = [NSString stringWithFormat:@"%@/%@", layer.parentGroup, path];
+    }
+    return path;
+}
+
 @end

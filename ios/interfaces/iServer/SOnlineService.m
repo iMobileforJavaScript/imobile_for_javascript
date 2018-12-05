@@ -461,7 +461,7 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
 
 - (void)uploadResult:(NSString*)error {
     @try {
-        if (error != nil) {
+        if (error == nil) {
             [self sendEventWithName:ONLINE_SERVICE_UPLOADED
                                body:error];
         } else {
