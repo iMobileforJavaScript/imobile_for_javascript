@@ -625,11 +625,36 @@ public class SMap extends ReactContextBaseJavaModule {
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             boolean result;
             if (name == null || name.equals("")) {
-                result = map.save();
+                if (map.getLayers().getCount() > 0) {
+                    name = map.getLayers().get(0).getName();
+                }
+                result = map.save(name);
             } else {
                 result = map.save(name);
             }
             result = result && sMap.smMapWC.getWorkspace().save();
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 地图另存为
+     * @param name
+     * @param promise
+     */
+    @ReactMethod
+    public void saveAsMap(String name, Promise promise) {
+        try {
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            boolean result = false;
+            if (name != null && !name.equals("")) {
+                result = map.saveAs(name);
+                result = result && sMap.smMapWC.getWorkspace().save();
+            }
 
             promise.resolve(result);
         } catch (Exception e) {

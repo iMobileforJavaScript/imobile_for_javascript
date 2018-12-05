@@ -150,6 +150,19 @@ export default (function () {
       console.error(e)
     }
   }
+  
+  /**
+   * 地图另存为
+   * @param name
+   * @returns {*|*|Promise}
+   */
+  function saveAsMap(name = '') {
+    try {
+      return SMap.saveAsMap(name)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
    * 关闭地图
@@ -528,6 +541,7 @@ export default (function () {
     setAction,
     openMap,
     saveMap,
+    saveAsMap,
     zoom,
     moveToCurrent,
     removeLayer,

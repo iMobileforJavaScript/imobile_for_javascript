@@ -524,12 +524,32 @@ RCT_REMAP_METHOD(submit, submitWithResolver:(RCTPromiseResolveBlock)resolve reje
 RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BOOL result = NO;
+        Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
         if (name == nil || [name isEqualToString:@""]) {
-            result = [[SMap singletonInstance].smMapWC.mapControl.map save];
+            if (map.layers.getCount > 0) {
+                Layer* layer = [map.layers getLayerAtIndex:0];
+                name = layer.name;
+            }
+            result = [map save:name];
         } else {
-            result = [[SMap singletonInstance].smMapWC.mapControl.map save:name];
+            result = [map save:name];
         }
-        result = [[SMap singletonInstance].smMapWC.workspace save];
+        result = result && [[SMap singletonInstance].smMapWC.workspace save];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 地图另存为
+RCT_REMAP_METHOD(saveAsMap, saveAsMapWithName:(NSString *)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BOOL result = NO;
+        if (name != nil && ![name isEqualToString:@""]) {
+            result = [[SMap singletonInstance].smMapWC.mapControl.map saveAs:name];
+            result = result && [[SMap singletonInstance].smMapWC.workspace save];
+        }
         
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
