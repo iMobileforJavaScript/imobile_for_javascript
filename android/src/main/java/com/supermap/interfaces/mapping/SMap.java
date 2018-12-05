@@ -296,6 +296,26 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+
+    /**
+     * 移除指定图层
+     *
+     * @param layerName 默认显示Map 图层名称
+     * @param promise
+     */
+    @ReactMethod
+    public void removeLayerWithName(String layerName, Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smMapWC.getMapControl().getMap().getLayers().remove(layerName);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
     /**
      * 根据名字显示图层
      *
