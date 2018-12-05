@@ -551,7 +551,7 @@ RCT_REMAP_METHOD(saveAsMap, saveAsMapWithName:(NSString *)name resolver:(RCTProm
             result = result && [[SMap singletonInstance].smMapWC.workspace save];
         }
         
-        resolve([NSNumber numberWithBool:result]);
+        resolve([NSNumber numberWithBool:result]);///test test
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
