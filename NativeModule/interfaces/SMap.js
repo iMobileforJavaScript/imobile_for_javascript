@@ -96,6 +96,20 @@ export default (function () {
   }
 
   /**
+   * 移除指定图层
+   * @param params
+   * @param value    图层名称
+   * @returns {*}
+   */
+  function removeLayerWithName(value) {
+    try {
+      return SMap.removeLayerWithName(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    *
    * @param value       序号或名称
    * @param viewEntire  (option)
@@ -536,6 +550,7 @@ export default (function () {
     saveMapToXML,
     openMapFromXML,
     getMapDatasourcesAlias,
+    removeLayerWithName,
   }
   Object.assign(SMapExp, MapTool, LayerManager)
 
