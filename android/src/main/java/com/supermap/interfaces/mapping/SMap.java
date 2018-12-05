@@ -35,7 +35,6 @@ import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.collector.Collector;
-import com.supermap.rnsupermap.JSLayer;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
@@ -624,13 +623,13 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            boolean result = false;
+            boolean result;
             if (name == null || name.equals("")) {
                 result = map.save();
             } else {
                 result = map.save(name);
             }
-            sMap.smMapWC.getWorkspace().save();
+            result = result && sMap.smMapWC.getWorkspace().save();
 
             promise.resolve(result);
         } catch (Exception e) {
