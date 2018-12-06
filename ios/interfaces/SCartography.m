@@ -157,6 +157,26 @@ RCT_REMAP_METHOD(setLineWidth, setLineWidthWithResolver:(int) mm layerName:(NSSt
     }
 }
 
+#pragma 设置线宽：1-10mm(边框符号宽度)
+RCT_REMAP_METHOD(setLineWidthByIndex, setLineWidthByIndexWithResolver:(int) mm layerIndex:(int)layerIndex resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVectorByIndex:layerIndex];
+        if (layerSettingVector != nil) {
+            GeoStyle *style = layerSettingVector.geoStyle;
+            double width = (double) mm / 10;
+            [style setMarkerAngle:width];
+            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            resolve([NSNumber numberWithBool:YES]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
 #pragma 设置线颜色(边框符号颜色)
 RCT_REMAP_METHOD(setLineColor, setLineColorWithResolver:(NSString *) lineColor layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
