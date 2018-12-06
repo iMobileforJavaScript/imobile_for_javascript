@@ -155,11 +155,12 @@ export default (function () {
   /**
    * 保存地图
    * @param name
-   * @returns {*|Promise}
+   * @param autoNaming 为true的话若有相同名字的地图则自动命名
+   * @returns {*}
    */
-  function saveMap(name = '') {
+  function saveMap(name = '', autoNaming = true) {
     try {
-      return SMap.saveMap(name)
+      return SMap.saveMap(name, autoNaming)
     } catch (e) {
       console.error(e)
     }
@@ -545,6 +546,37 @@ export default (function () {
       console.error(e)
     }
   }
+
+  /**
+   * 根据名称/序号关闭数据源
+   * value = '' 或 value = -1 则全部关闭
+   */
+  function closeDatasource(value = ''){
+    try {
+      if (typeof value === 'number') {
+        return SMap.closeDatasourceWithIndex(value)
+      } else if (typeof value === 'string') {
+        return SMap.closeDatasourceWithName(value)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 根据名称/序号关闭数据源
+   * value = '' 或 value = -1 则全部关闭
+   */
+  function workspaceIsModified(){
+    try {
+      return SMap.workspaceIsModified()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  
+  
   let SMapExp = {
     openWorkspace,
     openDatasource,
@@ -577,6 +609,8 @@ export default (function () {
     openMapFromXML,
     getMapDatasourcesAlias,
     removeLayerWithName,
+    closeDatasource,
+    workspaceIsModified,
   }
   Object.assign(SMapExp, MapTool, LayerManager)
 

@@ -181,6 +181,62 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
         reject(@"workspace", exception.reason, nil);
     }
 }
+
+#pragma mark 根据名称关闭数据源，datasourceName为空则全部关闭
+RCT_REMAP_METHOD(closeDatasourceWithName, closeDatasourceByName:(NSString *)datasourceName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    @try {
+        Datasources* dataSources = sMap.smMapWC.workspace.datasources;
+        BOOL isClosed = YES;
+        if (datasourceName == nil || [datasourceName isEqualToString:@""]) {
+            for (int i = 0; i < dataSources.count; i++) {
+                if ([dataSources get:i]) {
+                    isClosed = [dataSources close:i] && isClosed;
+                }
+            }
+        } else {
+            if ([dataSources getAlias:datasourceName]) {
+                isClosed = [dataSources closeAlias:datasourceName];
+            }
+        }
+        resolve([NSNumber numberWithBool:isClosed]);
+    } @catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 根据序号关闭数据源，index = -1 则全部关闭
+RCT_REMAP_METHOD(closeDatasourceWithIndex, closeDatasourceWithIndex:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Datasources* dataSources = sMap.smMapWC.workspace.datasources;
+        BOOL isClosed = YES;
+        if (index == -1) {
+            for (int i = 0; i < dataSources.count; i++) {
+                if ([dataSources get:i]) {
+                    isClosed = [dataSources close:i] && isClosed;
+                }
+            }
+        } else {
+            if ([dataSources get:index]) {
+                isClosed = [dataSources close:index];
+            }
+        }
+        resolve([NSNumber numberWithBool:isClosed]);
+    } @catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 工作空间是否被修改
+RCT_REMAP_METHOD(workspaceIsModified, workspaceIsModifiedWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BOOL result = sMap.smMapWC.workspace.isModified;
+        resolve([NSNumber numberWithBool:result]);
+    }@catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
 #pragma mark 保存工作空间
 RCT_REMAP_METHOD(saveWorkspace, saveWorkspaceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
@@ -522,8 +578,8 @@ RCT_REMAP_METHOD(submit, submitWithResolver:(RCTPromiseResolveBlock)resolve reje
     }
 }
 
-#pragma mark 保存地图
-RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+#pragma mark 保存地图 autoNaming为true的话若有相同名字的地图则自动命名
+RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)autoNaming resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BOOL result = NO;
         Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
@@ -533,7 +589,16 @@ RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name resolver:(RCTPromiseR
             } else if (map.layers.getCount > 0) {
                 Layer* layer = [map.layers getLayerAtIndex:0];
                 name = layer.name;
-                result = [map save:name];
+                if (autoNaming) {
+                    int i = 0;
+                    while (!result) {
+                        NSString* newName = i == 0 ? name : [NSString stringWithFormat:@"%@#%d", name, i];
+                        result = [map save:newName];
+                        i++;
+                    }
+                } else {
+                    result = [map save:name];
+                }
             }
         } else {
             result = [map save:name];
