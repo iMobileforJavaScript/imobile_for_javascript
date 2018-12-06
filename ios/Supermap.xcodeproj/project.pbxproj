@@ -156,6 +156,7 @@
 		0A51675221AD42BA003C77BE /* AnalysisHelper3D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD1B26121A6AA54006E1B27 /* AnalysisHelper3D.m */; };
 		0A51675321AD437D003C77BE /* SMSceneWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */; };
 		0A51675621AF7EF7003C77BE /* MapTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A51675521AF7EF7003C77BE /* MapTool.m */; };
+		0A56919121B7E58300F46C9B /* SMFileUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A56919021B7E58300F46C9B /* SMFileUtil.m */; };
 		0AB00D5621A6C8F800C35E4B /* SMSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB00D5421A6C8F700C35E4B /* SMSymbol.m */; };
 		0AB00D5A21A6C93A00C35E4B /* SMLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB00D5821A6C90F00C35E4B /* SMLayer.m */; };
 		4AA0C2ED21B1316C00614FE4 /* STranslate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AA0C2EB21B1316B00614FE4 /* STranslate.m */; };
@@ -163,7 +164,6 @@
 		4AF967A721B5283A00105B74 /* SCartography.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AF967A621B5283A00105B74 /* SCartography.m */; };
 		D82C65AB214208DC00E9EEC5 /* JSWorkspaceType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */; };
 		D82F377A2189ABEF00F85267 /* SCollectorType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82F37792189ABEF00F85267 /* SCollectorType.m */; };
-		D83170CD21A39A5800DB5DC0 /* SMFileUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = D83170CB21A39A5800DB5DC0 /* SMFileUtil.m */; };
 		D835E5B0219EC726008910F0 /* SLayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D835E5AF219EC726008910F0 /* SLayerManager.m */; };
 		D83F3C42218BDA97001C56BE /* SMMapWC.m in Sources */ = {isa = PBXBuildFile; fileRef = D83F3C41218BDA97001C56BE /* SMMapWC.m */; };
 		D854D86D218310760075B5F8 /* SMap.m in Sources */ = {isa = PBXBuildFile; fileRef = D854D868218310720075B5F8 /* SMap.m */; };
@@ -489,6 +489,8 @@
 		0A332DE9211D623E00F56F26 /* SceneViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SceneViewManager.m; sourceTree = "<group>"; };
 		0A51675421AF7EF7003C77BE /* MapTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapTool.h; sourceTree = "<group>"; };
 		0A51675521AF7EF7003C77BE /* MapTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapTool.m; sourceTree = "<group>"; };
+		0A56918F21B7E58300F46C9B /* SMFileUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFileUtil.h; sourceTree = "<group>"; };
+		0A56919021B7E58300F46C9B /* SMFileUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFileUtil.m; sourceTree = "<group>"; };
 		0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSceneWC.m; sourceTree = "<group>"; };
 		0A6DE64121A2CC4000CD27EA /* SMSceneWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSceneWC.h; sourceTree = "<group>"; };
 		0AB00D5421A6C8F700C35E4B /* SMSymbol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSymbol.m; sourceTree = "<group>"; };
@@ -517,8 +519,6 @@
 		D82C65AA214208DB00E9EEC5 /* JSWorkspaceType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSWorkspaceType.h; sourceTree = "<group>"; };
 		D82F37782189ABEF00F85267 /* SCollectorType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SCollectorType.h; sourceTree = "<group>"; };
 		D82F37792189ABEF00F85267 /* SCollectorType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCollectorType.m; sourceTree = "<group>"; };
-		D83170CB21A39A5800DB5DC0 /* SMFileUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFileUtil.m; sourceTree = "<group>"; };
-		D83170CC21A39A5800DB5DC0 /* SMFileUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFileUtil.h; sourceTree = "<group>"; };
 		D835E5AE219EC726008910F0 /* SLayerManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SLayerManager.h; sourceTree = "<group>"; };
 		D835E5AF219EC726008910F0 /* SLayerManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SLayerManager.m; sourceTree = "<group>"; };
 		D83F3C40218BDA97001C56BE /* SMMapWC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMapWC.h; sourceTree = "<group>"; };
@@ -638,8 +638,8 @@
 		D83170CA21A399FC00DB5DC0 /* utils */ = {
 			isa = PBXGroup;
 			children = (
-				D83170CC21A39A5800DB5DC0 /* SMFileUtil.h */,
-				D83170CB21A39A5800DB5DC0 /* SMFileUtil.m */,
+				0A56918F21B7E58300F46C9B /* SMFileUtil.h */,
+				0A56919021B7E58300F46C9B /* SMFileUtil.m */,
 				4AA0C2EC21B1316C00614FE4 /* STranslate.h */,
 				4AA0C2EB21B1316B00614FE4 /* STranslate.m */,
 			);
@@ -1118,7 +1118,6 @@
 				D8DD420F21748894009D80E9 /* JSSymbolGroup.m in Sources */,
 				0A51675121AD42B8003C77BE /* FlyHelper3D.m in Sources */,
 				0A332E31211D623E00F56F26 /* JSNavigation.m in Sources */,
-				D83170CD21A39A5800DB5DC0 /* SMFileUtil.m in Sources */,
 				0A332E07211D623E00F56F26 /* JSDatasetType.m in Sources */,
 				0A332DEA211D623E00F56F26 /* JSAction.m in Sources */,
 				0A332E5C211D623E00F56F26 /* JSTheme.m in Sources */,
@@ -1154,6 +1153,7 @@
 				0A332E69211D623E00F56F26 /* JSWeightFieldInfo.m in Sources */,
 				0A332E4F211D623E00F56F26 /* JSServiceQueryParameter.m in Sources */,
 				0A332E6C211D623E00F56F26 /* JSWorkspaceConnectionInfo.m in Sources */,
+				0A56919121B7E58300F46C9B /* SMFileUtil.m in Sources */,
 				0A332E56211D623E00F56F26 /* JSSupplyCenters.m in Sources */,
 				0A332E22211D623E00F56F26 /* JSLayerManager.m in Sources */,
 				0A332E58211D623E00F56F26 /* JSSystemUtil.m in Sources */,
