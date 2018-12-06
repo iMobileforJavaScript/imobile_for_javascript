@@ -13,6 +13,7 @@
 +(Recordset *)getRecordset:(int )geometryID layerName:(NSString *)layerName;
 +(LayerSettingGrid *)getLayerSettingGrid:(NSString*)layerName;
 +(LayerSettingVector *)getLayerSettingVector:(NSString*)layerName;
++(LayerSettingVector *)getLayerSettingVectorByIndex:(int)index;
 +(Layer *)getLayerByName:(NSString*)layerName;
 +(Layer *)getLayerByIndex:(int)layerIndex;
 
