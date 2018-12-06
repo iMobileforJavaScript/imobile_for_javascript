@@ -124,6 +124,25 @@
     }
 }
 
++(LayerSettingVector *)getLayerSettingVectorByIndex:(int)index{
+    @try{
+        Layer *layer = [self getLayerByIndex:index];
+        if (layer != nil && layer.theme == nil) {
+            if(layer.layerSetting != nil && layer.layerSetting.layerType == VECTOR)
+            {
+                return (LayerSettingVector* )layer.layerSetting;
+            }
+            else
+            {
+                return nil;
+            }
+        }
+    }
+    @catch(NSException *exception){
+        @throw exception;
+    }
+}
+
 +(Layer *)getLayerByName:(NSString*)layerName{
     @try{
         MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;

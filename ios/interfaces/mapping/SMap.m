@@ -524,14 +524,34 @@ RCT_REMAP_METHOD(submit, submitWithResolver:(RCTPromiseResolveBlock)resolve reje
 RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BOOL result = NO;
+        Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
         if (name == nil || [name isEqualToString:@""]) {
-            result = [[SMap singletonInstance].smMapWC.mapControl.map save];
+            if (map.layers.getCount > 0) {
+                Layer* layer = [map.layers getLayerAtIndex:0];
+                name = layer.name;
+            }
+            result = [map save:name];
         } else {
-            result = [[SMap singletonInstance].smMapWC.mapControl.map save:name];
+            result = [map save:name];
         }
-        result = [[SMap singletonInstance].smMapWC.workspace save];
+        result = result && [[SMap singletonInstance].smMapWC.workspace save];
         
         resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 地图另存为
+RCT_REMAP_METHOD(saveAsMap, saveAsMapWithName:(NSString *)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BOOL result = NO;
+        if (name != nil && ![name isEqualToString:@""]) {
+            result = [[SMap singletonInstance].smMapWC.mapControl.map saveAs:name];
+            result = result && [[SMap singletonInstance].smMapWC.workspace save];
+        }
+        
+        resolve([NSNumber numberWithBool:result]);///test test
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
@@ -718,14 +738,11 @@ RCT_REMAP_METHOD(findSymbolsByGroups, findSymbolsByGroups:(NSString *)type path:
     [layerInfo setObject:[NSNumber numberWithBool:layer.editable] forKey:@"editable"];
     [layerInfo setObject:[NSNumber numberWithBool:layer.visible] forKey:@"visible"];
     [layerInfo setObject:[NSNumber numberWithBool:layer.selectable] forKey:@"selectable"];
+    [layerInfo setObject:[NSNumber numberWithInteger:layer.dataset.datasetType] forKey:@"type"];
+    [layerInfo setObject:[SMLayer getLayerPath:layer] forKey:@"path"];
     
-    NSString* path = layer.name;
-    while (layer.parentGroup) {
-        path = [NSString stringWithFormat:@"%@/%@", layer.parentGroup.name, path];
-    }
-    [layerInfo setObject:path forKey:@"path"];
-    Recordset* r = [layer.getSelection.getDataset recordset:NO cursorType:STATIC];
-    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:r count:0 size:1];
+//    Recordset* r = [layer.getSelection.getDataset recordset:NO cursorType:STATIC];
+//    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:r count:0 size:1];
 //    [SMap singletonInstance].selection = [layer getSelection];
     
     [self sendEventWithName:MAP_GEOMETRY_SELECTED body:@{@"layerInfo":layerInfo,
@@ -737,12 +754,13 @@ RCT_REMAP_METHOD(findSymbolsByGroups, findSymbolsByGroups:(NSString *)type path:
     NSMutableArray* layersIdAndIds = [[NSMutableArray alloc]initWithCapacity:10];
     for (id layerAndId in layersAndIds) {
         if ([layerAndId isKindOfClass:[NSArray class]] && [layerAndId[0] isKindOfClass:[Layer class]]) {
-            Layer*layer = layerAndId[0];
+            Layer* layer = layerAndId[0];
             NSMutableDictionary *layerInfo = [[NSMutableDictionary alloc] init];
             [layerInfo setObject:layer.name forKey:@"name"];
             [layerInfo setObject:[NSNumber numberWithBool:layer.editable] forKey:@"editable"];
             [layerInfo setObject:[NSNumber numberWithBool:layer.visible] forKey:@"visible"];
             [layerInfo setObject:[NSNumber numberWithBool:layer.selectable] forKey:@"selectable"];
+            [layerInfo setObject:[SMLayer getLayerPath:layer] forKey:@"path"];
             [layersIdAndIds addObject:@[layerInfo, layerAndId[1]]];
         }
     }

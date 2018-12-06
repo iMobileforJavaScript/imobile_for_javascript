@@ -35,7 +35,7 @@ import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.collector.Collector;
-import com.supermap.rnsupermap.JSLayer;
+import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 
@@ -295,6 +295,26 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+
+    /**
+     * 移除指定图层
+     *
+     * @param layerName 默认显示Map 图层名称
+     * @param promise
+     */
+    @ReactMethod
+    public void removeLayerWithName(String layerName, Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smMapWC.getMapControl().getMap().getLayers().remove(layerName);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
     /**
      * 根据名字显示图层
@@ -623,13 +643,38 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            boolean result = false;
+            boolean result;
             if (name == null || name.equals("")) {
-                result = map.save();
+                if (map.getLayers().getCount() > 0) {
+                    name = map.getLayers().get(0).getName();
+                }
+                result = map.save(name);
             } else {
                 result = map.save(name);
             }
-            sMap.smMapWC.getWorkspace().save();
+            result = result && sMap.smMapWC.getWorkspace().save();
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 地图另存为
+     * @param name
+     * @param promise
+     */
+    @ReactMethod
+    public void saveAsMap(String name, Promise promise) {
+        try {
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            boolean result = false;
+            if (name != null && !name.equals("")) {
+                result = map.saveAs(name);
+                result = result && sMap.smMapWC.getWorkspace().save();
+            }
 
             promise.resolve(result);
         } catch (Exception e) {
@@ -809,6 +854,8 @@ public class SMap extends ReactContextBaseJavaModule {
                     layerInfo.putBoolean("editable", layer.isEditable());
                     layerInfo.putBoolean("visible", layer.isVisible());
                     layerInfo.putBoolean("selectable", layer.isSelectable());
+                    layerInfo.putInt("type", layer.getDataset().getType().value());
+                    layerInfo.putString("path", SMLayer.getLayerPath(layer));
 
                     map.putMap("layerInfo", layerInfo);
                     map.putInt("id", id);
@@ -826,11 +873,18 @@ public class SMap extends ReactContextBaseJavaModule {
                         GeometrySelectedEvent event = events.get(i);
                         int id = event.getGeometryID();
                         Layer layer = event.getLayer();
-                        String layerId = JSLayer.registerId(layer);
 
                         WritableMap map = Arguments.createMap();
-                        map.putString("layerId", layerId);
+                        WritableMap layerInfo = Arguments.createMap();
+
                         map.putInt("id", id);
+                        layerInfo.putString("name", layer.getName());
+                        layerInfo.putString("caption", layer.getCaption());
+                        layerInfo.putBoolean("editable", layer.isEditable());
+                        layerInfo.putBoolean("visible", layer.isVisible());
+                        layerInfo.putBoolean("selectable", layer.isSelectable());
+                        layerInfo.putInt("type", layer.getDataset().getType().value());
+                        layerInfo.putString("path", SMLayer.getLayerPath(layer));
                         array.pushMap(map);
                     }
 

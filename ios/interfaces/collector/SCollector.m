@@ -27,6 +27,7 @@
 #import "SuperMap/PrjCoordSys.h"
 #import "SuperMap/PrjCoordSysType.h"
 #import "SuperMap/Recordset.h"
+#import "SMLayer.h"
 
 @implementation SCollector
 RCT_EXPORT_MODULE();
@@ -276,10 +277,12 @@ RCT_REMAP_METHOD(closeGPS, closeGPSWesolver:(RCTPromiseResolveBlock)resolve reje
 }
 
 #pragma mark 关闭GPS
-RCT_REMAP_METHOD(remove, removeById:(int)geoId closeGPSWesolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(remove, removeById:(int)geoId layerPath:(NSString *)layerPath closeGPSWesolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
-        Recordset* recordset = sMap.selection.toRecordset;
+        Layer* layer = [SMLayer findLayerByPath: layerPath];
+        
+        Recordset* recordset = layer.getSelection.toRecordset;
         [recordset seekID:geoId];
         bool result = [recordset delete];
         

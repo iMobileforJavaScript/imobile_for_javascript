@@ -15,6 +15,7 @@ import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Map;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMCollector;
+import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 
 public class SCollector extends ReactContextBaseJavaModule {
@@ -306,10 +307,11 @@ public class SCollector extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void remove(int id, Promise promise) {
+    public void remove(int id, String layerPath, Promise promise) {
         try {
             SMap sMap = SMap.getInstance();
-            Recordset recordset = sMap.getSelection().toRecordset();
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+            Recordset recordset = layer.getSelection().toRecordset();
             recordset.seekID(id);
             boolean result = recordset.delete();
             sMap.getSmMapWC().getMapControl().getMap().refresh();

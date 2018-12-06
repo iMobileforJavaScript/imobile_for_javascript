@@ -107,6 +107,20 @@ export default (function () {
   }
 
   /**
+   * 移除指定图层
+   * @param params
+   * @param value    图层名称
+   * @returns {*}
+   */
+  function removeLayerWithName(value) {
+    try {
+      return SMap.removeLayerWithName(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    *
    * @param value       序号或名称
    * @param viewEntire  (option)
@@ -146,6 +160,19 @@ export default (function () {
   function saveMap(name = '') {
     try {
       return SMap.saveMap(name)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 地图另存为
+   * @param name
+   * @returns {*|*|Promise}
+   */
+  function saveAsMap(name = '') {
+    try {
+      return SMap.saveAsMap(name)
     } catch (e) {
       console.error(e)
     }
@@ -528,6 +555,7 @@ export default (function () {
     setAction,
     openMap,
     saveMap,
+    saveAsMap,
     zoom,
     moveToCurrent,
     removeLayer,
@@ -548,6 +576,7 @@ export default (function () {
     saveMapToXML,
     openMapFromXML,
     getMapDatasourcesAlias,
+    removeLayerWithName,
   }
   Object.assign(SMapExp, MapTool, LayerManager)
 

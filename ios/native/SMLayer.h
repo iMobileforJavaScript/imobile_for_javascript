@@ -25,4 +25,6 @@
 + (NSDictionary *)getLayerAttribute:(NSString *)path;
 + (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path ids:(NSArray *)ids;
 + (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path;
++ (Layer *)findLayerByPath:(NSString *)path;
++ (NSString *)getLayerPath:(Layer *)layer;
 @end
