@@ -12,12 +12,15 @@
 
 - (BOOL)openWorkspace:(NSDictionary*)infoDic {
     @try {
-        WorkspaceConnectionInfo* info = [[WorkspaceConnectionInfo alloc] init];
-        info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
-        
-        bool openWsResult = [_workspace open:info];
-       // _workspace = 
-        [info dispose];
+        bool openWsResult = YES;
+        if (infoDic && [infoDic objectForKey:@"server"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
+            WorkspaceConnectionInfo* info = [[WorkspaceConnectionInfo alloc] init];
+            info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
+            
+            openWsResult = [_workspace open:info];
+            // _workspace =
+            [info dispose];
+        }
         
         return openWsResult;
     } @catch (NSException *exception) {
@@ -27,8 +30,14 @@
 
 - (Datasource *)openDatasource:(NSDictionary*)params{
     @try {
+        if (!params) {
+            return nil;
+        }
         DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
-        if(params&&info){
+        Datasource* tempDs = [params objectForKey:@"alias"] ? [_workspace.datasources getAlias:[params objectForKey:@"alias"]] : nil;
+        BOOL isOpen = tempDs && [params objectForKey:@"server"] && [tempDs.datasourceConnectionInfo.server isEqualToString:[params objectForKey:@"server"]];
+        Datasource* dataSource = nil;
+        if (!isOpen) {
             NSArray* keyArr = [params allKeys];
             BOOL bDefault = YES;
             if ([keyArr containsObject:@"alias"]){
@@ -48,9 +57,9 @@
                 }
             }
             
-            if([_workspace.datasources indexOf:info.alias]!=-1){
-                [_workspace.datasources closeAlias:info.alias];
-            }
+//            if([_workspace.datasources indexOf:info.alias] != -1){
+//                [_workspace.datasources closeAlias:info.alias];
+//            }
             if ([keyArr containsObject:@"driver"]) info.driver = [params objectForKey:@"driver"];
             if ([keyArr containsObject:@"user"]) info.user = [params objectForKey:@"user"];
             if ([keyArr containsObject:@"readOnly"]) info.readOnly = ((NSNumber*)[params objectForKey:@"readOnly"]).boolValue;
@@ -64,10 +73,10 @@
             //                Rectangle2D* rect2d = [JSObjManager getObjWithKey:[params objectForKey:@"webBBox"]];
             //                info.webBBox = rect2d;
             //            }
-            Datasource* dataSource = [_workspace.datasources open:info];
+            dataSource = [_workspace.datasources open:info];
             [info dispose];
-            return dataSource;
         }
+        return dataSource;
     } @catch (NSException *exception) {
         @throw exception;
     }
