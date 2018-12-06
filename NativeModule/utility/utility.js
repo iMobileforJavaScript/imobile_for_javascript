@@ -67,12 +67,15 @@ exports.unZipFile = async function (zipFile, targetDir) {
 exports.deleteFile = async function (file) {
   return await util.deleteFile(file);
 }
+
 exports.writeFile = async function (filePath,strJson) {
     return await util.writeFile(filePath,strJson);
 }
+
 exports.readFile = async function (filePath) {
     return await util.readFile(filePath);
 }
+
 exports.doZipFiles = async function (filesList,toPath) {
   return await util.doZipFiles(filesList,toPath);
 }
