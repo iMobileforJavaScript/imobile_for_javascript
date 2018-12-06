@@ -331,6 +331,8 @@ public class SMap extends ReactContextBaseJavaModule {
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             Maps maps = sMap.smMapWC.getWorkspace().getMaps();
 
+            Boolean isOpen = false;
+
             if (maps.getCount() > 0) {
                 String mapName = name;
 
@@ -338,7 +340,7 @@ public class SMap extends ReactContextBaseJavaModule {
                     mapName = maps.get(0);
                 }
 
-                map.open(mapName);
+                isOpen = map.open(mapName);
 
                 if (viewEntire) {
                     map.viewEntire();
@@ -356,7 +358,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 map.refresh();
             }
 
-            promise.resolve(true);
+            promise.resolve(isOpen);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -643,12 +645,14 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            boolean result;
+            boolean result = false;
             if (name == null || name.equals("")) {
-                if (map.getLayers().getCount() > 0) {
+                if (map.getName() != null && !map.getName().equals("")) {
+                    result = map.save();
+                } else if (map.getLayers().getCount() > 0) {
                     name = map.getLayers().get(0).getName();
+                    result = map.save(name);
                 }
-                result = map.save(name);
             } else {
                 result = map.save(name);
             }

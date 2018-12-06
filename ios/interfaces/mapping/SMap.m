@@ -236,6 +236,8 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
         Map* map = sMap.smMapWC.mapControl.map;
         Maps* maps = sMap.smMapWC.workspace.maps;
         
+        BOOL isOpen = NO;
+        
         if (![map.name isEqualToString:name] && maps.count > 0) {
             NSString* mapName = name;
             
@@ -244,7 +246,7 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
                 [map open: mapName];
             }
             if (![name isKindOfClass:[NSNull class]] && name.length) {
-                [map open: mapName];
+                isOpen = [map open: mapName];
             }
             if (viewEntire == YES) {
                 [map viewEntire];
@@ -264,7 +266,7 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
             [map refresh];
         }
         
-        resolve([NSNumber numberWithBool:YES]);
+        resolve([NSNumber numberWithBool:isOpen]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
@@ -526,11 +528,13 @@ RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name resolver:(RCTPromiseR
         BOOL result = NO;
         Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
         if (name == nil || [name isEqualToString:@""]) {
-            if (map.layers.getCount > 0) {
+            if (map.name && ![map.name isEqualToString:@""]) {
+                result = [map save];
+            } else if (map.layers.getCount > 0) {
                 Layer* layer = [map.layers getLayerAtIndex:0];
                 name = layer.name;
+                result = [map save:name];
             }
-            result = [map save:name];
         } else {
             result = [map save:name];
         }
