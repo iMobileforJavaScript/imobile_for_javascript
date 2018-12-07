@@ -12,18 +12,18 @@ import {
   View,
   StyleSheet,
   Image,
-  NativeModules,
-  PixelRatio, /*像素转换工具*/
+  // NativeModules,
+  // PixelRatio, /*像素转换工具*/
   ViewPropTypes,
 } from 'react-native';
 import MapView from '../MapView.js';
-import Point2D from '../Point2D.js';
+// import Point2D from '../Point2D.js';
 import Point from '../Point.js';
 let resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
 /*解析静态图片工具*/
-let MC = NativeModules.JSMapControl;
-let MV = NativeModules.JSMapView;
-let SMap = NativeModules.SMap;
+// let MC = NativeModules.JSMapControl;
+// let MV = NativeModules.JSMapView;
+// let SMap = NativeModules.SMap;
 /**
  * ServerMapView视图标签，提供onGetInstance属性，该属性值的类型为函数，
  * 且函数参数为从Native层返回的MapViewId，在使用该标签时，必须通过此属性获得MapViewId
@@ -169,7 +169,8 @@ class SMMapView extends Component {
 
     return (
       <View style={styles.views}>
-        <RCTMapView {...props} style={styles.map} onChange={this._onChange}></RCTMapView>
+        <View style={{height: 0, width: '100%'}} />
+        <RCTMapView {...props} style={styles.map} onChange={this._onChange} />
         { !this.state.callouts ||
         this.state.callouts.filter(function (item) {
           if (!item.uri) {
@@ -190,6 +191,7 @@ class SMMapView extends Component {
           }></Image>
         })
         }
+        <View style={{height: 0, width: '100%'}} />
       </View>
     );
   }
@@ -215,6 +217,7 @@ var styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
+    flexDirection: 'column',
   },
   map: {
     flex: 1,
