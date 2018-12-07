@@ -1,4 +1,4 @@
-package com.supermap.util;
+package com.supermap.interfaces;
 
 import android.util.Log;
 
@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.RNUtils.FileUtil;
 
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipFile;
@@ -34,7 +35,9 @@ import java.util.zip.ZipOutputStream;
 
 public class SMFileUtil extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SMFileUtil";
-    private static final int BUFF_SIZE = 1024 * 1024; // 1M Byte
+//    private static final int BUFF_SIZE = 1024 * 1024; // 1M Byte
+    private final static String TAG = "ZipHelper";
+    private final static int BUFF_SIZE = 2048;
 
     private final String homeDirectory = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 
@@ -267,7 +270,6 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public static void zipFile(String archive, String targetPath, Promise promise) throws IOException, FileNotFoundException, ZipException {
-        Log.w("++++++++++++", "zipFile" );
         try {
             ZipOutputStream zipout = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(
                     targetPath), BUFF_SIZE));
@@ -287,7 +289,6 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public static void zipFiles(ReadableArray archives, String targetPath, Promise promise) throws IOException, FileNotFoundException, ZipException {
-        Log.w("++++++++++++", "zipFiles" );
         try {
             ZipOutputStream zipout = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(
                     targetPath), BUFF_SIZE));
@@ -310,14 +311,10 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public static void unZipFile(String archive, String decompressDir, Promise promise) throws IOException, FileNotFoundException, ZipException {
-        Log.e("++++++++++++", "zipzipzipzipzipzipzipzipzipzipzipzip" );
         try {
-
             boolean isUnZiped = false;
             BufferedInputStream bi;
-            Log.e("++++++++++++", "GBKGBKGBKGBKGBKGBKGBKGBKGBKGBKGBKGBK" );
             ZipFile zf = new ZipFile(archive, "GBK");
-            Log.e("++++++++++++", "okokokokokokokokokokokokokokokokokok" );
             Enumeration e = zf.getEntries();
             while (e.hasMoreElements()) {
                 ZipEntry ze2 = (ZipEntry) e.nextElement();
@@ -351,6 +348,21 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
             isUnZiped = true;
             promise.resolve(isUnZiped);
         } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public static void doZipFiles(ReadableArray array,String toPath,Promise promise) {
+        try {
+            int num=array.size();
+            File[] files=new File[num];
+            for (int i = 0; i < num; i++) {
+                files[i]=new File(array.getString(i));
+            }
+            zipFiles(files,toPath);
+            promise.resolve(true);
+        }catch (Exception e){
             promise.reject(e);
         }
     }
@@ -442,6 +454,74 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
             in.close();
             zipout.flush();
             zipout.closeEntry();
+        }
+    }
+
+
+    public static boolean zipFiles(File fs[], String zipFilePath) {
+        if (fs == null) {
+            throw new NullPointerException("fs == null");
+        }
+        boolean result = false;
+        org.apache.tools.zip.ZipOutputStream zos = null;
+        try {
+            zos = new org.apache.tools.zip.ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFilePath)));
+            for (File file : fs) {
+                if (file == null || !file.exists()) {
+                    continue;
+                }
+                if (file.isDirectory()) {
+                    recursionZip(zos, file, file.getName() + File.separator);
+                } else {
+                    recursionZip(zos, file, "");
+                }
+            }
+            result = true;
+            zos.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "zip file failed err: " + e.getMessage());
+        } finally {
+            try {
+                if (zos != null) {
+                    zos.closeEntry();
+                    zos.close();
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+
+    private static void recursionZip(org.apache.tools.zip.ZipOutputStream zipOut, File file, String baseDir) throws Exception {
+        if (file.isDirectory()) {
+            Log.i(TAG, "the file is dir name -->>" + file.getName() + " the baseDir-->>>" + baseDir);
+            File[] files = file.listFiles();
+            for (File fileSec : files) {
+                if (fileSec == null) {
+                    continue;
+                }
+                if (fileSec.isDirectory()) {
+                    baseDir = file.getName() + File.separator + fileSec.getName() + File.separator;
+                    Log.i(TAG, "basDir111-->>" + baseDir);
+                    recursionZip(zipOut, fileSec, baseDir);
+                } else {
+                    Log.i(TAG, "basDir222-->>" + baseDir);
+                    recursionZip(zipOut, fileSec, baseDir);
+                }
+            }
+        } else {
+            Log.i(TAG, "the file name is -->>" + file.getName() + " the base dir -->>" + baseDir);
+            byte[] buf = new byte[BUFF_SIZE];
+            InputStream input = new BufferedInputStream(new FileInputStream(file));
+            zipOut.putNextEntry(new ZipEntry(baseDir + file.getName()));
+            int len;
+            while ((len = input.read(buf)) != -1) {
+                zipOut.write(buf, 0, len);
+            }
+            input.close();
         }
     }
 

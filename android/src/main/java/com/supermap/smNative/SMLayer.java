@@ -173,4 +173,12 @@ public class SMLayer {
         WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, 1);
         return recordArray;
     }
+
+    public static String getLayerPath(Layer layer) {
+        String path = layer.getName();
+        while (layer.getParentGroup() != null) {
+            path = layer.getParentGroup().getName() + "/" + path;
+        }
+        return path;
+    }
 }

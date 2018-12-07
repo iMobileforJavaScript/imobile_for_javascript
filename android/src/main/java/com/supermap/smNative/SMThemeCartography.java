@@ -9,6 +9,7 @@ import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
+import com.supermap.mapping.RangeMode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -389,4 +390,37 @@ public class SMThemeCartography {
 
     }
 
+    /**
+     * 获取分段模式
+     * @param mode
+     * @return RangeMode
+     */
+    public static RangeMode getRangeMode(String mode) {
+        switch (mode) {
+            case "CUSTOMINTERVAL":
+                //自定义分段
+                return RangeMode.CUSTOMINTERVAL;
+            case "EQUALINTERVAL":
+                //等距离分段
+                return RangeMode.EQUALINTERVAL;
+            case "LOGARITHM":
+                //对数分段
+                return RangeMode.LOGARITHM;
+            case "NONE":
+                //空分段模式
+                return RangeMode.NONE;
+            case "QUANTILE":
+                //等计数分段
+                return RangeMode.QUANTILE;
+            case "SQUAREROOT":
+                //平方根分段
+                return RangeMode.SQUAREROOT;
+            case "STDDEVIATION":
+                //标准差分段。
+                return RangeMode.STDDEVIATION;
+            default:
+                //默认：等距分段
+                return RangeMode.EQUALINTERVAL;
+        }
+    }
 }

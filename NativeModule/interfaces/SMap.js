@@ -47,7 +47,18 @@ export default (function () {
       console.error(e)
     }
   }
-
+  
+  /**
+   * 获取工作空间地图列表
+   * @returns {*|Promise.<Maps>}
+   */
+  function getMaps() {
+    try {
+      return SMap.getMaps()
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
    * 保存工作空间
@@ -96,13 +107,27 @@ export default (function () {
   }
 
   /**
+   * 移除指定图层
+   * @param params
+   * @param value    图层名称
+   * @returns {*}
+   */
+  function removeLayerWithName(value) {
+    try {
+      return SMap.removeLayerWithName(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    *
    * @param value       序号或名称
    * @param viewEntire  (option)
    * @param center      (option)
    * @returns {*}
    */
-  function openMap(value, viewEntire = true, center = null) {
+  function openMap(value, viewEntire = false, center = null) {
     try {
       if (typeof value === 'number') {
         return SMap.openMapByIndex(value, viewEntire, center)
@@ -130,11 +155,25 @@ export default (function () {
   /**
    * 保存地图
    * @param name
-   * @returns {*|Promise}
+   * @param autoNaming 为true的话若有相同名字的地图则自动命名
+   * @returns {*}
    */
-  function saveMap(name = '') {
+  function saveMap(name = '', autoNaming = true) {
     try {
-      return SMap.saveMap(name)
+      return SMap.saveMap(name, autoNaming)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 地图另存为
+   * @param name
+   * @returns {*|*|Promise}
+   */
+  function saveAsMap(name = '') {
+    try {
+      return SMap.saveAsMap(name)
     } catch (e) {
       console.error(e)
     }
@@ -507,15 +546,48 @@ export default (function () {
       console.error(e)
     }
   }
+
+  /**
+   * 根据名称/序号关闭数据源
+   * value = '' 或 value = -1 则全部关闭
+   */
+  function closeDatasource(value = ''){
+    try {
+      if (typeof value === 'number') {
+        return SMap.closeDatasourceWithIndex(value)
+      } else if (typeof value === 'string') {
+        return SMap.closeDatasourceWithName(value)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 根据名称/序号关闭数据源
+   * value = '' 或 value = -1 则全部关闭
+   */
+  function workspaceIsModified(){
+    try {
+      return SMap.workspaceIsModified()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  
+  
   let SMapExp = {
     openWorkspace,
     openDatasource,
     saveWorkspace,
     closeWorkspace,
     closeMapControl,
+    getMaps,
     setAction,
     openMap,
     saveMap,
+    saveAsMap,
     zoom,
     moveToCurrent,
     removeLayer,
@@ -536,6 +608,9 @@ export default (function () {
     saveMapToXML,
     openMapFromXML,
     getMapDatasourcesAlias,
+    removeLayerWithName,
+    closeDatasource,
+    workspaceIsModified,
   }
   Object.assign(SMapExp, MapTool, LayerManager)
 

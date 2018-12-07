@@ -31,5 +31,5 @@
 - (Dataset *)addDatasetByName:(NSString *)name type:(DatasetType)type datasourceName:(NSString *)datasourceName datasourcePath:(NSString *)datasourcePath;
 - (BOOL)saveWorkspace;
 - (BOOL)saveWorkspaceWithInfo:(NSDictionary*)infoDic;
-
+-(BOOL)importWorkspaceInfo:(NSDictionary*)infoDic isResourcesReplace:(BOOL)bReplace;
 @end

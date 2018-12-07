@@ -90,7 +90,7 @@
 }
 
 + (SymbolGroup *)findSymbolGroups:(Resources *)resources type:(NSString *)type path:(NSString *)path {
-    if ([type isEqualToString:@""] || [path isEqualToString:@""]) return nil;
+    if ([type isEqualToString:@""]) return nil;
     
     SymbolGroup* group;
     NSArray* pathParams = [path componentsSeparatedByString:@"/"];
@@ -113,10 +113,30 @@
 }
 
 + (NSArray *)findSymbolsByGroups:(Resources *)resources type:(NSString *)type path:(NSString *)path {
-    if ([type isEqualToString:@""] || [path isEqualToString:@""]) return nil;
+    if ([type isEqualToString:@""]) return nil;
     NSMutableArray* symbols = [[NSMutableArray alloc] init];
     SymbolGroup* group = [self findSymbolGroups:resources type:type path:path];
-    
+    if ([path isEqualToString:@""]) {
+        [self findSymbolsInGroup:symbols group:group type:type path:path];
+    }
+    else
+    {
+        for (int i = 0; i < group.count; i++) {
+            Symbol* symbol = [group getSymbolWithIndex:i];
+            NSMutableDictionary *symbolInfo = [[NSMutableDictionary alloc] init];
+            
+            [symbolInfo setObject:path forKey:@"groupPath"];
+            [symbolInfo setObject:[symbol getName] forKey:@"name"];
+            [symbolInfo setObject:[NSNumber numberWithInteger:[symbol getID]] forKey:@"id"];
+            [symbolInfo setObject:type forKey:@"type"];
+            
+            [symbols addObject:symbolInfo];
+        }
+    }
+    return symbols;
+}
+
++ (void )findSymbolsInGroup:(NSMutableArray*)symbols group:(SymbolGroup *)group type:(NSString *)type path:(NSString *)path {
     for (int i = 0; i < group.count; i++) {
         Symbol* symbol = [group getSymbolWithIndex:i];
         NSMutableDictionary *symbolInfo = [[NSMutableDictionary alloc] init];
@@ -128,8 +148,11 @@
         
         [symbols addObject:symbolInfo];
     }
-    
-    return symbols;
+    SymbolGroups* groups = group.childSymbolGroups;
+    for (int i = 0; i < groups.count; i++) {
+        SymbolGroup* symbolGroup = [groups getGroupWithIndex:i];
+        [self findSymbolsInGroup:symbols group:symbolGroup type:type path:path];
+    }
 }
 
 + (NSArray *)findSymbolsByIDs:(Resources *)resources type:(NSString *)type IDs:(NSArray *)IDs {

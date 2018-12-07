@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build.VERSION;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
@@ -327,6 +328,7 @@ public class Utils {
 //				if (name.toLowerCase().startsWith("sm")) {
 //					continue;
 //				}
+
 			String strValue;
 			Object value;
 			if(feature==null){
@@ -334,7 +336,7 @@ public class Utils {
 			}else{
 				value = feature.getFieldValue(name);
 			}
-			if (value.equals("NULL")) {
+			if (value==null||value.equals("NULL")) {
 				strValue = "";
 			} else {
 				strValue = value.toString();

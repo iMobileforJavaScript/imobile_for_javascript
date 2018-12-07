@@ -335,6 +335,33 @@ RCT_REMAP_METHOD(setListener, setListener:(RCTPromiseResolveBlock)resolve reject
         reject(@"Resources", exception.reason, nil);
     }
 }
+
+RCT_REMAP_METHOD(removeKMLOfWorkcspace,  removeKMLOfWorkcspaceResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+       
+        [[LableHelper3D sharedInstance] closePage];
+        // [self openGPS];
+        resolve([NSNumber numberWithBool:@1]);
+    } @catch (NSException *exception) {
+        reject(@"Resources", exception.reason, nil);
+    }
+}
+
+/**
+ * 设置飞行
+ *
+ * @param promise
+ */
+RCT_REMAP_METHOD(getWorkspacePath, Position:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        NSString* path = sScene.smSceneWC.workspace.connectionInfo.server;
+        resolve(path);
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
 RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sScene = [SScene singletonInstance];
@@ -583,15 +610,18 @@ RCT_REMAP_METHOD(setSelectable, name:(NSString*)name  bVisual:(BOOL)bVisual setS
  * @param promise
  */
 RCT_REMAP_METHOD(zoom,  scale:(double)scale zoom:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        sScene = [SScene singletonInstance];
-        Scene* scene = sScene.smSceneWC.sceneControl.scene;
-        [scene zoom:scale];
-        [scene refresh];
-        resolve(@(1));
-    } @catch (NSException *exception) {
-        reject(@"SScene", exception.reason, nil);
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @try {
+            sScene = [SScene singletonInstance];
+            Scene* scene = sScene.smSceneWC.sceneControl.scene;
+            [scene zoom:scale];
+            [scene refresh];
+            resolve(@(1));
+        } @catch (NSException *exception) {
+            reject(@"SScene", exception.reason, nil);
+        }
+    });
+   
 }
 /**
  * 关闭工作空间及地图控件
@@ -625,17 +655,20 @@ RCT_REMAP_METHOD(closeWorkspace,  closeWorkspace:(RCTPromiseResolveBlock)resolve
  * @param promise
  */
 RCT_REMAP_METHOD(setHeading,  setHeading:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        sScene = [SScene singletonInstance];
-        Scene* scene = sScene.smSceneWC.sceneControl.scene;
-        Camera camera = [scene camera];
-        camera.heading = 0;
-        scene.camera = camera;
-        [scene refresh];
-        resolve(@(1));
-    } @catch (NSException *exception) {
-        reject(@"SScene", exception.reason, nil);
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @try {
+            sScene = [SScene singletonInstance];
+            Scene* scene = sScene.smSceneWC.sceneControl.scene;
+            Camera camera = [scene camera];
+            camera.heading = 0;
+            scene.camera = camera;
+            [scene refresh];
+            resolve(@(1));
+        } @catch (NSException *exception) {
+            reject(@"SScene", exception.reason, nil);
+        }
+    });
+   
 }
 /**
  * 获取指北角度

@@ -27,8 +27,8 @@
         if (fer3d != nil) {
             NSString* value = fer3d.description;//fer3d.getDescription();
             NSString* value1 = fer3d.name; //fer3d.getName();
-            [attributeMap setObject:value1 forKey:@"name:"];
-            [attributeMap setObject:value forKey:@"description:"];
+            [attributeMap setObject:value1 forKey:@"name"];
+            [attributeMap setObject:value forKey:@"description"];
             //attributeMap = @{@"name:":value1,@"description:":value};
 
         }
@@ -69,7 +69,7 @@
         } else {
             strValue = value;
         }
-        [attributeMap setObject:strValue forKey:[name stringByAppendingString:@":"]];
+        [attributeMap setObject:strValue forKey:name];
        // attributeMap.put(name + ":",strValue);
     }
   //  attributeMap = dict;
@@ -109,7 +109,7 @@
                         if ([name.lowercaseString hasPrefix:@"sm"]) {
                             continue;
                         }
-                        [nameList addObject:[name stringByAppendingString:@":"]];
+                       // [nameList addObject:[name stringByAppendingString:@":"]];
                        
                         NSString* strValue;
                         NSObject* value = [recordset getFieldValueWithString:name];// .getFieldValue(name);
@@ -121,7 +121,7 @@
                         }
                         
                         if (![nameList containsObject:name]) {
-                            [attributeMap setObject:strValue forKey:[name stringByAppendingString:@":"]];
+                            [attributeMap setObject:strValue forKey:name];
                         }
                         
                     }

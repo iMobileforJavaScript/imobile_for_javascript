@@ -230,11 +230,21 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  * 清除所有标注
  */
 -(void)clearAllLabel{
+    mSceneControl.isRender = false;
     [mSceneControl.scene.layers removeLayerWithName:@"NodeAnimation"];// getScene().getLayers().removeLayerWithName("NodeAnimation");
-    [self reset];
+    //[self reset];
     if ( [self deleteSingleFile: [kmlPath stringByAppendingString:kmlName]]){// deleteSingleFile(kmlPath + kmlName)) {
-        [self addKML];
+       // [self addKML];
     }
+    [mSceneControl.scene.layers removeLayerWithName:@"Favorite"];// getScene().getLayers().removeLayerWithName("NodeAnimation");
+    
+    if ( [self deleteSingleFile: [kmlPath stringByAppendingString:@"Favorite.kml"]]){// deleteSingleFile(kmlPath + kmlName)) {
+       
+    }
+    favoriteLayer3d = mLayer3d = nil;
+    [self reset];
+     [self addKML];
+    mSceneControl.isRender  = YES;
 }
 
 /**
@@ -677,14 +687,27 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
 }
 
 -(void)makeFilePath:(NSString*)filePath fileName:(NSString*)fileName{
-    NSString*file = [filePath stringByAppendingString:fileName];
-     [JSSystemUtil createFileDirectories:file];
+    
+    
+     [JSSystemUtil createFileDirectories:filePath];
+     NSString*file = [filePath stringByAppendingFormat:@"%@",fileName];
+    BOOL isDir = FALSE;
+    BOOL isDirExist = [[NSFileManager defaultManager] fileExistsAtPath:file isDirectory:&isDir];
+    
+    
+    if(!isDirExist){
+        BOOL b = [[NSFileManager defaultManager] createFileAtPath:file contents:nil attributes:nil];
+        if(!b){
+            NSLog(@"%@",@"dd");
+        }
+    }
+   
 }
 
 -(BOOL)deleteSingleFile:(NSString*)filePathName{
     NSError* error;
     BOOL b =[[NSFileManager defaultManager] removeItemAtPath:filePathName error:&error];
-    NSLog(@"%b",b);
+    NSLog(@"%d",b);
     return b;
 }
 

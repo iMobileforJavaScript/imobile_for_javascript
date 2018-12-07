@@ -583,7 +583,7 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerName);
             if (layerSettingGrid != null) {
-//                layerSettingGrid.setOpaqueRate(100 - gridOpaqueRate); //新增接口，待打开
+                layerSettingGrid.setOpaqueRate(100 - gridOpaqueRate);
 
                 SMap.getSMWorkspace().getMapControl().getMap().refresh();
 
@@ -607,7 +607,7 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerName);
             if (layerSettingGrid != null) {
-//                layerSettingGrid.setContrast(gridContrast); //新增接口，待打开
+                layerSettingGrid.setContrast(gridContrast);
 
                 SMap.getSMWorkspace().getMapControl().getMap().refresh();
 
@@ -631,7 +631,7 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerName);
             if (layerSettingGrid != null) {
-//                layerSettingGrid.setBrightness(gridBrightness); //新增接口，待打开
+                layerSettingGrid.setBrightness(gridBrightness);
 
                 SMap.getSMWorkspace().getMapControl().getMap().refresh();
 

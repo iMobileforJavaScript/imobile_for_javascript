@@ -14,6 +14,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
@@ -39,6 +40,8 @@ import com.supermap.realspace.Tracking3DEvent;
 import com.supermap.realspace.Tracking3DListener;
 import com.supermap.smNative.SMSceneWC;
 import android.os.Looper;
+
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
@@ -425,9 +428,6 @@ public class SScene extends ReactContextBaseJavaModule {
                     map.putString("name", name);
                     map.putBoolean("visible", visible);
                     map.putBoolean("selectable", selectable);
-                    if (i == count - 1) {
-                        map.putBoolean("basemap", true);
-                    }
                     arr.pushMap(map);
                 }
             }
@@ -712,6 +712,22 @@ public class SScene extends ReactContextBaseJavaModule {
                 arr.pushMap(map);
             }
             promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取工作空间所在地址
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getWorkspacePath(Promise promise) {
+        try {
+            sScene = getInstance();
+            String path = sScene.smSceneWc.getWorkspace().getConnectionInfo().getServer();
+            promise.resolve(path);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -1232,6 +1248,19 @@ public class SScene extends ReactContextBaseJavaModule {
     public void closeAnalysis(Promise promise) {
         try {
             AnalysisHelper.getInstence().closeAnalysis();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 移除当前工作空间的KML图层
+     */
+    @ReactMethod
+    public void removeKMLOfWorkcspace(Promise promise) {
+        try {
+            LabelHelper.getInstence().closePage();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

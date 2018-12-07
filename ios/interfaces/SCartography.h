@@ -6,9 +6,7 @@
 //  Copyright © 2018 Facebook. All rights reserved.
 //
 #import <React/RCTBridgeModule.h>
-#import "SMap.h"
-#import "SMLayer.h"
 
-@interface SMCartography : NSObject<RCTBridgeModule>
+@interface SCartography : NSObject<RCTBridgeModule>
 
 @end

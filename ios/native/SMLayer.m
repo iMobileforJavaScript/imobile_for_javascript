@@ -143,4 +143,12 @@
     return dic;
 }
 
++ (NSString *)getLayerPath:(Layer *)layer {
+    NSString* path = layer.name;
+    while (layer.parentGroup != nil) {
+        path = [NSString stringWithFormat:@"%@/%@", layer.parentGroup, path];
+    }
+    return path;
+}
+
 @end

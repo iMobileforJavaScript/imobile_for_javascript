@@ -105,13 +105,15 @@
  *   根据场景名称获取同名的飞行路线，需要确认飞行文件的存放位置
  */
 -(NSString*)flyRoutePath:(NSString*)localDataPath scenceName:(NSString*)strScenceName{
-    NSString *filePath = [NSString stringWithFormat:@"%@%@%@",localDataPath,strScenceName,@".fpf"];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if([fileManager fileExistsAtPath:filePath]){
-        return filePath;
-    }else{
-        return nil;
+    NSString *filePath = nil;
+    NSArray* arr = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:localDataPath error:nil];
+    for(NSString* eachFile in arr){
+        if([eachFile hasSuffix:@".fpf"]){
+            filePath = [NSString stringWithFormat:@"%@%@",localDataPath,eachFile];
+            break;
+        }
     }
+    return filePath;
 }
 
 /**
