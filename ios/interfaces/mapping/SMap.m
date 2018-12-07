@@ -190,7 +190,7 @@ RCT_REMAP_METHOD(closeDatasourceWithName, closeDatasourceByName:(NSString *)data
         BOOL isClosed = YES;
         if (datasourceName == nil || [datasourceName isEqualToString:@""]) {
             for (int i = 0; i < dataSources.count; i++) {
-                if ([dataSources get:i]) {
+                if ([dataSources get:i] && [[dataSources get:i] isOpended]) {
                     isClosed = [dataSources close:i] && isClosed;
                 }
             }
@@ -212,7 +212,7 @@ RCT_REMAP_METHOD(closeDatasourceWithIndex, closeDatasourceWithIndex:(int)index r
         BOOL isClosed = YES;
         if (index == -1) {
             for (int i = 0; i < dataSources.count; i++) {
-                if ([dataSources get:i]) {
+                if ([dataSources get:i] && [[dataSources get:i] isOpended]) {
                     isClosed = [dataSources close:i] && isClosed;
                 }
             }

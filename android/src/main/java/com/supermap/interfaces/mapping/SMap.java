@@ -220,7 +220,7 @@ public class SMap extends ReactContextBaseJavaModule {
             Boolean isClose = true;
             if (datasourceName.equals("")) {
                 for (int i = 0; i < datasources.getCount(); i++) {
-                    if (datasources.get(i) != null) {
+                    if (datasources.get(i) != null && datasources.get(i).isOpened()) {
                         isClose = datasources.close(i) && isClose;
                     }
                 }
@@ -249,7 +249,7 @@ public class SMap extends ReactContextBaseJavaModule {
             Boolean isClose = true;
             if (index == -1) {
                 for (int i = 0; i < datasources.getCount(); i++) {
-                    if (datasources.get(i) != null) {
+                    if (datasources.get(i) != null && datasources.get(i).isOpened()) {
                         isClose = datasources.close(i) && isClose;
                     }
                 }
