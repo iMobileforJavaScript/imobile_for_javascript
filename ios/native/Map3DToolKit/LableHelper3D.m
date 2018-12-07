@@ -230,11 +230,21 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  * 清除所有标注
  */
 -(void)clearAllLabel{
+    mSceneControl.isRender = false;
     [mSceneControl.scene.layers removeLayerWithName:@"NodeAnimation"];// getScene().getLayers().removeLayerWithName("NodeAnimation");
-    [self reset];
+    //[self reset];
     if ( [self deleteSingleFile: [kmlPath stringByAppendingString:kmlName]]){// deleteSingleFile(kmlPath + kmlName)) {
-        [self addKML];
+       // [self addKML];
     }
+    [mSceneControl.scene.layers removeLayerWithName:@"Favorite"];// getScene().getLayers().removeLayerWithName("NodeAnimation");
+    
+    if ( [self deleteSingleFile: [kmlPath stringByAppendingString:@"Favorite.kml"]]){// deleteSingleFile(kmlPath + kmlName)) {
+       
+    }
+    favoriteLayer3d = mLayer3d = nil;
+    [self reset];
+     [self addKML];
+    mSceneControl.isRender  = YES;
 }
 
 /**

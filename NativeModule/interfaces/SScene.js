@@ -547,6 +547,7 @@ export default (function () {
           }
       }
 
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
