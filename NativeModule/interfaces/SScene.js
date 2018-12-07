@@ -539,6 +539,15 @@ export default (function () {
           }
       }
 
+      function getWorkspacePath(){
+          try {
+              return SScene.getWorkspacePath()
+          } catch (error) {
+            console.error(e);
+          }
+      }
+
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -622,6 +631,7 @@ export default (function () {
         clearSquareAnalyst,
         removeKMLOfWorkcspace,
         doZipFiles,
+        getWorkspacePath,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp

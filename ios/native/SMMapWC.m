@@ -35,7 +35,7 @@
         }
         DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
         Datasource* tempDs = [params objectForKey:@"alias"] ? [_workspace.datasources getAlias:[params objectForKey:@"alias"]] : nil;
-        BOOL isOpen = tempDs && [params objectForKey:@"server"] && [tempDs.datasourceConnectionInfo.server isEqualToString:[params objectForKey:@"server"]];
+        BOOL isOpen = tempDs && [params objectForKey:@"server"] && [tempDs.datasourceConnectionInfo.server isEqualToString:[params objectForKey:@"server"]] && [tempDs isOpended];
         Datasource* dataSource = nil;
         if (!isOpen) {
             NSArray* keyArr = [params allKeys];

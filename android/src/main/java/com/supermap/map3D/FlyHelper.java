@@ -250,9 +250,16 @@ public class FlyHelper {
         String flyRoutePath = "";
 
         if (new File(localDataPath).exists()) {
-            flyRoutePath = localDataPath + sceneName + ".fpf";
-            if (new File(flyRoutePath).exists()) {
-                return flyRoutePath;
+            File flist = new File(localDataPath);
+            File[] mFileList = flist.listFiles();
+            for (int i = 0; i <mFileList.length ; i++) {
+                if(!mFileList[i].isDirectory()){
+                    flyRoutePath=mFileList[i].getAbsolutePath();
+                    String suffix=flyRoutePath.substring(flyRoutePath.lastIndexOf(".")+1);
+                    if(suffix.equals("fpf")){
+                        return flyRoutePath;
+                    }
+                }
             }
         }
         return null;

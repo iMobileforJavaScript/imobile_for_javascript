@@ -241,12 +241,17 @@ public class LabelHelper {
      * 清除所有标注
      */
     public void clearAllLabel() {
-        mSceneControl.getScene().getLayers().removeLayerWithName("NodeAnimation");
-        reSet();
-        if (deleteSingleFile(kmlPath + kmlName)) {
-            mLayer3d = null;
-            addKML();
+
+        while(mSceneControl.getScene().getLayers().get("NodeAnimation").getFeatures().getCount()>0){
+            mSceneControl.getScene().getLayers().get("NodeAnimation").getFeatures().removeAt(0);
         }
+
+        //mSceneControl.getScene().getLayers().removeLayerWithName("NodeAnimation");
+        reSet();
+//        if (deleteSingleFile(kmlPath + kmlName)) {
+//            mLayer3d = null;
+//            addKML();
+//        }
         //清空后无法保存成kml文件，考虑用删除kml文件的方式
         //layer3d.getFeatures().toKMLFile(kmlPath);
     }
@@ -275,6 +280,7 @@ public class LabelHelper {
             case DRAWLINE:
                 //保存线
                 layer3d.getFeatures().add(geoline3d);
+                break;
             case DRAWAREA:
                 GeoRegion3D geoRegion3D = getRegion(myPoint3DArrayList);
                 if (geoRegion3D != null) {

@@ -57,8 +57,9 @@ public class SMMapWC {
     public Datasource openDatasource(Map data) {
         try {
             DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-            Datasource dataSource = data.get("alias") != null ? workspace.getDatasources().get((String)data.get("alias")) : null;
-            Boolean isOpen = dataSource != null && data.get("server") != null && dataSource.getConnectionInfo().getServer().equals(data.get("server"));
+            Datasource ds = data.get("alias") != null ? workspace.getDatasources().get((String)data.get("alias")) : null;
+            Boolean isOpen = ds != null && data.get("server") != null && ds.getConnectionInfo().getServer().equals(data.get("server")) && ds.isOpened();
+            Datasource dataSource = null;
             if (!isOpen) {
                 if (data.containsKey("alias")){
                     String alias = data.get("alias").toString();
