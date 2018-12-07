@@ -14,16 +14,17 @@ import com.supermap.onlineservices.DownLoadFile;
 import com.supermap.onlineservices.OnlineCallBack;
 import com.supermap.onlineservices.OnlineService;
 import com.supermap.onlineservices.UpLoadFile;
-import com.supermap.utils.EnumServiceType;
+import com.supermap.onlineservices.utils.EnumServiceType;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.supermap.utils.EnumServiceType.RESTMAP;
+import static com.supermap.onlineservices.utils.EnumServiceType.RESTMAP;
+
 
 /**
  * Created by lucd on 2018/11/19.
@@ -33,6 +34,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     private OnlineService mOnlineService = null;
     private static  final String TAG = "SOnlineService"; //
     private ReactApplicationContext mContext = null;
+    String rootPath = android.os.Environment.getExternalStorageDirectory().getPath().toString();
     public SOnlineService(ReactApplicationContext reactContext) {
         super(reactContext);
         mContext = reactContext;
@@ -251,7 +253,6 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.verifyCodeImage(new OnlineCallBack.CallBackBitmap() {
                 @Override
                 public void onSucceed(Bitmap bitmap) {
-                    String rootPath = android.os.Environment.getExternalStorageDirectory().getPath().toString();
                     String fileDirs = rootPath+"/tmp/";
                     File file = new File(fileDirs);
                     if(!file.exists()){
@@ -446,6 +447,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 
                 @Override
                 public void onError(String s) {
+                    Log.e("test",s);
                     promise.resolve(s);
                 }
             });
@@ -504,6 +506,69 @@ public class SOnlineService extends ReactContextBaseJavaModule{
                 @Override
                 public void onError(String s) {
                     promise.resolve(s);
+                }
+            });
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getSessionID(final Promise promise){
+        try {
+           String sessionId = OnlineService.getDefaultJsessionidCookie();
+           if(sessionId.isEmpty()){
+               promise.resolve("undefined");
+           }else{
+               int length = "JSESSIONID=".length();
+               String newSessionID = sessionId.substring(length);
+               Log.e("JESESSION",newSessionID + " ..."+sessionId);
+               promise.resolve(newSessionID);
+           }
+
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void cacheImage(String imageUrl, final String saveFileName, final Promise promise){
+        try {
+            OnlineService.getBitmapByUrl(imageUrl, new OnlineCallBack.CallBackBitmap() {
+                @Override
+                public void onSucceed(Bitmap bitmap) {
+                    String fileDirs = rootPath+"/iTablet/Cache/tmp";
+                    File file = new File(fileDirs);
+                    if(!file.exists()){
+                        file.mkdirs();
+                    }
+                    String filePath = fileDirs+ "/"+saveFileName+".png";
+                    File file2= new File(filePath);
+                    if(!file2.exists()){
+                        file2.delete();
+                    }
+                    FileOutputStream fos = null;
+                    try {
+                        fos = new FileOutputStream(file2);
+                        bitmap.compress(Bitmap.CompressFormat.PNG,100,fos);
+                        promise.resolve(filePath);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }finally {
+                        try {
+                            if(fos != null) {
+                                fos.close();
+                                fos.flush();
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                @Override
+                public void onError(String s) {
+
                 }
             });
         }catch (Exception e){

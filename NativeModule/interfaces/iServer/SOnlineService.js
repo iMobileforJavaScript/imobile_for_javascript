@@ -1,4 +1,4 @@
-import {NativeModules, Platform, NativeEventEmitter} from 'react-native';
+import {NativeModules, Platform, NativeEventEmitter,DeviceEventEmitter} from 'react-native';
 import {EventConst} from '../../constains'
 let OnlineServiceNative = NativeModules.SOnlineService;
 /*获取ios原生层的回调*/
@@ -7,12 +7,21 @@ let objDownloadCallBackResult;
 let bIsFirstDownload = true;
 function init() {
   OnlineServiceNative.init();
-  // if(Platform.OS === 'ios'){
-  //   callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (obj) {
-  //     objDownloadCallBackResult=obj;
-  //   });
-  // }
+}
+/** 仅支持android*/
+function getAndroidSessionID() {
+  if(Platform.OS === 'android'){
+    return OnlineServiceNative.getSessionID()
+  }
+  return 'undefined'
 
+}
+/** 仅支持android*/
+function cacheImage(imageUrl,saveImagePath) {
+  if(Platform.OS === 'android'){
+    return OnlineServiceNative.cacheImage(imageUrl,saveImagePath)
+  }
+  return '不支持ios的缓存'
 }
 
 function objCallBack(){
@@ -20,18 +29,27 @@ function objCallBack(){
 }
 
 function uploadFile(path, dataName, handler) {
-  console.log("progress: 0");
   if (Platform.OS === 'ios' && handler) {
     if (typeof handler.onProgress === 'function') {
       callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (obj) {
         console.log("progress: " + obj.progress);
-        let downloadId = obj.id;
         handler.onProgress(obj.progress);
       })
     }
     if (typeof handler.onResult === 'function') {
       callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADED, function (value) {
         handler.onResult(value);
+      })
+    }
+  }else{
+    if (typeof handler.onProgress === 'function'&& handler) {
+      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
+        handler.onProgress(progress);
+      })
+    }
+    if (typeof handler.onResult === 'function'&& handler) {
+      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADED, function (result) {
+        handler.onResult(result);
       })
     }
   }
@@ -41,28 +59,6 @@ function uploadFile(path, dataName, handler) {
 
 
 function downloadFile(path, onlineDataName) {
-  // if (Platform.OS === 'ios' && handler) {
-  //   if (typeof handler.onProgress === 'function') {
-  //     callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (obj) {
-  //       console.log("progress:" + obj.progress);
-  //       let downloadId = obj.id;
-  //       if (downloadId === onlineDataName) {
-  //         handler.onProgress(obj.progress);
-  //       }
-  //     })
-  //   }
-  //   if (typeof handler.onResult === 'function') {
-  //     callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (bResult) {
-  //       handler.onResult(bResult);
-  //     })
-  //     callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (strErrorInfo) {
-  //       handler.onResult(strErrorInfo);
-  //     })
-  //   }
-  // }
-  // else if (Platform.OS === 'android' && handler) {
-  //
-  // }
   OnlineServiceNative.download(path, onlineDataName);
 }
 
@@ -247,4 +243,6 @@ export default {
   getAllUserDataList,
   getAllUserSymbolLibList,
   publishService,
+  getAndroidSessionID,
+  cacheImage,
 }
