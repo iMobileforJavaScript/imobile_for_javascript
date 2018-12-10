@@ -275,16 +275,19 @@ public class LabelHelper {
                     final GeoPoint3D geoPoint3D = new GeoPoint3D(point3D);
                     geoPoint3D.setStyle3D(geoPoint3dStyle);
                     layer3d.getFeatures().add(geoPoint3D);
+//                    layer3d.getFeatures().add(geoPoint3D).setDescription(point3D.getX()+","+point3D.getY());
                 }
                 break;
             case DRAWLINE:
                 //保存线
                 layer3d.getFeatures().add(geoline3d);
+//                layer3d.getFeatures().add(geoline3d).setDescription(geoline3d.getInnerPoint3D().getX()+","+geoline3d.getInnerPoint3D().getY());
                 break;
             case DRAWAREA:
                 GeoRegion3D geoRegion3D = getRegion(myPoint3DArrayList);
                 if (geoRegion3D != null) {
                     layer3d.getFeatures().add(geoRegion3D);
+//                    layer3d.getFeatures().add(geoRegion3D).setDescription(geoRegion3D.getInnerPoint3D().getX()+","+geoRegion3D.getInnerPoint3D().getY());
                 }
 
                 break;
@@ -293,6 +296,7 @@ public class LabelHelper {
                     Point3D point3D = myPoint3DArrayList.get(index);
                     GeoPlacemark geoPlacemark = getGeoText3D(point3D,geoTextStrList.get(index));
                     layer3d.getFeatures().add(geoPlacemark);
+//                    layer3d.getFeatures().add(geoPlacemark).setDescription(point3D.getX()+","+point3D.getY());
 
                 }
                 break;
@@ -300,7 +304,9 @@ public class LabelHelper {
                 if (favoriteFeature3D == null) {
                     return;
                 }
-                layer3d.getFeatures().add(favoriteFeature3D);
+                Feature3D feature3D=layer3d.getFeatures().add(favoriteFeature3D);
+                feature3D.setDescription(favoriteFeature3D.getGeometry().getInnerPoint3D().getX()+","+favoriteFeature3D.getGeometry().getInnerPoint3D().getY());
+                feature3D.setName("兴趣点");
                 Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("Favorite");
                 favoriteLayer3d.getFeatures().remove(favoriteFeature3D);
                 favoriteFeature3D = null;

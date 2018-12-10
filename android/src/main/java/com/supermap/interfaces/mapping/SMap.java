@@ -195,7 +195,7 @@ public class SMap extends ReactContextBaseJavaModule {
             Datasource datasource = sMap.smMapWC.openDatasource(params);
             sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
 
-            if (datasource != null && defaultName.equals("")) {
+            if (datasource != null && !defaultName.equals("")) {
                 Dataset ds = datasource.getDatasets().get(defaultName);
                 sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, true);
             }
@@ -719,33 +719,34 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            boolean result = false;
+            boolean mapSaved = false;
+            boolean wsSaved = false;
             if (name == null || name.equals("")) {
                 if (map.getName() != null && !map.getName().equals("")) {
-                    result = map.save();
+                    mapSaved = map.save();
                 } else if (map.getLayers().getCount() > 0) {
                     name = map.getLayers().get(0).getName();
                     int i = 0;
                     if (autoNaming) {
-                        while (!result) {
+                        while (!mapSaved) {
                             String newName = i == 0 ? name : (name + i);
                             try {
-                                result = map.save(newName);
+                                mapSaved = map.save(newName);
                             } catch (Exception e) {
-                                result = false;
+                                mapSaved = false;
                             }
                             i++;
                         }
                     } else {
-                        result = map.save(name);
+                        mapSaved = map.save(name);
                     }
                 }
             } else {
-                result = map.save(name);
+                mapSaved = map.save(name);
             }
-            result = result && sMap.smMapWC.getWorkspace().save();
+            wsSaved = sMap.smMapWC.getWorkspace().save();
 
-            promise.resolve(result);
+            promise.resolve(mapSaved && wsSaved);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -768,6 +769,49 @@ public class SMap extends ReactContextBaseJavaModule {
             }
 
             promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 检查地图是否有改动
+     * @param promise
+     */
+    @ReactMethod
+    public void mapIsModified(Promise promise) {
+        try {
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            boolean idModified = map.isModified();
+
+            promise.resolve(idModified);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 检查地图是否有改动
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapIndex(String name, Promise promise) {
+        try {
+            int index = -1;
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            Maps maps = sMap.smMapWC.getWorkspace().getMaps();
+
+            if (name == null || name.equals("")) {
+                if (map != null) {
+                    index = maps.indexOf(map.getName());
+                }
+            } else {
+                index = maps.indexOf(name);
+            }
+
+            promise.resolve(index);
         } catch (Exception e) {
             promise.reject(e);
         }
