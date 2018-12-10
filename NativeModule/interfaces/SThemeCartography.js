@@ -191,6 +191,18 @@ createUniformThemeLabelMap = (params) => {
 }
 
 /**
+ *
+ * @param params 
+ */
+createAndRemoveUniformThemeLabelMap = (params) => {
+  try {
+    return SThemeCartography.createAndRemoveUniformThemeLabelMap(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
  * 设置统一标签专题图的表达式
  *
  * @param params 
@@ -352,6 +364,7 @@ export default {
   setRangeExpression,
   //统一标签
   createUniformThemeLabelMap,
+  createAndRemoveUniformThemeLabelMap,
   setUniformLabelExpression,
   setUniformLabelBackShape,
   setUniformLabelFontName,
