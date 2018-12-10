@@ -105,7 +105,6 @@ getUniqueExpression = (layerName) => {
  * 获取数据集中的字段
  * @param udbPath UDB在内存中路径
  * @param datasetName 数据集名称
- * @param promise
  */
 getThemeExpressByUdb = (udbPath, datasetName) => {
   try {
@@ -118,7 +117,6 @@ getThemeExpressByUdb = (udbPath, datasetName) => {
 /**
  * 获取数据集中的字段
  * @param layerName 图层名称
- * @param promise
  */
 getThemeExpressByLayerName = (layerName) => {
   try {
@@ -131,7 +129,6 @@ getThemeExpressByLayerName = (layerName) => {
 /**
  * 获取数据集中的字段
  * @param layerIndex 图层索引
- * @param promise
  */
 getThemeExpressByLayerIndex = (layerIndex) => {
   try {
@@ -145,7 +142,6 @@ getThemeExpressByLayerIndex = (layerIndex) => {
  * 新建分段专题图层
  *
  * @param params(数据源的索引 / 数据源的别名 / 打开本地数据源、 数据集名称、 分段字段表达式、 分段模式、 分段参数、 颜色渐变模式)
- * @param promise
  */
 createThemeRangeMap = (params) => {
   try {
@@ -159,7 +155,6 @@ createThemeRangeMap = (params) => {
  * 新建分段专题图层
  *
  * @param params(数据源的索引 / 数据源的别名 / 打开本地数据源、 数据集名称、 分段字段表达式、 分段模式、 分段参数、 颜色渐变模式)
- * @param promise
  */
 createAndRemoveThemeRangeMap = (params) => {
   try {
@@ -173,11 +168,167 @@ createAndRemoveThemeRangeMap = (params) => {
  * 设置分段专题图的分段字段表达式
  *
  * @param params 分段字段表达式 图层名称 图层索引
- * @param promise
  */
 setRangeExpression = (params) => {
   try {
     return SThemeCartography.setRangeExpression(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 新建统一标签专题图
+ *
+ * @param params 
+ */
+createUniformThemeLabelMap = (params) => {
+  try {
+    return SThemeCartography.createUniformThemeLabelMap(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 设置统一标签专题图的表达式
+ *
+ * @param params 
+ */
+setUniformLabelExpression = (params) => {
+  try {
+    return SThemeCartography.setUniformLabelExpression(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 设置统一标签专题图的背景形状
+ *
+ * @param params 
+ */
+setUniformLabelBackShape = (params) => {
+  try {
+    return SThemeCartography.setUniformLabelBackShape(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 设置统一标签专题图的字体
+ *
+ * @param params 
+ */
+setUniformLabelFontName = (params) => {
+  try {
+    return SThemeCartography.setUniformLabelFontName(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 设置统一标签专题图的字号
+ *
+ * @param params 
+ */
+setUniformLabelFontSize = (params) => {
+  try {
+    return SThemeCartography.setUniformLabelFontSize(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 设置统一标签专题图的旋转角度
+ *
+ * @param params 
+ */
+setUniformLabelRotaion = (params) => {
+  try {
+    return SThemeCartography.setUniformLabelRotaion(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 设置统一标签专题图的颜色
+ *
+ * @param params 
+ */
+setUniformLabelColor = (params) => {
+  try {
+    return SThemeCartography.setUniformLabelColor(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * @param params 
+ */
+getUniformLabelExpression = (params) => {
+  try {
+    return SThemeCartography.getUniformLabelExpression(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * @param params 
+ */
+getUniformLabelBackShape = (params) => {
+  try {
+    return SThemeCartography.getUniformLabelBackShape(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * @param params 
+ */
+getUniformLabelFontName = (params) => {
+  try {
+    return SThemeCartography.getUniformLabelFontName(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * @param params 
+ */
+getUniformLabelFontSize = (params) => {
+  try {
+    return SThemeCartography.getUniformLabelFontSize(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * @param params 
+ */
+getUniformLabelRotaion = (params) => {
+  try {
+    return SThemeCartography.getUniformLabelRotaion(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * @param params 
+ */
+getUniformLabelColor = (params) => {
+  try {
+    return SThemeCartography.getUniformLabelColor(params)
   } catch (error) {
     console.error(error)
   }
@@ -199,4 +350,18 @@ export default {
   createThemeRangeMap,
   createAndRemoveThemeRangeMap,
   setRangeExpression,
+  //统一标签
+  createUniformThemeLabelMap,
+  setUniformLabelExpression,
+  setUniformLabelBackShape,
+  setUniformLabelFontName,
+  setUniformLabelFontSize,
+  setUniformLabelRotaion,
+  setUniformLabelColor,
+  getUniformLabelExpression,
+  getUniformLabelBackShape,
+  getUniformLabelFontName,
+  getUniformLabelFontSize,
+  getUniformLabelRotaion,
+  getUniformLabelColor,
 }
