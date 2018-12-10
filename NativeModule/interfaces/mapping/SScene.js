@@ -564,6 +564,14 @@ export default (function () {
           }
       }
 
+      function getSetting(){
+          try {
+              return SScene.getSetting()
+          } catch (error) {
+            console.error(e);
+          }
+      }
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -650,6 +658,7 @@ export default (function () {
         getWorkspacePath,
         getLableAttributeList,
         flyToFeatureById,
+        getSetting,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp

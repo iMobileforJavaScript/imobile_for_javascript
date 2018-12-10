@@ -1297,6 +1297,25 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+
+    /**
+     * 获取设置相关信息
+     */
+    @ReactMethod
+    public void getSetting(Promise promise) {
+        try {
+            sScene=getInstance();
+            Scene scene=sScene.smSceneWc.getSceneControl().getScene();
+            WritableMap map=Arguments.createMap();
+            map.putString("sceneNmae",scene.getName());
+            map.putDouble("heading",scene.getCamera().getHeading());
+            promise.resolve(map);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
     /**
      * 关闭工作空间及地图控件
      */
