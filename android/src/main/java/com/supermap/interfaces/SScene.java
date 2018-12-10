@@ -20,6 +20,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
+import com.supermap.data.AltitudeMode;
 import com.supermap.data.GeoPoint3D;
 import com.supermap.data.ImageFormatType;
 import com.supermap.data.Point3D;
@@ -33,6 +34,8 @@ import com.supermap.map3D.toolKit.TouchUtil;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.realspace.Action3D;
 import com.supermap.realspace.Camera;
+import com.supermap.realspace.Feature3D;
+import com.supermap.realspace.Feature3Ds;
 import com.supermap.realspace.Layer3D;
 import com.supermap.realspace.Scene;
 import com.supermap.realspace.SceneControl;
@@ -439,13 +442,10 @@ public class SScene extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void changeBaseMap(String oldLayer, String Url, String Layer3DType, String layerName, String imageFormatType, double dpi, Boolean addToHead,Promise promise) {
+    public void addLayer3D(String Url, String Layer3DType, String layerName, String imageFormatType, double dpi, Boolean addToHead,Promise promise) {
         try {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-            if (oldLayer != null) {
-                scene.getLayers().removeLayerWithName(oldLayer);
-            }
             com.supermap.realspace.Layer3DType layer3DType = null;
             ImageFormatType imageFormatType1 = null;
             switch (Layer3DType) {
@@ -527,7 +527,7 @@ public class SScene extends ReactContextBaseJavaModule {
             scene.getTerrainLayers().add(url,name);
             scene.refresh();
             int i=scene.getTerrainLayers().getCount();
-            promise.resolve(i);
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -1267,6 +1267,62 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 获取标注属性列表
+     */
+    @ReactMethod
+    public void getLableAttributeList(Promise promise) {
+        try {
+            sScene=getInstance();
+            Scene scene=sScene.smSceneWc.getSceneControl().getScene();
+            if(!scene.getLayers().get("NodeAnimation").getName().equals("NodeAnimation")){
+               promise.resolve(null);
+            }else {
+                Layer3D layer3D=scene.getLayers().get("NodeAnimation");
+                Feature3Ds feature3Ds=layer3D.getFeatures();
+                int count =feature3Ds.getCount();
+                WritableArray array=Arguments.createArray();
+                for (int i = 0; i <count ; i++) {
+                    Feature3D feature3D= (Feature3D) feature3Ds.get(i);
+                    WritableMap map=Arguments.createMap();
+                    map.putString("description",feature3D.getDescription());
+                    map.putInt("id",feature3D.getID());
+                    map.putString("name",feature3D.getName());
+                    array.pushMap(map);
+                }
+                promise.resolve(array);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 关闭工作空间及地图控件
+     */
+    @ReactMethod
+    public void flyToFeatureById(int id,Promise promise) {
+        try {
+            sScene=getInstance();
+            Scene scene=sScene.smSceneWc.getSceneControl().getScene();
+            if(!scene.getLayers().get("NodeAnimation").getName().equals("NodeAnimation")) {
+                promise.resolve(false);
+            }else {
+                Layer3D layer3D=scene.getLayers().get("NodeAnimation");
+                Feature3D feature3D= (Feature3D) layer3D.getFeatures().get(id);
+                if(feature3D==null){
+                    promise.resolve(false);
+                }else {
+                    Point3D point3D=feature3D.getGeometry().getInnerPoint3D();
+                    Camera camera=new Camera(point3D.getX(),point3D.getY(),point3D.getZ());
+                    scene.flyToCamera(camera,AltitudeMode.ABSOLUTE.value(),false);
+                    promise.resolve(true);
+                }
+            }
+            } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 
     /**
      * 关闭工作空间及地图控件

@@ -347,6 +347,21 @@ RCT_REMAP_METHOD(removeKMLOfWorkcspace,  removeKMLOfWorkcspaceResolver:(RCTPromi
     }
 }
 
+/**
+ * 设置飞行
+ *
+ * @param promise
+ */
+RCT_REMAP_METHOD(getWorkspacePath, Position:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        NSString* path = sScene.smSceneWC.workspace.connectionInfo.server;
+        resolve(path);
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
 RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sScene = [SScene singletonInstance];
