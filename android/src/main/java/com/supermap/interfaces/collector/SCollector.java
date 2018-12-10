@@ -7,6 +7,8 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.supermap.data.Dataset;
 import com.supermap.data.GeoStyle;
+import com.supermap.data.PrjCoordSys;
+import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Recordset;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Action;
@@ -130,6 +132,9 @@ public class SCollector extends ReactContextBaseJavaModule {
             if (geoStyle != null) {
                 ((LayerSettingVector)layer.getAdditionalSetting()).setStyle(geoStyle);
             }
+
+            ds.setPrjCoordSys(new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE));
+
             layer.setVisible(true);
             layer.setEditable(true);
             collector.setDataset(ds);
