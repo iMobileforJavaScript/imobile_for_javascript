@@ -362,7 +362,7 @@ export default (function () {
 
     function addLayer3D() {
         try {
-            return SScene.changeBaseMap()
+            return SScene.addLayer3D( Url, Layer3DType, layerName, imageFormatType, dpi, addToHead)
         } catch (error) {
             console.log(error)
         }
@@ -547,6 +547,22 @@ export default (function () {
           }
       }
 
+      function getLableAttributeList(){
+          try {
+              return SScene.getLableAttributeList()
+          } catch (error) {
+            console.error(e);
+          }
+      }
+      
+      function flyToFeatureById(){
+          try {
+              return SScene.flyToFeatureById()
+          } catch (error) {
+            console.error(e);
+          }
+      }
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -631,6 +647,8 @@ export default (function () {
         removeKMLOfWorkcspace,
         doZipFiles,
         getWorkspacePath,
+        getLableAttributeList,
+        flyToFeatureById,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
