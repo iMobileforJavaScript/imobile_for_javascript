@@ -58,7 +58,7 @@ setThemeUniqueItemStyle = (params, layerName, itemIndex) => {
   try {
     return SThemeCartography.setThemeUniqueItemStyle(params, layerName, itemIndex)
   } catch (error) {
-    console.error(e);
+    console.error(e)
   }
 }
 
@@ -141,7 +141,50 @@ getThemeExpressByLayerIndex = (layerIndex) => {
   }
 }
 
+/**
+ * 新建分段专题图层
+ *
+ * @param params(数据源的索引 / 数据源的别名 / 打开本地数据源、 数据集名称、 分段字段表达式、 分段模式、 分段参数、 颜色渐变模式)
+ * @param promise
+ */
+createThemeRangeMap = (params) => {
+  try {
+    return SThemeCartography.createThemeRangeMap(params)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 新建分段专题图层
+ *
+ * @param params(数据源的索引 / 数据源的别名 / 打开本地数据源、 数据集名称、 分段字段表达式、 分段模式、 分段参数、 颜色渐变模式)
+ * @param promise
+ */
+createAndRemoveThemeRangeMap = (params) => {
+  try {
+    return SThemeCartography.createAndRemoveThemeRangeMap(params)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 设置分段专题图的分段字段表达式
+ *
+ * @param params 分段字段表达式 图层名称 图层索引
+ * @param promise
+ */
+setRangeExpression = (params) => {
+  try {
+    return SThemeCartography.setRangeExpression(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
+  //单值
   createThemeUniqueMap,
   setThemeUniqueDefaultStyle,
   setThemeUniqueItemStyle,
@@ -152,4 +195,8 @@ export default {
   getThemeExpressByLayerName,
   getThemeExpressByLayerIndex,
   createAndRemoveThemeUniqueMap,
+  //分段
+  createThemeRangeMap,
+  createAndRemoveThemeRangeMap,
+  setRangeExpression,
 }

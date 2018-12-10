@@ -42,7 +42,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
         try {
             HashMap<String, Object> data = readableMap.toHashMap();
 
-            int datasourceIndex = 0;
+            int datasourceIndex = -1;
             String datasourceAlias = null;
             String datasetName = null;
             String uniqueExpression = null;
@@ -393,7 +393,221 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
      /*分段专题图
     * ********************************************************************************************/
+    /**
+     * 新建分段专题图层
+     *
+     * @param readableMap (数据源的索引/数据源的别名/打开本地数据源、数据集名称、 分段字段表达式、分段模式、分段参数、颜色渐变模式)
+     * @param promise
+     */
+    @ReactMethod
+    public void createThemeRangeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
 
+            int datasourceIndex = -1;
+            String datasourceAlias = null;
+            String datasetName = null;
+            String rangeExpression = null;//分段字段表达式
+            RangeMode rangeMode = null;//分段模式
+            double rangeParameter = -1;//分段参数
+            ColorGradientType colorGradientType = ColorGradientType.TERRAIN;//默认的颜色渐变模式
+
+            if (data.containsKey("DatasetName")){
+                datasetName = data.get("DatasetName").toString();
+            }
+            if (data.containsKey("RangeExpression")){
+                rangeExpression  = data.get("RangeExpression").toString();
+            }
+            if (data.containsKey("RangeMode")){
+                String mode = data.get("RangeMode").toString();
+                rangeMode  = SMThemeCartography.getRangeMode(mode);
+            }
+            if (data.containsKey("RangeParameter")){
+                String rangParam = data.get("RangeParameter").toString();
+                rangeParameter  = Double.parseDouble(rangParam);
+            }
+            if (data.containsKey("ColorGradientType")){
+                String type = data.get("ColorGradientType").toString();
+                colorGradientType = SMThemeCartography.getColorGradientType(type);
+            }
+
+            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
+            if (dataset == null) {
+                if (data.containsKey("DatasourceIndex")){
+                    String index = data.get("DatasourceIndex").toString();
+                    datasourceIndex = Integer.parseInt(index);
+                }
+                if (data.containsKey("DatasourceAlias")){
+                    datasourceAlias = data.get("DatasourceAlias").toString();
+                }
+
+                if (datasourceAlias != null) {
+                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
+                }  else {
+                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
+                }
+            }
+
+            if (dataset != null && rangeExpression != null && rangeMode != null && rangeParameter != -1) {
+                ThemeRange themeRange = ThemeRange.makeDefault((DatasetVector) dataset, rangeExpression, rangeMode, rangeParameter, colorGradientType);
+
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getMap().getLayers().add(dataset, themeRange, true);
+                mapControl.getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 新建分段专题图层
+     *
+     * @param readableMap (数据源的索引/数据源的别名/打开本地数据源、数据集名称、 分段字段表达式、分段模式、分段参数、颜色渐变模式)
+     * @param promise
+     */
+    @ReactMethod
+    public void createAndRemoveThemeRangeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            int datasourceIndex = -1;
+            String datasourceAlias = null;
+            String datasetName = null;
+            String rangeExpression = null;//分段字段表达式
+            RangeMode rangeMode = null;//分段模式
+            double rangeParameter = -1;//分段参数
+            ColorGradientType colorGradientType = ColorGradientType.TERRAIN;//默认的颜色渐变模式
+
+            String layerName = null;
+            int layerIndex = 0;
+
+            if (data.containsKey("DatasetName")){
+                datasetName = data.get("DatasetName").toString();
+            }
+            if (data.containsKey("RangeExpression")){
+                rangeExpression  = data.get("RangeExpression").toString();
+            }
+            if (data.containsKey("RangeMode")){
+                String mode = data.get("RangeMode").toString();
+                rangeMode  = SMThemeCartography.getRangeMode(mode);
+            }
+            if (data.containsKey("RangeParameter")){
+                String rangParam = data.get("RangeParameter").toString();
+                rangeParameter  = Double.parseDouble(rangParam);
+            }
+            if (data.containsKey("ColorGradientType")){
+                String type = data.get("ColorGradientType").toString();
+                colorGradientType = SMThemeCartography.getColorGradientType(type);
+            }
+
+            if (data.containsKey("LayerName")) {
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")) {
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
+            if (dataset == null) {
+                if (data.containsKey("DatasourceIndex")){
+                    String index = data.get("DatasourceIndex").toString();
+                    datasourceIndex = Integer.parseInt(index);
+                }
+                if (data.containsKey("DatasourceAlias")){
+                    datasourceAlias = data.get("DatasourceAlias").toString();
+                }
+
+                if (datasourceAlias != null) {
+                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
+                }  else {
+                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
+                }
+            }
+
+            if (dataset != null && rangeExpression != null && rangeMode != null && rangeParameter != -1) {
+                ThemeRange themeRange = ThemeRange.makeDefault((DatasetVector) dataset, rangeExpression, rangeMode, rangeParameter, colorGradientType);
+
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                if (layerName != null) {
+//                    mapControl.getMap().getLayers().remove(layerName);
+                    mapControl.getMap().getLayers().get(layerName).setVisible(false);
+                } else {
+//                    mapControl.getMap().getLayers().remove(layerIndex);
+                    mapControl.getMap().getLayers().get(layerIndex).setVisible(false);
+                }
+                mapControl.getMap().getLayers().add(dataset, themeRange, true);
+                mapControl.getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置分段专题图的分段字段表达式
+     *
+     * @param readableMap 分段字段表达式 图层名称 图层索引
+     * @param promise
+     */
+    @ReactMethod
+    public void setRangeExpression(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+            String rangeExpression = null;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("RangeExpression")){
+                rangeExpression = data.get("RangeExpression").toString();
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && rangeExpression != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.RANGE) {
+                    ThemeRange themeRange = (ThemeRange) layer.getTheme();
+                    themeRange.setRangeExpression(rangeExpression);
+
+                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+                    promise.resolve(true);
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
 
      /*栅格分段专题图
     * ********************************************************************************************/

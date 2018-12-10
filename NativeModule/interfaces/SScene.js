@@ -547,6 +547,7 @@ export default (function () {
           }
       }
 
+<<<<<<< HEAD
       function getLableAttributeList(){
           try {
               return SScene.getLableAttributeList()
@@ -562,6 +563,8 @@ export default (function () {
             console.error(e);
           }
       }
+=======
+>>>>>>> 76e5c0770a5f17f16ad72968d147a2b42ffbe3a0
 
     getWorkspaceType = (type) => {
         var value
