@@ -169,7 +169,7 @@ class SMMapView extends Component {
 
     return (
       <View style={styles.views}>
-        <View style={{height: 0, width: '100%'}} />
+        <View style={styles.view} />
         <RCTMapView {...props} style={styles.map} onChange={this._onChange} />
         { !this.state.callouts ||
         this.state.callouts.filter(function (item) {
@@ -188,10 +188,10 @@ class SMMapView extends Component {
               top: offY,
               left: offX,
             }]
-          }></Image>
+          }/>
         })
         }
-        <View style={{height: 0, width: '100%'}} />
+        <View style={styles.view} />
       </View>
     );
   }
@@ -227,7 +227,11 @@ var styles = StyleSheet.create({
     position: 'absolute',
     top: -100,
     left: -100,
-  }
+  },
+  view: {
+    height: 0,
+    width: '100%',
+  },
 });
 
 export default SMMapView;

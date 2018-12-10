@@ -6,7 +6,7 @@ import {
 } from 'react-native'
 import {
     EventConst
-} from '../constains'
+} from '../../constains/index'
 import SSceneTool from './SSceneTool'
 let SScene = NativeModules.SScene
 const nativeEvt = new NativeEventEmitter(SScene);

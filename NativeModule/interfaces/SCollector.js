@@ -31,7 +31,7 @@ async function getStyle() {
  * 设置数据集。若所在数据源不可用，则新建数据源后，再创建数据集
  * @param datasetName
  * @param datasetType
- * @param datasourceName
+ * @param datasourceName  若为空，则用当前地图命名；若地图还未保存，则命名为Collection
  * @param datasourcePath  数据源所在路径，不含文件名
  * @returns {Promise.<Promise|Promise.<void>>}
  */
@@ -41,7 +41,7 @@ async function setDataset(info = {}) {
     info.datasetName = info.datasetName || ''
     info.datasetType = info.datasetType || DatasetType.POINT
     info.datasourcePath = info.datasourcePath || (await Utility.appendingHomeDirectory() + '/iTablet/User/Customer/Data/Datasource/')
-    info.datasourceName = info.datasourceName || 'Collection'
+    info.datasourceName = info.datasourceName || ''
     info.style = info.style ? JSON.stringify(info.style) : ''
     return Collector.setDataset(info)
   } catch (e) {

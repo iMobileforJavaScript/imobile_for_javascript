@@ -74,7 +74,6 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     public void setLayerVisible(String path, boolean value, Promise promise) {
         try {
             SMLayer.setLayerVisible(path, value);
-            promise.resolve(true);
             SMap.getSMWorkspace().getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {

@@ -123,4 +123,18 @@ public class FileUtil {
             return false;
         }
     }
+
+    public static boolean deleteFile(String path) {
+        try {
+            File file = new File(path);
+            boolean result = false;
+            if (file.exists()) {
+                result = file.delete();
+            }
+            return result;
+        }catch (Exception e){
+            return false;
+        }
+
+    }
 }

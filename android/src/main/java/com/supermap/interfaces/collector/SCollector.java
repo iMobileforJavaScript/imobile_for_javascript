@@ -102,7 +102,12 @@ public class SCollector extends ReactContextBaseJavaModule {
 
             String name = data.getString("datasetName");
             int type = data.getInt("datasetType");
-            String datasourceName = data.getString("datasourceName");
+            String datasourceName = "Collection";
+            if (data.getString("datasourceName") != null && !data.getString("datasourceName").equals("")) {
+                datasourceName = data.getString("datasourceName");
+            } else if (!smMapWC.getMapControl().getMap().getName().equals("")) {
+                datasourceName = smMapWC.getMapControl().getMap().getName();
+            }
             String datasourcePath = data.getString("datasourcePath");
             String style = data.getString("style");
 
@@ -113,7 +118,7 @@ public class SCollector extends ReactContextBaseJavaModule {
             }
 
             if (!name.equals("")) {
-                layer = smMapWC.getMapControl().getMap().getLayers().get(name);
+                layer = smMapWC.getMapControl().getMap().getLayers().get(name + "@" + datasourceName);
             }
             if (layer == null) {
                 ds = smMapWC.addDatasetByName(name, type, datasourceName, datasourcePath);
