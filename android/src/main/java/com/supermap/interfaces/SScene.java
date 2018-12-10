@@ -527,7 +527,7 @@ public class SScene extends ReactContextBaseJavaModule {
             scene.getTerrainLayers().add(url,name);
             scene.refresh();
             int i=scene.getTerrainLayers().getCount();
-            promise.resolve(i);
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }

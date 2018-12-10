@@ -360,8 +360,9 @@ export default (function () {
         }
     }
 
-    function addLayer3D() {
+    function addLayer3D(Url, Layer3DType, layerName, imageFormatType, dpi, addToHead) {
         try {
+            // console.log(SScene.addLayer3D)
             return SScene.addLayer3D( Url, Layer3DType, layerName, imageFormatType, dpi, addToHead)
         } catch (error) {
             console.log(error)
@@ -547,7 +548,6 @@ export default (function () {
           }
       }
 
-<<<<<<< HEAD
       function getLableAttributeList(){
           try {
               return SScene.getLableAttributeList()
@@ -563,8 +563,6 @@ export default (function () {
             console.error(e);
           }
       }
-=======
->>>>>>> 76e5c0770a5f17f16ad72968d147a2b42ffbe3a0
 
     getWorkspaceType = (type) => {
         var value
