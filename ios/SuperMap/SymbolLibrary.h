@@ -92,6 +92,8 @@
  */
 -(NSString*)getLibPath;
 
+-(BOOL)saveAs:(NSString *)fileName;
+-(BOOL)appendFromFile:(NSString *)fileName isReplace:(BOOL)bReplace;
 -(void)clear;
 -(void)dispose;
 
