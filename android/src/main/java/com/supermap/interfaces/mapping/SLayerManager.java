@@ -6,7 +6,14 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
+import com.supermap.data.Dataset;
+import com.supermap.data.Datasets;
+import com.supermap.data.Datasources;
+import com.supermap.mapping.Layer;
+import com.supermap.mapping.Map;
 import com.supermap.smNative.SMLayer;
+
+import org.apache.http.cookie.SM;
 
 public class SLayerManager extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SLayerManager";
@@ -67,7 +74,6 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     public void setLayerVisible(String path, boolean value, Promise promise) {
         try {
             SMLayer.setLayerVisible(path, value);
-            promise.resolve(true);
             SMap.getSMWorkspace().getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
@@ -115,6 +121,64 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         try {
             WritableArray data = SMLayer.getSelectionAttributeByLayer(layerPath);
             promise.resolve(data);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据数据源序号和数据集序号，添加图层
+     * @param datasourceIndex
+     * @param datasetIndex
+     * @param promise
+     */
+    @ReactMethod
+    public void addLayerByIndex(int datasourceIndex, int datasetIndex, Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            Datasources datasources = sMap.getSmMapWC().getWorkspace().getDatasources();
+            Boolean result = false;
+            if (datasources != null && datasources.getCount() > datasourceIndex) {
+                Datasets dss = datasources.get(datasourceIndex).getDatasets();
+                if (dss.getCount() > datasetIndex) {
+                    Map map = sMap.getSmMapWC().getMapControl().getMap();
+                    Dataset ds = dss.get(datasetIndex);
+                    Layer layer = map.getLayers().add(ds, true);
+                    map.setVisibleScalesEnabled(false);
+
+                    result = layer != null;
+                }
+            }
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据数据源名称和数据集序号，添加图层
+     * @param datasourceName
+     * @param datasetIndex
+     * @param promise
+     */
+    @ReactMethod
+    public void addLayerByName(String datasourceName, int datasetIndex, Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            Datasources datasources = sMap.getSmMapWC().getWorkspace().getDatasources();
+            Boolean result = false;
+            if (datasources != null && datasources.get(datasourceName) != null) {
+                Datasets dss = datasources.get(datasourceName).getDatasets();
+                if (dss.getCount() > datasetIndex) {
+                    Map map = sMap.getSmMapWC().getMapControl().getMap();
+                    Dataset ds = dss.get(datasetIndex);
+                    Layer layer = map.getLayers().add(ds, true);
+                    map.setVisibleScalesEnabled(false);
+
+                    result = layer != null;
+                }
+            }
+            promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
         }

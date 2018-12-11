@@ -7,12 +7,21 @@ let objDownloadCallBackResult;
 let bIsFirstDownload = true;
 function init() {
   OnlineServiceNative.init();
-  // if(Platform.OS === 'ios'){
-  //   callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (obj) {
-  //     objDownloadCallBackResult=obj;
-  //   });
-  // }
+}
+/** 仅支持android*/
+function getAndroidSessionID() {
+  if(Platform.OS === 'android'){
+    return OnlineServiceNative.getSessionID()
+  }
+  return 'undefined'
 
+}
+/** 仅支持android*/
+function cacheImage(imageUrl,saveImagePath) {
+  if(Platform.OS === 'android'){
+    return OnlineServiceNative.cacheImage(imageUrl,saveImagePath)
+  }
+  return '不支持ios的缓存'
 }
 
 function objCallBack(){
@@ -50,28 +59,6 @@ function uploadFile(path, dataName, handler) {
 
 
 function downloadFile(path, onlineDataName) {
-  // if (Platform.OS === 'ios' && handler) {
-  //   if (typeof handler.onProgress === 'function') {
-  //     callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (obj) {
-  //       console.log("progress:" + obj.progress);
-  //       let downloadId = obj.id;
-  //       if (downloadId === onlineDataName) {
-  //         handler.onProgress(obj.progress);
-  //       }
-  //     })
-  //   }
-  //   if (typeof handler.onResult === 'function') {
-  //     callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (bResult) {
-  //       handler.onResult(bResult);
-  //     })
-  //     callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (strErrorInfo) {
-  //       handler.onResult(strErrorInfo);
-  //     })
-  //   }
-  // }
-  // else if (Platform.OS === 'android' && handler) {
-  //
-  // }
   OnlineServiceNative.download(path, onlineDataName);
 }
 
@@ -256,4 +243,6 @@ export default {
   getAllUserDataList,
   getAllUserSymbolLibList,
   publishService,
+  getAndroidSessionID,
+  cacheImage,
 }

@@ -90,6 +90,27 @@ function getSelectionAttributeByLayer(path) {
   }
 }
 
+/**
+ * 根据数据源名称/序号 和 数据集序号，添加图层
+ * @param datasourceNameOrIndex
+ * @param datasetIndex
+ * @returns {*}
+ */
+function addLayer(datasourceNameOrIndex, datasetIndex = -1) {
+  try {
+    if (datasourceNameOrIndex === '' || datasourceNameOrIndex === -1 || datasetIndex === -1) {
+      return
+    }
+    if (typeof datasourceNameOrIndex === 'number') {
+      return LayerManager.addLayerByIndex(datasourceNameOrIndex, datasetIndex)
+    } else {
+      return LayerManager.addLayerByName(datasourceNameOrIndex, datasetIndex)
+    }
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 export {
   getLayersByType,
   getLayersByGroupPath,
@@ -97,4 +118,5 @@ export {
   getLayerIndexByName,
   getLayerAttribute,
   getSelectionAttributeByLayer,
+  addLayer,
 }

@@ -230,11 +230,21 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  * 清除所有标注
  */
 -(void)clearAllLabel{
+    mSceneControl.isRender = false;
     [mSceneControl.scene.layers removeLayerWithName:@"NodeAnimation"];// getScene().getLayers().removeLayerWithName("NodeAnimation");
-    [self reset];
+    //[self reset];
     if ( [self deleteSingleFile: [kmlPath stringByAppendingString:kmlName]]){// deleteSingleFile(kmlPath + kmlName)) {
-        [self addKML];
+       // [self addKML];
     }
+    [mSceneControl.scene.layers removeLayerWithName:@"Favorite"];// getScene().getLayers().removeLayerWithName("NodeAnimation");
+    
+    if ( [self deleteSingleFile: [kmlPath stringByAppendingString:@"Favorite.kml"]]){// deleteSingleFile(kmlPath + kmlName)) {
+       
+    }
+    favoriteLayer3d = mLayer3d = nil;
+    [self reset];
+     [self addKML];
+    mSceneControl.isRender  = YES;
 }
 
 /**
@@ -561,15 +571,18 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
 }
 
 -(void)addKML{
+    mSceneControl.isRender = false;
     if (mLayer3d==nil) {
         [self makeFilePath:kmlPath fileName:kmlName]; //(kmlPath, kmlName);
+        [mSceneControl.scene.layers removeLayerWithName:@"NodeAnimation"];
         mLayer3d = [mSceneControl.scene.layers addLayerWith:[kmlPath stringByAppendingString:kmlName] Type:KML ToHead:true LayerName:@"NodeAnimation"];
     }
     if (favoriteLayer3d==nil) {
-        [self makeFilePath:kmlPath fileName:@"Favorite.mkl"];
-        favoriteLayer3d = [mSceneControl.scene.layers addLayerWith:[kmlPath stringByAppendingString:kmlName] Type:KML ToHead:true LayerName:@"Favorite"];
+        [self makeFilePath:kmlPath fileName:@"Favorite.kml"];
+        [mSceneControl.scene.layers removeLayerWithName:@"Favorite"];
+        favoriteLayer3d = [mSceneControl.scene.layers addLayerWith:[kmlPath stringByAppendingString:@"Favorite.kml"] Type:KML ToHead:true LayerName:@"Favorite"];
     }
-    
+     mSceneControl.isRender  = YES;
    // mSceneControl.getScene().getLayers().addLayerWith(kmlPath + kmlName, Layer3DType.KML, true,
                                         //              "NodeAnimation");
 }

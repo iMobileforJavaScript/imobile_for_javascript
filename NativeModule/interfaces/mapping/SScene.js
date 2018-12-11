@@ -6,7 +6,7 @@ import {
 } from 'react-native'
 import {
     EventConst
-} from '../constains'
+} from '../../constains/index'
 import SSceneTool from './SSceneTool'
 let SScene = NativeModules.SScene
 const nativeEvt = new NativeEventEmitter(SScene);
@@ -360,9 +360,10 @@ export default (function () {
         }
     }
 
-    function addLayer3D() {
+    function addLayer3D(Url, Layer3DType, layerName, imageFormatType, dpi, addToHead) {
         try {
-            return SScene.changeBaseMap()
+            // console.log(SScene.addLayer3D)
+            return SScene.addLayer3D( Url, Layer3DType, layerName, imageFormatType, dpi, addToHead)
         } catch (error) {
             console.log(error)
         }
@@ -547,6 +548,30 @@ export default (function () {
           }
       }
 
+      function getLableAttributeList(){
+          try {
+              return SScene.getLableAttributeList()
+          } catch (error) {
+            console.error(e);
+          }
+      }
+      
+      function flyToFeatureById(){
+          try {
+              return SScene.flyToFeatureById()
+          } catch (error) {
+            console.error(e);
+          }
+      }
+
+      function getSetting(){
+          try {
+              return SScene.getSetting()
+          } catch (error) {
+            console.error(e);
+          }
+      }
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -631,6 +656,9 @@ export default (function () {
         removeKMLOfWorkcspace,
         doZipFiles,
         getWorkspacePath,
+        getLableAttributeList,
+        flyToFeatureById,
+        getSetting,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
