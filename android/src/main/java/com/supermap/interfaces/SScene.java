@@ -718,6 +718,22 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取工作空间所在地址
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getWorkspacePath(Promise promise) {
+        try {
+            sScene = getInstance();
+            String path = sScene.smSceneWc.getWorkspace().getConnectionInfo().getServer();
+            promise.resolve(path);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置飞行
      *
      * @param promise

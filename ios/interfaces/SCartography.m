@@ -144,7 +144,7 @@ RCT_REMAP_METHOD(setLineWidth, setLineWidthWithResolver:(int) mm layerName:(NSSt
         if (layerSettingVector != nil) {
             GeoStyle *style = layerSettingVector.geoStyle;
             double width = (double) mm / 10;
-            [style setMarkerAngle:width];
+            [style setLineWidth:width];
             [[SMap singletonInstance].smMapWC.mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
@@ -164,7 +164,7 @@ RCT_REMAP_METHOD(setLineWidthByIndex, setLineWidthByIndexWithResolver:(int) mm l
         if (layerSettingVector != nil) {
             GeoStyle *style = layerSettingVector.geoStyle;
             double width = (double) mm / 10;
-            [style setMarkerAngle:width];
+            [style setLineWidth:width];
             [[SMap singletonInstance].smMapWC.mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {

@@ -208,6 +208,79 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 根据名称关闭数据源，datasourceName为空则全部关闭
+     * @param datasourceName
+     * @param promise
+     */
+    @ReactMethod
+    public void closeDatasourceWithName(String datasourceName, Promise promise) {
+        try {
+            sMap = getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+            Boolean isClose = true;
+            if (datasourceName.equals("")) {
+                for (int i = 0; i < datasources.getCount(); i++) {
+                    if (datasources.get(i) != null) {
+                        isClose = datasources.close(i) && isClose;
+                    }
+                }
+            } else {
+                if (datasources.get(datasourceName) != null) {
+                    isClose = datasources.close(datasourceName);
+                }
+            }
+
+            promise.resolve(isClose);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据序号关闭数据源，index = -1 则全部关闭
+     * @param index
+     * @param promise
+     */
+    @ReactMethod
+    public void closeDatasourceWithIndex(int index, Promise promise) {
+        try {
+            sMap = getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+            Boolean isClose = true;
+            if (index == -1) {
+                for (int i = 0; i < datasources.getCount(); i++) {
+                    if (datasources.get(i) != null) {
+                        isClose = datasources.close(i) && isClose;
+                    }
+                }
+            } else {
+                if (datasources.get(index) != null) {
+                    isClose = datasources.close(index);
+                }
+            }
+
+            promise.resolve(isClose);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 工作空间是否被修改
+     * @param promise
+     */
+    @ReactMethod
+    public void workspaceIsModified(Promise promise) {
+        try {
+            sMap = getInstance();
+            boolean result = sMap.smMapWC.getWorkspace().isModified();
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 保存工作空间
      * @param promise
      */
@@ -331,6 +404,8 @@ public class SMap extends ReactContextBaseJavaModule {
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             Maps maps = sMap.smMapWC.getWorkspace().getMaps();
 
+            Boolean isOpen = false;
+
             if (maps.getCount() > 0) {
                 String mapName = name;
 
@@ -338,13 +413,13 @@ public class SMap extends ReactContextBaseJavaModule {
                     mapName = maps.get(0);
                 }
 
-                map.open(mapName);
+                isOpen = map.open(mapName);
 
                 if (viewEntire) {
                     map.viewEntire();
                 }
 
-                if (center.hasKey("x") && center.hasKey("y")) {
+                if (center != null && center.hasKey("x") && center.hasKey("y")) {
                     Double x = center.getDouble("x");
                     Double y = center.getDouble("y");
                     Point2D point2D = new Point2D(x, y);
@@ -356,7 +431,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 map.refresh();
             }
 
-            promise.resolve(true);
+            promise.resolve(isOpen);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -636,19 +711,35 @@ public class SMap extends ReactContextBaseJavaModule {
     /**
      * 保存地图
      * @param name
+     * @param autoNaming   为true的话若有相同名字的地图则自动命名
      * @param promise
      */
     @ReactMethod
-    public void saveMap(String name, Promise promise) {
+    public void saveMap(String name, Boolean autoNaming, Promise promise) {
         try {
             sMap = getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            boolean result;
+            boolean result = false;
             if (name == null || name.equals("")) {
-                if (map.getLayers().getCount() > 0) {
+                if (map.getName() != null && !map.getName().equals("")) {
+                    result = map.save();
+                } else if (map.getLayers().getCount() > 0) {
                     name = map.getLayers().get(0).getName();
+                    int i = 0;
+                    if (autoNaming) {
+                        while (!result) {
+                            String newName = i == 0 ? name : (name + i);
+                            try {
+                                result = map.save(newName);
+                            } catch (Exception e) {
+                                result = false;
+                            }
+                            i++;
+                        }
+                    } else {
+                        result = map.save(name);
+                    }
                 }
-                result = map.save(name);
             } else {
                 result = map.save(name);
             }

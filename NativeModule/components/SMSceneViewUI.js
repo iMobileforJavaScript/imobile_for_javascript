@@ -37,7 +37,9 @@ class SMSceneView extends Component{
 
         return (
             <View style={styles.views}>
-                <RCTSceneView {...props} style={styles.map} onChange={this._onChange}></RCTSceneView>
+                <View style={{height: 0, width: '100%'}} />
+                <RCTSceneView {...props} style={styles.map} onChange={this._onChange} />
+                <View style={{height: 0, width: '100%'}} />
             </View>
         );
     }

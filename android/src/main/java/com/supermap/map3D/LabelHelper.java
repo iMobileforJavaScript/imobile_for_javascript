@@ -275,6 +275,7 @@ public class LabelHelper {
             case DRAWLINE:
                 //保存线
                 layer3d.getFeatures().add(geoline3d);
+                break;
             case DRAWAREA:
                 GeoRegion3D geoRegion3D = getRegion(myPoint3DArrayList);
                 if (geoRegion3D != null) {

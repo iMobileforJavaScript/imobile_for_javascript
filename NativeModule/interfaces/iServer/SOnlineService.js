@@ -1,4 +1,4 @@
-import {NativeModules, Platform, NativeEventEmitter} from 'react-native';
+import {NativeModules, Platform, NativeEventEmitter,DeviceEventEmitter} from 'react-native';
 import {EventConst} from '../../constains'
 let OnlineServiceNative = NativeModules.SOnlineService;
 /*获取ios原生层的回调*/
@@ -20,18 +20,27 @@ function objCallBack(){
 }
 
 function uploadFile(path, dataName, handler) {
-  console.log("progress: 0");
   if (Platform.OS === 'ios' && handler) {
     if (typeof handler.onProgress === 'function') {
       callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (obj) {
         console.log("progress: " + obj.progress);
-        let downloadId = obj.id;
         handler.onProgress(obj.progress);
       })
     }
     if (typeof handler.onResult === 'function') {
       callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADED, function (value) {
         handler.onResult(value);
+      })
+    }
+  }else{
+    if (typeof handler.onProgress === 'function'&& handler) {
+      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
+        handler.onProgress(progress);
+      })
+    }
+    if (typeof handler.onResult === 'function'&& handler) {
+      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADED, function (result) {
+        handler.onResult(result);
       })
     }
   }
