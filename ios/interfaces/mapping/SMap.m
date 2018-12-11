@@ -337,11 +337,14 @@ RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve 
 #pragma mark 获取UDB数据源的数据集列表
 RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)name:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[name,@219] forKeys:@[@"server",@"engineType"]];
+        if ([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:@"switchudb"]) {
+            [sMap.smMapWC.mapControl.map.workspace.datasources closeAlias:@"switchudb"];
+        }
+        NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[name,@219,@"switchudb"] forKeys:@[@"server",@"engineType",@"alias"]];
         Datasource* dataSource = [sMap.smMapWC openDatasource:params];
         NSInteger count = [dataSource.datasets count];
         NSString* name;
-        NSMutableArray* array = [[NSMutableArray alloc]init];
+        NSMutableArray* array = [[NSMutableArray alloc]init];	
         for(int i = 0; i < count; i++)
         {
             name = [[dataSource.datasets get:i] name];
