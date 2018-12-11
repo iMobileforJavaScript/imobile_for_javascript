@@ -237,6 +237,21 @@ public class LabelHelper {
         show();
     }
 
+    private static final int DELETEObj = 0xff05;
+    private Handler mHandle = new Handler()
+    {
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+
+                //主线程刷新地图
+                case DELETEObj:
+                    mSceneControl.getScene().getLayers().get("NodeAnimation").getFeatures().toKMLFile(kmlPath + kmlName);
+                    break;
+                default:
+                    break;
+            }
+        };
+    };
     /**
      * 清除所有标注
      */
@@ -248,6 +263,16 @@ public class LabelHelper {
 
         //mSceneControl.getScene().getLayers().removeLayerWithName("NodeAnimation");
         reSet();
+
+        mHandle.obtainMessage(DELETEObj).sendToTarget();
+
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                mHandle.obtainMessage(DELETEObj).sendToTarget();
+            }
+        }, 300);
+
+
 //        if (deleteSingleFile(kmlPath + kmlName)) {
 //            mLayer3d = null;
 //            addKML();

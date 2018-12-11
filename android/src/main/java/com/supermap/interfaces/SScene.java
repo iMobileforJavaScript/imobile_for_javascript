@@ -1275,7 +1275,8 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene=getInstance();
             Scene scene=sScene.smSceneWc.getSceneControl().getScene();
-            if(!scene.getLayers().get("NodeAnimation").getName().equals("NodeAnimation")){
+
+            if( scene.getLayers().indexOf("NodeAnimation") == -1){
                promise.resolve(null);
             }else {
                 Layer3D layer3D=scene.getLayers().get("NodeAnimation");
@@ -1338,7 +1339,7 @@ public class SScene extends ReactContextBaseJavaModule {
                     promise.resolve(true);
                 }
             }
-            } catch (Exception e) {
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
