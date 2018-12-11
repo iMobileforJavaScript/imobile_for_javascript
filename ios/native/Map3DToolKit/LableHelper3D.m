@@ -274,12 +274,13 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
                 [layer3d.feature3Ds addGeometry3D:geoPoint3D]; //getFeatures().add(geoPoint3D);
             }
             break;
-        case DRAWLINE:
+        case DRAWLINE:{
             //保存线
-            [layer3d.feature3Ds addGeometry3D:geoline3d];
+            
+             [layer3d.feature3Ds addGeometry3D:geoline3d];
             // layer3d.getFeatures().add(geoline3d);
             break;
-        case DRAWAREA:
+        }case DRAWAREA:
         {
 //            Point3Ds *pnt3ds = [geoArea3d getPart:0];
 //            GeoRegion3D *georegion3d = [[GeoRegion3D alloc] initWithPoint3Ds:pnt3ds];
@@ -506,6 +507,7 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
         
         mSceneControl.isRender = NO;
         GeoPlacemark *geoPlacemark = [[GeoPlacemark alloc]initWithName:text andGeomentry:geopnt];
+       // geoPlacemark.description = @"123456";
         TextStyle *textstyle = [[TextStyle alloc]init];
         [geoPlacemark setNameStyle:textstyle];
         
@@ -517,6 +519,7 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
             favoriteFeature3D = [[favoriteLayer3d feature3Ds]addGeometry3D:geoPlacemark];
             //[favoriteFeature3D setGeometry3D:geoPlacemark];
         }
+        favoriteFeature3D.description = [NSString stringWithFormat:@"x=%.2f, y=%.2f, z=%.2f",geopnt.x,geopnt.y,geopnt.z];
         //[mSceneControl.scene.trackingLayer3D AddGeometry:geoPlacemark Tag:@"aaaa"];
         mSceneControl.isRender = YES;
         //[mSceneControl.scene refresh];

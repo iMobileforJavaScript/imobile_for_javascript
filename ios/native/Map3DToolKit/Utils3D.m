@@ -69,7 +69,8 @@
         } else {
             strValue = value;
         }
-        [attributeMap setObject:strValue forKey:name];
+        if(strValue!=nil && name!=nil)
+            [attributeMap setObject:strValue forKey:name];
        // attributeMap.put(name + ":",strValue);
     }
   //  attributeMap = dict;

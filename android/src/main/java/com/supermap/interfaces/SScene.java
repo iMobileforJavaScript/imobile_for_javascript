@@ -1275,7 +1275,8 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene=getInstance();
             Scene scene=sScene.smSceneWc.getSceneControl().getScene();
-            if(!scene.getLayers().get("NodeAnimation").getName().equals("NodeAnimation")){
+
+            if( scene.getLayers().indexOf("NodeAnimation") == -1){
                promise.resolve(null);
             }else {
                 Layer3D layer3D=scene.getLayers().get("NodeAnimation");
@@ -1285,7 +1286,8 @@ public class SScene extends ReactContextBaseJavaModule {
                 for (int i = 0; i <count ; i++) {
                     Feature3D feature3D= (Feature3D) feature3Ds.get(i);
                     WritableMap map=Arguments.createMap();
-                    map.putString("description",feature3D.getDescription());
+                    Point3D p3d = feature3D.getGeometry().getInnerPoint3D();
+                    map.putString("description","x="+(int)(p3d.getX()*100)/100.0+" y="+(int)(p3d.getY()*100)/100.0+" z="+(int)(p3d.getZ()*100)/100.0);
                     map.putInt("id",feature3D.getID());
                     map.putString("name",feature3D.getName());
                     array.pushMap(map);
@@ -1338,7 +1340,7 @@ public class SScene extends ReactContextBaseJavaModule {
                     promise.resolve(true);
                 }
             }
-            } catch (Exception e) {
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
