@@ -340,15 +340,18 @@ RCT_REMAP_METHOD(getThemeExpressByUdb, getThemeExpressByUdbWithResolver:(NSStrin
         Datasets* datasets = datasource.datasets;
         DatasetVector* datasetVector = (DatasetVector*)[datasets getWithName:datasetName];
         FieldInfos* fieldInfos = datasetVector.fieldInfos;
-        NSMutableDictionary* mulDic = [[NSMutableDictionary alloc] init];
+        NSMutableArray* array = [[NSMutableArray alloc]init];
         NSInteger count = fieldInfos.count;
-        for (NSInteger i = 0; i < count; i++) {
+        for(int i = 0; i < count; i++)
+        {
             FieldInfo* fieldinfo = [fieldInfos get:i];
             NSString* strName = fieldinfo.name;
-            [mulDic setValue:strName forKey:@"title"];
+            NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
+            [info setObject:(strName) forKey:(@"title")];
+            [array addObject:info];
         }
         [datasourceConnection dispose];
-        resolve(mulDic);
+        resolve(array);
     }
     @catch(NSException *exception){
         reject(@"workspace", exception.reason, nil);

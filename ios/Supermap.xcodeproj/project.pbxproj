@@ -721,13 +721,10 @@
 				0AB00D5821A6C90F00C35E4B /* SMLayer.m */,
 				4AF967A221B50EC000105B74 /* SMCartography.h */,
 				4AF967A321B50EC000105B74 /* SMCartography.m */,
-<<<<<<< HEAD
 				4AE32D4421B91EB500555A5A /* SMThemeCartography.h */,
 				4AE32D4521B91EB500555A5A /* SMThemeCartography.m */,
-=======
 				0A84DED421BA44C9007995FC /* SMDatasource.h */,
 				0A84DED521BA44C9007995FC /* SMDatasource.m */,
->>>>>>> a503477e26ff3e32256bdd2b9ae7a5b146218c08
 			);
 			path = native;
 			sourceTree = "<group>";
