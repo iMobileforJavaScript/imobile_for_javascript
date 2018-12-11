@@ -86,14 +86,19 @@ RCT_REMAP_METHOD(getStyle, getStyleWithResolver:(RCTPromiseResolveBlock)resolve 
 RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
-        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
         Collector* collector = [self getCollector];
         Dataset* ds;
         Layer* layer;
         
         NSString* name = [info objectForKey:@"datasetName"];
         NSNumber* type = [info objectForKey:@"datasetType"];
-        NSString* datasourceName = [info objectForKey:@"datasourceName"];
+        NSString* datasourceName = @"Collection";
+        if ([info objectForKey:@"datasourceName"] != nil && ![[info objectForKey:@"datasourceName"] isEqualToString:@""]) {
+            datasourceName = [info objectForKey:@"datasourceName"];
+        } else if (![map.name isEqualToString:@""]) {
+            datasourceName = map.name;
+        }
         NSString* datasourcePath = [info objectForKey:@"datasourcePath"];
         NSString* styleJson = [info objectForKey:@"style"];
         GeoStyle* style = nil;

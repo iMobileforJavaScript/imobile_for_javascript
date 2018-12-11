@@ -73,4 +73,46 @@ RCT_REMAP_METHOD(getSelectionAttributeByLayer, getSelectionAttributeByLayer:(NSS
         reject(@"LayerManager", exception.reason, nil);
     }
 }
+
+#pragma mark - 根据数据源序号和数据集序号，添加图层
+RCT_REMAP_METHOD(addLayerByIndex, addLayerByIndex:(int)datasourceIndex datasetIndex:(int)datasetIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        Datasources* dataSources = sMap.smMapWC.workspace.datasources;
+        BOOL result = NO;
+        if (dataSources && dataSources.count > datasourceIndex) {
+            Datasets* dss = [dataSources get:datasourceIndex].datasets;
+            if (dss.count > datasetIndex) {
+                Dataset* ds = [dss get:datasetIndex];
+                Layer* layer = [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
+                sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
+                result = layer != nil;
+            }
+        }
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"LayerManager", exception.reason, nil);
+    }
+}
+
+#pragma mark - 根据数据源名称和数据集序号，添加图层
+RCT_REMAP_METHOD(addLayerByName, addLayerByName:(NSString *)datasourceName datasetIndex:(int)datasetIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        Datasources* dataSources = sMap.smMapWC.workspace.datasources;
+        BOOL result = NO;
+        if (dataSources && [dataSources getAlias:datasourceName]) {
+            Datasets* dss = [dataSources getAlias:datasourceName].datasets;
+            if (dss.count > datasetIndex) {
+                Dataset* ds = [dss get:datasetIndex];
+                Layer* layer = [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
+                sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
+                result = layer != nil;
+            }
+        }
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"LayerManager", exception.reason, nil);
+    }
+}
 @end

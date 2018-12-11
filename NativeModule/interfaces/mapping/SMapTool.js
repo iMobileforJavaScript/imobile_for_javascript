@@ -5,7 +5,7 @@
  Description: 地图工具类
  **********************************************************************************/
 import { NativeModules, Platform } from 'react-native'
-import { EventConst } from '../constains'
+import { EventConst } from '../../constains/index'
 let SMap = NativeModules.SMap
 const Action = NativeModules.Action
 

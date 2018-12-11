@@ -157,6 +157,8 @@
 		0A51675321AD437D003C77BE /* SMSceneWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */; };
 		0A51675621AF7EF7003C77BE /* MapTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A51675521AF7EF7003C77BE /* MapTool.m */; };
 		0A56919121B7E58300F46C9B /* SMFileUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A56919021B7E58300F46C9B /* SMFileUtil.m */; };
+		0A84DED321BA403B007995FC /* SDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A84DED221BA403B007995FC /* SDatasource.m */; };
+		0A84DED621BA44C9007995FC /* SMDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A84DED521BA44C9007995FC /* SMDatasource.m */; };
 		0AB00D5621A6C8F800C35E4B /* SMSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB00D5421A6C8F700C35E4B /* SMSymbol.m */; };
 		0AB00D5A21A6C93A00C35E4B /* SMLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB00D5821A6C90F00C35E4B /* SMLayer.m */; };
 		4AA0C2ED21B1316C00614FE4 /* STranslate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AA0C2EB21B1316B00614FE4 /* STranslate.m */; };
@@ -495,6 +497,10 @@
 		0A56919021B7E58300F46C9B /* SMFileUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFileUtil.m; sourceTree = "<group>"; };
 		0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSceneWC.m; sourceTree = "<group>"; };
 		0A6DE64121A2CC4000CD27EA /* SMSceneWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSceneWC.h; sourceTree = "<group>"; };
+		0A84DED121BA403B007995FC /* SDatasource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SDatasource.h; sourceTree = "<group>"; };
+		0A84DED221BA403B007995FC /* SDatasource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SDatasource.m; sourceTree = "<group>"; };
+		0A84DED421BA44C9007995FC /* SMDatasource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMDatasource.h; sourceTree = "<group>"; };
+		0A84DED521BA44C9007995FC /* SMDatasource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMDatasource.m; sourceTree = "<group>"; };
 		0AB00D5421A6C8F700C35E4B /* SMSymbol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSymbol.m; sourceTree = "<group>"; };
 		0AB00D5521A6C8F800C35E4B /* SMSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSymbol.h; sourceTree = "<group>"; };
 		0AB00D5721A6C90F00C35E4B /* SMLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLayer.h; sourceTree = "<group>"; };
@@ -670,6 +676,8 @@
 				D854D869218310720075B5F8 /* SMap.h */,
 				D835E5AE219EC726008910F0 /* SLayerManager.h */,
 				D835E5AF219EC726008910F0 /* SLayerManager.m */,
+				0A84DED121BA403B007995FC /* SDatasource.h */,
+				0A84DED221BA403B007995FC /* SDatasource.m */,
 			);
 			path = mapping;
 			sourceTree = "<group>";
@@ -713,8 +721,13 @@
 				0AB00D5821A6C90F00C35E4B /* SMLayer.m */,
 				4AF967A221B50EC000105B74 /* SMCartography.h */,
 				4AF967A321B50EC000105B74 /* SMCartography.m */,
+<<<<<<< HEAD
 				4AE32D4421B91EB500555A5A /* SMThemeCartography.h */,
 				4AE32D4521B91EB500555A5A /* SMThemeCartography.m */,
+=======
+				0A84DED421BA44C9007995FC /* SMDatasource.h */,
+				0A84DED521BA44C9007995FC /* SMDatasource.m */,
+>>>>>>> a503477e26ff3e32256bdd2b9ae7a5b146218c08
 			);
 			path = native;
 			sourceTree = "<group>";
@@ -1180,6 +1193,7 @@
 				D8DD420C2174874D009D80E9 /* JSSymbolType.m in Sources */,
 				0A332E1D211D623E00F56F26 /* JSGridHotChart.m in Sources */,
 				D8DD42392175D06C009D80E9 /* JSSymbolFillLibrary.m in Sources */,
+				0A84DED621BA44C9007995FC /* SMDatasource.m in Sources */,
 				D8FB9CF6219510C800597AE5 /* SScene.m in Sources */,
 				0A332E35211D623E00F56F26 /* JSOverlayAnalyst.m in Sources */,
 				0A332DF5211D623E00F56F26 /* JSBufferAnalystParameter.m in Sources */,
@@ -1216,6 +1230,7 @@
 				0A332E38211D623E00F56F26 /* JSPieChartData.m in Sources */,
 				D8DD42332175CC32009D80E9 /* JSSymbolLineLibrary.m in Sources */,
 				D877B5B22133D5C00044AE61 /* JSOnlineService.m in Sources */,
+				0A84DED321BA403B007995FC /* SDatasource.m in Sources */,
 				0A51674E21AD42AB003C77BE /* Utils3D.m in Sources */,
 				0A332DFC211D623E00F56F26 /* JSCollector.m in Sources */,
 				0A332E60211D623E00F56F26 /* JSThemeType.m in Sources */,

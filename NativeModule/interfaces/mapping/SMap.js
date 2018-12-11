@@ -7,7 +7,8 @@
 import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform } from 'react-native'
 import * as MapTool from './SMapTool'
 import * as LayerManager from './SLayerManager'
-import { EventConst } from '../constains'
+import * as Datasource from './SDatasource'
+import { EventConst } from '../../constains/index'
 let SMap = NativeModules.SMap
 
 const nativeEvt = new NativeEventEmitter(SMap);
@@ -155,11 +156,12 @@ export default (function () {
   /**
    * 保存地图
    * @param name
-   * @returns {*|Promise}
+   * @param autoNaming 为true的话若有相同名字的地图则自动命名
+   * @returns {*}
    */
-  function saveMap(name = '') {
+  function saveMap(name = '', autoNaming = true) {
     try {
-      return SMap.saveMap(name)
+      return SMap.saveMap(name, autoNaming)
     } catch (e) {
       console.error(e)
     }
@@ -545,6 +547,32 @@ export default (function () {
       console.error(e)
     }
   }
+
+  /**
+   * 根据名称/序号关闭数据源
+   * value = '' 或 value = -1 则全部关闭
+   */
+  function workspaceIsModified(){
+    try {
+      return SMap.workspaceIsModified()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 根据地图名称获取地图的index, 若name为空，则返回当前地图的index
+   * @param mapName
+   * @returns {*}
+   */
+  function getMapIndex(mapName){
+    try {
+      return SMap.getMapIndex(mapName)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
   let SMapExp = {
     openWorkspace,
     openDatasource,
@@ -577,8 +605,10 @@ export default (function () {
     openMapFromXML,
     getMapDatasourcesAlias,
     removeLayerWithName,
+    workspaceIsModified,
+    getMapIndex,
   }
-  Object.assign(SMapExp, MapTool, LayerManager)
+  Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 
   return SMapExp
 })()

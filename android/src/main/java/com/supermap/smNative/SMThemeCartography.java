@@ -6,9 +6,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.ColorParseUtil;
 import com.supermap.data.*;
 import com.supermap.interfaces.mapping.SMap;
-import com.supermap.mapping.Layer;
-import com.supermap.mapping.Layers;
-import com.supermap.mapping.MapControl;
+import com.supermap.mapping.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -389,4 +387,103 @@ public class SMThemeCartography {
 
     }
 
+    /**
+     * 获取分段模式
+     * @param mode
+     * @return RangeMode
+     */
+    public static RangeMode getRangeMode(String mode) {
+        switch (mode) {
+            case "CUSTOMINTERVAL":
+                //自定义分段
+                return RangeMode.CUSTOMINTERVAL;
+            case "EQUALINTERVAL":
+                //等距离分段
+                return RangeMode.EQUALINTERVAL;
+            case "LOGARITHM":
+                //对数分段
+                return RangeMode.LOGARITHM;
+            case "NONE":
+                //空分段模式
+                return RangeMode.NONE;
+            case "QUANTILE":
+                //等计数分段
+                return RangeMode.QUANTILE;
+            case "SQUAREROOT":
+                //平方根分段
+                return RangeMode.SQUAREROOT;
+            case "STDDEVIATION":
+                //标准差分段。
+                return RangeMode.STDDEVIATION;
+            default:
+                //默认：等距分段
+                return RangeMode.EQUALINTERVAL;
+        }
+    }
+
+    /**
+     * 返回标签专题图中的标签背景的形状类型。
+     * @param shape
+     * @return RangeMode
+     */
+    public static LabelBackShape getLabelBackShape(String shape) {
+        switch (shape) {
+            case "DIAMOND":
+                // 菱形背景
+                return LabelBackShape.DIAMOND;
+            case "ELLIPSE":
+                // 椭圆形背景
+                return LabelBackShape.ELLIPSE;
+            case "MARKER":
+                // 符号背景
+                return LabelBackShape.MARKER;
+            case "NONE":
+                // 空背景
+                return LabelBackShape.NONE;
+            case "RECT":
+                // 矩形背景
+                return LabelBackShape.RECT;
+            case "ROUNDRECT":
+                // 圆角矩形背景
+                return LabelBackShape.ROUNDRECT;
+            case "TRIANGLE":
+                // 三角形背景
+                return LabelBackShape.TRIANGLE;
+            default:
+                //默认
+                return LabelBackShape.NONE;
+        }
+    }
+
+    /**
+     * 返回标签专题图中的标签背景的形状类型字符串
+     * @param shape
+     * @return RangeMode
+     */
+    public static String getLabelBackShapeString(LabelBackShape shape) {
+        if (shape == LabelBackShape.DIAMOND) {
+            return "DIAMOND";
+        }
+        else if (shape == LabelBackShape.ELLIPSE) {
+            return "ELLIPSE";
+        }
+        else if (shape == LabelBackShape.MARKER) {
+            return "MARKER";
+        }
+        else if (shape == LabelBackShape.NONE) {
+            return "NONE";
+        }
+        else if (shape == LabelBackShape.RECT) {
+            return "RECT";
+        }
+        else if (shape == LabelBackShape.ROUNDRECT) {
+            return "ROUNDRECT";
+        }
+        else if (shape == LabelBackShape.TRIANGLE) {
+            return "TRIANGLE";
+        }
+        else {
+            return null;
+        }
+    }
 }

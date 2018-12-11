@@ -195,13 +195,86 @@ public class SMap extends ReactContextBaseJavaModule {
             Datasource datasource = sMap.smMapWC.openDatasource(params);
             sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
 
-            if (datasource != null && defaultName.equals("")) {
+            if (datasource != null && !defaultName.equals("")) {
                 Dataset ds = datasource.getDatasets().get(defaultName);
                 sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, true);
             }
             sMap.smMapWC.getMapControl().getMap().refresh();
 
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据名称关闭数据源，datasourceName为空则全部关闭
+     * @param datasourceName
+     * @param promise
+     */
+    @ReactMethod
+    public void closeDatasourceWithName(String datasourceName, Promise promise) {
+        try {
+            sMap = getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+            Boolean isClose = true;
+            if (datasourceName.equals("")) {
+                for (int i = 0; i < datasources.getCount(); i++) {
+                    if (datasources.get(i) != null && datasources.get(i).isOpened()) {
+                        isClose = datasources.close(i) && isClose;
+                    }
+                }
+            } else {
+                if (datasources.get(datasourceName) != null) {
+                    isClose = datasources.close(datasourceName);
+                }
+            }
+
+            promise.resolve(isClose);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据序号关闭数据源，index = -1 则全部关闭
+     * @param index
+     * @param promise
+     */
+    @ReactMethod
+    public void closeDatasourceWithIndex(int index, Promise promise) {
+        try {
+            sMap = getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+            Boolean isClose = true;
+            if (index == -1) {
+                for (int i = 0; i < datasources.getCount(); i++) {
+                    if (datasources.get(i) != null && datasources.get(i).isOpened()) {
+                        isClose = datasources.close(i) && isClose;
+                    }
+                }
+            } else {
+                if (datasources.get(index) != null) {
+                    isClose = datasources.close(index);
+                }
+            }
+
+            promise.resolve(isClose);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 工作空间是否被修改
+     * @param promise
+     */
+    @ReactMethod
+    public void workspaceIsModified(Promise promise) {
+        try {
+            sMap = getInstance();
+            boolean result = sMap.smMapWC.getWorkspace().isModified();
+            promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -346,7 +419,7 @@ public class SMap extends ReactContextBaseJavaModule {
                     map.viewEntire();
                 }
 
-                if (center.hasKey("x") && center.hasKey("y")) {
+                if (center != null && center.hasKey("x") && center.hasKey("y")) {
                     Double x = center.getDouble("x");
                     Double y = center.getDouble("y");
                     Point2D point2D = new Point2D(x, y);
@@ -638,27 +711,42 @@ public class SMap extends ReactContextBaseJavaModule {
     /**
      * 保存地图
      * @param name
+     * @param autoNaming   为true的话若有相同名字的地图则自动命名
      * @param promise
      */
     @ReactMethod
-    public void saveMap(String name, Promise promise) {
+    public void saveMap(String name, Boolean autoNaming, Promise promise) {
         try {
             sMap = getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            boolean result = false;
+            boolean mapSaved = false;
+            boolean wsSaved = false;
             if (name == null || name.equals("")) {
                 if (map.getName() != null && !map.getName().equals("")) {
-                    result = map.save();
+                    mapSaved = map.save();
                 } else if (map.getLayers().getCount() > 0) {
                     name = map.getLayers().get(0).getName();
-                    result = map.save(name);
+                    int i = 0;
+                    if (autoNaming) {
+                        while (!mapSaved) {
+                            String newName = i == 0 ? name : (name + i);
+                            try {
+                                mapSaved = map.save(newName);
+                            } catch (Exception e) {
+                                mapSaved = false;
+                            }
+                            i++;
+                        }
+                    } else {
+                        mapSaved = map.save(name);
+                    }
                 }
             } else {
-                result = map.save(name);
+                mapSaved = map.save(name);
             }
-            result = result && sMap.smMapWC.getWorkspace().save();
+            wsSaved = sMap.smMapWC.getWorkspace().save();
 
-            promise.resolve(result);
+            promise.resolve(mapSaved && wsSaved);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -681,6 +769,49 @@ public class SMap extends ReactContextBaseJavaModule {
             }
 
             promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 检查地图是否有改动
+     * @param promise
+     */
+    @ReactMethod
+    public void mapIsModified(Promise promise) {
+        try {
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            boolean idModified = map.isModified();
+
+            promise.resolve(idModified);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 检查地图是否有改动
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapIndex(String name, Promise promise) {
+        try {
+            int index = -1;
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            Maps maps = sMap.smMapWC.getWorkspace().getMaps();
+
+            if (name == null || name.equals("")) {
+                if (map != null) {
+                    index = maps.indexOf(map.getName());
+                }
+            } else {
+                index = maps.indexOf(name);
+            }
+
+            promise.resolve(index);
         } catch (Exception e) {
             promise.reject(e);
         }

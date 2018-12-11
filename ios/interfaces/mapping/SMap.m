@@ -181,6 +181,17 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
         reject(@"workspace", exception.reason, nil);
     }
 }
+
+#pragma mark 工作空间是否被修改
+RCT_REMAP_METHOD(workspaceIsModified, workspaceIsModifiedWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BOOL result = sMap.smMapWC.workspace.isModified;
+        resolve([NSNumber numberWithBool:result]);
+    }@catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
 #pragma mark 保存工作空间
 RCT_REMAP_METHOD(saveWorkspace, saveWorkspaceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
@@ -525,25 +536,35 @@ RCT_REMAP_METHOD(submit, submitWithResolver:(RCTPromiseResolveBlock)resolve reje
     }
 }
 
-#pragma mark 保存地图
-RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+#pragma mark 保存地图 autoNaming为true的话若有相同名字的地图则自动命名
+RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)autoNaming resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        BOOL result = NO;
+        BOOL mapSaved = NO;
+        BOOL wsSaved = NO;
         Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
         if (name == nil || [name isEqualToString:@""]) {
             if (map.name && ![map.name isEqualToString:@""]) {
-                result = [map save];
+                mapSaved = [map save];
             } else if (map.layers.getCount > 0) {
-                Layer* layer = [map.layers getLayerAtIndex:0];
+                Layer* layer = [map.layers getLayerAtIndex:map.layers.getCount - 1];
                 name = layer.name;
-                result = [map save:name];
+                if (autoNaming) {
+                    int i = 0;
+                    while (!mapSaved) {
+                        NSString* newName = i == 0 ? name : [NSString stringWithFormat:@"%@#%d", name, i];
+                        mapSaved = [map save:newName];
+                        i++;
+                    }
+                } else {
+                    mapSaved = [map save:name];
+                }
             }
         } else {
-            result = [map save:name];
+            mapSaved = [map save:name];
         }
-        result = result && [[SMap singletonInstance].smMapWC.workspace save];
+        wsSaved = [[SMap singletonInstance].smMapWC.workspace save];
         
-        resolve([NSNumber numberWithBool:result]);
+        resolve([NSNumber numberWithBool:mapSaved && wsSaved]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
@@ -570,6 +591,24 @@ RCT_REMAP_METHOD(mapIsModified, mapIsModifiedWithResolver:(RCTPromiseResolveBloc
         BOOL result = [SMap singletonInstance].smMapWC.mapControl.map.isModified;
         
         resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 根据地图名称获取地图的index, 若name为空，则返回当前地图的index
+RCT_REMAP_METHOD(getMapIndex, getMapIndexWithName:(NSString *)name Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        long index = -1;
+        if (name == nil || [name isEqualToString:@""]) {
+            if ([SMap singletonInstance].smMapWC.mapControl.map) {
+                index = [[SMap singletonInstance].smMapWC.workspace.maps indexOf:[SMap singletonInstance].smMapWC.mapControl.map.name];
+            }
+        } else {
+            index = [[SMap singletonInstance].smMapWC.workspace.maps indexOf:name];
+        }
+        
+        resolve([NSNumber numberWithLong:index]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
@@ -648,6 +687,19 @@ RCT_REMAP_METHOD(findSymbolsByGroups, findSymbolsByGroups:(NSString *)type path:
         NSArray* symbols = [SMSymbol findSymbolsByGroups:resoures type:type path:path];
         
         resolve(symbols);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 倒入工作空间
+RCT_REMAP_METHOD(importWorkspace, importWorkspaceInfo:(NSDictionary*)wInfo resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        BOOL result = [sMap.smMapWC importWorkspaceInfo:wInfo isResourcesReplace:YES];
+        
+         resolve(@(result));
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }

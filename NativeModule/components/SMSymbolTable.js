@@ -67,11 +67,13 @@ class SMSymbolTable extends React.Component {
       <View
         style={styles.container}
         onLayout={this._onLayout}>
+        <View style={styles.view} />
         <RCTSymbolTable
           ref={ref => this.symbolTable = ref}
           {...this.props}
           onSymbolClick={this._onSymbolClick}
         />
+        <View style={styles.view} />
       </View>
     )
   }
@@ -80,10 +82,11 @@ class SMSymbolTable extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: 'yellow',
     margin: 5,
-    // backgroundColor: 'blue',
-    // alignItems: 'center',
+  },
+  view: {
+    height: 0,
+    width: '100%',
   },
 })
 

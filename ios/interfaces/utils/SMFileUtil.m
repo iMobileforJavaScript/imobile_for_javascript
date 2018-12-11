@@ -71,18 +71,17 @@ RCT_REMAP_METHOD(getDirectoryContent, path:(NSString*)path getHomeDirectoryWithr
     }
     resolve(array);
 }
+
 +(BOOL)createFileDirectories:(NSString*)path
 {
     // 判断存放音频、视频的文件夹是否存在，不存在则创建对应文件夹
-    NSString* DOCUMENTS_FOLDER_AUDIO = path;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
     BOOL isDir = FALSE;
-    BOOL isDirExist = [fileManager fileExistsAtPath:DOCUMENTS_FOLDER_AUDIO isDirectory:&isDir];
-    
+    BOOL isDirExist = [fileManager fileExistsAtPath:path isDirectory:&isDir];
     
     if(!(isDirExist && isDir)){
-        BOOL bCreateDir = [fileManager createDirectoryAtPath:DOCUMENTS_FOLDER_AUDIO withIntermediateDirectories:YES attributes:nil error:nil];
+        BOOL bCreateDir = [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
         
         if(!bCreateDir){
             
