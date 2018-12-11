@@ -693,17 +693,31 @@ RCT_REMAP_METHOD(findSymbolsByGroups, findSymbolsByGroups:(NSString *)type path:
 }
 
 #pragma mark 倒入工作空间
-RCT_REMAP_METHOD(importWorkspace, importWorkspaceInfo:(NSDictionary*)wInfo resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(importWorkspace, importWorkspaceInfo:(NSDictionary*)wInfo toFile:(NSString*)strFilePath  datasourceReplace:(BOOL)breplaceDatasource resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         sMap = [SMap singletonInstance];
-        BOOL result = [sMap.smMapWC importWorkspaceInfo:wInfo isResourcesReplace:YES];
+        BOOL result = [sMap.smMapWC importWorkspaceInfo:wInfo withFileDirectory:strFilePath isDatasourceReplace:breplaceDatasource isSymbolsReplace:YES];
         
          resolve(@(result));
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
 }
+
+#pragma mark 倒出工作空间
+RCT_REMAP_METHOD(exportWorkspace, importWorkspaceInfo:(NSArray*)arrMapnames toFile:(NSString*)strFileName  fileReplace:(BOOL)bFileReplace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        BOOL result = [sMap.smMapWC exportMapNamed:arrMapnames toFile:strFileName isReplaceFile:bFileReplace];
+        
+        resolve(@(result));
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 
 /************************************************ 监听事件 ************************************************/
 #pragma mark 监听事件
