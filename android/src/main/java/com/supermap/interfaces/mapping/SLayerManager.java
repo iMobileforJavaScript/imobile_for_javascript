@@ -10,6 +10,7 @@ import com.supermap.data.Dataset;
 import com.supermap.data.Datasets;
 import com.supermap.data.Datasources;
 import com.supermap.mapping.Layer;
+import com.supermap.mapping.Layers;
 import com.supermap.mapping.Map;
 import com.supermap.smNative.SMLayer;
 
@@ -180,6 +181,24 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(result);
         } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据图层名设置图层可编辑
+     * @param
+     */
+    @ReactMethod
+    public void setLayerEditable(String name , Promise promise){
+        try {
+            SMap sMap = SMap.getInstance();
+            Layers layers = sMap.getSmMapWC().getMapControl().getMap().getLayers();
+            int index = layers.indexOfByCaption(name);
+            Layer layer = layers.get(index);
+            layer.setEditable(true);
+            promise.resolve(true);
+        }catch (Exception e) {
             promise.reject(e);
         }
     }

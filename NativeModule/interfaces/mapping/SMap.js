@@ -572,7 +572,9 @@ export default (function () {
       console.error(e)
     }
   }
-  
+
+
+
   let SMapExp = {
     openWorkspace,
     openDatasource,
