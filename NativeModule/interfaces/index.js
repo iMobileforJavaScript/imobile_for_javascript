@@ -1,7 +1,6 @@
-import SMap from './SMap'
+import { SMap, SScene } from './mapping'
 import SAnalyst from './SAnalyst'
 import SCollector from './SCollector'
-import SScene  from './SScene'
 import SCartography from './SCartography'
 import SThemeCartography from './SThemeCartography'
 import {SOnlineService} from './iServer'

@@ -111,6 +111,19 @@ function addLayer(datasourceNameOrIndex, datasetIndex = -1) {
   }
 }
 
+/**
+ * 根据地图名设置图层可编辑
+ * @param mapName
+ * @returns {*}
+ */
+function setLayerEditable(mapName){
+  try {
+    return LayerManager.setLayerEditable(mapName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 export {
   getLayersByType,
   getLayersByGroupPath,
@@ -119,4 +132,5 @@ export {
   getLayerAttribute,
   getSelectionAttributeByLayer,
   addLayer,
+  setLayerEditable,
 }

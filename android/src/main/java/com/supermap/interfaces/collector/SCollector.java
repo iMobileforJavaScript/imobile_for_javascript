@@ -7,6 +7,8 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.supermap.data.Dataset;
 import com.supermap.data.GeoStyle;
+import com.supermap.data.PrjCoordSys;
+import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Recordset;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Action;
@@ -102,7 +104,12 @@ public class SCollector extends ReactContextBaseJavaModule {
 
             String name = data.getString("datasetName");
             int type = data.getInt("datasetType");
-            String datasourceName = data.getString("datasourceName");
+            String datasourceName = "Collection";
+            if (data.getString("datasourceName") != null && !data.getString("datasourceName").equals("")) {
+                datasourceName = data.getString("datasourceName");
+            } else if (!smMapWC.getMapControl().getMap().getName().equals("")) {
+                datasourceName = smMapWC.getMapControl().getMap().getName();
+            }
             String datasourcePath = data.getString("datasourcePath");
             String style = data.getString("style");
 
@@ -113,7 +120,7 @@ public class SCollector extends ReactContextBaseJavaModule {
             }
 
             if (!name.equals("")) {
-                layer = smMapWC.getMapControl().getMap().getLayers().get(name);
+                layer = smMapWC.getMapControl().getMap().getLayers().get(name + "@" + datasourceName);
             }
             if (layer == null) {
                 ds = smMapWC.addDatasetByName(name, type, datasourceName, datasourcePath);
@@ -125,6 +132,9 @@ public class SCollector extends ReactContextBaseJavaModule {
             if (geoStyle != null) {
                 ((LayerSettingVector)layer.getAdditionalSetting()).setStyle(geoStyle);
             }
+
+            ds.setPrjCoordSys(new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE));
+
             layer.setVisible(true);
             layer.setEditable(true);
             collector.setDataset(ds);
