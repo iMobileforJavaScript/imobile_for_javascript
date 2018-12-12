@@ -75,7 +75,7 @@ function loginWithPhoneNumber(phoneNumber,password){
     console.log('params have undefined');
     return;
   }
-  return OnlineServiceNative.loginWtihPhone(phoneNumber, password);
+  return OnlineServiceNative.loginWithPhone(phoneNumber, password);
 }
 
 function logout() {

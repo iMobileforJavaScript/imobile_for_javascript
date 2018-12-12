@@ -50,8 +50,8 @@ RCT_REMAP_METHOD(login, loginByUserName:(NSString *)userName password:(NSString 
         reject(kTAG, @"login failed", nil);
     }
 }
-#pragma mark ---------------------------- loginWtihPhone
-RCT_REMAP_METHOD(loginWtihPhone, loginByPhoneNumber:(NSString *)phoneNumber password:(NSString *)password resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+#pragma mark ---------------------------- loginWithPhone
+RCT_REMAP_METHOD(loginWithPhone, loginByPhoneNumber:(NSString *)phoneNumber password:(NSString *)password resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         [m_onlineService loginWithPhoneNumber:phoneNumber password:password completionCallback:^(NSError *error) {
             if (error == nil) {
