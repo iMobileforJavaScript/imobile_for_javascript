@@ -245,10 +245,11 @@ public class LabelHelper {
             switch (msg.what) {
 
                 //主线程刷新地图
-                case DELETEObj:
-                    mSceneControl.getScene().getLayers().get("NodeAnimation").getFeatures().toKMLFile(kmlPath + kmlName);
+                case DELETEObj: {
+                    if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")!=-1)
+                        mSceneControl.getScene().getLayers().get("NodeAnimation").getFeatures().toKMLFile(kmlPath + kmlName);
                     break;
-                default:
+                }default:
                     break;
             }
         };
@@ -258,6 +259,8 @@ public class LabelHelper {
      */
     public void clearAllLabel() {
 
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")==-1)
+            return;
         while(mSceneControl.getScene().getLayers().get("NodeAnimation").getFeatures().getCount()>0){
             mSceneControl.getScene().getLayers().get("NodeAnimation").getFeatures().removeAt(0);
         }
@@ -290,6 +293,8 @@ public class LabelHelper {
         if (!isEdit) {
             return;
         }
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")==-1)
+            return;
         final Layer3D layer3d = mSceneControl.getScene().getLayers().get("NodeAnimation");
 
         switch (labelOperate) {
@@ -427,6 +432,8 @@ public class LabelHelper {
     public void addCirclePoint(Point point) {
 
     //
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")==-1)
+            return;
         Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("NodeAnimation");
         Point3D pnt3d = mSceneControl.getScene().pixelToGlobe(point, PixelToGlobeMode.TERRAINANDMODEL);
 
@@ -455,6 +462,8 @@ public class LabelHelper {
         if (circleFeature3D == null) {
             return;
         }
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")==-1)
+            return;
         Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("NodeAnimation");
         favoriteLayer3d.getFeatures().remove(circleFeature3D);
         circleFeature3D=null;
@@ -527,6 +536,8 @@ public class LabelHelper {
       //  Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("Favorite");
 //        Point3D pnt3d = mSceneControl.getScene().pixelToGlobe(point, PixelToGlobeMode.TERRAINANDMODEL);
 
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")==-1)
+            return;
 
         final GeoStyle3D pointStyle3D = new GeoStyle3D();
         GeoPoint3D geoPoint = new GeoPoint3D(pnt3d);
@@ -588,6 +599,8 @@ public class LabelHelper {
         if (favoriteFeature3D == null) {
             return;
         }
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")==-1)
+            return;
         Layer3D layer3d = mSceneControl.getScene().getLayers().get("NodeAnimation");
         layer3d.getFeatures().add(favoriteFeature3D);
         //保存
@@ -627,6 +640,8 @@ public class LabelHelper {
      */
     public void closePage(){
         reSet();
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")==-1)
+            return;
         mSceneControl.getScene().getLayers().removeLayerWithName("NodeAnimation");
         //mLayer3d=null;
        // mSceneControl.getScene().getLayers().removeLayerWithName("Favorite");
