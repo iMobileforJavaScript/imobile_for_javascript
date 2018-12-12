@@ -1287,7 +1287,7 @@ public class SScene extends ReactContextBaseJavaModule {
                     Feature3D feature3D= (Feature3D) feature3Ds.get(i);
                     WritableMap map=Arguments.createMap();
                     Point3D p3d = feature3D.getGeometry().getInnerPoint3D();
-                    map.putString("description","x="+(int)(p3d.getX()*100)/100.0+" y="+(int)(p3d.getY()*100)/100.0+" z="+(int)(p3d.getZ()*100)/100.0);
+                    map.putString("description",feature3D.getDescription());
                     map.putInt("id",feature3D.getID());
                     map.putString("name",feature3D.getName());
                     array.pushMap(map);
