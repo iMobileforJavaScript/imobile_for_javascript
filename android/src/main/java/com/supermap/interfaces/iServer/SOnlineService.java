@@ -84,7 +84,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
         }
     }
     @ReactMethod
-    public void loginWithPhoneNumber(String phoneNumber, String password, final Promise promise){
+    public void loginWithPhone(String phoneNumber, String password, final Promise promise){
         try{
             OnlineService.loginByPhoneNumber(phoneNumber, password, new OnlineService.LoginCallback() {
                 @Override
@@ -415,14 +415,24 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     @ReactMethod
     public void deleteDataWithDataId(final String dataId,final Promise promise){
         try {
+            OnlineService.deleteDataById(dataId, new OnlineCallBack.CallBackString() {
+                @Override
+                public void onSucceed(String s) {
+                    promise.resolve(true);
+                }
 
+                @Override
+                public void onError(String s) {
+                    promise.resolve(s);
+                }
+            });
         }catch (Exception e){
             promise.reject(e);
         }
     }
 
     @ReactMethod
-    public void deleteService(final String dataName, final EnumServiceType serviceType, final Promise promise){
+    public void deleteService(final String dataName, final Promise promise){
         try {
             OnlineService.deleteService(dataName, RESTMAP, new OnlineCallBack.CallBackString() {
                 @Override
@@ -442,9 +452,19 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 
 
     @ReactMethod
-    public void deleteServiceWithServiceName(final String serviceName, final EnumServiceType serviceType, final Promise promise){
+    public void deleteServiceWithServiceName(final String serviceName, final Promise promise){
         try {
+            OnlineService.deleteServiceByName(serviceName, new OnlineCallBack.CallBackString() {
+                @Override
+                public void onSucceed(String s) {
+                    promise.resolve(true);
+                }
 
+                @Override
+                public void onError(String s) {
+                    promise.resolve(s);
+                }
+            });
         }catch (Exception e){
             promise.reject(e);
         }
@@ -452,9 +472,19 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 
 
     @ReactMethod
-    public void deleteServiceWithServiceId(final String serviceId, final EnumServiceType serviceType, final Promise promise){
+    public void deleteServiceWithServiceId(final String serviceId, final Promise promise){
         try {
+            OnlineService.deleteServiceById(serviceId, new OnlineCallBack.CallBackString() {
+                @Override
+                public void onSucceed(String s) {
+                    promise.resolve(true);
+                }
 
+                @Override
+                public void onError(String s) {
+                    promise.resolve(s);
+                }
+            });
         }catch (Exception e){
             promise.reject(e);
         }
@@ -482,7 +512,17 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     @ReactMethod
     public void changeDataVisibility(String dataName, final boolean isPublic,final Promise promise){
         try {
+            OnlineService.changeDataVisiblityByName(dataName, isPublic, new OnlineCallBack.CallBackString() {
+                @Override
+                public void onSucceed(String s) {
+                    promise.resolve(true);
+                }
 
+                @Override
+                public void onError(String s) {
+                    promise.resolve(s);
+                }
+            });
         }catch (Exception e){
             promise.reject(e);
         }
@@ -491,7 +531,17 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     @ReactMethod
     public void changeServiceVisibility(final String serviceName, final boolean isPublic,final Promise promise){
         try {
+            OnlineService.changeServiceVisiblityByName(serviceName, isPublic, new OnlineCallBack.CallBackString() {
+                @Override
+                public void onSucceed(String s) {
+                    promise.resolve(true);
+                }
 
+                @Override
+                public void onError(String s) {
+                    promise.resolve(s);
+                }
+            });
         }catch (Exception e){
             promise.reject(e);
         }
