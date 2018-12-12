@@ -84,6 +84,24 @@ public class SOnlineService extends ReactContextBaseJavaModule{
         }
     }
     @ReactMethod
+    public void loginWithPhoneNumber(String phoneNumber, String password, final Promise promise){
+        try{
+            OnlineService.loginByPhoneNumber(phoneNumber, password, new OnlineService.LoginCallback() {
+                @Override
+                public void loginSuccess() {
+                    promise.resolve(true);
+                }
+
+                @Override
+                public void loginFailed(String error) {
+                    promise.resolve(error);
+                }
+            });
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+    @ReactMethod
     public void logout(final Promise promise){
         try{
             OnlineService.logout(new OnlineCallBack.CallBackString() {
@@ -104,23 +122,19 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     @ReactMethod
     public void download(String filePath,String onlineDataName,final Promise promise){
         try {
-            Log.e("SOnlineService","progress = "+ filePath);
             OnlineService.downloadFile(mContext, onlineDataName,filePath, new DownLoadFile.DownLoadListener() {
                 @Override
                 public void getProgress(int progress) {
-                    Log.e("SOnlineService","progress = "+ progress);
                     mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADING,progress);
                 }
 
                 @Override
                 public void onComplete() {
-                    Log.e("SOnlineService","progress = success");
                     mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED,true);
                 }
 
                 @Override
                 public void onFailure() {
-                    Log.e("SOnlineService","progress = failure");
                     mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, false);
                 }
             });
@@ -162,7 +176,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 
                 @Override
                 public void onError(String s) {
-                    promise.resolve(s);
+                    promise.resolve(false);
                 }
             });
         }catch (Exception e){
@@ -181,7 +195,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 
                 @Override
                 public void onError(String s) {
-                    promise.resolve(s);
+                    promise.resolve(false);
                 }
             });
         }catch (Exception e){
@@ -233,12 +247,12 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.sendSMSVerifyCodeWithPhoneNumber(phoneNumber, new OnlineCallBack.CallBackString() {
                 @Override
                 public void onSucceed(String s) {
-                    promise.resolve(s);
+                    promise.resolve(true);
                 }
 
                 @Override
                 public void onError(String s) {
-                    promise.resolve(s);
+                    promise.resolve(false);
                 }
             });
         }catch (Exception e){
@@ -284,7 +298,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 
                 @Override
                 public void onError(String s) {
-                    promise.resolve(s);
+                    promise.resolve(false);
                 }
             });
         }catch (Exception e){
@@ -399,6 +413,15 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     }
 
     @ReactMethod
+    public void deleteDataWithDataId(final String dataId,final Promise promise){
+        try {
+
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void deleteService(final String dataName, final EnumServiceType serviceType, final Promise promise){
         try {
             OnlineService.deleteService(dataName, RESTMAP, new OnlineCallBack.CallBackString() {
@@ -417,8 +440,28 @@ public class SOnlineService extends ReactContextBaseJavaModule{
         }
     }
 
+
     @ReactMethod
-    public void changeDataVisibility(String id, final boolean isPublic,final Promise promise){
+    public void deleteServiceWithServiceName(final String serviceName, final EnumServiceType serviceType, final Promise promise){
+        try {
+
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+
+    @ReactMethod
+    public void deleteServiceWithServiceId(final String serviceId, final EnumServiceType serviceType, final Promise promise){
+        try {
+
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void changeDataVisibilityWithDataId(String id, final boolean isPublic,final Promise promise){
         try {
             OnlineService.changeDataVisiblity(id, isPublic, new OnlineCallBack.CallBackString() {
                 @Override
@@ -437,7 +480,25 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     }
 
     @ReactMethod
-    public void changeServiceVisibility(final String id, final boolean isPublic,final Promise promise){
+    public void changeDataVisibility(String dataName, final boolean isPublic,final Promise promise){
+        try {
+
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void changeServiceVisibility(final String serviceName, final boolean isPublic,final Promise promise){
+        try {
+
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void changeServiceVisibilityWithServiceId(final String id, final boolean isPublic,final Promise promise){
         try {
             OnlineService.changeServiceVisiblity(id, isPublic, new OnlineCallBack.CallBackString() {
                 @Override
@@ -447,7 +508,6 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 
                 @Override
                 public void onError(String s) {
-                    Log.e("test",s);
                     promise.resolve(s);
                 }
             });
@@ -467,7 +527,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 
                 @Override
                 public void onError(String s) {
-                    promise.resolve(s);
+                    promise.resolve(false);
                 }
             });
         }catch (Exception e){
@@ -486,7 +546,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 
                 @Override
                 public void onError(String s) {
-                    promise.resolve(s);
+                    promise.resolve(false);
                 }
             });
         }catch (Exception e){

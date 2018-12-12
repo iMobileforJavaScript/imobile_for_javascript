@@ -62,19 +62,27 @@ function downloadFile(path, onlineDataName) {
   OnlineServiceNative.download(path, onlineDataName);
 }
 
-async function login(userName, password) {
-  if (userName === 'undefined' || password === 'undefined') {
+function login(userName, password) {
+  if (userName === undefined || password === undefined) {
     console.log('params have undefined');
     return;
   }
   return OnlineServiceNative.login(userName, password);
 }
 
-async function logout() {
+function loginWithPhoneNumber(phoneNumber,password){
+  if (phoneNumber === undefined || password === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.login(userName, password);
+}
+
+function logout() {
   return OnlineServiceNative.logout();
 }
 
-async function getDataList(currentPage, pageSize) {
+function getDataList(currentPage, pageSize) {
   if (currentPage === undefined ||
     pageSize === undefined) {
     console.log('params have undefined');
@@ -83,7 +91,7 @@ async function getDataList(currentPage, pageSize) {
   return OnlineServiceNative.getDataList(currentPage, pageSize);
 }
 
-async function getServiceList(currentPage, pageSize) {
+function getServiceList(currentPage, pageSize) {
   if (currentPage === undefined ||
     pageSize === undefined) {
     console.log('params have undefined');
@@ -92,7 +100,7 @@ async function getServiceList(currentPage, pageSize) {
   return OnlineServiceNative.getServiceList(currentPage, pageSize);
 }
 
-async function registerWithEmail(email, nickname, password) {
+function registerWithEmail(email, nickname, password) {
   if (email === undefined ||
     nickname === undefined ||
     password === undefined) {
@@ -102,7 +110,7 @@ async function registerWithEmail(email, nickname, password) {
   return OnlineServiceNative.registerWithEmail(email, nickname, password);
 }
 
-async function registerWithPhone(phoneNumber, smsVerifyCode, nickname, password) {
+function registerWithPhone(phoneNumber, smsVerifyCode, nickname, password) {
   if (phoneNumber === undefined ||
     smsVerifyCode === undefined ||
     nickname === undefined ||
@@ -113,7 +121,7 @@ async function registerWithPhone(phoneNumber, smsVerifyCode, nickname, password)
   return OnlineServiceNative.registerWithPhone(phoneNumber, smsVerifyCode, nickname, password);
 }
 
-async function sendSMSVerifyCode(phoneNumber) {
+function sendSMSVerifyCode(phoneNumber) {
   if (phoneNumber === undefined) {
     console.log('params have undefined');
     return;
@@ -121,11 +129,11 @@ async function sendSMSVerifyCode(phoneNumber) {
   return OnlineServiceNative.sendSMSVerifyCode(phoneNumber);
 }
 
-async function verifyCodeImage() {
+function verifyCodeImage() {
   return OnlineServiceNative.verifyCodeImage();
 }
 
-async function retrievePassword(account, verifyCode, isPhoneAccount) {
+function retrievePassword(account, verifyCode, isPhoneAccount) {
   if (account === undefined ||
     verifyCode === undefined ||
     isPhoneAccount === undefined) {
@@ -135,7 +143,7 @@ async function retrievePassword(account, verifyCode, isPhoneAccount) {
   return OnlineServiceNative.retrievePassword(account, verifyCode, isPhoneAccount);
 }
 
-async function retrievePasswordSecond(firstResult) {
+function retrievePasswordSecond(firstResult) {
   if (firstResult === undefined) {
     console.log('params have undefined');
     return;
@@ -143,7 +151,7 @@ async function retrievePasswordSecond(firstResult) {
   return OnlineServiceNative.retrievePasswordSecond(firstResult);
 }
 
-async function retrievePasswordThrid(secondResult, safeCode) {
+function retrievePasswordThrid(secondResult, safeCode) {
   if (secondResult === undefined ||
     safeCode === undefined) {
     console.log('params have undefined');
@@ -152,7 +160,7 @@ async function retrievePasswordThrid(secondResult, safeCode) {
   return OnlineServiceNative.retrievePasswordThrid(secondResult, safeCode);
 }
 
-async function retrievePasswordFourth(thridResult, newPassword) {
+function retrievePasswordFourth(thridResult, newPassword) {
   if (thridResult === undefined ||
     newPassword === undefined) {
     console.log('params have undefined');
@@ -161,23 +169,36 @@ async function retrievePasswordFourth(thridResult, newPassword) {
   return OnlineServiceNative.retrievePasswordFourth(thridResult, newPassword);
 }
 
-async function deleteData(dataName) {
+function deleteData(dataName) {
   if (dataName === undefined) {
     console.log('params have undefined');
     return;
   }
   return OnlineServiceNative.deleteData(dataName);
 }
-
-async function deleteService(dataName) {
-  if (dataName === undefined) {
+function deleteDataWithDataId(dataNameId) {
+  if (dataNameId === undefined) {
     console.log('params have undefined');
     return;
   }
-  return OnlineServiceNative.deleteService(dataName);
+  return OnlineServiceNative.deleteDataWithDataId(dataNameId);
 }
 
-async function changeDataVisibility(dataName, isPublic) {
+function deleteService(serviceName) {
+  if (serviceName === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.deleteServiceWithServiceName(serviceName);
+}
+function deleteServiceWithServiceId(serviceId) {
+  if (serviceId === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.deleteServiceWithServiceId(serviceId);
+}
+function changeDataVisibility(dataName, isPublic) {
   if (dataName === undefined ||
     isPublic === undefined) {
     console.log('params have undefined');
@@ -186,7 +207,16 @@ async function changeDataVisibility(dataName, isPublic) {
   return OnlineServiceNative.changeDataVisibility(dataName, isPublic);
 }
 
-async function changeServiceVisibility(serviceName, isPublic) {
+function changeDataVisibilityWithDataId(dataNameId, isPublic) {
+  if (dataNameId === undefined ||
+    isPublic === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.changeDataVisibilityWithDataId(dataNameId, isPublic);
+}
+
+function changeServiceVisibility(serviceName, isPublic) {
   if (serviceName === undefined ||
     isPublic === undefined) {
     console.log('params have undefined');
@@ -195,7 +225,16 @@ async function changeServiceVisibility(serviceName, isPublic) {
   return OnlineServiceNative.changeServiceVisibility(serviceName, isPublic);
 }
 
-async function getAllUserDataList(currentPage) {
+function changeServiceVisibilityWithServiceId(serviceNameId, isPublic) {
+  if (serviceNameId === undefined ||
+    isPublic === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.changeServiceVisibilityWithServiceId(serviceNameId, isPublic);
+}
+
+function getAllUserDataList(currentPage) {
   if (currentPage === undefined) {
     console.log('params have undefined');
     return;
@@ -203,7 +242,7 @@ async function getAllUserDataList(currentPage) {
   return OnlineServiceNative.getAllUserDataList(currentPage);
 }
 
-async function getAllUserSymbolLibList(currentPage) {
+function getAllUserSymbolLibList(currentPage) {
   if (currentPage === undefined) {
     console.log('params have undefined');
     return;
@@ -211,7 +250,7 @@ async function getAllUserSymbolLibList(currentPage) {
   return OnlineServiceNative.getAllUserSymbolLibList(currentPage);
 }
 
-async function publishService(dataName) {
+function publishService(dataName) {
   if (dataName === undefined) {
     console.log('params have undefined');
     return;
@@ -236,13 +275,18 @@ export default {
   retrievePasswordSecond,
   retrievePasswordThrid,
   retrievePasswordFourth,
-  deleteData,
-  deleteService,
-  changeDataVisibility,
-  changeServiceVisibility,
   getAllUserDataList,
   getAllUserSymbolLibList,
   publishService,
   getAndroidSessionID,
   cacheImage,
+  loginWithPhoneNumber,
+  deleteData,
+  deleteDataWithDataId,
+  deleteService,
+  deleteServiceWithServiceId,
+  changeDataVisibility,
+  changeServiceVisibility,
+  changeServiceVisibilityWithServiceId,
+  changeDataVisibilityWithDataId,
 }
