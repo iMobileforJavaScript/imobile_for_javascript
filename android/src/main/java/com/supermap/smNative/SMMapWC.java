@@ -1,5 +1,9 @@
 package com.supermap.smNative;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.soloader.NoopSoSource;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVectorInfo;
@@ -9,13 +13,20 @@ import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.Datasources;
 import com.supermap.data.EngineType;
 import com.supermap.data.Enum;
+import com.supermap.data.SymbolMarkerLibrary;
 import com.supermap.data.Workspace;
 import com.supermap.data.WorkspaceConnectionInfo;
 import com.supermap.data.WorkspaceType;
 import com.supermap.data.WorkspaceVersion;
+import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 import com.supermap.data.DatasetType;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class SMMapWC {
@@ -200,4 +211,342 @@ public class SMMapWC {
         }
         return info;
     }
+
+
+    //导出工作空间
+    //  失败情况：
+    //      a)工作空间未打开
+    //      b)导出文件名错误
+    //      c)非强制覆盖模式有同名sxm文件
+    //  流程：
+    //      1.新的工作空间目录，导出文件名可用？
+    //      2.新建workspace
+    //      3.导出列表中map，加到workspace.maps中
+    //      4.遍历datasource，拷贝其中文件数据源（注意覆盖模式），workspace打开数据源
+    //      5.导出符号库，workspace打开符号库
+    //      5.设置workspaceConnectionInfo，保存workspace
+
+    public boolean exportMapNames (ReadableArray arrMapNames , String strFileName , boolean isFileReplace ){
+
+        if (workspace==null || strFileName==null || strFileName.length()==0 || arrMapNames==null || arrMapNames.size()==0 ||
+                workspace.getConnectionInfo().getServer().equalsIgnoreCase(strFileName)){
+            return false;
+        }
+
+        WorkspaceType workspaceType = WorkspaceType.DEFAULT;
+        String strWorkspaceSuffix ;
+        if (strFileName.endsWith("sxw")){
+            workspaceType = WorkspaceType.DEFAULT;
+            strWorkspaceSuffix = "sxw";
+        }else if (strFileName.endsWith("smw")){
+            workspaceType = WorkspaceType.SMW;
+            strWorkspaceSuffix = "smw";
+        }else if (strFileName.endsWith("sxwu")){
+            workspaceType = WorkspaceType.SXWU;
+            strWorkspaceSuffix = "sxwu";
+        }else if (strFileName.endsWith("smwu")){
+            workspaceType = WorkspaceType.SMWU;
+            strWorkspaceSuffix = "smwu";
+        }else {
+            return false;
+        }
+
+        //建目录
+        //String[] desFileNames = strFileName.split("/");
+        //String desWorkspaceName = desFileNames[desFileNames.length-1];
+        String desWorkspaceName = strFileName.substring(strFileName.lastIndexOf("/")+1);
+        String desDir = strFileName.substring(0, strFileName.length()-desWorkspaceName.length() );
+        boolean bNewDir = false;
+        //WritableArray arrProtectedFile = Arguments.createArray();
+        ArrayList<String> arrProtectedFileNames = new ArrayList<String>;
+
+        File desDirFile = new File(desDir);
+        if ( desDirFile.exists() &&  desDirFile.isDirectory() ){
+            Datasources srcDatasources = workspace.getDatasources();
+            for (int i=0; i<srcDatasources.getCount(); i++) {
+                Datasource srcdatasource = srcDatasources.get(i);
+                DatasourceConnectionInfo datasourceInfo = srcdatasource.getConnectionInfo();
+                if (datasourceInfo.getEngineType() == EngineType.UDB
+                        || datasourceInfo.getEngineType() == EngineType.IMAGEPLUGINS) {
+
+                    //只要名字
+                    if (isFileReplace) {
+                        String  fullName = datasourceInfo.getServer();
+                        String  fatherDirName = fullName.substring(0, fullName.lastIndexOf("/"));
+
+                        if (fatherDirName.equalsIgnoreCase(desDir)) {
+                            //同级目录下的才会被替换
+                            //arrProtectedFile.pushString(fullName);
+                            arrProtectedFileNames.add(fullName);
+                        }
+                    }
+                }
+            }
+            bNewDir = false;
+        }else{
+           if(!desDirFile.mkdirs()){
+               return false;
+           }
+           bNewDir = true;
+        }
+
+        //文件名
+        File desWorkspaceFile = new File(strFileName);
+        if ( desWorkspaceFile.exists() && desWorkspaceFile.isFile() ) {
+            if(isFileReplace){
+                desWorkspaceFile.delete();
+            }else{
+                return false;
+            }
+        }
+
+        Workspace workspaceDes = new Workspace();
+        com.supermap.mapping.Map mapExport = new com.supermap.mapping.Map();
+        mapExport.setWorkspace(workspaceDes);
+
+        ArrayList<Datasource> arrDatasources = new ArrayList<Datasource>();
+
+        for (int i=0;i<arrMapNames.size();i++){
+            String mapName = arrMapNames.getString(i);
+            if (workspace.getMaps().indexOf(mapName)!=-1){
+                // 打开map
+                mapExport.open(mapName);
+                // 不重复的datasource保存
+                Layers exportLayes = mapExport.getLayers();
+                for (int i=0; i<exportLayes.getCount(); i++) {
+                    Datasource datasource = exportLayes.get(i).getDataset().getDatasource();
+                    if (!arrDatasources.contains(datasource)) {
+                        arrDatasources.add(datasource);
+                    }
+                }
+                String strMapXML = mapExport.toXML();
+                workspaceDes.getMaps().add(mapName,strMapXML);
+
+                mapExport.close();
+            }
+        }
+
+
+        // 导出datasource
+        for (int i=0; i<arrDatasources.size(); i++) {
+            Datasource datasource = arrDatasources.get(i);
+            // 文件拷贝
+            DatasourceConnectionInfo srcInfo = datasource.getConnectionInfo();
+            String strSrcServer = srcInfo.getServer();
+            EngineType engineType = srcInfo.getEngineType();
+            String strTargetServer = new String(strSrcServer);
+
+            if (engineType==EngineType.UDB || engineType==EngineType.IMAGEPLUGINS){
+                if ( !isDatasourceFileExist(strSrcServer,engineType==EngineType.UDB) ){
+                    continue;
+                }
+
+                String strlastname = strSrcServer.substring( strSrcServer.lastIndexOf("/")+1 );
+                // 导入工作空间名
+                strTargetServer = desDir+strlastname;
+
+                if (engineType==EngineType.UDB){
+
+                    String strSrcBase = strSrcServer.substring(0,strSrcServer.length()-4);
+                    String strTargetBase = strTargetServer.substring(0,strTargetServer.length()-4);
+                    if (!bNewDir) {
+                        // 检查重复
+                        if (arrProtectedFileNames.contains(strTargetServer)) {
+                            continue;
+                        }
+                        File targetFileUDB = new File(strTargetBase+".udb");
+                        if (targetFileUDB.exists() && targetFileUDB.isFile()){
+                            File targetFileUDD = new File(strTargetBase+".udd");
+                            if (targetFileUDD.exists() && targetFileUDD.isFile()){
+                                //存在同名文件
+                                if (isFileReplace) {
+                                    //覆盖模式
+                                    targetFileUDB.delete();
+                                    targetFileUDD.delete();
+                                }else{
+                                    //重名文件
+                                    strTargetServer = formateNoneExistFileName(strTargetServer,false);
+                                    strTargetBase = strTargetServer.substring(0,strTargetServer.length()-4);
+                                }//rep
+                            }
+
+                        }
+
+                    }//!New
+
+                    // 拷贝
+                    if (copyFile(strSrcBase+".udb",strTargetBase+".udb")){
+                        continue;
+                    }
+                    if (copyFile(strSrcBase+".udd",strTargetBase+".udd")){
+                        continue;
+                    }
+
+                }else{
+
+                    if (!bNewDir) {
+                        // 检查重复
+                        if (arrProtectedFileNames.contains(strTargetServer)) {
+                            continue;
+                        }
+                        File targetFile = new File(strTargetServer);
+                        if (targetFile.exists() && targetFile.isFile()){
+                            //存在同名文件
+                            if (isFileReplace) {
+                                //覆盖模式
+                                targetFile.delete();
+                            }else{
+                                //重名文件
+                                strTargetServer = formateNoneExistFileName(strTargetServer,false);
+                            }//rep
+                        }
+
+                    }//!New
+
+                    // 拷贝
+                    if (copyFile(strSrcServer,strTargetServer)){
+                        continue;
+                    }
+
+                }//udb
+
+            }
+
+            DatasourceConnectionInfo desInfo = new DatasourceConnectionInfo;
+            desInfo.setServer( strTargetServer );
+            desInfo.setAlias( srcInfo.getAlias() );
+            desInfo.setEngineType(engineType);
+            desInfo.setUser(srcInfo.getUser());
+            desInfo.setPassword( srcInfo.getPassword() );
+
+            workspaceDes.getDatasources().open(desInfo);
+
+        }
+
+        // symbol lib
+        String serverResourceBase = strFileName.substring(0,strFileName.lastIndexOf(".")-1);
+        String strMarkerPath = serverResourceBase + ".sym";
+        String strLinePath = serverResourceBase + ".lsl";
+        String strFillPath = serverResourceBase + ".bru";
+        if (workspaceType!=WorkspaceType.SXWU) {
+            //重命名
+            strMarkerPath = formateNoneExistFileName(strMarkerPath,false)
+            strLinePath = formateNoneExistFileName(strLinePath,false);
+            strFillPath = formateNoneExistFileName(strFillPath,false);
+        }
+
+        workspace.getResources().getMarkerLibrary().saveAs(strMarkerPath);
+        workspace.getResources().getLineLibrary().saveAs(strLinePath);
+        workspace.getResources().getFillLibrary().saveAs(strFillPath);
+
+        workspaceDes.getResources().getMarkerLibrary().appendFromFile(strMarkerPath,true);
+        workspaceDes.getResources().getLineLibrary().appendFromFile(strLinePath,true);
+        workspaceDes.getResources().getFillLibrary().appendFromFile(strFillPath,true);
+
+        if (workspaceType!=WorkspaceType.SXWU) {
+            File fileMarker = new File(strMarkerPath);
+            fileMarker.delete();
+            File fileLine = new File(strLinePath);
+            fileLine.delete();
+            File fileFill = new File(strFillPath);
+            fileFill.delete();
+        }
+
+        // fileName查重
+        //WorkspaceConnectionInfo *workspaceInfo = [[WorkspaceConnectionInfo alloc]initWithFile:fileName];
+        workspaceDes.getConnectionInfo().setType(workspaceType);
+        workspaceDes.getConnectionInfo().setServer(strFileName);
+        workspaceDes.save();
+        workspaceDes.close();
+
+    }
+
+    protected String formateNoneExistFileName(String strOrg,boolean isDir){
+        String strName = strOrg;
+        String strSuffix = "";
+        if (!isDir){
+            int index = strOrg.lastIndexOf(".");
+            strName = strOrg.substring(0,index-1);
+            strSuffix = strOrg.substring(index);
+        }else{
+            strName = strOrg.substring(0,strOrg.length()-1);
+            strSuffix = "/";
+        }
+        String result = strOrg;
+        int nAddNum = 1;
+        while (1){
+            File fileTemp = new File(result);
+            if ( !fileTemp.exists() ){
+                return result;
+            }else if (isDir!=fileTemp.isDirectory()){
+                return result;
+            }else {
+                result = strName+"#"+nAddNum+strSuffix;
+                nAddNum++;
+            }
+        }
+    }
+
+
+    protected boolean isDatasourceFileExist(String strpath ,boolean isUDB){
+        if (isUDB){
+            return isUDBFileExist(strpath);
+        }else{
+            File datasoueceFile = new File(strpath);
+            if ( !datasoueceFile.exists() || !datasoueceFile.isFile() ){
+                return false;
+            }else {
+                return  true;
+            }
+        }
+    }
+
+    protected  boolean isUDBFileExist(String strpath){
+        if (!strpath.endsWith(".udb")){
+            return false;
+        }
+        File udbFile = new File(strpath);
+        if( !udbFile.exists() || !udbFile.isFile() ){
+            return false;
+        }
+        String strBase = strpath.substring(0,strpath.length()-4);
+        File uddFile = new File(strBase+".udd");
+        if ( !uddFile.exists() || !uddFile.isFile() ){
+            return false;
+        }else {
+            return  true;
+        }
+    }
+
+    protected boolean copyFile( String oldPath , String newPath){
+        try{
+            int bytesum = 0;
+            int byteread = 0;
+            File oldfile = new File(oldPath);
+            File newfile = new File(newPath);
+            if (oldfile.exists()){
+                if (!newfile.exists()){
+                    newfile.createNewFile();
+                }
+                InputStream inStream = new FileInputStream(oldPath);
+                FileOutputStream fs = new FileOutputStream(newPath);
+                byte[] buffer = new byte[1444];
+                int length;
+                while( (byteread = inStream.read(buffer)) != -1 ){
+                    bytesum += byteread;
+                    System.out.println(bytesum);
+                    fs.write(buffer,0,byteread);
+                }
+                inStream.close();
+                return true;
+            }else{
+                return false;
+            }
+
+        }
+        catch (Exception e){
+            return false;
+        }
+    }
+
 }
