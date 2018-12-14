@@ -258,7 +258,7 @@ public class SMMapWC {
         String desDir = strFileName.substring(0, strFileName.length()-desWorkspaceName.length() );
         boolean bNewDir = false;
         //WritableArray arrProtectedFile = Arguments.createArray();
-        ArrayList<String> arrProtectedFileNames = new ArrayList<String>;
+        ArrayList<String> arrProtectedFileNames = new ArrayList<String>();
 
         File desDirFile = new File(desDir);
         if ( desDirFile.exists() &&  desDirFile.isDirectory() ){
@@ -313,8 +313,8 @@ public class SMMapWC {
                 mapExport.open(mapName);
                 // 不重复的datasource保存
                 Layers exportLayes = mapExport.getLayers();
-                for (int i=0; i<exportLayes.getCount(); i++) {
-                    Datasource datasource = exportLayes.get(i).getDataset().getDatasource();
+                for (int j=0; j<exportLayes.getCount(); j++) {
+                    Datasource datasource = exportLayes.get(j).getDataset().getDatasource();
                     if (!arrDatasources.contains(datasource)) {
                         arrDatasources.add(datasource);
                     }
@@ -412,7 +412,7 @@ public class SMMapWC {
 
             }
 
-            DatasourceConnectionInfo desInfo = new DatasourceConnectionInfo;
+            DatasourceConnectionInfo desInfo = new DatasourceConnectionInfo();
             desInfo.setServer( strTargetServer );
             desInfo.setAlias( srcInfo.getAlias() );
             desInfo.setEngineType(engineType);
@@ -430,7 +430,7 @@ public class SMMapWC {
         String strFillPath = serverResourceBase + ".bru";
         if (workspaceType!=WorkspaceType.SXWU) {
             //重命名
-            strMarkerPath = formateNoneExistFileName(strMarkerPath,false)
+            strMarkerPath = formateNoneExistFileName(strMarkerPath,false);
             strLinePath = formateNoneExistFileName(strLinePath,false);
             strFillPath = formateNoneExistFileName(strFillPath,false);
         }
@@ -456,8 +456,13 @@ public class SMMapWC {
         //WorkspaceConnectionInfo *workspaceInfo = [[WorkspaceConnectionInfo alloc]initWithFile:fileName];
         workspaceDes.getConnectionInfo().setType(workspaceType);
         workspaceDes.getConnectionInfo().setServer(strFileName);
-        workspaceDes.save();
+        try {
+            workspaceDes.save();
+        }catch (Exception e) {}
+
         workspaceDes.close();
+
+        return true;
 
     }
 
@@ -474,7 +479,7 @@ public class SMMapWC {
         }
         String result = strOrg;
         int nAddNum = 1;
-        while (1){
+        while (true){
             File fileTemp = new File(result);
             if ( !fileTemp.exists() ){
                 return result;
