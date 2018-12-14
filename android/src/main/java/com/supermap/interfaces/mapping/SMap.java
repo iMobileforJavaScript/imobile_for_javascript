@@ -143,6 +143,7 @@ public class SMap extends ReactContextBaseJavaModule {
             if (result) {
                 sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
             }
+            sMap.smMapWC.getMapControl().setMagnifierEnabled(true);
             sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
             sMap.smMapWC.getMapControl().getMap().refresh();
 
@@ -453,18 +454,15 @@ public class SMap extends ReactContextBaseJavaModule {
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             Maps maps = sMap.smMapWC.getWorkspace().getMaps();
 
-            Boolean isOpen = index < 0;
-
             if (maps.getCount() > 0 && index >= 0) {
                 String name = maps.get(index);
-
-                isOpen = map.open(name);
+                map.open(name);
 
                 if (viewEntire) {
                     map.viewEntire();
                 }
 
-                if (center != null && center.hasKey("x") && center.hasKey("y")) {
+                if (center.hasKey("x") && center.hasKey("y")) {
                     Double x = center.getDouble("x");
                     Double y = center.getDouble("y");
                     Point2D point2D = new Point2D(x, y);
@@ -475,7 +473,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 map.setVisibleScalesEnabled(false);
                 map.refresh();
             }
-            promise.resolve(isOpen);
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -489,6 +487,7 @@ public class SMap extends ReactContextBaseJavaModule {
     public void getMaps(Promise promise) {
         try {
             sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             Maps maps = sMap.smMapWC.getWorkspace().getMaps();
             WritableArray mapList = Arguments.createArray();
             for (int i = 0; i < maps.getCount(); i++) {
@@ -498,27 +497,6 @@ public class SMap extends ReactContextBaseJavaModule {
                 mapList.pushMap(mapInfo);
             }
             promise.resolve(mapList);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    /**
-     * 获取工作空间地图列表
-     * @param promise
-     */
-    @ReactMethod
-    public void getMapInfo(Promise promise) {
-        try {
-            sMap = getInstance();
-            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-
-            WritableMap mapInfo = Arguments.createMap();
-            mapInfo.putString("name", map.getName());
-            mapInfo.putString("description", map.getDescription());
-            mapInfo.putBoolean("isModified", map.isModified());
-
-            promise.resolve(mapInfo);
         } catch (Exception e) {
             promise.reject(e);
         }
