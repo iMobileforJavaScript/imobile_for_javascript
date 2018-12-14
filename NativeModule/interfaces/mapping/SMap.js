@@ -574,9 +574,9 @@ export default (function () {
    * @param info
    * @returns {*}
    */
-  function importWorkspace(info){
+  function importWorkspace(info, toFile = '', breplaceDatasource = false){
     try {
-      return SMap.importWorkspace(info)
+      return SMap.importWorkspace(info, toFile, breplaceDatasource)
     } catch (e) {
       console.error(e)
     }

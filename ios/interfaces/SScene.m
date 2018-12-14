@@ -15,7 +15,8 @@
 #import "FlyHelper3D.h"
 #import "AnalysisHelper3D.h"
 #import "SuperMap/Camera.h"
-
+#import "SuperMap/Feature3Ds.h"
+#import "SuperMap/Feature3D.h"
 
 typedef enum{
     /**
@@ -159,7 +160,13 @@ const double SMOffSet = 28.0;
 
 - (void)handleLongPressGestureEvent:(UILongPressGestureRecognizer *)gesture {
     if (gesture.state == UIGestureRecognizerStateBegan) {
-        CGPoint longPressPoint = [gesture locationInView:self.smSceneWC.sceneControl];
+        UIWindow *si  = [[UIApplication sharedApplication].windows objectAtIndex:0];
+        CGPoint longPressPoint = [gesture locationInView:si];
+//        [[UIApplication sharedApplication] statusBarOrientation];
+//        NSLog(@"+++ %f,%f",longPressPoint.x,longPressPoint.y);
+//        CGPoint longPressPoint1;
+//        longPressPoint1.x = 200;
+//        longPressPoint1.y = 200;
         [self longPress:longPressPoint];
     }
 }
@@ -342,6 +349,77 @@ RCT_REMAP_METHOD(removeKMLOfWorkcspace,  removeKMLOfWorkcspaceResolver:(RCTPromi
         [[LableHelper3D sharedInstance] closePage];
         // [self openGPS];
         resolve([NSNumber numberWithBool:@1]);
+    } @catch (NSException *exception) {
+        reject(@"Resources", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(getLableAttributeList,  getLableAttributeListResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        Scene* scene = sScene.smSceneWC.sceneControl.scene;
+        Layer3D* layer3D = [scene.layers getLayerWithName:@"NodeAnimation"];
+        if(!layer3D){
+            resolve([NSNumber numberWithBool:@0]);
+        }else{
+            Feature3Ds* feature3Ds = layer3D.feature3Ds;
+            int count =feature3Ds.count;
+            NSArray *array = [feature3Ds allFeature3DObjectsWithOption:Feature3DSearchOptionAllFeatures];
+            NSMutableArray* dict = [NSMutableArray array];
+            for (int i = 0; i <array.count ; i++) {
+                Feature3D* feature3D=  array[i];//[feature3Ds feature3DWithID:i option:Feature3DSearchOptionAllFeatures];
+                ;
+                //NSString* description = [NSString stringWithFormat:@"x=%.2f, y=%.2f, z=%.2f",feature3D.geometry3D.position.x,feature3D.geometry3D.position.y,feature3D.geometry3D.position.z];
+                NSDictionary* map = @{@"description":feature3D.description,@"id":@(feature3D.ID),@"name":feature3D.name};
+               
+                [dict addObject:map];
+            }
+            resolve(dict);
+        }
+       
+    } @catch (NSException *exception) {
+        reject(@"Resources", exception.reason, nil);
+    }
+}
+
+/**
+ * 获取设置相关信息
+ */
+RCT_REMAP_METHOD(getSetting,  getSettingResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        Scene* scene = sScene.smSceneWC.sceneControl.scene;
+        Layer3D* layer3D = [scene.layers getLayerWithName:@"NodeAnimation"];
+        NSDictionary* map = @{@"sceneNmae":scene.name,@"heading":@(scene.camera.heading)};
+        resolve(map);
+    } @catch (NSException *exception) {
+        reject(@"Resources", exception.reason, nil);
+    }
+}
+
+
+RCT_REMAP_METHOD(flyToFeatureById,  index:(int)index flyToFeatureByIdResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        Scene* scene = sScene.smSceneWC.sceneControl.scene;
+        Layer3D* layer3D = [scene.layers getLayerWithName:@"NodeAnimation"];
+        if(!layer3D){
+            resolve([NSNumber numberWithBool:@0]);
+        }else{
+            Feature3Ds* feature3Ds = layer3D.feature3Ds;
+            Feature3D* feature3D=  [feature3Ds feature3DWithID:index option:Feature3DSearchOptionAllFeatures];
+          //  Feature3D feature3D= (Feature3D) layer3D.getFeatures().get(id);
+            if(feature3D==nil){
+                resolve([NSNumber numberWithBool:@0]);
+            }else {
+                Point3D pnt3d = feature3D.geometry3D.innerPoint3D;
+                
+                Camera camera= {pnt3d.x,pnt3d.y,pnt3d.z};
+                [scene flyToCamera:camera];
+                resolve([NSNumber numberWithBool:@1]);
+            }
+        }
+        
     } @catch (NSException *exception) {
         reject(@"Resources", exception.reason, nil);
     }

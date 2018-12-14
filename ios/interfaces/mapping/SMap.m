@@ -364,11 +364,14 @@ RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve 
 #pragma mark 获取UDB数据源的数据集列表
 RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)name:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[name,@219] forKeys:@[@"server",@"engineType"]];
+        if ([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:@"switchudb"]) {
+            [sMap.smMapWC.mapControl.map.workspace.datasources closeAlias:@"switchudb"];
+        }
+        NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[name,@219,@"switchudb"] forKeys:@[@"server",@"engineType",@"alias"]];
         Datasource* dataSource = [sMap.smMapWC openDatasource:params];
         NSInteger count = [dataSource.datasets count];
         NSString* name;
-        NSMutableArray* array = [[NSMutableArray alloc]init];
+        NSMutableArray* array = [[NSMutableArray alloc]init];	
         for(int i = 0; i < count; i++)
         {
             name = [[dataSource.datasets get:i] name];
@@ -687,18 +690,32 @@ RCT_REMAP_METHOD(findSymbolsByGroups, findSymbolsByGroups:(NSString *)type path:
     }
 }
 
-#pragma mark 导入入工作空间
-RCT_REMAP_METHOD(importWorkspace, importWorkspaceInfo:(NSDictionary*)wInfo resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+#pragma mark 导入工作空间
+RCT_REMAP_METHOD(importWorkspace, importWorkspaceInfo:(NSDictionary*)wInfo toFile:(NSString*)strFilePath  datasourceReplace:(BOOL)breplaceDatasource resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         sMap = [SMap singletonInstance];
-        BOOL result = [sMap.smMapWC importWorkspaceInfo:wInfo isResourcesReplace:YES];
+        BOOL result = [sMap.smMapWC importWorkspaceInfo:wInfo withFileDirectory:strFilePath isDatasourceReplace:breplaceDatasource isSymbolsReplace:YES];
         
          resolve(@(result));
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
 }
+
+#pragma mark 倒出工作空间
+RCT_REMAP_METHOD(exportWorkspace, importWorkspaceInfo:(NSArray*)arrMapnames toFile:(NSString*)strFileName  fileReplace:(BOOL)bFileReplace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        BOOL result = [sMap.smMapWC exportMapNamed:arrMapnames toFile:strFileName isReplaceFile:bFileReplace];
+        
+        resolve(@(result));
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 
 /************************************************ 监听事件 ************************************************/
 #pragma mark 监听事件

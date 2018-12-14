@@ -11,6 +11,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
@@ -1126,6 +1127,26 @@ public class SMap extends ReactContextBaseJavaModule {
             WritableArray symbols = SMSymbol.findSymbolsByGroups(resources, type, path);
 
             promise.resolve(symbols);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取指定SymbolGroup中所有的symbol
+     * @param type
+     * @param path
+     * @param promise
+     */
+    @ReactMethod
+    public void exportWorkspace(ReadableArray arrMapNames , String strFileName , boolean isFileReplace, Promise promise) {
+        try {
+
+            sMap = getInstance();
+            boolean result = sMap.smMapWC.exportMapNames(arrMapNames,strFileName,isFileReplace);
+
+            promise.resolve(result);
+
         } catch (Exception e) {
             promise.reject(e);
         }

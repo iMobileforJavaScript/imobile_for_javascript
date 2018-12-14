@@ -17,6 +17,7 @@ import com.supermap.data.FieldInfo;
 import com.supermap.data.FieldType;
 import com.supermap.data.Recordset;
 import com.supermap.mapping.Layer;
+import com.supermap.mapping.Layers;
 import com.supermap.mapping.Map;
 import com.supermap.smNative.SMLayer;
 

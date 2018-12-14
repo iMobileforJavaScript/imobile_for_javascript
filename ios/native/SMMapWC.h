@@ -31,5 +31,6 @@
 - (Dataset *)addDatasetByName:(NSString *)name type:(DatasetType)type datasourceName:(NSString *)datasourceName datasourcePath:(NSString *)datasourcePath;
 - (BOOL)saveWorkspace;
 - (BOOL)saveWorkspaceWithInfo:(NSDictionary*)infoDic;
--(BOOL)importWorkspaceInfo:(NSDictionary*)infoDic isResourcesReplace:(BOOL)bReplace;
+-(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic withFileDirectory:(NSString*)strDirPath isDatasourceReplace:(BOOL)bDatasourceRep isSymbolsReplace:(BOOL)bSymbolsRep;
+-(BOOL)exportMapNamed:(NSArray*)arrMapNames toFile:(NSString*)fileName isReplaceFile:(BOOL)bFileRep;
 @end

@@ -9,6 +9,9 @@
 #import "SMMapWC.h"
 #import "SuperMap/Maps.h"
 #import "SuperMap/Map.h"
+#import "SuperMap/Layers.h"
+#import "SuperMap/Layer.h"
+#import "SuperMap/Dataset.h"
 #import "SuperMap/Resources.h"
 #import "SuperMap/SymbolMarkerLibrary.h"
 #import "SuperMap/SymbolLineLibrary.h"
@@ -282,11 +285,24 @@
     return resultName;
 }
 
+-(BOOL)isDatasourceFileExist:(NSString*)strPath isUDB:(BOOL)bUDB{
+    if(bUDB){
+        return [self isUDBFileExist:strPath];
+    }else{
+        BOOL bDir = false;
+        BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:strPath isDirectory:&bDir];
+        if ( !bExist || bDir) {
+            return false;
+        }else{
+            return true;
+        }
+    }
+}
+
 -(BOOL)isUDBFileExist:(NSString*)udbPath{
-    if(![udbPath hasSuffix:@".udb"]){
+    if (![udbPath hasSuffix:@".udb"]) {
         return false;
     }
-    
     BOOL bDir = false;
     BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:udbPath isDirectory:&bDir];
     if ( !bExist || bDir) {
@@ -317,10 +333,9 @@
     return strResult;
 }
 
-
 //导入工作空间
 //  失败情况：
-//      a)info为空或sever为空
+//      a)info为空或sever为空或type为空 或导入工作空间为_workspace
 //      b)打开工作空间失败
 //      c)_workspace没初始化
 //  流程：
@@ -330,17 +345,19 @@
 //          -打开数据源，alias相同需改名
 //      3.导入点线面符号库（若是SMWX可直接读取文件，其他类型需要先导出符号库文件再读入）
 //      4.导入maps，先导出成XML在倒入，3中alian变化的数据源需修改导出XML对应字段
+//  非替换模式：重复文件名+num
+//  替换模式：重复文件替换，同路径先关闭工作空间再替换
 
--(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic isResourcesReplace:(BOOL)bReplace{
+-(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic withFileDirectory:(NSString*)strDirPath isDatasourceReplace:(BOOL)bDatasourceRep isSymbolsReplace:(BOOL)bSymbolsRep{
     
     BOOL bSucc = NO;
-    NSString *targetPath = [_workspace.connectionInfo server];
-    if (_workspace && targetPath!=nil && infoDic && [infoDic objectForKey:@"server"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
+    
+    if (_workspace && infoDic && [infoDic objectForKey:@"server"] && [infoDic objectForKey:@"type"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
         Workspace *importWorkspace = [[Workspace alloc]init];
         WorkspaceConnectionInfo* info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
         
-        NSString *importPath = info.server;
         if([importWorkspace open:info]){
+            NSString *importPath = info.server;
             NSFileManager *manager = [NSFileManager defaultManager];
             
             int nSuffixCount = 0;
@@ -350,145 +367,229 @@
                 nSuffixCount = 4;
             }
             
+            NSString * strTargetDir = strDirPath;
             
-            NSArray *arrTargetPathStr = [targetPath componentsSeparatedByString:@"/"];
-            NSString* strTargetWorkspaceName = [arrTargetPathStr lastObject];
-            NSString* strTargetDirFather = [targetPath substringToIndex:targetPath.length-strTargetWorkspaceName.length];
+            if (strTargetDir==nil||strTargetDir.length==0) {
+                //若未指定存放目录需构造默认目录
+                NSString *currentPath = [_workspace.connectionInfo server];
+                NSArray *arrCurrentPathStr = [currentPath componentsSeparatedByString:@"/"];
+                NSString* strCurrentNameStr = [arrCurrentPathStr lastObject];
+                // NSString* strTargetDirFather = [targetPath substringToIndex:targetPath.length-strTargetWorkspaceName.length];
+                strTargetDir = [currentPath substringToIndex:currentPath.length-strCurrentNameStr.length-1];
+                NSArray* arrSrcPathStr = [importPath componentsSeparatedByString:@"/"];
+                NSArray* arrSrcWorkspaceName = [[arrSrcPathStr lastObject] componentsSeparatedByString:@"."];
+                // 目标文件+importWorkspaceName
+                strTargetDir = [NSString stringWithFormat:@"%@/%@", strTargetDir,[arrSrcWorkspaceName firstObject]];
+            }
             
+            BOOL bDirReady = YES;
+            BOOL bNewDir = NO;
+            BOOL bDir = NO;
+            BOOL bExist = [manager fileExistsAtPath:strTargetDir isDirectory:&bDir];
+            if (!bExist || !bDir) {
+                bDirReady = [manager createDirectoryAtPath:strTargetDir withIntermediateDirectories:YES attributes:nil error:nil];
+                bNewDir = YES;
+            }
+            if (!bDirReady) {
+                return false;
+            }
             
-            NSArray* arrSrcPathStr = [importPath componentsSeparatedByString:@"/"];
-            NSArray* arrSrcWorkspaceName = [[arrSrcPathStr lastObject] componentsSeparatedByString:@"."];
-            // 目标文件+importWorkspaceName
-            NSString* strTargetDir = [NSString stringWithFormat:@"%@%@", strTargetDirFather,[arrSrcWorkspaceName firstObject]];
-            // 目标文件存在性判断 文件名后加 #num
-            // 这里判断了文件夹存在性 后面可以省略文件的判断
-            strTargetDir = [self formateNoneExistFileName:strTargetDir isDir:YES];
-            BOOL bFirstFile = YES;
+            // 重复的server处理
+            //      1.文件型数据源：若bDatasourceRep，关闭原来数据源，拷贝新数据源并重新打开（alian保持原来的）
+            //      2.网络型数据源：不再重复打开（alian保持原来的）
+            NSMutableArray * arrTargetServers = [[NSMutableArray alloc]init];
+            NSMutableArray * arrTargetAlians = [[NSMutableArray alloc]init];
+            for (int i=0; i<_workspace.datasources.count; i++) {
+                Datasource* datasource = [_workspace.datasources get:i];
+                DatasourceConnectionInfo *datasourceInfo = [datasource datasourceConnectionInfo];
+                if (datasourceInfo.engineType == ET_UDB || datasourceInfo.engineType == ET_IMAGEPLUGINS) {
+                    //只要名字
+                    if (bDatasourceRep) {
+                        NSString* fullName = datasourceInfo.server;
+                        NSArray * arrServer = [fullName componentsSeparatedByString:@"/"];
+                        NSString* lastName = [arrServer lastObject];
+                        NSString* fatherName = [fullName substringToIndex:fullName.length-lastName.length-1];
+                        if ([fatherName isEqualToString:strTargetDir]) {
+                            //同级目录下的才会被替换
+                            [arrTargetServers addObject:lastName];
+                            [arrTargetAlians addObject:datasourceInfo.alias];
+                        }
+                    }
+                }else{
+                    //网络数据集用完整url
+                    [arrTargetServers addObject:datasourceInfo.server];
+                    [arrTargetAlians addObject:datasourceInfo.alias];
+                }
+            }
+            
             //数据源
             Datasources *datasourcesTemp = [importWorkspace datasources];
             //NSMutableDictionary *reAlianDic = [[NSMutableDictionary alloc]init];
+            //更名数组
             NSMutableArray *arrAlian = [[NSMutableArray alloc]init];
             NSMutableArray *arrReAlian = [[NSMutableArray alloc]init];
             for (int i=0; i<datasourcesTemp.count; i++) {
                 Datasource* dTemp = [datasourcesTemp get:i];
-                DatasourceConnectionInfo *infoTemp = dTemp.datasourceConnectionInfo;
-                NSString *importServer = infoTemp.server;
-                
-                if(infoTemp.engineType==ET_UDB){
-                    
-                    if( ![self isUDBFileExist:importServer] ){
-                        continue;
-                    }
-                    if (bFirstFile) {
-                        if( [manager createDirectoryAtPath:strTargetDir withIntermediateDirectories:YES attributes:nil error:nil]){
-                            bFirstFile = NO;
-                        }else{
-                            continue;
-                        }
-                    }
-                    NSString *strSrcDatasourcePath = [importServer substringToIndex:importServer.length-4];
-                    // 文件数据源拷贝
-                    NSArray *arrSrcStr = [importServer componentsSeparatedByString:@"/"];
-                    NSString *strUDBName = [arrSrcStr lastObject];
-                    // 导入工作空间名／数据源名字
-                    NSString *strTargetDatasourcePath = [NSString stringWithFormat:@"%@/%@",strTargetDir,[strUDBName substringToIndex:strUDBName.length-4]];
-                    // 拷贝udb
-                    if(![manager copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udb"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udb"] error:nil]){
-                        continue;
-                    }
-                    // 拷贝udd
-                    if(![manager copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udd"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udd"] error:nil]){
-                        continue;
-                    }
-                    
-                    // 更名
-                    NSString *strAlian = [self formateNoneExistDatasourceAlian:infoTemp.alias];
-                    
-                    // 打开
-                    DatasourceConnectionInfo *temp = [[DatasourceConnectionInfo alloc]init];
-                    temp.server = [strTargetDatasourcePath stringByAppendingString:@".udb"];
-                    temp.alias = strAlian;
-                    temp.user = infoTemp.user;
-                    if(infoTemp.password && ![infoTemp.password isEqualToString:@""]){
-                        temp.password = infoTemp.password;
-                    }
-                    
-                    temp.engineType = ET_UDB;
-                    
-                    if ( [_workspace.datasources open:temp] ) {
-                        //[reAlianDic setObject:strAlian forKey:infoTemp.alias];
-                        if (![strAlian isEqualToString:infoTemp.alias]) {
-                            [arrAlian addObject:infoTemp.alias];
-                            [arrReAlian addObject:strAlian];
-                        }
-                    }
-                    
+                if (![dTemp isOpended]) {
+                    //没打开就跳过
+                    continue;
                 }
-                else if(infoTemp.engineType==ET_IMAGEPLUGINS){
-                    BOOL bDir = false;
-                    BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:importServer isDirectory:&bDir];
-                    if ( !bExist || bDir) {
+                DatasourceConnectionInfo *infoTemp = dTemp.datasourceConnectionInfo;
+                NSString *strSrcServer = infoTemp.server;
+                EngineType engineType = infoTemp.engineType;
+                NSString *strSrcAlian = infoTemp.alias;
+                NSString *strSrcUser = infoTemp.user;
+                NSString *strSrcPassword = infoTemp.password;
+                NSString* strTargetAlian = strSrcAlian;
+                
+                if(engineType==ET_UDB || engineType==ET_IMAGEPLUGINS){
+                    
+                    // 源文件存在？
+                    if( ![self isDatasourceFileExist:strSrcServer isUDB:(engineType==ET_UDB)] ){
                         continue;
                     }
-                    if (bFirstFile) {
-                        if( [manager createDirectoryAtPath:strTargetDir withIntermediateDirectories:YES attributes:nil error:nil]){
-                            bFirstFile = NO;
-                        }else{
+                    
+                    NSArray *arrSrcServer = [strSrcServer componentsSeparatedByString:@"/"];
+                    NSString *strFileName = [arrSrcServer lastObject];
+                    // 导入工作空间名／数据源名字
+                    NSString *strTargetServer = [NSString stringWithFormat:@"%@/%@",strTargetDir,strFileName];
+                    
+                    if (engineType==ET_UDB) {
+                        
+                        NSString * strSrcDatasourcePath = [strSrcServer substringToIndex:strSrcServer.length-4];
+                        NSString * strTargetDatasourcePath = [strTargetServer substringToIndex:strTargetServer.length-4];
+                        if (!bNewDir) {
+                            // 检查重复性
+                            bDir = YES;
+                            bExist = [manager fileExistsAtPath:strTargetServer isDirectory:&bDir];
+                            if (bExist && !bDir) {
+                                //存在同名文件
+                                if (bDatasourceRep) {
+                                    //覆盖模式
+                                    NSInteger nIndex = [arrTargetServers indexOfObject:strFileName];
+                                    if (nIndex>=0 && nIndex<arrTargetServers.count) {
+                                        // 替换alian 保证原来map有数据源
+                                        strTargetAlian = [arrTargetAlians objectAtIndex:nIndex];
+                                        [_workspace.datasources closeAlias:strTargetAlian];
+                                        //删文件
+                                        if(![manager removeItemAtPath:[strTargetDatasourcePath stringByAppendingString:@".udb"] error:nil]){
+                                            continue;
+                                        }
+                                        if(![manager removeItemAtPath:[strTargetDatasourcePath stringByAppendingString:@".udd"] error:nil]){
+                                            continue;
+                                        }
+                                    }else{
+                                        //_worspace外的 直接删
+                                        [manager removeItemAtPath:[strTargetDatasourcePath stringByAppendingString:@".udb"] error:nil];
+                                        [manager removeItemAtPath:[strTargetDatasourcePath stringByAppendingString:@".udd"] error:nil];
+                                    }
+                                }else{
+                                    //重名文件
+                                    strTargetServer = [self formateNoneExistFileName:strTargetServer isDir:NO];
+                                    strTargetDatasourcePath = [strTargetServer substringToIndex:strTargetServer.length-4];
+                                }//rep
+                            }//exist
+                        }//!New
+                        
+                        // 拷贝udb
+                        if(![manager copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udb"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udb"] error:nil]){
                             continue;
                         }
-                    }
-                    // 文件数据源拷贝
-                    NSArray *arrSrcStr = [importServer componentsSeparatedByString:@"/"];
-                    NSString *strFileName = [arrSrcStr lastObject];
-                    // 拷贝影像文件
-                    if(![manager copyItemAtPath:importServer toPath:[strTargetDir stringByAppendingString:strFileName] error:nil]){
-                        continue;
-                    }
-                    // 更名
-                    NSString *strAlian = [self formateNoneExistDatasourceAlian:infoTemp.alias];
+                        // 拷贝udd
+                        if(![manager copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udd"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udd"] error:nil]){
+                            continue;
+                        }
+                        
+                    }else{
+                        if (!bNewDir) {
+                            // 检查重复性
+                            bDir = YES;
+                            bExist = [manager fileExistsAtPath:strTargetServer isDirectory:&bDir];
+                            if (bExist && !bDir) {
+                                //存在同名文件
+                                if (bDatasourceRep) {
+                                    //覆盖模式
+                                    NSInteger nIndex = [arrTargetServers indexOfObject:strFileName];
+                                    if (nIndex>=0 && nIndex<arrTargetServers.count) {
+                                        // 替换alian 保证原来map有数据源
+                                        strTargetAlian = [arrTargetAlians objectAtIndex:nIndex];
+                                        [_workspace.datasources closeAlias:strTargetAlian];
+                                        //删文件
+                                        if(![manager removeItemAtPath:strTargetServer error:nil]){
+                                            continue;
+                                        }
+                                    }else{
+                                        //_worspace外的 直接删
+                                        [manager removeItemAtPath:strTargetServer error:nil];
+                                    }
+                                }else{
+                                    //重名文件
+                                    strTargetServer = [self formateNoneExistFileName:strTargetServer isDir:NO];
+                                }//rep
+                            }//exist
+                        }//!New
+                        
+                        // 拷贝
+                        if(![manager copyItemAtPath:strSrcServer toPath:strTargetServer error:nil]){
+                            continue;
+                        }
+                        
+                    }//bUDB
                     // 打开
                     DatasourceConnectionInfo *temp = [[DatasourceConnectionInfo alloc]init];
-                    temp.server = [strTargetDir stringByAppendingString:strFileName];
-                    temp.alias = strAlian;
-                    temp.user = infoTemp.user;
-                    if(infoTemp.password && ![infoTemp.password isEqualToString:@""]){
-                        temp.password = infoTemp.password;
+                    temp.server = strTargetServer;
+                    // 更名
+                    strTargetAlian= [self formateNoneExistDatasourceAlian:strTargetAlian];
+                    temp.alias = strTargetAlian;
+                    temp.user = strSrcUser;
+                    if(strSrcPassword && ![strSrcPassword isEqualToString:@""]){
+                        temp.password = strSrcPassword;
                     }
-                    temp.engineType = ET_IMAGEPLUGINS;
+                    temp.engineType =engineType;
                     
                     if ( [_workspace.datasources open:temp] ) {
                         //[reAlianDic setObject:strAlian forKey:infoTemp.alias];
-                        if (![strAlian isEqualToString:infoTemp.alias]) {
-                            [arrAlian addObject:infoTemp.alias];
-                            [arrReAlian addObject:strAlian];
+                        if (![strTargetAlian isEqualToString:strSrcAlian]) {
+                            [arrAlian addObject:strSrcAlian];
+                            [arrReAlian addObject:strTargetAlian];
                         }
                     }
+                    
                 }
                 else{
-                    NSString *strAlian = [self formateNoneExistDatasourceAlian:infoTemp.alias];
-                    // web数据源
-                    DatasourceConnectionInfo *temp = [[DatasourceConnectionInfo alloc]init];
-                    temp.server = infoTemp.server;
-                    temp.alias = strAlian;
-                    temp.user = infoTemp.user;
-                    if(infoTemp.password && ![infoTemp.password isEqualToString:@""]){
-                        temp.password = infoTemp.password;
-                    }
-                    temp.driver = infoTemp.driver;
-                    temp.engineType = infoTemp.engineType;
-                    [_workspace.datasources open:temp];
-                    
-                    if ( [_workspace.datasources open:temp] ) {
-                        if (![strAlian isEqualToString:infoTemp.alias]) {
-                            [arrAlian addObject:infoTemp.alias];
-                            [arrReAlian addObject:strAlian];
+                    //url需要区分大小写吗？
+                    NSInteger nIndex = [arrTargetServers indexOfObject:strSrcServer];
+                    if (nIndex>=0 && nIndex<arrTargetServers.count) {
+                        // 替换alian 保证原来map有数据源
+                        strTargetAlian = [arrTargetAlians objectAtIndex:nIndex];
+                        if (![strTargetAlian isEqualToString:strSrcAlian]) {
+                            [arrAlian addObject:strSrcAlian];
+                            [arrReAlian addObject:strTargetAlian];
+                        }
+                    }else{
+                        strTargetAlian = [self formateNoneExistDatasourceAlian:strTargetAlian];
+                        // web数据源
+                        DatasourceConnectionInfo *temp = [[DatasourceConnectionInfo alloc]init];
+                        temp.server = strSrcServer;
+                        temp.alias = strTargetAlian;
+                        temp.user = strSrcUser;
+                        if(strSrcPassword && ![strSrcPassword isEqualToString:@""]){
+                            temp.password = strSrcPassword;
+                        }
+                        temp.driver = infoTemp.driver;
+                        temp.engineType = infoTemp.engineType;
+                        
+                        if ( [_workspace.datasources open:temp] ) {
+                            if (![strTargetAlian isEqualToString:strSrcAlian]) {
+                                [arrAlian addObject:strSrcAlian];
+                                [arrReAlian addObject:strTargetAlian];
+                            }
                         }
                     }
                     
                 }// if udb
                 
             }// for datasources
-            
             
             //符号库
             
@@ -503,9 +604,9 @@
                 [importWorkspace.resources.fillLibrary saveAs:strFillPath];
                 
             }
-            [_workspace.resources.markerLibrary appendFromFile:strMarkerPath isReplace:YES];
-            [_workspace.resources.lineLibrary appendFromFile:strLinePath isReplace:YES];
-            [_workspace.resources.fillLibrary appendFromFile:strFillPath isReplace:YES];
+            [_workspace.resources.markerLibrary appendFromFile:strMarkerPath isReplace:bSymbolsRep];
+            [_workspace.resources.lineLibrary appendFromFile:strLinePath isReplace:bSymbolsRep];
+            [_workspace.resources.fillLibrary appendFromFile:strFillPath isReplace:bSymbolsRep];
             if (info.type!=SM_SXWU) {
                 [manager removeItemAtPath:strMarkerPath error:nil];
                 [manager removeItemAtPath:strLinePath error:nil];
@@ -513,10 +614,10 @@
             }
             
             
-            
+            Map *mapTemp = [[Map alloc]initWithWorkspace:importWorkspace];
             // map
             for (int i=0; i<importWorkspace.maps.count; i++) {
-                Map *mapTemp = [[Map alloc]initWithWorkspace:importWorkspace];
+                
                 [mapTemp open:[importWorkspace.maps get:i]];
                 mapTemp.description = [NSString stringWithFormat:@"%@-%@", @"Template", mapTemp.name];
                 NSString* strSrcMapXML = [mapTemp toXML];
@@ -530,6 +631,7 @@
             
             
             [importWorkspace close];
+            bSucc = YES;
         }
         
         [info dispose];
@@ -537,6 +639,239 @@
         bSucc = YES;
     }
     return bSucc;
+}
+
+//导出工作空间
+//  失败情况：
+//      a)工作空间未打开
+//      b)导出文件名错误
+//      c)非强制覆盖模式有同名sxm文件
+//  流程：
+//      1.新的工作空间目录，导出文件名可用？
+//      2.新建workspace
+//      3.导出列表中map，加到workspace.maps中
+//      4.遍历datasource，拷贝其中文件数据源（注意覆盖模式），workspace打开数据源
+//      5.导出符号库，workspace打开符号库
+//      5.设置workspaceConnectionInfo，保存workspace
+
+-(BOOL)exportMapNamed:(NSArray*)arrMapNames toFile:(NSString*)fileName isReplaceFile:(BOOL)bFileRep{
+    if (_workspace==nil || fileName==nil||fileName.length==0||arrMapNames==nil||[arrMapNames count]==0||[_workspace.connectionInfo.server isEqualToString:fileName]) {
+        return false;
+    }
+    
+    NSFileManager *manager =  [NSFileManager defaultManager];
+    //    SM_SXW = 4,
+    //    SM_SMW = 5,
+    //    SM_SXWU = 8,
+    //    SM_SMWU = 9
+    
+    WorkspaceType workspaceType = SM_DEFAULT;
+    NSString* strWorkspaceSuffix = [[fileName componentsSeparatedByString:@"."] lastObject];
+    if ( [strWorkspaceSuffix isEqualToString:@"sxw"] ) {
+        workspaceType = SM_SXW;
+    }else if( [strWorkspaceSuffix isEqualToString:@"smw"] ){
+        workspaceType = SM_SMW;
+    }else if( [strWorkspaceSuffix isEqualToString:@"sxwu"] ){
+        workspaceType = SM_SXWU;
+    }else if( [strWorkspaceSuffix isEqualToString:@"smwu"] ){
+        workspaceType = SM_SMWU;
+    }else{
+        return false;
+    }
+    
+    //建目录
+    NSString *desWorkspaceName = [[fileName componentsSeparatedByString:@"/"]lastObject];
+    NSString *desDir = [fileName substringToIndex:fileName.length-desWorkspaceName.length-1];
+    BOOL bDir = NO;
+    BOOL bExist = [manager fileExistsAtPath:desDir isDirectory:&bDir];
+    BOOL bNewDir = false;
+    // 目录下受保护文件
+    NSMutableArray *arrProtectedFile = [[NSMutableArray alloc]init];
+    if (bExist && bDir) {
+        for (int i=0; i<_workspace.datasources.count; i++) {
+            Datasource* datasource = [_workspace.datasources get:i];
+            DatasourceConnectionInfo *datasourceInfo = [datasource datasourceConnectionInfo];
+            if (datasourceInfo.engineType == ET_UDB || datasourceInfo.engineType == ET_IMAGEPLUGINS) {
+                //只要名字
+                if (bFileRep) {
+                    NSString* fullName = datasourceInfo.server;
+                    NSArray * arrServer = [fullName componentsSeparatedByString:@"/"];
+                    NSString* lastName = [arrServer lastObject];
+                    NSString* fatherName = [fullName substringToIndex:fullName.length-lastName.length-1];
+                    if ([fatherName isEqualToString:desDir]) {
+                        //同级目录下的才会被替换
+                        [arrProtectedFile addObject:fullName];
+                    }
+                }
+            }
+        }
+        bNewDir = false;
+    }else{
+        if(![manager createDirectoryAtPath:desDir withIntermediateDirectories:YES attributes:nil error:nil]){
+            return false;
+        }
+        bNewDir = true;
+    }
+    //文件名
+    bDir = NO;
+    bExist = [manager fileExistsAtPath:fileName isDirectory:&bDir];
+    if (bExist && !bDir) {
+        if(bFileRep){
+            [manager removeItemAtPath:fileName error:nil];
+        }else{
+            return false;
+        }
+    }
+    
+    Workspace *workspaceDes = [[Workspace alloc]init];
+    // map用到的datasource
+    NSMutableArray *arrDatasources = [[NSMutableArray alloc]init];
+    
+    Map *mapExport = [[Map alloc]initWithWorkspace:_workspace];
+    
+    for (int k=0; k<arrMapNames.count; k++) {
+        NSString *mapName = [arrMapNames objectAtIndex:k];
+        if ([_workspace.maps indexOf:mapName]!=-1) {
+            // 打开map
+            [mapExport open:mapName];
+            // 不重复的datasource保存
+            for (int i=0; i<mapExport.layers.getCount; i++) {
+                Datasource *datasource = [[[mapExport.layers getLayerAtIndex:i] dataset]datasource];
+                if (![arrDatasources containsObject:datasource]) {
+                    [arrDatasources addObject:datasource];
+                }
+            }
+            NSString* strMapXML = [mapExport toXML];
+            [workspaceDes.maps add:mapName withXML:strMapXML];
+            [mapExport close];
+        }
+    }
+    
+    // 导出datasource
+    for (int i=0; i<arrDatasources.count; i++) {
+        Datasource *datasource = [arrDatasources objectAtIndex:i];
+        // 文件拷贝
+        DatasourceConnectionInfo *srcInfo = [datasource datasourceConnectionInfo];
+        NSString *strSrcServer = srcInfo.server;
+        EngineType engineType = srcInfo.engineType;
+        NSString *strTargetServer = strSrcServer;
+        if (engineType == ET_UDB || engineType == ET_IMAGEPLUGINS) {
+            
+            // 源文件存在？
+            if( ![self isDatasourceFileExist:strSrcServer isUDB:(engineType==ET_UDB)] ){
+                continue;
+            }
+            
+            NSArray *arrSrcServer = [strSrcServer componentsSeparatedByString:@"/"];
+            NSString *strFileName = [arrSrcServer lastObject];
+            // 导入工作空间名
+            strTargetServer = [NSString stringWithFormat:@"%@/%@",desDir,strFileName];
+            
+            if (engineType==ET_UDB) {
+                
+                NSString * strSrcDatasourcePath = [strSrcServer substringToIndex:strSrcServer.length-4];
+                NSString * strTargetDatasourcePath = [strTargetServer substringToIndex:strTargetServer.length-4];
+                if (!bNewDir) {
+                    // 检查重复性
+                    if ([arrProtectedFile containsObject:strTargetServer]) {
+                        continue;
+                    }
+                    bDir = YES;
+                    bExist = [manager fileExistsAtPath:strTargetServer isDirectory:&bDir];
+                    if (bExist && !bDir) {
+                        //存在同名文件
+                        if (bFileRep) {
+                            //覆盖模式
+                            [manager removeItemAtPath:[strTargetDatasourcePath stringByAppendingString:@".udb"] error:nil];
+                            [manager removeItemAtPath:[strTargetDatasourcePath stringByAppendingString:@".udd"] error:nil];
+                        }else{
+                            //重名文件
+                            strTargetServer = [self formateNoneExistFileName:strTargetServer isDir:NO];
+                            strTargetDatasourcePath = [strTargetServer substringToIndex:strTargetServer.length-4];
+                        }//rep
+                    }//exist
+                }//!New
+                
+                // 拷贝udb
+                if(![manager copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udb"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udb"] error:nil]){
+                    continue;
+                }
+                // 拷贝udd
+                if(![manager copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udd"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udd"] error:nil]){
+                    continue;
+                }
+                
+            }else{
+                if (!bNewDir) {
+                    // 检查重复性
+                    if ([arrProtectedFile containsObject:strTargetServer]) {
+                        continue;
+                    }
+                    bDir = YES;
+                    bExist = [manager fileExistsAtPath:strTargetServer isDirectory:&bDir];
+                    if (bExist && !bDir) {
+                        //存在同名文件
+                        if (bFileRep) {
+                            //覆盖模式
+                            [manager removeItemAtPath:strTargetServer error:nil];
+                        }else{
+                            //重名文件
+                            strTargetServer = [self formateNoneExistFileName:strTargetServer isDir:NO];
+                        }//rep
+                    }//exist
+                }//!New
+                
+                // 拷贝
+                if(![manager copyItemAtPath:strSrcServer toPath:strTargetServer error:nil]){
+                    continue;
+                }
+            }//bUDB
+        }
+        DatasourceConnectionInfo *desInfo = [[DatasourceConnectionInfo alloc]init];
+        desInfo.server = strTargetServer;
+        desInfo.alias = srcInfo.alias;
+        desInfo.engineType = srcInfo.engineType;
+        desInfo.user = srcInfo.user;
+        if (srcInfo.password && ![srcInfo.password isEqualToString:@""]) {
+            desInfo.password = srcInfo.password;
+        }
+        [workspaceDes.datasources open:desInfo];
+    }
+    
+    // symbol lib
+    NSString*serverResourceBase = [fileName substringToIndex:fileName.length-strWorkspaceSuffix.length];
+    NSString*strMarkerPath = [serverResourceBase stringByAppendingString:@".sym"];
+    NSString*strLinePath = [serverResourceBase stringByAppendingString:@".lsl"];
+    NSString*strFillPath = [serverResourceBase stringByAppendingString:@".bru"];
+    if (workspaceType!=SM_SXWU) {
+        //重命名
+        strMarkerPath = [self formateNoneExistFileName:strMarkerPath isDir:NO];
+        strLinePath = [self formateNoneExistFileName:strLinePath isDir:NO];
+        strFillPath = [self formateNoneExistFileName:strFillPath isDir:NO];
+    }
+    
+    [_workspace.resources.markerLibrary saveAs:strMarkerPath];
+    [_workspace.resources.lineLibrary saveAs:strLinePath];
+    [_workspace.resources.fillLibrary saveAs:strFillPath];
+    // 导入
+    [workspaceDes.resources.markerLibrary appendFromFile:strMarkerPath isReplace:YES];
+    [workspaceDes.resources.lineLibrary appendFromFile:strLinePath isReplace:YES];
+    [workspaceDes.resources.fillLibrary appendFromFile:strFillPath isReplace:YES];
+    if (workspaceType!=SM_SXWU) {
+        [manager removeItemAtPath:strMarkerPath error:nil];
+        [manager removeItemAtPath:strLinePath error:nil];
+        [manager removeItemAtPath:strFillPath error:nil];
+    }
+    
+    // fileName查重
+    //WorkspaceConnectionInfo *workspaceInfo = [[WorkspaceConnectionInfo alloc]initWithFile:fileName];
+    [workspaceDes.connectionInfo setType:workspaceType];
+    [workspaceDes.connectionInfo setServer:fileName];
+    //[workspaceDes.connectionInfo setVersion:UGC60];
+    [workspaceDes save];
+    [workspaceDes close];
+    
+    return true;
 }
 
 @end
