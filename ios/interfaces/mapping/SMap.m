@@ -73,8 +73,6 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
             [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
         }
         sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
-        //[sMap.smMapWC.mapControl.snapSetting openAll];
-        sMap.smMapWC.mapControl.isMagnifierEnabled = YES;
         [sMap.smMapWC.mapControl.map refresh];
         [self openGPS];
         resolve([NSNumber numberWithBool:result]);
@@ -292,9 +290,11 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
         Map* map = sMap.smMapWC.mapControl.map;
         Maps* maps = sMap.smMapWC.workspace.maps;
         
+        BOOL isOpen = YES;
+        
         if (maps.count > 0 && index >= 0) {
             NSString* mapName = [maps get:index];
-            [map open: mapName];
+            isOpen = [map open: mapName];
             if (viewEntire == YES) {
                 [map viewEntire];
             }
@@ -312,7 +312,7 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
             sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
             [map refresh];
         }
-        resolve([NSNumber numberWithBool:YES]);
+        resolve([NSNumber numberWithBool:isOpen]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
@@ -330,6 +330,20 @@ RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve re
             [mapList addObject:mapInfo];
         }
         resolve(mapList);
+    }@catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取地图信息
+RCT_REMAP_METHOD(getMapInfo, getMapInfoWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Map* map = sMap.smMapWC.mapControl.map;
+        NSMutableDictionary* mapInfo = [[NSMutableDictionary alloc] init];
+        [mapInfo setObject:map.name forKey:@"name"];
+        [mapInfo setObject:map.description forKey:@"description"];
+        [mapInfo setObject:@(map.isModified) forKey:@"isModified"];
+        resolve(mapInfo);
     }@catch (NSException *exception) {
         reject(@"workspace", exception.reason, nil);
     }
@@ -497,24 +511,6 @@ RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBloc
             
             [mapControl.map refresh];
         });
-        resolve([NSNumber numberWithBool:YES]);
-    } @catch (NSException *exception) {
-        reject(@"MapControl", exception.reason, nil);
-    }
-}
-
-#pragma mark 移动到当前位置
-RCT_REMAP_METHOD(getLayers, getLayersWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        Layers* layers = [SMap singletonInstance].smMapWC.mapControl.map.layers;
-        int count = [layers getCount];
-        NSMutableArray* nameArr = [[NSMutableArray alloc] init];
-        for (int i = 0; i < count; i++) {
-            Layer* layer = [layers getLayerAtIndex:i];
-            [nameArr addObject:[layers getLayerAtIndex:i]];
-            NSLog(@"%@ - %@ - %@", layer.name, [NSNumber numberWithBool:layer.editable], [NSNumber numberWithBool:layer.visible]);
-        }
-        
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
@@ -694,7 +690,7 @@ RCT_REMAP_METHOD(findSymbolsByGroups, findSymbolsByGroups:(NSString *)type path:
     }
 }
 
-#pragma mark 倒入工作空间
+#pragma mark 导入工作空间
 RCT_REMAP_METHOD(importWorkspace, importWorkspaceInfo:(NSDictionary*)wInfo toFile:(NSString*)strFilePath  datasourceReplace:(BOOL)breplaceDatasource resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
