@@ -9,6 +9,9 @@
 #import <React/RCTBridgeModule.h>
 #import "SMap.h"
 #import "SMLayer.h"
+#import <SuperMap/DatasetVector.h>
+#import <SuperMap/FieldInfos.h>
+#import <SuperMap/FieldInfo.h>
 
 @interface SLayerManager : NSObject<RCTBridgeModule>
 

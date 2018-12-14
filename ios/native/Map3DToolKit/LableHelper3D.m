@@ -346,7 +346,7 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
     [mSceneControl.scene.trackingLayer3D AddGeometry:geoPlacemark Tag:@"text"]; //getScene().getTrackingLayer().add(geoPlacemark, "text");
     mSceneControl.isRender = YES;
     
-    [myPoint3DArrayList addObject:geoPlacemark];// .add(pnt3d);
+    [myPoint3DArrayList addObject:p3d];// .add(pnt3d);
     [geoTextStrList addObject:text];//.add(text);
     isEdit = true;
 }

@@ -73,6 +73,8 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
             [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
         }
         sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
+        //[sMap.smMapWC.mapControl.snapSetting openAll];
+        sMap.smMapWC.mapControl.isMagnifierEnabled = YES;
         [sMap.smMapWC.mapControl.map refresh];
         [self openGPS];
         resolve([NSNumber numberWithBool:result]);

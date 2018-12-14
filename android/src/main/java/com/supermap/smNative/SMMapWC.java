@@ -1,9 +1,6 @@
 package com.supermap.smNative;
 
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.soloader.NoopSoSource;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVectorInfo;
@@ -13,7 +10,6 @@ import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.Datasources;
 import com.supermap.data.EngineType;
 import com.supermap.data.Enum;
-import com.supermap.data.SymbolMarkerLibrary;
 import com.supermap.data.Workspace;
 import com.supermap.data.WorkspaceConnectionInfo;
 import com.supermap.data.WorkspaceType;
