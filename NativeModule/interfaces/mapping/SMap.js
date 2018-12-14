@@ -128,7 +128,7 @@ export default (function () {
    * @param center      (option)
    * @returns {*}
    */
-  function openMap(value, viewEntire = false, center = null) {
+  function openMap(value, viewEntire = true, center = null) {
     try {
       if (typeof value === 'number') {
         return SMap.openMapByIndex(value, viewEntire, center)
@@ -277,11 +277,7 @@ export default (function () {
   }
 
   submit = () => {
-    SMap.submit()
-  }
-
-  getLayers = () => {
-    SMap.getLayers()
+    return SMap.submit()
   }
 
   /**
@@ -573,6 +569,31 @@ export default (function () {
     }
   }
   
+  /**
+   * 导入工作空间
+   * @param info
+   * @returns {*}
+   */
+  function importWorkspace(info){
+    try {
+      return SMap.importWorkspace(info)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 获取地图信息
+   * @returns {*}
+   */
+  function getMapInfo(){
+    try {
+      return SMap.getMapInfo()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
   let SMapExp = {
     openWorkspace,
     openDatasource,
@@ -589,7 +610,6 @@ export default (function () {
     removeLayer,
     closeMap,
     getUDBName,
-    getLayers,
     submit,
     setGestureDetector,
     deleteGestureDetector,
@@ -607,6 +627,8 @@ export default (function () {
     removeLayerWithName,
     workspaceIsModified,
     getMapIndex,
+    importWorkspace,
+    getMapInfo,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 

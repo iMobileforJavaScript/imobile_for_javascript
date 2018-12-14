@@ -5,10 +5,17 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
+import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
+import com.supermap.data.DatasetVector;
 import com.supermap.data.Datasets;
 import com.supermap.data.Datasources;
+import com.supermap.data.FieldInfo;
+import com.supermap.data.FieldType;
+import com.supermap.data.Recordset;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Map;
 import com.supermap.smNative.SMLayer;
@@ -74,6 +81,23 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     public void setLayerVisible(String path, boolean value, Promise promise) {
         try {
             SMLayer.setLayerVisible(path, value);
+            SMap.getSMWorkspace().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置制定名字图层是否可编辑
+     * @param path
+     * @param value
+     * @param promise
+     */
+    @ReactMethod
+    public void setLayerEditable(String path, boolean value, Promise promise) {
+        try {
+            SMLayer.setLayerEditable(path, value);
             SMap.getSMWorkspace().getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
@@ -179,6 +203,70 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                 }
             }
             promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据图层路径，找到对应的图层并修改指定recordset中的FieldInfo
+     * @param layerPath
+     * @param fieldInfos
+     * @param promise
+     */
+    @ReactMethod
+    public void setLayerFieldInfo(String layerPath, ReadableArray fieldInfos, int index, Promise promise) {
+        try {
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+
+            if (layer != null) {
+                DatasetVector dv = (DatasetVector)layer.getDataset();
+                Recordset recordset = dv.getRecordset(false, CursorType.DYNAMIC);
+
+                index = index >= 0 ? index : (recordset.getRecordCount() - 1);
+                recordset.moveTo(index);
+                recordset.edit();
+
+                for (int i = 0; i < fieldInfos.size(); i++) {
+                    ReadableMap info = fieldInfos.getMap(i);
+                    String name = info.getString("name");
+                    String value = info.getString("value");
+                    FieldInfo fieldInfo = recordset.getFieldInfos().get(name);
+                    FieldType type = fieldInfo.getType();
+
+                    if (type == FieldType.BOOLEAN) {
+                        boolean boolValue = false;
+                        if (value.equals("true") || value.equals("YES")) {
+                            boolValue = true;
+                        }
+                        recordset.setBoolean(name, boolValue);
+                    } else if (type == FieldType.INT16) {
+                        value = value.equals("") ? "0" : value;
+                        recordset.setInt16(name, Short.parseShort(value));
+                    } else if (type == FieldType.INT32) {
+                        value = value.equals("") ? "0" : value;
+                        recordset.setInt32(name, Integer.parseInt(value));
+                    } else if (type == FieldType.INT64) {
+                        value = value.equals("") ? "0" : value;
+                        recordset.setInt64(name, Integer.parseInt(value));
+                    } else if (type == FieldType.SINGLE) {
+                        value = value.equals("") ? "0" : value;
+                        recordset.setSingle(name, Integer.parseInt(value));
+                    } else if (type == FieldType.DOUBLE) {
+                        value = value.equals("") ? "0" : value;
+                        recordset.setDouble(name, Double.parseDouble(value));
+                    } else if (type == FieldType.DATETIME) {
+
+                    } else if (type == FieldType.TEXT || type == FieldType.WTEXT
+                            || type == FieldType.LONGBINARY || type == FieldType.BYTE) {
+                        recordset.setFieldValue(name, value);
+                    }
+                }
+
+                recordset.update();
+            }
+
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }

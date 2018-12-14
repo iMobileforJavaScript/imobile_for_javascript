@@ -22,9 +22,10 @@
 + (NSArray *)getLayersByType:(int)type path:(NSString *)path;
 + (NSArray *)getLayersByGroupPath:(NSString *)path;
 + (void)setLayerVisible:(NSString *)path value:(BOOL)value;
++ (void)setLayerEditable:(NSString *)path value:(BOOL)value;
 + (NSDictionary *)getLayerAttribute:(NSString *)path;
-+ (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path ids:(NSArray *)ids;
 + (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path;
 + (Layer *)findLayerByPath:(NSString *)path;
 + (NSString *)getLayerPath:(Layer *)layer;
++ (Layer *)findLayerByDatasetName:(NSString *)datasetName;
 @end

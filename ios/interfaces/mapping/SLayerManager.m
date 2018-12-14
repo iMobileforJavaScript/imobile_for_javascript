@@ -43,6 +43,18 @@ RCT_REMAP_METHOD(setLayerVisible, setLayerVisible:(NSString *)path value:(BOOL)v
     }
 }
 
+#pragma mark 设置制定名字图层是否可编辑
+RCT_REMAP_METHOD(setLayerEditable, setLayerEditable:(NSString *)path value:(BOOL)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
+        [SMLayer setLayerEditable:path value:value];
+        [map refresh];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"LayerManager", exception.reason, nil);
+    }
+}
+
 #pragma mark 设置制定名字图层是否可见
 RCT_REMAP_METHOD(getLayerIndex, getLayerIndex:(NSString *)name value:(BOOL)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -90,6 +102,75 @@ RCT_REMAP_METHOD(addLayerByIndex, addLayerByIndex:(int)datasourceIndex datasetIn
             }
         }
         resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"LayerManager", exception.reason, nil);
+    }
+}
+
+#pragma mark - 根据图层路径，找到对应的图层并修改指定recordset中的FieldInfo
+RCT_REMAP_METHOD(setLayerFieldInfo, setLayerFieldByLayerPath:(NSString *)layerPath fieldInfos:(NSArray *)fieldInfos index:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [SMLayer findLayerByPath:layerPath];
+        
+        if (layer) {
+            DatasetVector* dsVector = (DatasetVector *)layer.dataset;
+            Recordset* recordset = [dsVector recordset:false cursorType:DYNAMIC];
+            
+            index = index >= 0 ? index : (recordset.recordCount - 1);
+            [recordset moveTo:index];
+            [recordset edit];
+            
+            for (int i = 0; i < fieldInfos.count; i++) {
+                NSDictionary* info = fieldInfos[i];
+                
+                NSString* name = [info objectForKey:@"name"];
+                NSObject* value = [info objectForKey:@"value"];
+                FieldInfo* fieldInfo = [recordset.fieldInfos getName:name];
+                
+                if (!fieldInfo) continue;
+                
+                switch (fieldInfo.fieldType) {
+                    case FT_BOOLEAN: {
+                        BOOL boolValue = NO;
+                        if ([value isEqual:@"YES"] || [value isEqual:@"true"]) {
+                            boolValue = YES;
+                        }
+                        [recordset setBOOLWithName:name BOOLValue:boolValue];
+                        break;
+                    }
+                    case FT_BYTE:
+                        [recordset setByteWithName:name ByteValue: (Byte)[[(NSString *)value dataUsingEncoding: NSUTF8StringEncoding] bytes]];
+                        break;
+                    case FT_INT16: {
+                        short shortValue = (short)((NSNumber *)value).intValue;
+                        [recordset setInt16WithName:name shortValue:shortValue];
+                        break;
+                    }
+                    case FT_INT32:
+                        [recordset setInt32WithName:name value:((NSNumber *)value).intValue];
+                        break;
+                    case FT_INT64:
+                        [recordset setInt64WithName:name value:((NSNumber *)value).intValue];
+                        break;
+                    case FT_SINGLE:
+                        [recordset setSingleWithName:name value:((NSNumber *)value).floatValue];
+                        break;
+                    case FT_DOUBLE:
+                        [recordset setDoubleWithName:name DoubleValue:((NSNumber *)value).doubleValue];
+                        break;
+                    case FT_DATE:
+                        break;
+                    case FT_LONGBINARY:
+                    case FT_TEXT:
+                    default:
+                        [recordset setFieldValueWithString:name Obj:value];
+                        break;
+                }
+            }
+            
+            [recordset update];
+        }
+        resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"LayerManager", exception.reason, nil);
     }
