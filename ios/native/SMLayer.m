@@ -145,6 +145,8 @@
     
     [recordSet moveFirst];
     NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet count:0 size:1];
+    [recordSet dispose];
+    recordSet = nil;
     return dic;
 }
 

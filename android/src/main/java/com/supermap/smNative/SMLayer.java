@@ -176,6 +176,8 @@ public class SMLayer {
 
         Recordset recordset = selection.toRecordset();
         WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, 1);
+        recordset.dispose();
+        recordset = null;
         return recordArray;
     }
 
