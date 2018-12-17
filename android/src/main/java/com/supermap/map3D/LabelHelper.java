@@ -24,6 +24,7 @@ import com.supermap.data.Point3D;
 import com.supermap.data.Point3Ds;
 import com.supermap.realspace.Action3D;
 import com.supermap.realspace.Feature3D;
+import com.supermap.realspace.Feature3Ds;
 import com.supermap.realspace.Layer3D;
 import com.supermap.realspace.Layer3DType;
 import com.supermap.realspace.PixelToGlobeMode;
@@ -83,7 +84,7 @@ public class LabelHelper {
     //绕点飞行添加点动画view
     private ImageView circleAnimImageView;
 
-    private Layer3D favoriteLayer3d, mLayer3d;
+  //  private Layer3D  mLayer3d;
 
 
     /**
@@ -244,10 +245,11 @@ public class LabelHelper {
             switch (msg.what) {
 
                 //主线程刷新地图
-                case DELETEObj:
-                    mSceneControl.getScene().getLayers().get("NodeAnimation").getFeatures().toKMLFile(kmlPath + kmlName);
+                case DELETEObj: {
+                    if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")!=-1)
+                        mSceneControl.getScene().getLayers().get("NodeAnimation").getFeatures().toKMLFile(kmlPath + kmlName);
                     break;
-                default:
+                }default:
                     break;
             }
         };
@@ -257,6 +259,8 @@ public class LabelHelper {
      */
     public void clearAllLabel() {
 
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")==-1)
+            return;
         while(mSceneControl.getScene().getLayers().get("NodeAnimation").getFeatures().getCount()>0){
             mSceneControl.getScene().getLayers().get("NodeAnimation").getFeatures().removeAt(0);
         }
@@ -289,6 +293,8 @@ public class LabelHelper {
         if (!isEdit) {
             return;
         }
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")==-1)
+            return;
         final Layer3D layer3d = mSceneControl.getScene().getLayers().get("NodeAnimation");
 
         switch (labelOperate) {
@@ -299,45 +305,51 @@ public class LabelHelper {
                     geoPoint3dStyle.setAltitudeMode(AltitudeMode.ABSOLUTE);
                     final GeoPoint3D geoPoint3D = new GeoPoint3D(point3D);
                     geoPoint3D.setStyle3D(geoPoint3dStyle);
-                    layer3d.getFeatures().add(geoPoint3D);
+                    Feature3D fea3d = layer3d.getFeatures().add(geoPoint3D);
 //                    layer3d.getFeatures().add(geoPoint3D).setDescription(point3D.getX()+","+point3D.getY());
+                    fea3d.setDescription("x="+(int)(geoPoint3D.getX()*100)/100.0+" y="+(int)(geoPoint3D.getY()*100)/100.0+" z="+(int)(geoPoint3D.getZ()*100)/100.0);
+                  //  map.putString("description",);
                 }
                 break;
-            case DRAWLINE:
+            case DRAWLINE: {
                 //保存线
-                layer3d.getFeatures().add(geoline3d);
+                Feature3D fea3d = layer3d.getFeatures().add(geoline3d);
+                fea3d.setDescription("x="+(int)(geoline3d.getInnerPoint3D().getX()*100)/100.0+" y="+(int)(geoline3d.getInnerPoint3D().getY()*100)/100.0+" z="+(int)(geoline3d.getInnerPoint3D().getZ()*100)/100.0);
 //                layer3d.getFeatures().add(geoline3d).setDescription(geoline3d.getInnerPoint3D().getX()+","+geoline3d.getInnerPoint3D().getY());
                 break;
-            case DRAWAREA:
+            }case DRAWAREA: {
                 GeoRegion3D geoRegion3D = getRegion(myPoint3DArrayList);
                 if (geoRegion3D != null) {
-                    layer3d.getFeatures().add(geoRegion3D);
+                    Feature3D fea3d = layer3d.getFeatures().add(geoRegion3D);
+                    fea3d.setDescription("x="+(int)(geoRegion3D.getInnerPoint3D().getX()*100)/100.0+" y="+(int)(geoRegion3D.getInnerPoint3D().getY()*100)/100.0+" z="+(int)(geoRegion3D.getInnerPoint3D().getZ()*100)/100.0);
 //                    layer3d.getFeatures().add(geoRegion3D).setDescription(geoRegion3D.getInnerPoint3D().getX()+","+geoRegion3D.getInnerPoint3D().getY());
                 }
 
                 break;
-            case DRAWTEXT:
+            }case DRAWTEXT: {
                 for (int index = 0; index < myPoint3DArrayList.size(); index++) {
                     Point3D point3D = myPoint3DArrayList.get(index);
-                    GeoPlacemark geoPlacemark = getGeoText3D(point3D,geoTextStrList.get(index));
-                    layer3d.getFeatures().add(geoPlacemark);
+                    GeoPlacemark geoPlacemark = getGeoText3D(point3D, geoTextStrList.get(index));
+                    Feature3D fea3d = layer3d.getFeatures().add(geoPlacemark);
+                    fea3d.setDescription("x="+(int)(geoPlacemark.getInnerPoint3D().getX()*100)/100.0+" y="+(int)(geoPlacemark.getInnerPoint3D().getY()*100)/100.0+" z="+(int)(geoPlacemark.getInnerPoint3D().getZ()*100)/100.0);
 //                    layer3d.getFeatures().add(geoPlacemark).setDescription(point3D.getX()+","+point3D.getY());
 
                 }
                 break;
-            case DRAWFAVORITE:
+            }case DRAWFAVORITE: {
                 if (favoriteFeature3D == null) {
                     return;
                 }
-                Feature3D feature3D=layer3d.getFeatures().add(favoriteFeature3D);
-                feature3D.setDescription(favoriteFeature3D.getGeometry().getInnerPoint3D().getX()+","+favoriteFeature3D.getGeometry().getInnerPoint3D().getY());
+                Feature3D feature3D = layer3d.getFeatures().add(favoriteFeature3D);
+                feature3D.setDescription("x="+(int)(favoriteFeature3D.getGeometry().getInnerPoint3D().getX()*100)/100.0+" y="+(int)(favoriteFeature3D.getGeometry().getInnerPoint3D().getY()*100)/100.0+" z="+(int)(favoriteFeature3D.getGeometry().getInnerPoint3D().getZ()*100)/100.0);
+              //  feature3D.setDescription(favoriteFeature3D.getGeometry().getInnerPoint3D().getX() + "," + favoriteFeature3D.getGeometry().getInnerPoint3D().getY());
                 feature3D.setName("兴趣点");
-                Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("Favorite");
-                favoriteLayer3d.getFeatures().remove(favoriteFeature3D);
+//                Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("Favorite");
+                layer3d.getFeatures().remove(favoriteFeature3D);
                 favoriteFeature3D = null;
 
                 break;
-
+            }
 
         }
         //保存
@@ -419,7 +431,10 @@ public class LabelHelper {
      */
     public void addCirclePoint(Point point) {
 
-        Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("Favorite");
+    //
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")==-1)
+            return;
+        Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("NodeAnimation");
         Point3D pnt3d = mSceneControl.getScene().pixelToGlobe(point, PixelToGlobeMode.TERRAINANDMODEL);
 
 
@@ -447,7 +462,9 @@ public class LabelHelper {
         if (circleFeature3D == null) {
             return;
         }
-        Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("Favorite");
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")==-1)
+            return;
+        Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("NodeAnimation");
         favoriteLayer3d.getFeatures().remove(circleFeature3D);
         circleFeature3D=null;
     }
@@ -516,9 +533,11 @@ public class LabelHelper {
      */
     private void addFavoriteText(Point3D pnt3d, String text) {
 
-        Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("Favorite");
+      //  Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("Favorite");
 //        Point3D pnt3d = mSceneControl.getScene().pixelToGlobe(point, PixelToGlobeMode.TERRAINANDMODEL);
 
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")==-1)
+            return;
 
         final GeoStyle3D pointStyle3D = new GeoStyle3D();
         GeoPoint3D geoPoint = new GeoPoint3D(pnt3d);
@@ -531,7 +550,10 @@ public class LabelHelper {
         geoPoint.setStyle3D(pointStyle3D);
         GeoPlacemark geoPlacemark = new GeoPlacemark(text, geoPoint);
         if (favoriteFeature3D == null) {
-            favoriteFeature3D = favoriteLayer3d.getFeatures().add(geoPlacemark);
+            final Layer3D layer3d = mSceneControl.getScene().getLayers().get("NodeAnimation");
+          //  Feature3Ds fea3d1 = layer3d.getFeatures();
+            Feature3Ds fea3d = layer3d.getFeatures();
+            favoriteFeature3D = fea3d.add(geoPlacemark);
         } else {
             favoriteFeature3D.setGeometry(geoPlacemark);
         }
@@ -561,10 +583,12 @@ public class LabelHelper {
         if (favoriteFeature3D == null) {
             return;
         }
-        Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("Favorite");
-        favoriteLayer3d.getFeatures().remove(favoriteFeature3D);
-        favoriteFeature3D = null;
-        isEdit = false;
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation") != -1) {
+            Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("NodeAnimation");
+            favoriteLayer3d.getFeatures().remove(favoriteFeature3D);
+            favoriteFeature3D = null;
+            isEdit = false;
+        }
     }
 
 
@@ -575,11 +599,13 @@ public class LabelHelper {
         if (favoriteFeature3D == null) {
             return;
         }
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")==-1)
+            return;
         Layer3D layer3d = mSceneControl.getScene().getLayers().get("NodeAnimation");
         layer3d.getFeatures().add(favoriteFeature3D);
         //保存
         layer3d.getFeatures().toKMLFile(kmlPath + kmlName);
-        Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("Favorite");
+        Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("NodeAnimation");
         favoriteLayer3d.getFeatures().remove(favoriteFeature3D);
         favoriteFeature3D = null;
         reSet();
@@ -614,10 +640,12 @@ public class LabelHelper {
      */
     public void closePage(){
         reSet();
+        if(mSceneControl.getScene().getLayers().indexOf("NodeAnimation")==-1)
+            return;
         mSceneControl.getScene().getLayers().removeLayerWithName("NodeAnimation");
-        mLayer3d=null;
-        mSceneControl.getScene().getLayers().removeLayerWithName("Favorite");
-        favoriteLayer3d=null;
+        //mLayer3d=null;
+       // mSceneControl.getScene().getLayers().removeLayerWithName("Favorite");
+        //favoriteLayer3d=null;
         circleFeature3D=null;
     }
 
@@ -628,15 +656,16 @@ public class LabelHelper {
     private void addKML() {
 
 //        Layer3D mLayer3d = mSceneControl.getScene().getLayers().get("NodeAnimation");
-        if (mLayer3d == null) {
+
             makeFilePath(kmlPath, kmlName);
-            mLayer3d = mSceneControl.getScene().getLayers().addLayerWith(kmlPath + kmlName, Layer3DType.KML, true, "NodeAnimation");
-        }
+        mSceneControl.getScene().getLayers().removeLayerWithName("NodeAnimation");
+        mSceneControl.getScene().getLayers().addLayerWith(kmlPath + kmlName, Layer3DType.KML, true, "NodeAnimation");
+
 //        Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("Favorite");
-        if (favoriteLayer3d == null) {
-            makeFilePath(kmlPath, "Favorite.mkl");
-            favoriteLayer3d = mSceneControl.getScene().getLayers().addLayerWith(kmlPath + "Favorite.mkl", Layer3DType.KML, true, "Favorite");
-        }
+//        if (favoriteLayer3d == null) {
+//            makeFilePath(kmlPath, "Favorite.mkl");
+//            favoriteLayer3d = mSceneControl.getScene().getLayers().addLayerWith(kmlPath + "Favorite.mkl", Layer3DType.KML, true, "Favorite");
+//        }
     }
 
 
@@ -755,9 +784,9 @@ public class LabelHelper {
         Point3Ds point3ds = new Point3Ds(points);
         if (point3ds.getCount() > 1) {
             GeoStyle3D lineStyle3D = new GeoStyle3D();
-            lineStyle3D.setLineColor(new Color(255, 255, 0));
+            lineStyle3D.setLineColor(new Color(18, 183, 245));
             lineStyle3D.setAltitudeMode(AltitudeMode.ABSOLUTE);
-            lineStyle3D.setLineWidth(5);
+            lineStyle3D.setLineWidth(15);
             geoline3d = new GeoLine3D(point3ds);
             geoline3d.setStyle3D(lineStyle3D);
             mSceneControl.getScene().getTrackingLayer().add(geoline3d, "geoline");
@@ -785,7 +814,8 @@ public class LabelHelper {
         if (point3Ds.getCount() >= 3) {
             geoRegion3D = new GeoRegion3D(point3Ds);
             GeoStyle3D regionStyle3D = new GeoStyle3D();
-            regionStyle3D.setLineColor(new Color(255, 255, 0));
+            regionStyle3D.setFillForeColor(new Color(140, 224, 80));
+            regionStyle3D.setLineColor(new Color(18, 183, 245));
             regionStyle3D.setAltitudeMode(AltitudeMode.ABSOLUTE);
             regionStyle3D.setLineWidth(5);
 

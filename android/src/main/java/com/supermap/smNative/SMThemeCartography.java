@@ -8,7 +8,9 @@ import com.supermap.data.*;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SMThemeCartography {
@@ -485,5 +487,58 @@ public class SMThemeCartography {
         else {
             return null;
         }
+    }
+
+    public static List<String> getColorList() {
+        List<String> colorList = new ArrayList<>();
+        colorList.add("#000000");
+        colorList.add("#424242");
+        colorList.add("#757575");
+        colorList.add("#BDBDBD");
+        colorList.add("#EEEEEE");
+        colorList.add("#FFFFFF");
+        colorList.add("#3E2723");
+        colorList.add("#5D4037");
+        colorList.add("#A1887F");
+        colorList.add("#D7CCC8");
+        colorList.add("#263238");
+        colorList.add("#546E7A");
+        colorList.add("#90A4AE");
+        colorList.add("#CFD8DC");
+        colorList.add("#FFECB3");
+        colorList.add("#FFF9C4");
+        colorList.add("#F1F8E9");
+        colorList.add("#E3F2FD");
+        colorList.add("#EDE7F6");
+        colorList.add("#FCE4EC");
+        colorList.add("#FBE9E7");
+        colorList.add("#004D40");
+        colorList.add("#006064");
+        colorList.add("#009688");
+        colorList.add("#8BC34A");
+        colorList.add("#A5D6A7");
+        colorList.add("#80CBC4");
+        colorList.add("#80DEEA");
+        colorList.add("#A1C2FA");
+        colorList.add("#9FA8DA");
+        colorList.add("#01579B");
+        colorList.add("#1A237E");
+        colorList.add("#3F51B5");
+        colorList.add("#03A9F4");
+        colorList.add("#4A148C");
+        colorList.add("#673AB7");
+        colorList.add("#9C27B0");
+        colorList.add("#880E4F");
+        colorList.add("#E91E63");
+        colorList.add("#F44336");
+        colorList.add("#F48FB1");
+        colorList.add("#EF9A9A");
+        colorList.add("#F57F17");
+        colorList.add("#F4B400");
+        colorList.add("#FADA80");
+        colorList.add("#FFF59D");
+        colorList.add("#FFEB3B");
+
+        return colorList;
     }
 }

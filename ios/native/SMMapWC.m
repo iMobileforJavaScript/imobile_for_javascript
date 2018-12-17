@@ -333,7 +333,7 @@
     return strResult;
 }
 
-//倒入工作空间
+//导入工作空间
 //  失败情况：
 //      a)info为空或sever为空或type为空 或导入工作空间为_workspace
 //      b)打开工作空间失败
@@ -342,7 +342,7 @@
 //      1.新的工作空间打开
 //      2.导入数据源
 //          -文件型数据源需拷贝数据源到目录下,重名要改名
-//          -打开数据源，alian相同需改名
+//          -打开数据源，alias相同需改名
 //      3.导入点线面符号库（若是SMWX可直接读取文件，其他类型需要先导出符号库文件再读入）
 //      4.导入maps，先导出成XML在倒入，3中alian变化的数据源需修改导出XML对应字段
 //  非替换模式：重复文件名+num
@@ -619,6 +619,7 @@
             for (int i=0; i<importWorkspace.maps.count; i++) {
                 
                 [mapTemp open:[importWorkspace.maps get:i]];
+                mapTemp.description = [NSString stringWithFormat:@"%@-%@", @"Template", mapTemp.name];
                 NSString* strSrcMapXML = [mapTemp toXML];
                 NSString* strMapName = [self formateNoneExistMapName:mapTemp.name];
                 [mapTemp close];
@@ -635,7 +636,7 @@
         
         [info dispose];
         [importWorkspace dispose];
-        
+        bSucc = YES;
     }
     return bSucc;
 }

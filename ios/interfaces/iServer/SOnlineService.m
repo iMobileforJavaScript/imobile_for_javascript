@@ -32,7 +32,6 @@ RCT_EXPORT_MODULE();
 #pragma mark ---------------------------- init
 RCT_REMAP_METHOD(init, initWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     m_onlineService = [OnlineService sharedService];
-    NSLog(@"SOnlineService init2");
 }
 #pragma mark ---------------------------- login
 RCT_REMAP_METHOD(login, loginByUserName:(NSString *)userName password:(NSString *)password resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -40,7 +39,22 @@ RCT_REMAP_METHOD(login, loginByUserName:(NSString *)userName password:(NSString 
 //        OnlineService* m_onlineService = [OnlineService sharedService];
         [m_onlineService loginWithUsername:userName password:password completionCallback:^(NSError *error) {
             if (error == nil) {
-                NSLog(@"login success");
+                NSNumber* number =[NSNumber numberWithBool:YES];
+                resolve(number);
+            } else {
+                NSNumber* number =[NSNumber numberWithBool:NO];
+                resolve(number);
+            }
+        }];
+    } @catch (NSException *exception) {
+        reject(kTAG, @"login failed", nil);
+    }
+}
+#pragma mark ---------------------------- loginWithPhone
+RCT_REMAP_METHOD(loginWithPhone, loginByPhoneNumber:(NSString *)phoneNumber password:(NSString *)password resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [m_onlineService loginWithPhoneNumber:phoneNumber password:password completionCallback:^(NSError *error) {
+            if (error == nil) {
                 NSNumber* number =[NSNumber numberWithBool:YES];
                 resolve(number);
             } else {
@@ -94,7 +108,7 @@ RCT_REMAP_METHOD(getDataList,getDataListCurrentPage:(NSInteger)currentPage pageS
 //        OnlineService* m_onlineService = [OnlineService sharedService];
         [m_onlineService getDataList:currentPage pageSize:pageSize completionHandler:^(NSString *dataJson, NSString *error) {
             if(error){
-                reject(kTAG,error,nil);
+                resolve(@(NO));
             }else{
                 resolve(dataJson);
             }
@@ -109,7 +123,7 @@ RCT_REMAP_METHOD(getServiceList,getServiceListCurrentPage:(NSInteger)currentPage
 //        OnlineService* m_onlineService = [OnlineService sharedService];
         [m_onlineService getServiceList:currentPage pageSize:pageSize completionHandler:^(NSString *serviceJson, NSString *error) {
             if(error){
-                reject(kTAG,error,nil);
+                resolve(@(NO));
             }else{
                 resolve(serviceJson);
             }
@@ -123,14 +137,13 @@ RCT_REMAP_METHOD(registerWithEmail, registerWithEmail:(NSString*)email  nickname
     @try{
 //        OnlineService* m_onlineService = [OnlineService sharedService];
         [m_onlineService registerWithEmail:email nickname:nickname password:password completionHandler:^(BOOL result, NSString * _Nullable info) {
-            NSNumber* number=nil;
             if(result){
-                NSLog(@"RegisterEmail success");
-                number =[NSNumber numberWithBool:YES];
+                NSNumber* number =[NSNumber numberWithBool:YES];
+                resolve(number);
             }else{
-                number =[NSNumber numberWithBool:NO];
+                resolve(info);
             }
-            resolve(number);
+            
         }];
     }@catch(NSException* exception){
         reject(kTAG,@"register failed",nil);
@@ -141,14 +154,13 @@ RCT_REMAP_METHOD(registerWithPhone,registerWithPhone:(NSString*)phoneNumber smsV
     @try{
 //        OnlineService* m_onlineService = [OnlineService sharedService];
         [m_onlineService registerWithPhone:phoneNumber smsVerifyCode:smsVerifyCode nickname:nickname password:password completionHandler:^(BOOL result, NSString * _Nullable info) {
-            NSNumber* number=nil;
             if(result){
-                NSLog(@"RegisterPhone success");
-                number =[NSNumber numberWithBool:YES];
+                NSNumber* number =[NSNumber numberWithBool:YES];
+                resolve(number);
             }else{
-                number =[NSNumber numberWithBool:NO];
+                resolve(info);
             }
-            resolve(number);
+            
         }];
     }@catch(NSException* exception){
         reject(kTAG,@"RegisterPhone failed",nil);
@@ -161,7 +173,6 @@ RCT_REMAP_METHOD(sendSMSVerifyCode,sendSMSVerifyCodePhoneNumber:(NSString*)phone
         [m_onlineService sendSMSVerifyCodeWithPhoneNumber:phoneNumber completionHandler:^(BOOL result, NSString * _Nullable info) {
             NSNumber* number=nil;
             if(result){
-                NSLog(@"sendSMSVerifyCode success");
                 number =[NSNumber numberWithBool:YES];
             }else{
                 number =[NSNumber numberWithBool:NO];
@@ -184,8 +195,7 @@ RCT_REMAP_METHOD(download, downloadByPath:(NSString *)path fileName:(NSString *)
         if([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:nil]){
             [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
         }
-        
-        NSLog(@"start download");
+
         [m_onlineService downloadFileName:fileName filePath:path];
         
         NSNumber* number =[NSNumber numberWithBool:YES];
@@ -216,6 +226,10 @@ RCT_REMAP_METHOD(verifyCodeImage,verifyCodeImageResolver:(RCTPromiseResolveBlock
     @try{
 //        OnlineService* m_onlineService = [OnlineService sharedService];
         [m_onlineService verifyCodeImage:^(UIImage * _Nullable verifyCodeImage, NSString *error) {
+            if(error){
+                resolve(@(NO));
+                return;
+            }
             NSData* data = UIImagePNGRepresentation(verifyCodeImage);
             NSString* pictruePath = [NSHomeDirectory() stringByAppendingString:@"/tmp/SuperMapCaches/vefityCodeImage.png"];
             if([[NSFileManager defaultManager] fileExistsAtPath:pictruePath] ){
@@ -302,37 +316,79 @@ RCT_REMAP_METHOD(retrievePasswordFourth,thridResult:(BOOL)thridResult newPasswor
         reject(kTAG,@"retrievePasswordFourth failed",nil);
     }
 }
-#pragma mark ---------------------------- deleteData
+#pragma mark ---------------------------- deleteDataWithDataName
 RCT_REMAP_METHOD(deleteData,deleteData:(NSString*)dataName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try{
 //        OnlineService* m_onlineService = [OnlineService sharedService];
         [m_onlineService deleteData:dataName completionHandler:^(BOOL result, NSString *error) {
-            NSNumber* number=nil;
             if(result){
-                NSLog(@"deleteData success");
-                number =[NSNumber numberWithBool:YES];
+                NSNumber*  number =[NSNumber numberWithBool:YES];
+                resolve(number);
             }else{
-                number =[NSNumber numberWithBool:NO];
+                resolve(error);
             }
-            resolve(number);
         }];
     }@catch(NSException* exception){
         reject(kTAG,@"deleteData failed",nil);
     }
 }
-#pragma mark ---------------------------- deleteService
+#pragma mark ---------------------------- deleteDataWithDataId
+RCT_REMAP_METHOD(deleteDataWithDataId,deleteDataWithDataId:(NSString*)dataNameId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        [m_onlineService deleteDataWithDataId:dataNameId completionHandler:^(BOOL result, NSString *error) {
+            if(result){
+                NSNumber*  number =[NSNumber numberWithBool:YES];
+                resolve(number);
+            }else{
+                resolve(error);
+            }
+        }];
+    }@catch(NSException* exception){
+        reject(kTAG,@"deleteData failed",nil);
+    }
+}
+#pragma mark ---------------------------- deleteServiceWithDataName
 RCT_REMAP_METHOD(deleteService,deleteService:(NSString*)dataName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try{
 //        OnlineService* m_onlineService = [OnlineService sharedService];
         [m_onlineService deleteService:dataName completionHandler:^(BOOL result, NSString *error) {
-            NSNumber* number=nil;
             if(result){
-                NSLog(@"deleteService success");
-                number =[NSNumber numberWithBool:YES];
+                NSNumber*  number =[NSNumber numberWithBool:YES];
+                resolve(number);
             }else{
-                number =[NSNumber numberWithBool:NO];
+                resolve(error);
             }
-            resolve(number);
+        }];
+    }@catch(NSException* exception){
+        reject(kTAG,@"deleteService failed",nil);
+    }
+}
+#pragma mark ---------------------------- deleteServiceWithServiceName
+RCT_REMAP_METHOD(deleteServiceWithServiceName,deleteServiceWithServiceName:(NSString*)serviceName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        //        OnlineService* m_onlineService = [OnlineService sharedService];
+        [m_onlineService deleteServiceWithServiceName:serviceName completionHandler:^(BOOL result, NSString *error) {
+            if(result){
+                NSNumber*  number =[NSNumber numberWithBool:YES];
+                resolve(number);
+            }else{
+                resolve(error);
+            }
+        }];
+    }@catch(NSException* exception){
+        reject(kTAG,@"deleteService failed",nil);
+    }
+}
+#pragma mark ---------------------------- deleteServiceWithServiceId
+RCT_REMAP_METHOD(deleteServiceWithServiceId,deleteServiceWithServiceId:(NSString*)serviceId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        [m_onlineService deleteServiceWithServiceId:serviceId completionHandler:^(BOOL result, NSString *error) {
+            if(result){
+                NSNumber*  number =[NSNumber numberWithBool:YES];
+                resolve(number);
+            }else{
+                resolve(error);
+            }
         }];
     }@catch(NSException* exception){
         reject(kTAG,@"deleteService failed",nil);
@@ -343,17 +399,47 @@ RCT_REMAP_METHOD(changeServiceVisibility,changeServiceVisibility:(NSString*)serv
     @try {
 //        OnlineService* m_onlineService = [OnlineService sharedService];
         [m_onlineService changeServiceVisibility:serviceName isPublic:isPublic completionHandler:^(BOOL result, NSString *error) {
-            NSNumber* number=nil;
             if(result){
-                NSLog(@"changeServiceVisibility success");
-                number =[NSNumber numberWithBool:YES];
+                NSNumber*  number =[NSNumber numberWithBool:YES];
+                resolve(number);
             }else{
-                number =[NSNumber numberWithBool:NO];
+                resolve(error);
             }
-            resolve(number);
         }];
     } @catch (NSException *exception) {
         reject(kTAG, @"changeServiceVisibility failed", nil);
+    }
+}
+#pragma mark ---------------------------- changeServiceVisibilityWithServiceId
+RCT_REMAP_METHOD(changeServiceVisibilityWithServiceId,changeServiceVisibilityWithServiceId:(NSString*)serviceNameId isPublic:(BOOL)isPublic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        //        OnlineService* m_onlineService = [OnlineService sharedService];
+        [m_onlineService changeServiceVisibilityWithServiceId:serviceNameId isPublic:isPublic completionHandler:^(BOOL result, NSString *error) {
+            if(result){
+                NSNumber*  number =[NSNumber numberWithBool:YES];
+                resolve(number);
+            }else{
+                resolve(error);
+            }
+        }];
+    } @catch (NSException *exception) {
+        reject(kTAG, @"changeServiceVisibility failed", nil);
+    }
+}
+#pragma mark ---------------------------- changeDataVisibilityWithDataId
+RCT_REMAP_METHOD(changeDataVisibilityWithDataId,changeDataVisibilityWithDataId:(NSString*)dataNameId isPublic:(BOOL)isPubilc resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        //        OnlineService* m_onlineService = [OnlineService sharedService];
+        [m_onlineService changeDataVisibilityWithDataId:dataNameId isPublic:isPubilc completionHandler:^(BOOL result, NSString *error) {
+            if(result){
+                NSNumber*  number =[NSNumber numberWithBool:YES];
+                resolve(number);
+            }else{
+                resolve(error);
+            }
+        }];
+    }@catch(NSException* exception){
+        reject(kTAG,@"changeDataVisibility failed",nil);
     }
 }
 #pragma mark ---------------------------- changeDataVisibility
@@ -361,14 +447,12 @@ RCT_REMAP_METHOD(changeDataVisibility,changeDataVisibility:(NSString*)dataName i
     @try{
 //        OnlineService* m_onlineService = [OnlineService sharedService];
         [m_onlineService changeDataVisibility:dataName isPublic:isPubilc completionHandler:^(BOOL result, NSString *error) {
-            NSNumber* number=nil;
             if(result){
-                NSLog(@"changeDataVisibility success");
-                number =[NSNumber numberWithBool:YES];
+                NSNumber*  number =[NSNumber numberWithBool:YES];
+                resolve(number);
             }else{
-                number =[NSNumber numberWithBool:NO];
+                resolve(error);
             }
-            resolve(number);
         }];
     }@catch(NSException* exception){
         reject(kTAG,@"changeDataVisibility failed",nil);
@@ -380,7 +464,7 @@ RCT_REMAP_METHOD(getAllUserDataList,getAllUserDataList:(NSInteger)currentPage re
 //        OnlineService* m_onlineService = [OnlineService sharedService];
         [m_onlineService getAllUserDataList:currentPage completionHandler:^(NSString *dataJson, NSString *error) {
             if(error){
-                reject(kTAG,error,nil);
+                resolve(@(NO));
             }else{
                 resolve(dataJson);
             }
@@ -395,7 +479,7 @@ RCT_REMAP_METHOD(getAllUserSymbolLibList,getAllUserSymbolLibList:(NSInteger)curr
 //        OnlineService* m_onlineService = [OnlineService sharedService];
         [m_onlineService getAllUserSymbolLibList:currentPage completionHandler:^(NSString *dataJson, NSString *error) {
             if(error){
-                reject(kTAG,error,nil);
+                resolve(@(NO));
             }else{
                 resolve(dataJson);
             }

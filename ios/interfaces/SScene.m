@@ -160,7 +160,13 @@ const double SMOffSet = 28.0;
 
 - (void)handleLongPressGestureEvent:(UILongPressGestureRecognizer *)gesture {
     if (gesture.state == UIGestureRecognizerStateBegan) {
-        CGPoint longPressPoint = [gesture locationInView:self.smSceneWC.sceneControl];
+        UIWindow *si  = [[UIApplication sharedApplication].windows objectAtIndex:0];
+        CGPoint longPressPoint = [gesture locationInView:si];
+//        [[UIApplication sharedApplication] statusBarOrientation];
+//        NSLog(@"+++ %f,%f",longPressPoint.x,longPressPoint.y);
+//        CGPoint longPressPoint1;
+//        longPressPoint1.x = 200;
+//        longPressPoint1.y = 200;
         [self longPress:longPressPoint];
     }
 }
@@ -363,8 +369,8 @@ RCT_REMAP_METHOD(getLableAttributeList,  getLableAttributeListResolver:(RCTPromi
             for (int i = 0; i <array.count ; i++) {
                 Feature3D* feature3D=  array[i];//[feature3Ds feature3DWithID:i option:Feature3DSearchOptionAllFeatures];
                 ;
-                NSString* description = [NSString stringWithFormat:@"x=%.2f, y=%.2f, z=%.2f",feature3D.geometry3D.position.x,feature3D.geometry3D.position.y,feature3D.geometry3D.position.z];
-                NSDictionary* map = @{@"description":description,@"id":@(feature3D.ID),@"name":feature3D.name};
+                //NSString* description = [NSString stringWithFormat:@"x=%.2f, y=%.2f, z=%.2f",feature3D.geometry3D.position.x,feature3D.geometry3D.position.y,feature3D.geometry3D.position.z];
+                NSDictionary* map = @{@"description":feature3D.description,@"id":@(feature3D.ID),@"name":feature3D.name};
                
                 [dict addObject:map];
             }

@@ -80,7 +80,7 @@ typedef enum{
 //    //绕点飞行添加点动画view
 //    private ImageView circleAnimImageView;
     
-    Layer3D *favoriteLayer3d;
+  //  Layer3D *favoriteLayer3d;
     Layer3D *mLayer3d;
     
 
@@ -98,7 +98,7 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
     mSceneControl = control;
     kmlName = strkmlName;
     kmlPath = strpath;
-    favoriteLayer3d = nil;
+   // favoriteLayer3d = nil;
     mLayer3d = nil;
     
     myPoint3DArrayList = [[NSMutableArray alloc]init];
@@ -109,7 +109,7 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
     
     mSceneControl.action3D = CREATEPOINT3D;
     [self addKML];
-    favoriteLayer3d = [mSceneControl.scene.layers getLayerWithName:@"Favorite"];
+   // favoriteLayer3d = [mSceneControl.scene.layers getLayerWithName:@"Favorite"];
     
     [self reset];
     //    geoline3d = nil;
@@ -236,12 +236,12 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
     if ( [self deleteSingleFile: [kmlPath stringByAppendingString:kmlName]]){// deleteSingleFile(kmlPath + kmlName)) {
        // [self addKML];
     }
-    [mSceneControl.scene.layers removeLayerWithName:@"Favorite"];// getScene().getLayers().removeLayerWithName("NodeAnimation");
-    
-    if ( [self deleteSingleFile: [kmlPath stringByAppendingString:@"Favorite.kml"]]){// deleteSingleFile(kmlPath + kmlName)) {
-       
-    }
-    favoriteLayer3d = mLayer3d = nil;
+//    [mSceneControl.scene.layers removeLayerWithName:@"Favorite"];// getScene().getLayers().removeLayerWithName("NodeAnimation");
+//
+//    if ( [self deleteSingleFile: [kmlPath stringByAppendingString:@"Favorite.kml"]]){// deleteSingleFile(kmlPath + kmlName)) {
+//
+//    }
+    mLayer3d = nil;
     [self reset];
      [self addKML];
     mSceneControl.isRender  = YES;
@@ -271,27 +271,35 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
                 GeoPoint3D* geoPoint3D = [[GeoPoint3D alloc]init];//new GeoPoint3D(point3D);
                 geoPoint3D.style3D =  geoPoint3dStyle;//setStyle3D(geoPoint3dStyle);
                 //保存点
-                [layer3d.feature3Ds addGeometry3D:geoPoint3D]; //getFeatures().add(geoPoint3D);
+                Feature3D* fea3d = [layer3d.feature3Ds addGeometry3D:geoPoint3D]; //getFeatures().add(geoPoint3D);
+                NSString* description = [NSString stringWithFormat:@"x=%.2f, y=%.2f, z=%.2f",geoPoint3D.position.x,geoPoint3D.position.y,geoPoint3D.position.z];
+                fea3d.description = description;
             }
             break;
         case DRAWLINE:{
             //保存线
             
-             [layer3d.feature3Ds addGeometry3D:geoline3d];
+            Feature3D* fea3d = [layer3d.feature3Ds addGeometry3D:geoline3d];
+             NSString* description = [NSString stringWithFormat:@"x=%.2f, y=%.2f, z=%.2f",geoline3d.position.x,geoline3d.position.y,geoline3d.position.z];
+            fea3d.description = description;
             // layer3d.getFeatures().add(geoline3d);
             break;
         }case DRAWAREA:
         {
 //            Point3Ds *pnt3ds = [geoArea3d getPart:0];
 //            GeoRegion3D *georegion3d = [[GeoRegion3D alloc] initWithPoint3Ds:pnt3ds];
-            [layer3d.feature3Ds addGeometry3D:geoArea3d];
+            Feature3D* fea3d = [layer3d.feature3Ds addGeometry3D:geoArea3d];
+            NSString* description = [NSString stringWithFormat:@"x=%.2f, y=%.2f, z=%.2f",geoArea3d.position.x,geoArea3d.position.y,geoArea3d.position.z];
+            fea3d.description = description;
         }
             break;
         case DRAWTEXT:
             for (int index = 0; index < myPoint3DArrayList.count; index++) {
                 GeoPoint3D* point3D = myPoint3DArrayList[index];
                 GeoPlacemark* geoPlacemark = [[GeoPlacemark alloc]initWithName:geoTextStrList[index] andGeomentry:point3D];//new GeoPlacemark(geoTextStrList.get(index), new GeoPoint3D(point3D));
-                [layer3d.feature3Ds addGeometry3D:geoPlacemark];//add(geoPlacemark);
+                 Feature3D* fea3d = [layer3d.feature3Ds addGeometry3D:geoPlacemark];//add(geoPlacemark);
+                NSString* description = [NSString stringWithFormat:@"x=%.2f, y=%.2f, z=%.2f",geoPlacemark.position.x,geoPlacemark.position.y,geoPlacemark.position.z];
+                fea3d.description = description;
             }
             break;
         default:
@@ -338,7 +346,8 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
     [mSceneControl.scene.trackingLayer3D AddGeometry:geoPlacemark Tag:@"text"]; //getScene().getTrackingLayer().add(geoPlacemark, "text");
     mSceneControl.isRender = YES;
     
-    [myPoint3DArrayList addObject:geoPlacemark];// .add(pnt3d);
+     [myPoint3DArrayList addObject:p3d];
+    //[myPoint3DArrayList addObject:geoPlacemark];// .add(pnt3d);
     [geoTextStrList addObject:text];//.add(text);
     isEdit = true;
 }
@@ -349,7 +358,7 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  * @param point
  */
 -(BOOL)addCirclePoint:(CGPoint)longPressPoint{
-    if (favoriteLayer3d!=nil) {
+    if (mLayer3d!=nil) {
         CGFloat scale = [UIScreen mainScreen].scale;
         if (longPressPoint.x * scale-56/2<0) {
             return false;
@@ -384,11 +393,11 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
             [geoPlacemark setNameStyle:textstyle];
             
             if (circleFeature3D==nil) {
-                circleFeature3D = [[favoriteLayer3d feature3Ds]addGeometry3D:geoPlacemark];
+                circleFeature3D = [[mLayer3d feature3Ds]addGeometry3D:geoPlacemark];
             }else{
-                [[favoriteLayer3d feature3Ds]removeFeature3D:circleFeature3D];
+                [[mLayer3d feature3Ds]removeFeature3D:circleFeature3D];
                 circleFeature3D = nil;
-                circleFeature3D = [[favoriteLayer3d feature3Ds]addGeometry3D:geoPlacemark];
+                circleFeature3D = [[mLayer3d feature3Ds]addGeometry3D:geoPlacemark];
                 //[circleFeature3D setGeometry3D:geoPlacemark];
             }
             //isEdit = true;
@@ -428,10 +437,10 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  * 清除环绕飞行的点
  */
 -(void) clearCirclePoint{
-    if (circleFeature3D==nil || favoriteLayer3d==nil) {
+    if (circleFeature3D==nil ) {
         return;
     }
-    [[favoriteLayer3d feature3Ds]removeFeature3D:circleFeature3D];
+    [[mLayer3d feature3Ds]removeFeature3D:circleFeature3D];
     circleFeature3D = nil;
 }
 -(void)clearTrackingLayer{
@@ -490,7 +499,7 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  */
 
 -(void)addFavoritePoint:(Point3D)pnt3d Text:(NSString*)text {
-    if (favoriteLayer3d!=nil) {
+    if (mLayer3d!=nil) {
         
         
         GeoPoint3D *geopnt = [[GeoPoint3D alloc]initWithPoint3D:pnt3d];
@@ -512,11 +521,11 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
         [geoPlacemark setNameStyle:textstyle];
         
         if (favoriteFeature3D==nil) {
-            favoriteFeature3D = [[favoriteLayer3d feature3Ds]addGeometry3D:geoPlacemark];
+            favoriteFeature3D = [[mLayer3d feature3Ds]addGeometry3D:geoPlacemark];
         }else{
-            [[favoriteLayer3d feature3Ds]removeFeature3D:favoriteFeature3D];
+            [[mLayer3d feature3Ds]removeFeature3D:favoriteFeature3D];
             favoriteFeature3D = nil;
-            favoriteFeature3D = [[favoriteLayer3d feature3Ds]addGeometry3D:geoPlacemark];
+            favoriteFeature3D = [[mLayer3d feature3Ds]addGeometry3D:geoPlacemark];
             //[favoriteFeature3D setGeometry3D:geoPlacemark];
         }
         favoriteFeature3D.description = [NSString stringWithFormat:@"x=%.2f, y=%.2f, z=%.2f",geopnt.x,geopnt.y,geopnt.z];
@@ -531,11 +540,11 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  * 取消兴趣点
  */
 -(void)favoriteCancel{
-    if (favoriteFeature3D == nil || favoriteLayer3d == nil) {
+    if (favoriteFeature3D == nil ) {
         return;
     }
     //Layer3D* favoriteLayer3d = [mSceneControl.scene.layers getLayerWithName:@"Favorite"];//mSceneControl.getScene().getLayers().get();
-    [[favoriteLayer3d feature3Ds]removeFeature3D:favoriteFeature3D];
+    [[mLayer3d feature3Ds]removeFeature3D:favoriteFeature3D];
     favoriteFeature3D = nil;
     isEdit = false;
 }
@@ -544,13 +553,13 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  * 保存兴趣点
  */
 -(void)saveFavoritePoint{
-    if (favoriteFeature3D == nil || favoriteLayer3d == nil) {
+    if (favoriteFeature3D == nil ) {
         return;
     }
     Layer3D *layer3d = [mSceneControl.scene.layers getLayerWithName:@"NodeAnimation"];
     [[layer3d feature3Ds]addFeature3D:favoriteFeature3D];
     [[layer3d feature3Ds]toKMLFile:[kmlPath stringByAppendingString:kmlName]];
-    [[favoriteLayer3d feature3Ds]removeFeature3D:favoriteFeature3D];
+    [[mLayer3d feature3Ds]removeFeature3D:favoriteFeature3D];
     favoriteFeature3D = nil;
     geoline3d = nil;
     geoArea3d = nil;
@@ -580,11 +589,11 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
         [mSceneControl.scene.layers removeLayerWithName:@"NodeAnimation"];
         mLayer3d = [mSceneControl.scene.layers addLayerWith:[kmlPath stringByAppendingString:kmlName] Type:KML ToHead:true LayerName:@"NodeAnimation"];
     }
-    if (favoriteLayer3d==nil) {
-        [self makeFilePath:kmlPath fileName:@"Favorite.kml"];
-        [mSceneControl.scene.layers removeLayerWithName:@"Favorite"];
-        favoriteLayer3d = [mSceneControl.scene.layers addLayerWith:[kmlPath stringByAppendingString:@"Favorite.kml"] Type:KML ToHead:true LayerName:@"Favorite"];
-    }
+//    if (favoriteLayer3d==nil) {
+//        [self makeFilePath:kmlPath fileName:@"Favorite.kml"];
+//        [mSceneControl.scene.layers removeLayerWithName:@"Favorite"];
+//        favoriteLayer3d = [mSceneControl.scene.layers addLayerWith:[kmlPath stringByAppendingString:@"Favorite.kml"] Type:KML ToHead:true LayerName:@"Favorite"];
+//    }
      mSceneControl.isRender  = YES;
    // mSceneControl.getScene().getLayers().addLayerWith(kmlPath + kmlName, Layer3DType.KML, true,
                                         //              "NodeAnimation");
@@ -722,7 +731,7 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
     [mSceneControl.scene.layers removeLayerWithName:@"NodeAnimation"];
     mLayer3d = nil;
     [mSceneControl.scene.layers removeLayerWithName:@"Favorite"];
-    favoriteLayer3d = nil;
+   // favoriteLayer3d = nil;
     mSceneControl = nil;
 }
 

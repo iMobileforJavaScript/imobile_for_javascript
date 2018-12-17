@@ -15,6 +15,13 @@ typedef void(^OnlineServiceInfoCompletionCallback)(NSDictionary *info, NSError *
 @protocol OnlineServiceUploadDelegate <NSObject>
 @optional
 /**
+ 上传进度显示
+ @param bytesSent    当前上传的大小
+ @param totalBytesSent   当前已经上传的总大小
+ @param totalBytesExpectedToWrite  当前上传文件的总大小
+ */
+-(void)didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend;
+/**
  上传结果
  @param error   若为nil，则成功
  */
@@ -44,10 +51,21 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
 
 + (instancetype)sharedService;
 
-// 登录
+/**
+ 邮箱、昵称登录
+ @param username qq邮箱或者昵称
+ @param password 密码
+ */
 - (void)loginWithUsername:(NSString *)username password:(NSString *)password completionCallback:(OnlineServiceCompletionCallback)completionCallback;
-
-// 登出
+/**
+ 手机号登录
+ @param  phoneNumber 手机号
+ @param  password 密码
+ */
+- (void)loginWithPhoneNumber:(NSString *)phoneNumber password:(NSString *)password completionCallback:(OnlineServiceCompletionCallback)completionCallback;
+/*
+ 登出
+ */
 - (void)logoutWithCompletionCallback:(OnlineServiceCompletionCallback)completionCallback;
 
 // 获取账号信息
@@ -59,6 +77,7 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
  注：目前仅支持上传.zip压缩包
  */
 -(void)uploadFilePath:(NSString*)filePath onlineFileName:(NSString*)fileName;
+
 /**
  上传协议
  */
@@ -69,6 +88,25 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
  @param filePath 保存完整的数据路径 ，默认保存在/Library/Caches/SupermapOnlineData/服务器上的数据名称.zip
  */
 -(void)downloadFileName:(NSString*)onlineFileName filePath:(NSString*)filePath;
+/**
+  暂停下载
+  @param index 暂停第index次下载
+ */
+-(void) pauseDownloadTask:(NSInteger) index;
+/**
+ 恢复下载
+ @param index 恢复第index次下载
+ */
+-(void) resumeDownloadTask:(NSInteger) index;
+/**
+ 取消下载
+ @param index 取消第index次下载
+ */
+-(void) cancelDownloadTask:(NSInteger) index;
+/**
+ 记录下载的次数
+ */
+@property(nonatomic,strong,readonly)NSMutableArray* downloadTasks;
 /**
  下载协议
  */
@@ -119,6 +157,12 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
  */
 -(void) changeServiceVisibility:(NSString*)serviceName isPublic:(BOOL)isPublic completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
 /**
+ 改变服务可见类型，分为公开、私有，默认服务可见类型为私有
+ @param serviceNameId 服务名称的id
+ @param isPublic 是否公开  YES代表公开，NO代表私有
+ */
+-(void) changeServiceVisibilityWithServiceId:(NSString*)serviceId isPublic:(BOOL)isPublic completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
+/**
  找回密码的第一步 ，首先调用该接口进行对账号的核实，然后进行retrievePasswordSecond，retrievePasswordThrid，retrievePasswordFourth步骤
  @param account 账号
  @param verifyCode 图片中的验证码
@@ -150,16 +194,37 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
  */
 -(void) deleteData:(NSString*)dataName completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
 /**
+ 删除数据,若result为true，则代表删除成功
+ @param dataNameId online上的数据名称
+ */
+-(void) deleteDataWithDataId:(NSString*)dataNameId completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
+/**
  删除服务,若result为true，则代表删除成功
  @param dataName online上的数据名称
  */
 -(void) deleteService:(NSString*)dataName completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
+/**
+ 删除服务,若result为true，则代表删除成功
+ @param serviceNameId online上的服务名称id
+ */
+-(void) deleteServiceWithServiceId:(NSString*)serviceNameId completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
+/**
+ 删除服务,若result为true，则代表删除成功
+ @param serviceName online上的服务名称
+ */
+-(void) deleteServiceWithServiceName:(NSString*)serviceName completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
 /**
  数据公开私有
  @param dataName online上的数据名称
  @param isPublic 是否公开 若为YES，则代表为公开，反之为私有
  */
 -(void) changeDataVisibility:(NSString*)dataName isPublic:(BOOL)isPubilc completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
+/**
+ 数据公开私有
+ @param dataNameId online上的数据名称的id
+ @param isPublic 是否公开 若为YES，则代表为公开，反之为私有
+ */
+-(void) changeDataVisibilityWithDataId:(NSString*)dataNameId isPublic:(BOOL)isPublic completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
 /**
  获取所有用户公开的第currentPage页数据信息,dataJson为第currentPage页的json数据
   @param currentPage 第几页

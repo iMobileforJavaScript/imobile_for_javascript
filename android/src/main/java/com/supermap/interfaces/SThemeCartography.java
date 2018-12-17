@@ -842,7 +842,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 layerIndex = Integer.parseInt(index);
             }
             if (data.containsKey("FontName")){
-                fontName = data.get("fontName").toString();
+                fontName = data.get("FontName").toString();
             }
 
             Layer layer;
@@ -1038,7 +1038,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             String layerName = null;
             int layerIndex = -1;
-            double rotaion = -1;
+            double rotation = -1;
 
             if (data.containsKey("LayerName")){
                 layerName = data.get("LayerName").toString();
@@ -1049,7 +1049,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             }
             if (data.containsKey("Rotaion")){
                 String rt = data.get("Rotaion").toString();
-                rotaion = Double.parseDouble(rt);
+                rotation = Double.parseDouble(rt);
             }
 
             Layer layer;
@@ -1059,11 +1059,17 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 layer = SMThemeCartography.getLayerByIndex(layerIndex);
             }
 
-            if (layer != null && rotaion != -1 && layer.getTheme() != null) {
+            if (layer != null && rotation != -1 && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.LABEL) {
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     TextStyle uniformStyle = themeLabel.getUniformStyle();
-                    uniformStyle.setRotation(rotaion);
+                    double lastRotation = uniformStyle.getRotation();
+                    if (lastRotation == 360.0) {
+                        lastRotation = 0.0;
+                    } else if (lastRotation == 0.0) {
+                        lastRotation = 360.0;
+                    }
+                    uniformStyle.setRotation(lastRotation + rotation);
 
                     SMap.getSMWorkspace().getMapControl().getMap().refresh();
 

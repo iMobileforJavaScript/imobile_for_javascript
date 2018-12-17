@@ -11,6 +11,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
@@ -452,15 +453,18 @@ public class SMap extends ReactContextBaseJavaModule {
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             Maps maps = sMap.smMapWC.getWorkspace().getMaps();
 
+            Boolean isOpen = index < 0;
+
             if (maps.getCount() > 0 && index >= 0) {
                 String name = maps.get(index);
-                map.open(name);
+
+                isOpen = map.open(name);
 
                 if (viewEntire) {
                     map.viewEntire();
                 }
 
-                if (center.hasKey("x") && center.hasKey("y")) {
+                if (center != null && center.hasKey("x") && center.hasKey("y")) {
                     Double x = center.getDouble("x");
                     Double y = center.getDouble("y");
                     Point2D point2D = new Point2D(x, y);
@@ -471,7 +475,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 map.setVisibleScalesEnabled(false);
                 map.refresh();
             }
-            promise.resolve(true);
+            promise.resolve(isOpen);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -485,7 +489,6 @@ public class SMap extends ReactContextBaseJavaModule {
     public void getMaps(Promise promise) {
         try {
             sMap = getInstance();
-            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             Maps maps = sMap.smMapWC.getWorkspace().getMaps();
             WritableArray mapList = Arguments.createArray();
             for (int i = 0; i < maps.getCount(); i++) {
@@ -495,6 +498,27 @@ public class SMap extends ReactContextBaseJavaModule {
                 mapList.pushMap(mapInfo);
             }
             promise.resolve(mapList);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取工作空间地图列表
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapInfo(Promise promise) {
+        try {
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+
+            WritableMap mapInfo = Arguments.createMap();
+            mapInfo.putString("name", map.getName());
+            mapInfo.putString("description", map.getDescription());
+            mapInfo.putBoolean("isModified", map.isModified());
+
+            promise.resolve(mapInfo);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -1103,6 +1127,26 @@ public class SMap extends ReactContextBaseJavaModule {
             WritableArray symbols = SMSymbol.findSymbolsByGroups(resources, type, path);
 
             promise.resolve(symbols);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取指定SymbolGroup中所有的symbol
+     * @param type
+     * @param path
+     * @param promise
+     */
+    @ReactMethod
+    public void exportWorkspace(ReadableArray arrMapNames , String strFileName , boolean isFileReplace, Promise promise) {
+        try {
+
+            sMap = getInstance();
+            boolean result = sMap.smMapWC.exportMapNames(arrMapNames,strFileName,isFileReplace);
+
+            promise.resolve(result);
+
         } catch (Exception e) {
             promise.reject(e);
         }
