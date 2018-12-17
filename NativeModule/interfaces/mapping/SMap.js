@@ -572,11 +572,28 @@ export default (function () {
   /**
    * 导入工作空间
    * @param info
+   * @param toFile  UDB等文件的所在文件夹（option）
+   * @param breplaceDatasource   同名替换文件
    * @returns {*}
    */
   function importWorkspace(info, toFile = '', breplaceDatasource = false){
     try {
       return SMap.importWorkspace(info, toFile, breplaceDatasource)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 导出工作空间
+   * @param arrMapnames  地图名字
+   * @param strFileName  导出完整路径（包含工作空间后缀名）
+   * @param fileReplace  同名替换文件
+   * @returns {*}
+   */
+  function exportWorkspace(arrMapnames = [], strFileName = '', fileReplace = false){
+    try {
+      return SMap.exportWorkspace(arrMapnames, strFileName, fileReplace)
     } catch (e) {
       console.error(e)
     }
@@ -629,6 +646,7 @@ export default (function () {
     getMapIndex,
     importWorkspace,
     getMapInfo,
+    exportWorkspace,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 

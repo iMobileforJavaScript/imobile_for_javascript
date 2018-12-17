@@ -704,7 +704,7 @@ RCT_REMAP_METHOD(importWorkspace, importWorkspaceInfo:(NSDictionary*)wInfo toFil
     }
 }
 
-#pragma mark 倒出工作空间
+#pragma mark 导出工作空间
 RCT_REMAP_METHOD(exportWorkspace, importWorkspaceInfo:(NSArray*)arrMapnames toFile:(NSString*)strFileName  fileReplace:(BOOL)bFileReplace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
