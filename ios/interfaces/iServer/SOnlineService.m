@@ -89,14 +89,27 @@ RCT_REMAP_METHOD(publishService,dataName:(NSString*) dataName resolver:(RCTPromi
     @try {
 //        OnlineService* m_onlineService = [OnlineService sharedService];
         [m_onlineService publishService:dataName completionHandler:^(BOOL result, NSString * _Nullable error) {
-            NSNumber* number=nil;
             if(result){
-                NSLog(@"publishService success");
-                number =[NSNumber numberWithBool:YES];
+                NSNumber* number =[NSNumber numberWithBool:YES];
+                resolve(number);
             }else{
-                number =[NSNumber numberWithBool:NO];
+                resolve(error);
             }
-            resolve(number);
+        }];
+    } @catch (NSException *exception) {
+        reject(kTAG, @"publishService failed", nil);
+    }
+}
+#pragma mark ---------------------------- publishServiceWithDataId
+RCT_REMAP_METHOD(publishServiceWithDataId,dataId:(NSString*) dataId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [m_onlineService publishServiceWithDataId:dataId completionHandler:^(BOOL result, NSString * _Nullable error) {
+            if(result){
+                NSNumber* number =[NSNumber numberWithBool:YES];
+                resolve(number);
+            }else{
+                resolve(error);
+            }
         }];
     } @catch (NSException *exception) {
         reject(kTAG, @"publishService failed", nil);
@@ -200,6 +213,19 @@ RCT_REMAP_METHOD(download, downloadByPath:(NSString *)path fileName:(NSString *)
         
         NSNumber* number =[NSNumber numberWithBool:YES];
         resolve(number);
+    } @catch (NSException *exception) {
+        reject(kTAG, @"download failed", nil);
+    }
+}
+#pragma mark ---------------------------- downloadWithDataId
+RCT_REMAP_METHOD(downloadWithDataId, filePath:(NSString *)filePath dataId:(NSString *)dataId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        //        OnlineService* m_onlineService = [OnlineService sharedService];
+        if( m_onlineService.downloadDelegate == nil){
+            m_onlineService.downloadDelegate = self;
+        }
+        downloadId = dataId;
+        [m_onlineService downloadFileWithDataId:dataId filePath:filePath];
     } @catch (NSException *exception) {
         reject(kTAG, @"download failed", nil);
     }

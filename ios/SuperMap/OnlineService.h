@@ -89,8 +89,14 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
  */
 -(void)downloadFileName:(NSString*)onlineFileName filePath:(NSString*)filePath;
 /**
-  暂停下载
-  @param index 暂停第index次下载
+ 下载online在线数据,需要在登录过后才能调用
+ @param dataId 服务器上的数据名称的id
+ @param filePath 保存完整的数据路径 ，默认保存在/Library/Caches/SupermapOnlineData/服务器上的数据名称.zip
+ */
+-(void)downloadFileWithDataId:(NSString*)dataId filePath:(NSString*)filePath;
+/**
+ 暂停下载
+ @param index 暂停第index次下载
  */
 -(void) pauseDownloadTask:(NSInteger) index;
 /**
@@ -116,6 +122,11 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
  @param dataName 数据名称
  */
 -(void) publishService:(NSString*) dataName completionHandler:(void(^)(BOOL result,NSString*_Nullable  error))completionHandler;
+/**
+ 发布rest服务,若成功，则result为true
+ @param dataId 数据名称的id
+ */
+-(void) publishServiceWithDataId:(NSString*) dataId completionHandler:(void(^)(BOOL result,NSString* _Nullable  error))completionHandler;
 /**
  返回用户已上传的数据,dataJson为当前页的json数据
  @param currentPage 当前页
@@ -208,6 +219,13 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
  @param serviceNameId online上的服务名称id
  */
 -(void) deleteServiceWithServiceId:(NSString*)serviceNameId completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
+
+/**
+ 删除服务,若result为true，则代表删除成功
+ @param dataServiceId online上的数据名称对应的serviceId（不是我的服务中的服务id）
+ @param dataId online上的数据名称id
+ */
+-(void) deleteServiceWithDataServiceId:(NSString*)dataServiceId dataId:(NSString*)dataNameId completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
 /**
  删除服务,若result为true，则代表删除成功
  @param serviceName online上的服务名称
@@ -225,9 +243,10 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
  @param isPublic 是否公开 若为YES，则代表为公开，反之为私有
  */
 -(void) changeDataVisibilityWithDataId:(NSString*)dataNameId isPublic:(BOOL)isPublic completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
+
 /**
  获取所有用户公开的第currentPage页数据信息,dataJson为第currentPage页的json数据
-  @param currentPage 第几页
+ @param currentPage 第几页
  */
 -(void)getAllUserDataList:(NSInteger)currentPage completionHandler:(void(^)(NSString* dataJson,NSString* error))completionHandler;
 /**
