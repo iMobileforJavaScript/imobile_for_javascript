@@ -183,6 +183,61 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 修改单值专题图层
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void modifyThemeUniqueMap(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+//            Log.e("SThemeCartography", "createAndRemoveThemeUniqueMap: " + data.toString());
+
+            String uniqueExpression = null;
+            ColorGradientType colorGradientType = ColorGradientType.TERRAIN;//默认
+            String layerName = null;
+            int layerIndex = 0;
+
+            if (data.containsKey("UniqueExpression")){
+                uniqueExpression = data.get("UniqueExpression").toString();
+            }
+            if (data.containsKey("ColorGradientType")){
+                String type = data.get("ColorGradientType").toString();
+                colorGradientType = SMThemeCartography.getColorGradientType(type);
+            }
+            if (data.containsKey("LayerName")) {
+                layerName = data.get("LayerName").toString();
+            }
+
+            Layer layer = SMThemeCartography.getLayerByName(layerName);
+            Dataset dataset = null;
+            if (layer != null) {
+                dataset = layer.getDataset();
+            }
+
+            if (dataset != null && uniqueExpression != null) {
+                ThemeUnique themeUnique = ThemeUnique.makeDefault((DatasetVector) dataset, uniqueExpression, colorGradientType);
+
+                GeoStyle geoStyle = SMThemeCartography.getThemeUniqueGeoStyle(themeUnique.getDefaultStyle(), data);
+                themeUnique.setDefaultStyle(geoStyle);
+
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getMap().getLayers().add(dataset, themeUnique, true);
+                mapControl.getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置单值专题图的默认风格
      *
      * @param readableMap 显示风格
@@ -1388,6 +1443,66 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 //                    mapControl.getMap().getLayers().remove(layerIndex);
                     mapControl.getMap().getLayers().get(layerIndex).setVisible(false);
                 }
+                mapControl.getMap().getLayers().add(dataset, themeRange, true);
+                mapControl.getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 修改分段专题图层
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void modifyThemeRangeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String rangeExpression = null;//分段字段表达式
+            RangeMode rangeMode = null;//分段模式
+            double rangeParameter = -1;//分段参数
+            ColorGradientType colorGradientType = ColorGradientType.TERRAIN;//默认的颜色渐变模式
+            String layerName = null;
+
+            if (data.containsKey("RangeExpression")){
+                rangeExpression  = data.get("RangeExpression").toString();
+            }
+            if (data.containsKey("RangeMode")){
+                String mode = data.get("RangeMode").toString();
+                rangeMode  = SMThemeCartography.getRangeMode(mode);
+            }
+            if (data.containsKey("RangeParameter")){
+                String rangParam = data.get("RangeParameter").toString();
+                rangeParameter  = Double.parseDouble(rangParam);
+            }
+            if (data.containsKey("ColorGradientType")){
+                String type = data.get("ColorGradientType").toString();
+                colorGradientType = SMThemeCartography.getColorGradientType(type);
+            }
+            if (data.containsKey("LayerName")) {
+                layerName = data.get("LayerName").toString();
+            }
+
+            Layer layer = SMThemeCartography.getLayerByName(layerName);
+            Dataset dataset = null;
+            if (layer != null) {
+                dataset = layer.getDataset();
+            }
+
+            if (dataset != null && rangeExpression != null && rangeMode != null && rangeParameter != -1) {
+                ThemeRange themeRange = ThemeRange.makeDefault((DatasetVector) dataset, rangeExpression, rangeMode, rangeParameter, colorGradientType);
+
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                 mapControl.getMap().getLayers().add(dataset, themeRange, true);
                 mapControl.getMap().refresh();
 

@@ -75,6 +75,15 @@ setUniqueExpression = (params) => {
   }
 }
 
+//修改单值专题图
+modifyThemeUniqueMap = (params) => {
+  try {
+    return SThemeCartography.modifyThemeUniqueMap(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 /**
  * 获取单值专题图的默认风格
  *
@@ -172,6 +181,15 @@ createAndRemoveThemeRangeMap = (params) => {
 setRangeExpression = (params) => {
   try {
     return SThemeCartography.setRangeExpression(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+//修改分段专题图
+modifyThemeRangeMap = (params) => {
+  try {
+    return SThemeCartography.modifyThemeRangeMap(params)
   } catch (error) {
     console.error(error)
   }
@@ -352,6 +370,7 @@ export default {
   setThemeUniqueDefaultStyle,
   setThemeUniqueItemStyle,
   setUniqueExpression,
+  modifyThemeUniqueMap,
   getThemeUniqueDefaultStyle,
   getUniqueExpression,
   getThemeExpressByUdb,
@@ -362,6 +381,7 @@ export default {
   createThemeRangeMap,
   createAndRemoveThemeRangeMap,
   setRangeExpression,
+  modifyThemeRangeMap,
   //统一标签
   createUniformThemeLabelMap,
   createAndRemoveUniformThemeLabelMap,
