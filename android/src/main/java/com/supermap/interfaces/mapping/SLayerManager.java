@@ -265,6 +265,8 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                 }
 
                 recordset.update();
+                recordset.dispose();
+                recordset = null;
             }
 
             promise.resolve(true);

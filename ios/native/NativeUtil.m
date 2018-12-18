@@ -74,6 +74,8 @@
         [recordset moveNext];
         count++;
     }
+    [recordset dispose];
+    recordset = nil;
     return recordArray;
 }
 +(NSMutableArray *)parseRecordset:(Recordset *)recordset fieldsDics:(NSMutableDictionary*)fieldsDics{

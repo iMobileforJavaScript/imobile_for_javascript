@@ -117,6 +117,8 @@ public class JsonUtil {
             count++;
         }
 
+        recordset.dispose();
+
         return recordArray;
     }
 
