@@ -43,6 +43,11 @@ async function setDataset(info = {}) {
     info.datasourcePath = info.datasourcePath || (await Utility.appendingHomeDirectory() + '/iTablet/User/Customer/Data/Datasource/')
     info.datasourceName = info.datasourceName || ''
     info.style = info.style ? JSON.stringify(info.style) : ''
+  
+  
+    console.warn('datasetName--' + info.datasetName)
+    console.warn('datasetType--' + info.datasetType)
+    console.warn('datasourcePath--' + info.datasourcePath)
     return Collector.setDataset(info)
   } catch (e) {
     console.error(e)
@@ -89,7 +94,7 @@ async function submit(type = -1) {
   try {
     type = type >= 0 ? type : currentType
     // currentType = -1
-    let result = Collector.submit(type)
+    let result = await Collector.submit(type)
     if (result) {
       Collector.startCollect(type)
     }

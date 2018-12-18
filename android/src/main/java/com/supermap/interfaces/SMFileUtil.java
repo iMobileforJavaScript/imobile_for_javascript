@@ -202,6 +202,11 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
                 }
                 boolean isDirectory = files[i].isDirectory();
 
+                boolean includeDirectory = true;
+                if (filter.toHashMap().containsKey("includeDirectory")) {
+                    includeDirectory = filter.getBoolean("includeDirectory");
+                }
+
                 if (!filter.toHashMap().containsKey("name")) {
                     String filterName = filter.getString("name").toLowerCase().trim();
                     // 判断文件名
@@ -217,7 +222,7 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
                     for (int j = 0; j < types.length; j++) {
                         String mType = types[j].trim();
                         // 判断文件类型
-                        if (isDirectory || !isDirectory && !type.equals("") && type.contains(mType)) {
+                        if (isDirectory && includeDirectory || !isDirectory && !type.equals("") && type.contains(mType)) {
                             isExist = true;
                             break;
                         } else {

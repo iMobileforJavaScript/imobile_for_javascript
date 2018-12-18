@@ -101,45 +101,55 @@ public class SCollector extends ReactContextBaseJavaModule {
 
             Dataset ds;
             Layer layer = null;
-
-            String name = data.getString("datasetName");
-            int type = data.getInt("datasetType");
-            String datasourceName = "Collection";
-            if (data.getString("datasourceName") != null && !data.getString("datasourceName").equals("")) {
-                datasourceName = data.getString("datasourceName");
-            } else if (!smMapWC.getMapControl().getMap().getName().equals("")) {
-                datasourceName = smMapWC.getMapControl().getMap().getName();
-            }
-            String datasourcePath = data.getString("datasourcePath");
+            Boolean resetPrj = false;
+            String layerPath = data.getString("layerPath");
             String style = data.getString("style");
+
+            if (layerPath != null || !layerPath.equals("")) {
+                layer = SMLayer.findLayerByPath(layerPath);
+                ds = layer.getDataset();
+            } else {
+                String name = data.getString("datasetName");
+                int type = data.getInt("datasetType");
+                String datasourceName = "Collection";
+                if (data.getString("datasourceName") != null && !data.getString("datasourceName").equals("")) {
+                    datasourceName = data.getString("datasourceName");
+                } else if (!smMapWC.getMapControl().getMap().getName().equals("")) {
+                    datasourceName = smMapWC.getMapControl().getMap().getName();
+                }
+                String datasourcePath = data.getString("datasourcePath");
+
+                if (!name.equals("")) {
+                    layer = smMapWC.getMapControl().getMap().getLayers().get(name + "@" + datasourceName);
+                }
+                if (layer == null) {
+                    ds = smMapWC.addDatasetByName(name, type, datasourceName, datasourcePath);
+                    layer = smMapWC.getMapControl().getMap().getLayers().add(ds, true);
+                    resetPrj = true;
+                } else {
+                    ds = layer.getDataset();
+                }
+            }
 
             GeoStyle geoStyle = null;
             if (style != null) {
                 geoStyle = new GeoStyle();
                 geoStyle.fromJson(style);
-            }
-
-            if (!name.equals("")) {
-                layer = smMapWC.getMapControl().getMap().getLayers().get(name + "@" + datasourceName);
-            }
-            if (layer == null) {
-                ds = smMapWC.addDatasetByName(name, type, datasourceName, datasourcePath);
-                layer = smMapWC.getMapControl().getMap().getLayers().add(ds, true);
-            } else {
-                ds = layer.getDataset();
-            }
-
-            if (geoStyle != null) {
                 ((LayerSettingVector)layer.getAdditionalSetting()).setStyle(geoStyle);
             }
 
-            ds.setPrjCoordSys(new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE));
+            if (layer != null) {
 
-            layer.setVisible(true);
-            layer.setEditable(true);
-            collector.setDataset(ds);
+                if (resetPrj) ds.setPrjCoordSys(new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE));
 
-            promise.resolve(true);
+                layer.setVisible(true);
+                layer.setEditable(true);
+                collector.setDataset(ds);
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             promise.reject(e);
