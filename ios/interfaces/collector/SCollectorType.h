@@ -10,7 +10,7 @@
 
 typedef enum {
     POINT_GPS = 0,
-    POINT_HAND ,
+    POINT_HAND,
     
     LINE_GPS_POINT,
     LINE_GPS_PATH,

@@ -84,6 +84,11 @@ public class SMLayer {
         layer.setVisible(value);
     }
 
+    public static void setLayerEditable(String path, boolean value) {
+        Layer layer = findLayerByPath(path);
+        layer.setEditable(value);
+    }
+
     public static WritableMap getLayerInfo(Layer layer, String path) {
         Dataset dataset = layer.getDataset();
         int intType = -1;
@@ -171,6 +176,8 @@ public class SMLayer {
 
         Recordset recordset = selection.toRecordset();
         WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, 1);
+        recordset.dispose();
+        recordset = null;
         return recordArray;
     }
 

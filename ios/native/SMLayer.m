@@ -104,6 +104,11 @@
     layer.visible = value;
 }
 
++ (void)setLayerEditable:(NSString *)path value:(BOOL)value {
+    Layer* layer = [self findLayerByPath:path];
+    layer.editable = value;
+}
+
 + (Layer *)findLayerByPath:(NSString *)path {
     if (path == nil || [path isEqualToString:@""]) return nil;
     Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
@@ -140,6 +145,8 @@
     
     [recordSet moveFirst];
     NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet count:0 size:1];
+    [recordSet dispose];
+    recordSet = nil;
     return dic;
 }
 
@@ -149,6 +156,25 @@
         path = [NSString stringWithFormat:@"%@/%@", layer.parentGroup, path];
     }
     return path;
+}
+
++ (Layer *)findLayerByDatasetName:(NSString *)datasetName {
+    if (datasetName == nil || [datasetName isEqualToString:@""]) return nil;
+    Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
+    Layers* layers = map.layers;
+    Layer* targetLayer = nil;
+    int count = layers.getCount;
+    for (int i = 0; i < count; i++) {
+        Layer* layer = [layers getLayerAtIndex:i];
+        Dataset* dataset = layer.dataset;
+        
+        if (dataset.name == datasetName) {
+            targetLayer = layer;
+            break;
+        }
+    }
+    
+    return targetLayer;
 }
 
 @end

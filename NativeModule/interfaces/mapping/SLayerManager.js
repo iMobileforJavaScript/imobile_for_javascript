@@ -27,7 +27,6 @@ function getLayersByGroupPath(path = ''){
   }
 }
 
-
 /**
  * 设置制定名字图层是否可见
  * @param path
@@ -37,6 +36,20 @@ function getLayersByGroupPath(path = ''){
 function setLayerVisible(path, value){
   try {
     return LayerManager.setLayerVisible(path, value)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 设置制定名字图层是否可编辑
+ * @param path
+ * @param value
+ * @returns {*}
+ */
+function setLayerEditable(path, value){
+  try {
+    return LayerManager.setLayerEditable(path, value)
   } catch (e) {
     console.error(e)
   }
@@ -112,13 +125,16 @@ function addLayer(datasourceNameOrIndex, datasetIndex = -1) {
 }
 
 /**
- * 根据地图名设置图层可编辑
- * @param mapName
+ * 根据图层路径，找到对应的图层并修改指定recordset中的FieldInfo
+ * @param layerPath
+ * @param fieldInfo
+ * @param index
  * @returns {*}
  */
-function setLayerEditable(mapName){
+function setLayerFieldInfo(layerPath = '', fieldInfo = {}, index = -1) {
   try {
-    return LayerManager.setLayerEditable(mapName)
+    console.warn('====' + JSON.stringify(fieldInfo))
+    return LayerManager.setLayerFieldInfo(layerPath, fieldInfo, index)
   } catch (e) {
     console.error(e)
   }
@@ -128,9 +144,10 @@ export {
   getLayersByType,
   getLayersByGroupPath,
   setLayerVisible,
+  setLayerEditable,
   getLayerIndexByName,
   getLayerAttribute,
   getSelectionAttributeByLayer,
   addLayer,
-  setLayerEditable,
+  setLayerFieldInfo,
 }

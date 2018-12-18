@@ -160,7 +160,13 @@ const double SMOffSet = 28.0;
 
 - (void)handleLongPressGestureEvent:(UILongPressGestureRecognizer *)gesture {
     if (gesture.state == UIGestureRecognizerStateBegan) {
-        CGPoint longPressPoint = [gesture locationInView:self.smSceneWC.sceneControl];
+        UIWindow *si  = [[UIApplication sharedApplication].windows objectAtIndex:0];
+        CGPoint longPressPoint = [gesture locationInView:si];
+//        [[UIApplication sharedApplication] statusBarOrientation];
+//        NSLog(@"+++ %f,%f",longPressPoint.x,longPressPoint.y);
+//        CGPoint longPressPoint1;
+//        longPressPoint1.x = 200;
+//        longPressPoint1.y = 200;
         [self longPress:longPressPoint];
     }
 }
