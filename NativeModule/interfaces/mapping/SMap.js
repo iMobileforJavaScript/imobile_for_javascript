@@ -128,7 +128,7 @@ export default (function () {
    * @param center      (option)
    * @returns {*}
    */
-  function openMap(value, viewEntire = true, center = null) {
+  function openMap(value, viewEntire = false, center = null) {
     try {
       if (typeof value === 'number') {
         return SMap.openMapByIndex(value, viewEntire, center)
@@ -578,6 +578,9 @@ export default (function () {
    */
   function importWorkspace(info, toFile = '', breplaceDatasource = false){
     try {
+      console.warn('info ==== ' + JSON.stringify(info))
+      console.warn('toFile ==== ' + toFile)
+      console.warn('breplaceDatasource ==== ' + breplaceDatasource)
       return SMap.importWorkspace(info, toFile, breplaceDatasource)
     } catch (e) {
       console.error(e)

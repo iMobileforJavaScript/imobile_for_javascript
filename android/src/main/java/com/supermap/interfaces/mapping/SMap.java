@@ -456,6 +456,7 @@ public class SMap extends ReactContextBaseJavaModule {
             Boolean isOpen = index < 0;
 
             if (maps.getCount() > 0 && index >= 0) {
+                if (index >= maps.getCount()) index = maps.getCount() - 1;
                 String name = maps.get(index);
 
                 isOpen = map.open(name);
@@ -874,6 +875,7 @@ public class SMap extends ReactContextBaseJavaModule {
 
                 collector.openGPS();
                 Point2D point2D = new Point2D(collector.getGPSPoint());
+                Boolean isMove = false;
                 if (mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
                     Point2Ds point2Ds = new Point2Ds();
                     point2Ds.add(point2D);
@@ -885,9 +887,15 @@ public class SMap extends ReactContextBaseJavaModule {
                     point2D = point2Ds.getItem(0);
                 }
 
-                mapControl.getMap().setCenter(point2D);
+                if (mapControl.getMap().getBounds().contains(point2D)) {
+                    mapControl.getMap().setCenter(point2D);
+                    isMove = true;
+                } else {
+                    mapControl.panTo(mapControl.getMap().getCenter(), 200);
+                }
+
                 mapControl.getMap().refresh();
-                promise.resolve(true);
+                promise.resolve(isMove);
             } catch (Exception e) {
                 promise.resolve(e);
             }
@@ -1133,9 +1141,10 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 获取指定SymbolGroup中所有的symbol
-     * @param type
-     * @param path
+     * 导出工作空间
+     * @param arrMapNames
+     * @param strFileName
+     * @param isFileReplace
      * @param promise
      */
     @ReactMethod

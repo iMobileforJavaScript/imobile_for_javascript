@@ -31,6 +31,7 @@
 #import "SuperMap/SymbolLineLibrary.h"
 #import "SuperMap/SymbolMarkerLibrary.h"
 #import "SuperMap/Selection.h"
+#import "SuperMap/Rectangle2D.h"
 #import "JSMapControl.h"
 #import "SMMapWC.h"
 #import "SMSymbol.h"

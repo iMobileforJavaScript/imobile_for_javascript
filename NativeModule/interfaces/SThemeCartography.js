@@ -364,6 +364,23 @@ getUniformLabelColor = (params) => {
   }
 }
 
+/**获取数据源中的所有数据集名称 */
+getDatasetNames = () => {
+  try {
+    return SThemeCartography.getDatasetNames()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+getThemeExpressByDatasetName = (datasetName) => {
+  try {
+    return SThemeCartography.getThemeExpressByDatasetName(datasetName)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   //单值
   createThemeUniqueMap,
@@ -397,4 +414,6 @@ export default {
   getUniformLabelFontSize,
   getUniformLabelRotaion,
   getUniformLabelColor,
+  getDatasetNames,
+  getThemeExpressByDatasetName,
 }

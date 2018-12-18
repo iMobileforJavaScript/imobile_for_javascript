@@ -61,7 +61,9 @@ function uploadFile(path, dataName, handler) {
 function downloadFile(path, onlineDataName) {
   OnlineServiceNative.download(path, onlineDataName);
 }
-
+function downloadFileWithDataId(path, dataNameId) {
+  OnlineServiceNative.downloadWithDataId(path, dataNameId);
+}
 function login(userName, password) {
   if (userName === undefined || password === undefined) {
     console.log('params have undefined');
@@ -191,6 +193,13 @@ function deleteService(serviceName) {
   }
   return OnlineServiceNative.deleteServiceWithServiceName(serviceName);
 }
+function deleteServiceWithDataName(dataName) {
+  if (dataName === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.deleteService(dataName);
+}
 function deleteServiceWithServiceId(serviceId) {
   if (serviceId === undefined) {
     console.log('params have undefined');
@@ -257,7 +266,13 @@ function publishService(dataName) {
   }
   return OnlineServiceNative.publishService(dataName);
 }
-
+function publishServiceWithDataId(dataId) {
+  if (dataId === undefined) {
+    console.log('params have undefined');
+    return;
+  }
+  return OnlineServiceNative.publishServiceWithDataId(dataId);
+}
 export default {
   init,
   uploadFile,
@@ -284,9 +299,12 @@ export default {
   deleteData,
   deleteDataWithDataId,
   deleteService,
+  deleteServiceWithDataName,
   deleteServiceWithServiceId,
   changeDataVisibility,
   changeServiceVisibility,
   changeServiceVisibilityWithServiceId,
   changeDataVisibilityWithDataId,
+  downloadFileWithDataId,
+  publishServiceWithDataId,
 }

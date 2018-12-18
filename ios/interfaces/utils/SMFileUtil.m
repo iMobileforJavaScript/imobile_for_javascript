@@ -25,7 +25,11 @@ RCT_REMAP_METHOD(getPathListByFilter, path:(NSString*)path filter:(NSDictionary*
     NSArray* tempArray = [fileMgr contentsOfDirectoryAtPath:path error:nil];
     
     NSString* filterKey = filter[@"name"];
-    NSString* filterEx = filter[@"type"];
+    NSString* filterEx = filter[@"extension"];
+    NSString* type = @"";
+    if (filter[@"type"]) {
+        type = filter[@"type"];
+    }
     for (NSString* fileName in tempArray) {
         
         BOOL flag = YES;
@@ -37,7 +41,7 @@ RCT_REMAP_METHOD(getPathListByFilter, path:(NSString*)path filter:(NSDictionary*
             NSString* tt = [fullPath stringByReplacingOccurrencesOfString:[NSHomeDirectory() stringByAppendingString:@"/Documents"] withString:@""];
             NSString* extension = [tt pathExtension];
             NSString* fileName = [tt lastPathComponent];
-            if(([filterEx containsString:extension] && ([fileName containsString:filterKey] || [filterKey isEqualToString:@""])) || flag) {
+            if(([filterEx containsString:extension] && ([fileName containsString:filterKey] || [filterKey isEqualToString:@""])) || (flag && [type isEqualToString:@"Directory"])) {
                 [array addObject:@{@"name":fileName,@"path":tt,@"isDirectory":@(flag)}];
             }
                 

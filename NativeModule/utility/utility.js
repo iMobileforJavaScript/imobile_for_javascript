@@ -48,8 +48,8 @@ exports.isDirectory = async function (path) {
   return await util.isDirectory(path);
 }
 
-exports.getPathListByFilter = async function (path, {name = '', type = ''}) {
-  return await util.getPathListByFilter(path, {name, type});
+exports.getPathListByFilter = async function (path, {name = '', extension = '', includeDirectory = true}) {
+  return await util.getPathListByFilter(path, {name, extension, includeDirectory});
 }
 
 exports.zipFile = async function (filePath, targetPath) {

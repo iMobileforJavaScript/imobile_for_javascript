@@ -1631,10 +1631,21 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 FieldInfo fieldInfo = fieldInfos.get(i);
                 String name = fieldInfo.getName();
                 WritableMap writeMap = Arguments.createMap();
-                writeMap.putString("title",name);
+                writeMap.putString("title", name);
                 arr.pushMap(writeMap);
             }
-            promise.resolve(arr);
+
+            WritableMap map2 = Arguments.createMap();
+            String datasetName = dataset.getName();
+            map2.putString("datasetName", datasetName);
+            String datasetType = dataset.getType().toString();
+            map2.putString("datasetType", datasetType);
+
+            WritableMap WritableMap = Arguments.createMap();
+            WritableMap.putArray("list", arr);
+            WritableMap.putMap("dataset", map2);
+
+            promise.resolve(WritableMap);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -1668,4 +1679,139 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 获取数据源中的数据集
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void getDatasetNames(Promise promise) {
+        try {
+            Datasources datasources = SMap.getSMWorkspace().getWorkspace().getDatasources();
+
+            Datasource datasource = datasources.get(0);
+            Datasets datasets = datasource.getDatasets();
+            int datasetsCount = datasets.getCount();
+
+            WritableArray arr = Arguments.createArray();
+            for (int j = 0; j < datasetsCount; j++) {
+                WritableMap writeMap = Arguments.createMap();
+                writeMap.putString("title", datasets.get(j).getName());
+                writeMap.putString("type", datasets.get(j).getType().toString());
+                arr.pushMap(writeMap);
+            }
+
+            WritableMap map2 = Arguments.createMap();
+            String datasourceAlias = datasource.getAlias();
+            map2.putString("alias", datasourceAlias);
+
+            WritableMap WritableMap = Arguments.createMap();
+            WritableMap.putArray("list", arr);
+            WritableMap.putMap("datasource", map2);
+
+            promise.resolve(WritableMap);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取数据源中的数据集
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void getThemeExpressByDatasetName(String datasetName,Promise promise) {
+        try {
+            Datasources datasources = SMap.getSMWorkspace().getWorkspace().getDatasources();
+            Datasource datasource = datasources.get(0);
+            Datasets datasets = datasource.getDatasets();
+
+            Dataset dataset = datasets.get(datasetName);
+            DatasetVector datasetVector = (DatasetVector) dataset;
+            FieldInfos fieldInfos = datasetVector.getFieldInfos();
+            int count = fieldInfos.getCount();
+
+            WritableArray arr = Arguments.createArray();
+            for (int i=0;i<count;i++){
+                FieldInfo fieldInfo = fieldInfos.get(i);
+                String name = fieldInfo.getName();
+                WritableMap writeMap = Arguments.createMap();
+                writeMap.putString("title", name);
+                arr.pushMap(writeMap);
+            }
+
+            WritableMap map2 = Arguments.createMap();
+            String name = dataset.getName();
+            map2.putString("datasetName", name);
+            String datasetType = dataset.getType().toString();
+            map2.putString("datasetType", datasetType);
+
+            WritableMap WritableMap = Arguments.createMap();
+            WritableMap.putArray("list", arr);
+            WritableMap.putMap("dataset", map2);
+
+            promise.resolve(WritableMap);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+//    /**
+//     * 获取数据源中的数据集
+//     * @param
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void getDatasetNames(Promise promise) {
+//        try {
+//            Datasources datasources = SMap.getSMWorkspace().getWorkspace().getDatasources();
+//            int datasourcesCount = datasources.getCount();
+//
+//            WritableMap WritableMap = Arguments.createMap();
+//            for (int i = 0; i < datasourcesCount; i++) {
+//                Datasource datasource = datasources.get(i);
+//                Datasets datasets = datasource.getDatasets();
+//                int datasetsCount = datasets.getCount();
+//
+//                WritableArray arr = Arguments.createArray();
+//                for (int j = 0; j < datasetsCount; j++) {
+//                    WritableMap writeMap = Arguments.createMap();
+//                    writeMap.putString("title", datasets.get(j).getName());
+//                    writeMap.putString("type", datasets.get(j).getType().toString());
+//                    arr.pushMap(writeMap);
+//                }
+//                WritableMap.putArray(datasource.getAlias(), arr);
+//            }
+//
+//            promise.resolve(WritableMap);
+//        } catch (Exception e) {
+//            promise.reject(e);
+//        }
+//    }
+
+//    /**
+//     * 获取数据源别名
+//     * @param
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void getDatasourceNames(Promise promise) {
+//        try {
+//            Datasources datasources = SMap.getSMWorkspace().getWorkspace().getDatasources();
+//            int datasourcesCount = datasources.getCount();
+//
+//            WritableMap WritableMap = Arguments.createMap();
+//            for (int i = 0; i < datasourcesCount; i++) {
+//                Datasource datasource = datasources.get(i);
+//                WritableMap.putString("title", datasource.getAlias());
+//            }
+//
+//            promise.resolve(WritableMap);
+//        } catch (Exception e) {
+//            promise.reject(e);
+//        }
+//    }
+
 }
