@@ -658,8 +658,10 @@ public class LabelHelper {
 //        Layer3D mLayer3d = mSceneControl.getScene().getLayers().get("NodeAnimation");
 
             makeFilePath(kmlPath, kmlName);
-        mSceneControl.getScene().getLayers().removeLayerWithName("NodeAnimation");
-        mSceneControl.getScene().getLayers().addLayerWith(kmlPath + kmlName, Layer3DType.KML, true, "NodeAnimation");
+            if( mSceneControl.getScene().getLayers().indexOf("NodeAnimation")!=-1){
+                mSceneControl.getScene().getLayers().removeLayerWithName("NodeAnimation");
+            }
+            mSceneControl.getScene().getLayers().addLayerWith(kmlPath + kmlName, Layer3DType.KML, true, "NodeAnimation");
 
 //        Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("Favorite");
 //        if (favoriteLayer3d == null) {
