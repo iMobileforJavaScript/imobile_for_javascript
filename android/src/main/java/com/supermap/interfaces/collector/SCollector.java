@@ -102,10 +102,10 @@ public class SCollector extends ReactContextBaseJavaModule {
             Dataset ds;
             Layer layer = null;
             Boolean resetPrj = false;
-            String layerPath = data.getString("layerPath");
             String style = data.getString("style");
 
-            if (layerPath != null || !layerPath.equals("")) {
+            if (data.hasKey("layerPath") && !data.getString("layerPath").equals("")) {
+                String layerPath = data.getString("layerPath");
                 layer = SMLayer.findLayerByPath(layerPath);
                 ds = layer.getDataset();
             } else {

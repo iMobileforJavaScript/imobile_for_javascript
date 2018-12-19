@@ -578,9 +578,6 @@ export default (function () {
    */
   function importWorkspace(info, toFile = '', breplaceDatasource = false){
     try {
-      console.warn('info ==== ' + JSON.stringify(info))
-      console.warn('toFile ==== ' + toFile)
-      console.warn('breplaceDatasource ==== ' + breplaceDatasource)
       return SMap.importWorkspace(info, toFile, breplaceDatasource)
     } catch (e) {
       console.error(e)
