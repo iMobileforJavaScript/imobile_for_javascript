@@ -26,9 +26,9 @@ RCT_REMAP_METHOD(getPathListByFilter, path:(NSString*)path filter:(NSDictionary*
     
     NSString* filterKey = filter[@"name"];
     NSString* filterEx = filter[@"extension"];
-    NSString* type = @"";
+    NSString* type = @"Directory";
     if (filter[@"type"]) {
-        type = filter[@"type"];
+        type = [filter[@"type"] isEqualToString:@""] ? @"Directory" : filter[@"type"];
     }
     for (NSString* fileName in tempArray) {
         
