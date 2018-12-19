@@ -169,6 +169,8 @@ RCT_REMAP_METHOD(setLayerFieldInfo, setLayerFieldByLayerPath:(NSString *)layerPa
             }
             
             [recordset update];
+            [recordset dispose];
+            recordset = nil;
         }
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {

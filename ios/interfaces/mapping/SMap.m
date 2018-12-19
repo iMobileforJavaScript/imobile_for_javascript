@@ -294,6 +294,7 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
         BOOL isOpen = YES;
         
         if (maps.count > 0 && index >= 0) {
+            if (index >= maps.count) index = maps.count - 1;
             NSString* mapName = [maps get:index];
             isOpen = [map open: mapName];
             if (viewEntire == YES) {
@@ -495,6 +496,7 @@ RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBloc
         Collector* collector = [mapControl getCollector];
         dispatch_async(dispatch_get_main_queue(), ^{
 //            [collector moveToCurrentPos];
+            BOOL isMove = NO;
             Point2D* pt = [[Point2D alloc]initWithPoint2D:[collector getGPSPoint]];
             if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
                 Point2Ds *points = [[Point2Ds alloc]init];
@@ -508,11 +510,16 @@ RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBloc
                 pt = [points getItem:0];
             }
             
-            mapControl.map.center = pt;
+            if ([mapControl.map.bounds containsPoint2D:pt]) {
+                mapControl.map.center = pt;
+                isMove = YES;
+            } else {
+                [mapControl panTo:mapControl.map.center time:200];
+            }
             
             [mapControl.map refresh];
+            resolve([NSNumber numberWithBool:isMove]);
         });
-        resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
