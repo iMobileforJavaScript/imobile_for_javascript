@@ -24,10 +24,10 @@
     @try {
         bool openWsResult = YES;
         if (infoDic && [infoDic objectForKey:@"server"] && ![SMap.singletonInstance.smMapWC.workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
-            if (SMap.singletonInstance.smMapWC.workspace) {
-                if (![SMap.singletonInstance.smMapWC.workspace.caption isEqualToString:@"UntitledWorkspace"]) {
-                    [SMap.singletonInstance.smMapWC.workspace close];
-                }
+            if (SMap.singletonInstance.smMapWC.workspace && [SMap.singletonInstance.smMapWC.workspace.caption isEqualToString:@"UntitledWorkspace"]) {
+//                if (![SMap.singletonInstance.smMapWC.workspace.caption isEqualToString:@"UntitledWorkspace"]) {
+//                    [SMap.singletonInstance.smMapWC.workspace close];
+//                }
                 [SMap.singletonInstance.smMapWC.workspace dispose];
                 SMap.singletonInstance.smMapWC.workspace = [[Workspace alloc] init];
             }

@@ -1141,6 +1141,22 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 导入工作空间
+     * @param wInfo
+     * @param strFilePath
+     * @param breplaceDatasource
+     * @param promise
+     */
+    @ReactMethod
+    public void importWorkspace(ReadableMap wInfo , String strFilePath , boolean breplaceDatasource, Promise promise) {
+        try {
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 导出工作空间
      * @param arrMapNames
      * @param strFileName
