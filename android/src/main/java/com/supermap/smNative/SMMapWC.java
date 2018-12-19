@@ -234,11 +234,9 @@ public class SMMapWC {
     //      4.遍历datasource，拷贝其中文件数据源（注意覆盖模式），workspace打开数据源
     //      5.导出符号库，workspace打开符号库
     //      5.设置workspaceConnectionInfo，保存workspace
-    
-    public boolean exportMapNames (ArrayList<String> arrMapNames , String strFileName , boolean isFileReplace ){
 
+    public boolean exportMapNames (ReadableArray arrMapNames , String strFileName , boolean isFileReplace ){
         Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
-        
         if (SMap.getInstance().getSmMapWC().getWorkspace()==null || strFileName==null || strFileName.length()==0 || arrMapNames==null || arrMapNames.size()==0 ||
             workspace.getConnectionInfo().getServer().equalsIgnoreCase(strFileName)){
             return false;
@@ -319,7 +317,7 @@ public class SMMapWC {
         ArrayList<Datasource> arrDatasources = new ArrayList<Datasource>();
         
         for (int i=0;i<arrMapNames.size();i++){
-            String mapName = arrMapNames.get(i);
+            String mapName = arrMapNames.getString(i);
             if (workspace.getMaps().indexOf(mapName)!=-1){
                 // 打开map
                 mapExport.open(mapName);
