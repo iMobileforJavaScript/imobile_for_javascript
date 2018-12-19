@@ -193,18 +193,18 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
                 String p = files[i].getAbsolutePath().replace(homeDirectory, "");
                 String n = files[i].getName();
                 int lastDot = n.lastIndexOf(".");
-                String name, type = "";
+                String name, extension = "";
                 if (lastDot > 0) {
                     name = n.substring(0, lastDot).toLowerCase();
-                    type = n.substring(lastDot + 1).toLowerCase();
+                    extension = n.substring(lastDot + 1).toLowerCase();
                 } else {
                     name = n;
                 }
                 boolean isDirectory = files[i].isDirectory();
 
-                boolean includeDirectory = true;
-                if (filter.toHashMap().containsKey("includeDirectory")) {
-                    includeDirectory = filter.getBoolean("includeDirectory");
+                String type = "Directory";
+                if (filter.toHashMap().containsKey("type")) {
+                    type = filter.getString("type");
                 }
 
                 if (!filter.toHashMap().containsKey("name")) {
@@ -216,13 +216,13 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
                 }
 
                 boolean isExist = false;
-                if (filter.toHashMap().containsKey("type")) {
-                    String filterType = filter.getString("type").toLowerCase();
-                    String[] types = filterType.split(",");
-                    for (int j = 0; j < types.length; j++) {
-                        String mType = types[j].trim();
+                if (filter.toHashMap().containsKey("extension")) {
+                    String filterType = filter.getString("extension").toLowerCase();
+                    String[] extensions = filterType.split(",");
+                    for (int j = 0; j < extensions.length; j++) {
+                        String mExtension = extensions[j].trim();
                         // 判断文件类型
-                        if (isDirectory && includeDirectory || !isDirectory && !type.equals("") && type.contains(mType)) {
+                        if (isDirectory && type.equals("Directory") || !isDirectory && !mExtension.equals("") && extension.contains(mExtension)) {
                             isExist = true;
                             break;
                         } else {

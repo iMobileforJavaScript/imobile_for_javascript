@@ -14,6 +14,7 @@ import com.supermap.data.Workspace;
 import com.supermap.data.WorkspaceConnectionInfo;
 import com.supermap.data.WorkspaceType;
 import com.supermap.data.WorkspaceVersion;
+import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 import com.supermap.data.DatasetType;
@@ -24,7 +25,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -51,12 +51,21 @@ public class SMMapWC {
     public boolean openWorkspace(Map data) {
         try {
             boolean result = true;
-            if (data != null && data.get("server") != null && !workspace.getConnectionInfo().getServer().equals(data.get("server"))) {
+
+            if (SMap.getInstance().getSmMapWC().getWorkspace() != null) {
+                if (!SMap.getInstance().getSmMapWC().getWorkspace().getCaption().equals("UntitledWorkspace")) {
+                    SMap.getInstance().getSmMapWC().getWorkspace().close();
+                }
+                SMap.getInstance().getSmMapWC().getWorkspace().dispose();
+                SMap.getInstance().getSmMapWC().setWorkspace(new Workspace());
+            }
+
+            if (data != null && data.get("server") != null && !SMap.getInstance().getSmMapWC().getWorkspace().getConnectionInfo().getServer().equals(data.get("server"))) {
                 WorkspaceConnectionInfo info = setWorkspaceConnectionInfo(data, null);
 
-                result = this.workspace.open(info);
+                result = SMap.getInstance().getSmMapWC().getWorkspace().open(info);
                 info.dispose();
-                this.mapControl.getMap().setWorkspace(this.workspace);
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
             }
             return result;
         } catch (Exception e) {
@@ -67,7 +76,7 @@ public class SMMapWC {
     public Datasource openDatasource(Map data) {
         try {
             DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-            Datasource ds = data.get("alias") != null ? workspace.getDatasources().get((String)data.get("alias")) : null;
+            Datasource ds = data.get("alias") != null ? SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get((String)data.get("alias")) : null;
             Boolean isOpen = ds != null && data.get("server") != null && ds.getConnectionInfo().getServer().equals(data.get("server")) && ds.isOpened();
             Datasource dataSource = null;
             if (!isOpen) {
@@ -101,7 +110,7 @@ public class SMMapWC {
                 if (data.containsKey("webVisibleLayers")) info.setWebVisibleLayers(data.get("webVisibleLayers").toString());
                 if (data.containsKey("webExtendParam")) info.setWebExtendParam(data.get("webExtendParam").toString());
 
-                dataSource = this.workspace.getDatasources().open(info);
+                dataSource = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().open(info);
                 info.dispose();
             }
 
@@ -131,7 +140,7 @@ public class SMMapWC {
                 }
             }
 
-            Datasource datasource = workspace.getDatasources().get(datasourceName);
+            Datasource datasource = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get(datasourceName);
             if (datasource == null || datasource.isReadOnly()) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
                 info.setAlias(datasourceName);
@@ -139,9 +148,9 @@ public class SMMapWC {
                 FileUtil.createDirectory(datasourcePath);
                 info.setServer(datasourcePath + "/" + datasourceName + ".udb");
 
-                datasource = workspace.getDatasources().create(info);
+                datasource = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().create(info);
                 if (datasource == null) {
-                    datasource = workspace.getDatasources().open(info);
+                    datasource = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().open(info);
                 }
             }
 
@@ -162,8 +171,8 @@ public class SMMapWC {
 
     public boolean saveWorkspace() {
         try {
-            if (this.workspace == null) return false;
-            boolean saved = this.workspace.save();
+            if (SMap.getInstance().getSmMapWC().getWorkspace() == null) return false;
+            boolean saved = SMap.getInstance().getSmMapWC().getWorkspace().save();
             return saved;
         } catch (Exception e) {
             return false;
@@ -172,9 +181,9 @@ public class SMMapWC {
 
     public boolean saveWorkspaceWithInfo(Map data) {
         try {
-            if (this.workspace == null) return false;
-            setWorkspaceConnectionInfo(data, this.workspace);
-            boolean saved = this.workspace.save();
+            if (SMap.getInstance().getSmMapWC().getWorkspace() == null) return false;
+            setWorkspaceConnectionInfo(data, SMap.getInstance().getSmMapWC().getWorkspace());
+            boolean saved = SMap.getInstance().getSmMapWC().getWorkspace().save();
             return saved;
         } catch (Exception e) {
             return false;
@@ -224,10 +233,10 @@ public class SMMapWC {
     //      4.遍历datasource，拷贝其中文件数据源（注意覆盖模式），workspace打开数据源
     //      5.导出符号库，workspace打开符号库
     //      5.设置workspaceConnectionInfo，保存workspace
-    
+
     public boolean exportMapNames (ReadableArray arrMapNames , String strFileName , boolean isFileReplace ){
-        
-        if (workspace==null || strFileName==null || strFileName.length()==0 || arrMapNames==null || arrMapNames.size()==0 ||
+        Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+        if (SMap.getInstance().getSmMapWC().getWorkspace()==null || strFileName==null || strFileName.length()==0 || arrMapNames==null || arrMapNames.size()==0 ||
             workspace.getConnectionInfo().getServer().equalsIgnoreCase(strFileName)){
             return false;
         }
