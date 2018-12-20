@@ -460,7 +460,7 @@ export default (function () {
    */
   appointEditGeometry = (geoID, layerName) => {
     try {
-      SMap.appointEditGeometry(geoID, layerName)
+      return SMap.appointEditGeometry(geoID, layerName)
     } catch (e) {
       console.error(e)
     }
