@@ -133,7 +133,6 @@ function addLayer(datasourceNameOrIndex, datasetIndex = -1) {
  */
 function setLayerFieldInfo(layerPath = '', fieldInfo = {}, index = -1) {
   try {
-    console.warn('====' + JSON.stringify(fieldInfo))
     return LayerManager.setLayerFieldInfo(layerPath, fieldInfo, index)
   } catch (e) {
     console.error(e)

@@ -14,14 +14,17 @@ import com.supermap.data.Workspace;
 import com.supermap.data.WorkspaceConnectionInfo;
 import com.supermap.data.WorkspaceType;
 import com.supermap.data.WorkspaceVersion;
+import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 import com.supermap.data.DatasetType;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -48,12 +51,22 @@ public class SMMapWC {
     public boolean openWorkspace(Map data) {
         try {
             boolean result = true;
-            if (data != null && data.get("server") != null && !workspace.getConnectionInfo().getServer().equals(data.get("server"))) {
+
+            Workspace _workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            if (_workspace!= null && _workspace.getCaption().equals("UntitledWorkspace")) {
+                SMap.getInstance().getSmMapWC().setWorkspace(new Workspace());
+            }
+            if (data != null && data.get("server") != null && !SMap.getInstance().getSmMapWC().getWorkspace().getConnectionInfo().getServer().equals(data.get("server"))) {
                 WorkspaceConnectionInfo info = setWorkspaceConnectionInfo(data, null);
 
-                result = this.workspace.open(info);
+                result = SMap.getInstance().getSmMapWC().getWorkspace().open(info);
                 info.dispose();
-                this.mapControl.getMap().setWorkspace(this.workspace);
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
+            }
+
+            // 先设置在释放
+            if (_workspace != null && _workspace.getCaption().equals("UntitledWorkspace")) {
+                _workspace.dispose();
             }
             return result;
         } catch (Exception e) {
@@ -64,7 +77,7 @@ public class SMMapWC {
     public Datasource openDatasource(Map data) {
         try {
             DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-            Datasource ds = data.get("alias") != null ? workspace.getDatasources().get((String)data.get("alias")) : null;
+            Datasource ds = data.get("alias") != null ? SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get((String)data.get("alias")) : null;
             Boolean isOpen = ds != null && data.get("server") != null && ds.getConnectionInfo().getServer().equals(data.get("server")) && ds.isOpened();
             Datasource dataSource = null;
             if (!isOpen) {
@@ -98,7 +111,7 @@ public class SMMapWC {
                 if (data.containsKey("webVisibleLayers")) info.setWebVisibleLayers(data.get("webVisibleLayers").toString());
                 if (data.containsKey("webExtendParam")) info.setWebExtendParam(data.get("webExtendParam").toString());
 
-                dataSource = this.workspace.getDatasources().open(info);
+                dataSource = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().open(info);
                 info.dispose();
             }
 
@@ -128,7 +141,7 @@ public class SMMapWC {
                 }
             }
 
-            Datasource datasource = workspace.getDatasources().get(datasourceName);
+            Datasource datasource = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get(datasourceName);
             if (datasource == null || datasource.isReadOnly()) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
                 info.setAlias(datasourceName);
@@ -136,9 +149,9 @@ public class SMMapWC {
                 FileUtil.createDirectory(datasourcePath);
                 info.setServer(datasourcePath + "/" + datasourceName + ".udb");
 
-                datasource = workspace.getDatasources().create(info);
+                datasource = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().create(info);
                 if (datasource == null) {
-                    datasource = workspace.getDatasources().open(info);
+                    datasource = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().open(info);
                 }
             }
 
@@ -159,8 +172,8 @@ public class SMMapWC {
 
     public boolean saveWorkspace() {
         try {
-            if (this.workspace == null) return false;
-            boolean saved = this.workspace.save();
+            if (SMap.getInstance().getSmMapWC().getWorkspace() == null) return false;
+            boolean saved = SMap.getInstance().getSmMapWC().getWorkspace().save();
             return saved;
         } catch (Exception e) {
             return false;
@@ -169,9 +182,9 @@ public class SMMapWC {
 
     public boolean saveWorkspaceWithInfo(Map data) {
         try {
-            if (this.workspace == null) return false;
-            setWorkspaceConnectionInfo(data, this.workspace);
-            boolean saved = this.workspace.save();
+            if (SMap.getInstance().getSmMapWC().getWorkspace() == null) return false;
+            setWorkspaceConnectionInfo(data, SMap.getInstance().getSmMapWC().getWorkspace());
+            boolean saved = SMap.getInstance().getSmMapWC().getWorkspace().save();
             return saved;
         } catch (Exception e) {
             return false;
@@ -223,12 +236,12 @@ public class SMMapWC {
     //      5.设置workspaceConnectionInfo，保存workspace
 
     public boolean exportMapNames (ReadableArray arrMapNames , String strFileName , boolean isFileReplace ){
-
-        if (workspace==null || strFileName==null || strFileName.length()==0 || arrMapNames==null || arrMapNames.size()==0 ||
-                workspace.getConnectionInfo().getServer().equalsIgnoreCase(strFileName)){
+        Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+        if (SMap.getInstance().getSmMapWC().getWorkspace()==null || strFileName==null || strFileName.length()==0 || arrMapNames==null || arrMapNames.size()==0 ||
+            workspace.getConnectionInfo().getServer().equalsIgnoreCase(strFileName)){
             return false;
         }
-
+        
         WorkspaceType workspaceType = WorkspaceType.DEFAULT;
         String strWorkspaceSuffix ;
         if (strFileName.endsWith("sxw")){
@@ -246,7 +259,7 @@ public class SMMapWC {
         }else {
             return false;
         }
-
+        
         //建目录
         //String[] desFileNames = strFileName.split("/");
         //String desWorkspaceName = desFileNames[desFileNames.length-1];
@@ -255,21 +268,21 @@ public class SMMapWC {
         boolean bNewDir = false;
         //WritableArray arrProtectedFile = Arguments.createArray();
         ArrayList<String> arrProtectedFileNames = new ArrayList<String>();
-
+        
         File desDirFile = new File(desDir);
         if ( desDirFile.exists() &&  desDirFile.isDirectory() ){
-            Datasources srcDatasources = workspace.getDatasources();
-            for (int i=0; i<srcDatasources.getCount(); i++) {
-                Datasource srcdatasource = srcDatasources.get(i);
-                DatasourceConnectionInfo datasourceInfo = srcdatasource.getConnectionInfo();
-                if (datasourceInfo.getEngineType() == EngineType.UDB
+            if (isFileReplace){
+                Datasources srcDatasources = workspace.getDatasources();
+                for (int i=0; i<srcDatasources.getCount(); i++) {
+                    Datasource srcdatasource = srcDatasources.get(i);
+                    DatasourceConnectionInfo datasourceInfo = srcdatasource.getConnectionInfo();
+                    if (datasourceInfo.getEngineType() == EngineType.UDB
                         || datasourceInfo.getEngineType() == EngineType.IMAGEPLUGINS) {
-
-                    //只要名字
-                    if (isFileReplace) {
+                        
+                        //只要名字
                         String  fullName = datasourceInfo.getServer();
                         String  fatherDirName = fullName.substring(0, fullName.lastIndexOf("/"));
-
+                        
                         if (fatherDirName.equalsIgnoreCase(desDir)) {
                             //同级目录下的才会被替换
                             //arrProtectedFile.pushString(fullName);
@@ -278,30 +291,31 @@ public class SMMapWC {
                     }
                 }
             }
+            
             bNewDir = false;
         }else{
-           if(!desDirFile.mkdirs()){
-               return false;
-           }
-           bNewDir = true;
+            if(!desDirFile.mkdirs()){
+                return false;
+            }
+            bNewDir = true;
         }
-
+        
         //文件名
         File desWorkspaceFile = new File(strFileName);
         if ( desWorkspaceFile.exists() && desWorkspaceFile.isFile() ) {
             if(isFileReplace){
                 desWorkspaceFile.delete();
             }else{
-                return false;
+                strFileName = formateNoneExistFileName(strFileName,false);
             }
         }
-
+        
         Workspace workspaceDes = new Workspace();
         com.supermap.mapping.Map mapExport = new com.supermap.mapping.Map();
-        mapExport.setWorkspace(workspaceDes);
-
+        mapExport.setWorkspace(workspace);
+        
         ArrayList<Datasource> arrDatasources = new ArrayList<Datasource>();
-
+        
         for (int i=0;i<arrMapNames.size();i++){
             String mapName = arrMapNames.getString(i);
             if (workspace.getMaps().indexOf(mapName)!=-1){
@@ -317,12 +331,12 @@ public class SMMapWC {
                 }
                 String strMapXML = mapExport.toXML();
                 workspaceDes.getMaps().add(mapName,strMapXML);
-
+                
                 mapExport.close();
             }
         }
-
-
+        
+        
         // 导出datasource
         for (int i=0; i<arrDatasources.size(); i++) {
             Datasource datasource = arrDatasources.get(i);
@@ -331,18 +345,18 @@ public class SMMapWC {
             String strSrcServer = srcInfo.getServer();
             EngineType engineType = srcInfo.getEngineType();
             String strTargetServer = new String(strSrcServer);
-
+            
             if (engineType==EngineType.UDB || engineType==EngineType.IMAGEPLUGINS){
                 if ( !isDatasourceFileExist(strSrcServer,engineType==EngineType.UDB) ){
                     continue;
                 }
-
+                
                 String strlastname = strSrcServer.substring( strSrcServer.lastIndexOf("/")+1 );
                 // 导入工作空间名
                 strTargetServer = desDir+strlastname;
-
+                
                 if (engineType==EngineType.UDB){
-
+                    
                     String strSrcBase = strSrcServer.substring(0,strSrcServer.length()-4);
                     String strTargetBase = strTargetServer.substring(0,strTargetServer.length()-4);
                     if (!bNewDir) {
@@ -350,36 +364,42 @@ public class SMMapWC {
                         if (arrProtectedFileNames.contains(strTargetServer)) {
                             continue;
                         }
+                        boolean bExist = false;
                         File targetFileUDB = new File(strTargetBase+".udb");
+                        File targetFileUDD = new File(strTargetBase+".udd");
                         if (targetFileUDB.exists() && targetFileUDB.isFile()){
-                            File targetFileUDD = new File(strTargetBase+".udd");
+                            bExist = true;
+                        }else{
                             if (targetFileUDD.exists() && targetFileUDD.isFile()){
-                                //存在同名文件
-                                if (isFileReplace) {
-                                    //覆盖模式
-                                    targetFileUDB.delete();
-                                    targetFileUDD.delete();
-                                }else{
-                                    //重名文件
-                                    strTargetServer = formateNoneExistFileName(strTargetServer,false);
-                                    strTargetBase = strTargetServer.substring(0,strTargetServer.length()-4);
-                                }//rep
+                                bExist = true;
                             }
-
                         }
-
+                        //存在同名文件
+                        if (bExist){
+                            if (isFileReplace) {
+                                //覆盖模式
+                                targetFileUDB.delete();
+                                targetFileUDD.delete();
+                            }else{
+                                //重名文件
+                                strTargetServer = formateNoneExistFileName(strTargetServer,false);
+                                strTargetBase = strTargetServer.substring(0,strTargetServer.length()-4);
+                            }//rep
+                        }
+                        
+                        
                     }//!New
-
+                    
                     // 拷贝
-                    if (copyFile(strSrcBase+".udb",strTargetBase+".udb")){
+                    if (!copyFile(strSrcBase+".udb",strTargetBase+".udb")){
                         continue;
                     }
-                    if (copyFile(strSrcBase+".udd",strTargetBase+".udd")){
+                    if (!copyFile(strSrcBase+".udd",strTargetBase+".udd")){
                         continue;
                     }
-
+                    
                 }else{
-
+                    
                     if (!bNewDir) {
                         // 检查重复
                         if (arrProtectedFileNames.contains(strTargetServer)) {
@@ -396,31 +416,34 @@ public class SMMapWC {
                                 strTargetServer = formateNoneExistFileName(strTargetServer,false);
                             }//rep
                         }
-
+                        
                     }//!New
-
+                    
                     // 拷贝
-                    if (copyFile(strSrcServer,strTargetServer)){
+                    if (!copyFile(strSrcServer,strTargetServer)){
                         continue;
                     }
-
+                    
                 }//udb
-
+                
             }
-
+            
             DatasourceConnectionInfo desInfo = new DatasourceConnectionInfo();
             desInfo.setServer( strTargetServer );
+            desInfo.setDriver( srcInfo.getDriver() );
             desInfo.setAlias( srcInfo.getAlias() );
             desInfo.setEngineType(engineType);
             desInfo.setUser(srcInfo.getUser());
             desInfo.setPassword( srcInfo.getPassword() );
-
+            
             workspaceDes.getDatasources().open(desInfo);
-
+            
+            
+            
         }
-
+        
         // symbol lib
-        String serverResourceBase = strFileName.substring(0,strFileName.lastIndexOf(".")-1);
+        String serverResourceBase = strFileName.substring(0,strFileName.lastIndexOf("."));
         String strMarkerPath = serverResourceBase + ".sym";
         String strLinePath = serverResourceBase + ".lsl";
         String strFillPath = serverResourceBase + ".bru";
@@ -430,15 +453,15 @@ public class SMMapWC {
             strLinePath = formateNoneExistFileName(strLinePath,false);
             strFillPath = formateNoneExistFileName(strFillPath,false);
         }
-
+        
         workspace.getResources().getMarkerLibrary().saveAs(strMarkerPath);
         workspace.getResources().getLineLibrary().saveAs(strLinePath);
         workspace.getResources().getFillLibrary().saveAs(strFillPath);
-
+        
         workspaceDes.getResources().getMarkerLibrary().appendFromFile(strMarkerPath,true);
         workspaceDes.getResources().getLineLibrary().appendFromFile(strLinePath,true);
         workspaceDes.getResources().getFillLibrary().appendFromFile(strFillPath,true);
-
+        
         if (workspaceType!=WorkspaceType.SXWU) {
             File fileMarker = new File(strMarkerPath);
             fileMarker.delete();
@@ -447,7 +470,7 @@ public class SMMapWC {
             File fileFill = new File(strFillPath);
             fileFill.delete();
         }
-
+        
         // fileName查重
         //WorkspaceConnectionInfo *workspaceInfo = [[WorkspaceConnectionInfo alloc]initWithFile:fileName];
         workspaceDes.getConnectionInfo().setType(workspaceType);
@@ -455,19 +478,19 @@ public class SMMapWC {
         try {
             workspaceDes.save();
         }catch (Exception e) {}
-
+        
         workspaceDes.close();
-
+        
         return true;
-
+        
     }
-
+    
     protected String formateNoneExistFileName(String strOrg,boolean isDir){
         String strName = strOrg;
         String strSuffix = "";
         if (!isDir){
             int index = strOrg.lastIndexOf(".");
-            strName = strOrg.substring(0,index-1);
+            strName = strOrg.substring(0,index);
             strSuffix = strOrg.substring(index);
         }else{
             strName = strOrg.substring(0,strOrg.length()-1);
@@ -487,8 +510,8 @@ public class SMMapWC {
             }
         }
     }
-
-
+    
+    
     protected boolean isDatasourceFileExist(String strpath ,boolean isUDB){
         if (isUDB){
             return isUDBFileExist(strpath);
@@ -501,7 +524,7 @@ public class SMMapWC {
             }
         }
     }
-
+    
     protected  boolean isUDBFileExist(String strpath){
         if (!strpath.endsWith(".udb")){
             return false;
@@ -518,36 +541,72 @@ public class SMMapWC {
             return  true;
         }
     }
-
+    
     protected boolean copyFile( String oldPath , String newPath){
-        try{
-            int bytesum = 0;
-            int byteread = 0;
-            File oldfile = new File(oldPath);
-            File newfile = new File(newPath);
-            if (oldfile.exists()){
-                if (!newfile.exists()){
-                    newfile.createNewFile();
-                }
-                InputStream inStream = new FileInputStream(oldPath);
-                FileOutputStream fs = new FileOutputStream(newPath);
-                byte[] buffer = new byte[1444];
-                int length;
-                while( (byteread = inStream.read(buffer)) != -1 ){
-                    bytesum += byteread;
-                    System.out.println(bytesum);
-                    fs.write(buffer,0,byteread);
-                }
-                inStream.close();
-                return true;
-            }else{
-                return false;
+        
+        File oldfile = new File(oldPath);
+        File newfile = new File(newPath);
+        if (oldfile.exists()) {
+            if (newfile.exists()) {
+                newfile.delete();
             }
-
+            
+            try{
+                newfile.createNewFile();
+                FileInputStream input = new FileInputStream(oldPath);
+                BufferedInputStream inBuff = new BufferedInputStream(input);
+                FileOutputStream output = new FileOutputStream(newPath);
+                BufferedOutputStream outBuff = new BufferedOutputStream(output);
+                
+                byte[] b = new byte[1024*5];
+                int len;
+                while ( (len = inBuff.read(b)) != -1 ){
+                    outBuff.write(b,0,len);
+                }
+                outBuff.flush();
+                
+                inBuff.close();
+                outBuff.close();
+                output.close();
+                input.close();
+            }catch (IOException e){
+                
+            }
+            
+            return true;
         }
-        catch (Exception e){
-            return false;
-        }
+        return false;
+        //        int bytesum = 0;
+        //        int byteread = 0;
+        //        try{
+        //            int bytesum = 0;
+        //            int byteread = 0;
+        //            File oldfile = new File(oldPath);
+        //            File newfile = new File(newPath);
+        //            if (oldfile.exists()){
+        //                if (newfile.exists()){
+        //                    newfile.delete();
+        //                }
+        //                newfile.createNewFile();
+        //                InputStream inStream = new FileInputStream(oldPath);
+        //                FileOutputStream fs = new FileOutputStream(newPath);
+        //                byte[] buffer = new byte[1444];
+        //                int length;
+        //                while( (byteread = inStream.read(buffer)) != -1 ){
+        //                    bytesum += byteread;
+        //                    System.out.println(bytesum);
+        //                    fs.write(buffer,0,byteread);
+        //                }
+        //                inStream.close();
+        //                return true;
+        //            }else{
+        //                return false;
+        //            }
+        //
+        //        }
+        //        catch (Exception e){
+        //            return false;
+        //        }
     }
 
 }

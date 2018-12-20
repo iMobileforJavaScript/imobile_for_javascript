@@ -128,7 +128,7 @@ export default (function () {
    * @param center      (option)
    * @returns {*}
    */
-  function openMap(value, viewEntire = true, center = null) {
+  function openMap(value, viewEntire = false, center = null) {
     try {
       if (typeof value === 'number') {
         return SMap.openMapByIndex(value, viewEntire, center)
@@ -460,7 +460,7 @@ export default (function () {
    */
   appointEditGeometry = (geoID, layerName) => {
     try {
-      SMap.appointEditGeometry(geoID, layerName)
+      return SMap.appointEditGeometry(geoID, layerName)
     } catch (e) {
       console.error(e)
     }
