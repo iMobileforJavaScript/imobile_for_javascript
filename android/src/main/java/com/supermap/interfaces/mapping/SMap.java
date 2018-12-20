@@ -117,7 +117,8 @@ public class SMap extends ReactContextBaseJavaModule {
     public static void setWorkspace(Workspace workspace) {
         if (sMap.smMapWC.getWorkspace() == null) {
             if (workspace == null) {
-                sMap.smMapWC.setWorkspace(new Workspace());
+                Workspace _workspace = new Workspace();
+                sMap.smMapWC.setWorkspace(_workspace);
             } else {
                 sMap.smMapWC.setWorkspace(workspace);
             }
