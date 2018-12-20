@@ -391,8 +391,7 @@ RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)name:(RCTPromiseResolveBlock)
 RCT_REMAP_METHOD(setAction, setActionByActionType:(int)actionType resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        MapControl* mapControl = sMap.smMapWC.mapControl;
-        mapControl.action = actionType;
+        sMap.smMapWC.mapControl.action = actionType;
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
