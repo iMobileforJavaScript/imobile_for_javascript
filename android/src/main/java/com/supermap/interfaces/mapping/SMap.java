@@ -416,20 +416,22 @@ public class SMap extends ReactContextBaseJavaModule {
 
                 isOpen = map.open(mapName);
 
-                if (viewEntire) {
-                    map.viewEntire();
-                }
+                if (isOpen) {
+                    if (viewEntire) {
+                        map.viewEntire();
+                    }
 
-                if (center != null && center.hasKey("x") && center.hasKey("y")) {
-                    Double x = center.getDouble("x");
-                    Double y = center.getDouble("y");
-                    Point2D point2D = new Point2D(x, y);
-                    map.setCenter(point2D);
-                }
+                    if (center != null && center.hasKey("x") && center.hasKey("y")) {
+                        Double x = center.getDouble("x");
+                        Double y = center.getDouble("y");
+                        Point2D point2D = new Point2D(x, y);
+                        map.setCenter(point2D);
+                    }
 
-                sMap.smMapWC.getMapControl().setAction(Action.PAN);
-                map.setVisibleScalesEnabled(false);
-                map.refresh();
+                    sMap.smMapWC.getMapControl().setAction(Action.PAN);
+                    map.setVisibleScalesEnabled(false);
+                    map.refresh();
+                }
             }
 
             promise.resolve(isOpen);
@@ -461,20 +463,22 @@ public class SMap extends ReactContextBaseJavaModule {
 
                 isOpen = map.open(name);
 
-                if (viewEntire) {
-                    map.viewEntire();
-                }
+                if (isOpen) {
+                    if (viewEntire) {
+                        map.viewEntire();
+                    }
 
-                if (center != null && center.hasKey("x") && center.hasKey("y")) {
-                    Double x = center.getDouble("x");
-                    Double y = center.getDouble("y");
-                    Point2D point2D = new Point2D(x, y);
-                    map.setCenter(point2D);
-                }
+                    if (center != null && center.hasKey("x") && center.hasKey("y")) {
+                        Double x = center.getDouble("x");
+                        Double y = center.getDouble("y");
+                        Point2D point2D = new Point2D(x, y);
+                        map.setCenter(point2D);
+                    }
 
-                sMap.smMapWC.getMapControl().setAction(Action.PAN);
-                map.setVisibleScalesEnabled(false);
-                map.refresh();
+                    sMap.smMapWC.getMapControl().setAction(Action.PAN);
+                    map.setVisibleScalesEnabled(false);
+                    map.refresh();
+                }
             }
             promise.resolve(isOpen);
         } catch (Exception e) {
