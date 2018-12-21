@@ -47,7 +47,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             String datasourceAlias = null;
             String datasetName = null;
             String uniqueExpression = null;
-            ColorGradientType colorGradientType = ColorGradientType.TERRAIN;//默认
+            ColorGradientType colorGradientType = null;
 
             if (data.containsKey("DatasetName")){
                 datasetName = data.get("DatasetName").toString();
@@ -1113,7 +1113,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             String rangeExpression = null;//分段字段表达式
             RangeMode rangeMode = null;//分段模式
             double rangeParameter = -1;//分段参数
-            ColorGradientType colorGradientType = ColorGradientType.TERRAIN;//默认的颜色渐变模式
+            ColorGradientType colorGradientType = null;
 
             if (data.containsKey("DatasetName")){
                 datasetName = data.get("DatasetName").toString();
