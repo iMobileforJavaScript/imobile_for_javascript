@@ -1,9 +1,13 @@
 package com.supermap.interfaces.iServer;
 
-import android.content.Context;
+
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.util.Log;
+import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.webkit.ValueCallback;
+
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -15,16 +19,12 @@ import com.supermap.onlineservices.DownLoadFile;
 import com.supermap.onlineservices.OnlineCallBack;
 import com.supermap.onlineservices.OnlineService;
 import com.supermap.onlineservices.UpLoadFile;
-import com.supermap.onlineservices.utils.EnumServiceType;
+
 
 import java.io.File;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
-import java.net.CookieStore;
-import java.net.HttpCookie;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -686,13 +686,34 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             promise.reject(e);
         }
     }
+    @ReactMethod
+    public void removeCookie(){
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        cookieManager.removeAllCookie();
+    }
 
     @ReactMethod
     public void syncCookie(String url){
-        CookieManager cookieManager = (CookieManager)CookieManager.getDefault();
-        CookieStore cookieStore = cookieManager.getCookieStore();
-//        HttpCookie httpCookie = HttpCookie.domainMatches()
-//        cookieStore.add(url,null);
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            cookieManager.removeAllCookies(new ValueCallback<Boolean>() {
+                @Override
+                public void onReceiveValue(Boolean aBoolean) {
+
+                }
+            });
+        }else{
+            cookieManager.removeAllCookie();
+        }
+        cookieManager.setCookie(url,OnlineService.getDefaultJsessionidCookie());
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+            CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(mContext);
+            cookieSyncManager.sync();
+        }else {
+            cookieManager.flush();
+        }
     }
     @ReactMethod
     public void cacheImage(String imageUrl, final String saveFileName, final Promise promise){
@@ -728,7 +749,6 @@ public class SOnlineService extends ReactContextBaseJavaModule{
                         }
                     }
                 }
-
                 @Override
                 public void onError(String s) {
 
