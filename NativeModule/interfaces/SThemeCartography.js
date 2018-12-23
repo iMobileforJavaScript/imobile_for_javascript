@@ -345,6 +345,24 @@ getThemeExpressByDatasetName = (datasourceName, datasetName) => {
   }
 }
 
+/**设置单值专题图的颜色方案 */
+setUniqueColorScheme = (params) => {
+  try {
+    return SThemeCartography.setUniqueColorScheme(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**设置单值专题图的颜色方案 */
+setRangeColorScheme = (params) => {
+  try {
+    return SThemeCartography.setRangeColorScheme(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   //单值
   createThemeUniqueMap,
@@ -354,10 +372,12 @@ export default {
   modifyThemeUniqueMap,
   getThemeUniqueDefaultStyle,
   getUniqueExpression,
+  setUniqueColorScheme,
   //分段
   createThemeRangeMap,
   setRangeExpression,
   modifyThemeRangeMap,
+  setRangeColorScheme,
   //统一标签
   createUniformThemeLabelMap,
   setUniformLabelExpression,
