@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class SMMapWC {
@@ -219,6 +220,349 @@ public class SMMapWC {
             info.setVersion((WorkspaceVersion) Enum.parse(WorkspaceVersion.class, version.intValue()));
         }
         return info;
+    }
+
+    ////////////////////
+
+    private String formateNoneExistDatasourceAlian(String alian) {
+        String resultAlian = alian;
+        int nAddNumber = 1;
+        while (workspace.getDatasources().indexOf(resultAlian) != -1) {
+            resultAlian = alian + "#"+nAddNumber;
+            nAddNumber++;
+        }
+        return resultAlian;
+    }
+
+    private String formateNoneExistMapName(String name) {
+        String resultName = name;
+        int nAddNumber = 1;
+        while (workspace.getMaps().indexOf(resultName) != -1) {
+            resultName = name + "#"+nAddNumber;
+            nAddNumber++;
+        }
+        return resultName;
+    }
+
+    private String modifyXML(String strXML, List<String> arrAlian, List<String> arrNewAlian){
+        // 倒着替换 不然会把先前替换过的名字再次替换出错
+        String strResult = strXML;
+        for (int i = arrAlian.size() - 1; i >= 0; i--) {
+            String strAlian = arrAlian.get(i);
+            String strNewAlian = arrNewAlian.get(i);
+            String strSrc = "<sml:DataSourceAlias>%@</sml:DataSourceAlias>" + strAlian;
+            String strReplace = "<sml:DataSourceAlias>%@</sml:DataSourceAlias>" + strNewAlian;
+            strResult = strResult.replaceAll(strSrc, strReplace);
+        }
+        return strResult;
+    }
+
+
+
+    //导入工作空间
+//  失败情况：
+//      a)info为空或sever为空或type为空 或导入工作空间为SMap.singletonInstance.smMapWC.workspace
+//      b)打开工作空间失败
+//      c)SMap.singletonInstance.smMapWC.workspace没初始化
+//  流程：
+//      1.新的工作空间打开
+//      2.导入数据源
+//          -文件型数据源需拷贝数据源到目录下,重名要改名
+//          -打开数据源，alias相同需改名
+//      3.导入点线面符号库（若是SMWX可直接读取文件，其他类型需要先导出符号库文件再读入）
+//      4.导入maps，先导出成XML在倒入，3中alian变化的数据源需修改导出XML对应字段
+//  非替换模式：重复文件名+num
+//  替换模式：重复文件替换，同路径先关闭工作空间再替换
+    public boolean importWorkspaceInfo(Map infoMap, String strDirPath, boolean bDatasourceRep, boolean bSymbolsRep) {
+        boolean bSucc = false;
+        Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+
+        if (!(workspace != null && infoMap != null && infoMap.containsKey("server") && infoMap.containsKey("type") &&
+                !workspace.getConnectionInfo().getServer().equals(infoMap.get("server")))) {
+            return bSucc;
+        }
+        Workspace importWorkspace = new Workspace();
+        WorkspaceConnectionInfo info = setWorkspaceConnectionInfo(infoMap, null);
+
+        if (!importWorkspace.open(info)) {
+            info.dispose();
+            importWorkspace.dispose();
+            return bSucc;
+        }
+        String importPath = info.getServer();
+
+        int nSuffixCount = 0;
+        if (info.getType() == WorkspaceType.SXWU || info.getType() == WorkspaceType.SMWU) {
+            nSuffixCount = 5;
+        } else {
+            nSuffixCount = 4;
+        }
+
+        String strTargetDir = strDirPath;
+        if (strDirPath == null || strDirPath.length() == 0) {
+            //若未指定存放目录需构造默认目录
+            String currentPath = workspace.getConnectionInfo().getServer();
+            String[] arrCurrentPathStr = currentPath.split("/");
+            String strCurrentNameStr = arrCurrentPathStr[arrCurrentPathStr.length - 1];
+            strTargetDir = currentPath.substring(0, currentPath.length() - strCurrentNameStr.length() - 1);
+            String[] arrSrePathStr = importPath.split("/");
+            String[] arrSrcWorkspaceName = arrSrePathStr[arrSrePathStr.length - 1].split("\\.");
+            //目标文件+importWorkspaceName
+            strTargetDir = strTargetDir + "/" + arrSrcWorkspaceName[0];
+        }
+        boolean bDirReady = true;
+        boolean bNewDir = false;
+        boolean bDir = false;
+        boolean bExist = false;
+        File file = new File(strTargetDir);
+        bExist = file.exists();
+        bDir = file.isDirectory();
+        if (!bExist || !bDir) {
+            bDirReady = file.mkdirs();
+            bNewDir = true;
+        }
+        if (!bDirReady) {
+            return bSucc;
+        }
+
+        // 重复的server处理
+        //      1.文件型数据源：若bDatasourceRep，关闭原来数据源，拷贝新数据源并重新打开（alian保持原来的）
+        //      2.网络型数据源：不再重复打开（alian保持原来的）
+        List<String> arrTargetServers = new ArrayList<>();
+        List<String> arrTargetAlians = new ArrayList<>();
+        Datasources datasources = workspace.getDatasources();
+        for (int i = 0; i < datasources.getCount(); i++) {
+            Datasource datasource = datasources.get(i);
+            DatasourceConnectionInfo datasourceInfo = datasource.getConnectionInfo();
+            if (datasourceInfo.getEngineType() == EngineType.UDB || datasourceInfo.getEngineType() == EngineType.IMAGEPLUGINS) {
+                //只要名字
+                if (bDatasourceRep) {
+                    String fullName = datasourceInfo.getServer();
+                    String[] arrServer = fullName.split("/");
+                    String lastName = arrServer[arrServer.length - 1];
+                    String fatherName = fullName.substring(0, fullName.length() - lastName.length() - 1);
+                    if (fatherName.equals(strTargetDir)) {
+                        //同级目录下的才会被替换
+                        arrTargetServers.add(lastName);
+                        arrTargetAlians.add(datasourceInfo.getAlias());
+                    }
+                }
+            } else {
+                //网络数据集用完整url
+                arrTargetServers.add(datasourceInfo.getServer());
+                arrTargetAlians.add(datasourceInfo.getAlias());
+            }
+        }
+
+        //数据源
+        Datasources datasourcesTemp = importWorkspace.getDatasources();
+        //更名数组
+        List<String> arrAlian = new ArrayList<>();
+        List<String> arrReAlian = new ArrayList<>();
+        for (int i = 0; i < datasourcesTemp.getCount(); i++) {
+            Datasource dTemp = datasourcesTemp.get(i);
+            if (!dTemp.isOpened()) {
+                //没打开就跳过
+                continue;
+            }
+            DatasourceConnectionInfo infoTemp = dTemp.getConnectionInfo();
+            String strSrcServer = infoTemp.getServer();
+            EngineType engineType = infoTemp.getEngineType();
+            String strSrcAlian = infoTemp.getAlias();
+            String strSrcUser = infoTemp.getUser();
+            String strSrcPassword = infoTemp.getPassword();
+            String strTargetAlian = strSrcAlian;
+
+            if (engineType == EngineType.UDB || engineType == EngineType.IMAGEPLUGINS) {
+
+                boolean isUDB = engineType == EngineType.UDB;
+                // 源文件存在？
+                if (!isDatasourceFileExist(strSrcServer, isUDB))
+                    continue;
+
+                String[] arrSrcServer = strSrcServer.split("/");
+                String strFileName = arrSrcServer[arrSrcServer.length - 1];
+                // 导入工作空间名／数据源名字
+                String strTargetServer = strTargetDir + "/" + strFileName;
+
+                if (engineType == EngineType.UDB) {
+
+                    String strSrcDatasourcePath = strSrcServer.substring(0, strSrcServer.length() - 4);
+                    String strTargetDatasourcePath = strTargetServer.substring(0, strTargetServer.length() - 4);
+                    if (!bNewDir) {
+                        // 检查重复性
+                        bDir = true;
+                        File file1 = new File(strTargetServer);
+                        bExist = file1.exists();
+                        bDir = file1.isDirectory();
+                        if (bExist && !bDir) {
+                            //存在同名文件
+                            if (bDatasourceRep) {
+                                //覆盖模式
+                                int nIndex = arrTargetServers.indexOf(strFileName);
+                                if (nIndex >= 0 && nIndex < arrTargetServers.size()) {
+                                    // 替换alian 保证原来map有数据源
+                                    strTargetAlian = arrTargetAlians.get(nIndex);
+                                    workspace.getDatasources().close(strTargetAlian);
+                                    //删文件
+                                    File file2 = new File(strTargetDatasourcePath + ".udb");
+                                    if (!file2.delete()) {
+                                        continue;
+                                    }
+                                    File file3 = new File(strTargetDatasourcePath + ".udd");
+                                    if (!file3.delete()) {
+                                        continue;
+                                    }
+
+                                } else {
+                                    //_worspace外的 直接删
+                                    new File(strTargetDatasourcePath + ".udb").delete();
+                                    new File(strTargetDatasourcePath + ".udd").delete();
+                                }
+                            } else {
+                                //重名文件
+                                strTargetServer = formateNoneExistFileName(strTargetServer, false);
+                                strTargetDatasourcePath = strTargetServer.substring(0, strTargetServer.length() - 4);
+                            }//rep
+                        }//exist
+                    }//!New
+                    if (!copyFile(strSrcDatasourcePath + ".udb", strTargetDatasourcePath + ".udb")) {
+                        continue;
+                    }
+                    if (!copyFile(strSrcDatasourcePath + ".udd", strTargetDatasourcePath + ".udd")) {
+                        continue;
+                    }
+                } else {
+                    if (!bNewDir) {
+                        //检查重复性
+                        bDir = true;
+                        File file1 = new File(strTargetServer);
+                        bExist = file1.exists();
+                        bDir = file1.isDirectory();
+                        if (bExist && !bDir) {
+                            //存在同名文件
+                            if (bDatasourceRep) {
+                                //覆盖模式
+                                int nIndex = arrTargetServers.indexOf(strFileName);
+                                if (nIndex >= 0 && nIndex < arrTargetServers.size()) {
+                                    // 替换alian 保证原来map有数据源
+                                    strTargetAlian = arrTargetAlians.get(nIndex);
+                                    workspace.getDatasources().close(strTargetAlian);
+                                    //删文件
+                                    if (!new File(strTargetServer).delete()) {
+                                        continue;
+                                    }
+                                } else {
+                                    //_worspace外的 直接删
+                                    new File(strTargetServer).delete();
+                                }
+                            } else {
+                                //重名文件
+                                strTargetServer = formateNoneExistFileName(strTargetServer, false);
+                            }//rep
+                        }//exist
+                    }//new
+
+                    //拷贝
+                    if (!copyFile(strSrcServer, strTargetServer)) {
+                        continue;
+                    }
+                }//bUDB
+                //打开
+                DatasourceConnectionInfo temp = new DatasourceConnectionInfo();
+                temp.setServer(strTargetServer);
+                // 更名
+                strTargetAlian = formateNoneExistDatasourceAlian(strTargetAlian);
+                temp.setAlias(strTargetAlian);
+                temp.setUser(strSrcUser);
+                if (strSrcPassword != null && !strSrcPassword.equals("")) {
+                    temp.setPassword(strSrcPassword);
+                }
+                temp.setEngineType(engineType);
+                if (workspace.getDatasources().open(temp) == null) {
+                    if (!strTargetAlian.equals(strSrcAlian)) {
+                        arrAlian.add(strSrcAlian);
+                        arrReAlian.add(strTargetAlian);
+                    }
+                }
+            } else {
+                //url需要区分大小写吗？
+                int nIndex = arrTargetServers.indexOf(strSrcServer);
+                if (nIndex >= 0 && nIndex < arrTargetServers.size()) {
+                    // 替换alian 保证原来map有数据源
+                    strTargetAlian = arrTargetAlians.get(nIndex);
+                    if (!strTargetAlian.equals(strSrcAlian)) {
+                        arrAlian.add(strSrcAlian);
+                        arrReAlian.add(strTargetAlian);
+                    }
+                } else {
+                    strTargetAlian = formateNoneExistDatasourceAlian(strTargetAlian);
+                    // web数据源
+                    DatasourceConnectionInfo temp = new DatasourceConnectionInfo();
+                    temp.setServer(strSrcServer);
+                    temp.setAlias(strTargetAlian);
+                    temp.setUser(strSrcUser);
+                    if (strSrcPassword != null && !strSrcPassword.equals("")) {
+                        temp.setPassword(strSrcPassword);
+                    }
+                    temp.setDriver(infoTemp.getDriver());
+                    temp.setEngineType(infoTemp.getEngineType());
+
+                    if (workspace.getDatasources().open(temp) != null) {
+                        if (!strTargetAlian.equals(strSrcAlian)) {
+                            arrAlian.add(strSrcAlian);
+                            arrReAlian.add(strTargetAlian);
+                        }
+                    }
+                }
+
+            }// if udb
+
+        }//for datasources
+
+        //符号库
+
+        String serverResourceBase = importPath.substring(0, importPath.length() - nSuffixCount);
+        String strMarkerPath = serverResourceBase + ".sym";
+        String strLinePath = serverResourceBase + ".lsl";
+        String strFillPath = serverResourceBase + ".bru";
+        if (info.getType() != WorkspaceType.SXWU) {
+            //导出
+            importWorkspace.getResources().getMarkerLibrary().saveAs(strMarkerPath);
+            importWorkspace.getResources().getLineLibrary().saveAs(strLinePath);
+            importWorkspace.getResources().getFillLibrary().saveAs(strFillPath);
+        }
+        workspace.getResources().getMarkerLibrary().appendFromFile(strMarkerPath, bSymbolsRep);
+        workspace.getResources().getLineLibrary().appendFromFile(strLinePath, bSymbolsRep);
+        workspace.getResources().getFillLibrary().appendFromFile(strFillPath, bSymbolsRep);
+        if (info.getType() != WorkspaceType.SXWU) {
+            new File(strMarkerPath).delete();
+            new File(strLinePath).delete();
+            new File(strFillPath).delete();
+        }
+
+        com.supermap.mapping.Map mapTemp = new com.supermap.mapping.Map(importWorkspace);
+        // map
+        for (int i = 0; i < importWorkspace.getMaps().getCount(); i++) {
+
+            mapTemp.open(importWorkspace.getMaps().get(i));
+            mapTemp.setDescription("Template" + mapTemp.getName());
+            String strSrcMapXML = mapTemp.toXML();
+            String strMapName = formateNoneExistMapName(mapTemp.getName());
+            mapTemp.close();
+
+            // 替换XML字段
+            String strTargetMapXML = modifyXML(strSrcMapXML, arrAlian, arrReAlian);
+            workspace.getMaps().add(strMapName, strTargetMapXML);
+        }
+
+        importWorkspace.close();
+        bSucc = true;
+
+
+        info.dispose();
+        importWorkspace.dispose();
+        return bSucc;
     }
 
 
