@@ -117,7 +117,8 @@ public class SMap extends ReactContextBaseJavaModule {
     public static void setWorkspace(Workspace workspace) {
         if (sMap.smMapWC.getWorkspace() == null) {
             if (workspace == null) {
-                sMap.smMapWC.setWorkspace(new Workspace());
+                Workspace _workspace = new Workspace();
+                sMap.smMapWC.setWorkspace(_workspace);
             } else {
                 sMap.smMapWC.setWorkspace(workspace);
             }
@@ -416,20 +417,22 @@ public class SMap extends ReactContextBaseJavaModule {
 
                 isOpen = map.open(mapName);
 
-                if (viewEntire) {
-                    map.viewEntire();
-                }
+                if (isOpen) {
+                    if (viewEntire) {
+                        map.viewEntire();
+                    }
 
-                if (center != null && center.hasKey("x") && center.hasKey("y")) {
-                    Double x = center.getDouble("x");
-                    Double y = center.getDouble("y");
-                    Point2D point2D = new Point2D(x, y);
-                    map.setCenter(point2D);
-                }
+                    if (center != null && center.hasKey("x") && center.hasKey("y")) {
+                        Double x = center.getDouble("x");
+                        Double y = center.getDouble("y");
+                        Point2D point2D = new Point2D(x, y);
+                        map.setCenter(point2D);
+                    }
 
-                sMap.smMapWC.getMapControl().setAction(Action.PAN);
-                map.setVisibleScalesEnabled(false);
-                map.refresh();
+                    sMap.smMapWC.getMapControl().setAction(Action.PAN);
+                    map.setVisibleScalesEnabled(false);
+                    map.refresh();
+                }
             }
 
             promise.resolve(isOpen);
@@ -456,24 +459,27 @@ public class SMap extends ReactContextBaseJavaModule {
             Boolean isOpen = index < 0;
 
             if (maps.getCount() > 0 && index >= 0) {
+                if (index >= maps.getCount()) index = maps.getCount() - 1;
                 String name = maps.get(index);
 
                 isOpen = map.open(name);
 
-                if (viewEntire) {
-                    map.viewEntire();
-                }
+                if (isOpen) {
+                    if (viewEntire) {
+                        map.viewEntire();
+                    }
 
-                if (center != null && center.hasKey("x") && center.hasKey("y")) {
-                    Double x = center.getDouble("x");
-                    Double y = center.getDouble("y");
-                    Point2D point2D = new Point2D(x, y);
-                    map.setCenter(point2D);
-                }
+                    if (center != null && center.hasKey("x") && center.hasKey("y")) {
+                        Double x = center.getDouble("x");
+                        Double y = center.getDouble("y");
+                        Point2D point2D = new Point2D(x, y);
+                        map.setCenter(point2D);
+                    }
 
-                sMap.smMapWC.getMapControl().setAction(Action.PAN);
-                map.setVisibleScalesEnabled(false);
-                map.refresh();
+                    sMap.smMapWC.getMapControl().setAction(Action.PAN);
+                    map.setVisibleScalesEnabled(false);
+                    map.refresh();
+                }
             }
             promise.resolve(isOpen);
         } catch (Exception e) {
@@ -874,6 +880,7 @@ public class SMap extends ReactContextBaseJavaModule {
 
                 collector.openGPS();
                 Point2D point2D = new Point2D(collector.getGPSPoint());
+                Boolean isMove = false;
                 if (mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
                     Point2Ds point2Ds = new Point2Ds();
                     point2Ds.add(point2D);
@@ -885,9 +892,15 @@ public class SMap extends ReactContextBaseJavaModule {
                     point2D = point2Ds.getItem(0);
                 }
 
-                mapControl.getMap().setCenter(point2D);
+                if (mapControl.getMap().getBounds().contains(point2D)) {
+                    mapControl.getMap().setCenter(point2D);
+                    isMove = true;
+                } else {
+                    mapControl.panTo(mapControl.getMap().getCenter(), 200);
+                }
+
                 mapControl.getMap().refresh();
-                promise.resolve(true);
+                promise.resolve(isMove);
             } catch (Exception e) {
                 promise.resolve(e);
             }
@@ -1133,9 +1146,26 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 获取指定SymbolGroup中所有的symbol
-     * @param type
-     * @param path
+     * 导入工作空间
+     * @param wInfo
+     * @param strFilePath
+     * @param breplaceDatasource
+     * @param promise
+     */
+    @ReactMethod
+    public void importWorkspace(ReadableMap wInfo , String strFilePath , boolean breplaceDatasource, Promise promise) {
+        try {
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 导出工作空间
+     * @param arrMapNames
+     * @param strFileName
+     * @param isFileReplace
      * @param promise
      */
     @ReactMethod
@@ -1144,9 +1174,7 @@ public class SMap extends ReactContextBaseJavaModule {
 
             sMap = getInstance();
             boolean result = sMap.smMapWC.exportMapNames(arrMapNames,strFileName,isFileReplace);
-
             promise.resolve(result);
-
         } catch (Exception e) {
             promise.reject(e);
         }

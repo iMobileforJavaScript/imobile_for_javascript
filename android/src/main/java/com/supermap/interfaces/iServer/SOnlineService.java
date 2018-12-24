@@ -1,8 +1,13 @@
 package com.supermap.interfaces.iServer;
 
-import android.content.Context;
+
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.util.Log;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
+import android.webkit.ValueCallback;
+
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -14,7 +19,7 @@ import com.supermap.onlineservices.DownLoadFile;
 import com.supermap.onlineservices.OnlineCallBack;
 import com.supermap.onlineservices.OnlineService;
 import com.supermap.onlineservices.UpLoadFile;
-import com.supermap.onlineservices.utils.EnumServiceType;
+
 
 import java.io.File;
 
@@ -143,9 +148,32 @@ public class SOnlineService extends ReactContextBaseJavaModule{
         }
     }
     @ReactMethod
+    public void downloadWithDataId(String filePath,String onlineDataNameId,final Promise promise){
+        try {
+           OnlineService.downloadFileById(mContext, onlineDataNameId, filePath, new DownLoadFile.DownLoadListener() {
+               @Override
+               public void getProgress(int progress) {
+                   mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADING,progress);
+               }
+
+               @Override
+               public void onComplete() {
+                   mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED,true);
+               }
+
+               @Override
+               public void onFailure() {
+                   mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, false);
+               }
+           });
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+    @ReactMethod
     public void upload(String filePath,String onlineDataName,final Promise promise){
         try {
-            OnlineService.uploadFile(filePath, onlineDataName, new UpLoadFile.UpLoadListener() {
+            OnlineService.uploadFile(onlineDataName,filePath, new UpLoadFile.UpLoadListener() {
                 @Override
                 public void getProgress(int progress) {
                     mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING,progress);
@@ -605,7 +633,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     }
 
     @ReactMethod
-    public void pulishService(final String dataName,final Promise promise){
+    public void publishService(final String dataName,final Promise promise){
         try {
             OnlineService.publishService(dataName, RESTMAP, new OnlineCallBack.CallBackString() {
                 @Override
@@ -624,6 +652,24 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     }
 
     @ReactMethod
+    public void publishServiceWithDataId(final String dataNameId,final Promise promise){
+        try {
+            OnlineService.publishServiceById(dataNameId, RESTMAP, new OnlineCallBack.CallBackString() {
+                @Override
+                public void onSucceed(String s) {
+                    promise.resolve(true);
+                }
+
+                @Override
+                public void onError(String s) {
+                    promise.resolve(s);
+                }
+            });
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+    @ReactMethod
     public void getSessionID(final Promise promise){
         try {
            String sessionId = OnlineService.getDefaultJsessionidCookie();
@@ -640,7 +686,35 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             promise.reject(e);
         }
     }
+    @ReactMethod
+    public void removeCookie(){
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        cookieManager.removeAllCookie();
+    }
 
+    @ReactMethod
+    public void syncCookie(String url){
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            cookieManager.removeAllCookies(new ValueCallback<Boolean>() {
+                @Override
+                public void onReceiveValue(Boolean aBoolean) {
+
+                }
+            });
+        }else{
+            cookieManager.removeAllCookie();
+        }
+        cookieManager.setCookie(url,OnlineService.getDefaultJsessionidCookie());
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+            CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(mContext);
+            cookieSyncManager.sync();
+        }else {
+            cookieManager.flush();
+        }
+    }
     @ReactMethod
     public void cacheImage(String imageUrl, final String saveFileName, final Promise promise){
         try {
@@ -675,7 +749,6 @@ public class SOnlineService extends ReactContextBaseJavaModule{
                         }
                     }
                 }
-
                 @Override
                 public void onError(String s) {
 

@@ -77,20 +77,33 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 }
             }
 
+            boolean result = false;
             if (dataset != null && uniqueExpression != null) {
                 ThemeUnique themeUnique = ThemeUnique.makeDefault((DatasetVector) dataset, uniqueExpression, colorGradientType);
+                if (themeUnique != null) {
+                    if (data.containsKey("ColorScheme")) {
+                        Color[] rangeColors = null;
+                        String colorScheme = data.get("ColorScheme").toString();
+                        rangeColors = SMThemeCartography.getRangeColors(colorScheme);
 
-                GeoStyle geoStyle = SMThemeCartography.getThemeUniqueGeoStyle(themeUnique.getDefaultStyle(), data);
-                themeUnique.setDefaultStyle(geoStyle);
+                        if (rangeColors != null) {
+                            int rangeCount = themeUnique.getCount();
+                            Colors selectedColors = Colors.makeGradient(rangeCount, rangeColors);
 
-                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
-                mapControl.getMap().getLayers().add(dataset, themeUnique, true);
-                mapControl.getMap().refresh();
+                            for (int i = 0; i < rangeCount; i++) {
+                                setGeoStyleColor(dataset.getType(), themeUnique.getItem(i).getStyle(), selectedColors.get(i));
+                            }
+                        }
+                    }
 
-                promise.resolve(true);
-            } else {
-                promise.resolve(false);
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getMap().getLayers().add(dataset, themeUnique, true);
+                    mapControl.getMap().refresh();
+
+                    result = true;
+                }
             }
+            promise.resolve(result);
         } catch (Exception e) {
             Log.e(REACT_CLASS, e.getMessage());
             e.printStackTrace();
@@ -99,82 +112,59 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 新建单值专题图层
+     * 修改单值专题图层
      *
-     * @param readableMap (数据源的索引/数据源的别名/打开本地数据源、数据集名称、单值专题图字段表达式、默认样式)
-     *                    LayerName: 要移除的专题图层
+     * @param readableMap
      * @param promise
      */
     @ReactMethod
-    public void createAndRemoveThemeUniqueMap(ReadableMap readableMap, Promise promise) {
+    public void modifyThemeUniqueMap(ReadableMap readableMap, Promise promise) {
         try {
             HashMap<String, Object> data = readableMap.toHashMap();
-//            Log.e("SThemeCartography", "createAndRemoveThemeUniqueMap: " + data.toString());
 
-            int datasourceIndex = 0;
-            String datasourceAlias = null;
-            String datasetName = null;
             String uniqueExpression = null;
-            ColorGradientType colorGradientType = ColorGradientType.TERRAIN;//默认
+            ColorGradientType colorGradientType = null;
             String layerName = null;
-            int layerIndex = 0;
 
-            if (data.containsKey("DatasetName")){
-                datasetName = data.get("DatasetName").toString();
+            if (data.containsKey("LayerName")) {
+                layerName = data.get("LayerName").toString();
             }
+            Layer themeUniqueLayer = SMThemeCartography.getLayerByName(layerName);
+            Dataset dataset = null;
+            if (themeUniqueLayer != null) {
+                dataset = themeUniqueLayer.getDataset();
+            }
+
+            ThemeUnique themeUnique = null;
+            if (themeUniqueLayer != null && themeUniqueLayer.getTheme() != null && themeUniqueLayer.getTheme().getType() == ThemeType.UNIQUE) {
+                themeUnique = (ThemeUnique) themeUniqueLayer.getTheme();
+            }
+
             if (data.containsKey("UniqueExpression")){
                 uniqueExpression = data.get("UniqueExpression").toString();
+            } else {
+                if (themeUnique != null) {
+                    uniqueExpression = themeUnique.getUniqueExpression();
+                }
             }
+
             if (data.containsKey("ColorGradientType")){
                 String type = data.get("ColorGradientType").toString();
                 colorGradientType = SMThemeCartography.getColorGradientType(type);
             }
-            if (data.containsKey("LayerName")) {
-                layerName = data.get("LayerName").toString();
-            }
-            if (data.containsKey("LayerIndex")) {
-                String index = data.get("LayerIndex").toString();
-                layerIndex = Integer.parseInt(index);
-            }
 
-            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
-            if (dataset == null) {
-                if (data.containsKey("DatasourceIndex")){
-                    String index = data.get("DatasourceIndex").toString();
-                    datasourceIndex = Integer.parseInt(index);
-                }
-                if (data.containsKey("DatasourceAlias")){
-                    datasourceAlias = data.get("DatasourceAlias").toString();
-                }
+            boolean result = false;
+            if (dataset != null && themeUniqueLayer.getTheme() != null && uniqueExpression != null && colorGradientType != null) {
+                ThemeUnique tu = ThemeUnique.makeDefault((DatasetVector) dataset, uniqueExpression, colorGradientType);
+                if (tu != null){
+                    themeUniqueLayer.getTheme().fromXML(tu.toXML());
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getMap().refresh();
 
-                if (datasourceAlias != null) {
-                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
-                }  else {
-                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
+                    result = true;
                 }
             }
-
-            if (dataset != null && uniqueExpression != null) {
-                ThemeUnique themeUnique = ThemeUnique.makeDefault((DatasetVector) dataset, uniqueExpression, colorGradientType);
-
-                GeoStyle geoStyle = SMThemeCartography.getThemeUniqueGeoStyle(themeUnique.getDefaultStyle(), data);
-                themeUnique.setDefaultStyle(geoStyle);
-
-                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
-                if (layerName != null) {
-//                    mapControl.getMap().getLayers().remove(layerName);
-                    mapControl.getMap().getLayers().get(layerName).setVisible(false);
-                } else {
-//                    mapControl.getMap().getLayers().remove(layerIndex);
-                    mapControl.getMap().getLayers().get(layerIndex).setVisible(false);
-                }
-                mapControl.getMap().getLayers().add(dataset, themeUnique, true);
-                mapControl.getMap().refresh();
-
-                promise.resolve(true);
-            } else {
-                promise.resolve(false);
-            }
+            promise.resolve(result);
         } catch (Exception e) {
             Log.e(REACT_CLASS, e.getMessage());
             e.printStackTrace();
@@ -479,126 +469,6 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 themeLabel.setUniformStyle(textStyle);
 
                 MapControl mapControl = SMap.getSMWorkspace().getMapControl();
-                mapControl.getMap().getLayers().add(dataset, themeLabel, true);
-                mapControl.getMap().refresh();
-
-                promise.resolve(true);
-            } else {
-                promise.resolve(false);
-            }
-        } catch (Exception e) {
-            Log.e(REACT_CLASS, e.getMessage());
-            e.printStackTrace();
-            promise.reject(e);
-        }
-    }
-
-    /**
-     * 新建统一标签专题图
-     *
-     * @param readableMap
-     * @param promise
-     */
-    @ReactMethod
-    public void createAndRemoveUniformThemeLabelMap(ReadableMap readableMap, Promise promise) {
-        try {
-            HashMap<String, Object> data = readableMap.toHashMap();
-
-            int datasourceIndex = -1;
-            String datasourceAlias = null;
-
-            String datasetName = null;
-            String labelExpression = null;//标注字段表达式
-            LabelBackShape labelBackShape = null;//背景形状
-            String fontName = null;//字体名称
-            double fontSize = -1;//字号
-            double rotation = -1;//旋转角度
-            String foreColor = null;//颜色
-
-            String layerName = null;
-            int layerIndex = 0;
-            if (data.containsKey("LayerName")) {
-                layerName = data.get("LayerName").toString();
-            }
-            if (data.containsKey("LayerIndex")) {
-                String index = data.get("LayerIndex").toString();
-                layerIndex = Integer.parseInt(index);
-            }
-
-            if (data.containsKey("DatasetName")){
-                datasetName = data.get("DatasetName").toString();
-            }
-            if (data.containsKey("LabelExpression")){
-                labelExpression  = data.get("LabelExpression").toString();
-            }
-            if (data.containsKey("LabelBackShape")){
-                String shape = data.get("LabelBackShape").toString();
-                labelBackShape  = SMThemeCartography.getLabelBackShape(shape);
-            }
-            if (data.containsKey("FontName")){
-                fontName = data.get("FontName").toString();
-            }
-            if (data.containsKey("FontSize")){
-                String size = data.get("FontSize").toString();
-                fontSize = Double.parseDouble(size);
-            }
-            if (data.containsKey("Rotation")){
-                String rt = data.get("Rotation").toString();
-                rotation = Double.parseDouble(rt);
-            }
-            if (data.containsKey("ForeColor")){
-                foreColor = data.get("ForeColor").toString();
-            }
-
-            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
-            if (dataset == null) {
-                if (data.containsKey("DatasourceIndex")){
-                    String index = data.get("DatasourceIndex").toString();
-                    datasourceIndex = Integer.parseInt(index);
-                }
-                if (data.containsKey("DatasourceAlias")){
-                    datasourceAlias = data.get("DatasourceAlias").toString();
-                }
-
-                if (datasourceAlias != null) {
-                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
-                }  else {
-                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
-                }
-            }
-
-            if (dataset != null && labelExpression != null) {
-                ThemeLabel themeLabel = new ThemeLabel();
-                themeLabel.setLabelExpression(labelExpression);
-                if (labelBackShape != null) {
-                    themeLabel.setBackShape(labelBackShape);
-                }
-
-                TextStyle textStyle = new TextStyle();
-                if (fontName != null) {
-                    textStyle.setFontName(fontName);
-                }
-                if (fontSize != -1) {
-                    textStyle.setFontHeight(fontSize);
-                    textStyle.setFontWidth(fontSize);
-                }
-                if (rotation != -1) {
-                    textStyle.setRotation(rotation);
-                }
-                if (foreColor != null) {
-                    textStyle.setForeColor(ColorParseUtil.getColor(foreColor));
-                }
-                themeLabel.setUniformStyle(textStyle);
-
-                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
-                if (layerName != null) {
-//                    mapControl.getMap().getLayers().remove(layerName);
-                    mapControl.getMap().getLayers().get(layerName).setVisible(false);
-                } else {
-//                    mapControl.getMap().getLayers().remove(layerIndex);
-                    mapControl.getMap().getLayers().get(layerIndex).setVisible(false);
-                }
-
                 mapControl.getMap().getLayers().add(dataset, themeLabel, true);
                 mapControl.getMap().refresh();
 
@@ -1293,14 +1163,169 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 }
             }
 
+            boolean result = false;
             if (dataset != null && rangeExpression != null && rangeMode != null && rangeParameter != -1) {
                 ThemeRange themeRange = ThemeRange.makeDefault((DatasetVector) dataset, rangeExpression, rangeMode, rangeParameter, colorGradientType);
+                if (themeRange != null) {
+                    if (data.containsKey("ColorScheme")) {
+                        Color[] rangeColors = null;
+                        String colorScheme = data.get("ColorScheme").toString();
+                        rangeColors = SMThemeCartography.getRangeColors(colorScheme);
 
-                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
-                mapControl.getMap().getLayers().add(dataset, themeRange, true);
-                mapControl.getMap().refresh();
+                        if (rangeColors != null) {
+                            int rangeCount = themeRange.getCount();
+                            Colors selectedColors = Colors.makeGradient(rangeCount, rangeColors);
 
-                promise.resolve(true);
+                            for (int i = 0; i < rangeCount; i++) {
+                                setGeoStyleColor(dataset.getType(), themeRange.getItem(i).getStyle(), selectedColors.get(i));
+                            }
+                        }
+                    }
+
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getMap().getLayers().add(dataset, themeRange, true);
+                    mapControl.getMap().refresh();
+
+                    result = true;
+                }
+            }
+            promise.resolve(result);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 修改分段专题图层
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void modifyThemeRangeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String rangeExpression = null;//分段字段表达式
+            RangeMode rangeMode = null;//分段模式
+            double rangeParameter = -1;//分段参数
+            ColorGradientType colorGradientType = null;
+            String layerName = null;
+
+            if (data.containsKey("LayerName")) {
+                layerName = data.get("LayerName").toString();
+            }
+            Layer themeRangeLayer = SMThemeCartography.getLayerByName(layerName);
+            Dataset dataset = null;
+            if (themeRangeLayer != null) {
+                dataset = themeRangeLayer.getDataset();
+            }
+
+            ThemeRange themeRange = null;
+            if (themeRangeLayer != null && themeRangeLayer.getTheme() != null && themeRangeLayer.getTheme().getType() == ThemeType.RANGE) {
+                themeRange = (ThemeRange) themeRangeLayer.getTheme();
+            }
+
+            if (data.containsKey("RangeExpression")){
+                rangeExpression  = data.get("RangeExpression").toString();
+            } else {
+                if (themeRange != null) {
+                    rangeExpression = themeRange.getRangeExpression();
+                }
+            }
+
+            if (data.containsKey("RangeMode")){
+                String mode = data.get("RangeMode").toString();
+                rangeMode  = SMThemeCartography.getRangeMode(mode);
+            } else {
+                if (themeRange != null) {
+                    rangeMode = themeRange.getRangeMode();
+                }
+            }
+
+            if (data.containsKey("RangeParameter")){
+                String rangParam = data.get("RangeParameter").toString();
+                rangeParameter  = Double.parseDouble(rangParam);
+            } else {
+                if (themeRange != null) {
+                    rangeParameter = themeRange.getCount();
+                }
+            }
+
+            if (data.containsKey("ColorGradientType")){
+                String type = data.get("ColorGradientType").toString();
+                colorGradientType = SMThemeCartography.getColorGradientType(type);
+            }
+
+            boolean result = false;
+            if (dataset != null && themeRangeLayer.getTheme() != null && rangeExpression != null && rangeMode != null && rangeParameter != -1 && colorGradientType != null) {
+                ThemeRange tr = ThemeRange.makeDefault((DatasetVector) dataset, rangeExpression, rangeMode, rangeParameter, colorGradientType);
+                if (tr != null){
+                    themeRangeLayer.getTheme().fromXML(tr.toXML());
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getMap().refresh();
+
+                    result = true;
+                }
+            }
+            promise.resolve(result);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置单值专题图颜色方案
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void setUniqueColorScheme(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Color[] rangeColors = null;
+            if (data.containsKey("ColorScheme")) {
+                String colorScheme = data.get("ColorScheme").toString();
+                rangeColors = SMThemeCartography.getUniqueColors(colorScheme);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && rangeColors != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.UNIQUE) {
+                    ThemeUnique themeUnique = (ThemeUnique) layer.getTheme();
+                    int rangeCount = themeUnique.getCount();
+                    Colors selectedColors = Colors.makeGradient(rangeCount, rangeColors);
+
+                    for (int i = 0; i < rangeCount; i++) {
+                        setGeoStyleColor(layer.getDataset().getType(), themeUnique.getItem(i).getStyle(), selectedColors.get(i));
+                    }
+                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+                    promise.resolve(true);
+                }
             } else {
                 promise.resolve(false);
             }
@@ -1312,86 +1337,53 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 新建分段专题图层
+     * 设置分段专题图颜色方案
      *
-     * @param readableMap (数据源的索引/数据源的别名/打开本地数据源、数据集名称、 分段字段表达式、分段模式、分段参数、颜色渐变模式)
+     * @param readableMap
      * @param promise
      */
     @ReactMethod
-    public void createAndRemoveThemeRangeMap(ReadableMap readableMap, Promise promise) {
+    public void setRangeColorScheme(ReadableMap readableMap, Promise promise) {
         try {
             HashMap<String, Object> data = readableMap.toHashMap();
 
-            int datasourceIndex = -1;
-            String datasourceAlias = null;
-            String datasetName = null;
-            String rangeExpression = null;//分段字段表达式
-            RangeMode rangeMode = null;//分段模式
-            double rangeParameter = -1;//分段参数
-            ColorGradientType colorGradientType = ColorGradientType.TERRAIN;//默认的颜色渐变模式
-
             String layerName = null;
-            int layerIndex = 0;
+            int layerIndex = -1;
 
-            if (data.containsKey("DatasetName")){
-                datasetName = data.get("DatasetName").toString();
-            }
-            if (data.containsKey("RangeExpression")){
-                rangeExpression  = data.get("RangeExpression").toString();
-            }
-            if (data.containsKey("RangeMode")){
-                String mode = data.get("RangeMode").toString();
-                rangeMode  = SMThemeCartography.getRangeMode(mode);
-            }
-            if (data.containsKey("RangeParameter")){
-                String rangParam = data.get("RangeParameter").toString();
-                rangeParameter  = Double.parseDouble(rangParam);
-            }
-            if (data.containsKey("ColorGradientType")){
-                String type = data.get("ColorGradientType").toString();
-                colorGradientType = SMThemeCartography.getColorGradientType(type);
-            }
-
-            if (data.containsKey("LayerName")) {
+            if (data.containsKey("LayerName")){
                 layerName = data.get("LayerName").toString();
             }
-            if (data.containsKey("LayerIndex")) {
+            if (data.containsKey("LayerIndex")){
                 String index = data.get("LayerIndex").toString();
                 layerIndex = Integer.parseInt(index);
             }
 
-            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
-            if (dataset == null) {
-                if (data.containsKey("DatasourceIndex")){
-                    String index = data.get("DatasourceIndex").toString();
-                    datasourceIndex = Integer.parseInt(index);
-                }
-                if (data.containsKey("DatasourceAlias")){
-                    datasourceAlias = data.get("DatasourceAlias").toString();
-                }
-
-                if (datasourceAlias != null) {
-                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
-                }  else {
-                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
-                }
+            Color[] rangeColors = null;
+            if (data.containsKey("ColorScheme")) {
+                String colorScheme = data.get("ColorScheme").toString();
+                rangeColors = SMThemeCartography.getRangeColors(colorScheme);
             }
 
-            if (dataset != null && rangeExpression != null && rangeMode != null && rangeParameter != -1) {
-                ThemeRange themeRange = ThemeRange.makeDefault((DatasetVector) dataset, rangeExpression, rangeMode, rangeParameter, colorGradientType);
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
 
-                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
-                if (layerName != null) {
-//                    mapControl.getMap().getLayers().remove(layerName);
-                    mapControl.getMap().getLayers().get(layerName).setVisible(false);
-                } else {
-//                    mapControl.getMap().getLayers().remove(layerIndex);
-                    mapControl.getMap().getLayers().get(layerIndex).setVisible(false);
+            if (layer != null && rangeColors != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.RANGE) {
+                    ThemeRange themeRange = (ThemeRange) layer.getTheme();
+                    int rangeCount = themeRange.getCount();
+                    Colors selectedColors = Colors.makeGradient(rangeCount, rangeColors);
+
+                    for (int i = 0; i < rangeCount; i++) {
+                        setGeoStyleColor(layer.getDataset().getType(), themeRange.getItem(i).getStyle(), selectedColors.get(i));
+                    }
+                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+                    promise.resolve(true);
                 }
-                mapControl.getMap().getLayers().add(dataset, themeRange, true);
-                mapControl.getMap().refresh();
-
-                promise.resolve(true);
             } else {
                 promise.resolve(false);
             }
@@ -1399,6 +1391,24 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             Log.e(REACT_CLASS, e.getMessage());
             e.printStackTrace();
             promise.reject(e);
+        }
+    }
+
+    private void setGeoStyleColor(DatasetType type, GeoStyle style, Color color) {
+        try {
+            switch (type.toString()) {
+                case "POINT":
+                    style.setPointColor(color);
+                    break;
+                case "LINE":
+                    style.setLineColor(color);
+                    break;
+                case "REGION":
+                    style.setFillForeColor(color);
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -1516,10 +1526,21 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 FieldInfo fieldInfo = fieldInfos.get(i);
                 String name = fieldInfo.getName();
                 WritableMap writeMap = Arguments.createMap();
-                writeMap.putString("title",name);
+                writeMap.putString("title", name);
                 arr.pushMap(writeMap);
             }
-            promise.resolve(arr);
+
+            WritableMap map2 = Arguments.createMap();
+            String datasetName = dataset.getName();
+            map2.putString("datasetName", datasetName);
+            String datasetType = dataset.getType().toString();
+            map2.putString("datasetType", datasetType);
+
+            WritableMap WritableMap = Arguments.createMap();
+            WritableMap.putArray("list", arr);
+            WritableMap.putMap("dataset", map2);
+
+            promise.resolve(WritableMap);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -1545,12 +1566,109 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 FieldInfo fieldInfo = fieldInfos.get(i);
                 String name = fieldInfo.getName();
                 WritableMap writeMap = Arguments.createMap();
-                writeMap.putString("title",name);
+                writeMap.putString("title", name);
                 arr.pushMap(writeMap);
             }
-            promise.resolve(arr);
+
+            WritableMap map2 = Arguments.createMap();
+            String datasetName = dataset.getName();
+            map2.putString("datasetName", datasetName);
+            String datasetType = dataset.getType().toString();
+            map2.putString("datasetType", datasetType);
+
+            WritableMap WritableMap = Arguments.createMap();
+            WritableMap.putArray("list", arr);
+            WritableMap.putMap("dataset", map2);
+
+            promise.resolve(WritableMap);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
+
+    /**
+     * 获取数据集中的表达式
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void getThemeExpressByDatasetName(String datasourceAlias, String datasetName,Promise promise) {
+        try {
+            Datasources datasources = SMap.getSMWorkspace().getWorkspace().getDatasources();
+            Datasource datasource = datasources.get(datasourceAlias);
+            Datasets datasets = datasource.getDatasets();
+
+            Dataset dataset = datasets.get(datasetName);
+            DatasetVector datasetVector = (DatasetVector) dataset;
+            FieldInfos fieldInfos = datasetVector.getFieldInfos();
+            int count = fieldInfos.getCount();
+
+            WritableArray arr = Arguments.createArray();
+            for (int i=0;i<count;i++){
+                FieldInfo fieldInfo = fieldInfos.get(i);
+                String name = fieldInfo.getName();
+                WritableMap writeMap = Arguments.createMap();
+                writeMap.putString("title", name);
+                arr.pushMap(writeMap);
+            }
+
+            WritableMap map2 = Arguments.createMap();
+            String name = dataset.getName();
+            map2.putString("datasetName", name);
+            String datasetType = dataset.getType().toString();
+            map2.putString("datasetType", datasetType);
+
+            WritableMap WritableMap = Arguments.createMap();
+            WritableMap.putArray("list", arr);
+            WritableMap.putMap("dataset", map2);
+
+            promise.resolve(WritableMap);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取所有数据源中的数据集
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void getAllDatasetNames(Promise promise) {
+        try {
+            Datasources datasources = SMap.getSMWorkspace().getWorkspace().getDatasources();
+            int datasourcesCount = datasources.getCount();
+
+            WritableArray WA = Arguments.createArray();
+            for (int i = 0; i < datasourcesCount; i++) {
+                Datasource datasource = datasources.get(i);
+                Datasets datasets = datasource.getDatasets();
+                int datasetsCount = datasets.getCount();
+
+                WritableArray arr = Arguments.createArray();
+                for (int j = 0; j < datasetsCount; j++) {
+                    WritableMap writeMap = Arguments.createMap();
+                    writeMap.putString("datasetName", datasets.get(j).getName());
+                    writeMap.putString("datasetType", datasets.get(j).getType().toString());
+                    writeMap.putString("datasourceName", datasource.getAlias());
+                    arr.pushMap(writeMap);
+                }
+
+                WritableMap map = Arguments.createMap();
+                String datasourceAlias = datasource.getAlias();
+                map.putString("alias", datasourceAlias);
+
+                WritableMap writableMap = Arguments.createMap();
+                writableMap.putArray("list", arr);
+                writableMap.putMap("datasource", map);
+
+                WA.pushMap(writableMap);
+            }
+
+            promise.resolve(WA);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 }

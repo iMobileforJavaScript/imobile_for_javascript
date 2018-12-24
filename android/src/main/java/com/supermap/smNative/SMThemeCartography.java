@@ -1,6 +1,7 @@
 package com.supermap.smNative;
 
 import android.util.Log;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.ColorParseUtil;
@@ -18,6 +19,7 @@ public class SMThemeCartography {
 
     /**
      * 根据数据源索引和数据集名称获取数据集对象
+     *
      * @return
      */
     public static Dataset getDataset(int datasourceIndex, String datasetName) {
@@ -36,6 +38,7 @@ public class SMThemeCartography {
 
     /**
      * 根据数据源别名和数据集名称获取数据集对象
+     *
      * @return
      */
     public static Dataset getDataset(String datasourceAlias, String datasetName) {
@@ -54,6 +57,7 @@ public class SMThemeCartography {
 
     /**
      * 打开数据源路径，数据集名称获取数据集对象
+     *
      * @return
      */
     public static Dataset getDataset(Map data, String datasetName) {
@@ -65,7 +69,7 @@ public class SMThemeCartography {
             Dataset dataset = null;
             Datasource datasource = SMap.getSMWorkspace().openDatasource(data);
             if (datasource != null) {
-                dataset= datasource.getDatasets().get(datasetName);
+                dataset = datasource.getDatasets().get(datasetName);
             }
             return dataset;
         } catch (Exception e) {
@@ -111,6 +115,7 @@ public class SMThemeCartography {
 
     /**
      * 解析获取单值专题图(子项)的显示风格
+     *
      * @param style
      * @param data
      * @return
@@ -118,72 +123,72 @@ public class SMThemeCartography {
     public static GeoStyle getThemeUniqueGeoStyle(GeoStyle style, HashMap<String, Object> data) {
         final GeoStyle oldStyle = style.clone();
         try {
-            if (data.containsKey("MarkerSymbolID")){
+            if (data.containsKey("MarkerSymbolID")) {
                 //点符号的ID
                 String MarkerSymbolID = data.get("MarkerSymbolID").toString();
                 style.setMarkerSymbolID(Integer.parseInt(MarkerSymbolID));
             }
-            if (data.containsKey("MarkerSize")){
+            if (data.containsKey("MarkerSize")) {
                 //点符号的大小
                 String MarkerSize = data.get("MarkerSize").toString();
                 int mm = Integer.parseInt(MarkerSize);
                 style.setMarkerSize(new Size2D(mm, mm));
             }
-            if (data.containsKey("MakerColor")){
+            if (data.containsKey("MakerColor")) {
                 //点符号的颜色
                 String MakerColor = data.get("MakerColor").toString();
                 style.setLineColor(ColorParseUtil.getColor(MakerColor));
             }
-            if (data.containsKey("MarkerAngle")){
+            if (data.containsKey("MarkerAngle")) {
                 //点符号的旋转角度
                 String MarkerAngle = data.get("MarkerAngle").toString();
                 style.setMarkerAngle(Integer.parseInt(MarkerAngle));
             }
-            if (data.containsKey("MarkerAlpha")){
+            if (data.containsKey("MarkerAlpha")) {
                 //点符号的透明度
                 String MarkerAlpha = data.get("MarkerAlpha").toString();
                 style.setFillOpaqueRate(100 - Integer.parseInt(MarkerAlpha));
             }
 
-            if (data.containsKey("LineSymbolID")){
+            if (data.containsKey("LineSymbolID")) {
                 //线符号的ID(//设置边框符号的ID)
                 String LineSymbolID = data.get("LineSymbolID").toString();
                 style.setLineSymbolID(Integer.parseInt(LineSymbolID));
             }
-            if (data.containsKey("LineWidth")){
+            if (data.containsKey("LineWidth")) {
                 //线宽(边框符号宽度)
                 String LineWidth = data.get("LineWidth").toString();
                 int mm = Integer.parseInt(LineWidth);
                 double width = (double) mm / 10;
                 style.setLineWidth(width);
             }
-            if (data.containsKey("LineColor")){
+            if (data.containsKey("LineColor")) {
                 //线颜色(边框符号颜色)
                 String LineColor = data.get("LineColor").toString();
                 style.setLineColor(ColorParseUtil.getColor(LineColor));
             }
 
-            if (data.containsKey("FillSymbolID")){
+            if (data.containsKey("FillSymbolID")) {
                 //面符号的ID
                 String FillSymbolID = data.get("FillSymbolID").toString();
                 style.setFillSymbolID(Integer.parseInt(FillSymbolID));
             }
-            if (data.containsKey("FillForeColor")){
+            if (data.containsKey("FillForeColor")) {
                 //前景色
                 String FillForeColor = data.get("FillForeColor").toString();
                 style.setFillForeColor(ColorParseUtil.getColor(FillForeColor));
             }
-            if (data.containsKey("FillBackColor")){
+            if (data.containsKey("FillBackColor")) {
                 //背景色
                 String FillBackColor = data.get("FillBackColor").toString();
                 style.setFillBackColor(ColorParseUtil.getColor(FillBackColor));
             }
-            if (data.containsKey("FillOpaqueRate")){
+            if (data.containsKey("FillOpaqueRate")) {
                 //设置透明度（0-100）
                 String FillOpaqueRate = data.get("FillOpaqueRate").toString();
                 style.setFillOpaqueRate(100 - Integer.parseInt(FillOpaqueRate));
             }
-            if (data.containsKey("FillGradientMode")){
+            if (data.containsKey("FillGradientMode")) {
                 //设置渐变
                 String FillGradientMode = data.get("FillGradientMode").toString();
                 switch (FillGradientMode) {
@@ -213,6 +218,7 @@ public class SMThemeCartography {
 
     /**
      * 获取单值专题图默认的显示风格
+     *
      * @param style
      * @return
      */
@@ -296,6 +302,7 @@ public class SMThemeCartography {
 
     /**
      * 获取颜色渐变类型
+     *
      * @param type
      * @return ColorGradientType
      */
@@ -391,6 +398,7 @@ public class SMThemeCartography {
 
     /**
      * 获取分段模式
+     *
      * @param mode
      * @return RangeMode
      */
@@ -425,6 +433,7 @@ public class SMThemeCartography {
 
     /**
      * 返回标签专题图中的标签背景的形状类型。
+     *
      * @param shape
      * @return RangeMode
      */
@@ -459,32 +468,26 @@ public class SMThemeCartography {
 
     /**
      * 返回标签专题图中的标签背景的形状类型字符串
+     *
      * @param shape
      * @return RangeMode
      */
     public static String getLabelBackShapeString(LabelBackShape shape) {
         if (shape == LabelBackShape.DIAMOND) {
             return "DIAMOND";
-        }
-        else if (shape == LabelBackShape.ELLIPSE) {
+        } else if (shape == LabelBackShape.ELLIPSE) {
             return "ELLIPSE";
-        }
-        else if (shape == LabelBackShape.MARKER) {
+        } else if (shape == LabelBackShape.MARKER) {
             return "MARKER";
-        }
-        else if (shape == LabelBackShape.NONE) {
+        } else if (shape == LabelBackShape.NONE) {
             return "NONE";
-        }
-        else if (shape == LabelBackShape.RECT) {
+        } else if (shape == LabelBackShape.RECT) {
             return "RECT";
-        }
-        else if (shape == LabelBackShape.ROUNDRECT) {
+        } else if (shape == LabelBackShape.ROUNDRECT) {
             return "ROUNDRECT";
-        }
-        else if (shape == LabelBackShape.TRIANGLE) {
+        } else if (shape == LabelBackShape.TRIANGLE) {
             return "TRIANGLE";
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -540,5 +543,640 @@ public class SMThemeCartography {
         colorList.add("#FFEB3B");
 
         return colorList;
+    }
+
+    //分段颜色方案
+    public static Color[] getRangeColors(String colorType) {
+        Color[] colors = null;
+        switch (colorType) {
+            case "CA_Oranges":
+                colors = new Color[]{
+                        new Color(255,242,230),
+                        new Color(255,203,153),
+                        new Color(255,140,25) };
+                break;
+            case "CB_Reds":
+                colors = new Color[]{
+                        new Color(255,230,217),
+                        new Color(252,144,112),
+                        new Color(223,39,36) };
+                break;
+            case "CC_Lemons":
+                colors = new Color[]{
+                        new Color(255,255,230),
+                        new Color(255,255,153),
+                        new Color(230,255,51) };
+                break;
+            case "CD_Cyans":
+                colors = new Color[]{
+                        new Color(229,255,237),
+                        new Color(153,255,187),
+                        new Color(0,217,152) };
+                break;
+            case "CE_Greens":
+                colors = new Color[]{
+                        new Color(229,245,225),
+                        new Color(161,217,156),
+                        new Color(48,163,85) };
+                break;
+            case "CF_Blues":
+                colors = new Color[]{
+                        new Color(223,236,247),
+                        new Color(159,202,225),
+                        new Color(48,130,189) };
+                break;
+            case "CG_Purples":
+                colors = new Color[]{
+                        new Color(240,238,245),
+                        new Color(188,189,221),
+                        new Color(117,106,177) };
+                break;
+            case "DA_Oranges":
+                colors = new Color[]{
+                        new Color(255,242,230),
+                        new Color(255,216,178),
+                        new Color(255,178,102),
+                        new Color(227,108,9)};
+                break;
+            case "DB_Reds":
+                colors = new Color[]{
+                        new Color(254,229,217),
+                        new Color(253,174,144),
+                        new Color(252,105,75),
+                        new Color(216,43,48)};
+                break;
+            case "DC_Lemons":
+                colors = new Color[]{
+                        new Color(255,255,230),
+                        new Color(255,255,178),
+                        new Color(255,255,127),
+                        new Color(229,255,50)};
+                break;
+            case "DD_Cyans":
+                colors = new Color[]{
+                        new Color(222,247,232),
+                        new Color(149,252,189),
+                        new Color(79,247,177),
+                        new Color(0,217,152)};
+                break;
+            case "DE_Greens":
+                colors = new Color[]{
+                        new Color(238,248,233),
+                        new Color(186,228,180),
+                        new Color(116,196,118),
+                        new Color(31,138,71)};
+                break;
+            case "DF_Blues":
+                colors = new Color[]{
+                        new Color(223,236,247),
+                        new Color(159,202,225),
+                        new Color(95,161,204),
+                        new Color(48,130,189)};
+                break;
+            case "DG_Purples":
+                colors = new Color[]{
+                        new Color(242,241,247),
+                        new Color(203,202,226),
+                        new Color(159,154,201),
+                        new Color(105,81,163)};
+                break;
+            case "EA_Oranges":
+                colors = new Color[]{
+                        new Color(254,238,223),
+                        new Color(253,190,134),
+                        new Color(253,154,86),
+                        new Color(239,107,28),
+                        new Color(230,85,7)};
+            case "EB_Reds":
+                colors = new Color[]{
+                        new Color(254,229,217),
+                        new Color(253,174,144),
+                        new Color(252,126,100),
+                        new Color(233,71,55),
+                        new Color(216,43,48)};
+            case "EC_Lemons":
+                colors = new Color[]{
+                        new Color(255,255,230),
+                        new Color(255,255,196),
+                        new Color(255,255,153),
+                        new Color(249,255,111),
+                        new Color(229,255,50)};
+            case "ED_Cyans":
+                colors = new Color[]{
+                        new Color(222,247,232),
+                        new Color(163,252,198),
+                        new Color(103,247,187),
+                        new Color(31,229,162),
+                        new Color(10,216,164)};
+            case "EE_Greens":
+                colors = new Color[]{
+                        new Color(238,248,233),
+                        new Color(186,228,180),
+                        new Color(116,196,118),
+                        new Color(53,165,89),
+                        new Color(41,140,77)};
+            case "EF_Blues":
+                colors = new Color[]{
+                        new Color(240,243,255),
+                        new Color(189,215,231),
+                        new Color(106,174,214),
+                        new Color(48,130,189),
+                        new Color(15,88,163)};
+            case "EG_Purples":
+                colors = new Color[]{
+                        new Color(242,241,247),
+                        new Color(203,202,226),
+                        new Color(157,152,198),
+                        new Color(131,116,181),
+                        new Color(105,81,163)};
+            case "FA_Oranges":
+                colors = new Color[]{
+                        new Color(254,238,223),
+                        new Color(253,190,134),
+                        new Color(253,154,86),
+                        new Color(239,107,28),
+                        new Color(230,85,7),
+                        new Color(219,72,0)};
+            case "FB_Reds":
+                colors = new Color[]{
+                        new Color(254,229,217),
+                        new Color(253,174,144),
+                        new Color(252,126,100),
+                        new Color(233,71,55),
+                        new Color(216,43,48),
+                        new Color(204,36,40)};
+            case "FC_Lemons":
+                colors = new Color[]{
+                        new Color(255,255,230),
+                        new Color(255,255,196),
+                        new Color(255,255,153),
+                        new Color(249,255,111),
+                        new Color(229,255,50),
+                        new Color(216,255,0)};
+            case "FD_Cyans":
+                colors = new Color[]{
+                        new Color(222,247,232),
+                        new Color(163,252,198),
+                        new Color(103,247,187),
+                        new Color(31,229,162),
+                        new Color(10,216,164),
+                        new Color(2,198,156)};
+            case "FE_Greens":
+                colors = new Color[]{
+                        new Color(238,248,233),
+                        new Color(186,228,180),
+                        new Color(116,196,118),
+                        new Color(48,163,85),
+                        new Color(6,127,50),
+                        new Color(3,114,58)};
+            case "FF_Blues":
+                colors = new Color[]{
+                        new Color(240,243,255),
+                        new Color(189,215,231),
+                        new Color(106,174,214),
+                        new Color(48,130,189),
+                        new Color(7,89,173),
+                        new Color(5,67,158)};
+            case "FG_Purples":
+                colors = new Color[]{
+                        new Color(242,241,247),
+                        new Color(203,202,226),
+                        new Color(157,152,198),
+                        new Color(131,116,181),
+                        new Color(105,81,163),
+                        new Color(89,58,153)};
+            case "GA_Yellow to Orange":
+                colors = new Color[]{
+                        new Color(255,254,102),
+                        new Color(255,119,51)};
+            case "GB_Orange to Red":
+                colors = new Color[]{
+                        new Color(250,204,137),
+                        new Color(204,40,40)};
+            case "GC_Olive to Purple":
+                colors = new Color[]{
+                        new Color(75,172,198),
+                        new Color(255,255,255),
+                        new Color(178,162,199)};
+            case "GD_Green to Orange":
+                colors = new Color[]{
+                        new Color(127,194,105),
+                        new Color(255,255,255),
+                        new Color(247,150,70)};
+            case "GE_Blue to Lemon":
+                colors = new Color[]{
+                        new Color(146,255,220),
+                        new Color(255,255,255),
+                        new Color(255,255,0)};
+            case "ZA_Temperature 1":
+                colors = new Color[]{
+                        new Color(255,255,255),
+                        new Color(253,225,255),
+                        new Color(242,195,255),
+                        new Color(236,175,255),
+                        new Color(229,156,255),
+
+                        new Color(222,136,255),
+                        new Color(216,117,255),
+                        new Color(209,97,255),
+                        new Color(188,88,255),
+                        new Color(139,100,255),
+
+                        new Color(114,107,255),
+                        new Color(66,157,244),
+                        new Color(51,217,226),
+                        new Color(53,236,176),
+                        new Color(134,221,25),
+
+                        new Color(185,234,21),
+                        new Color(244,249,22),
+                        new Color(244,203,24),
+                        new Color(243,156,25),
+                        new Color(241,108,26),
+
+                        new Color(240,62,27),
+                        new Color(224,33,32),
+                        new Color(193,24,41),
+                        new Color(178,20,46),
+                        new Color(131,7,60),
+
+                        new Color(110,0,78)};
+            case "ZB_Temperature 2":
+                colors = new Color[]{
+                        new Color(28,12,204),
+                        new Color(40,25,204),
+                        new Color(34,77,244),
+                        new Color(51,119,230),
+                        new Color(107,174,217),
+
+                        new Color(122,222,238),
+                        new Color(204,255,240),
+                        new Color(255,246,172),
+                        new Color(252,230,121),
+                        new Color(250,222,53),
+
+                        new Color(251,183,46),
+                        new Color(255,161,47),
+                        new Color(230,112,2),
+                        new Color(255,85,1)};
+            case "ZC_Temperature 3":
+                colors = new Color[]{
+                        new Color(255,255,216),
+                        new Color(255,204,153),
+                        new Color(255,153,51),
+                        new Color(204,51,0),
+                        new Color(153,0,0)};
+            case "ZD_Temperature 4":
+                colors = new Color[]{
+                        new Color(112,229,236),
+                        new Color(217,255,255),
+                        new Color(252,255,174),
+                        new Color(255,255,1),
+                        new Color(250,113,0),
+                        new Color(184,103,48)};
+            case "ZE_Precipitation 1":
+                colors = new Color[]{
+                        new Color(255,62,0),
+                        new Color(255,93,0),
+                        new Color(255,124,0),
+                        new Color(255,155,0),
+                        new Color(255,185,0),
+
+                        new Color(255,216,0),
+                        new Color(255,247,0),
+                        new Color(232,255,23),
+                        new Color(201,255,54),
+                        new Color(170,255,85),
+
+                        new Color(139,255,116),
+                        new Color(108,255,147),
+                        new Color(77,255,178),
+                        new Color(46,255,209),
+                        new Color(15,255,240),
+
+                        new Color(0,248,255),
+                        new Color(0,233,255),
+                        new Color(0,219,255),
+                        new Color(0,204,255),
+                        new Color(0,190,255),
+
+                        new Color(0,175,255),
+                        new Color(0,160,255),
+                        new Color(0,146,255),
+                        new Color(0,131,255),
+                        new Color(0,115,255),
+
+                        new Color(0,98,255),
+                        new Color(0,82,255),
+                        new Color(0,65,255),
+                        new Color(0,49,255),
+                        new Color(0,33,255),
+
+                        new Color(0,16,255),
+                        new Color(0,0,255)};
+            case "ZF_Precipitation 2":
+                colors = new Color[]{
+                        new Color(246,151,107),
+                        new Color(247,192,143),
+                        new Color(252,228,179),
+                        new Color(167,219,212),
+                        new Color(92,182,229),
+                        new Color(4,155,224)};
+            case "ZG_Precipitation 3":
+                colors = new Color[]{
+                        new Color(253,253,227),
+                        new Color(204,251,219),
+                        new Color(171,247,235),
+                        new Color(116,225,232),
+                        new Color(108,198,235),
+                        new Color(78,178,219)};
+            case "ZH_Precipitation 4":
+                colors = new Color[]{
+                        new Color(252,75,45),
+                        new Color(253,118,52),
+                        new Color(252,154,38),
+                        new Color(248,205,89),
+                        new Color(250,235,110),
+
+                        new Color(238,251,132),
+                        new Color(197,248,136),
+                        new Color(168,247,155),
+                        new Color(139,250,189),
+                        new Color(107,249,172),
+
+                        new Color(75,229,146)};
+            case "ZI_Altitude 1":
+                colors = new Color[]{
+                        new Color(106,247,0),
+                        new Color(99,254,0),
+                        new Color(132,255,0),
+                        new Color(144,255,0),
+                        new Color(172,252,3),
+
+                        new Color(191,255,0),
+                        new Color(210,255,0),
+                        new Color(224,254,0),
+                        new Color(247,245,2),
+                        new Color(255,246,0),
+
+                        new Color(255,236,31),
+                        new Color(255,222,1),
+                        new Color(248,209,0),
+                        new Color(255,202,2),
+                        new Color(255,193,0),
+
+                        new Color(249,176,0),
+                        new Color(255,169,0),
+                        new Color(252,159,0),
+                        new Color(249,153,0),
+                        new Color(255,140,0),
+
+                        new Color(248,136,26),
+                        new Color(255,112,1),
+                        new Color(255,112,9),
+                        new Color(255,92,13),
+                        new Color(250,89,0),
+
+                        new Color(255,75,4),
+                        new Color(250,57,0),
+                        new Color(255,48,0),
+                        new Color(255,44,0),
+                        new Color(246,33,0),
+
+                        new Color(247,27,3)};
+            case "ZJ_Altitude 2":
+                colors = new Color[]{
+                        new Color(250,248,251),
+                        new Color(203,203,203),
+                        new Color(161,147,134),
+                        new Color(123,74,42),
+                        new Color(111,37,12),
+
+                        new Color(123,13,0),
+                        new Color(188,70,9),
+                        new Color(227,183,22),
+                        new Color(99,147,63),
+                        new Color(23,158,55),
+
+                        new Color(214,235,132),
+                        new Color(192,245,177),
+                        new Color(175,243,232)};
+                break;
+            case "ZK_Altitude 3":
+                colors = new Color[]{
+                        new Color(155,228,248),
+                        new Color(252,252,268),
+                        new Color(251,194,98),
+                        new Color(174,163,128),
+                        new Color(130,107,109) };
+                break;
+            default:
+                break;
+        }
+
+        return colors;
+    }
+
+    //单值颜色方案
+    public static Color[] getUniqueColors(String colorType) {
+        Color[] colors = null;
+        switch (colorType) {
+            case "BA_Blue":
+                colors = new Color[]{
+                        new Color(191,217,242),
+                        new Color(128,179,230) };
+                break;
+            case "BB_Green":
+                colors = new Color[]{
+                        new Color(204,255,204),
+                        new Color(127,229,127) };
+                break;
+            case "BC_Orange":
+                colors = new Color[]{
+                        new Color(255,239,204),
+                        new Color(255,222,153) };
+                break;
+            case "BD_Pink":
+                colors = new Color[]{
+                        new Color(255,224,203),
+                        new Color(242,185,145) };
+                break;
+            case "CA_Red Rose":
+                colors = new Color[]{
+                        new Color(255,244,91),
+                        new Color(252,216,219),
+                        new Color(129,195,231) };
+                break;
+            case "CB_Blue and Yellow":
+                colors = new Color[]{
+                        new Color(245,255,166),
+                        new Color(121,232,208),
+                        new Color(255,251,0) };
+                break;
+            case "CC_Pink and Green":
+                colors = new Color[]{
+                        new Color(255,204,178),
+                        new Color(255,255,204),
+                        new Color(153,204,153) };
+                break;
+            case "CD_Fresh":
+                colors = new Color[]{
+                        new Color(204,255,204),
+                        new Color(255,255,204),
+                        new Color(204,255,255)};
+                break;
+            case "DA_Ragular":
+                colors = new Color[]{
+                        new Color(254,224,236),
+                        new Color(255,253,228),
+                        new Color(194,229,252),
+                        new Color(166,255,166)};
+                break;
+            case "DB_Common":
+                colors = new Color[]{
+                        new Color(221,168,202),
+                        new Color(253,253,176),
+                        new Color(197,228,189),
+                        new Color(245,198,144)};
+                break;
+            case "DC_Bright":
+                colors = new Color[]{
+                        new Color(122,203,203),
+                        new Color(245,245,110),
+                        new Color(183,229,193),
+                        new Color(254,250,177)};
+                break;
+            case "DD_Warm":
+                colors = new Color[]{
+                        new Color(237,156,156),
+                        new Color(255,251,154),
+                        new Color(244,191,122),
+                        new Color(226,201,220)};
+                break;
+            case "DE_Set":
+                colors = new Color[]{
+                        new Color(140,211,200),
+                        new Color(255,255,180),
+                        new Color(190,186,218),
+                        new Color(252,128,114)};
+                break;
+            case "DF_Pastel":
+                colors = new Color[]{
+                        new Color(180,226,206),
+                        new Color(253,206,172),
+                        new Color(203,213,232),
+                        new Color(245,202,228)};
+                break;
+            case "DG_Grass":
+                colors = new Color[]{
+                        new Color(162,205,247),
+                        new Color(160,239,158),
+                        new Color(255,252,240),
+                        new Color(255,255,195)};
+            case "EA_Sin_ColorScheme8":
+                colors = new Color[]{
+                        new Color(179,255,255),
+                        new Color(255,204,255),
+                        new Color(255,255,204),
+                        new Color(204,204,255),
+                        new Color(204,255,179)};
+            case "EB_Sweet":
+                colors = new Color[]{
+                        new Color(241,176,160),
+                        new Color(245,245,191),
+                        new Color(185,219,65),
+                        new Color(192,232,207),
+                        new Color(251,213,181)};
+            case "EC_Dusk":
+                colors = new Color[]{
+                        new Color(251,203,163),
+                        new Color(229,155,18),
+                        new Color(234,226,27),
+                        new Color(177,210,34),
+                        new Color(205,238,204)};
+            case "ED_Pastel":
+                colors = new Color[]{
+                        new Color(180,226,206),
+                        new Color(253,206,172),
+                        new Color(203,213,232),
+                        new Color(245,202,228),
+                        new Color(230,245,202)};
+            case "EE_Lake":
+                colors = new Color[]{
+                        new Color(103,205,227),
+                        new Color(165,226,228),
+                        new Color(99,192,190),
+                        new Color(183,229,193),
+                        new Color(102,201,147)};
+            case "EF_Grass":
+                colors = new Color[]{
+                        new Color(254,242,0),
+                        new Color(104,189,178),
+                        new Color(185,219,65),
+                        new Color(206,232,142),
+                        new Color(29,151,121)};
+            case "EG_Sin_ColorScheme1":
+                colors = new Color[]{
+                        new Color(255,251,178),
+                        new Color(230,243,180),
+                        new Color(179,208,239),
+                        new Color(142,212,226),
+                        new Color(68,200,227)};
+            case "EH_Sin_ColorScheme4":
+                colors = new Color[]{
+                        new Color(255,204,204),
+                        new Color(255,204,153),
+                        new Color(153,204,204),
+                        new Color(204,255,255),
+                        new Color(255,255,102)};
+            case "EI_Sin_ColorScheme6":
+                colors = new Color[]{
+                        new Color(95,217,205),
+                        new Color(234,247,134),
+                        new Color(255,181,161),
+                        new Color(184,255,184),
+                        new Color(184,244,255)};
+            case "EJ_Sin_ColorScheme7":
+                colors = new Color[]{
+                        new Color(204,255,204),
+                        new Color(204,255,153),
+                        new Color(153,204,255),
+                        new Color(198,217,240),
+                        new Color(230,226,0)};
+            case "FA_Red-Yellow-Blue":
+                colors = new Color[]{
+                        new Color(165,0,36),
+                        new Color(215,48,36),
+                        new Color(245,107,69),
+                        new Color(253,174,96),
+                        new Color(254,225,143),
+
+                        new Color(255,255,191),
+                        new Color(225,243,248),
+                        new Color(171,217,233),
+                        new Color(116,172,209),
+                        new Color(71,117,181),
+
+                        new Color(48,55,149)};
+            case "FB_Red-Yellow-Green":
+                colors = new Color[]{
+                        new Color(165,0,36),
+                        new Color(213,64,79),
+                        new Color(245,107,69),
+                        new Color(253,174,96),
+                        new Color(254,225,138),
+
+                        new Color(255,255,191),
+                        new Color(217,240,138),
+                        new Color(166,217,105),
+                        new Color(102,189,99),
+                        new Color(25,153,81),
+
+                        new Color(0,103,55)};
+            default:
+                break;
+        }
+
+        return colors;
     }
 }

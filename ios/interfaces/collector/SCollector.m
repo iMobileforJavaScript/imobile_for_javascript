@@ -90,45 +90,59 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
         Collector* collector = [self getCollector];
         Dataset* ds;
         Layer* layer;
-        
-        NSString* name = [info objectForKey:@"datasetName"];
-        NSNumber* type = [info objectForKey:@"datasetType"];
-        NSString* datasourceName = @"Collection";
-        if ([info objectForKey:@"datasourceName"] != nil && ![[info objectForKey:@"datasourceName"] isEqualToString:@""]) {
-            datasourceName = [info objectForKey:@"datasourceName"];
-        } else if (![map.name isEqualToString:@""]) {
-            datasourceName = map.name;
-        }
-        NSString* datasourcePath = [info objectForKey:@"datasourcePath"];
-        NSString* styleJson = [info objectForKey:@"style"];
         GeoStyle* style = nil;
+        BOOL resetPrj = NO;
+        NSString* layerPath = [info objectForKey:@"layerPath"];
+        NSString* styleJson = [info objectForKey:@"style"];
+        
+        // layerPath存在，则直接在Maps中找到layer并设置dataset；若为不存在，则新建数据源
+        if (layerPath) {
+            layer = [SMLayer findLayerByPath:layerPath];
+            ds = layer.dataset;
+        } else {
+            NSString* name = [info objectForKey:@"datasetName"];
+            NSNumber* type = [info objectForKey:@"datasetType"];
+            NSString* datasourceName = @"Collection";
+            if ([info objectForKey:@"datasourceName"] != nil && ![[info objectForKey:@"datasourceName"] isEqualToString:@""]) {
+                datasourceName = [info objectForKey:@"datasourceName"];
+            } else if (![map.name isEqualToString:@""]) {
+                datasourceName = map.name;
+            }
+            NSString* datasourcePath = [info objectForKey:@"datasourcePath"];
+            if (name != nil && ![name isEqualToString:@""]) {
+                NSString* layerName = [NSString stringWithFormat:@"%@@%@", name, datasourceName];
+                layer = [sMap.smMapWC.mapControl.map.layers getLayerWithName:layerName];
+            }
+            
+            if (layer == nil) {
+                ds = [sMap.smMapWC addDatasetByName:name type:type.intValue datasourceName:datasourceName datasourcePath:datasourcePath];
+                layer = [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:true];
+                resetPrj = YES;
+            } else {
+                ds = layer.dataset;
+            }
+        }
+        
         if (styleJson) {
             style = [[GeoStyle alloc] init];
             [style fromJson:styleJson];
-        }
-
-        if (name != nil && ![name isEqualToString:@""]) {
-            NSString* layerName = [NSString stringWithFormat:@"%@@%@", name, datasourceName];
-            layer = [sMap.smMapWC.mapControl.map.layers getLayerWithName:layerName];
-        }
-        
-        if (layer == nil) {
-            ds = [sMap.smMapWC addDatasetByName:name type:type.intValue datasourceName:datasourceName datasourcePath:datasourcePath];
-            layer = [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:true];
-        } else {
-            ds = layer.dataset;
-        }
-        if (style) {
             ((LayerSettingVector *)layer.layerSetting).geoStyle = style;
         }
         
-        ds.prjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
-        
-        [layer setVisible:true];
-        [layer setEditable:true];
-        [collector setDataset:ds];
+        if (layer) {
+            [layer setVisible:true];
+            [layer setEditable:true];
+            
+            if (resetPrj) {
+                ds.prjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+            }
+            [collector setDataset:ds];
+            
+            resolve([[NSNumber alloc] initWithBool:YES]);
+        } else {
+            resolve([[NSNumber alloc] initWithBool:NO]);
+        }
 
-        resolve([[NSNumber alloc] initWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"SCollector", exception.reason, nil);
     }
@@ -139,9 +153,11 @@ RCT_REMAP_METHOD(startCollect, startCollectWithType:(int)type resolver:(RCTPromi
     @try {
         SMap* sMap = [SMap singletonInstance];
         Collector* collector = [self getCollector];
+        Action action = sMap.smMapWC.mapControl.action;
         BOOL result = [SMCollector setCollector:collector mapControl:sMap.smMapWC.mapControl type:type];
+//        [sMap.smMapWC.mapControl setAction:401];
         //        [SMCollector openGPS:collector];
-        
+        Action action1 = sMap.smMapWC.mapControl.action;
         resolve([NSNumber numberWithBool:result]);
         
     } @catch (NSException *exception) {

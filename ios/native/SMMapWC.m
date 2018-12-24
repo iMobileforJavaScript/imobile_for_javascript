@@ -16,18 +16,27 @@
 #import "SuperMap/SymbolMarkerLibrary.h"
 #import "SuperMap/SymbolLineLibrary.h"
 #import "SuperMap/SymbolFillLibrary.h"
+#import "SMap.h"
 
 @implementation SMMapWC
 
 - (BOOL)openWorkspace:(NSDictionary*)infoDic {
     @try {
         bool openWsResult = YES;
-        if (infoDic && [infoDic objectForKey:@"server"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
+        if (infoDic && [infoDic objectForKey:@"server"] && ![SMap.singletonInstance.smMapWC.workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
+            if (SMap.singletonInstance.smMapWC.workspace && [SMap.singletonInstance.smMapWC.workspace.caption isEqualToString:@"UntitledWorkspace"]) {
+//                if (![SMap.singletonInstance.smMapWC.workspace.caption isEqualToString:@"UntitledWorkspace"]) {
+//                    [SMap.singletonInstance.smMapWC.workspace close];
+//                }
+                [SMap.singletonInstance.smMapWC.workspace dispose];
+                SMap.singletonInstance.smMapWC.workspace = [[Workspace alloc] init];
+            }
+            
             WorkspaceConnectionInfo* info = [[WorkspaceConnectionInfo alloc] init];
             info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
             
-            openWsResult = [_workspace open:info];
-            // _workspace =
+            openWsResult = [SMap.singletonInstance.smMapWC.workspace open:info];
+            // SMap.singletonInstance.smMapWC.workspace =
             [info dispose];
         }
         
@@ -43,7 +52,7 @@
             return nil;
         }
         DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
-        Datasource* tempDs = [params objectForKey:@"alias"] ? [_workspace.datasources getAlias:[params objectForKey:@"alias"]] : nil;
+        Datasource* tempDs = [params objectForKey:@"alias"] ? [SMap.singletonInstance.smMapWC.workspace.datasources getAlias:[params objectForKey:@"alias"]] : nil;
         BOOL isOpen = tempDs && [params objectForKey:@"server"] && [tempDs.datasourceConnectionInfo.server isEqualToString:[params objectForKey:@"server"]] && [tempDs isOpended];
         Datasource* dataSource = nil;
         if (!isOpen) {
@@ -66,8 +75,8 @@
                 }
             }
             
-//            if([_workspace.datasources indexOf:info.alias] != -1){
-//                [_workspace.datasources closeAlias:info.alias];
+//            if([SMap.singletonInstance.smMapWC.workspace.datasources indexOf:info.alias] != -1){
+//                [SMap.singletonInstance.smMapWC.workspace.datasources closeAlias:info.alias];
 //            }
             if ([keyArr containsObject:@"driver"]) info.driver = [params objectForKey:@"driver"];
             if ([keyArr containsObject:@"user"]) info.user = [params objectForKey:@"user"];
@@ -82,7 +91,7 @@
             //                Rectangle2D* rect2d = [JSObjManager getObjWithKey:[params objectForKey:@"webBBox"]];
             //                info.webBBox = rect2d;
             //            }
-            dataSource = [_workspace.datasources open:info];
+            dataSource = [SMap.singletonInstance.smMapWC.workspace.datasources open:info];
             [info dispose];
         }
         return dataSource;
@@ -111,7 +120,7 @@
             }
         }
         
-        Datasource* datasource = [_workspace.datasources getAlias:datasourceName];
+        Datasource* datasource = [SMap.singletonInstance.smMapWC.workspace.datasources getAlias:datasourceName];
         if (datasource == nil || datasource.isReadOnly) {
             DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc] init];
             NSString* dsType = @"udb";
@@ -120,9 +129,9 @@
             info.engineType = ET_UDB;
             [SMFileUtil createFileDirectories:datasourcePath];
             info.server = [NSString stringWithFormat:@"%@/%@.%@", datasourcePath, datasourceName, dsType];
-            datasource = [_workspace.datasources create:info];
+            datasource = [SMap.singletonInstance.smMapWC.workspace.datasources create:info];
             if (datasource == nil) {
-                datasource = [_workspace.datasources open:info];
+                datasource = [SMap.singletonInstance.smMapWC.workspace.datasources open:info];
             }
         }
         
@@ -140,7 +149,7 @@
 }
 
 - (BOOL)saveWorkspace {
-    Workspace* workspace = _workspace;
+    Workspace* workspace = SMap.singletonInstance.smMapWC.workspace;
     if(workspace == nil) return NO;
     
     bool saved = [workspace save];
@@ -148,7 +157,7 @@
 }
 
 - (BOOL)saveWorkspaceWithInfo:(NSDictionary*)infoDic{
-    Workspace* workspace = _workspace;
+    Workspace* workspace = SMap.singletonInstance.smMapWC.workspace;
     if(workspace == nil) return NO;
     [self setWorkspaceConnectionInfo:infoDic workspace:workspace];
     bool saved = [workspace save];
@@ -268,7 +277,7 @@
 -(NSString*)formateNoneExistDatasourceAlian:(NSString*)alian{
     NSString *resultAlian = alian;
     int nAddNumber = 1;
-    while ([_workspace.datasources indexOf:resultAlian]!=-1) {
+    while ([SMap.singletonInstance.smMapWC.workspace.datasources indexOf:resultAlian]!=-1) {
         resultAlian = [NSString stringWithFormat:@"%@#%d",alian,nAddNumber];
         nAddNumber++;
     }
@@ -278,7 +287,7 @@
 -(NSString*)formateNoneExistMapName:(NSString*)name{
     NSString *resultName = name;
     int nAddNumber = 1;
-    while ([_workspace.maps indexOf:resultName]!=-1) {
+    while ([SMap.singletonInstance.smMapWC.workspace.maps indexOf:resultName]!=-1) {
         resultName = [NSString stringWithFormat:@"%@#%d",name,nAddNumber];
         nAddNumber++;
     }
@@ -335,9 +344,9 @@
 
 //导入工作空间
 //  失败情况：
-//      a)info为空或sever为空或type为空 或导入工作空间为_workspace
+//      a)info为空或sever为空或type为空 或导入工作空间为SMap.singletonInstance.smMapWC.workspace
 //      b)打开工作空间失败
-//      c)_workspace没初始化
+//      c)SMap.singletonInstance.smMapWC.workspace没初始化
 //  流程：
 //      1.新的工作空间打开
 //      2.导入数据源
@@ -352,7 +361,7 @@
     
     BOOL bSucc = NO;
     
-    if (_workspace && infoDic && [infoDic objectForKey:@"server"] && [infoDic objectForKey:@"type"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
+    if (SMap.singletonInstance.smMapWC.workspace && infoDic && [infoDic objectForKey:@"server"] && [infoDic objectForKey:@"type"] && ![SMap.singletonInstance.smMapWC.workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
         Workspace *importWorkspace = [[Workspace alloc]init];
         WorkspaceConnectionInfo* info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
         
@@ -371,7 +380,7 @@
             
             if (strTargetDir==nil||strTargetDir.length==0) {
                 //若未指定存放目录需构造默认目录
-                NSString *currentPath = [_workspace.connectionInfo server];
+                NSString *currentPath = [SMap.singletonInstance.smMapWC.workspace.connectionInfo server];
                 NSArray *arrCurrentPathStr = [currentPath componentsSeparatedByString:@"/"];
                 NSString* strCurrentNameStr = [arrCurrentPathStr lastObject];
                 // NSString* strTargetDirFather = [targetPath substringToIndex:targetPath.length-strTargetWorkspaceName.length];
@@ -399,8 +408,8 @@
             //      2.网络型数据源：不再重复打开（alian保持原来的）
             NSMutableArray * arrTargetServers = [[NSMutableArray alloc]init];
             NSMutableArray * arrTargetAlians = [[NSMutableArray alloc]init];
-            for (int i=0; i<_workspace.datasources.count; i++) {
-                Datasource* datasource = [_workspace.datasources get:i];
+            for (int i=0; i<SMap.singletonInstance.smMapWC.workspace.datasources.count; i++) {
+                Datasource* datasource = [SMap.singletonInstance.smMapWC.workspace.datasources get:i];
                 DatasourceConnectionInfo *datasourceInfo = [datasource datasourceConnectionInfo];
                 if (datasourceInfo.engineType == ET_UDB || datasourceInfo.engineType == ET_IMAGEPLUGINS) {
                     //只要名字
@@ -470,7 +479,7 @@
                                     if (nIndex>=0 && nIndex<arrTargetServers.count) {
                                         // 替换alian 保证原来map有数据源
                                         strTargetAlian = [arrTargetAlians objectAtIndex:nIndex];
-                                        [_workspace.datasources closeAlias:strTargetAlian];
+                                        [SMap.singletonInstance.smMapWC.workspace.datasources closeAlias:strTargetAlian];
                                         //删文件
                                         if(![manager removeItemAtPath:[strTargetDatasourcePath stringByAppendingString:@".udb"] error:nil]){
                                             continue;
@@ -513,7 +522,7 @@
                                     if (nIndex>=0 && nIndex<arrTargetServers.count) {
                                         // 替换alian 保证原来map有数据源
                                         strTargetAlian = [arrTargetAlians objectAtIndex:nIndex];
-                                        [_workspace.datasources closeAlias:strTargetAlian];
+                                        [SMap.singletonInstance.smMapWC.workspace.datasources closeAlias:strTargetAlian];
                                         //删文件
                                         if(![manager removeItemAtPath:strTargetServer error:nil]){
                                             continue;
@@ -547,7 +556,7 @@
                     }
                     temp.engineType =engineType;
                     
-                    if ( [_workspace.datasources open:temp] ) {
+                    if ( [SMap.singletonInstance.smMapWC.workspace.datasources open:temp] ) {
                         //[reAlianDic setObject:strAlian forKey:infoTemp.alias];
                         if (![strTargetAlian isEqualToString:strSrcAlian]) {
                             [arrAlian addObject:strSrcAlian];
@@ -579,7 +588,7 @@
                         temp.driver = infoTemp.driver;
                         temp.engineType = infoTemp.engineType;
                         
-                        if ( [_workspace.datasources open:temp] ) {
+                        if ( [SMap.singletonInstance.smMapWC.workspace.datasources open:temp] ) {
                             if (![strTargetAlian isEqualToString:strSrcAlian]) {
                                 [arrAlian addObject:strSrcAlian];
                                 [arrReAlian addObject:strTargetAlian];
@@ -604,9 +613,9 @@
                 [importWorkspace.resources.fillLibrary saveAs:strFillPath];
                 
             }
-            [_workspace.resources.markerLibrary appendFromFile:strMarkerPath isReplace:bSymbolsRep];
-            [_workspace.resources.lineLibrary appendFromFile:strLinePath isReplace:bSymbolsRep];
-            [_workspace.resources.fillLibrary appendFromFile:strFillPath isReplace:bSymbolsRep];
+            [SMap.singletonInstance.smMapWC.workspace.resources.markerLibrary appendFromFile:strMarkerPath isReplace:bSymbolsRep];
+            [SMap.singletonInstance.smMapWC.workspace.resources.lineLibrary appendFromFile:strLinePath isReplace:bSymbolsRep];
+            [SMap.singletonInstance.smMapWC.workspace.resources.fillLibrary appendFromFile:strFillPath isReplace:bSymbolsRep];
             if (info.type!=SM_SXWU) {
                 [manager removeItemAtPath:strMarkerPath error:nil];
                 [manager removeItemAtPath:strLinePath error:nil];
@@ -626,7 +635,7 @@
                 
                 // 替换XML字段
                 NSString* strTargetMapXML = [self modifyXML:strSrcMapXML replace:arrAlian with:arrReAlian];
-                [_workspace.maps add:strMapName withXML:strTargetMapXML];
+                [SMap.singletonInstance.smMapWC.workspace.maps add:strMapName withXML:strTargetMapXML];
             }
             
             
@@ -655,7 +664,7 @@
 //      5.设置workspaceConnectionInfo，保存workspace
 
 -(BOOL)exportMapNamed:(NSArray*)arrMapNames toFile:(NSString*)fileName isReplaceFile:(BOOL)bFileRep{
-    if (_workspace==nil || fileName==nil||fileName.length==0||arrMapNames==nil||[arrMapNames count]==0||[_workspace.connectionInfo.server isEqualToString:fileName]) {
+    if (SMap.singletonInstance.smMapWC.workspace==nil || fileName==nil||fileName.length==0||arrMapNames==nil||[arrMapNames count]==0||[SMap.singletonInstance.smMapWC.workspace.connectionInfo.server isEqualToString:fileName]) {
         return false;
     }
     
@@ -688,8 +697,8 @@
     // 目录下受保护文件
     NSMutableArray *arrProtectedFile = [[NSMutableArray alloc]init];
     if (bExist && bDir) {
-        for (int i=0; i<_workspace.datasources.count; i++) {
-            Datasource* datasource = [_workspace.datasources get:i];
+        for (int i=0; i<SMap.singletonInstance.smMapWC.workspace.datasources.count; i++) {
+            Datasource* datasource = [SMap.singletonInstance.smMapWC.workspace.datasources get:i];
             DatasourceConnectionInfo *datasourceInfo = [datasource datasourceConnectionInfo];
             if (datasourceInfo.engineType == ET_UDB || datasourceInfo.engineType == ET_IMAGEPLUGINS) {
                 //只要名字
@@ -727,11 +736,11 @@
     // map用到的datasource
     NSMutableArray *arrDatasources = [[NSMutableArray alloc]init];
     
-    Map *mapExport = [[Map alloc]initWithWorkspace:_workspace];
+    Map *mapExport = [[Map alloc]initWithWorkspace:SMap.singletonInstance.smMapWC.workspace];
     
     for (int k=0; k<arrMapNames.count; k++) {
         NSString *mapName = [arrMapNames objectAtIndex:k];
-        if ([_workspace.maps indexOf:mapName]!=-1) {
+        if ([SMap.singletonInstance.smMapWC.workspace.maps indexOf:mapName]!=-1) {
             // 打开map
             [mapExport open:mapName];
             // 不重复的datasource保存
@@ -850,9 +859,9 @@
         strFillPath = [self formateNoneExistFileName:strFillPath isDir:NO];
     }
     
-    [_workspace.resources.markerLibrary saveAs:strMarkerPath];
-    [_workspace.resources.lineLibrary saveAs:strLinePath];
-    [_workspace.resources.fillLibrary saveAs:strFillPath];
+    [SMap.singletonInstance.smMapWC.workspace.resources.markerLibrary saveAs:strMarkerPath];
+    [SMap.singletonInstance.smMapWC.workspace.resources.lineLibrary saveAs:strLinePath];
+    [SMap.singletonInstance.smMapWC.workspace.resources.fillLibrary saveAs:strFillPath];
     // 导入
     [workspaceDes.resources.markerLibrary appendFromFile:strMarkerPath isReplace:YES];
     [workspaceDes.resources.lineLibrary appendFromFile:strLinePath isReplace:YES];

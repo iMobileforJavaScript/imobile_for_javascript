@@ -95,7 +95,7 @@ export default class SystemUtil {
   /**
    * 根据过滤条件获取文件夹内容
    * @param path
-   * @param filter  {name: 文件名, type: 文件类型}
+   * @param filter  {name: 文件名, extension: 后缀， type: 文件类型(file | Directory)}
    * @returns {Promise}
    */
   async getPathListByFilter(path, filter) {
