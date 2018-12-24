@@ -321,4 +321,59 @@
     return CGT_TERRAIN;
 }
 
++(LabelBackShape)getLabelBackShape:(NSString*) shape{
+    if ([shape isEqualToString:@"DIAMOND"]) {
+        return LAB_DIAMOND;
+    }
+    if ([shape isEqualToString:@"ELLIPSE"]) {
+        return LAB_ELLIPSE;
+    }
+    if ([shape isEqualToString:@"MARKER"]) {
+        return LAB_MARKER;
+    }
+    if ([shape isEqualToString:@"NONE"]) {
+        return LAB_NONE;
+    }
+    if ([shape isEqualToString:@"RECT"]) {
+        return LAB_RECT;
+    }
+    if ([shape isEqualToString:@"ROUNDRECT"]) {
+        return LAB_ROUNDRECT;
+    }
+    if ([shape isEqualToString:@"TRIANGLE"]) {
+        return LAB_TRIANGLE;
+    }
+    return LAB_NONE;
+}
+
++(NSString*)getLabelBackShapeString:(LabelBackShape) shape{
+    if (shape == LAB_DIAMOND) {
+        return @"DIAMOND";
+    }
+    if (shape == LAB_ELLIPSE) {
+        return @"ELLIPSE";
+    }
+    if (shape == LAB_MARKER) {
+        return @"MARKER";
+    }
+    if (shape == LAB_NONE) {
+        return @"NONE";
+    }
+    if (shape == LAB_RECT) {
+        return @"RECT";
+    }
+    if (shape == LAB_ROUNDRECT) {
+        return @"ROUNDRECT";
+    }
+    if (shape == LAB_TRIANGLE) {
+        return @"TRIANGLE";
+    }
+    return nil;
+}
+
++(NSArray*)getColorList{
+    NSArray *array = [[NSArray alloc] initWithObjects:@"#000000",@"#424242",@"#757575",@"#BDBDBD",@"#EEEEEE",@"#FFFFFF",@"#3E2723",@"#5D4037",@"#A1887F",@"#D7CCC8",@"#263238",@"#546E7A",@"#90A4AE",@"#CFD8DC",@"#FFECB3",@"#FFF9C4",@"#F1F8E9",@"#E3F2FD",@"#EDE7F6",@"#FCE4EC",@"#FBE9E7",@"#004D40",@"#006064",@"#009688",@"#8BC34A",@"#A5D6A7",@"#80CBC4",@"#80DEEA",@"#A1C2FA",@"#9FA8DA",@"#01579B",@"#1A237E",@"#3F51B5",@"#03A9F4",@"#4A148C",@"#673AB7",@"#9C27B0",@"#880E4F",@"#E91E63",@"#F44336",@"#F48FB1",@"#EF9A9A",@"#F57F17",@"#F4B400",@"#FADA80",@"#FFF59D",@"#FFEB3B"];
+    return array;
+}
+
 @end

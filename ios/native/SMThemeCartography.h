@@ -18,5 +18,8 @@
 +(GeoStyle* )getThemeUniqueGeoStyle:(GeoStyle*)style data:(NSDictionary* )data;
 +(NSMutableDictionary* )getThemeUniqueDefaultStyle:(GeoStyle* )style;
 +(ColorGradientType) getColorGradientType:(NSString*) type;
++(LabelBackShape)getLabelBackShape:(NSString*) shape;
++(NSString*)getLabelBackShapeString:(LabelBackShape) shape;
++(NSArray*)getColorList;
 
 @end
