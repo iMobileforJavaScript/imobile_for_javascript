@@ -354,10 +354,34 @@ setUniqueColorScheme = (params) => {
   }
 }
 
-/**设置单值专题图的颜色方案 */
+/**设置分段专题图的颜色方案 */
 setRangeColorScheme = (params) => {
   try {
     return SThemeCartography.setRangeColorScheme(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+getRangeExpression = (params) => {
+  try {
+    return SThemeCartography.getRangeExpression(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+getRangeMode = (params) => {
+  try {
+    return SThemeCartography.getRangeMode(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+getRangeCount = (params) => {
+  try {
+    return SThemeCartography.getRangeCount(params)
   } catch (error) {
     console.error(error)
   }
@@ -378,6 +402,9 @@ export default {
   setRangeExpression,
   modifyThemeRangeMap,
   setRangeColorScheme,
+  getRangeExpression,
+  getRangeMode,
+  getRangeCount,
   //统一标签
   createUniformThemeLabelMap,
   setUniformLabelExpression,
