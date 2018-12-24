@@ -259,23 +259,24 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
             }
             if (![name isKindOfClass:[NSNull class]] && name.length) {
                 isOpen = [map open: mapName];
-            }
-            if (viewEntire == YES) {
+            } else if (viewEntire == YES) {
                 [map viewEntire];
             }
             
-            if (center != nil && ![center isKindOfClass:[NSNull class]] && center.count > 0) {
-                NSNumber* x = [center objectForKey:@"x"];
-                NSNumber* y = [center objectForKey:@"y"];
-                Point2D* point = [[Point2D alloc] init];
-                point.x = x.doubleValue;
-                point.y = y.doubleValue;
-                [map setCenter:point];
+            if (isOpen) {
+                if (center != nil && ![center isKindOfClass:[NSNull class]] && center.count > 0) {
+                    NSNumber* x = [center objectForKey:@"x"];
+                    NSNumber* y = [center objectForKey:@"y"];
+                    Point2D* point = [[Point2D alloc] init];
+                    point.x = x.doubleValue;
+                    point.y = y.doubleValue;
+                    [map setCenter:point];
+                }
+                
+                [sMap.smMapWC.mapControl setAction:PAN];
+                sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
+                [map refresh];
             }
-            
-            [sMap.smMapWC.mapControl setAction:PAN];
-            sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
-            [map refresh];
         }
         
         resolve([NSNumber numberWithBool:isOpen]);
@@ -297,22 +298,25 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
             if (index >= maps.count) index = maps.count - 1;
             NSString* mapName = [maps get:index];
             isOpen = [map open: mapName];
-            if (viewEntire == YES) {
-                [map viewEntire];
-            }
             
-            if (center != nil && ![center isKindOfClass:[NSNull class]] && center.count > 0) {
-                NSNumber* x = [center objectForKey:@"x"];
-                NSNumber* y = [center objectForKey:@"y"];
-                Point2D* point = [[Point2D alloc] init];
-                point.x = x.doubleValue;
-                point.y = y.doubleValue;
-                [map setCenter:point];
+            if (isOpen) {
+                if (viewEntire == YES) {
+                    [map viewEntire];
+                }
+                
+                if (center != nil && ![center isKindOfClass:[NSNull class]] && center.count > 0) {
+                    NSNumber* x = [center objectForKey:@"x"];
+                    NSNumber* y = [center objectForKey:@"y"];
+                    Point2D* point = [[Point2D alloc] init];
+                    point.x = x.doubleValue;
+                    point.y = y.doubleValue;
+                    [map setCenter:point];
+                }
+                
+                [sMap.smMapWC.mapControl setAction:PAN];
+                sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
+                [map refresh];
             }
-            
-            [sMap.smMapWC.mapControl setAction:PAN];
-            sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
-            [map refresh];
         }
         resolve([NSNumber numberWithBool:isOpen]);
     } @catch (NSException *exception) {
@@ -391,8 +395,7 @@ RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)name:(RCTPromiseResolveBlock)
 RCT_REMAP_METHOD(setAction, setActionByActionType:(int)actionType resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        MapControl* mapControl = sMap.smMapWC.mapControl;
-        mapControl.action = actionType;
+        sMap.smMapWC.mapControl.action = actionType;
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);

@@ -14,7 +14,20 @@ function getAndroidSessionID() {
     return OnlineServiceNative.getSessionID()
   }
   return 'undefined'
-
+}
+/** 仅支持android*/
+function syncAndroidCookie() {
+  if(Platform.OS === 'android'){
+    return OnlineServiceNative.syncCookie('https://www.supermapol.com/')
+  }
+  return 'undefined'
+}
+/** 仅支持android*/
+function removeCookie() {
+  if(Platform.OS === 'android'){
+    return OnlineServiceNative.removeCookie()
+  }
+  return 'undefined'
 }
 /** 仅支持android*/
 function cacheImage(imageUrl,saveImagePath) {
@@ -307,4 +320,6 @@ export default {
   changeDataVisibilityWithDataId,
   downloadFileWithDataId,
   publishServiceWithDataId,
+  syncAndroidCookie,
+  removeCookie,
 }

@@ -22,18 +22,6 @@ createThemeUniqueMap = (params) => {
 }
 
 /**
- * 新建单值专题图层
- * 
- */
-createAndRemoveThemeUniqueMap = (params) => {
-  try {
-    return SThemeCartography.createAndRemoveThemeUniqueMap(params)
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-/**
  * 设置单值专题图的默认风格
  * 
  * @param params 显示风格
@@ -161,19 +149,6 @@ createThemeRangeMap = (params) => {
 }
 
 /**
- * 新建分段专题图层
- *
- * @param params(数据源的索引 / 数据源的别名 / 打开本地数据源、 数据集名称、 分段字段表达式、 分段模式、 分段参数、 颜色渐变模式)
- */
-createAndRemoveThemeRangeMap = (params) => {
-  try {
-    return SThemeCartography.createAndRemoveThemeRangeMap(params)
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-/**
  * 设置分段专题图的分段字段表达式
  *
  * @param params 分段字段表达式 图层名称 图层索引
@@ -208,17 +183,6 @@ createUniformThemeLabelMap = (params) => {
   }
 }
 
-/**
- *
- * @param params 
- */
-createAndRemoveUniformThemeLabelMap = (params) => {
-  try {
-    return SThemeCartography.createAndRemoveUniformThemeLabelMap(params)
-  } catch (error) {
-    console.error(error)
-  }
-}
 
 /**
  * 设置统一标签专题图的表达式
@@ -364,18 +328,36 @@ getUniformLabelColor = (params) => {
   }
 }
 
-/**获取数据源中的所有数据集名称 */
-getDatasetNames = () => {
+/**获取所有数据源中的所有数据集名称 */
+getAllDatasetNames = () => {
   try {
-    return SThemeCartography.getDatasetNames()
+    return SThemeCartography.getAllDatasetNames()
   } catch (error) {
     console.error(error)
   }
 }
 
-getThemeExpressByDatasetName = (datasetName) => {
+getThemeExpressByDatasetName = (datasourceName, datasetName) => {
   try {
-    return SThemeCartography.getThemeExpressByDatasetName(datasetName)
+    return SThemeCartography.getThemeExpressByDatasetName(datasourceName, datasetName)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**设置单值专题图的颜色方案 */
+setUniqueColorScheme = (params) => {
+  try {
+    return SThemeCartography.setUniqueColorScheme(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**设置单值专题图的颜色方案 */
+setRangeColorScheme = (params) => {
+  try {
+    return SThemeCartography.setRangeColorScheme(params)
   } catch (error) {
     console.error(error)
   }
@@ -390,18 +372,14 @@ export default {
   modifyThemeUniqueMap,
   getThemeUniqueDefaultStyle,
   getUniqueExpression,
-  getThemeExpressByUdb,
-  getThemeExpressByLayerName,
-  getThemeExpressByLayerIndex,
-  createAndRemoveThemeUniqueMap,
+  setUniqueColorScheme,
   //分段
   createThemeRangeMap,
-  createAndRemoveThemeRangeMap,
   setRangeExpression,
   modifyThemeRangeMap,
+  setRangeColorScheme,
   //统一标签
   createUniformThemeLabelMap,
-  createAndRemoveUniformThemeLabelMap,
   setUniformLabelExpression,
   setUniformLabelBackShape,
   setUniformLabelFontName,
@@ -414,6 +392,10 @@ export default {
   getUniformLabelFontSize,
   getUniformLabelRotaion,
   getUniformLabelColor,
-  getDatasetNames,
+  //其他
+  getThemeExpressByUdb,
+  getThemeExpressByLayerName,
+  getThemeExpressByLayerIndex,
   getThemeExpressByDatasetName,
+  getAllDatasetNames,
 }
