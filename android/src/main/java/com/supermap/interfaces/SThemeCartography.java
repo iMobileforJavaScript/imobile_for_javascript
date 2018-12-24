@@ -81,8 +81,20 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (dataset != null && uniqueExpression != null) {
                 ThemeUnique themeUnique = ThemeUnique.makeDefault((DatasetVector) dataset, uniqueExpression, colorGradientType);
                 if (themeUnique != null) {
-                    GeoStyle geoStyle = SMThemeCartography.getThemeUniqueGeoStyle(themeUnique.getDefaultStyle(), data);
-                    themeUnique.setDefaultStyle(geoStyle);
+                    if (data.containsKey("ColorScheme")) {
+                        Color[] rangeColors = null;
+                        String colorScheme = data.get("ColorScheme").toString();
+                        rangeColors = SMThemeCartography.getRangeColors(colorScheme);
+
+                        if (rangeColors != null) {
+                            int rangeCount = themeUnique.getCount();
+                            Colors selectedColors = Colors.makeGradient(rangeCount, rangeColors);
+
+                            for (int i = 0; i < rangeCount; i++) {
+                                setGeoStyleColor(dataset.getType(), themeUnique.getItem(i).getStyle(), selectedColors.get(i));
+                            }
+                        }
+                    }
 
                     MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                     mapControl.getMap().getLayers().add(dataset, themeUnique, true);
@@ -1155,6 +1167,21 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (dataset != null && rangeExpression != null && rangeMode != null && rangeParameter != -1) {
                 ThemeRange themeRange = ThemeRange.makeDefault((DatasetVector) dataset, rangeExpression, rangeMode, rangeParameter, colorGradientType);
                 if (themeRange != null) {
+                    if (data.containsKey("ColorScheme")) {
+                        Color[] rangeColors = null;
+                        String colorScheme = data.get("ColorScheme").toString();
+                        rangeColors = SMThemeCartography.getRangeColors(colorScheme);
+
+                        if (rangeColors != null) {
+                            int rangeCount = themeRange.getCount();
+                            Colors selectedColors = Colors.makeGradient(rangeCount, rangeColors);
+
+                            for (int i = 0; i < rangeCount; i++) {
+                                setGeoStyleColor(dataset.getType(), themeRange.getItem(i).getStyle(), selectedColors.get(i));
+                            }
+                        }
+                    }
+
                     MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                     mapControl.getMap().getLayers().add(dataset, themeRange, true);
                     mapControl.getMap().refresh();
@@ -1248,6 +1275,140 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             Log.e(REACT_CLASS, e.getMessage());
             e.printStackTrace();
             promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置单值专题图颜色方案
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void setUniqueColorScheme(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Color[] rangeColors = null;
+            if (data.containsKey("ColorScheme")) {
+                String colorScheme = data.get("ColorScheme").toString();
+                rangeColors = SMThemeCartography.getUniqueColors(colorScheme);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && rangeColors != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.UNIQUE) {
+                    ThemeUnique themeUnique = (ThemeUnique) layer.getTheme();
+                    int rangeCount = themeUnique.getCount();
+                    Colors selectedColors = Colors.makeGradient(rangeCount, rangeColors);
+
+                    for (int i = 0; i < rangeCount; i++) {
+                        setGeoStyleColor(layer.getDataset().getType(), themeUnique.getItem(i).getStyle(), selectedColors.get(i));
+                    }
+                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+                    promise.resolve(true);
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置分段专题图颜色方案
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void setRangeColorScheme(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Color[] rangeColors = null;
+            if (data.containsKey("ColorScheme")) {
+                String colorScheme = data.get("ColorScheme").toString();
+                rangeColors = SMThemeCartography.getRangeColors(colorScheme);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && rangeColors != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.RANGE) {
+                    ThemeRange themeRange = (ThemeRange) layer.getTheme();
+                    int rangeCount = themeRange.getCount();
+                    Colors selectedColors = Colors.makeGradient(rangeCount, rangeColors);
+
+                    for (int i = 0; i < rangeCount; i++) {
+                        setGeoStyleColor(layer.getDataset().getType(), themeRange.getItem(i).getStyle(), selectedColors.get(i));
+                    }
+                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+                    promise.resolve(true);
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    private void setGeoStyleColor(DatasetType type, GeoStyle style, Color color) {
+        try {
+            switch (type.toString()) {
+                case "POINT":
+                    style.setPointColor(color);
+                    break;
+                case "LINE":
+                    style.setLineColor(color);
+                    break;
+                case "REGION":
+                    style.setFillForeColor(color);
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
