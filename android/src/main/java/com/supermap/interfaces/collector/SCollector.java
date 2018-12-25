@@ -14,7 +14,6 @@ import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSettingVector;
-import com.supermap.mapping.Map;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMCollector;
 import com.supermap.smNative.SMLayer;
@@ -132,7 +131,7 @@ public class SCollector extends ReactContextBaseJavaModule {
             }
 
             GeoStyle geoStyle = null;
-            if (style != null) {
+            if (style != null && !style.equals("")) {
                 geoStyle = new GeoStyle();
                 geoStyle.fromJson(style);
                 ((LayerSettingVector)layer.getAdditionalSetting()).setStyle(geoStyle);
@@ -334,6 +333,7 @@ public class SCollector extends ReactContextBaseJavaModule {
             Recordset recordset = layer.getSelection().toRecordset();
             recordset.seekID(id);
             boolean result = recordset.delete();
+            recordset.dispose();
             sMap.getSmMapWC().getMapControl().getMap().refresh();
             promise.resolve(result);
         } catch (Exception e) {

@@ -52,10 +52,12 @@ public class SMMapWC {
     public boolean openWorkspace(Map data) {
         try {
             boolean result = true;
+            Workspace newWS = null;
 
             Workspace _workspace = SMap.getInstance().getSmMapWC().getWorkspace();
             if (_workspace!= null && _workspace.getCaption().equals("UntitledWorkspace")) {
-                SMap.getInstance().getSmMapWC().setWorkspace(new Workspace());
+                newWS = new Workspace();
+                SMap.getInstance().getSmMapWC().setWorkspace(newWS);
             }
             if (data != null && data.get("server") != null && !SMap.getInstance().getSmMapWC().getWorkspace().getConnectionInfo().getServer().equals(data.get("server"))) {
                 WorkspaceConnectionInfo info = setWorkspaceConnectionInfo(data, null);
@@ -68,6 +70,7 @@ public class SMMapWC {
             // 先设置在释放
             if (_workspace != null && _workspace.getCaption().equals("UntitledWorkspace")) {
                 _workspace.dispose();
+                setWorkspace(newWS);
             }
             return result;
         } catch (Exception e) {
