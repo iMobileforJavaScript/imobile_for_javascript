@@ -86,6 +86,31 @@ public class SCartography extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取点符号的大小：1-100mm
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMarkerSize(String layerName, Promise promise) {
+        try {
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
+            if (layerSettingVector != null) {
+                GeoStyle style = layerSettingVector.getStyle();
+                Size2D size2d = new Size2D();
+                size2d = style.getMarkerSize();
+                double size =  size2d.getWidth();
+
+                promise.resolve(size);
+            } else {
+                promise.resolve(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置点符号的颜色，color: 十六进制颜色码
      *
      * @param promise
@@ -140,6 +165,28 @@ public class SCartography extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取点符号的旋转角度：0-360°
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMarkerAngle(String layerName, Promise promise) {
+        try {
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
+            if (layerSettingVector != null) {
+                GeoStyle style = layerSettingVector.getStyle();
+                double angle =  style.getMarkerAngle();
+                promise.resolve(angle);
+            } else {
+                promise.resolve(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置点符号的透明度：0-100%
      *
      * @param promise
@@ -158,6 +205,28 @@ public class SCartography extends ReactContextBaseJavaModule {
                 promise.resolve(true);
             } else {
                 promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取点符号的透明度：0-100%
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMarkerAlpha(String layerName, Promise promise) {
+        try {
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
+            if (layerSettingVector != null) {
+                GeoStyle style = layerSettingVector.getStyle();
+                int alpha = 100-style.getFillOpaqueRate();
+                promise.resolve(alpha);
+            } else {
+                promise.resolve(0);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -224,7 +293,7 @@ public class SCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 设置线宽：1-10mm(边框符号宽度)
+     * 设置线宽：1-20mm(边框符号宽度)
      *
      * @param promise
      */
@@ -251,7 +320,29 @@ public class SCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 根据图层索引设置线宽：1-10mm(边框符号宽度)
+     * 获取线宽：1-20mm(边框符号宽度)
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getLineWidth(String layerName, Promise promise) {
+        try {
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
+            if (layerSettingVector != null) {
+                GeoStyle geoStyle = layerSettingVector.getStyle();
+                double width = geoStyle.getLineWidth()*10;
+                promise.resolve(width);
+            } else {
+                promise.resolve(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据图层索引设置线宽：1-20mm(边框符号宽度)
      *
      * @param promise
      */
@@ -445,6 +536,28 @@ public class SCartography extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取透明度（0-100）
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getFillOpaqueRate(String layerName, Promise promise) {
+        try {
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
+            if (layerSettingVector != null) {
+                GeoStyle geoStyle = layerSettingVector.getStyle();
+                int opaque = 100 - geoStyle.getFillOpaqueRate();
+                promise.resolve(opaque);
+            } else {
+                promise.resolve(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置线性渐变
      *
      * @param promise
@@ -598,6 +711,27 @@ public class SCartography extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取透明度(0-100%)
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getGridOpaqueRate(String layerName, Promise promise) {
+        try {
+            LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerName);
+            if (layerSettingGrid != null) {
+                int opaque = 100-layerSettingGrid.getOpaqueRate();
+                promise.resolve(opaque);
+            } else {
+                promise.resolve(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置亮度(-100%-100%)
      *
      * @param promise
@@ -622,6 +756,27 @@ public class SCartography extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取亮度(-100%-100%)
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getGridContrast(String layerName, Promise promise) {
+        try {
+            LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerName);
+            if (layerSettingGrid != null) {
+                int gri = layerSettingGrid.getContrast();
+                promise.resolve(gri);
+            } else {
+                promise.resolve(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置对比度(-100%-100%)
      *
      * @param promise
@@ -638,6 +793,27 @@ public class SCartography extends ReactContextBaseJavaModule {
                 promise.resolve(true);
             } else {
                 promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取对比度(-100%-100%)
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getGridBrightness(String layerName, Promise promise) {
+        try {
+            LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerName);
+            if (layerSettingGrid != null) {
+                int bri = layerSettingGrid.getBrightness();
+                promise.resolve(bri);
+            } else {
+                promise.resolve(0);
             }
         } catch (Exception e) {
             e.printStackTrace();

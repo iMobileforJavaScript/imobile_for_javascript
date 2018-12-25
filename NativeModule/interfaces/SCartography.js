@@ -38,6 +38,20 @@ setMarkerSize = (mm, layerName) => {
 }
 
 /**
+ * 获取点符号的大小： 1 - 100 mm
+ *
+ * @param mm
+ * @param layerName
+ */
+getMarkerSize = (layerName) => {
+  try {
+    return SCartography.getMarkerSize(layerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  * 设置点符号的颜色
  * 
  * @param color 十六进制颜色码
@@ -66,6 +80,20 @@ setMarkerAngle = (angle, layerName) => {
 }
 
 /**
+ * 获取点符号的旋转角度： 0 - 360°
+ *
+ * @param angle
+ * @param layerName
+ */
+getMarkerAngle = (layerName) => {
+  try {
+    return SCartography.getMarkerAngle(layerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  * 设置点符号的透明度： 0 - 100 %
  * 
  * @param alpha
@@ -77,6 +105,20 @@ setMarkerAlpha = (alpha, layerName) => {
     } catch (e) {
         console.error(e)
     }
+}
+
+/**
+ * 设置点符号的透明度： 0 - 100 %
+ *
+ * @param alpha
+ * @param layerName
+ */
+getMarkerAlpha = (layerName) => {
+  try {
+    return SCartography.getMarkerAlpha(layerName)
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 /**
@@ -120,6 +162,20 @@ setLineWidth = (mm, layerName) => {
     } catch (e) {
         console.error(e)
     }
+}
+
+/**
+ * 获取线宽：1 - 10mm(边框符号宽度)
+ *
+ * @param mm
+ * @param layerName
+ */
+getLineWidth = (layerName) => {
+  try {
+    return SCartography.getLineWidth(layerName)
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 /**
@@ -207,6 +263,20 @@ setFillOpaqueRate = (fillOpaqueRate, layerName) => {
 }
 
 /**
+ * 获取透明度（0 - 100）
+ *
+ * @param fillOpaqueRate
+ * @param layerName
+ */
+getFillOpaqueRate = (layerName) => {
+  try {
+    return SCartography.getFillOpaqueRate(layerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  * 设置线性渐变
  * 
  * @param layerName
@@ -273,6 +343,20 @@ setGridOpaqueRate = (gridOpaqueRate, layerName) => {
 }
 
 /**
+ * 获取透明度(0 - 100 % )
+ *
+ * @param gridOpaqueRate
+ * @param layerName
+ */
+getGridOpaqueRate = (layerName) => {
+  try {
+    return SCartography.getGridOpaqueRate(layerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  * 设置亮度(-100 % -100 % )
  * 
  * @param gridContrast
@@ -287,6 +371,20 @@ setGridContrast = (gridContrast, layerName) => {
 }
 
 /**
+ * 获取亮度(-100 % -100 % )
+ *
+ * @param gridContrast
+ * @param layerName
+ */
+getGridContrast = (layerName) => {
+  try {
+    return SCartography.getGridContrast(layerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  * 设置对比度(-100 % -100 % )
  * 
  * @param gridBrightness
@@ -298,6 +396,20 @@ setGridBrightness = (gridBrightness, layerName) => {
     } catch (e) {
         console.error(e)
     }
+}
+
+/**
+ * 获取对比度(-100 % -100 % )
+ *
+ * @param gridBrightness
+ * @param layerName
+ */
+getGridBrightness = (layerName) => {
+  try {
+    return SCartography.getGridBrightness(layerName)
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 /**
@@ -394,13 +506,17 @@ export default {
     //点风格
     setMakerSymbolID,
     setMarkerSize,
+    getMarkerSize,
     setMarkerColor,
     setMarkerAngle,
+    getMarkerAngle,
     setMarkerAlpha,
+    getMarkerAlpha,
     //线风格
     setLineSymbolID,
     setLineSymbolIDByIndex,
     setLineWidth,
+    getLineWidth,
     setLineWidthByIndex,
     setLineColor,
     //面风格
@@ -408,14 +524,18 @@ export default {
     setFillForeColor,
     setFillBackColor,
     setFillOpaqueRate,
+    getFillOpaqueRate,
     setFillLinearGradient,
     setFillRadialGradient,
     setFillSquareGradient,
     setFillNoneGradient,
     //栅格风格
     setGridOpaqueRate,
+    getGridOpaqueRate,
     setGridContrast,
+    getGridContrast,
     setGridBrightness,
+    getGridBrightness,
     //文本风格
     setTextFont,
     setTextFontSize,
