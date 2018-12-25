@@ -1155,7 +1155,9 @@ public class SMap extends ReactContextBaseJavaModule {
     @ReactMethod
     public void importWorkspace(ReadableMap wInfo , String strFilePath , boolean breplaceDatasource, Promise promise) {
         try {
-            promise.resolve(true);
+            sMap=SMap.getInstance();
+            boolean result=sMap.smMapWC.importWorkspaceInfo(wInfo.toHashMap(),strFilePath,breplaceDatasource,true);
+            promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
         }

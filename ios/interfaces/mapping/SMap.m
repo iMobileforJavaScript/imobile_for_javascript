@@ -8,7 +8,11 @@
 
 #import "SMap.h"
 static SMap *sMap = nil;
-
+@interface SMap()
+{
+    Point2D* defaultMapCenter;
+}
+@end
 @implementation SMap
 RCT_EXPORT_MODULE();
 - (NSArray<NSString *> *)supportedEvents
@@ -74,6 +78,7 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
         }
         sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
         sMap.smMapWC.mapControl.isMagnifierEnabled = YES;
+        sMap.smMapWC.mapControl.map.isAntialias = YES;
         [sMap.smMapWC.mapControl.map refresh];
         [self openGPS];
         resolve([NSNumber numberWithBool:result]);
@@ -129,6 +134,7 @@ RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBl
         [sMap.smMapWC.mapControl.map dispose];
         //        [sMap.smMapWC.mapControl dispose];
         [sMap.smMapWC.workspace close];
+        defaultMapCenter = nil;
         //        [sMap.smMapWC.workspace dispose];
         
         //        sMap.smMapWC.mapControl = nil;
@@ -232,6 +238,7 @@ RCT_REMAP_METHOD(closeMapControl, closeMapControlWithResolver:(RCTPromiseResolve
 //            [sMap.smMapWC.workspace dispose];
         }
         
+        defaultMapCenter = nil;
 //        sMap.smMapWC.mapControl = nil;
 //        sMap.smMapWC.workspace = nil;
         
@@ -273,6 +280,7 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
                     [map setCenter:point];
                 }
                 
+                defaultMapCenter = map.center;
                 [sMap.smMapWC.mapControl setAction:PAN];
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
                 [map refresh];
@@ -312,7 +320,7 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
                     point.y = y.doubleValue;
                     [map setCenter:point];
                 }
-                
+                defaultMapCenter = map.center;
                 [sMap.smMapWC.mapControl setAction:PAN];
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
                 [map refresh];
@@ -361,6 +369,7 @@ RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve 
         sMap = [SMap singletonInstance];
         MapControl* mapControl = sMap.smMapWC.mapControl;
         [[mapControl map] close];
+        defaultMapCenter = nil;
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
@@ -517,7 +526,13 @@ RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBloc
                 mapControl.map.center = pt;
                 isMove = YES;
             } else {
-                [mapControl panTo:mapControl.map.center time:200];
+//                Point2D* p2d = mapControl.map.bounds.center;
+//                mapControl.map.center = p2d;
+//
+                if(defaultMapCenter){
+                    mapControl.map.center = defaultMapCenter;
+                }
+                  //  [mapControl panTo:defaultMapCenter time:200];
             }
             
             [mapControl.map refresh];
