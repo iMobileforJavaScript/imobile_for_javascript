@@ -624,6 +624,18 @@ export default (function () {
       console.error(e)
     }
   }
+
+  /**
+   * 添加数据集
+   * @returns {*}
+   */
+  function addDatasetToMap(params) {
+    try {
+      return SMap.addDatasetToMap(params)
+    } catch (e) {
+      console.error(e)
+    }
+  }
   
   let SMapExp = {
     openWorkspace,
@@ -662,6 +674,7 @@ export default (function () {
     importWorkspace,
     getMapInfo,
     exportWorkspace,
+    addDatasetToMap,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 
