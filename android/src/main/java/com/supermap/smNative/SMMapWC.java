@@ -83,7 +83,7 @@ public class SMMapWC {
             DatasourceConnectionInfo info = new DatasourceConnectionInfo();
             Datasource ds = data.get("alias") != null ? SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get((String)data.get("alias")) : null;
             Boolean isOpen = ds != null && data.get("server") != null && ds.getConnectionInfo().getServer().equals(data.get("server")) && ds.isOpened();
-            Datasource dataSource = null;
+            Datasource dataSource = isOpen ? ds : null;
             if (!isOpen) {
                 if (data.containsKey("alias")){
                     String alias = data.get("alias").toString();

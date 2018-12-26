@@ -793,6 +793,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 mapSaved = map.save(name);
             }
             wsSaved = sMap.smMapWC.getWorkspace().save();
+//            wsSaved = true;
 
             promise.resolve(mapSaved && wsSaved);
         } catch (Exception e) {

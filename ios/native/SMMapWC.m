@@ -59,7 +59,7 @@
         DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
         Datasource* tempDs = [params objectForKey:@"alias"] ? [SMap.singletonInstance.smMapWC.workspace.datasources getAlias:[params objectForKey:@"alias"]] : nil;
         BOOL isOpen = tempDs && [params objectForKey:@"server"] && [tempDs.datasourceConnectionInfo.server isEqualToString:[params objectForKey:@"server"]] && [tempDs isOpended];
-        Datasource* dataSource = nil;
+        Datasource* dataSource = isOpen ? tempDs : nil;
         if (!isOpen) {
             NSArray* keyArr = [params allKeys];
             BOOL bDefault = YES;
@@ -977,24 +977,24 @@
 //      3.模块存在
 //
 //-(BOOL)exportMapNames:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(int)nModule isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified{
-//    
+//
 //    if(srcWorkspace==nil || [srcWorkspace.maps indexOf:strMapAlians]==-1){
 //        return false;
 //    }
-//    
+//
 //    NSString *strCustomer = [self getCustomerDirectory];
 //    NSString *strModule = [self getModuleDirectory:nModule];
 //        if (strModule == nil) {
 //        return false;
 //    }
-//    
+//
 //    Map *mapExport = [[Map alloc]initWithWorkspace:srcWorkspace];
-//    
+//
 //    if(![mapExport open:strMapAlians]){
 //        //打开失败
 //        return false;
 //    }
-//    
+//
 //    NSString *strMapName = strMapAlians;
 //    // map文件
 //    NSString* desPathMapXML = [NSString stringWithFormat:@"%@/Map/%@/%@.xml",strCustomer,strModule,strMapName];
@@ -1011,7 +1011,7 @@
 //        if (isExist && !isDir) {
 //            [[NSFileManager defaultManager]removeItemAtPath:desPathMapXML error:nil];
 //        }
-//        
+//
 //    }else{
 //        // 改名
 //        desPathMapXML = [self formateNoneExistFileName:desPathMapXML isDir:NO];
@@ -1020,17 +1020,17 @@
 //        strMapName = [desLastMap substringToIndex:desLastMap.length-4];
 //        desPathMapExp = [NSString stringWithFormat:@"%@/Map/%@/%@.exp",strCustomer,strModule,strMapName];
 //    }
-//    
+//
 //    // map xml
 //    NSString* strMapXML = [mapExport toXML];
 //    [strMapXML writeToFile:desPathMapXML atomically:YES encoding:NSUTF8StringEncoding error:nil];
 //    //NSString*newstr = [NSString stringWithContentsOfFile:desPathMapXML encoding:NSUTF8StringEncoding error:nil];
-//    
+//
 //    //bResourcesModified时存所有用到的符号id
 //    NSMutableSet *setMarkerIDs = [[NSMutableSet alloc]init];
 //    NSMutableSet *setLineIDs = [[NSMutableSet alloc]init];
 //    NSMutableSet *setFillIDs = [[NSMutableSet alloc]init];
-//    
+//
 //    //    NSMutableArray *arrMarkerIDs = [[NSMutableArray alloc]init];
 //    //    NSMutableArray *arrLineIDs = [[NSMutableArray alloc]init];
 //    //    NSMutableArray *arrFillIDs = [[NSMutableArray alloc]init];
@@ -1038,7 +1038,7 @@
 //    NSMutableArray *arrDatasources = [[NSMutableArray alloc]init];
 //    for (int i=0; i<mapExport.layers.getCount; i++) {
 //        Layer *layer = [mapExport.layers getLayerAtIndex:i];
-//        
+//
 //        Datasource *datasource = [[layer dataset]datasource];
 //        if (![arrDatasources containsObject:datasource]) {
 //            [arrDatasources addObject:datasource];
@@ -1067,11 +1067,11 @@
 //            }
 //            [recordset close];
 //        }
-//        
+//
 //    }
-//    
+//
 //    NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource/%@",strCustomer,strModule];
-//    
+//
 //    NSMutableArray *arrExpDatasources = [[NSMutableArray alloc]init];
 //    //[[NSFileManager defaultManager]createDirectoryAtPath:desDataDir withIntermediateDirectories:YES attributes:nil error:nil];
 //    // 导出datasource  datasource名=文件名
@@ -1086,22 +1086,22 @@
 //        //---------》》》》》只有一部分new怎么办？
 //        if (bNew) {
 //            if (engineType == ET_UDB || engineType == ET_IMAGEPLUGINS) {
-//                
+//
 //                // 源文件存在？
 //                if( ![self isDatasourceFileExist:strSrcServer isUDB:(engineType==ET_UDB)] ){
 //                    continue;
 //                }
-//                
+//
 //                NSArray *arrSrcServer = [strSrcServer componentsSeparatedByString:@"/"];
 //                NSString *strFileName = [arrSrcServer lastObject];
 //                // 导入工作空间名
 //                strTargetServer = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strFileName];
-//                
+//
 //                if (engineType==ET_UDB) {
-//                    
+//
 //                    NSString * strSrcDatasourcePath = [strSrcServer substringToIndex:strSrcServer.length-4];
 //                    NSString * strTargetDatasourcePath = [strTargetServer substringToIndex:strTargetServer.length-4];
-//                    
+//
 //                    // 检查重复性
 //                    BOOL bDir = YES;
 //                    BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:strTargetServer isDirectory:&bDir];
@@ -1111,7 +1111,7 @@
 //                        strTargetServer = [self formateNoneExistFileName:strTargetServer isDir:NO];
 //                        strTargetDatasourcePath = [strTargetServer substringToIndex:strTargetServer.length-4];
 //                    }//exist
-//                    
+//
 //                    // 拷贝udb
 //                    if(![[NSFileManager defaultManager] copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udb"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udb"] error:nil]){
 //                        continue;
@@ -1120,9 +1120,9 @@
 //                    if(![[NSFileManager defaultManager] copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udd"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udd"] error:nil]){
 //                        continue;
 //                    }
-//                    
+//
 //                }else{
-//                    
+//
 //                    BOOL bDir = YES;
 //                    BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:strTargetServer isDirectory:&bDir];
 //                    if (bExist && !bDir) {
@@ -1130,8 +1130,8 @@
 //                        //重名文件
 //                        strTargetServer = [self formateNoneExistFileName:strTargetServer isDir:NO];
 //                    }//exist
-//                    
-//                    
+//
+//
 //                    // 拷贝
 //                    if(![[NSFileManager defaultManager] copyItemAtPath:strSrcServer toPath:strTargetServer error:nil]){
 //                        continue;
@@ -1139,19 +1139,19 @@
 //                }//bUDB
 //            }
 //        }
-//        
+//
 //        NSDictionary *dicDatasource = @{ @"Alians":strSrcAlian , @"Server":strTargetServer , @"Type":[NSNumber numberWithInt:engineType] };
 //        [arrExpDatasources addObject:dicDatasource];
 //        //user password
 //    }
-//    
+//
 //    NSString* desResources = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
 //    //    if (bNew) {
 //    //        NSString *strSymTemp = [desResources stringByAppendingString:@".sym"];
 //    //        strSymTemp = [self formateNoneExistFileName:strSymTemp isDir:NO];
 //    //        desResources = [strSymTemp substringToIndex:strSymTemp.length-4];
 //    //    }
-//    
+//
 //    if (bNew||bResourcesModified) {
 //        // 从工作空间Lib中找到地图名的分组，导出成为根组符号库
 //        // Marker
@@ -1185,7 +1185,7 @@
 //        {
 //            SymbolLineLibrary *lineLibrary = [[SymbolLineLibrary alloc]init];
 //            SymbolMarkerLibrary *markerInlineLibrary = [lineLibrary getInlineMarkerLib];
-//            
+//
 //            //SymbolGroup *desLineGroup = [lineLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
 //            SymbolGroup *desLineGroup = lineLibrary.rootGroup;
 //            SymbolGroup *srcLineGroup = [srcWorkspace.resources.lineLibrary.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
@@ -1229,7 +1229,7 @@
 //        {
 //            SymbolFillLibrary *fillLibrary = [[SymbolFillLibrary alloc]init];
 //            SymbolMarkerLibrary *markerInfillLibrary = [fillLibrary getInfillMarkerLib];
-//            
+//
 //            //SymbolGroup *desFillGroup = [fillLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
 //            SymbolGroup *desFillGroup = fillLibrary.rootGroup;
 //            SymbolGroup *srcFillGroup = [srcWorkspace.resources.fillLibrary.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
@@ -1269,29 +1269,29 @@
 //            [fillLibrary saveAs:[desResources stringByAppendingString:@".bru"]];
 //            [fillLibrary dispose];
 //        }
-//        
+//
 //    }
-//    
-//    
+//
+//
 //    NSDictionary *dicExp= @{ @"Datasources":arrExpDatasources , @"Resources": desResources};
 //    //[NSJSONSerialization JSONObjectWithData:[[features objectAtIndex:i] dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingAllowFragments error:&error];
 //    // [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil]
-//    
+//
 //    NSData *dataJson = [NSJSONSerialization dataWithJSONObject:dicExp options:NSJSONWritingPrettyPrinted error:nil];
 //    NSString *strExplorerJson = [[NSString alloc]initWithData:dataJson encoding:NSUTF8StringEncoding];
 //    [strExplorerJson writeToFile:desPathMapExp atomically:YES encoding:NSUTF8StringEncoding error:nil];
-//    
+//
 //    [mapExport close];
-//    
+//
 //    return true;
 //}
 //
 //-(BOOL)importMapNames:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(int)nModule{
-//    
+//
 //    if(desWorkspace==nil || [desWorkspace.maps indexOf:strMapName]!=-1){
 //        return false;
 //    }
-//    
+//
 //    NSString *strCustomer = [self getCustomerDirectory];
 //    NSString *strModule = [self getModuleDirectory:nModule];
 //    if ([strModule isEqualToString:@""]) {
@@ -1304,7 +1304,7 @@
 //    if (!isExist || isDir) {
 //        return false;
 //    }
-//    
+//
 //    NSString* srcPathEXP = [NSString stringWithFormat:@"%@.exp",srcPathMap];
 //    isDir = true;
 //    isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathEXP isDirectory:&isDir];
@@ -1319,9 +1319,9 @@
 //    //                  strMapName
 //    // }
 //    NSDictionary *dicExp = [NSJSONSerialization JSONObjectWithData:[strMapEXP dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
-//    
+//
 //    NSString *srcDatasourceDir = [NSString stringWithFormat:@"%@/Datasource/%@",strCustomer,strModule];
-//    
+//
 //    // 重复的server处理
 //    //      1.文件型数据源：若bDatasourceRep，关闭原来数据源，拷贝新数据源并重新打开（alian保持原来的）
 //    //      2.网络型数据源：不再重复打开（alian保持原来的）
@@ -1347,11 +1347,11 @@
 //            [arrTargetAlians addObject:datasourceInfo.alias];
 //        }
 //    }
-//    
+//
 //    //更名数组
 //    NSMutableArray *arrAlian = [[NSMutableArray alloc]init];
 //    NSMutableArray *arrReAlian = [[NSMutableArray alloc]init];
-//    
+//
 //    NSArray *arrDatasources = [dicExp objectForKey:@"Datasources"];
 //    for (int i=0; i<arrDatasources.count; i++) {
 //        NSDictionary *dicDatasource = [arrDatasources objectAtIndex:i];
@@ -1360,7 +1360,7 @@
 //        EngineType engineType = (EngineType)[[dicDatasource objectForKey:@"Type"] intValue];
 //        // Alians重命名 同一个Server不要打开两次
 //        NSString *strDesAlian = strAlian;
-//        
+//
 //        NSInteger nIndex = [arrTargetServers indexOfObject:strServer];
 //        if (nIndex>=0 && nIndex<arrTargetServers.count) {
 //            // 替换alian 保证原来map有数据源
@@ -1386,8 +1386,8 @@
 //            [arrReAlian addObject:strDesAlian];
 //        }
 //    }
-//    
-//    
+//
+//
 //    NSString* srcResources = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
 //    // Marker
 //    {
@@ -1398,7 +1398,7 @@
 //        }
 //        //新建分组
 //        SymbolGroup *desMarkerGroup = [desWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
-//        
+//
 //        NSString *strMarkerPath = [srcResources stringByAppendingString:@".sym"];
 //        isDir = true;
 //        isExist = [[NSFileManager defaultManager] fileExistsAtPath:strMarkerPath isDirectory:&isDir];
@@ -1418,10 +1418,10 @@
 //            //删除inlineMarkerLib
 //            [desWorkspace.resources.lineLibrary.getInlineMarkerLib.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
 //        }
-//        
+//
 //        SymbolGroup *desLineGroup = [desWorkspace.resources.lineLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
 //        SymbolGroup *desInlineMarkerGroup = [desWorkspace.resources.lineLibrary.getInlineMarkerLib.rootGroup.childSymbolGroups createGroupWith:strMapName];
-//        
+//
 //        NSString *strLinePath = [srcResources stringByAppendingString:@".lsl"];
 //        isDir = true;
 //        isExist = [[NSFileManager defaultManager] fileExistsAtPath:strLinePath isDirectory:&isDir];
@@ -1442,10 +1442,10 @@
 //            //删除infillMarkerLib
 //            [desWorkspace.resources.fillLibrary.getInfillMarkerLib.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
 //        }
-//        
+//
 //        SymbolGroup *desFillGroup = [desWorkspace.resources.fillLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
 //        SymbolGroup *desInfillMarkerGroup = [desWorkspace.resources.fillLibrary.getInfillMarkerLib.rootGroup.childSymbolGroups createGroupWith:strMapName];
-//        
+//
 //        NSString *strFillPath = [srcResources stringByAppendingString:@".bru"];
 //        isDir = true;
 //        isExist = [[NSFileManager defaultManager] fileExistsAtPath:strFillPath isDirectory:&isDir];
@@ -1456,13 +1456,13 @@
 //            [self importSymbolsFrom:fillLibrary.rootGroup toGroup:desFillGroup isDirRetain:YES isSymbolReplace:YES];
 //        }
 //    }
-//    
-//    
+//
+//
 //    NSString* strMapXML = [NSString stringWithContentsOfFile:srcPathXML encoding:NSUTF8StringEncoding error:nil];
 //    strMapXML = [self modifyXML:strMapXML replace:arrAlian with:arrReAlian];
-//    
+//
 //    [desWorkspace.maps add:strMapName withXML:strMapXML];
-//    
+//
 //    return true;
 //}
 
