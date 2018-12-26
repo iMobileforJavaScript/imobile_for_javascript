@@ -74,6 +74,9 @@ function uploadFile(path, dataName, handler) {
 function downloadFile(path, onlineDataName) {
   OnlineServiceNative.download(path, onlineDataName);
 }
+function cancelDownload() {
+  OnlineServiceNative.cancelDownload();
+}
 function downloadFileWithDataId(path, dataNameId) {
   OnlineServiceNative.downloadWithDataId(path, dataNameId);
 }
@@ -322,4 +325,5 @@ export default {
   publishServiceWithDataId,
   syncAndroidCookie,
   removeCookie,
+  cancelDownload,
 }

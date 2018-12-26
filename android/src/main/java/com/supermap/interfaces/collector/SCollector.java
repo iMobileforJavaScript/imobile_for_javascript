@@ -14,7 +14,7 @@ import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSettingVector;
-import com.supermap.mapping.Map;
+import com.supermap.mapping.Layers;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMCollector;
 import com.supermap.smNative.SMLayer;
@@ -37,10 +37,8 @@ public class SCollector extends ReactContextBaseJavaModule {
 
     public Collector getCollector() {
         try {
-            if (collector == null) {
-                SMMapWC smMapWC = SMap.getSMWorkspace();
-                collector = smMapWC.getMapControl().getCollector();
-            }
+            SMMapWC smMapWC = SMap.getSMWorkspace();
+            collector = smMapWC.getMapControl().getCollector();
             return collector;
         } catch (Exception e) {
             throw e;
@@ -120,7 +118,16 @@ public class SCollector extends ReactContextBaseJavaModule {
                 String datasourcePath = data.getString("datasourcePath");
 
                 if (!name.equals("")) {
-                    layer = smMapWC.getMapControl().getMap().getLayers().get(name + "@" + datasourceName);
+                    Layers layers = smMapWC.getMapControl().getMap().getLayers();
+                    for (int i = 0; i < layers.getCount(); i++) {
+                        Layer _layer = layers.get(i);
+                        String[] nameArr = _layer.getName().split("@");
+                        if (nameArr[0].equals(name)) {
+                            layer = _layer;
+                            break;
+                        }
+                    }
+//                    layer = smMapWC.getMapControl().getMap().getLayers().get(name + "@" + datasourceName);
                 }
                 if (layer == null) {
                     ds = smMapWC.addDatasetByName(name, type, datasourceName, datasourcePath);
@@ -132,7 +139,7 @@ public class SCollector extends ReactContextBaseJavaModule {
             }
 
             GeoStyle geoStyle = null;
-            if (style != null) {
+            if (style != null && !style.equals("")) {
                 geoStyle = new GeoStyle();
                 geoStyle.fromJson(style);
                 ((LayerSettingVector)layer.getAdditionalSetting()).setStyle(geoStyle);
@@ -282,9 +289,9 @@ public class SCollector extends ReactContextBaseJavaModule {
         try {
             SMap.getSMWorkspace().getMapControl().cancel();
             if (type == SCollectorType.REGION_HAND_PATH || type == SCollectorType.LINE_HAND_PATH || type == -1) {
-                startCollect(type, promise);
-            } else {
                 promise.resolve(true);
+            } else {
+                startCollect(type, promise);
             }
         } catch (Exception e) {
             promise.reject(e);
@@ -334,6 +341,7 @@ public class SCollector extends ReactContextBaseJavaModule {
             Recordset recordset = layer.getSelection().toRecordset();
             recordset.seekID(id);
             boolean result = recordset.delete();
+            recordset.dispose();
             sMap.getSmMapWC().getMapControl().getMap().refresh();
             promise.resolve(result);
         } catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.supermap.interfaces.mapping;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -8,6 +9,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
@@ -208,6 +210,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
 
     /**
      * 根据图层路径，找到对应的图层并修改指定recordset中的FieldInfo

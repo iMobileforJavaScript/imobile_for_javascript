@@ -181,7 +181,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 
                 @Override
                 public void onComplete() {
-                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED,true);
+                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADED,true);
                 }
 
                 @Override

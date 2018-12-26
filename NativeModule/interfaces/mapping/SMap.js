@@ -35,14 +35,14 @@ export default (function () {
    * @param value    图层 index / name
    * @returns {*}
    */
-  function openDatasource(params, value) {
+  function openDatasource(params, value, toHead = true) {
     try {
       if (typeof value === 'number') {
         value = value >= 0 ? value : -1
-        return SMap.openDatasourceWithIndex(params, value)
+        return SMap.openDatasourceWithIndex(params, value, toHead)
       } else {
         value = value || ''
-        return SMap.openDatasourceWithName(params, value)
+        return SMap.openDatasourceWithName(params, value, toHead)
       }
     } catch (e) {
       console.error(e)
@@ -87,6 +87,20 @@ export default (function () {
   function getUDBName(value) {
     try {
       return SMap.getUDBName(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移除所有图层
+   * @param params
+   * @param value
+   * @returns {*}
+   */
+  function removeAllLayer() {
+    try {
+      return SMap.removeAllLayer()
     } catch (e) {
       console.error(e)
     }
@@ -625,6 +639,7 @@ export default (function () {
     zoom,
     moveToCurrent,
     removeLayer,
+    removeAllLayer,
     closeMap,
     getUDBName,
     submit,

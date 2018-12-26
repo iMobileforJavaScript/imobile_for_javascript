@@ -11,7 +11,7 @@ public class EventConst {
     public static final String ONLINE_SERVICE_DOWNLOADED = "com.supermap.RN.Mapcontrol.online_service_downloaded";
     public static final String ONLINE_SERVICE_DOWNLOADFAILURE = "com.supermap.RN.Mapcontrol.online_service_downloadfailure";
     public static final String ONLINE_SERVICE_UPLOADING = "com.supermap.RN.Mapcontrol.online_service_uploading";
-    public static final String ONLINE_SERVICE_UPLOAED = "com.supermap.RN.Mapcontrol.online_service_uploaded";
+    public static final String ONLINE_SERVICE_UPLOADED = "com.supermap.RN.Mapcontrol.online_service_uploaded";
     public static final String ONLINE_SERVICE_UPLOADFAILURE = "com.supermap.RN.Mapcontrol.online_service_uploadfailure";
 
     public static final String MEASURE_LENGTH = "com.supermap.RN.Mapcontrol.length_measured";

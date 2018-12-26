@@ -161,7 +161,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void openDatasourceWithIndex(ReadableMap data, int defaultIndex, Promise promise) {
+    public void openDatasourceWithIndex(ReadableMap data, int defaultIndex, boolean toHead, Promise promise) {
         try {
             sMap = getInstance();
             Map params = data.toHashMap();
@@ -171,7 +171,7 @@ public class SMap extends ReactContextBaseJavaModule {
             if (datasource != null && defaultIndex >= 0 && datasource.getDatasets().getCount() > 0) {
                 Dataset ds = datasource.getDatasets().get(defaultIndex);
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                map.getLayers().add(ds, true);
+                map.getLayers().add(ds, toHead);
             }
             sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
             sMap.smMapWC.getMapControl().getMap().refresh();
@@ -190,7 +190,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void openDatasourceWithName(ReadableMap data, String defaultName, Promise promise) {
+    public void openDatasourceWithName(ReadableMap data, String defaultName, boolean toHead, Promise promise) {
         try {
             sMap = getInstance();
             Map params = data.toHashMap();
@@ -199,7 +199,7 @@ public class SMap extends ReactContextBaseJavaModule {
 
             if (datasource != null && !defaultName.equals("")) {
                 Dataset ds = datasource.getDatasets().get(defaultName);
-                sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, true);
+                sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, toHead);
             }
             sMap.smMapWC.getMapControl().getMap().refresh();
 
@@ -365,6 +365,24 @@ public class SMap extends ReactContextBaseJavaModule {
             sMap = getInstance();
             sMap.smMapWC.getMapControl().getMap().getLayers().remove(defaultIndex);
 
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+
+    /**
+     * 移除所有图层
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void removeAllLayer(Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smMapWC.getMapControl().getMap().getLayers().clear();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -1155,7 +1173,9 @@ public class SMap extends ReactContextBaseJavaModule {
     @ReactMethod
     public void importWorkspace(ReadableMap wInfo , String strFilePath , boolean breplaceDatasource, Promise promise) {
         try {
-            promise.resolve(true);
+            sMap=SMap.getInstance();
+            boolean result=sMap.smMapWC.importWorkspaceInfo(wInfo.toHashMap(),strFilePath,breplaceDatasource,true);
+            promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
         }

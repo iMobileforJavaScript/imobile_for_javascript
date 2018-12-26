@@ -55,9 +55,10 @@
 /**
  * @brief  在分组集合类里移除子分组。
  * @param name子分组名称。
+ * @param bUpMove子分组中内容上移
  * @return 移除是否成功。
  */
--(BOOL)removeGroupWith:(NSString*)name;
+-(BOOL)removeGroupWith:(NSString*)name isUpMove:(BOOL)bUpMove;
 /**
  * @brief  在分组集合类是否包含子分组（递归遍历所有子集合）。
  * @param name子分组名称。
