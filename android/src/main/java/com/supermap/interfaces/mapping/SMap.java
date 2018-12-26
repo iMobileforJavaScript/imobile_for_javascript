@@ -31,6 +31,7 @@ import com.supermap.mapping.Action;
 import com.supermap.mapping.GeometrySelectedEvent;
 import com.supermap.mapping.GeometrySelectedListener;
 import com.supermap.mapping.Layer;
+import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
@@ -172,6 +173,11 @@ public class SMap extends ReactContextBaseJavaModule {
                 Dataset ds = datasource.getDatasets().get(defaultIndex);
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                 map.getLayers().add(ds, toHead);
+//                if (ds.getType() == DatasetType.REGION ) {
+//                    Layer layer = map.getLayers().get(map.getLayers().getCount()-1);
+//                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+//                    setting.getStyle().setLineSymbolID(1);
+//                }
             }
             sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
             sMap.smMapWC.getMapControl().getMap().refresh();
@@ -379,7 +385,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void openDatasource(Promise promise) {
+    public void removeAllLayer(Promise promise) {
         try {
             sMap = getInstance();
             sMap.smMapWC.getMapControl().getMap().getLayers().clear();
