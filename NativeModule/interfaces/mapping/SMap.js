@@ -92,6 +92,20 @@ export default (function () {
     }
   }
 
+  /**
+   * 移除所有图层
+   * @param params
+   * @param value
+   * @returns {*}
+   */
+  function removeAllLayer() {
+    try {
+      return SMap.removeAllLayer()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
 
   /**
    * 移除指定图层
@@ -625,6 +639,7 @@ export default (function () {
     zoom,
     moveToCurrent,
     removeLayer,
+    removeAllLayer,
     closeMap,
     getUDBName,
     submit,
