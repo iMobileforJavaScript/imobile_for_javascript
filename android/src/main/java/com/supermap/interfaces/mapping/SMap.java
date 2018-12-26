@@ -379,7 +379,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void removeAllLayer(Promise promise) {
+    public void openDatasource(Promise promise) {
         try {
             sMap = getInstance();
             sMap.smMapWC.getMapControl().getMap().getLayers().clear();
