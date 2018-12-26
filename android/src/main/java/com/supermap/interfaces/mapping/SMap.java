@@ -372,6 +372,24 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
 
+
+    /**
+     * 移除所有图层
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void removeAllLayer(Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smMapWC.getMapControl().getMap().getLayers().clear();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
     /**
      * 移除指定图层
      *
