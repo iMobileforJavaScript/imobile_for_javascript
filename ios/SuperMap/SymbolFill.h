@@ -10,5 +10,8 @@
 // 面填充符号类
 @interface SymbolFill : Symbol
 
+// 填充符号用到的第三方点符号的id
+-(NSArray*)customizedPointSymbolIDs;
+
 -(void)dispose;
 @end

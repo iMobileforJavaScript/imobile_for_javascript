@@ -9,5 +9,4 @@
 #import <React/RCTBridgeModule.h>
 
 @interface SThemeCartography : NSObject<RCTBridgeModule>
-
 @end
