@@ -230,6 +230,32 @@ RCT_REMAP_METHOD(downloadWithDataId, filePath:(NSString *)filePath dataId:(NSStr
         reject(kTAG, @"download failed", nil);
     }
 }
+#pragma mark ---------------------------- cancelDownload
+RCT_REMAP_METHOD(cancelDownload, cancelDownloadResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSInteger count = [m_onlineService downloadTasks].count;
+        for(int i =0;i<count;i++){
+            [m_onlineService cancelDownloadTask:i];
+        }
+        NSNumber* number =[NSNumber numberWithBool:YES];
+        resolve(number);
+    } @catch (NSException *exception) {
+        reject(kTAG, @"download failed", nil);
+    }
+}
+#pragma mark ---------------------------- cancelAllDownload
+//RCT_REMAP_METHOD(cancelAllDownload, cancelAllDownloadResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        NSInteger count = [m_onlineService downloadTasks].count;
+//        for(int i =0;i<count;i++){
+//            [m_onlineService cancelDownloadTask:count];
+//        }
+//        NSNumber* number =[NSNumber numberWithBool:YES];
+//        resolve(number);
+//    } @catch (NSException *exception) {
+//        reject(kTAG, @"download failed", nil);
+//    }
+//}
 #pragma mark ---------------------------- upload
 RCT_REMAP_METHOD(upload, uploadByPath:(NSString *)path fileName:(NSString *)fileName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
