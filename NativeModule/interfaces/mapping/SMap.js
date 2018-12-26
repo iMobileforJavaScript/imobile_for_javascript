@@ -191,6 +191,7 @@ export default (function () {
       return SMap.saveAsMap(name)
     } catch (e) {
       console.error(e)
+      return e
     }
   }
 
