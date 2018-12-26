@@ -976,494 +976,494 @@
 //      2.srcWorkspace包含地图
 //      3.模块存在
 //
--(BOOL)exportMapNames:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(int)nModule isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified{
-    
-    if(srcWorkspace==nil || [srcWorkspace.maps indexOf:strMapAlians]==-1){
-        return false;
-    }
-    
-    NSString *strCustomer = [self getCustomerDirectory];
-    NSString *strModule = [self getModuleDirectory:nModule];
-        if (strModule == nil) {
-        return false;
-    }
-    
-    Map *mapExport = [[Map alloc]initWithWorkspace:srcWorkspace];
-    
-    if(![mapExport open:strMapAlians]){
-        //打开失败
-        return false;
-    }
-    
-    NSString *strMapName = strMapAlians;
-    // map文件
-    NSString* desPathMapXML = [NSString stringWithFormat:@"%@/Map/%@/%@.xml",strCustomer,strModule,strMapName];
-    NSString* desPathMapExp ;
-    if (!bNew) {
-        // 删文件
-        BOOL isDir = true;
-        BOOL isExist = [[NSFileManager defaultManager]fileExistsAtPath:desPathMapXML isDirectory:&isDir];
-        if (isExist && !isDir) {
-            [[NSFileManager defaultManager]removeItemAtPath:desPathMapXML error:nil];
-        }
-        desPathMapExp = [NSString stringWithFormat:@"%@/Map/%@/%@.exp",strCustomer,strModule,strMapName];
-        isExist = [[NSFileManager defaultManager]fileExistsAtPath:desPathMapExp isDirectory:&isDir];
-        if (isExist && !isDir) {
-            [[NSFileManager defaultManager]removeItemAtPath:desPathMapXML error:nil];
-        }
-        
-    }else{
-        // 改名
-        desPathMapXML = [self formateNoneExistFileName:desPathMapXML isDir:NO];
-        NSString * desLastMap = [[desPathMapXML componentsSeparatedByString:@"/"]lastObject];
-        // map文件名确定后其他文件（符号库）不需要判断，直接覆盖
-        strMapName = [desLastMap substringToIndex:desLastMap.length-4];
-        desPathMapExp = [NSString stringWithFormat:@"%@/Map/%@/%@.exp",strCustomer,strModule,strMapName];
-    }
-    
-    // map xml
-    NSString* strMapXML = [mapExport toXML];
-    [strMapXML writeToFile:desPathMapXML atomically:YES encoding:NSUTF8StringEncoding error:nil];
-    //NSString*newstr = [NSString stringWithContentsOfFile:desPathMapXML encoding:NSUTF8StringEncoding error:nil];
-    
-    //bResourcesModified时存所有用到的符号id
-    NSMutableSet *setMarkerIDs = [[NSMutableSet alloc]init];
-    NSMutableSet *setLineIDs = [[NSMutableSet alloc]init];
-    NSMutableSet *setFillIDs = [[NSMutableSet alloc]init];
-    
-    //    NSMutableArray *arrMarkerIDs = [[NSMutableArray alloc]init];
-    //    NSMutableArray *arrLineIDs = [[NSMutableArray alloc]init];
-    //    NSMutableArray *arrFillIDs = [[NSMutableArray alloc]init];
-    // datasources
-    NSMutableArray *arrDatasources = [[NSMutableArray alloc]init];
-    for (int i=0; i<mapExport.layers.getCount; i++) {
-        Layer *layer = [mapExport.layers getLayerAtIndex:i];
-        
-        Datasource *datasource = [[layer dataset]datasource];
-        if (![arrDatasources containsObject:datasource]) {
-            [arrDatasources addObject:datasource];
-        }
-        //处理newSymbol
-        //cad
-        if(bResourcesModified && layer.dataset.datasetType == CAD){
-            Recordset *recordset = [(DatasetVector*)layer.dataset recordset:NO cursorType:STATIC];
-            [recordset moveFirst];
-            while ([recordset isEOF]) {
-                Geometry *geoTemp = [recordset geometry];
-                [recordset moveNext];
-                GeoStyle *styleTemp = [geoTemp getStyle];
-                int nMarkerID = [styleTemp getMarkerSymbolID];
-                int nLineID = [styleTemp getLineSymbolID];
-                int nFillID = [styleTemp getFillSymbolID];
-                if (nMarkerID>0) {
-                    [setMarkerIDs addObject:[NSNumber numberWithInt:nMarkerID]];
-                }
-                if (nLineID>0) {
-                    [setLineIDs addObject:[NSNumber numberWithInt:nLineID]];
-                }
-                if (nFillID>0) {
-                    [setFillIDs addObject:[NSNumber numberWithInt:nFillID]];
-                }
-            }
-            [recordset close];
-        }
-        
-    }
-    
-    NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource/%@",strCustomer,strModule];
-    
-    NSMutableArray *arrExpDatasources = [[NSMutableArray alloc]init];
-    //[[NSFileManager defaultManager]createDirectoryAtPath:desDataDir withIntermediateDirectories:YES attributes:nil error:nil];
-    // 导出datasource  datasource名=文件名
-    for (int i=0; i<arrDatasources.count; i++) {
-        Datasource *datasource = [arrDatasources objectAtIndex:i];
-        // 文件拷贝
-        DatasourceConnectionInfo *srcInfo = [datasource datasourceConnectionInfo];
-        NSString *strSrcAlian = srcInfo.alias;
-        NSString *strSrcServer = srcInfo.server;
-        EngineType engineType = srcInfo.engineType;
-        NSString *strTargetServer = strSrcServer;
-        //---------》》》》》只有一部分new怎么办？
-        if (bNew) {
-            if (engineType == ET_UDB || engineType == ET_IMAGEPLUGINS) {
-                
-                // 源文件存在？
-                if( ![self isDatasourceFileExist:strSrcServer isUDB:(engineType==ET_UDB)] ){
-                    continue;
-                }
-                
-                NSArray *arrSrcServer = [strSrcServer componentsSeparatedByString:@"/"];
-                NSString *strFileName = [arrSrcServer lastObject];
-                // 导入工作空间名
-                strTargetServer = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strFileName];
-                
-                if (engineType==ET_UDB) {
-                    
-                    NSString * strSrcDatasourcePath = [strSrcServer substringToIndex:strSrcServer.length-4];
-                    NSString * strTargetDatasourcePath = [strTargetServer substringToIndex:strTargetServer.length-4];
-                    
-                    // 检查重复性
-                    BOOL bDir = YES;
-                    BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:strTargetServer isDirectory:&bDir];
-                    if (bExist && !bDir) {
-                        //存在同名文件
-                        //重名文件
-                        strTargetServer = [self formateNoneExistFileName:strTargetServer isDir:NO];
-                        strTargetDatasourcePath = [strTargetServer substringToIndex:strTargetServer.length-4];
-                    }//exist
-                    
-                    // 拷贝udb
-                    if(![[NSFileManager defaultManager] copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udb"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udb"] error:nil]){
-                        continue;
-                    }
-                    // 拷贝udd
-                    if(![[NSFileManager defaultManager] copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udd"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udd"] error:nil]){
-                        continue;
-                    }
-                    
-                }else{
-                    
-                    BOOL bDir = YES;
-                    BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:strTargetServer isDirectory:&bDir];
-                    if (bExist && !bDir) {
-                        //存在同名文件
-                        //重名文件
-                        strTargetServer = [self formateNoneExistFileName:strTargetServer isDir:NO];
-                    }//exist
-                    
-                    
-                    // 拷贝
-                    if(![[NSFileManager defaultManager] copyItemAtPath:strSrcServer toPath:strTargetServer error:nil]){
-                        continue;
-                    }
-                }//bUDB
-            }
-        }
-        
-        NSDictionary *dicDatasource = @{ @"Alians":strSrcAlian , @"Server":strTargetServer , @"Type":[NSNumber numberWithInt:engineType] };
-        [arrExpDatasources addObject:dicDatasource];
-        //user password
-    }
-    
-    NSString* desResources = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
-    //    if (bNew) {
-    //        NSString *strSymTemp = [desResources stringByAppendingString:@".sym"];
-    //        strSymTemp = [self formateNoneExistFileName:strSymTemp isDir:NO];
-    //        desResources = [strSymTemp substringToIndex:strSymTemp.length-4];
-    //    }
-    
-    if (bNew||bResourcesModified) {
-        // 从工作空间Lib中找到地图名的分组，导出成为根组符号库
-        // Marker
-        {
-            SymbolMarkerLibrary *markerLibrary = [[SymbolMarkerLibrary alloc]init];
-            //SymbolGroup *desMarkerGroup = [markerLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
-            SymbolGroup *desMarkerGroup = markerLibrary.rootGroup;
-            SymbolGroup *srcMarkerGroup = [srcWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
-            if (srcMarkerGroup!=nil) {
-                [self importSymbolsFrom:srcMarkerGroup toGroup:desMarkerGroup isDirRetain:YES isSymbolReplace:NO];
-            }
-            if (bResourcesModified) {
-                NSArray *arrMarkerFromXML = [self findIntValuesFromXML:strMapXML withTag:@"sml:MarkerStyle"];
-                [setMarkerIDs addObjectsFromArray:arrMarkerFromXML];
-                NSArray *arrMarkerIDs = [setMarkerIDs allObjects];
-                for (int i=0; i<arrMarkerIDs.count; i++) {
-                    int nMarkerID = [[arrMarkerIDs objectAtIndex:i]intValue];
-                    if (![markerLibrary containID:nMarkerID]) {
-                        Symbol * symbolTemp = [srcWorkspace.resources.markerLibrary findSymbolWithID:nMarkerID];
-                        if (symbolTemp!=nil) {
-                            //[markerLibrary add:symbolTemp toGroup:desMarkerGroup];
-                            [markerLibrary add:symbolTemp];
-                        }
-                    }
-                }
-            }
-            [markerLibrary saveAs:[desResources stringByAppendingString:@".sym"]];
-            [markerLibrary dispose];
-        }
-        // Line
-        {
-            SymbolLineLibrary *lineLibrary = [[SymbolLineLibrary alloc]init];
-            SymbolMarkerLibrary *markerInlineLibrary = [lineLibrary getInlineMarkerLib];
-            
-            //SymbolGroup *desLineGroup = [lineLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
-            SymbolGroup *desLineGroup = lineLibrary.rootGroup;
-            SymbolGroup *srcLineGroup = [srcWorkspace.resources.lineLibrary.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
-            if (srcLineGroup!=nil) {
-                [self importSymbolsFrom:srcLineGroup toGroup:desLineGroup isDirRetain:YES isSymbolReplace:NO];
-            }
-            //SymbolGroup *desInlineGroup = [markerInlineLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
-            SymbolGroup *desInlineGroup = markerInlineLibrary.rootGroup;
-            SymbolGroup *srcInlineGroup = [srcWorkspace.resources.lineLibrary.getInlineMarkerLib.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
-            if (srcInlineGroup!=nil) {
-                [self importSymbolsFrom:srcInlineGroup toGroup:desInlineGroup isDirRetain:YES isSymbolReplace:NO];
-            }
-            if (bResourcesModified) {
-                NSArray *arrLineFromXML = [self findIntValuesFromXML:strMapXML withTag:@"sml:LineStyle"];
-                [setLineIDs addObjectsFromArray:arrLineFromXML];
-                NSArray *arrLineIDs = [setLineIDs allObjects];
-                for (int i=0; i<arrLineIDs.count; i++) {
-                    int nLineID = [[arrLineIDs objectAtIndex:i]intValue];
-                    if (![lineLibrary containID:nLineID]) {
-                        SymbolLine * symbolTemp = (SymbolLine *)[srcWorkspace.resources.lineLibrary findSymbolWithID:nLineID];
-                        if (symbolTemp!=nil) {
-                            NSArray *arrInlineMarkerIds = [symbolTemp customizedPointSymbolIDs];
-                            for (int j=0; j<arrInlineMarkerIds.count; j++) {
-                                int nInlineMarker = [[arrInlineMarkerIds objectAtIndex:j]intValue];
-                                if ( ![markerInlineLibrary containID:nInlineMarker] ) {
-                                    Symbol *symbolMarker = [srcWorkspace.resources.lineLibrary.getInlineMarkerLib findSymbolWithID:nInlineMarker];
-                                    //[markerInlineLibrary add:symbolMarker toGroup:desInlineGroup];
-                                    [markerInlineLibrary add:symbolMarker];
-                                }
-                            }
-                            //[lineLibrary add:symbolTemp toGroup:desLineGroup];
-                            [lineLibrary add:symbolTemp];
-                        }
-                    }
-                }
-            }
-            [lineLibrary saveAs:[desResources stringByAppendingString:@".lsl"]];
-            [lineLibrary dispose];
-        }
-        // Fill
-        {
-            SymbolFillLibrary *fillLibrary = [[SymbolFillLibrary alloc]init];
-            SymbolMarkerLibrary *markerInfillLibrary = [fillLibrary getInfillMarkerLib];
-            
-            //SymbolGroup *desFillGroup = [fillLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
-            SymbolGroup *desFillGroup = fillLibrary.rootGroup;
-            SymbolGroup *srcFillGroup = [srcWorkspace.resources.fillLibrary.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
-            if (srcFillGroup!=nil) {
-                [self importSymbolsFrom:srcFillGroup toGroup:desFillGroup isDirRetain:YES isSymbolReplace:NO];
-            }
-            //SymbolGroup *desInfillGroup = [markerInfillLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
-            SymbolGroup *desInfillGroup = markerInfillLibrary.rootGroup;
-            SymbolGroup *srcInfillGroup = [srcWorkspace.resources.fillLibrary.getInfillMarkerLib.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
-            if (srcInfillGroup!=nil) {
-                [self importSymbolsFrom:srcInfillGroup toGroup:desInfillGroup isDirRetain:YES isSymbolReplace:NO];
-            }
-            if (bResourcesModified) {
-                NSArray *arrFillFromXML = [self findIntValuesFromXML:strMapXML withTag:@"sml:FillStyle"];
-                [setFillIDs addObjectsFromArray:arrFillFromXML];
-                NSArray *arrFillIDs = [setFillIDs allObjects];
-                for (int i=0; i<arrFillIDs.count; i++) {
-                    int nFillID = [[arrFillIDs objectAtIndex:i]intValue];
-                    if (![fillLibrary containID:nFillID]) {
-                        SymbolFill * symbolTemp = (SymbolFill *)[srcWorkspace.resources.fillLibrary findSymbolWithID:nFillID];
-                        if (symbolTemp!=nil) {
-                            NSArray *arrInfillMarkerIds = [symbolTemp customizedPointSymbolIDs];
-                            for (int j=0; j<arrInfillMarkerIds.count; j++) {
-                                int nInfillMarker = [[arrInfillMarkerIds objectAtIndex:j]intValue];
-                                if ( ![markerInfillLibrary containID:nInfillMarker] ) {
-                                    Symbol *symbolMarker = [srcWorkspace.resources.fillLibrary.getInfillMarkerLib findSymbolWithID:nInfillMarker];
-                                    //[markerInfillLibrary add:symbolMarker toGroup:desInfillGroup];
-                                    [markerInfillLibrary add:symbolMarker];
-                                }
-                            }
-                            //[fillLibrary add:symbolTemp toGroup:desFillGroup];
-                            [fillLibrary add:symbolTemp];
-                        }
-                    }
-                }
-            }
-            [fillLibrary saveAs:[desResources stringByAppendingString:@".bru"]];
-            [fillLibrary dispose];
-        }
-        
-    }
-    
-    
-    NSDictionary *dicExp= @{ @"Datasources":arrExpDatasources , @"Resources": desResources};
-    //[NSJSONSerialization JSONObjectWithData:[[features objectAtIndex:i] dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingAllowFragments error:&error];
-    // [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil]
-    
-    NSData *dataJson = [NSJSONSerialization dataWithJSONObject:dicExp options:NSJSONWritingPrettyPrinted error:nil];
-    NSString *strExplorerJson = [[NSString alloc]initWithData:dataJson encoding:NSUTF8StringEncoding];
-    [strExplorerJson writeToFile:desPathMapExp atomically:YES encoding:NSUTF8StringEncoding error:nil];
-    
-    [mapExport close];
-    
-    return true;
-}
-
--(BOOL)importMapNames:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(int)nModule{
-    
-    if(desWorkspace==nil || [desWorkspace.maps indexOf:strMapName]!=-1){
-        return false;
-    }
-    
-    NSString *strCustomer = [self getCustomerDirectory];
-    NSString *strModule = [self getModuleDirectory:nModule];
-    if ([strModule isEqualToString:@""]) {
-        return false;
-    }
-    NSString* srcPathMap = [NSString stringWithFormat:@"%@/Map/%@/%@",strCustomer,strModule,strMapName];
-    NSString* srcPathXML = [NSString stringWithFormat:@"%@.xml",srcPathMap];
-    BOOL isDir = true;
-    BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathXML isDirectory:&isDir];
-    if (!isExist || isDir) {
-        return false;
-    }
-    
-    NSString* srcPathEXP = [NSString stringWithFormat:@"%@.exp",srcPathMap];
-    isDir = true;
-    isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathEXP isDirectory:&isDir];
-    if (!isExist || isDir) {
-        return false;
-    }
-    NSString* strMapEXP = [NSString stringWithContentsOfFile:srcPathEXP encoding:NSUTF8StringEncoding error:nil];
-    // {
-    //  "Datasources":
-    //                  [ {"Alians":strMapName,"Type":nEngineType,"Server":strDatasourceName} , {...} , {...} ... ] ,
-    //  "Resources":
-    //                  strMapName
-    // }
-    NSDictionary *dicExp = [NSJSONSerialization JSONObjectWithData:[strMapEXP dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
-    
-    NSString *srcDatasourceDir = [NSString stringWithFormat:@"%@/Datasource/%@",strCustomer,strModule];
-    
-    // 重复的server处理
-    //      1.文件型数据源：若bDatasourceRep，关闭原来数据源，拷贝新数据源并重新打开（alian保持原来的）
-    //      2.网络型数据源：不再重复打开（alian保持原来的）
-    NSMutableArray * arrTargetServers = [[NSMutableArray alloc]init];
-    NSMutableArray * arrTargetAlians = [[NSMutableArray alloc]init];
-    for (int i=0; i<desWorkspace.datasources.count; i++) {
-        Datasource* datasource = [desWorkspace.datasources get:i];
-        DatasourceConnectionInfo *datasourceInfo = [datasource datasourceConnectionInfo];
-        if (datasourceInfo.engineType == ET_UDB || datasourceInfo.engineType == ET_IMAGEPLUGINS) {
-            //只要名字
-            NSString* fullName = datasourceInfo.server;
-            NSArray * arrServer = [fullName componentsSeparatedByString:@"/"];
-            NSString* lastName = [arrServer lastObject];
-            NSString* fatherName = [fullName substringToIndex:fullName.length-lastName.length-1];
-            if ([fatherName isEqualToString:srcDatasourceDir]) {
-                //同级目录下的才会被替换
-                [arrTargetServers addObject:lastName];
-                [arrTargetAlians addObject:datasourceInfo.alias];
-            }
-        }else{
-            //网络数据集用完整url
-            [arrTargetServers addObject:datasourceInfo.server];
-            [arrTargetAlians addObject:datasourceInfo.alias];
-        }
-    }
-    
-    //更名数组
-    NSMutableArray *arrAlian = [[NSMutableArray alloc]init];
-    NSMutableArray *arrReAlian = [[NSMutableArray alloc]init];
-    
-    NSArray *arrDatasources = [dicExp objectForKey:@"Datasources"];
-    for (int i=0; i<arrDatasources.count; i++) {
-        NSDictionary *dicDatasource = [arrDatasources objectAtIndex:i];
-        NSString *strAlian = [dicDatasource objectForKey:@"Alians"];
-        NSString *strServer = [dicDatasource objectForKey:@"Server"];
-        EngineType engineType = (EngineType)[[dicDatasource objectForKey:@"Type"] intValue];
-        // Alians重命名 同一个Server不要打开两次
-        NSString *strDesAlian = strAlian;
-        
-        NSInteger nIndex = [arrTargetServers indexOfObject:strServer];
-        if (nIndex>=0 && nIndex<arrTargetServers.count) {
-            // 替换alian 保证原来map有数据源
-            strDesAlian = [arrTargetAlians objectAtIndex:nIndex];
-        }else{
-            // 保证不重名
-            strDesAlian = [self formateNoneExistDatasourceAlian:strAlian ofWorkspace:desWorkspace];
-            DatasourceConnectionInfo *infoTemp = [[DatasourceConnectionInfo alloc]init];
-            if (engineType == ET_UDB || engineType == ET_IMAGEPLUGINS){
-                infoTemp.server = [NSString stringWithFormat:@"%@/%@",srcDatasourceDir,strServer];
-            }else{
-                infoTemp.server = strServer;
-            }
-            infoTemp.engineType = engineType;
-            infoTemp.alias = strDesAlian;
-            if(![desWorkspace.datasources open:infoTemp]){
-                continue;
-            }
-        }
-        // xml中需重命名的别名
-        if (![strAlian isEqualToString:strDesAlian]) {
-            [arrAlian addObject:strAlian];
-            [arrReAlian addObject:strDesAlian];
-        }
-    }
-    
-    
-    NSString* srcResources = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
-    // Marker
-    {
-        if([desWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups indexofGroup:strMapName]!=-1){
-            //删除分组
-            //-----??>>>[desWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups removeGroupWith:strMapName];
-            [desWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
-        }
-        //新建分组
-        SymbolGroup *desMarkerGroup = [desWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
-        
-        NSString *strMarkerPath = [srcResources stringByAppendingString:@".sym"];
-        isDir = true;
-        isExist = [[NSFileManager defaultManager] fileExistsAtPath:strMarkerPath isDirectory:&isDir];
-        if ( isExist && !isDir) {
-            SymbolMarkerLibrary *markerLibrary = [[SymbolMarkerLibrary alloc]init];
-            [markerLibrary appendFromFile:strMarkerPath isReplace:YES];
-            [self importSymbolsFrom:markerLibrary.rootGroup toGroup:desMarkerGroup isDirRetain:YES isSymbolReplace:YES];
-        }
-    }
-    // Line
-    {
-        if([desWorkspace.resources.lineLibrary.rootGroup.childSymbolGroups indexofGroup:strMapName]!=-1){
-            //删除分组
-            [desWorkspace.resources.lineLibrary.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
-        }
-        if([desWorkspace.resources.lineLibrary.getInlineMarkerLib.rootGroup.childSymbolGroups indexofGroup:strMapName]!=-1){
-            //删除inlineMarkerLib
-            [desWorkspace.resources.lineLibrary.getInlineMarkerLib.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
-        }
-        
-        SymbolGroup *desLineGroup = [desWorkspace.resources.lineLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
-        SymbolGroup *desInlineMarkerGroup = [desWorkspace.resources.lineLibrary.getInlineMarkerLib.rootGroup.childSymbolGroups createGroupWith:strMapName];
-        
-        NSString *strLinePath = [srcResources stringByAppendingString:@".lsl"];
-        isDir = true;
-        isExist = [[NSFileManager defaultManager] fileExistsAtPath:strLinePath isDirectory:&isDir];
-        if ( isExist && !isDir) {
-            SymbolLineLibrary *lineLibrary = [[SymbolLineLibrary alloc]init];
-            [lineLibrary appendFromFile:strLinePath isReplace:YES];
-            [self importSymbolsFrom:lineLibrary.getInlineMarkerLib.rootGroup toGroup:desInlineMarkerGroup isDirRetain:YES isSymbolReplace:YES];
-            [self importSymbolsFrom:lineLibrary.rootGroup toGroup:desLineGroup isDirRetain:YES isSymbolReplace:YES];
-        }
-    }
-    // Fill
-    {
-        if([desWorkspace.resources.fillLibrary.rootGroup.childSymbolGroups indexofGroup:strMapName]!=-1){
-            //删除分组
-            [desWorkspace.resources.fillLibrary.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
-        }
-        if([desWorkspace.resources.fillLibrary.getInfillMarkerLib.rootGroup.childSymbolGroups indexofGroup:strMapName]!=-1){
-            //删除infillMarkerLib
-            [desWorkspace.resources.fillLibrary.getInfillMarkerLib.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
-        }
-        
-        SymbolGroup *desFillGroup = [desWorkspace.resources.fillLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
-        SymbolGroup *desInfillMarkerGroup = [desWorkspace.resources.fillLibrary.getInfillMarkerLib.rootGroup.childSymbolGroups createGroupWith:strMapName];
-        
-        NSString *strFillPath = [srcResources stringByAppendingString:@".bru"];
-        isDir = true;
-        isExist = [[NSFileManager defaultManager] fileExistsAtPath:strFillPath isDirectory:&isDir];
-        if ( isExist && !isDir) {
-            SymbolFillLibrary *fillLibrary = [[SymbolFillLibrary alloc]init];
-            [fillLibrary appendFromFile:strFillPath isReplace:YES];
-            [self importSymbolsFrom:fillLibrary.getInfillMarkerLib.rootGroup toGroup:desInfillMarkerGroup isDirRetain:YES isSymbolReplace:YES];
-            [self importSymbolsFrom:fillLibrary.rootGroup toGroup:desFillGroup isDirRetain:YES isSymbolReplace:YES];
-        }
-    }
-    
-    
-    NSString* strMapXML = [NSString stringWithContentsOfFile:srcPathXML encoding:NSUTF8StringEncoding error:nil];
-    strMapXML = [self modifyXML:strMapXML replace:arrAlian with:arrReAlian];
-    
-    [desWorkspace.maps add:strMapName withXML:strMapXML];
-    
-    return true;
-}
+//-(BOOL)exportMapNames:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(int)nModule isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified{
+//    
+//    if(srcWorkspace==nil || [srcWorkspace.maps indexOf:strMapAlians]==-1){
+//        return false;
+//    }
+//    
+//    NSString *strCustomer = [self getCustomerDirectory];
+//    NSString *strModule = [self getModuleDirectory:nModule];
+//        if (strModule == nil) {
+//        return false;
+//    }
+//    
+//    Map *mapExport = [[Map alloc]initWithWorkspace:srcWorkspace];
+//    
+//    if(![mapExport open:strMapAlians]){
+//        //打开失败
+//        return false;
+//    }
+//    
+//    NSString *strMapName = strMapAlians;
+//    // map文件
+//    NSString* desPathMapXML = [NSString stringWithFormat:@"%@/Map/%@/%@.xml",strCustomer,strModule,strMapName];
+//    NSString* desPathMapExp ;
+//    if (!bNew) {
+//        // 删文件
+//        BOOL isDir = true;
+//        BOOL isExist = [[NSFileManager defaultManager]fileExistsAtPath:desPathMapXML isDirectory:&isDir];
+//        if (isExist && !isDir) {
+//            [[NSFileManager defaultManager]removeItemAtPath:desPathMapXML error:nil];
+//        }
+//        desPathMapExp = [NSString stringWithFormat:@"%@/Map/%@/%@.exp",strCustomer,strModule,strMapName];
+//        isExist = [[NSFileManager defaultManager]fileExistsAtPath:desPathMapExp isDirectory:&isDir];
+//        if (isExist && !isDir) {
+//            [[NSFileManager defaultManager]removeItemAtPath:desPathMapXML error:nil];
+//        }
+//        
+//    }else{
+//        // 改名
+//        desPathMapXML = [self formateNoneExistFileName:desPathMapXML isDir:NO];
+//        NSString * desLastMap = [[desPathMapXML componentsSeparatedByString:@"/"]lastObject];
+//        // map文件名确定后其他文件（符号库）不需要判断，直接覆盖
+//        strMapName = [desLastMap substringToIndex:desLastMap.length-4];
+//        desPathMapExp = [NSString stringWithFormat:@"%@/Map/%@/%@.exp",strCustomer,strModule,strMapName];
+//    }
+//    
+//    // map xml
+//    NSString* strMapXML = [mapExport toXML];
+//    [strMapXML writeToFile:desPathMapXML atomically:YES encoding:NSUTF8StringEncoding error:nil];
+//    //NSString*newstr = [NSString stringWithContentsOfFile:desPathMapXML encoding:NSUTF8StringEncoding error:nil];
+//    
+//    //bResourcesModified时存所有用到的符号id
+//    NSMutableSet *setMarkerIDs = [[NSMutableSet alloc]init];
+//    NSMutableSet *setLineIDs = [[NSMutableSet alloc]init];
+//    NSMutableSet *setFillIDs = [[NSMutableSet alloc]init];
+//    
+//    //    NSMutableArray *arrMarkerIDs = [[NSMutableArray alloc]init];
+//    //    NSMutableArray *arrLineIDs = [[NSMutableArray alloc]init];
+//    //    NSMutableArray *arrFillIDs = [[NSMutableArray alloc]init];
+//    // datasources
+//    NSMutableArray *arrDatasources = [[NSMutableArray alloc]init];
+//    for (int i=0; i<mapExport.layers.getCount; i++) {
+//        Layer *layer = [mapExport.layers getLayerAtIndex:i];
+//        
+//        Datasource *datasource = [[layer dataset]datasource];
+//        if (![arrDatasources containsObject:datasource]) {
+//            [arrDatasources addObject:datasource];
+//        }
+//        //处理newSymbol
+//        //cad
+//        if(bResourcesModified && layer.dataset.datasetType == CAD){
+//            Recordset *recordset = [(DatasetVector*)layer.dataset recordset:NO cursorType:STATIC];
+//            [recordset moveFirst];
+//            while ([recordset isEOF]) {
+//                Geometry *geoTemp = [recordset geometry];
+//                [recordset moveNext];
+//                GeoStyle *styleTemp = [geoTemp getStyle];
+//                int nMarkerID = [styleTemp getMarkerSymbolID];
+//                int nLineID = [styleTemp getLineSymbolID];
+//                int nFillID = [styleTemp getFillSymbolID];
+//                if (nMarkerID>0) {
+//                    [setMarkerIDs addObject:[NSNumber numberWithInt:nMarkerID]];
+//                }
+//                if (nLineID>0) {
+//                    [setLineIDs addObject:[NSNumber numberWithInt:nLineID]];
+//                }
+//                if (nFillID>0) {
+//                    [setFillIDs addObject:[NSNumber numberWithInt:nFillID]];
+//                }
+//            }
+//            [recordset close];
+//        }
+//        
+//    }
+//    
+//    NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource/%@",strCustomer,strModule];
+//    
+//    NSMutableArray *arrExpDatasources = [[NSMutableArray alloc]init];
+//    //[[NSFileManager defaultManager]createDirectoryAtPath:desDataDir withIntermediateDirectories:YES attributes:nil error:nil];
+//    // 导出datasource  datasource名=文件名
+//    for (int i=0; i<arrDatasources.count; i++) {
+//        Datasource *datasource = [arrDatasources objectAtIndex:i];
+//        // 文件拷贝
+//        DatasourceConnectionInfo *srcInfo = [datasource datasourceConnectionInfo];
+//        NSString *strSrcAlian = srcInfo.alias;
+//        NSString *strSrcServer = srcInfo.server;
+//        EngineType engineType = srcInfo.engineType;
+//        NSString *strTargetServer = strSrcServer;
+//        //---------》》》》》只有一部分new怎么办？
+//        if (bNew) {
+//            if (engineType == ET_UDB || engineType == ET_IMAGEPLUGINS) {
+//                
+//                // 源文件存在？
+//                if( ![self isDatasourceFileExist:strSrcServer isUDB:(engineType==ET_UDB)] ){
+//                    continue;
+//                }
+//                
+//                NSArray *arrSrcServer = [strSrcServer componentsSeparatedByString:@"/"];
+//                NSString *strFileName = [arrSrcServer lastObject];
+//                // 导入工作空间名
+//                strTargetServer = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strFileName];
+//                
+//                if (engineType==ET_UDB) {
+//                    
+//                    NSString * strSrcDatasourcePath = [strSrcServer substringToIndex:strSrcServer.length-4];
+//                    NSString * strTargetDatasourcePath = [strTargetServer substringToIndex:strTargetServer.length-4];
+//                    
+//                    // 检查重复性
+//                    BOOL bDir = YES;
+//                    BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:strTargetServer isDirectory:&bDir];
+//                    if (bExist && !bDir) {
+//                        //存在同名文件
+//                        //重名文件
+//                        strTargetServer = [self formateNoneExistFileName:strTargetServer isDir:NO];
+//                        strTargetDatasourcePath = [strTargetServer substringToIndex:strTargetServer.length-4];
+//                    }//exist
+//                    
+//                    // 拷贝udb
+//                    if(![[NSFileManager defaultManager] copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udb"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udb"] error:nil]){
+//                        continue;
+//                    }
+//                    // 拷贝udd
+//                    if(![[NSFileManager defaultManager] copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udd"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udd"] error:nil]){
+//                        continue;
+//                    }
+//                    
+//                }else{
+//                    
+//                    BOOL bDir = YES;
+//                    BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:strTargetServer isDirectory:&bDir];
+//                    if (bExist && !bDir) {
+//                        //存在同名文件
+//                        //重名文件
+//                        strTargetServer = [self formateNoneExistFileName:strTargetServer isDir:NO];
+//                    }//exist
+//                    
+//                    
+//                    // 拷贝
+//                    if(![[NSFileManager defaultManager] copyItemAtPath:strSrcServer toPath:strTargetServer error:nil]){
+//                        continue;
+//                    }
+//                }//bUDB
+//            }
+//        }
+//        
+//        NSDictionary *dicDatasource = @{ @"Alians":strSrcAlian , @"Server":strTargetServer , @"Type":[NSNumber numberWithInt:engineType] };
+//        [arrExpDatasources addObject:dicDatasource];
+//        //user password
+//    }
+//    
+//    NSString* desResources = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
+//    //    if (bNew) {
+//    //        NSString *strSymTemp = [desResources stringByAppendingString:@".sym"];
+//    //        strSymTemp = [self formateNoneExistFileName:strSymTemp isDir:NO];
+//    //        desResources = [strSymTemp substringToIndex:strSymTemp.length-4];
+//    //    }
+//    
+//    if (bNew||bResourcesModified) {
+//        // 从工作空间Lib中找到地图名的分组，导出成为根组符号库
+//        // Marker
+//        {
+//            SymbolMarkerLibrary *markerLibrary = [[SymbolMarkerLibrary alloc]init];
+//            //SymbolGroup *desMarkerGroup = [markerLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
+//            SymbolGroup *desMarkerGroup = markerLibrary.rootGroup;
+//            SymbolGroup *srcMarkerGroup = [srcWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
+//            if (srcMarkerGroup!=nil) {
+//                [self importSymbolsFrom:srcMarkerGroup toGroup:desMarkerGroup isDirRetain:YES isSymbolReplace:NO];
+//            }
+//            if (bResourcesModified) {
+//                NSArray *arrMarkerFromXML = [self findIntValuesFromXML:strMapXML withTag:@"sml:MarkerStyle"];
+//                [setMarkerIDs addObjectsFromArray:arrMarkerFromXML];
+//                NSArray *arrMarkerIDs = [setMarkerIDs allObjects];
+//                for (int i=0; i<arrMarkerIDs.count; i++) {
+//                    int nMarkerID = [[arrMarkerIDs objectAtIndex:i]intValue];
+//                    if (![markerLibrary containID:nMarkerID]) {
+//                        Symbol * symbolTemp = [srcWorkspace.resources.markerLibrary findSymbolWithID:nMarkerID];
+//                        if (symbolTemp!=nil) {
+//                            //[markerLibrary add:symbolTemp toGroup:desMarkerGroup];
+//                            [markerLibrary add:symbolTemp];
+//                        }
+//                    }
+//                }
+//            }
+//            [markerLibrary saveAs:[desResources stringByAppendingString:@".sym"]];
+//            [markerLibrary dispose];
+//        }
+//        // Line
+//        {
+//            SymbolLineLibrary *lineLibrary = [[SymbolLineLibrary alloc]init];
+//            SymbolMarkerLibrary *markerInlineLibrary = [lineLibrary getInlineMarkerLib];
+//            
+//            //SymbolGroup *desLineGroup = [lineLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
+//            SymbolGroup *desLineGroup = lineLibrary.rootGroup;
+//            SymbolGroup *srcLineGroup = [srcWorkspace.resources.lineLibrary.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
+//            if (srcLineGroup!=nil) {
+//                [self importSymbolsFrom:srcLineGroup toGroup:desLineGroup isDirRetain:YES isSymbolReplace:NO];
+//            }
+//            //SymbolGroup *desInlineGroup = [markerInlineLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
+//            SymbolGroup *desInlineGroup = markerInlineLibrary.rootGroup;
+//            SymbolGroup *srcInlineGroup = [srcWorkspace.resources.lineLibrary.getInlineMarkerLib.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
+//            if (srcInlineGroup!=nil) {
+//                [self importSymbolsFrom:srcInlineGroup toGroup:desInlineGroup isDirRetain:YES isSymbolReplace:NO];
+//            }
+//            if (bResourcesModified) {
+//                NSArray *arrLineFromXML = [self findIntValuesFromXML:strMapXML withTag:@"sml:LineStyle"];
+//                [setLineIDs addObjectsFromArray:arrLineFromXML];
+//                NSArray *arrLineIDs = [setLineIDs allObjects];
+//                for (int i=0; i<arrLineIDs.count; i++) {
+//                    int nLineID = [[arrLineIDs objectAtIndex:i]intValue];
+//                    if (![lineLibrary containID:nLineID]) {
+//                        SymbolLine * symbolTemp = (SymbolLine *)[srcWorkspace.resources.lineLibrary findSymbolWithID:nLineID];
+//                        if (symbolTemp!=nil) {
+//                            NSArray *arrInlineMarkerIds = [symbolTemp customizedPointSymbolIDs];
+//                            for (int j=0; j<arrInlineMarkerIds.count; j++) {
+//                                int nInlineMarker = [[arrInlineMarkerIds objectAtIndex:j]intValue];
+//                                if ( ![markerInlineLibrary containID:nInlineMarker] ) {
+//                                    Symbol *symbolMarker = [srcWorkspace.resources.lineLibrary.getInlineMarkerLib findSymbolWithID:nInlineMarker];
+//                                    //[markerInlineLibrary add:symbolMarker toGroup:desInlineGroup];
+//                                    [markerInlineLibrary add:symbolMarker];
+//                                }
+//                            }
+//                            //[lineLibrary add:symbolTemp toGroup:desLineGroup];
+//                            [lineLibrary add:symbolTemp];
+//                        }
+//                    }
+//                }
+//            }
+//            [lineLibrary saveAs:[desResources stringByAppendingString:@".lsl"]];
+//            [lineLibrary dispose];
+//        }
+//        // Fill
+//        {
+//            SymbolFillLibrary *fillLibrary = [[SymbolFillLibrary alloc]init];
+//            SymbolMarkerLibrary *markerInfillLibrary = [fillLibrary getInfillMarkerLib];
+//            
+//            //SymbolGroup *desFillGroup = [fillLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
+//            SymbolGroup *desFillGroup = fillLibrary.rootGroup;
+//            SymbolGroup *srcFillGroup = [srcWorkspace.resources.fillLibrary.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
+//            if (srcFillGroup!=nil) {
+//                [self importSymbolsFrom:srcFillGroup toGroup:desFillGroup isDirRetain:YES isSymbolReplace:NO];
+//            }
+//            //SymbolGroup *desInfillGroup = [markerInfillLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
+//            SymbolGroup *desInfillGroup = markerInfillLibrary.rootGroup;
+//            SymbolGroup *srcInfillGroup = [srcWorkspace.resources.fillLibrary.getInfillMarkerLib.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
+//            if (srcInfillGroup!=nil) {
+//                [self importSymbolsFrom:srcInfillGroup toGroup:desInfillGroup isDirRetain:YES isSymbolReplace:NO];
+//            }
+//            if (bResourcesModified) {
+//                NSArray *arrFillFromXML = [self findIntValuesFromXML:strMapXML withTag:@"sml:FillStyle"];
+//                [setFillIDs addObjectsFromArray:arrFillFromXML];
+//                NSArray *arrFillIDs = [setFillIDs allObjects];
+//                for (int i=0; i<arrFillIDs.count; i++) {
+//                    int nFillID = [[arrFillIDs objectAtIndex:i]intValue];
+//                    if (![fillLibrary containID:nFillID]) {
+//                        SymbolFill * symbolTemp = (SymbolFill *)[srcWorkspace.resources.fillLibrary findSymbolWithID:nFillID];
+//                        if (symbolTemp!=nil) {
+//                            NSArray *arrInfillMarkerIds = [symbolTemp customizedPointSymbolIDs];
+//                            for (int j=0; j<arrInfillMarkerIds.count; j++) {
+//                                int nInfillMarker = [[arrInfillMarkerIds objectAtIndex:j]intValue];
+//                                if ( ![markerInfillLibrary containID:nInfillMarker] ) {
+//                                    Symbol *symbolMarker = [srcWorkspace.resources.fillLibrary.getInfillMarkerLib findSymbolWithID:nInfillMarker];
+//                                    //[markerInfillLibrary add:symbolMarker toGroup:desInfillGroup];
+//                                    [markerInfillLibrary add:symbolMarker];
+//                                }
+//                            }
+//                            //[fillLibrary add:symbolTemp toGroup:desFillGroup];
+//                            [fillLibrary add:symbolTemp];
+//                        }
+//                    }
+//                }
+//            }
+//            [fillLibrary saveAs:[desResources stringByAppendingString:@".bru"]];
+//            [fillLibrary dispose];
+//        }
+//        
+//    }
+//    
+//    
+//    NSDictionary *dicExp= @{ @"Datasources":arrExpDatasources , @"Resources": desResources};
+//    //[NSJSONSerialization JSONObjectWithData:[[features objectAtIndex:i] dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingAllowFragments error:&error];
+//    // [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil]
+//    
+//    NSData *dataJson = [NSJSONSerialization dataWithJSONObject:dicExp options:NSJSONWritingPrettyPrinted error:nil];
+//    NSString *strExplorerJson = [[NSString alloc]initWithData:dataJson encoding:NSUTF8StringEncoding];
+//    [strExplorerJson writeToFile:desPathMapExp atomically:YES encoding:NSUTF8StringEncoding error:nil];
+//    
+//    [mapExport close];
+//    
+//    return true;
+//}
+//
+//-(BOOL)importMapNames:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(int)nModule{
+//    
+//    if(desWorkspace==nil || [desWorkspace.maps indexOf:strMapName]!=-1){
+//        return false;
+//    }
+//    
+//    NSString *strCustomer = [self getCustomerDirectory];
+//    NSString *strModule = [self getModuleDirectory:nModule];
+//    if ([strModule isEqualToString:@""]) {
+//        return false;
+//    }
+//    NSString* srcPathMap = [NSString stringWithFormat:@"%@/Map/%@/%@",strCustomer,strModule,strMapName];
+//    NSString* srcPathXML = [NSString stringWithFormat:@"%@.xml",srcPathMap];
+//    BOOL isDir = true;
+//    BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathXML isDirectory:&isDir];
+//    if (!isExist || isDir) {
+//        return false;
+//    }
+//    
+//    NSString* srcPathEXP = [NSString stringWithFormat:@"%@.exp",srcPathMap];
+//    isDir = true;
+//    isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathEXP isDirectory:&isDir];
+//    if (!isExist || isDir) {
+//        return false;
+//    }
+//    NSString* strMapEXP = [NSString stringWithContentsOfFile:srcPathEXP encoding:NSUTF8StringEncoding error:nil];
+//    // {
+//    //  "Datasources":
+//    //                  [ {"Alians":strMapName,"Type":nEngineType,"Server":strDatasourceName} , {...} , {...} ... ] ,
+//    //  "Resources":
+//    //                  strMapName
+//    // }
+//    NSDictionary *dicExp = [NSJSONSerialization JSONObjectWithData:[strMapEXP dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
+//    
+//    NSString *srcDatasourceDir = [NSString stringWithFormat:@"%@/Datasource/%@",strCustomer,strModule];
+//    
+//    // 重复的server处理
+//    //      1.文件型数据源：若bDatasourceRep，关闭原来数据源，拷贝新数据源并重新打开（alian保持原来的）
+//    //      2.网络型数据源：不再重复打开（alian保持原来的）
+//    NSMutableArray * arrTargetServers = [[NSMutableArray alloc]init];
+//    NSMutableArray * arrTargetAlians = [[NSMutableArray alloc]init];
+//    for (int i=0; i<desWorkspace.datasources.count; i++) {
+//        Datasource* datasource = [desWorkspace.datasources get:i];
+//        DatasourceConnectionInfo *datasourceInfo = [datasource datasourceConnectionInfo];
+//        if (datasourceInfo.engineType == ET_UDB || datasourceInfo.engineType == ET_IMAGEPLUGINS) {
+//            //只要名字
+//            NSString* fullName = datasourceInfo.server;
+//            NSArray * arrServer = [fullName componentsSeparatedByString:@"/"];
+//            NSString* lastName = [arrServer lastObject];
+//            NSString* fatherName = [fullName substringToIndex:fullName.length-lastName.length-1];
+//            if ([fatherName isEqualToString:srcDatasourceDir]) {
+//                //同级目录下的才会被替换
+//                [arrTargetServers addObject:lastName];
+//                [arrTargetAlians addObject:datasourceInfo.alias];
+//            }
+//        }else{
+//            //网络数据集用完整url
+//            [arrTargetServers addObject:datasourceInfo.server];
+//            [arrTargetAlians addObject:datasourceInfo.alias];
+//        }
+//    }
+//    
+//    //更名数组
+//    NSMutableArray *arrAlian = [[NSMutableArray alloc]init];
+//    NSMutableArray *arrReAlian = [[NSMutableArray alloc]init];
+//    
+//    NSArray *arrDatasources = [dicExp objectForKey:@"Datasources"];
+//    for (int i=0; i<arrDatasources.count; i++) {
+//        NSDictionary *dicDatasource = [arrDatasources objectAtIndex:i];
+//        NSString *strAlian = [dicDatasource objectForKey:@"Alians"];
+//        NSString *strServer = [dicDatasource objectForKey:@"Server"];
+//        EngineType engineType = (EngineType)[[dicDatasource objectForKey:@"Type"] intValue];
+//        // Alians重命名 同一个Server不要打开两次
+//        NSString *strDesAlian = strAlian;
+//        
+//        NSInteger nIndex = [arrTargetServers indexOfObject:strServer];
+//        if (nIndex>=0 && nIndex<arrTargetServers.count) {
+//            // 替换alian 保证原来map有数据源
+//            strDesAlian = [arrTargetAlians objectAtIndex:nIndex];
+//        }else{
+//            // 保证不重名
+//            strDesAlian = [self formateNoneExistDatasourceAlian:strAlian ofWorkspace:desWorkspace];
+//            DatasourceConnectionInfo *infoTemp = [[DatasourceConnectionInfo alloc]init];
+//            if (engineType == ET_UDB || engineType == ET_IMAGEPLUGINS){
+//                infoTemp.server = [NSString stringWithFormat:@"%@/%@",srcDatasourceDir,strServer];
+//            }else{
+//                infoTemp.server = strServer;
+//            }
+//            infoTemp.engineType = engineType;
+//            infoTemp.alias = strDesAlian;
+//            if(![desWorkspace.datasources open:infoTemp]){
+//                continue;
+//            }
+//        }
+//        // xml中需重命名的别名
+//        if (![strAlian isEqualToString:strDesAlian]) {
+//            [arrAlian addObject:strAlian];
+//            [arrReAlian addObject:strDesAlian];
+//        }
+//    }
+//    
+//    
+//    NSString* srcResources = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
+//    // Marker
+//    {
+//        if([desWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups indexofGroup:strMapName]!=-1){
+//            //删除分组
+//            //-----??>>>[desWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups removeGroupWith:strMapName];
+//            [desWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
+//        }
+//        //新建分组
+//        SymbolGroup *desMarkerGroup = [desWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
+//        
+//        NSString *strMarkerPath = [srcResources stringByAppendingString:@".sym"];
+//        isDir = true;
+//        isExist = [[NSFileManager defaultManager] fileExistsAtPath:strMarkerPath isDirectory:&isDir];
+//        if ( isExist && !isDir) {
+//            SymbolMarkerLibrary *markerLibrary = [[SymbolMarkerLibrary alloc]init];
+//            [markerLibrary appendFromFile:strMarkerPath isReplace:YES];
+//            [self importSymbolsFrom:markerLibrary.rootGroup toGroup:desMarkerGroup isDirRetain:YES isSymbolReplace:YES];
+//        }
+//    }
+//    // Line
+//    {
+//        if([desWorkspace.resources.lineLibrary.rootGroup.childSymbolGroups indexofGroup:strMapName]!=-1){
+//            //删除分组
+//            [desWorkspace.resources.lineLibrary.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
+//        }
+//        if([desWorkspace.resources.lineLibrary.getInlineMarkerLib.rootGroup.childSymbolGroups indexofGroup:strMapName]!=-1){
+//            //删除inlineMarkerLib
+//            [desWorkspace.resources.lineLibrary.getInlineMarkerLib.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
+//        }
+//        
+//        SymbolGroup *desLineGroup = [desWorkspace.resources.lineLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
+//        SymbolGroup *desInlineMarkerGroup = [desWorkspace.resources.lineLibrary.getInlineMarkerLib.rootGroup.childSymbolGroups createGroupWith:strMapName];
+//        
+//        NSString *strLinePath = [srcResources stringByAppendingString:@".lsl"];
+//        isDir = true;
+//        isExist = [[NSFileManager defaultManager] fileExistsAtPath:strLinePath isDirectory:&isDir];
+//        if ( isExist && !isDir) {
+//            SymbolLineLibrary *lineLibrary = [[SymbolLineLibrary alloc]init];
+//            [lineLibrary appendFromFile:strLinePath isReplace:YES];
+//            [self importSymbolsFrom:lineLibrary.getInlineMarkerLib.rootGroup toGroup:desInlineMarkerGroup isDirRetain:YES isSymbolReplace:YES];
+//            [self importSymbolsFrom:lineLibrary.rootGroup toGroup:desLineGroup isDirRetain:YES isSymbolReplace:YES];
+//        }
+//    }
+//    // Fill
+//    {
+//        if([desWorkspace.resources.fillLibrary.rootGroup.childSymbolGroups indexofGroup:strMapName]!=-1){
+//            //删除分组
+//            [desWorkspace.resources.fillLibrary.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
+//        }
+//        if([desWorkspace.resources.fillLibrary.getInfillMarkerLib.rootGroup.childSymbolGroups indexofGroup:strMapName]!=-1){
+//            //删除infillMarkerLib
+//            [desWorkspace.resources.fillLibrary.getInfillMarkerLib.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
+//        }
+//        
+//        SymbolGroup *desFillGroup = [desWorkspace.resources.fillLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
+//        SymbolGroup *desInfillMarkerGroup = [desWorkspace.resources.fillLibrary.getInfillMarkerLib.rootGroup.childSymbolGroups createGroupWith:strMapName];
+//        
+//        NSString *strFillPath = [srcResources stringByAppendingString:@".bru"];
+//        isDir = true;
+//        isExist = [[NSFileManager defaultManager] fileExistsAtPath:strFillPath isDirectory:&isDir];
+//        if ( isExist && !isDir) {
+//            SymbolFillLibrary *fillLibrary = [[SymbolFillLibrary alloc]init];
+//            [fillLibrary appendFromFile:strFillPath isReplace:YES];
+//            [self importSymbolsFrom:fillLibrary.getInfillMarkerLib.rootGroup toGroup:desInfillMarkerGroup isDirRetain:YES isSymbolReplace:YES];
+//            [self importSymbolsFrom:fillLibrary.rootGroup toGroup:desFillGroup isDirRetain:YES isSymbolReplace:YES];
+//        }
+//    }
+//    
+//    
+//    NSString* strMapXML = [NSString stringWithContentsOfFile:srcPathXML encoding:NSUTF8StringEncoding error:nil];
+//    strMapXML = [self modifyXML:strMapXML replace:arrAlian with:arrReAlian];
+//    
+//    [desWorkspace.maps add:strMapName withXML:strMapXML];
+//    
+//    return true;
+//}
 
 @end
