@@ -6,11 +6,15 @@
 //
 
 #import "SymbolLibrary.h"
+@class SymbolMarkerLibrary;
 /** 填充符号库类。
  * 
  * <p>该类继承自符号库基类，即  <SymbolLibrary> 类，该类提供的方法都继承自符号库基类。
  */
 @interface SymbolFillLibrary : SymbolLibrary
+
+//得到内部点符号库
+-(SymbolMarkerLibrary*)getInfillMarkerLib;
 
 -(void)dispose;
 

@@ -7,9 +7,13 @@
 //
 
 #import "Symbol.h"
+
 // 线填充符号类
 @interface SymbolLine : Symbol
 
 -(void)dispose;
+
+// 线符号用到的第三方点符号的id
+-(NSArray*)customizedPointSymbolIDs;
 
 @end
