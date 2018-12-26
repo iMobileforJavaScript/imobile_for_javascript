@@ -148,7 +148,7 @@ RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBl
 
 
 #pragma mark 以数据源形式打开工作空间, 默认根据Map 图层索引显示图层
-RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)params defaultIndex:(int)defaultIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)params defaultIndex:(int)defaultIndex toHead:(BOOL)toHead resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try {
         Datasource* dataSource = [sMap.smMapWC openDatasource:params];
@@ -156,7 +156,7 @@ RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)
         
         if (dataSource && defaultIndex >= 0 && dataSource.datasets.count > 0) {
             Dataset* ds = [dataSource.datasets get:defaultIndex];
-            [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
+            [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:toHead];
             sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
         }
         [sMap.smMapWC.mapControl.map refresh];
@@ -168,7 +168,7 @@ RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)
 }
 
 #pragma mark 以数据源形式打开工作空间, 默认根据Map 图层名称显示图层
-RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)params defaultName:(NSString *)defaultName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)params defaultName:(NSString *)defaultName toHead:(BOOL)toHead resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try {
         if(params){
@@ -177,7 +177,7 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
             
             if (defaultName != nil && defaultName.length > 0) {
                 Dataset* ds = [dataSource.datasets getWithName:defaultName];
-                [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
+                [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:toHead];
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
             }
             [self openGPS];

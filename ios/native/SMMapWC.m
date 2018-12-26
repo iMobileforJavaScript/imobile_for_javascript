@@ -285,7 +285,7 @@
     }
     NSString *resultAlian = alian;
     int nAddNumber = 1;
-    while ([SMap.singletonInstance.smMapWC.workspace.datasources indexOf:resultAlian]!=-1) {
+    while ([workspaceTemp.datasources indexOf:resultAlian]!=-1) {
         resultAlian = [NSString stringWithFormat:@"%@#%d",alian,nAddNumber];
         nAddNumber++;
     }
@@ -298,12 +298,13 @@
     }
     NSString *resultName = name;
     int nAddNumber = 1;
-    while ([SMap.singletonInstance.smMapWC.workspace.maps indexOf:resultName]!=-1) {
+    while ([workspaceTemp.maps indexOf:resultName]!=-1) {
         resultName = [NSString stringWithFormat:@"%@#%d",name,nAddNumber];
         nAddNumber++;
     }
     return resultName;
 }
+
 
 -(BOOL)isDatasourceFileExist:(NSString*)strPath isUDB:(BOOL)bUDB{
     if(bUDB){
@@ -340,15 +341,115 @@
     }
 }
 
+// arrAlian中值不重复
+// arrNewAlian中值不重复
+// arrAlian与arrNewAlian对应位不等
+
 -(NSString*)modifyXML:(NSString*)strXML replace:(NSArray*)arrAlian with:(NSArray*)arrNewAlian{
-    // 倒着替换 不然会把先前替换过的名字再次替换出错
+    
+    NSSet *setAlian= [NSSet setWithArray:arrAlian];
+    if (setAlian.count!=arrAlian.count) {
+        NSLog(@"error:XML modify with redefined srcString!!");
+    }
+    NSSet *setNewAlian= [NSSet setWithArray:arrNewAlian];
+    if (setNewAlian.count!=arrNewAlian.count) {
+        NSLog(@"error:XML modify with redefined desString!!");
+    }
+    
+    int nCount = arrAlian.count;
+    int pRespace[nCount];
+    
+    for (int i=0; i<nCount; i++) {
+        pRespace[i] = [arrAlian indexOfObject:arrNewAlian[i]];
+        if (pRespace[i]<0 || pRespace[i]>=nCount) {
+            pRespace[i] = -1;  //源外的
+        }
+    }
+    
+    // -2处理过 -1不在源内 i为所指list
+    
+    NSMutableArray *arrLists = [[NSMutableArray alloc]init];
+    for (int i=0; i<nCount; i++) {
+        int nIndex = pRespace[i];
+        if (nIndex == -2) {
+            //已经处理过 在list中
+            continue;
+        }else{
+            
+            NSMutableArray *arrTemp = [[NSMutableArray alloc]init];
+            [arrTemp addObject:arrAlian[i]];//list头
+            int nPreIndex = i;
+            while (nIndex > i) {
+                
+                [arrTemp addObject:arrAlian[nIndex]];//加到list中
+                nPreIndex = nIndex;
+                nIndex = pRespace[nPreIndex];
+                pRespace[nPreIndex] = -2;//标记处理过了
+                
+            }
+            if (nIndex==i || nIndex==-1) {
+                //循环 || 源外的
+                
+                int nListIndex = arrLists.count;
+                [arrTemp addObject:arrNewAlian[nPreIndex]];
+                [arrLists addObject:arrTemp];
+                pRespace[i] = nListIndex;
+                
+                
+            }else if(nIndex >= 0){
+                
+                //添加到其他表头
+                int nListIndex = pRespace[nIndex];
+                NSArray *arrListTemp = arrLists[ nListIndex ];
+                [arrTemp addObjectsFromArray:arrListTemp];
+                [arrLists replaceObjectAtIndex:nListIndex withObject:arrTemp];
+                pRespace[nIndex] = -2;
+                pRespace[i] = nListIndex;
+                
+                
+            }else{
+                //error
+                NSLog(@"error_____wnmng");
+            }
+            
+        }
+        
+    }
+    
+    
     NSString* strResult = strXML;
-    for (NSInteger i=arrAlian.count-1; i>=0; i--) {
-        NSString * strAlian = [arrAlian objectAtIndex:i];
-        NSString * strNewAlian = [arrNewAlian objectAtIndex:i];
-        NSString * strSrc = [NSString stringWithFormat:@"<sml:DataSourceAlias>%@</sml:DataSourceAlias>",strAlian];
-        NSString * strReplace = [NSString stringWithFormat:@"<sml:DataSourceAlias>%@</sml:DataSourceAlias>",strNewAlian];
+    for (int i=0; i<arrLists.count; i++) {
+        NSMutableArray *arrListTemp = arrLists[i];
+        if ([[arrListTemp firstObject] isEqualToString:[arrListTemp lastObject]]) {
+            int ntemp = 1;
+            NSString *strTail = [arrListTemp lastObject];
+            NSString *strTmp =[ NSString stringWithFormat:@"%@#%d" ,strTail,ntemp ];
+            while ([strResult containsString: [NSString stringWithFormat:@"<sml:DataSourceAlias>%@</sml:DataSourceAlias>",strTmp] ]
+                   || [arrNewAlian containsObject:strTmp] ) {
+                ntemp++;
+                strTmp = [ NSString stringWithFormat:@"%@#%d" ,strTail,ntemp ];
+            }
+            [arrListTemp replaceObjectAtIndex:arrListTemp.count-1 withObject:strTmp];
+            strResult = [self modifyXML:strResult with:arrListTemp];
+            NSArray *arrStrTemp_Tail = [NSArray arrayWithObjects:strTmp,strTail, nil];
+            strResult = [self modifyXML:strResult with:arrStrTemp_Tail];
+        }else{
+            strResult = [self modifyXML:strResult with:arrListTemp];
+        }
+        
+    }
+    
+    return strResult;
+}
+
+-(NSString*)modifyXML:(NSString*)strXML with:(NSArray*)arrString{
+    NSString*strResult = strXML;
+    int nIndex = arrString.count-1;
+    while (nIndex>0) {
+        NSString *strSrc = [NSString stringWithFormat:@"<sml:DataSourceAlias>%@</sml:DataSourceAlias>",arrString[nIndex-1]];
+        NSString *strReplace = [NSString stringWithFormat:@"<sml:DataSourceAlias>%@</sml:DataSourceAlias>",arrString[nIndex]];
         strResult = [strResult stringByReplacingOccurrencesOfString:strSrc withString:strReplace];
+        nIndex--;
     }
     return strResult;
 }
@@ -936,7 +1037,7 @@
         if (bDirRetain) {
             NSString* subName = subGroup.name;
             int nAddNum = 1;
-            while ([desLib.rootGroup.childSymbolGroups contains:subName]) {
+            while ([desLib.rootGroup.childSymbolGroups indexofGroup:subName]!=-1) {
                 subName = [NSString stringWithFormat:@"%@#%d",subGroup.name,nAddNum];
                 nAddNum++;
             }
@@ -950,21 +1051,55 @@
 }
 
 -(NSString *)getCustomerDirectory{
-    return @"/Customer";
+    return  [NSHomeDirectory() stringByAppendingString:@"/Documents/Customer"];
+    //return @"/Customer";
 }
 -(NSString*)getModuleDirectory:(int)nModule{
     switch (nModule) {
         case 0:  /*模块0*/
             return  @"模块0";
-        
-            
+        case 1:  /*模块0*/
+            return  @"模块1";
         default:
             return nil;
     }
 }
 
+// 导入文件工作空间到程序目录
+//      拆分文件工作空间成为多个map.xml及其资源文件到程序相应目录
+// 目录结构：
+//      Customer:
+//          \------->Map:           旗下包含模块子文件夹，存放map.xml和map.exp文件
+//          \------->Datasource:    旗下包含模块子文件夹，存放文件数据源文件
+//          \------->Resource:      旗下包含模块子文件夹，存放符号库文件（.sym/.lsl./bru）
+
+-(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(int)nModule{
+    
+    BOOL result = false;
+    if ( infoDic && [infoDic objectForKey:@"server"] && [infoDic objectForKey:@"type"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
+        Workspace *importWorkspace = [[Workspace alloc]init];
+        WorkspaceConnectionInfo* info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
+        
+        if([importWorkspace open:info]){
+            
+            for (int i=0; i<importWorkspace.maps.count; i++) {
+                NSString *strMapName = [importWorkspace.maps get:i];
+                BOOL resMap = [self saveMapName:strMapName fromWorkspace:importWorkspace ofModule:nModule isNewMap:YES isResourcesModyfied:false];
+            }
+            
+            result = true;
+        }
+        
+        [importWorkspace close];
+        [importWorkspace dispose];
+        
+    }
+    return result;
+    
+}
+
 //
-// 导出工作空间中地图到模块
+// 导出(保存)工作空间中地图到模块
 // 参数：
 //      strMapAlians: 导出的地图别名（一般即为保存文件名）
 //      srcWorkspace: 内存工作空间
@@ -976,7 +1111,7 @@
 //      2.srcWorkspace包含地图
 //      3.模块存在
 //
--(BOOL)exportMapNames:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(int)nModule isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified{
+-(BOOL)saveMapName:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(int)nModule isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified{
     
     if(srcWorkspace==nil || [srcWorkspace.maps indexOf:strMapAlians]==-1){
         return false;
@@ -984,7 +1119,7 @@
     
     NSString *strCustomer = [self getCustomerDirectory];
     NSString *strModule = [self getModuleDirectory:nModule];
-        if (strModule == nil) {
+    if (strModule == nil) {
         return false;
     }
     
@@ -995,18 +1130,27 @@
         return false;
     }
     
+    NSString* desDirMap =  [NSString stringWithFormat:@"%@/Map/%@",strCustomer,strModule];
+    BOOL isDir = false;
+    BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:desDirMap isDirectory:&isDir];
+    if (!isExist || !isDir) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:desDirMap withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
     NSString *strMapName = strMapAlians;
     // map文件
-    NSString* desPathMapXML = [NSString stringWithFormat:@"%@/Map/%@/%@.xml",strCustomer,strModule,strMapName];
+    // NSString* desPathMapXML = [NSString stringWithFormat:@"%@/%@.xml",strCustomer,strModule,strMapName];
+    NSString* desPathMapXML = [NSString stringWithFormat:@"%@/%@.xml",desDirMap,strMapName];
     NSString* desPathMapExp ;
     if (!bNew) {
         // 删文件
-        BOOL isDir = true;
-        BOOL isExist = [[NSFileManager defaultManager]fileExistsAtPath:desPathMapXML isDirectory:&isDir];
+        isDir = true;
+        isExist = [[NSFileManager defaultManager]fileExistsAtPath:desPathMapXML isDirectory:&isDir];
         if (isExist && !isDir) {
             [[NSFileManager defaultManager]removeItemAtPath:desPathMapXML error:nil];
         }
-        desPathMapExp = [NSString stringWithFormat:@"%@/Map/%@/%@.exp",strCustomer,strModule,strMapName];
+        //desPathMapExp = [NSString stringWithFormat:@"%@/Map/%@/%@.exp",strCustomer,strModule,strMapName];
+        desPathMapExp = [NSString stringWithFormat:@"%@/%@.exp",desDirMap,strMapName];
         isExist = [[NSFileManager defaultManager]fileExistsAtPath:desPathMapExp isDirectory:&isDir];
         if (isExist && !isDir) {
             [[NSFileManager defaultManager]removeItemAtPath:desPathMapXML error:nil];
@@ -1018,8 +1162,10 @@
         NSString * desLastMap = [[desPathMapXML componentsSeparatedByString:@"/"]lastObject];
         // map文件名确定后其他文件（符号库）不需要判断，直接覆盖
         strMapName = [desLastMap substringToIndex:desLastMap.length-4];
-        desPathMapExp = [NSString stringWithFormat:@"%@/Map/%@/%@.exp",strCustomer,strModule,strMapName];
+        //desPathMapExp = [NSString stringWithFormat:@"%@/Map/%@/%@.exp",strCustomer,strModule,strMapName];
+        desPathMapExp = [NSString stringWithFormat:@"%@/%@.exp",desDirMap,strMapName];
     }
+    
     
     // map xml
     NSString* strMapXML = [mapExport toXML];
@@ -1071,6 +1217,12 @@
     }
     
     NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource/%@",strCustomer,strModule];
+    isDir = false;
+    isExist = [[NSFileManager defaultManager] fileExistsAtPath:desDatasourceDir isDirectory:&isDir];
+    if (!isExist || !isDir) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:desDatasourceDir withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
     
     NSMutableArray *arrExpDatasources = [[NSMutableArray alloc]init];
     //[[NSFileManager defaultManager]createDirectoryAtPath:desDataDir withIntermediateDirectories:YES attributes:nil error:nil];
@@ -1140,12 +1292,25 @@
             }
         }
         
+        if (engineType == ET_UDB || engineType == ET_IMAGEPLUGINS){
+            strTargetServer = [strTargetServer substringFromIndex:desDatasourceDir.length+1];
+        }
+        
         NSDictionary *dicDatasource = @{ @"Alians":strSrcAlian , @"Server":strTargetServer , @"Type":[NSNumber numberWithInt:engineType] };
         [arrExpDatasources addObject:dicDatasource];
         //user password
     }
     
-    NSString* desResources = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
+    NSString *desResourceDir = [NSString stringWithFormat:@"%@/Resource/%@",strCustomer,strModule];
+    isDir = false;
+    isExist = [[NSFileManager defaultManager] fileExistsAtPath:desResourceDir isDirectory:&isDir];
+    if (!isExist || !isDir) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:desResourceDir withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    
+    //NSString* desResources = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
+    NSString* desResources = [NSString stringWithFormat:@"%@/%@",desResourceDir,strMapName];
     //    if (bNew) {
     //        NSString *strSymTemp = [desResources stringByAppendingString:@".sym"];
     //        strSymTemp = [self formateNoneExistFileName:strSymTemp isDir:NO];
@@ -1160,6 +1325,10 @@
             //SymbolGroup *desMarkerGroup = [markerLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
             SymbolGroup *desMarkerGroup = markerLibrary.rootGroup;
             SymbolGroup *srcMarkerGroup = [srcWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
+            if (bNew && !bResourcesModified) {
+                // 整个库都倒出
+                srcMarkerGroup = srcWorkspace.resources.markerLibrary.rootGroup;
+            }
             if (srcMarkerGroup!=nil) {
                 [self importSymbolsFrom:srcMarkerGroup toGroup:desMarkerGroup isDirRetain:YES isSymbolReplace:NO];
             }
@@ -1189,12 +1358,18 @@
             //SymbolGroup *desLineGroup = [lineLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
             SymbolGroup *desLineGroup = lineLibrary.rootGroup;
             SymbolGroup *srcLineGroup = [srcWorkspace.resources.lineLibrary.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
+            if (bNew && !bResourcesModified) {
+                srcLineGroup = srcWorkspace.resources.lineLibrary.rootGroup;
+            }
             if (srcLineGroup!=nil) {
                 [self importSymbolsFrom:srcLineGroup toGroup:desLineGroup isDirRetain:YES isSymbolReplace:NO];
             }
             //SymbolGroup *desInlineGroup = [markerInlineLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
             SymbolGroup *desInlineGroup = markerInlineLibrary.rootGroup;
             SymbolGroup *srcInlineGroup = [srcWorkspace.resources.lineLibrary.getInlineMarkerLib.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
+            if (bNew && !bResourcesModified) {
+                srcInlineGroup = srcWorkspace.resources.lineLibrary.getInlineMarkerLib.rootGroup;
+            }
             if (srcInlineGroup!=nil) {
                 [self importSymbolsFrom:srcInlineGroup toGroup:desInlineGroup isDirRetain:YES isSymbolReplace:NO];
             }
@@ -1233,12 +1408,18 @@
             //SymbolGroup *desFillGroup = [fillLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
             SymbolGroup *desFillGroup = fillLibrary.rootGroup;
             SymbolGroup *srcFillGroup = [srcWorkspace.resources.fillLibrary.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
+            if (bNew && !bResourcesModified) {
+                srcFillGroup = srcWorkspace.resources.fillLibrary.rootGroup;
+            }
             if (srcFillGroup!=nil) {
                 [self importSymbolsFrom:srcFillGroup toGroup:desFillGroup isDirRetain:YES isSymbolReplace:NO];
             }
             //SymbolGroup *desInfillGroup = [markerInfillLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
             SymbolGroup *desInfillGroup = markerInfillLibrary.rootGroup;
             SymbolGroup *srcInfillGroup = [srcWorkspace.resources.fillLibrary.getInfillMarkerLib.rootGroup.childSymbolGroups getGroupWithName:strMapAlians];
+            if (bNew && !bResourcesModified) {
+                srcInfillGroup = srcWorkspace.resources.fillLibrary.getInfillMarkerLib.rootGroup;
+            }
             if (srcInfillGroup!=nil) {
                 [self importSymbolsFrom:srcInfillGroup toGroup:desInfillGroup isDirRetain:YES isSymbolReplace:NO];
             }
@@ -1273,7 +1454,7 @@
     }
     
     
-    NSDictionary *dicExp= @{ @"Datasources":arrExpDatasources , @"Resources": desResources};
+    NSDictionary *dicExp= @{ @"Datasources":arrExpDatasources , @"Resources": strMapName};
     //[NSJSONSerialization JSONObjectWithData:[[features objectAtIndex:i] dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingAllowFragments error:&error];
     // [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil]
     
@@ -1286,7 +1467,9 @@
     return true;
 }
 
--(BOOL)importMapNames:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(int)nModule{
+
+// 大工作空间打开本地地图
+-(BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(int)nModule{
     
     if(desWorkspace==nil || [desWorkspace.maps indexOf:strMapName]!=-1){
         return false;
@@ -1294,7 +1477,7 @@
     
     NSString *strCustomer = [self getCustomerDirectory];
     NSString *strModule = [self getModuleDirectory:nModule];
-    if ([strModule isEqualToString:@""]) {
+    if (strModule==nil) {
         return false;
     }
     NSString* srcPathMap = [NSString stringWithFormat:@"%@/Map/%@/%@",strCustomer,strModule,strMapName];

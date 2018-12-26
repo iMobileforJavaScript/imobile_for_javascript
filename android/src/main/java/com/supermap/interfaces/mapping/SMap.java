@@ -162,7 +162,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void openDatasourceWithIndex(ReadableMap data, int defaultIndex, Promise promise) {
+    public void openDatasourceWithIndex(ReadableMap data, int defaultIndex, boolean toHead, Promise promise) {
         try {
             sMap = getInstance();
             Map params = data.toHashMap();
@@ -172,7 +172,7 @@ public class SMap extends ReactContextBaseJavaModule {
             if (datasource != null && defaultIndex >= 0 && datasource.getDatasets().getCount() > 0) {
                 Dataset ds = datasource.getDatasets().get(defaultIndex);
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                map.getLayers().add(ds, true);
+                map.getLayers().add(ds, toHead);
             }
             sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
             sMap.smMapWC.getMapControl().getMap().refresh();
@@ -191,7 +191,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void openDatasourceWithName(ReadableMap data, String defaultName, Promise promise) {
+    public void openDatasourceWithName(ReadableMap data, String defaultName, boolean toHead, Promise promise) {
         try {
             sMap = getInstance();
             Map params = data.toHashMap();
@@ -200,7 +200,7 @@ public class SMap extends ReactContextBaseJavaModule {
 
             if (datasource != null && !defaultName.equals("")) {
                 Dataset ds = datasource.getDatasets().get(defaultName);
-                sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, true);
+                sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, toHead);
             }
             sMap.smMapWC.getMapControl().getMap().refresh();
 

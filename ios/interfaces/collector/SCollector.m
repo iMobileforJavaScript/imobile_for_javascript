@@ -110,8 +110,17 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
             }
             NSString* datasourcePath = [info objectForKey:@"datasourcePath"];
             if (name != nil && ![name isEqualToString:@""]) {
-                NSString* layerName = [NSString stringWithFormat:@"%@@%@", name, datasourceName];
-                layer = [sMap.smMapWC.mapControl.map.layers getLayerWithName:layerName];
+//                NSString* layerName = [NSString stringWithFormat:@"%@@%@", name, datasourceName];
+//                layer = [sMap.smMapWC.mapControl.map.layers getLayerWithName:layerName];
+                Layers* layers = sMap.smMapWC.mapControl.map.layers;
+                for (int i = 0; i < layers.getCount; i++) {
+                    Layer* _layer = [layers getLayerAtIndex:i];
+                    NSArray* nameArr = [_layer.name componentsSeparatedByString:@"@"];
+                    if ([nameArr[0] isEqualToString:name]) {
+                        layer = _layer;
+                        break;
+                    }
+                }
             }
             
             if (layer == nil) {
@@ -153,11 +162,7 @@ RCT_REMAP_METHOD(startCollect, startCollectWithType:(int)type resolver:(RCTPromi
     @try {
         SMap* sMap = [SMap singletonInstance];
         Collector* collector = [self getCollector];
-        Action action = sMap.smMapWC.mapControl.action;
         BOOL result = [SMCollector setCollector:collector mapControl:sMap.smMapWC.mapControl type:type];
-//        [sMap.smMapWC.mapControl setAction:401];
-        //        [SMCollector openGPS:collector];
-        Action action1 = sMap.smMapWC.mapControl.action;
         resolve([NSNumber numberWithBool:result]);
         
     } @catch (NSException *exception) {
@@ -264,11 +269,7 @@ RCT_REMAP_METHOD(cancel, cancelWithType:(int)type resolver:(RCTPromiseResolveBlo
     @try {
         SMap* sMap = [SMap singletonInstance];
         [sMap.smMapWC.mapControl cancel];
-        if (type == REGION_HAND_PATH || type == LINE_HAND_PATH) {
-            [self startCollectWithType:type resolver:resolve rejecter:reject];
-        } else {
-            resolve([[NSNumber alloc] initWithBool:YES]);
-        }
+        [self startCollectWithType:type resolver:resolve rejecter:reject];
     } @catch (NSException *exception) {
         reject(@"SCollector",@"submit expection",nil);
     }

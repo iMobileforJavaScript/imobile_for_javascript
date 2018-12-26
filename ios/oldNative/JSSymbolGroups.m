@@ -99,7 +99,7 @@ RCT_REMAP_METHOD(indexOf, indexOfById:(NSString *)groupsId name:(NSString *)name
 RCT_REMAP_METHOD(remove, removeById:(NSString *)groupsId name:(NSString *)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SymbolGroups* groups = [JSObjManager getObjWithKey:groupsId];
-        bool result = [groups removeGroupWith:name];
+        bool result = [groups removeGroupWith:name isUpMove:true];
         
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
