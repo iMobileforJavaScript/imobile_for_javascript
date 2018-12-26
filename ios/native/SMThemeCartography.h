@@ -9,7 +9,7 @@
 #import "SuperMap/SuperMap.h"
 
 @interface SMThemeCartography : NSObject
-
++(void)setGeoStyleColor:(DatasetType)type geoStyle:(GeoStyle*)geoStyle color:(Color*)color;
 +(Dataset* )getDataset:(NSString* ) datasetName datasourceIndex:(int) datasourceIndex;
 +(Dataset* )getDataset:(NSString* ) datasetName datasourceAlias:(NSString* )datasourceAlias;
 +(Dataset* )getDataset:(NSString* ) datasetName data:(NSDictionary *)data;
@@ -18,5 +18,11 @@
 +(GeoStyle* )getThemeUniqueGeoStyle:(GeoStyle*)style data:(NSDictionary* )data;
 +(NSMutableDictionary* )getThemeUniqueDefaultStyle:(GeoStyle* )style;
 +(ColorGradientType) getColorGradientType:(NSString*) type;
-
++(RangeMode)getRangeMode:(NSString*) strMode;
++(LabelBackShape)getLabelBackShape:(NSString*) shape;
++(NSString*)getLabelBackShapeString:(LabelBackShape) shape;
++(NSArray*)getColorList;
++(NSMutableArray*)getRangeColors:(NSString* )colorType;
++(NSMutableArray*)getUniqueColors:(NSString* )colorType;
++(NSString*)datasetTypeToString:(DatasetType)datasetType;
 @end

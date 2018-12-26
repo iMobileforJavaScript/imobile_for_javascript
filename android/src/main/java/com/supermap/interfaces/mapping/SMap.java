@@ -46,6 +46,7 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class SMap extends ReactContextBaseJavaModule {
@@ -1396,5 +1397,42 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
 
+    }
+
+    /**
+     * 添加数据集到当前地图
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void addDatasetToMap(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+            String datastourceName = null;
+            String datasetName = null;
+
+            if (data.containsKey("DatasourceName")){
+                datastourceName = data.get("DatasourceName").toString();
+            }
+            if (data.containsKey("DatasetName")){
+                datasetName = data.get("DatasetName").toString();
+            }
+
+            Workspace workspace = sMap.smMapWC.getWorkspace();
+            if (datastourceName != null && datasetName != null) {
+                Datasource datasource = workspace.getDatasources().get(datastourceName);
+                Dataset dataset = datasource.getDatasets().get(datasetName);
+
+                sMap.smMapWC.getMapControl().getMap().getLayers().add(dataset, true);
+                sMap.smMapWC.getMapControl().getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
     }
 }

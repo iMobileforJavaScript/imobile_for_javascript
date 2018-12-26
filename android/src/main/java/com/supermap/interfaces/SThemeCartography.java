@@ -472,7 +472,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 if (fontSize != -1) {
 //                    textStyle.setFontScale();
                     textStyle.setFontHeight(fontSize);
-                    textStyle.setFontWidth(fontSize);
+//                    textStyle.setFontWidth(fontSize);
                 }
                 if (rotation != -1) {
                     textStyle.setRotation(rotation);
@@ -844,7 +844,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     TextStyle uniformStyle = themeLabel.getUniformStyle();
                     uniformStyle.setFontHeight(fontSize);
-                    uniformStyle.setFontWidth(fontSize);
+//                    uniformStyle.setFontWidth(fontSize);
 
                     SMap.getSMWorkspace().getMapControl().getMap().refresh();
 
