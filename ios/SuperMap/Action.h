@@ -95,15 +95,17 @@ typedef enum {
      */
     PATCH_HOLLOW_REGION = 205,
     
+    
     /**
      * 填充导洞对象
      */
-    INTERSECT_REGION = 207,
+    INTERSECT_REGION = 206,
     
     /**
      * 求交面对象
      */
-    FILL_HOLLOW_REGION = 206,
+    FILL_HOLLOW_REGION = 207,
+    
     
     /**
      * 多对象补洞
