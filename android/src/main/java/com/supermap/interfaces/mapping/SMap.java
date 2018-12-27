@@ -177,6 +177,10 @@ public class SMap extends ReactContextBaseJavaModule {
                 Dataset ds = datasource.getDatasets().get(defaultIndex);
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                 Layer layer = map.getLayers().add(ds, toHead);
+                 if (ds.getType() == DatasetType.REGION ) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineSymbolID(5);
+                }
                 if (ds.getType() == DatasetType.REGION || ds.getType() == DatasetType.REGION3D) {
                     LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
                     setting.getStyle().setFillForeColor(this.getFillColor());
