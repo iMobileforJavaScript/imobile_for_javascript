@@ -58,6 +58,27 @@ RCT_REMAP_METHOD(setMarkerSize, setMarkerSizeWithResolver:(int) mm layerName:(NS
     }
 }
 
+
+#pragma 获取点符号大小
+RCT_REMAP_METHOD(getMarkerSize, getMarkerSizeWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
+        if (layerSettingVector != nil) {
+            GeoStyle *style = layerSettingVector.geoStyle;
+            Size2D  *size = [[Size2D alloc] init];
+            size = [style getMarkerSize];
+            double dSize = size.width;
+            resolve([NSNumber numberWithDouble:dSize]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
 #pragma 设置点符号的颜色，color: 十六进制颜色码
 RCT_REMAP_METHOD(setMarkerColor, setMarkerColorWithResolver:(NSString*) strcolor layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
@@ -97,6 +118,24 @@ RCT_REMAP_METHOD(setMarkerAngle, setMarkerAngleWithResolver:(int) angle layerNam
     }
 }
 
+#pragma 设置点符号的旋转角度：0-360°
+RCT_REMAP_METHOD(getMarkerAngle, getMarkerAngleWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
+        if (layerSettingVector != nil) {
+            GeoStyle *style = layerSettingVector.geoStyle;
+            double angel = [style getMarkerAngle];
+            resolve([NSNumber numberWithDouble:angel]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
 #pragma 设置点符号的透明度：0-100%
 RCT_REMAP_METHOD(setMarkerAlpha, setMarkerAlphaWithResolver:(int) alpha layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
@@ -106,6 +145,24 @@ RCT_REMAP_METHOD(setMarkerAlpha, setMarkerAlphaWithResolver:(int) alpha layerNam
             [style setFillOpaqueRate:100-alpha];
             [[SMap singletonInstance].smMapWC.mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma 设置点符号的透明度：0-100%
+RCT_REMAP_METHOD(getMarkerAlpha, getMarkerAlphaWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
+        if (layerSettingVector != nil) {
+            GeoStyle *style = layerSettingVector.geoStyle;
+            int alhpa =100 - [style getFillOpaqueRate];
+            resolve([NSNumber numberWithInt:alhpa]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
         }
@@ -147,6 +204,24 @@ RCT_REMAP_METHOD(setLineWidth, setLineWidthWithResolver:(int) mm layerName:(NSSt
             [style setLineWidth:width];
             [[SMap singletonInstance].smMapWC.mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma 设置线宽：1-10mm(边框符号宽度)
+RCT_REMAP_METHOD(getLineWidth, getLineWidthWithResolver:(int) mm layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
+        if (layerSettingVector != nil) {
+            GeoStyle *style = layerSettingVector.geoStyle;
+            double width = [style getLineWidth] * 10;
+            resolve([NSNumber numberWithDouble:width]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
         }
@@ -277,6 +352,24 @@ RCT_REMAP_METHOD(setFillOpaqueRate, setFillOpaqueRateWithResolver:(int) fillOpaq
     }
 }
 
+#pragma 设置透明度（0-100）
+RCT_REMAP_METHOD(getFillOpaqueRate, getFillOpaqueRateWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
+        if (layerSettingVector != nil) {
+            GeoStyle *style = layerSettingVector.geoStyle;
+            int value =100 - [style getFillOpaqueRate];
+            resolve([NSNumber numberWithInt:value]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
 #pragma 设置线性渐变
 RCT_REMAP_METHOD(setFillLinearGradient, setFillLinearGradientWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
@@ -382,6 +475,25 @@ RCT_REMAP_METHOD(setGridOpaqueRate, setGridOpaqueRateWithResolver:(int) gridOpaq
         if (layerSettingVector != nil) {
 //            layerSettingGrid.setOpaqueRate(100 - gridOpaqueRate); //新增接口，待打开
             [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            resolve([NSNumber numberWithBool:YES]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma 设置点符号的透明度：0-100%
+RCT_REMAP_METHOD(getGridOpaqueRate, getGridOpaqueRateWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        LayerSettingGrid *layerSettingVector = [SMCartography getLayerSettingGrid:layername];
+        if (layerSettingVector != nil) {
+//            int opque = 100 - layerSettingtop
+//
+//            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
