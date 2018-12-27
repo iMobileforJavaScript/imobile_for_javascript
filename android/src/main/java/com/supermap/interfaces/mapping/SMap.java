@@ -31,6 +31,7 @@ import com.supermap.mapping.Action;
 import com.supermap.mapping.GeometrySelectedEvent;
 import com.supermap.mapping.GeometrySelectedListener;
 import com.supermap.mapping.Layer;
+import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
@@ -39,7 +40,6 @@ import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -48,6 +48,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class SMap extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SMap";
@@ -56,6 +57,9 @@ public class SMap extends ReactContextBaseJavaModule {
     private static MeasureListener mMeasureListener;
     private GestureDetector mGestureDetector;
     private GeometrySelectedListener mGeometrySelectedListener;
+    public static int fillNum;
+    public static Color[] fillColors;
+    public static Random random;// 用于保存产生随机的线风格颜色的Random对象
 
     public Selection getSelection() {
         return selection;
@@ -172,8 +176,28 @@ public class SMap extends ReactContextBaseJavaModule {
             if (datasource != null && defaultIndex >= 0 && datasource.getDatasets().getCount() > 0) {
                 Dataset ds = datasource.getDatasets().get(defaultIndex);
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                map.getLayers().add(ds, toHead);
+                Layer layer = map.getLayers().add(ds, toHead);
+                 if (ds.getType() == DatasetType.REGION ) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineSymbolID(5);
+                }
+                if (ds.getType() == DatasetType.REGION || ds.getType() == DatasetType.REGION3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setFillForeColor(this.getFillColor());
+                    setting.getStyle().setLineColor(this.getLineColor());
+                } else if (ds.getType() == DatasetType.LINE || ds.getType() == DatasetType.NETWORK || ds.getType() == DatasetType.NETWORK3D
+                        || ds.getType() == DatasetType.LINE3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineColor(this.getLineColor());
+                    if (ds.getType() == DatasetType.NETWORK || ds.getType() == DatasetType.NETWORK3D) {
+                        map.getLayers().add(((DatasetVector) ds).getChildDataset(), true);
+                    }
+                } else if (ds.getType() == DatasetType.POINT || ds.getType() == DatasetType.POINT3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineColor(this.getLineColor());
+                }
             }
+
             sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
             sMap.smMapWC.getMapControl().getMap().refresh();
 
@@ -181,6 +205,66 @@ public class SMap extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             promise.reject(e);
         }
+    }
+
+    /**
+     * 不同于上次选用的填充颜色的颜色
+     *
+     * @return
+     */
+    public static Color getFillColor() {
+
+        Color result = new Color(255,192,203);
+        if (fillNum >= getFillColors().length) {
+            fillNum = 0;
+        }
+        result = getFillColors()[fillNum];
+        fillNum++;
+        return result;
+
+    }
+
+    /**
+     * 获取随机的用于线风格的颜色
+     *
+     * @return
+     */
+    public static Color getLineColor() {
+        return getRandomLineColor();
+    }
+
+    /**
+     * 产生随机的用于线风格的颜色 经过初步试验，新产生的线颜色，饱和度【0-240】最好在30-100之间 亮度【0-240】最好在75-120之间
+     *
+     * @return
+     */
+    private static Color getRandomLineColor() {
+        Color result = new Color(255,192,203);
+        try {
+            if (random == null) {
+                random = new Random();
+            }
+            result = new Color(random.nextInt(255),random.nextInt(255),random.nextInt(255));
+        } catch (Exception ex) {
+        }
+        return result;
+    }
+
+    private static Color[] getFillColors() {
+        if (fillColors == null) {
+            fillColors = new Color[10];
+            fillColors[0] = new Color(224, 207, 226);
+            fillColors[1] = new Color(151, 191, 242);
+            fillColors[2] = new Color(242, 242, 186);
+            fillColors[3] = new Color(190, 255, 232);
+            fillColors[4] = new Color(255, 190, 232);
+            fillColors[5] = new Color(255, 190, 190);
+            fillColors[6] = new Color(255, 235, 175);
+            fillColors[7] = new Color(233, 255, 190);
+            fillColors[8] = new Color(234, 225, 168);
+            fillColors[9] = new Color(174, 241, 176);
+        }
+        return fillColors;
     }
 
     /**

@@ -1050,10 +1050,21 @@
     return;
 }
 
+//static NSString *g_strCustomerDirectory = nil;
 -(NSString *)getCustomerDirectory{
-    return  [NSHomeDirectory() stringByAppendingString:@"/Documents/Customer"];
-    //return @"/Customer";
+    NSString *strServer = SMap.singletonInstance.smMapWC.workspace.connectionInfo.server;
+    NSString *strRootFolder = [strServer substringToIndex: strServer.length - [[strServer componentsSeparatedByString:@"/"]lastObject].length-1];
+    return strRootFolder;
+    //    if (g_strCustomerDirectory==nil) {
+    //        g_strCustomerDirectory = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer"];
+    //    }
+    //    return g_strCustomerDirectory;
+    //    //return @"/Customer";
+    //}
+    //-(void)setCustomerDirectory:(NSString *)strValue{
+    //    g_strCustomerDirectory = strValue;
 }
+
 -(NSString*)getModuleDirectory:(int)nModule{
     switch (nModule) {
         case 0:  /*模块0*/
@@ -1073,7 +1084,7 @@
 //          \------->Datasource:    旗下包含模块子文件夹，存放文件数据源文件
 //          \------->Resource:      旗下包含模块子文件夹，存放符号库文件（.sym/.lsl./bru）
 
--(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(int)nModule{
+-(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString*)strModule/*(int)nModule*/{
     
     BOOL result = false;
     if ( infoDic && [infoDic objectForKey:@"server"] && [infoDic objectForKey:@"type"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
@@ -1082,9 +1093,33 @@
         
         if([importWorkspace open:info]){
             
+            NSMutableDictionary *dicAddition = [[NSMutableDictionary alloc]init];
+            
+            //模版
+            if ([strModule isEqualToString:@"Collection"]/*采集模块*/) {
+                NSString *strServer = [infoDic objectForKey:@"server"];
+                NSString *strRootDir =[strServer substringToIndex:strServer.length-[[strServer componentsSeparatedByString:@"/"]lastObject].length-1];
+                NSArray *arrSubs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:strRootDir error:nil];
+                for (int i=0; i<arrSubs.count; i++) {
+                    NSString *strSub = [arrSubs objectAtIndex:i];
+                    if ([strSub hasSuffix:@".xml"]) {
+                        NSString *strSrcTemplate = [NSString stringWithFormat:@"%@/%@",strRootDir,strSub];
+                        NSString *strDesTemplate = [NSString stringWithFormat:@"%@/Template/%@",[self getCustomerDirectory],strSub];
+                        strDesTemplate = [self formateNoneExistFileName:strDesTemplate isDir:NO];
+                        NSString *strNewSub = [[strDesTemplate componentsSeparatedByString:@"/"]lastObject];
+                        
+                        [[NSFileManager defaultManager]copyItemAtPath:strSrcTemplate toPath:strDesTemplate error:nil];
+                        [dicAddition setObject:strNewSub forKey:@"Template"];
+                        
+                        break;
+                    }
+                }
+            }
+
+
             for (int i=0; i<importWorkspace.maps.count; i++) {
                 NSString *strMapName = [importWorkspace.maps get:i];
-                BOOL resMap = [self saveMapName:strMapName fromWorkspace:importWorkspace ofModule:nModule isNewMap:YES isResourcesModyfied:false];
+                BOOL resMap = [self saveMapName:strMapName fromWorkspace:importWorkspace ofModule:strModule withAddition:dicAddition isNewMap:YES isResourcesModyfied:false];
             }
             
             result = true;
@@ -1111,14 +1146,14 @@
 //      2.srcWorkspace包含地图
 //      3.模块存在
 //
--(BOOL)saveMapName:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(int)nModule isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified{
+-(BOOL)saveMapName:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(NSString*)strModule withAddition:(NSDictionary*)dicAddition isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified{
     
     if(srcWorkspace==nil || [srcWorkspace.maps indexOf:strMapAlians]==-1){
         return false;
     }
     
     NSString *strCustomer = [self getCustomerDirectory];
-    NSString *strModule = [self getModuleDirectory:nModule];
+    //NSString *strModule = [self getModuleDirectory:nModule];
     if (strModule == nil) {
         return false;
     }
@@ -1453,12 +1488,17 @@
         
     }
     
+    //NSDictionary *dicExp= @{ @"Datasources":arrExpDatasources , @"Resources": strMapName};
+    NSMutableDictionary *dictionaryExp = [[NSMutableDictionary alloc]init];
+    [dictionaryExp setObject:arrExpDatasources forKey:@"Datasources"];
+    [dictionaryExp setObject:strMapName forKey:@"Resources"];
+    //模板
+    NSString *strTemplate = [dicAddition objectForKey:@"Template"];
+    if (strTemplate!=nil) {
+        [dictionaryExp setObject:strTemplate forKey:@"Template"];
+    }
     
-    NSDictionary *dicExp= @{ @"Datasources":arrExpDatasources , @"Resources": strMapName};
-    //[NSJSONSerialization JSONObjectWithData:[[features objectAtIndex:i] dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingAllowFragments error:&error];
-    // [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil]
-    
-    NSData *dataJson = [NSJSONSerialization dataWithJSONObject:dicExp options:NSJSONWritingPrettyPrinted error:nil];
+    NSData *dataJson = [NSJSONSerialization dataWithJSONObject:dictionaryExp options:NSJSONWritingPrettyPrinted error:nil];
     NSString *strExplorerJson = [[NSString alloc]initWithData:dataJson encoding:NSUTF8StringEncoding];
     [strExplorerJson writeToFile:desPathMapExp atomically:YES encoding:NSUTF8StringEncoding error:nil];
     
@@ -1469,14 +1509,14 @@
 
 
 // 大工作空间打开本地地图
--(BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(int)nModule{
+-(BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(NSString *)strModule{
     
     if(desWorkspace==nil || [desWorkspace.maps indexOf:strMapName]!=-1){
         return false;
     }
     
     NSString *strCustomer = [self getCustomerDirectory];
-    NSString *strModule = [self getModuleDirectory:nModule];
+    //NSString *strModule = [self getModuleDirectory:nModule];
     if (strModule==nil) {
         return false;
     }
