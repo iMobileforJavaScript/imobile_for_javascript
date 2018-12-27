@@ -8,6 +8,7 @@
 
 #import "SMSceneWC.h"
 //#import "SuperMap/Workspace.h"
+#import "SuperMap/Scenes.h"
 
 @implementation SMSceneWC
 
@@ -140,4 +141,247 @@
 //        @throw exception;
 //    }
 //}
+
+-(BOOL)copyFileFromPath:(NSString*)srcPath toPath:(NSString*)desPath{
+    BOOL copySucc = YES;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:desPath]) {
+        [fileManager createDirectoryAtPath:desPath withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    NSArray *array = [fileManager contentsOfDirectoryAtPath:srcPath error:nil];
+    for (int i=0; i<array.count; i++) {
+        NSString *fullPath = [srcPath stringByAppendingPathComponent:[array objectAtIndex:i]];
+        NSString *fullToPath = [desPath stringByAppendingPathComponent:[array objectAtIndex:i]];
+        BOOL isDir = NO;
+        BOOL isExist = [fileManager fileExistsAtPath:fullPath isDirectory:&isDir];
+        if (isExist) {
+            NSError *err = nil;
+            [fileManager copyItemAtPath:fullPath toPath:fullToPath error:&err];
+            if (err) {
+                copySucc = false;
+            }
+            if (isDir) {
+                [self copyFileFromPath:fullPath toPath:fullToPath];
+            }
+        }
+        
+    }
+    return copySucc;
+    
+}
+- (WorkspaceConnectionInfo *)setWorkspaceConnectionInfo:(NSDictionary *)infoDic workspace:(Workspace *)workspace {
+    WorkspaceConnectionInfo* info;
+    if (workspace == nil) {
+        info = [[WorkspaceConnectionInfo alloc] init];
+    } else {
+        info = workspace.connectionInfo;
+    }
+    NSString* caption = [infoDic objectForKey:@"caption"];
+    NSNumber* type = (NSNumber *)[infoDic objectForKey:@"type"];
+    NSInteger typevalue = type.integerValue > 0 ? type.integerValue : 0;
+    type = @(typevalue);
+    NSInteger version = (NSInteger)[infoDic objectForKey:@"version"];
+    NSString* server = [infoDic objectForKey:@"server"];
+    NSString* user = [infoDic objectForKey:@"user"];
+    NSString* password = [infoDic objectForKey:@"password"];
+    
+    //        [info setServer:path];
+    if (caption) {
+        [workspace setCaption:caption];
+    }
+    if (version) {
+        info.version = (WorkspaceVersion)version;
+    }
+    if (user) {
+        info.user = user;
+    }
+    if (password) {
+        info.password = password;
+    }
+    
+    if (server) {
+        switch (type.integerValue) {
+            case 4:
+                [info setType:SM_SXW];
+                if (![server hasSuffix:@".sxw"]) {
+                    server = [NSString stringWithFormat:@"%@/%@%@", server, caption, @".sxw"];
+                }
+                break;
+                
+                // SMW 工作空间信息设置
+            case 5:
+                [info setType:SM_SMW];
+                if (![server hasSuffix:@".smw"]) {
+                    server = [NSString stringWithFormat:@"%@/%@%@", server, caption, @".smw"];
+                }
+                break;
+                
+                // SXWU 文件工作空间信息设置
+            case 8:
+                [info setType:SM_SXWU];
+                if (![server hasSuffix:@".sxwu"]) {
+                    server = [NSString stringWithFormat:@"%@/%@%@", server, caption, @".sxwu"];
+                }
+                break;
+                
+                // SMWU 工作空间信息设置
+            case 9:
+                [info setType:SM_SMWU];
+                if (![server hasSuffix:@".smwu"]) {
+                    server = [NSString stringWithFormat:@"%@/%@%@", server, caption, @".smwu"];
+                }
+                break;
+                
+                // 其他情况
+            default:
+                [info setType:SM_SMWU];
+                if (![server hasSuffix:@".smwu"]) {
+                    server = [NSString stringWithFormat:@"%@/%@%@", server, caption, @".smwu"];
+                }
+                break;
+        }
+        [info setServer:server];
+    }
+    return info;
+}
+
+static NSString *g_strCustomerDirectory = nil;
+-(NSString *)getCustomerDirectory{
+    if (g_strCustomerDirectory==nil) {
+        g_strCustomerDirectory = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer"];
+    }
+    return g_strCustomerDirectory;
+    //return @"/Customer";
+}
+-(void)setCustomerDirectory:(NSString *)strValue{
+    g_strCustomerDirectory = strValue;
+}
+
+-(NSString*)formateNoneExistFileName:(NSString*)strPath isDir:(BOOL)bDirFile{
+    
+    NSString*strName = strPath;
+    NSString*strSuffix = @"";
+    if (!bDirFile) {
+        NSArray *arrPath = [strPath componentsSeparatedByString:@"/"];
+        NSString *strFileName = [arrPath lastObject];
+        NSArray *arrFileName = [strFileName componentsSeparatedByString:@"."];
+        strSuffix = [arrFileName lastObject];
+        strName = [strPath substringToIndex:strPath.length-strSuffix.length-1];
+    }
+    NSString *strResult = strPath;
+    int nAddNumber = 1;
+    while (1) {
+        BOOL isDir  = false;
+        BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:strResult isDirectory:&isDir];
+        if (!isExist) {
+            return strResult;
+        }else if(isDir!=bDirFile){
+            return strResult;
+        }else{
+            if (!bDirFile) {
+                strResult = [NSString stringWithFormat:@"%@#%d.%@",strName,nAddNumber,strSuffix];
+            }else{
+                strResult = [NSString stringWithFormat:@"%@#%d",strName,nAddNumber];
+            }
+            
+            nAddNumber++;
+        }
+    }
+}
+
+-(BOOL)import3DWorkspaceInfo:(NSDictionary *)infoDic{
+    
+    BOOL result = false;
+    if ( infoDic && [infoDic objectForKey:@"server"] && [infoDic objectForKey:@"type"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
+        Workspace *importWorkspace = [[Workspace alloc]init];
+        WorkspaceConnectionInfo* info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
+        
+        if([importWorkspace open:info]){
+            NSString * strSrcServer = [infoDic objectForKey:@"server"];
+            NSString * strServerName = [[strSrcServer componentsSeparatedByString:@"/"] lastObject];
+            
+            NSString * strSrcFolder = [strSrcServer substringToIndex:strSrcServer.length-strServerName.length-1];
+            NSString * strFolderName = [[strSrcFolder  componentsSeparatedByString:@"/"] lastObject];
+            
+            NSString * strDesDir = [NSString stringWithFormat:@"%@/Scence",[self getCustomerDirectory]];
+            NSString * strDesFolder = [NSString stringWithFormat:@"%@/%@",strDesDir,strFolderName];
+            //1.拷贝所有数据
+            strDesFolder = [self formateNoneExistFileName:strDesFolder isDir:YES];
+            //处理重名
+            strFolderName = [[strDesFolder  componentsSeparatedByString:@"/"] lastObject];
+            
+            [self copyFileFromPath:strSrcFolder toPath:strDesFolder];
+            
+            NSString *strWorkspace = [NSString stringWithFormat:@"%@/%@",strFolderName,strServerName];
+            NSMutableDictionary *dicParame = [[NSMutableDictionary alloc]initWithDictionary:infoDic];
+            [dicParame setObject:strWorkspace forKey:@"server"];
+            
+            //2.导出所有scence
+            for (int i=0; i<importWorkspace.scenes.count; i++) {
+                NSString* strScenceName = [importWorkspace.scenes get:i];
+                NSString *desScencePxp = [NSString stringWithFormat:@"%@/%@.pxp",strDesDir,strScenceName];
+                desScencePxp = [self formateNoneExistFileName:desScencePxp isDir:NO];
+                
+                NSDictionary *dicTemp = @{ @"Name":strScenceName , @"Workspace":dicParame };
+                
+                NSData *dataJson = [NSJSONSerialization dataWithJSONObject:dicTemp options:NSJSONWritingPrettyPrinted error:nil];
+                NSString *strExplorerJson = [[NSString alloc]initWithData:dataJson encoding:NSUTF8StringEncoding];
+                [strExplorerJson writeToFile:desScencePxp atomically:YES encoding:NSUTF8StringEncoding error:nil];
+            }
+            
+            [importWorkspace close];
+            result = true;
+        }
+        
+        [info dispose];
+        [importWorkspace close];
+        [importWorkspace dispose];
+    }
+    
+    return result;
+    
+}
+
+-(BOOL)openScenceName:(NSString *)strScenceName{
+    if(_workspace==nil || [[_workspace caption]isEqualToString:@"UntitledWorkspace"]){
+        return false;
+    }
+    NSString * strDir = [NSString stringWithFormat:@"%@/Scence",[self getCustomerDirectory]];
+    NSString* srcPathPXP = [NSString stringWithFormat:@"%@/%@.pxp",strDir,strScenceName];
+    BOOL isDir = true;
+    BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathPXP isDirectory:&isDir];
+    if (!isExist || isDir) {
+        return false;
+    }
+    BOOL result = false;
+    NSString* strScencePXP = [NSString stringWithContentsOfFile:srcPathPXP encoding:NSUTF8StringEncoding error:nil];
+    // {
+    //  "Datasources":
+    //                  [ {"Alians":strMapName,"Type":nEngineType,"Server":strDatasourceName} , {...} , {...} ... ] ,
+    //  "Resources":
+    //                  strMapName
+    // }
+    NSDictionary *dicExp = [NSJSONSerialization JSONObjectWithData:[strScencePXP dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
+    
+    NSString *strName = [dicExp objectForKey:@"Name"];
+    NSDictionary *dicTemp = [dicExp objectForKey:@"Workspace"];
+    NSString *strServer = [dicTemp objectForKey:@"server"];
+    NSString *strFullPath = [NSString stringWithFormat:@"%@/%@",strDir,strServer];
+    
+    NSMutableDictionary *dicInfo = [[NSMutableDictionary alloc] initWithDictionary:dicTemp];
+    
+    [dicInfo setObject:strFullPath forKey:@"server"];
+    
+    WorkspaceConnectionInfo* info = [self setWorkspaceConnectionInfo:dicInfo workspace:nil];
+    if([_workspace open:info]){
+        [_sceneControl.scene setWorkspace:_workspace];
+        [_sceneControl.scene open:strName];
+        result = true;
+    }
+    
+     [info dispose];
+    return result;
+}
+
 @end
