@@ -59,7 +59,7 @@
         DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
         Datasource* tempDs = [params objectForKey:@"alias"] ? [SMap.singletonInstance.smMapWC.workspace.datasources getAlias:[params objectForKey:@"alias"]] : nil;
         BOOL isOpen = tempDs && [params objectForKey:@"server"] && [tempDs.datasourceConnectionInfo.server isEqualToString:[params objectForKey:@"server"]] && [tempDs isOpended];
-        Datasource* dataSource = nil;
+        Datasource* dataSource = isOpen ? tempDs : nil;
         if (!isOpen) {
             NSArray* keyArr = [params allKeys];
             BOOL bDefault = YES;

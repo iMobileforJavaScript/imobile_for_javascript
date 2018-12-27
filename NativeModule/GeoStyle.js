@@ -3,12 +3,6 @@
  Author: Yang Shanglong
  E-mail: yangshanglong@supermap.com
  **********************************************************************************/
-import { NativeModules } from 'react-native';
-import xml2json from './utility/xml2json.min'
-// let G = NativeModules.JSGeoStyle;
-
-// import Size2D from './Size2D'
-
 /**
  * @class GeoStyle
  * @description 几何风格类。用于定义点状符号、线状符号、填充符号及其相关设置。对于文本对象只能设置文本风格，不能设置几何风格。
@@ -23,7 +17,7 @@ export default class GeoStyle {
    * @param a
    */
   setLineColor(r, g, b, a = 1) {
-    const rgba = a << 24 | b << 16 | g << 8 | a * 255
+    const rgba = (a * 255) << 24 | b << 16 | g << 8 | r
     // Object.assign(this.geoStyle, {
     //   LineColor: rgba,
     // })
@@ -95,7 +89,7 @@ export default class GeoStyle {
    * @param a
    */
   setFillForeColor(r, g, b, a = 1) {
-    const rgba = a << 24 | b << 16 | g << 8 | a * 255
+    const rgba = (a * 255) << 24 | b << 16 | g << 8 | r
     // Object.assign(this.geoStyle, {
     //   FillForeColor: rgba,
     // })
@@ -121,7 +115,7 @@ export default class GeoStyle {
    * @param a
    */
   setPointColor(r, g, b, a = 1) {
-    const rgba = a << 24 | b << 16 | g << 8 | a * 255
+    const rgba = (a * 255) << 24 | b << 16 | g << 8 | r
     // Object.assign(this.geoStyle, {
     //   PointColor: rgba,
     // })
