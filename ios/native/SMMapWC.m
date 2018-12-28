@@ -1083,10 +1083,10 @@
 //          \------->Map:           旗下包含模块子文件夹，存放map.xml和map.exp文件
 //          \------->Datasource:    旗下包含模块子文件夹，存放文件数据源文件
 //          \------->Resource:      旗下包含模块子文件夹，存放符号库文件（.sym/.lsl./bru）
+// 返回结果：NSArray为导入成功的所有地图名
 
--(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString*)strModule/*(int)nModule*/{
-    
-    BOOL result = false;
+-(NSArray *)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString*)strModule/*(int)nModule*/{
+    NSArray *arrResult = nil;
     if ( infoDic && [infoDic objectForKey:@"server"] && [infoDic objectForKey:@"type"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
         Workspace *importWorkspace = [[Workspace alloc]init];
         WorkspaceConnectionInfo* info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
@@ -1117,22 +1117,29 @@
             }
 
 
+            NSMutableArray *arrTemp = [[NSMutableArray alloc]init];
             for (int i=0; i<importWorkspace.maps.count; i++) {
                 NSString *strMapName = [importWorkspace.maps get:i];
-                BOOL resMap = [self saveMapName:strMapName fromWorkspace:importWorkspace ofModule:strModule withAddition:dicAddition isNewMap:YES isResourcesModyfied:false];
+                NSString *strResName = [self saveMapName:strMapName fromWorkspace:importWorkspace ofModule:strModule withAddition:dicAddition isNewMap:YES isResourcesModyfied:false];
+                if(strResName!=nil){
+                    [arrTemp addObject:strResName];
+                }
             }
-            
-            result = true;
+            if(arrTemp.count>0){
+                arrResult = arrTemp;
+            }
         }
         
         [importWorkspace close];
         [importWorkspace dispose];
         
     }
-    return result;
+    return arrResult;
     
 }
 
+//
+// 返回保存成功地图名
 //
 // 导出(保存)工作空间中地图到模块
 // 参数：
@@ -1146,23 +1153,23 @@
 //      2.srcWorkspace包含地图
 //      3.模块存在
 //
--(BOOL)saveMapName:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(NSString*)strModule withAddition:(NSDictionary*)dicAddition isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified{
+-(NSString*)saveMapName:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(NSString*)strModule withAddition:(NSDictionary*)dicAddition isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified{
     
     if(srcWorkspace==nil || [srcWorkspace.maps indexOf:strMapAlians]==-1){
-        return false;
+        return nil;
     }
     
     NSString *strCustomer = [self getCustomerDirectory];
     //NSString *strModule = [self getModuleDirectory:nModule];
     if (strModule == nil) {
-        return false;
+        return nil;
     }
     
     Map *mapExport = [[Map alloc]initWithWorkspace:srcWorkspace];
     
     if(![mapExport open:strMapAlians]){
         //打开失败
-        return false;
+        return nil;
     }
     
     NSString* desDirMap =  [NSString stringWithFormat:@"%@/Map/%@",strCustomer,strModule];
@@ -1504,7 +1511,7 @@
     
     [mapExport close];
     
-    return true;
+    return strMapName;
 }
 
 
