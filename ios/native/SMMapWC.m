@@ -1065,9 +1065,9 @@
     //    g_strCustomerDirectory = strValue;
 }
 
--(void)setCustomerDirectory:(NSString *)strValue{
-    g_strCustomerDirectory = strValue;
-}
+//-(void)setCustomerDirectory:(NSString *)strValue{
+//    g_strCustomerDirectory = strValue;
+//}
 -(NSString*)getModuleDirectory:(int)nModule{
     switch (nModule) {
         case 0:  /*模块0*/
@@ -1493,12 +1493,14 @@
     
     //NSDictionary *dicExp= @{ @"Datasources":arrExpDatasources , @"Resources": strMapName};
     NSMutableDictionary *dictionaryExp = [[NSMutableDictionary alloc]init];
-    [dictionaryExp setObject:@"Datasources" forKey:arrExpDatasources];
-    [dictionaryExp setObject:@"Resources" forKey:strMapName];
+    [dictionaryExp setObject:arrExpDatasources forKey:@"Datasources"];
+    [dictionaryExp setObject:strMapName forKey:@"Resources"];
     //模板
-    NSString *strTemplate = [dicAddition objectForKey:@"Template"];
-    if (strTemplate!=nil) {
-        [dictionaryExp setObject:@"Template" forKey:strTemplate];
+    if (dicAddition != nil) {
+        NSString *strTemplate = [dicAddition objectForKey:@"Template"];
+        if (strTemplate!=nil) {
+            [dictionaryExp setObject:strTemplate forKey:@"Template"];
+        }
     }
     
     NSData *dataJson = [NSJSONSerialization dataWithJSONObject:dictionaryExp options:NSJSONWritingPrettyPrinted error:nil];

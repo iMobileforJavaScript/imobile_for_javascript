@@ -883,6 +883,55 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 移除指定位置的地图
+     * @param index
+     * @param promise
+     */
+    @ReactMethod
+    public void removeMapByIndex(int index, Promise promise) {
+        try {
+            sMap = getInstance();
+            Maps maps = sMap.smMapWC.getWorkspace().getMaps();
+            boolean result = false;
+            if (index >= 0 && index < maps.getCount()) {
+                String name = maps.get(index);
+                result = maps.remove(index);
+                sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(name);
+                sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(name);
+                sMap.smMapWC.getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(name);
+            }
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 移除指定名称的地图
+     * @param name
+     * @param promise
+     */
+    @ReactMethod
+    public void removeMapByName(String name, Promise promise) {
+        try {
+            sMap = getInstance();
+            Maps maps = sMap.smMapWC.getWorkspace().getMaps();
+            boolean result = false;
+            if (maps.indexOf(name) >= 0) {
+                result = maps.remove(name);
+                sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(name);
+                sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(name);
+                sMap.smMapWC.getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(name);
+            }
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 地图另存为
      * @param name
      * @param promise
