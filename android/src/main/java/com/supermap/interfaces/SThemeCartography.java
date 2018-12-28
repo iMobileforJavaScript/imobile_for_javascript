@@ -6,7 +6,6 @@ import com.supermap.RNUtils.ColorParseUtil;
 import com.supermap.data.*;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.*;
-import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMThemeCartography;
 
 import java.util.HashMap;
@@ -1078,6 +1077,59 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 设置统一标签专题图的背景颜色
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void setUniformLabelBackColor(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+            String color = null;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("Color")){
+                color = data.get("Color").toString();
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && color != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
+                    GeoStyle backStyle = themeLabel.getBackStyle();
+                    backStyle.setFillForeColor(ColorParseUtil.getColor(color));
+
+                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+                    promise.resolve(true);
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 获取统一标签专题图的颜色
      *
      * @param readableMap
@@ -1779,6 +1831,77 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             }
 
             promise.resolve(WA);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取专题图的颜色方案
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getThemeColorSchemeName(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() != null) {
+                String themeColorSchemeName = SMThemeCartography.getThemeColorSchemeName(layer);
+
+                if (themeColorSchemeName != null) {
+                    promise.resolve(themeColorSchemeName);
+                } else {
+                    promise.resolve(false);
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 保存当前地图
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void saveMap(Promise promise) {
+        try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            Workspace workspace = SMap.getSMWorkspace().getWorkspace();
+            com.supermap.mapping.Map map = mapControl.getMap();
+
+            boolean saveMap = map.save();
+            boolean saveWorkspace = workspace.save();
+            if (saveMap && saveWorkspace) {
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
         } catch (Exception e) {
             promise.reject(e);
         }
