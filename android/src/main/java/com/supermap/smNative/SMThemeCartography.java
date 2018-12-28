@@ -1285,6 +1285,98 @@ public class SMThemeCartography {
         return null;
     }
 
+    //获取专题图层上次设置的颜色方案
+    public static String getThemeColorSchemeName(Layer layer) {
+        try {
+            if (layer == null) {
+                return null;
+            }
+            Theme theme = layer.getTheme();
+            if (theme == null) {
+                return  null;
+            }
+            Color color_start = null;
+            Color color_end = null;
+            if (theme.getType() == ThemeType.UNIQUE) {
+                ThemeUnique themeUnique = (ThemeUnique) theme;
+                int count = themeUnique.getCount();
+
+                switch (layer.getDataset().getType().toString()) {
+                    case "POINT":
+                        color_start = themeUnique.getItem(0).getStyle().getLineColor();
+                        color_end = themeUnique.getItem(count - 1).getStyle().getLineColor();
+                        break;
+                    case "LINE":
+                        color_start = themeUnique.getItem(0).getStyle().getLineColor();
+                        color_end = themeUnique.getItem(count - 1).getStyle().getLineColor();
+                        break;
+                    case "REGION":
+                        color_start = themeUnique.getItem(0).getStyle().getFillForeColor();
+                        color_end = themeUnique.getItem(count - 1).getStyle().getFillForeColor();
+                        break;
+                }
+
+                if (color_start == null || color_end == null){
+                    return null;
+                }
+
+                int rgb_start = color_start.getRGB();
+                int rgb_end = color_end.getRGB();
+
+                for (int i = 0; i < listUniqueColors.size(); i++) {
+                    HashMap<String, Object> hashMap = listUniqueColors.get(i);
+                    Color[] colors = (Color[]) hashMap.get("Colors");
+                    int rgb01 = colors[0].getRGB();
+                    int rgb02 = colors[colors.length - 1].getRGB();
+                    if (rgb_start == rgb01 && rgb_end == rgb02) {
+                        return (String) hashMap.get("ColorScheme");
+                    }
+                }
+            } else if (theme.getType() == ThemeType.RANGE) {
+                ThemeRange themeRange = (ThemeRange) theme;
+                int count = themeRange.getCount();
+
+                switch (layer.getDataset().getType().toString()) {
+                    case "POINT":
+                        color_start = themeRange.getItem(0).getStyle().getLineColor();
+                        color_end = themeRange.getItem(count - 1).getStyle().getLineColor();
+                        break;
+                    case "LINE":
+                        color_start = themeRange.getItem(0).getStyle().getLineColor();
+                        color_end = themeRange.getItem(count - 1).getStyle().getLineColor();
+                        break;
+                    case "REGION":
+                        color_start = themeRange.getItem(0).getStyle().getFillForeColor();
+                        color_end = themeRange.getItem(count - 1).getStyle().getFillForeColor();
+                        break;
+                }
+
+                if (color_start == null || color_end == null){
+                    return null;
+                }
+
+                int rgb_start = color_start.getRGB();
+                int rgb_end = color_end.getRGB();
+
+                for (int i = 0; i < listRangeColors.size(); i++) {
+                    HashMap<String, Object> hashMap = listRangeColors.get(i);
+                    Color[] colors = (Color[]) hashMap.get("Colors");
+                    int rgb01 = colors[0].getRGB();
+                    int rgb02 = colors[colors.length - 1].getRGB();
+                    if (rgb_start == rgb01 && rgb_end == rgb02) {
+                        return (String) hashMap.get("ColorScheme");
+                    }
+                }
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
     public static void setGeoStyleColor(DatasetType type, GeoStyle geoStyle, Color color) {
         try {
             switch (type.toString()) {
