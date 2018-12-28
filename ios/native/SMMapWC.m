@@ -1174,7 +1174,7 @@
     
     NSString* desDirMap =  [NSString stringWithFormat:@"%@/Map",strCustomer];
     if(strModule!=nil){
-        [NSString stringWithFormat:@"%@/%@",desDirMap,strModule];
+        desDirMap = [NSString stringWithFormat:@"%@/%@",desDirMap,strModule];
     }
     BOOL isDir = false;
     BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:desDirMap isDirectory:&isDir];
@@ -1260,7 +1260,7 @@
     
     NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",strCustomer];
     if(strModule!=nil){
-        [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
+        desDatasourceDir = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
     }
     isDir = false;
     isExist = [[NSFileManager defaultManager] fileExistsAtPath:desDatasourceDir isDirectory:&isDir];
@@ -1348,7 +1348,7 @@
     
     NSString *desResourceDir = [NSString stringWithFormat:@"%@/Symbol",strCustomer];
     if(strModule!=nil){
-        [NSString stringWithFormat:@"%@/%@",desResourceDir,strModule];
+        desResourceDir = [NSString stringWithFormat:@"%@/%@",desResourceDir,strModule];
     }
     
     isDir = false;
