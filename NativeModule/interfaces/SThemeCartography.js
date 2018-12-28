@@ -373,6 +373,31 @@ getRangeCount = (params) => {
   }
 }
 
+/** 获取专题图的颜色方案(String) */
+getThemeColorSchemeName = (params) => {
+  try {
+    return SThemeCartography.getThemeColorSchemeName(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+saveMap = () => {
+  try {
+    return SThemeCartography.saveMap()
+  } catch (error) {
+    console.error(error)
+  }
+}
+/**设置统一标签背景颜色 */
+setUniformLabelBackColor = (params) => {
+  try {
+    return SThemeCartography.setUniformLabelBackColor(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   //单值
   createThemeUniqueMap,
@@ -405,9 +430,12 @@ export default {
   getUniformLabelFontSize,
   getUniformLabelRotaion,
   getUniformLabelColor,
+  setUniformLabelBackColor,
   //其他
   getThemeExpressionByLayerName,
   getThemeExpressionByLayerIndex,
   getThemeExpressionByDatasetName,
   getAllDatasetNames,
+  getThemeColorSchemeName,
+  saveMap,
 }
