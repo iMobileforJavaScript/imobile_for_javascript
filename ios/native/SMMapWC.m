@@ -1096,7 +1096,7 @@
             NSMutableDictionary *dicAddition = [[NSMutableDictionary alloc]init];
             
             //模版
-            if ([strModule isEqualToString:@"Collection"]/*采集模块*/) {
+            //if ([strModule isEqualToString:@"Collection"]/*采集模块*/) {
                 NSString *strServer = [infoDic objectForKey:@"server"];
                 NSString *strRootDir =[strServer substringToIndex:strServer.length-[[strServer componentsSeparatedByString:@"/"]lastObject].length-1];
                 NSArray *arrSubs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:strRootDir error:nil];
@@ -1114,7 +1114,7 @@
                         break;
                     }
                 }
-            }
+            //}
 
 
             NSMutableArray *arrTemp = [[NSMutableArray alloc]init];
@@ -1161,9 +1161,9 @@
     
     NSString *strCustomer = [self getCustomerDirectory];
     //NSString *strModule = [self getModuleDirectory:nModule];
-    if (strModule == nil) {
-        return nil;
-    }
+//    if (strModule == nil) {
+//        return nil;
+//    }
     
     Map *mapExport = [[Map alloc]initWithWorkspace:srcWorkspace];
     
@@ -1172,7 +1172,10 @@
         return nil;
     }
     
-    NSString* desDirMap =  [NSString stringWithFormat:@"%@/Map/%@",strCustomer,strModule];
+    NSString* desDirMap =  [NSString stringWithFormat:@"%@/Map",strCustomer];
+    if(strModule!=nil){
+        [NSString stringWithFormat:@"%@/%@",desDirMap,strModule];
+    }
     BOOL isDir = false;
     BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:desDirMap isDirectory:&isDir];
     if (!isExist || !isDir) {
@@ -1181,7 +1184,6 @@
     
     NSString *strMapName = strMapAlians;
     // map文件
-    // NSString* desPathMapXML = [NSString stringWithFormat:@"%@/%@.xml",strCustomer,strModule,strMapName];
     NSString* desPathMapXML = [NSString stringWithFormat:@"%@/%@.xml",desDirMap,strMapName];
     NSString* desPathMapExp ;
     if (!bNew) {
@@ -1191,7 +1193,6 @@
         if (isExist && !isDir) {
             [[NSFileManager defaultManager]removeItemAtPath:desPathMapXML error:nil];
         }
-        //desPathMapExp = [NSString stringWithFormat:@"%@/Map/%@/%@.exp",strCustomer,strModule,strMapName];
         desPathMapExp = [NSString stringWithFormat:@"%@/%@.exp",desDirMap,strMapName];
         isExist = [[NSFileManager defaultManager]fileExistsAtPath:desPathMapExp isDirectory:&isDir];
         if (isExist && !isDir) {
@@ -1204,7 +1205,6 @@
         NSString * desLastMap = [[desPathMapXML componentsSeparatedByString:@"/"]lastObject];
         // map文件名确定后其他文件（符号库）不需要判断，直接覆盖
         strMapName = [desLastMap substringToIndex:desLastMap.length-4];
-        //desPathMapExp = [NSString stringWithFormat:@"%@/Map/%@/%@.exp",strCustomer,strModule,strMapName];
         desPathMapExp = [NSString stringWithFormat:@"%@/%@.exp",desDirMap,strMapName];
     }
     
@@ -1258,7 +1258,10 @@
         
     }
     
-    NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource/%@",strCustomer,strModule];
+    NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",strCustomer];
+    if(strModule!=nil){
+        [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
+    }
     isDir = false;
     isExist = [[NSFileManager defaultManager] fileExistsAtPath:desDatasourceDir isDirectory:&isDir];
     if (!isExist || !isDir) {
@@ -1343,7 +1346,11 @@
         //user password
     }
     
-    NSString *desResourceDir = [NSString stringWithFormat:@"%@/Resource/%@",strCustomer,strModule];
+    NSString *desResourceDir = [NSString stringWithFormat:@"%@/Symbol",strCustomer];
+    if(strModule!=nil){
+        [NSString stringWithFormat:@"%@/%@",desResourceDir,strModule];
+    }
+    
     isDir = false;
     isExist = [[NSFileManager defaultManager] fileExistsAtPath:desResourceDir isDirectory:&isDir];
     if (!isExist || !isDir) {
@@ -1351,7 +1358,6 @@
     }
     
     
-    //NSString* desResources = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
     NSString* desResources = [NSString stringWithFormat:@"%@/%@",desResourceDir,strMapName];
     //    if (bNew) {
     //        NSString *strSymTemp = [desResources stringByAppendingString:@".sym"];
@@ -1523,11 +1529,16 @@
     }
     
     NSString *strCustomer = [self getCustomerDirectory];
-    //NSString *strModule = [self getModuleDirectory:nModule];
-    if (strModule==nil) {
-        return false;
+    
+//    if (strModule==nil) {
+//        return false;
+//    }
+    NSString* srcPathMap;
+    if (strModule!=nil) {
+        srcPathMap = [NSString stringWithFormat:@"%@/Map/%@/%@",strCustomer,strModule,strMapName];
+    }else{
+        srcPathMap = [NSString stringWithFormat:@"%@/Map/%@",strCustomer,strMapName];
     }
-    NSString* srcPathMap = [NSString stringWithFormat:@"%@/Map/%@/%@",strCustomer,strModule,strMapName];
     NSString* srcPathXML = [NSString stringWithFormat:@"%@.xml",srcPathMap];
     BOOL isDir = true;
     BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathXML isDirectory:&isDir];
@@ -1550,7 +1561,10 @@
     // }
     NSDictionary *dicExp = [NSJSONSerialization JSONObjectWithData:[strMapEXP dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
     
-    NSString *srcDatasourceDir = [NSString stringWithFormat:@"%@/Datasource/%@",strCustomer,strModule];
+    NSString *srcDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",strCustomer];
+    if (strModule!=nil) {
+        srcDatasourceDir = [NSString stringWithFormat:@"%@/%@",srcDatasourceDir,strModule];
+    }
     
     // 重复的server处理
     //      1.文件型数据源：若bDatasourceRep，关闭原来数据源，拷贝新数据源并重新打开（alian保持原来的）
@@ -1618,7 +1632,12 @@
     }
     
     
-    NSString* srcResources = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
+    NSString* srcResources;// = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
+    if (strModule!=nil) {
+        srcResources = [NSString stringWithFormat:@"%@/Symbol/%@/%@",strCustomer,strModule,strMapName];
+    }else{
+         srcResources = [NSString stringWithFormat:@"%@/Symbol/%@/%@",strCustomer,strMapName];
+    }
     // Marker
     {
         if([desWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups indexofGroup:strMapName]!=-1){
