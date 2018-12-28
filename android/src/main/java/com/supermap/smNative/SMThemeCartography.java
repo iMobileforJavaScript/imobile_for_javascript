@@ -193,6 +193,21 @@ public class SMThemeCartography {
                     new Color(48, 55, 149)};
             listUniqueColors.add(createColorScheme(colors, "FA_Red-Yellow-Blue"));
             colors = new Color[]{
+                    new Color(48, 55, 149),
+                    new Color(71, 117, 181),
+                    new Color(116, 172, 209),
+                    new Color(171, 217, 233),
+                    new Color(225, 243, 248),
+
+                    new Color(255, 255, 191),
+                    new Color(254, 225, 143),
+                    new Color(253, 174, 96),
+                    new Color(245, 107, 69),
+                    new Color(215, 48, 36),
+
+                    new Color(165, 0, 36)};
+            listUniqueColors.add(createColorScheme(colors, "FA_Blue-Yellow-Red"));
+            colors = new Color[]{
                     new Color(165, 0, 36),
                     new Color(213, 64, 79),
                     new Color(245, 107, 69),

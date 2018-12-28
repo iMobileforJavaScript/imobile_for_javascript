@@ -677,9 +677,8 @@ export default (function () {
    * @param nModule 模块名（文件夹名）
    * @returns {*}
    */
-  function openMapName(strMapName, nModule) {
+  function openMapName(strMapName, nModule = '') {
     try {
-      if (nModule === '') return
       return SMap.openMapName(strMapName, nModule)
     } catch (e) {
       console.error(e)
@@ -689,11 +688,12 @@ export default (function () {
   /**
    * 移除指定地图
    * @param value
+   *        value = -1 或者 value = '' 移除所有地图
    * @returns {*}
    */
   function removeMap(value) {
     try {
-      if (value === undefined || value < 0 || value === '') return
+      if (value === undefined) return
       if (typeof value === 'number') {
         return SMap.removeMapByIndex(value)
       } else {

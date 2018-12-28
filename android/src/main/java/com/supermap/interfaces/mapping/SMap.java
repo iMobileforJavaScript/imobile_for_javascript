@@ -177,6 +177,10 @@ public class SMap extends ReactContextBaseJavaModule {
                 Dataset ds = datasource.getDatasets().get(defaultIndex);
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                 Layer layer = map.getLayers().add(ds, toHead);
+                 if (ds.getType() == DatasetType.REGION ) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineSymbolID(5);
+                }
                 if (ds.getType() == DatasetType.REGION || ds.getType() == DatasetType.REGION3D) {
                     LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
                     setting.getStyle().setFillForeColor(this.getFillColor());
@@ -893,12 +897,22 @@ public class SMap extends ReactContextBaseJavaModule {
             sMap = getInstance();
             Maps maps = sMap.smMapWC.getWorkspace().getMaps();
             boolean result = false;
-            if (index >= 0 && index < maps.getCount()) {
-                String name = maps.get(index);
-                result = maps.remove(index);
-                sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(name);
-                sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(name);
-                sMap.smMapWC.getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(name);
+            if (maps.getCount() > 0 && index < maps.getCount()) {
+                if (index == -1) {
+                    for (int i = 0; i < maps.getCount(); i++) {
+                        String name = maps.get(i);
+                        result = maps.remove(i) && result;
+                        sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(name);
+                        sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(name);
+                        sMap.smMapWC.getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(name);
+                    }
+                } else {
+                    String name = maps.get(index);
+                    result = maps.remove(index);
+                    sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(name);
+                    sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(name);
+                    sMap.smMapWC.getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(name);
+                }
             }
 
             promise.resolve(result);
@@ -918,7 +932,15 @@ public class SMap extends ReactContextBaseJavaModule {
             sMap = getInstance();
             Maps maps = sMap.smMapWC.getWorkspace().getMaps();
             boolean result = false;
-            if (maps.indexOf(name) >= 0) {
+            if (maps.getCount() > 0 && (name == null || name.equals(""))) {
+                for (int i = 0; i < maps.getCount(); i++) {
+                    String _name = maps.get(i);
+                    result = maps.remove(i) && result;
+                    sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(_name);
+                    sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(_name);
+                    sMap.smMapWC.getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(_name);
+                }
+            } else if (maps.getCount() > 0 && maps.indexOf(name) >= 0) {
                 result = maps.remove(name);
                 sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(name);
                 sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(name);

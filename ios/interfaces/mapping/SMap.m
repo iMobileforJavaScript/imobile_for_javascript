@@ -600,12 +600,22 @@ RCT_REMAP_METHOD(removeMapByIndex, removeMapWithIndex:(int)index resolver:(RCTPr
     @try {
         BOOL result = NO;
         Maps* maps = SMap.singletonInstance.smMapWC.workspace.maps;
-        if (index >= 0 && index < maps.count) {
-            NSString* name = [maps get:index];
-            result = [maps removeMapAtIndex:index];
-            [SMap.singletonInstance.smMapWC.workspace.resources.markerLibrary.rootGroup.childSymbolGroups removeGroupWith:name isUpMove:NO];
-            [SMap.singletonInstance.smMapWC.workspace.resources.lineLibrary.rootGroup.childSymbolGroups removeGroupWith:name isUpMove:NO];
-            [SMap.singletonInstance.smMapWC.workspace.resources.fillLibrary.rootGroup.childSymbolGroups removeGroupWith:name isUpMove:NO];
+        if (maps.count > 0 && index < maps.count) {
+            if (index < 0) {
+                for (int i = 0; i < maps.count; i++) {
+                    NSString* name = [maps get:i];
+                    result = [maps removeMapAtIndex:i] && result;
+                    [SMap.singletonInstance.smMapWC.workspace.resources.markerLibrary.rootGroup.childSymbolGroups removeGroupWith:name isUpMove:NO];
+                    [SMap.singletonInstance.smMapWC.workspace.resources.lineLibrary.rootGroup.childSymbolGroups removeGroupWith:name isUpMove:NO];
+                    [SMap.singletonInstance.smMapWC.workspace.resources.fillLibrary.rootGroup.childSymbolGroups removeGroupWith:name isUpMove:NO];
+                }
+            } else {
+                NSString* name = [maps get:index];
+                result = [maps removeMapAtIndex:index];
+                [SMap.singletonInstance.smMapWC.workspace.resources.markerLibrary.rootGroup.childSymbolGroups removeGroupWith:name isUpMove:NO];
+                [SMap.singletonInstance.smMapWC.workspace.resources.lineLibrary.rootGroup.childSymbolGroups removeGroupWith:name isUpMove:NO];
+                [SMap.singletonInstance.smMapWC.workspace.resources.fillLibrary.rootGroup.childSymbolGroups removeGroupWith:name isUpMove:NO];
+            }
         }
         
         resolve([NSNumber numberWithBool:result]);///test test
@@ -619,7 +629,15 @@ RCT_REMAP_METHOD(removeMapByName, removeMapWithName:(NSString *)name resolver:(R
     @try {
         BOOL result = NO;
         Maps* maps = SMap.singletonInstance.smMapWC.workspace.maps;
-        if ([maps indexOf:name] >= 0) {
+        if (maps.count > 0 && (name == nil || [name isEqualToString:@""])) {
+            for (int i = 0; i < maps.count; i++) {
+                NSString* _name = [maps get:i];
+                result = [maps removeMapAtIndex:i] && result;
+                [SMap.singletonInstance.smMapWC.workspace.resources.markerLibrary.rootGroup.childSymbolGroups removeGroupWith:_name isUpMove:NO];
+                [SMap.singletonInstance.smMapWC.workspace.resources.lineLibrary.rootGroup.childSymbolGroups removeGroupWith:_name isUpMove:NO];
+                [SMap.singletonInstance.smMapWC.workspace.resources.fillLibrary.rootGroup.childSymbolGroups removeGroupWith:_name isUpMove:NO];
+            }
+        } else if (maps.count > 0 && [maps indexOf:name] >= 0) {
             result = [maps removeMapName:name];
             [SMap.singletonInstance.smMapWC.workspace.resources.markerLibrary.rootGroup.childSymbolGroups removeGroupWith:name isUpMove:NO];
             [SMap.singletonInstance.smMapWC.workspace.resources.lineLibrary.rootGroup.childSymbolGroups removeGroupWith:name isUpMove:NO];
@@ -787,8 +805,7 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
         sMap = [SMap singletonInstance];
 //        BOOL bNew = name == nil || [name isEqualToString:@""] || [sMap.smMapWC.workspace.maps indexOf:name] == -1;
         BOOL bNew = NO;
-        Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
-        if (map.name == nil || [map.name isEqualToString:@""]) bNew = YES;
+        Map* map = sMap.smMapWC.mapControl.map;
         if (bNew) {
             if (name == nil || [name isEqualToString:@""]) {
                 if (map.name && ![map.name isEqualToString:@""]) {
@@ -808,9 +825,12 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
             }
         }
         BOOL bResourcesModified = sMap.smMapWC.workspace.maps.count > 1;
-        BOOL result = mapSaved && [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:nil isNewMap:bNew isResourcesModyfied:bResourcesModified];
+        NSString* mapName = @"";
+        if (mapSaved) {
+            mapName = [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:nil isNewMap:bNew isResourcesModyfied:bResourcesModified];
+        }
         
-        resolve(@(result));
+        resolve(mapName);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
@@ -821,9 +841,9 @@ RCT_REMAP_METHOD(importWorkspaceInfo, importWorkspaceInfo:(NSDictionary *)infoDi
     @try {
         
         sMap = [SMap singletonInstance];
-        BOOL result = [sMap.smMapWC importWorkspaceInfo:infoDic toModule:nModule];
+        NSArray* mapsInfo = [sMap.smMapWC importWorkspaceInfo:infoDic toModule:nModule];
         
-        resolve(@(result));
+        resolve(mapsInfo);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
