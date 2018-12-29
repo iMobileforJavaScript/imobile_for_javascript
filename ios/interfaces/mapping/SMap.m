@@ -799,28 +799,40 @@ RCT_REMAP_METHOD(exportWorkspace, exportWorkspace:(NSArray*)arrMapnames toFile:(
 }
 
 #pragma mark 导出地图为xml
-RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)nModule withAddition:(NSDictionary *)withAddition isNewMap:bNew resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)nModule withAddition:(NSDictionary *)withAddition resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BOOL mapSaved = NO;
         sMap = [SMap singletonInstance];
 //        BOOL bNew = name == nil || [name isEqualToString:@""] || [sMap.smMapWC.workspace.maps indexOf:name] == -1;
-        BOOL bNew = NO;
+        BOOL bNew = YES;
         Map* map = sMap.smMapWC.mapControl.map;
-        if (bNew) {
-            if (name == nil || [name isEqualToString:@""]) {
-                if (map.name && ![map.name isEqualToString:@""]) {
-                    mapSaved = [map save];
-                } else if (map.layers.getCount > 0) {
-                    Layer* layer = [map.layers getLayerAtIndex:map.layers.getCount - 1];
-                    name = layer.name;
-                    int i = 0;
-                    while (!mapSaved) {
-                        NSString* newName = i == 0 ? name : [NSString stringWithFormat:@"%@#%d", name, i];
-                        mapSaved = [map save:newName];
-                        i++;
-                    }
+        if (map.name && ![map.name isEqualToString:@""]) {
+            bNew = NO;
+        }
+        
+        if (name == nil || [name isEqualToString:@""]) {
+            if (map.name && ![map.name isEqualToString:@""]) {
+                bNew = NO;
+                mapSaved = [map save];
+                name = map.name;
+            } else if (map.layers.getCount > 0) {
+                bNew = YES;
+                Layer* layer = [map.layers getLayerAtIndex:map.layers.getCount - 1];
+                name = layer.name;
+                int i = 0;
+                while (!mapSaved) {
+                    name = i == 0 ? name : [NSString stringWithFormat:@"%@#%d", name, i];
+                    mapSaved = [map save:name];
+                    i++;
                 }
+            }
+        } else {
+            if ([name isEqualToString:map.name]) {
+                bNew = NO;
+                mapSaved = [map save];
+                name = map.name;
             } else {
+                bNew = YES;
                 mapSaved = [map save:name];
             }
         }

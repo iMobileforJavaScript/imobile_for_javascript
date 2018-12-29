@@ -155,25 +155,47 @@
     }
 }
 
-+ (NSArray *)findSymbolsByIDs:(Resources *)resources type:(NSString *)type IDs:(NSArray *)IDs {
-    if (IDs == nil || IDs.count == 0) return nil;
+//+ (NSArray *)findSymbolsByIDs:(Resources *)resources type:(NSString *)type IDs:(NSArray *)IDs {
+//    if (IDs == nil || IDs.count == 0) return nil;
+//    NSMutableArray* symbols = [[NSMutableArray alloc] init];
+//    
+//    SymbolLibrary* lib;
+//    if ([type isEqualToString:@"fill"]) {
+//        lib = resources.fillLibrary;
+//    } else if ([type isEqualToString:@"line"]) {
+//        lib = resources.lineLibrary;
+//    } else if ([type isEqualToString:@"marker"]) {
+//        lib = resources.markerLibrary;
+//    }
+//    
+//    for (int i = 0; i < IDs.count; i++) {
+//        Symbol* symbol;
+//        if (type == nil) {
+//            symbol = [self findSymbolsByID:resources ID:[(NSNumber *)IDs[i] intValue]];
+//        } else {
+//            symbol = [self findSymbolsByTypeAndID:resources type:type ID:[(NSNumber *)IDs[i] intValue]];
+//        }
+//        if (symbol != nil) {
+//            [symbols addObject:symbol];
+//        }
+//    }
+//    
+//    return symbols;
+//}
+
++ (NSArray *)findSymbolsByIDs:(Resources *)resources symbolObjs:(NSArray *)symbolObjs {
     NSMutableArray* symbols = [[NSMutableArray alloc] init];
+    if (symbolObjs == nil || symbolObjs.count == 0) return symbols;
     
-    SymbolLibrary* lib;
-    if ([type isEqualToString:@"fill"]) {
-        lib = resources.fillLibrary;
-    } else if ([type isEqualToString:@"line"]) {
-        lib = resources.lineLibrary;
-    } else if ([type isEqualToString:@"marker"]) {
-        lib = resources.markerLibrary;
-    }
-    
-    for (int i = 0; i < IDs.count; i++) {
+    for (int i = 0; i < symbolObjs.count; i++) {
         Symbol* symbol;
+        NSDictionary* dic = [symbolObjs objectAtIndex:i];
+        NSObject* _id = [dic objectForKey:@"id"];
+        NSString* type = [dic objectForKey:@"type"];
         if (type == nil) {
-            symbol = [self findSymbolsByID:resources ID:[(NSNumber *)IDs[i] intValue]];
+            symbol = [self findSymbolsByID:resources ID:[(NSNumber *)_id intValue]];
         } else {
-            symbol = [lib findSymbolWithID:[(NSNumber *)IDs[i] intValue]];
+            symbol = [self findSymbolsByTypeAndID:resources type:type ID:[(NSNumber *)_id intValue]];
         }
         if (symbol != nil) {
             [symbols addObject:symbol];
@@ -195,7 +217,28 @@
         symbol = [resources.markerLibrary findSymbolWithID:ID];
         if (symbol) return symbol;
         
-        return symbol;
+        return nil;
+    } @catch (NSException *exception) {
+        return nil;
+    }
+}
+
++ (Symbol *)findSymbolsByTypeAndID:(Resources *)resources type:(NSString *)type ID:(int)ID {
+    @try {
+        Symbol* symbol;
+        SymbolLibrary* lib;
+        if ([type isEqualToString:@"fill"]) {
+            lib = resources.fillLibrary;
+        } else if ([type isEqualToString:@"line"]) {
+            lib = resources.lineLibrary;
+        } else {
+            lib = resources.markerLibrary;
+        }
+        
+        symbol = [lib findSymbolWithID:ID];
+        if (symbol) return symbol;
+        
+        return nil;
     } @catch (NSException *exception) {
         return nil;
     }

@@ -40,8 +40,8 @@ public class SMCollector {
                 break;
             case SCollectorType.LINE_HAND_POINT: // LINE_HAND_POINT
                 result = collector.createElement(CollectorElement.GPSElementType.LINE);
-                if (collector.IsSingleTapEnable()) {
-                    collector.setSingleTapEnable(false);
+                if (!collector.IsSingleTapEnable()) {
+                    collector.setSingleTapEnable(true);
                 }
                 break;
             case SCollectorType.LINE_HAND_PATH: // LINE_HAND_PATH

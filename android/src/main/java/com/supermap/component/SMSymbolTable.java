@@ -124,8 +124,9 @@ public class SMSymbolTable extends SimpleViewManager<SymbolLibView> {
 
     @ReactProp(name = "data")
     public void setData(SymbolLibView view, ReadableArray data) {
-        List arr = data.toArrayList();
-        List<Symbol> symbols = SMSymbol.findSymbolsByIDs(SMap.getSMWorkspace().getWorkspace().getResources(), "", arr);
+//        List arr = data.toArrayList();
+//        List<Symbol> symbols = SMSymbol.findSymbolsByIDs(SMap.getSMWorkspace().getWorkspace().getResources(), "", arr);
+        List<Symbol> symbols = SMSymbol.findSymbolsByIDs(SMap.getSMWorkspace().getWorkspace().getResources(), data);
 
         view.showSymbols(symbols);
         view.scrollBy(0,1);

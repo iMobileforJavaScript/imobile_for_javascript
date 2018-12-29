@@ -1442,7 +1442,7 @@ public class SMMapWC {
                     }
                 }
                 fillLibrary.saveAs(desResources + ".bru");
-                fillLibrary.dispose();
+//                fillLibrary.dispose();
             }
 
         }
@@ -1456,9 +1456,11 @@ public class SMMapWC {
             }
             jsonObject.put("Datasources", jsonArray);
             //模板
-            String strTemplate = dicAddition.get("Template");
-            if (strTemplate != null) {
-                jsonObject.put("Template", strTemplate);
+            if(dicAddition!=null) {
+                String strTemplate = dicAddition.get("Template");
+                if (strTemplate != null) {
+                    jsonObject.put("Template", strTemplate);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1718,7 +1720,7 @@ public class SMMapWC {
             return s;
         }
         for (int i = 0; i < files.length; i++) {
-            s.add(files[i].getAbsolutePath());
+            s.add(files[i].getName());
         }
         return s;
     }
@@ -1769,7 +1771,7 @@ public class SMMapWC {
             } else if (isDir != fileTemp.isDirectory()) {
                 return result;
             } else {
-                result = strName + "#" + nAddNum + strSuffix;
+                result = strName + "_" + nAddNum + strSuffix;
                 nAddNum++;
             }
         }
