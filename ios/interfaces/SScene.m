@@ -471,6 +471,54 @@ RCT_REMAP_METHOD(openMap, openMapByName:(NSString*)name  resolver:(RCTPromiseRes
         reject(@"SScene", exception.reason, nil);
     }
 }
+/*
+ 判断是否3D工作空间
+ */
+RCT_REMAP_METHOD(is3DWorkspace, is3DWorkspaceByInfo:(NSDictionary*)infoDic  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        BOOL result = [sScene.smSceneWC is3DWorkspaceInfo:infoDic];
+        resolve(@(result));
+    }@catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+/*
+ 从pxp文件打开scence
+ */
+RCT_REMAP_METHOD(openScence, openScenceByName:(NSString*)name  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        BOOL result = [sScene.smSceneWC openScenceName:name toScenceControl:sScene.smSceneWC.sceneControl];
+        resolve(@(result));
+    }@catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+/*
+ 导入3维工作空间成pxp
+ */
+RCT_REMAP_METHOD(import3DWorkspace, import3DWorkspaceByInfo:(NSDictionary*)infoDic  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        BOOL result = [sScene.smSceneWC import3DWorkspaceInfo:infoDic];
+        resolve(@(result));
+    }@catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+/*
+ 导出pxp到工作空间
+ */
+RCT_REMAP_METHOD(export3DScence, export3DScenceByName:(NSString*)name toFile:(NSString*)strFile resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        BOOL result = [sScene.smSceneWC export3DScenceName:name toFolder:strFile];
+        resolve(@(result));
+    }@catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
 
 /**
  * 获取场景列表
@@ -1378,6 +1426,7 @@ RCT_REMAP_METHOD( closeAnalysis,  closeAnalysisResolver:(RCTPromiseResolveBlock)
         reject(@"SScene", exception.reason, nil);
     }
 }
+
 
 
 @end

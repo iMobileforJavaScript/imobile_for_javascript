@@ -280,14 +280,73 @@ static NSString *g_strCustomerDirectory = nil;
             return strResult;
         }else{
             if (!bDirFile) {
-                strResult = [NSString stringWithFormat:@"%@#%d.%@",strName,nAddNumber,strSuffix];
+                strResult = [NSString stringWithFormat:@"%@_%d.%@",strName,nAddNumber,strSuffix];
             }else{
-                strResult = [NSString stringWithFormat:@"%@#%d",strName,nAddNumber];
+                strResult = [NSString stringWithFormat:@"%@_%d",strName,nAddNumber];
             }
             
             nAddNumber++;
         }
     }
+}
+
+-(BOOL)export3DScenceName:(NSString*)strScenceName toFolder:(NSString*)strDesFolder{
+    
+    NSString * strDir = [NSString stringWithFormat:@"%@/Scence",[self getCustomerDirectory]];
+    NSString* srcPathPXP = [NSString stringWithFormat:@"%@/%@.pxp",strDir,strScenceName];
+    BOOL isDir = true;
+    BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathPXP isDirectory:&isDir];
+    if (!isExist || isDir) {
+        return false;
+    }
+    BOOL result = false;
+    NSString* strScencePXP = [NSString stringWithContentsOfFile:srcPathPXP encoding:NSUTF8StringEncoding error:nil];
+    // {
+    //  "Datasources":
+    //                  [ {"Alians":strMapName,"Type":nEngineType,"Server":strDatasourceName} , {...} , {...} ... ] ,
+    //  "Resources":
+    //                  strMapName
+    // }
+    NSDictionary *dicExp = [NSJSONSerialization JSONObjectWithData:[strScencePXP dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
+    
+    NSString *strName = [dicExp objectForKey:@"Name"];
+    NSDictionary *dicTemp = [dicExp objectForKey:@"Workspace"];
+    NSString *strServer = [dicTemp objectForKey:@"server"];
+    isDir = true;
+    isExist = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@",strDir,strServer] isDirectory:&isDir];
+    if (!isExist || isDir) {
+        return false;
+    }
+    NSArray* arrServer = [strServer componentsSeparatedByString:@"/"];
+    
+    NSString *strSrcFolder = [NSString stringWithFormat:@"%@/%@",strDir,[arrServer firstObject]];
+    
+    [self copyFileFromPath:strSrcFolder toPath:strDesFolder];
+    result = true;
+//    NSMutableDictionary *dicInfo = [[NSMutableDictionary alloc] initWithDictionary:dicTemp];
+//    NSString *strDesServer = [NSString stringWithFormat:@"%@/%@",strDesFolder,[arrServer lastObject]];
+//    [dicInfo setObject:strDesServer forKey:@"server"];
+//    WorkspaceConnectionInfo *info = [self setWorkspaceConnectionInfo:dicInfo workspace:nil];
+//    Workspace *desWorkspace = [[Workspace alloc]init];
+//    if([desWorkspace open:info]){
+//        NSMutableArray *arrNames = [[NSMutableArray alloc]init];
+//        for (int i=0; i<desWorkspace.scenes.count; i++) {
+//            NSString *strNameTemp = [desWorkspace.scenes get:i];
+//            if (![strNameTemp isEqualToString:strName]) {
+//                [arrNames addObject:strNameTemp];
+//            }
+//        }
+//        for (int i=0; i<arrNames.count; i++) {
+//            [desWorkspace.scenes ]
+//        }
+//
+//        result = true;
+//    }
+//
+//    [info dispose];
+    
+    return result;
+    
 }
 
 -(BOOL)import3DWorkspaceInfo:(NSDictionary *)infoDic{
@@ -343,8 +402,8 @@ static NSString *g_strCustomerDirectory = nil;
     
 }
 
--(BOOL)openScenceName:(NSString *)strScenceName{
-    if(_workspace==nil || [[_workspace caption]isEqualToString:@"UntitledWorkspace"]){
+-(BOOL)openScenceName:(NSString *)strScenceName toScenceControl:(SceneControl*)scenceControl{
+    if(scenceControl.scene.workspace==nil){
         return false;
     }
     NSString * strDir = [NSString stringWithFormat:@"%@/Scence",[self getCustomerDirectory]];
@@ -368,19 +427,66 @@ static NSString *g_strCustomerDirectory = nil;
     NSDictionary *dicTemp = [dicExp objectForKey:@"Workspace"];
     NSString *strServer = [dicTemp objectForKey:@"server"];
     NSString *strFullPath = [NSString stringWithFormat:@"%@/%@",strDir,strServer];
+    isDir = true;
+    isExist = [[NSFileManager defaultManager] fileExistsAtPath:strFullPath isDirectory:&isDir];
+    if (!isExist || isDir) {
+        return false;
+    }
     
     NSMutableDictionary *dicInfo = [[NSMutableDictionary alloc] initWithDictionary:dicTemp];
     
     [dicInfo setObject:strFullPath forKey:@"server"];
     
     WorkspaceConnectionInfo* info = [self setWorkspaceConnectionInfo:dicInfo workspace:nil];
-    if([_workspace open:info]){
-        [_sceneControl.scene setWorkspace:_workspace];
-        [_sceneControl.scene open:strName];
-        result = true;
-    }
     
+    if([[scenceControl.scene.workspace caption]isEqualToString:@"UntitledWorkspace"]){
+        //工作空间未打开
+        if([scenceControl.scene.workspace open:info]){
+            //[_sceneControl.scene setWorkspace:_workspace];
+            [_sceneControl.scene open:strName];
+            result = true;
+        }
+    }else{
+        
+        if ([scenceControl.scene.workspace.connectionInfo.server isEqualToString:strFullPath]) {
+            // 同一个工作空间
+            if ([_sceneControl.scene.name isEqualToString:strName]) {
+                result = true;
+            }else{
+                [_sceneControl.scene close];
+                result = [_sceneControl.scene open:strName];
+            }
+        }else{
+            // 不同工作空间
+            [_sceneControl.scene close];
+            [_sceneControl.scene.workspace close];
+            if ([_sceneControl.scene.workspace open:info]) {
+                result = [_sceneControl.scene open:strName];
+            }
+        }
+        
+    }
+
      [info dispose];
+    return result;
+}
+
+-(BOOL)is3DWorkspaceInfo:(NSDictionary *)infoDic{
+    BOOL result = false;
+    if ( infoDic && [infoDic objectForKey:@"server"] && [infoDic objectForKey:@"type"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
+        Workspace *importWorkspace = [[Workspace alloc]init];
+        WorkspaceConnectionInfo* info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
+        
+        if([importWorkspace open:info]){
+            if (importWorkspace.scenes.count>0) {
+                result = YES;
+            }
+            [importWorkspace close];
+        }
+        [info dispose];
+        [importWorkspace close];
+        [importWorkspace dispose];
+    }
     return result;
 }
 
