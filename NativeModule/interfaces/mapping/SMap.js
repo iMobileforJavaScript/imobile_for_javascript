@@ -649,7 +649,6 @@ export default (function () {
    */
   function saveMapName(strMapAlians = '', nModule = '', withAddition = {}) {
     try {
-      if (nModule === '') return
       return SMap.saveMapName(strMapAlians, nModule, withAddition)
     } catch (e) {
       console.error(e)
@@ -747,6 +746,7 @@ export default (function () {
     importWorkspaceInfo,
     openMapName,
     removeMap,
+    mapIsModified,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 

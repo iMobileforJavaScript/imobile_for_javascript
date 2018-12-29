@@ -47,6 +47,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -902,16 +903,16 @@ public class SMap extends ReactContextBaseJavaModule {
                     for (int i = 0; i < maps.getCount(); i++) {
                         String name = maps.get(i);
                         result = maps.remove(i) && result;
-                        sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(name);
-                        sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(name);
-                        sMap.smMapWC.getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(name);
+                        sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(name, false);
+                        sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(name, false);
+                        sMap.smMapWC.getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(name, false);
                     }
                 } else {
                     String name = maps.get(index);
                     result = maps.remove(index);
-                    sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(name);
-                    sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(name);
-                    sMap.smMapWC.getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(name);
+                    sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(name, false);
+                    sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(name, false);
+                    sMap.smMapWC.getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(name, false);
                 }
             }
 
@@ -936,15 +937,15 @@ public class SMap extends ReactContextBaseJavaModule {
                 for (int i = 0; i < maps.getCount(); i++) {
                     String _name = maps.get(i);
                     result = maps.remove(i) && result;
-                    sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(_name);
-                    sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(_name);
-                    sMap.smMapWC.getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(_name);
+                    sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(_name, false);
+                    sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(_name, false);
+                    sMap.smMapWC.getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(_name, false);
                 }
             } else if (maps.getCount() > 0 && maps.indexOf(name) >= 0) {
                 result = maps.remove(name);
-                sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(name);
-                sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(name);
-                sMap.smMapWC.getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(name);
+                sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(name, false);
+                sMap.smMapWC.getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(name, false);
+                sMap.smMapWC.getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(name, false);
             }
 
             promise.resolve(result);
@@ -1403,6 +1404,7 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
 	@ReactMethod
     public void isModified(Promise promise){
         try {
@@ -1559,6 +1561,7 @@ public class SMap extends ReactContextBaseJavaModule {
     @ReactMethod
     public void addDatasetToMap(ReadableMap readableMap, Promise promise) {
         try {
+            sMap = SMap.getInstance();
             HashMap<String, Object> data = readableMap.toHashMap();
             String datastourceName = null;
             String datasetName = null;
@@ -1582,6 +1585,105 @@ public class SMap extends ReactContextBaseJavaModule {
             } else {
                 promise.resolve(false);
             }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 导出地图为xml
+     * @param name
+     * @param nModule
+     * @param addition
+     * @param promise
+     */
+    @ReactMethod
+    public void saveMapName(String name, String nModule, ReadableMap addition, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            boolean mapSaved = false;
+            boolean bNew = true;
+
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            if (map.getName() != null && !map.getName().equals("")) {
+                bNew = false;
+            }
+
+            if (name == null || name.equals("")) {
+                if (map.getName() != null && !map.getName().equals("")) {
+                    bNew = false;
+                    mapSaved = map.save();
+                    name = map.getName();
+                } else if (map.getLayers().getCount() > 0) {
+                    bNew = true;
+                    Layers layers = map.getLayers();
+                    Layer layer = layers.get(layers.getCount() - 1);
+                    name = layer.getName();
+                    int i = 0;
+                    while (!mapSaved) {
+                        name = i == 0 ? name : (name + i);
+                        mapSaved = map.save(name);
+                        i++;
+                    }
+                }
+            } else {
+                if (name.equals(map.getName())) {
+                    bNew = false;
+                    mapSaved = map.save();
+                    name = map.getName();
+                } else {
+                    bNew = true;
+                    mapSaved = map.save(name);
+                }
+            }
+
+            boolean bResourcesModified = sMap.smMapWC.getWorkspace().getMaps().getCount() > 1;
+            String mapName = "";
+            if (mapSaved) {
+                mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, null, bNew, bResourcesModified);
+            }
+
+            promise.resolve(mapName);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 导入文件工作空间到程序目录
+     * @param infoMap
+     * @param nModule
+     * @param promise
+     */
+    @ReactMethod
+    public void importWorkspaceInfo(ReadableMap infoMap, String nModule, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            List<String> list = sMap.smMapWC.importWorkspaceInfo(infoMap.toHashMap(), nModule);
+            WritableArray mapsInfo = Arguments.createArray();
+            for (int i = 0; i < list.size(); i++) {
+                mapsInfo.pushString(list.get(i));
+            }
+
+            promise.resolve(mapsInfo);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 大工作空间打开本地地图
+     * @param strMapName
+     * @param nModule
+     * @param promise
+     */
+    @ReactMethod
+    public void openMapName(String strMapName, String nModule, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            boolean result = sMap.smMapWC.openMapName(strMapName, sMap.smMapWC.getWorkspace(), nModule);
+
+            promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
         }
