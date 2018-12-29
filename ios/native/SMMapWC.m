@@ -269,9 +269,9 @@
             return strResult;
         }else{
             if (!bDirFile) {
-                strResult = [NSString stringWithFormat:@"%@#%d.%@",strName,nAddNumber,strSuffix];
+                strResult = [NSString stringWithFormat:@"%@_%d.%@",strName,nAddNumber,strSuffix];
             }else{
-                strResult = [NSString stringWithFormat:@"%@#%d",strName,nAddNumber];
+                strResult = [NSString stringWithFormat:@"%@_%d",strName,nAddNumber];
             }
             
             nAddNumber++;
@@ -1794,7 +1794,8 @@
             strTargetFile = [self formateNoneExistFileName:strTargetFile isDir:NO];
             strResult = [[strTargetFile componentsSeparatedByString:@"/"]lastObject];
         }//exist
-
+        
+        
         // 拷贝
         if(![[NSFileManager defaultManager] copyItemAtPath:strFile toPath:strTargetFile error:nil]){
             return nil;
