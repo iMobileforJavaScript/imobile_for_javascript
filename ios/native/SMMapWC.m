@@ -269,9 +269,9 @@
             return strResult;
         }else{
             if (!bDirFile) {
-                strResult = [NSString stringWithFormat:@"%@#%d.%@",strName,nAddNumber,strSuffix];
+                strResult = [NSString stringWithFormat:@"%@_%d.%@",strName,nAddNumber,strSuffix];
             }else{
-                strResult = [NSString stringWithFormat:@"%@#%d",strName,nAddNumber];
+                strResult = [NSString stringWithFormat:@"%@_%d",strName,nAddNumber];
             }
             
             nAddNumber++;
@@ -1715,6 +1715,96 @@
     [desWorkspace.maps add:strMapName withXML:strMapXML];
     
     return true;
+}
+
+-(NSString*)importUDBFile:(NSString*)strFile ofModule:(NSString*)strModule{
+    
+    if (![self isDatasourceFileExist:strFile isUDB:YES]) {
+        return nil;
+    }
+    
+    NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",[self getCustomerDirectory]];
+    if (strModule!=nil) {
+        desDatasourceDir = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
+    }
+    BOOL isDir = false;
+    BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:desDatasourceDir isDirectory:&isDir];
+    if (!isExist || !isDir) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:desDatasourceDir withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    NSArray *arrSrcServer = [strFile componentsSeparatedByString:@"/"];
+    NSString *strFileName = [arrSrcServer lastObject];
+    // 导入工作空间名
+    NSString* strTargetFile = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strFileName];
+    
+    NSString * strSrcDatasourcePath = [strFile substringToIndex:strFile.length-4];
+    NSString * strTargetDatasourcePath = [strFile substringToIndex:strTargetFile.length-4];
+    
+    NSString *strResult = nil;
+    // 检查重复性
+    isDir = YES;
+    isExist = [[NSFileManager defaultManager] fileExistsAtPath:strTargetFile isDirectory:&isDir];
+    if (isExist && !isDir) {
+        //存在同名文件
+        //重名文件
+        strTargetFile = [self formateNoneExistFileName:strTargetFile isDir:NO];
+        strResult = [[strTargetFile componentsSeparatedByString:@"/"]lastObject];
+        strTargetDatasourcePath = [strTargetFile substringToIndex:strTargetFile.length-4];
+    }//exist
+    
+    // 拷贝udb
+    if(![[NSFileManager defaultManager] copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udb"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udb"] error:nil]){
+        return nil;
+    }
+    // 拷贝udd
+    if(![[NSFileManager defaultManager] copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udd"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udd"] error:nil]){
+        return  nil;
+    }
+    return strResult;
+
+}
+
+-(NSString*)importDatasourceFile:(NSString*)strFile ofModule:(NSString*)strModule{
+    
+    NSString *strSuffix = [[strFile componentsSeparatedByString:@"."]lastObject];
+    if ([strFile.lowercaseString isEqualToString:@"udb"]) {
+        return [self importUDBFile:strFile ofModule:strModule];
+    }else{
+        if (![self isDatasourceFileExist:strFile isUDB:NO]) {
+            return nil;
+        }
+        NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",[self getCustomerDirectory]];
+        if (strModule!=nil) {
+            desDatasourceDir = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
+        }
+        BOOL isDir = false;
+        BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:desDatasourceDir isDirectory:&isDir];
+        if (!isExist || !isDir) {
+            [[NSFileManager defaultManager] createDirectoryAtPath:desDatasourceDir withIntermediateDirectories:YES attributes:nil error:nil];
+        }
+        NSArray *arrSrcServer = [strFile componentsSeparatedByString:@"/"];
+        NSString *strFileName = [arrSrcServer lastObject];
+        // 导入工作空间名
+        NSString* strTargetFile = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strFileName];
+        isDir = YES;
+        isExist = [[NSFileManager defaultManager] fileExistsAtPath:strTargetFile isDirectory:&isDir];
+        NSString *strResult = nil;
+        if (isExist && !isDir) {
+            //存在同名文件
+            //重名文件
+            strTargetFile = [self formateNoneExistFileName:strTargetFile isDir:NO];
+            strResult = [[strTargetFile componentsSeparatedByString:@"/"]lastObject];
+        }//exist
+        
+        
+        // 拷贝
+        if(![[NSFileManager defaultManager] copyItemAtPath:strFile toPath:strTargetFile error:nil]){
+            return nil;
+        }
+        
+        return strResult;
+    }
 }
 
 @end
