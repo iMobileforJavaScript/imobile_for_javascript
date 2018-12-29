@@ -280,9 +280,9 @@ static NSString *g_strCustomerDirectory = nil;
             return strResult;
         }else{
             if (!bDirFile) {
-                strResult = [NSString stringWithFormat:@"%@#%d.%@",strName,nAddNumber,strSuffix];
+                strResult = [NSString stringWithFormat:@"%@_%d.%@",strName,nAddNumber,strSuffix];
             }else{
-                strResult = [NSString stringWithFormat:@"%@#%d",strName,nAddNumber];
+                strResult = [NSString stringWithFormat:@"%@_%d",strName,nAddNumber];
             }
             
             nAddNumber++;
