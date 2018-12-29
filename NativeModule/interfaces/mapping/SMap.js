@@ -638,6 +638,72 @@ export default (function () {
     }
   }
   
+  /**
+   * 导出(保存)工作空间中地图到模块
+   * @param strMapAlians
+   * @param srcWorkspace
+   * @param nModule
+   * @param bNew
+   * @param bResourcesModified
+   * @returns {*}
+   */
+  function saveMapName(strMapAlians = '', nModule = '', withAddition = {}) {
+    try {
+      return SMap.saveMapName(strMapAlians, nModule, withAddition)
+    } catch (e) {
+      console.error(e)
+      return e
+    }
+  }
+  
+  /**
+   * 导入文件工作空间到程序目录
+   * @param infoDic
+   * @param strDirPath
+   * @returns {*}
+   */
+  function importWorkspaceInfo(infoDic, strDirPath) {
+    try {
+      return SMap.importWorkspaceInfo(infoDic, strDirPath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 大工作空间打开本地地图
+   * @param strMapName
+   * @param nModule 模块名（文件夹名）
+   * @returns {*}
+   */
+  function openMapName(strMapName, nModule = '') {
+    try {
+      return SMap.openMapName(strMapName, nModule)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 移除指定地图
+   * @param value
+   *        value = -1 或者 value = '' 移除所有地图
+   * @returns {*}
+   */
+  function removeMap(value) {
+    try {
+      if (value === undefined) return
+      if (typeof value === 'number') {
+        return SMap.removeMapByIndex(value)
+      } else {
+        return SMap.removeMapByName(value)
+      }
+    } catch (e) {
+      console.error(e)
+      return e
+    }
+  }
+  
   let SMapExp = {
     openWorkspace,
     openDatasource,
@@ -676,6 +742,11 @@ export default (function () {
     getMapInfo,
     exportWorkspace,
     addDatasetToMap,
+    saveMapName,
+    importWorkspaceInfo,
+    openMapName,
+    removeMap,
+    mapIsModified,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 

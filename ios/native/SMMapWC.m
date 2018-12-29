@@ -1506,9 +1506,11 @@
     [dictionaryExp setObject:arrExpDatasources forKey:@"Datasources"];
     [dictionaryExp setObject:strMapName forKey:@"Resources"];
     //模板
-    NSString *strTemplate = [dicAddition objectForKey:@"Template"];
-    if (strTemplate!=nil) {
-        [dictionaryExp setObject:strTemplate forKey:@"Template"];
+    if (dicAddition != nil) {
+        NSString *strTemplate = [dicAddition objectForKey:@"Template"];
+        if (strTemplate!=nil) {
+            [dictionaryExp setObject:strTemplate forKey:@"Template"];
+        }
     }
     
     NSData *dataJson = [NSJSONSerialization dataWithJSONObject:dictionaryExp options:NSJSONWritingPrettyPrinted error:nil];
