@@ -729,6 +729,40 @@ RCT_REMAP_METHOD(importWorkspace, importWorkspaceInfo:(NSDictionary*)wInfo toFil
     }
 }
 
+/**
+ * 获取统一标签专题图的字段表达式
+ *
+ * @param layerName 图层名称
+ */
+
+RCT_REMAP_METHOD(addDatasetToMap, addDatasetToMapWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        Layer *layer = nil;
+        NSString* datastourceName = @"";
+        NSString* datasetName = @"";
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"DatasourceName"]) {
+            datastourceName = [dataDic objectForKey:@"DatasourceName"];
+        }
+        if ([array containsObject:@"DatasetName"]) {
+            datasetName = [dataDic objectForKey:@"DatasetName"];
+        }
+        Workspace* workspace = sMap.smMapWC.workspace;
+        if(![datastourceName isEqualToString:@""] && ![datasetName isEqualToString:@""]){
+            Datasource* datasource = [workspace.datasources getAlias:datastourceName];
+            Dataset* dataset = [datasource.datasets getWithName:datasetName];
+            [sMap.smMapWC.mapControl.map.layers addDataset:dataset ToHead:true];
+            [sMap.smMapWC.mapControl.map refresh];
+        }
+        else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
 #pragma mark 导出工作空间
 RCT_REMAP_METHOD(exportWorkspace, importWorkspaceInfo:(NSArray*)arrMapnames toFile:(NSString*)strFileName  fileReplace:(BOOL)bFileReplace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {

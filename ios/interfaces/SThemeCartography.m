@@ -191,12 +191,27 @@ RCT_REMAP_METHOD(modifyThemeUniqueMap, modifyThemeUniqueMapWithResolver:(NSDicti
             NSString* strType = [dataDic objectForKey:@"ColorGradientType"];
             colorGradientType = [SMThemeCartography getColorGradientType:strType];
         }
+        else
+        {
+            colorGradientType = CGT_GREENWHITE;
+        }
         
         bool result = false;
         if (dataset != nil && themeUniqueLayer.theme != nil && ![uniqueExpression isEqualToString:@""]) {
             ThemeUnique* tu = nil;
             tu = [ThemeUnique makeDefault:(DatasetVector*)dataset uniqueExpression:uniqueExpression colorType:colorGradientType];
             if (tu != nil) {
+                if(![array containsObject:@"ColorGradientType"]){
+                    NSMutableArray* mulArray = nil;
+                    mulArray =  [SMThemeCartography getLastThemeColors:themeUniqueLayer];
+                    if (mulArray != nil) {
+                        int rangeCount = [tu getCount];
+                        Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:mulArray];
+                        for (int i = 0; i < rangeCount; i++) {
+                            [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tu getItem:i].mStyle color:[selectedColors get:i]];
+                        }
+                    }
+                }
                 [themeUniqueLayer.theme fromXML:[tu toXML]];
                 MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
                 [mapControl.map refresh];
@@ -430,7 +445,7 @@ RCT_REMAP_METHOD(createUniformThemeLabelMap, createUniformThemeLabelMapWithResol
         if (dataset != nil && ![labelExpression isEqualToString:@""]) {
             ThemeLabel* themeLabel = [[ThemeLabel alloc] init];
             [themeLabel setLabelExpression:labelExpression];
-//TODO            [themeLabel labelBackShape:labelBackShape];
+            [themeLabel setBackShape:labelBackShape];
             TextStyle* textStyle = [[TextStyle alloc] init];
             if (![fontName isEqualToString:@""]) {
                 [textStyle setFontName:fontName];
@@ -589,8 +604,8 @@ RCT_REMAP_METHOD(setUniformLabelBackShape, setUniformLabelBackShapeWithResolver:
         
         if (layer != nil && isContainBackShape && layer.theme != nil) {
             if (layer.theme.themeType == TT_label) {
-//                ThemeLabel* themeLabel = (ThemeLabel*)layer.theme;
-                //TODO            [themeLabel labelBackShape:labelBackShape];
+                ThemeLabel* themeLabel = (ThemeLabel*)layer.theme;
+                [themeLabel setBackShape:labelBackShape];
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             }
@@ -1102,16 +1117,24 @@ RCT_REMAP_METHOD(createThemeRangeMap, createThemeRangeMapMapWithResolver:(NSDict
             {
                 if ([array containsObject:@"ColorScheme"]) {
                     NSString* colorScheme = [dataDic objectForKey:@"ColorScheme"];
-                    NSMutableArray* array = nil;
-                    array = [SMThemeCartography getRangeColors:colorScheme];
-                    if (array != nil) {
+                    NSMutableDictionary* arrayColor = nil;
+                    NSMutableArray* colorArray;
+                    arrayColor = [SMThemeCartography getRangeColors:colorScheme];
+                    NSArray* arrKey = [arrayColor allKeys];
+                    if ([arrKey containsObject:colorScheme]) {
+                    colorArray = [arrayColor objectForKey:colorScheme];
+                    }
+                    if (colorArray != nil) {
                         int rangeCount = [themeRange getCount];
-                        Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:array];
+                        Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:colorArray];
                         for (int i = 0; i < rangeCount; i++) {
                             [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[themeRange getItem:i].mStyle color:[selectedColors get:i]];
                         }
                     }
                 }
+                [[SMap singletonInstance].smMapWC.mapControl.map.layers addDataset:dataset Theme:themeRange ToHead:true];
+                [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+                result = true;
             }
         }
         resolve([NSNumber numberWithBool:result]);
@@ -1184,6 +1207,11 @@ RCT_REMAP_METHOD(modifyThemeRangeMap, modifyThemeRangeMapWithResolver:(NSDiction
             colorGradientType = [SMThemeCartography getColorGradientType:strType];
             isContainColorGradientType = true;
         }
+        else
+        {
+            colorGradientType = CGT_GREENWHITE;
+            isContainColorGradientType = true;
+        }
         bool result = false;
 
         if (dataset != nil && themeRangeLayer.theme != nil && ![rangeExpression isEqualToString:@""] && isContainRangeMode && rangeParameter != -1 && isContainColorGradientType) {
@@ -1191,6 +1219,18 @@ RCT_REMAP_METHOD(modifyThemeRangeMap, modifyThemeRangeMapWithResolver:(NSDiction
             themeRange = [ThemeRange makeDefaultDataSet:(DatasetVector*)dataset RangeExpression:rangeExpression RangeMode:rangeMode RangeParameter:rangeParameter ColorGradientType:colorGradientType];
             if(themeRange != nil)
             {
+                if(![array containsObject:@"ColorGradientType"]){
+                    NSMutableArray* mulArray = nil;
+                    mulArray =  [SMThemeCartography getLastThemeColors:themeRangeLayer];
+                    if (mulArray != nil) {
+                        int rangeCount = [themeRange getCount];
+                        Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:mulArray];
+                        for (int i = 0; i < rangeCount; i++) {
+                            [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[themeRange getItem:i].mStyle color:[selectedColors get:i]];
+                        }
+                    }
+                }
+                
                 [themeRangeLayer.theme fromXML:[themeRange toXML]];
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 result = true;
@@ -1224,10 +1264,15 @@ RCT_REMAP_METHOD(setUniqueColorScheme, setUniqueColorSchemeWithResolver:(NSDicti
             NSNumber* indexValue = [dataDic objectForKey:@"LayerIndex"];
             layerIndex = indexValue.intValue;
         }
-        NSMutableArray* arrayColor = nil;
+        NSMutableDictionary* arrayColor = nil;
+        NSMutableArray* colorArray;
         if ([array containsObject:@"ColorScheme"]) {
             strColor = [dataDic objectForKey:@"ColorScheme"];
             arrayColor = [SMThemeCartography getUniqueColors:strColor];
+            NSArray* arrKey = [arrayColor allKeys];
+            if ([arrKey containsObject:strColor]) {
+                colorArray = [arrayColor objectForKey:strColor];
+            }
         }
         
         Layer* layer = nil;
@@ -1242,7 +1287,7 @@ RCT_REMAP_METHOD(setUniqueColorScheme, setUniqueColorSchemeWithResolver:(NSDicti
             if (layer.theme.themeType == TT_Unique) {
                 ThemeUnique* themeUnique = (ThemeUnique*)layer.theme;
                 int rangeCount = [themeUnique getCount];
-                Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:arrayColor];
+                Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:colorArray];
                 for (int i = 0; i < rangeCount; i++) {
                     [SMThemeCartography setGeoStyleColor:layer.dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:[selectedColors get:i]];
                 }
@@ -1280,10 +1325,15 @@ RCT_REMAP_METHOD(setRangeColorScheme, setRangeColorSchemeWithResolver:(NSDiction
             NSNumber* indexValue = [dataDic objectForKey:@"LayerIndex"];
             layerIndex = indexValue.intValue;
         }
-        NSMutableArray* arrayColor = nil;
+        NSMutableDictionary* arrayColor = nil;
+        NSMutableArray* colorArray;
         if ([array containsObject:@"ColorScheme"]) {
             strColor = [dataDic objectForKey:@"ColorScheme"];
             arrayColor = [SMThemeCartography getRangeColors:strColor];
+            NSArray* arrKey = [arrayColor allKeys];
+            if ([arrKey containsObject:strColor]) {
+                colorArray = [arrayColor objectForKey:strColor];
+            }
         }
         
         Layer* layer = nil;
@@ -1298,7 +1348,7 @@ RCT_REMAP_METHOD(setRangeColorScheme, setRangeColorSchemeWithResolver:(NSDiction
             if (layer.theme.themeType == TT_Range) {
                 ThemeRange* themeUnique = (ThemeRange*)(layer.theme);
                 int rangeCount = [themeUnique getCount];
-                Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:arrayColor];
+                Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:colorArray];
                 for (int i = 0; i < rangeCount; i++) {
                     [SMThemeCartography setGeoStyleColor:layer.dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:[selectedColors get:i]];
                 }

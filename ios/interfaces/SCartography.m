@@ -215,7 +215,7 @@ RCT_REMAP_METHOD(setLineWidth, setLineWidthWithResolver:(int) mm layerName:(NSSt
 }
 
 #pragma 设置线宽：1-10mm(边框符号宽度)
-RCT_REMAP_METHOD(getLineWidth, getLineWidthWithResolver:(int) mm layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+RCT_REMAP_METHOD(getLineWidth, getLineWidthWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
@@ -491,10 +491,42 @@ RCT_REMAP_METHOD(getGridOpaqueRate, getGridOpaqueRateWithResolver:(NSString *)la
     @try{
         LayerSettingGrid *layerSettingVector = [SMCartography getLayerSettingGrid:layername];
         if (layerSettingVector != nil) {
-//            int opque = 100 - layerSettingtop
-//
-//            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
-            resolve([NSNumber numberWithBool:YES]);
+            int opque = 100 - [layerSettingVector getOpaqueRate];
+            resolve([NSNumber numberWithInt:opque]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma 设置点符号的透明度：0-100%
+RCT_REMAP_METHOD(getGridContrast, getGridContrastWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        LayerSettingGrid *layerSettingVector = [SMCartography getLayerSettingGrid:layername];
+        if (layerSettingVector != nil) {
+            int opque = [layerSettingVector getContrast];
+            resolve([NSNumber numberWithInt:opque]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma 设置点符号的透明度：0-100%
+RCT_REMAP_METHOD(getGridBrightness, getGridBrightnessWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        LayerSettingGrid *layerSettingVector = [SMCartography getLayerSettingGrid:layername];
+        if (layerSettingVector != nil) {
+            int opque = [layerSettingVector getBrightness];
+            resolve([NSNumber numberWithInt:opque]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
         }

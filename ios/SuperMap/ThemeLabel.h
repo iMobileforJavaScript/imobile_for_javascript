@@ -14,6 +14,7 @@
 #import "ColorGradientType.h"
 #import "GeoStyle.h"
 #import "OverLengthLabelMode.h"
+#import "LabelBackShape.h"
 
 @class Size2D;
 @class LabelMatrix;
@@ -59,7 +60,7 @@
 @property(nonatomic,assign)AlongLineDirection alongLineDirection;
 
 /**
-* @brief 拷贝构造函数，根据给定的  <ThemeLabel> 对象构造一个与其完全相同的新对象。
+* @brief/Users/xianglongli/Documents/WorkSpace/iTablet/node_modules/imobile_for_reactnative/ios/SuperMap/ThemeLabel.h 拷贝构造函数，根据给定的  <ThemeLabel> 对象构造一个与其完全相同的新对象。
 * @param themeLabel 给定的  <ThemeLabel>  对象。
 */
 -(id)initThemeLabel:(ThemeLabel *)themeLabel;
@@ -68,7 +69,7 @@
 * @return 标签专题图子项列表。
 */
 -(NSMutableArray *)getLableItemList;
-//-(void)setBackShape:(LabelBackShape)value;
+-(void)setBackShape:(LabelBackShape)value;
 
 /**
 * @brief 设置分段字段表达式。其中分段表达式中的值必须为数值型的。
