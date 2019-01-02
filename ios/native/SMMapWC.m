@@ -1768,7 +1768,7 @@
 -(NSString*)importDatasourceFile:(NSString*)strFile ofModule:(NSString*)strModule{
     
     NSString *strSuffix = [[strFile componentsSeparatedByString:@"."]lastObject];
-    if ([strFile.lowercaseString isEqualToString:@"udb"]) {
+    if ([strSuffix.lowercaseString isEqualToString:@"udb"]) {
         return [self importUDBFile:strFile ofModule:strModule];
     }else{
         if (![self isDatasourceFileExist:strFile isUDB:NO]) {
