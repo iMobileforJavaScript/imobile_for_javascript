@@ -620,6 +620,59 @@ RCT_REMAP_METHOD(setUniformLabelBackShape, setUniformLabelBackShapeWithResolver:
 }
 
 /**
+ * 设置统一标签专题图背景形状
+ *
+ * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+ * @param promise
+ */
+RCT_REMAP_METHOD(setUniformLabelBackColor, setUniformLabelBackColorWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        NSString* layerName = @"";
+        int layerIndex = -1;
+        NSString* strColor = @"";
+        bool isContainColor = false;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+        }
+        if ([array containsObject:@"Color"]) {
+            strColor = [dataDic objectForKey:@"Color"];
+            isContainColor = true;
+        }
+        if ([array containsObject:@"LayerIndex"]) {
+            NSNumber* indexValue = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = indexValue.intValue;
+        }
+        
+        Layer* layer = nil;
+        
+        if ([layerName isEqualToString:@""]) {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        } else {
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }
+        
+        if (layer != nil && isContainColor && layer.theme != nil) {
+            if (layer.theme.themeType == TT_label) {
+                ThemeLabel* themeLabel = (ThemeLabel*)layer.theme;
+                GeoStyle* backStyle = [themeLabel getBackStyle];
+                Color* color = [STranslate colorFromHexString:strColor];
+                [backStyle setFillForeColor:color];
+                [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+                resolve([NSNumber numberWithBool:YES]);
+            }
+        }
+        else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
  * 获取统一标签专题图的背景形状
  *
  * @param layerName 图层名称
@@ -1413,6 +1466,49 @@ RCT_REMAP_METHOD(setRangeExpression, setRangeExpressionWithResolver:(NSDictionar
         reject(@"workspace", exception.reason, nil);
     }
 }
+
+/**
+ * 获取分段专题图的分段字段表达式
+ *
+ * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+ * @param promise
+ */
+RCT_REMAP_METHOD(getRangeExpression, getRangeExpressionWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        NSString* layerName = @"";
+        int layerIndex = -1;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+        }
+        if ([array containsObject:@"LayerIndex"]) {
+            NSNumber* indexValue = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = indexValue.intValue;
+        }
+        
+        Layer* layer = nil;
+        
+        if ([layerName isEqualToString:@""]) {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        } else {
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }
+        
+        if (layer != nil && layer.theme != nil) {
+            if (layer.theme.themeType == TT_Range) {
+                ThemeRange* themeLabel = (ThemeRange*)layer.theme;
+                resolve([themeLabel getRangeExpression]);
+            }
+        }
+        else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
 /*栅格分段专题图
  * ********************************************************************************************/
 
@@ -1457,7 +1553,7 @@ RCT_REMAP_METHOD(getThemeExpressByUdb, getThemeExpressByUdbWithResolver:(NSStrin
  * 获取数据集中的字段
  * @param layerName 图层名称
  */
-RCT_REMAP_METHOD(getThemeExpressByLayerName, getThemeExpressByLayerNameWithResolver:(NSString*)layerName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+RCT_REMAP_METHOD(getThemeExpressionByLayerName, getThemeExpressionByLayerNameWithResolver:(NSString*)layerName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         Layers *layers = [SMap singletonInstance].smMapWC.mapControl.map.layers;
         Dataset* dataset = [layers getLayerWithName:layerName].dataset;
@@ -1497,10 +1593,51 @@ RCT_REMAP_METHOD(getThemeExpressByLayerName, getThemeExpressByLayerNameWithResol
  * @param promise
  */
 
-RCT_REMAP_METHOD(getThemeExpressByLayerIndex, getThemeExpressByLayerIndexWithResolver:(int)layerIndex resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+RCT_REMAP_METHOD(getThemeExpressionByLayerIndex, getThemeExpressionByLayerIndexWithResolver:(int)layerIndex resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         Layers *layers = [SMap singletonInstance].smMapWC.mapControl.map.layers;
         Dataset* dataset = [layers getLayerAtIndex:layerIndex].dataset;
+        DatasetVector* datasetVector = (DatasetVector*)dataset;
+        FieldInfos* fieldInfos = datasetVector.fieldInfos;
+        NSMutableArray* array = [[NSMutableArray alloc]init];
+        NSInteger count = fieldInfos.count;
+        for(int i = 0; i < count; i++)
+        {
+            FieldInfo* fieldinfo = [fieldInfos get:i];
+            NSString* strName = fieldinfo.name;
+            NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
+            [info setObject:(strName) forKey:(@"title")];
+            [array addObject:info];
+        }
+        NSMutableDictionary* mulDic2 = [[NSMutableDictionary alloc] init];
+        NSString* datasetName = dataset.name;
+        [mulDic2 setValue:datasetName forKey:@"datasetName"];
+        NSString* datasetType = [SMThemeCartography datasetTypeToString:dataset.datasetType];
+        [mulDic2 setValue:datasetType forKey:@"datasetType"];
+        
+        NSMutableDictionary* mulDic3 =[[NSMutableDictionary alloc] init];
+        [mulDic3 setValue:array forKey:@"list"];
+        [mulDic3 setValue:mulDic2 forKey:@"dataset"];
+        
+        resolve(mulDic3);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
+ * 获取数据集中的字段
+ * @param layerIndex 图层索引
+ * @param promise
+ */
+
+RCT_REMAP_METHOD(getThemeExpressionByDatasetName, getThemeExpressionByDatasetNameWithResolver:(NSString*)datasourceAlias datasetName:(NSString*)datasetName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        Datasource* datasource = [datasources getAlias:datasourceAlias];
+        Datasets* datasets = datasource.datasets;
+        Dataset* dataset = [datasets getWithName:datasetName];
         DatasetVector* datasetVector = (DatasetVector*)dataset;
         FieldInfos* fieldInfos = datasetVector.fieldInfos;
         NSMutableArray* array = [[NSMutableArray alloc]init];
