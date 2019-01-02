@@ -23,4 +23,6 @@
 + (SymbolGroup *)findSymbolGroups:(Resources *)resources type:(NSString *)type path:(NSString *)path;
 + (NSArray *)findSymbolsByGroups:(Resources *)resources type:(NSString *)type path:(NSString *)path;
 + (NSArray *)findSymbolsByIDs:(Resources *)resources type:(NSString *)type IDs:(NSArray *)IDs;
++ (Symbol *)findSymbolsByTypeAndID:(Resources *)resources type:(NSString *)type ID:(int)ID;
++ (NSArray *)findSymbolsByIDs:(Resources *)resources symbolObjs:(NSArray *)symbolObjs;
 @end

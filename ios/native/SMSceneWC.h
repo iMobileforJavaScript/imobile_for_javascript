@@ -30,4 +30,9 @@
 - (Datasource *)openDatasource:(NSDictionary *)params;
 //- (Dataset *)addDatasetByName:(NSString *)name type:(DatasetType)type datasourceName:(NSString *)datasourceName datasourcePath:(NSString *)datasourcePath;
 
+-(BOOL)export3DScenceName:(NSString*)strScenceName toFolder:(NSString*)strDesFolder;
+-(BOOL)import3DWorkspaceInfo:(NSDictionary *)infoDic;
+-(BOOL)openScenceName:(NSString *)strScenceName toScenceControl:(SceneControl*)scenceControl;
+-(BOOL)is3DWorkspaceInfo:(NSDictionary *)infoDic;
+
 @end

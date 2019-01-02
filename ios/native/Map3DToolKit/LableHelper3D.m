@@ -297,6 +297,13 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
             for (int index = 0; index < myPoint3DArrayList.count; index++) {
                 GeoPoint3D* point3D = myPoint3DArrayList[index];
                 GeoPlacemark* geoPlacemark = [[GeoPlacemark alloc]initWithName:geoTextStrList[index] andGeomentry:point3D];//new GeoPlacemark(geoTextStrList.get(index), new GeoPoint3D(point3D));
+                TextStyle* textStyle = [[TextStyle alloc]init];;
+                [textStyle setForeColor:[ [Color alloc]initWithR:255 G:255 B:255]];
+                [textStyle setFontWidth:22];
+                [textStyle setFontHeight:12];
+                [textStyle setBold:YES];
+                [textStyle setAlignment: TA_MIDDLELEFT];
+                geoPlacemark.nameStyle = textStyle;;
                  Feature3D* fea3d = [layer3d.feature3Ds addGeometry3D:geoPlacemark];//add(geoPlacemark);
                 NSString* description = [NSString stringWithFormat:@"x=%.2f, y=%.2f, z=%.2f",geoPlacemark.position.x,geoPlacemark.position.y,geoPlacemark.position.z];
                 fea3d.description = description;
@@ -337,9 +344,10 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
     textStyle3D.altitudeMode = Absolute3D; // setAltitudeMode(AltitudeMode.ABSOLUTE);
     geoPlacemark.style3D = textStyle3D;
     TextStyle* textStyle = [[TextStyle alloc]init];;
-    [textStyle setForeColor:[ [Color alloc]initWithR:255 G:0 B:0]];
-    [textStyle setFontWidth:50];
-    [textStyle setFontHeight:50];
+    [textStyle setForeColor:[ [Color alloc]initWithR:255 G:255 B:255]];
+    [textStyle setFontWidth:22];
+    [textStyle setFontHeight:12];
+    [textStyle setAlignment: TA_MIDDLELEFT];
     geoPlacemark.nameStyle = textStyle;;
     
     mSceneControl.isRender = NO;
@@ -518,6 +526,10 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
         GeoPlacemark *geoPlacemark = [[GeoPlacemark alloc]initWithName:text andGeomentry:geopnt];
        // geoPlacemark.description = @"123456";
         TextStyle *textstyle = [[TextStyle alloc]init];
+        [textstyle setFontWidth:22];
+        [textstyle setFontHeight:12];
+        [textstyle setAlignment: TA_MIDDLELEFT];
+        [textstyle setForeColor:[[Color alloc]initWithR:255 G:255 B:255]];
         [geoPlacemark setNameStyle:textstyle];
         
         if (favoriteFeature3D==nil) {

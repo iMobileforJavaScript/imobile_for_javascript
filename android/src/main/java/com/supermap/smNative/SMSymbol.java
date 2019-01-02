@@ -1,6 +1,8 @@
 package com.supermap.smNative;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.DataUtil;
@@ -169,35 +171,51 @@ public class SMSymbol {
         }
     }
 
-    public static List<Symbol> findSymbolsByIDs(Resources resources, String type, List IDs) {
+//    public static List<Symbol> findSymbolsByIDs(Resources resources, String type, List IDs) {
+//        List<Symbol> symbols = new ArrayList<>();
+//
+//        if (IDs.isEmpty()) {
+//            return symbols;
+//        }
+//
+//        for (int i = 0; i < IDs.size(); i++) {
+//            Symbol symbol;
+//            Object data = IDs.get(i);
+//            int id;
+//            if (DataUtil.getDataType(data).equals("Double")) {
+//                id = ((Double) data).intValue();
+//            } else {
+//                id = (Integer) data;
+//            }
+//            if (type.equals("")) {
+//                symbol = findSymbolsByID(resources, id);
+//            } else {
+//                symbol = findSymbolsByTypeAndID(resources, type, id);
+//            }
+//            if (symbol != null) {
+//                symbols.add(symbol);
+//            }
+//        }
+//
+//        return symbols;
+//    }
+
+    public static List<Symbol> findSymbolsByIDs(Resources resources, ReadableArray symbolObjs) {
         List<Symbol> symbols = new ArrayList<>();
 
-        if (IDs.isEmpty()) {
+        if (symbolObjs.size() == 0) {
             return symbols;
         }
 
-        SymbolLibrary lib;
-        if (type.equals("fill")) {
-            lib = resources.getFillLibrary();
-        } else if (type.equals("line")) {
-            lib = resources.getLineLibrary();
-        } else {
-            lib = resources.getMarkerLibrary();
-        }
-
-        for (int i = 0; i < IDs.size(); i++) {
+        for (int i = 0; i < symbolObjs.size(); i++) {
             Symbol symbol;
-            Object data = IDs.get(i);
-            int id;
-            if (DataUtil.getDataType(data).equals("Double")) {
-                id = ((Double) data).intValue();
-            } else {
-                id = (Integer) data;
-            }
+            ReadableMap map = symbolObjs.getMap(i);
+            int id = map.getInt("id");
+            String type = map.getString("type");
             if (type.equals("")) {
                 symbol = findSymbolsByID(resources, id);
             } else {
-                symbol = lib.findSymbol(id);
+                symbol = findSymbolsByTypeAndID(resources, type, id);
             }
             if (symbol != null) {
                 symbols.add(symbol);
@@ -207,7 +225,7 @@ public class SMSymbol {
         return symbols;
     }
 
-  public static Symbol findSymbolsByID(Resources resources, int ID) {
+    public static Symbol findSymbolsByID(Resources resources, int ID) {
         try {
             Symbol symbol;
             symbol = resources.getFillLibrary().findSymbol(ID);
@@ -218,6 +236,25 @@ public class SMSymbol {
 
             symbol = resources.getMarkerLibrary().findSymbol(ID);
             if (symbol != null) return symbol;
+
+            return symbol;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Symbol findSymbolsByTypeAndID(Resources resources, String type, int ID) {
+        try {
+            Symbol symbol;
+            SymbolLibrary lib;
+            if (type.equals("fill")) {
+                lib = resources.getFillLibrary();
+            } else if (type.equals("line")) {
+                lib = resources.getLineLibrary();
+            } else {
+                lib = resources.getMarkerLibrary();
+            }
+            symbol = lib.findSymbol(ID);
 
             return symbol;
         } catch (Exception e) {

@@ -76,7 +76,8 @@ RCT_EXPORT_VIEW_PROPERTY(onSymbolClick, RCTBubblingEventBlock)
 }
 
 - (NSArray *)findSymbolsByIDs:(NSArray *)arr {
-    NSArray* symbols = [SMSymbol findSymbolsByIDs:[SMap singletonInstance].smMapWC.workspace.resources type:nil IDs:arr];
+//    NSArray* symbols = [SMSymbol findSymbolsByIDs:[SMap singletonInstance].smMapWC.workspace.resources type:nil IDs:arr];
+    NSArray* symbols = [SMSymbol findSymbolsByIDs:[SMap singletonInstance].smMapWC.workspace.resources symbolObjs:arr];
     return symbols;
 }
 

@@ -88,24 +88,10 @@ getThemeUniqueDefaultStyle = (layerName) => {
 /**
  * 获取单值专题图的字段表达式
  *
- * @param layerName 专题图层名称
  */
-getUniqueExpression = (layerName) => {
+getUniqueExpression = (params) => {
   try {
-    return SThemeCartography.getUniqueExpression(layerName)
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * 获取数据集中的字段
- * @param udbPath UDB在内存中路径
- * @param datasetName 数据集名称
- */
-getThemeExpressByUdb = (udbPath, datasetName) => {
-  try {
-    return SThemeCartography.getThemeExpressByUdb(udbPath, datasetName)
+    return SThemeCartography.getUniqueExpression(params)
   } catch (error) {
     console.error(error)
   }
@@ -115,9 +101,9 @@ getThemeExpressByUdb = (udbPath, datasetName) => {
  * 获取数据集中的字段
  * @param layerName 图层名称
  */
-getThemeExpressByLayerName = (layerName) => {
+getThemeExpressionByLayerName = (layerName) => {
   try {
-    return SThemeCartography.getThemeExpressByLayerName(layerName)
+    return SThemeCartography.getThemeExpressionByLayerName(layerName)
   } catch (error) {
     console.error(error)
   }
@@ -127,9 +113,9 @@ getThemeExpressByLayerName = (layerName) => {
  * 获取数据集中的字段
  * @param layerIndex 图层索引
  */
-getThemeExpressByLayerIndex = (layerIndex) => {
+getThemeExpressionByLayerIndex = (layerIndex) => {
   try {
-    return SThemeCartography.getThemeExpressByLayerIndex(layerIndex)
+    return SThemeCartography.getThemeExpressionByLayerIndex(layerIndex)
   } catch (error) {
     console.error(error)
   }
@@ -337,9 +323,9 @@ getAllDatasetNames = () => {
   }
 }
 
-getThemeExpressByDatasetName = (datasourceName, datasetName) => {
+getThemeExpressionByDatasetName = (datasourceName, datasetName) => {
   try {
-    return SThemeCartography.getThemeExpressByDatasetName(datasourceName, datasetName)
+    return SThemeCartography.getThemeExpressionByDatasetName(datasourceName, datasetName)
   } catch (error) {
     console.error(error)
   }
@@ -387,6 +373,31 @@ getRangeCount = (params) => {
   }
 }
 
+/** 获取专题图的颜色方案(String) */
+getThemeColorSchemeName = (params) => {
+  try {
+    return SThemeCartography.getThemeColorSchemeName(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+saveMap = () => {
+  try {
+    return SThemeCartography.saveMap()
+  } catch (error) {
+    console.error(error)
+  }
+}
+/**设置统一标签背景颜色 */
+setUniformLabelBackColor = (params) => {
+  try {
+    return SThemeCartography.setUniformLabelBackColor(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   //单值
   createThemeUniqueMap,
@@ -419,10 +430,12 @@ export default {
   getUniformLabelFontSize,
   getUniformLabelRotaion,
   getUniformLabelColor,
+  setUniformLabelBackColor,
   //其他
-  getThemeExpressByUdb,
-  getThemeExpressByLayerName,
-  getThemeExpressByLayerIndex,
-  getThemeExpressByDatasetName,
+  getThemeExpressionByLayerName,
+  getThemeExpressionByLayerIndex,
+  getThemeExpressionByDatasetName,
   getAllDatasetNames,
+  getThemeColorSchemeName,
+  saveMap,
 }

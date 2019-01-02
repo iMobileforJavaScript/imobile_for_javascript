@@ -269,9 +269,9 @@
             return strResult;
         }else{
             if (!bDirFile) {
-                strResult = [NSString stringWithFormat:@"%@#%d.%@",strName,nAddNumber,strSuffix];
+                strResult = [NSString stringWithFormat:@"%@_%d.%@",strName,nAddNumber,strSuffix];
             }else{
-                strResult = [NSString stringWithFormat:@"%@#%d",strName,nAddNumber];
+                strResult = [NSString stringWithFormat:@"%@_%d",strName,nAddNumber];
             }
             
             nAddNumber++;
@@ -1050,10 +1050,21 @@
     return;
 }
 
+//static NSString *g_strCustomerDirectory = nil;
 -(NSString *)getCustomerDirectory{
-    return  [NSHomeDirectory() stringByAppendingString:@"/Documents/Customer"];
-    //return @"/Customer";
+    NSString *strServer = SMap.singletonInstance.smMapWC.workspace.connectionInfo.server;
+    NSString *strRootFolder = [strServer substringToIndex: strServer.length - [[strServer componentsSeparatedByString:@"/"]lastObject].length-1];
+    return strRootFolder;
+    //    if (g_strCustomerDirectory==nil) {
+    //        g_strCustomerDirectory = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer"];
+    //    }
+    //    return g_strCustomerDirectory;
+    //    //return @"/Customer";
+    //}
+    //-(void)setCustomerDirectory:(NSString *)strValue{
+    //    g_strCustomerDirectory = strValue;
 }
+
 -(NSString*)getModuleDirectory:(int)nModule{
     switch (nModule) {
         case 0:  /*模块0*/
@@ -1072,32 +1083,63 @@
 //          \------->Map:           旗下包含模块子文件夹，存放map.xml和map.exp文件
 //          \------->Datasource:    旗下包含模块子文件夹，存放文件数据源文件
 //          \------->Resource:      旗下包含模块子文件夹，存放符号库文件（.sym/.lsl./bru）
+// 返回结果：NSArray为导入成功的所有地图名
 
--(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(int)nModule{
-    
-    BOOL result = false;
+-(NSArray *)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString*)strModule/*(int)nModule*/{
+    NSArray *arrResult = nil;
     if ( infoDic && [infoDic objectForKey:@"server"] && [infoDic objectForKey:@"type"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
         Workspace *importWorkspace = [[Workspace alloc]init];
         WorkspaceConnectionInfo* info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
         
         if([importWorkspace open:info]){
             
+            NSMutableDictionary *dicAddition = [[NSMutableDictionary alloc]init];
+            
+            //模版
+            //if ([strModule isEqualToString:@"Collection"]/*采集模块*/) {
+                NSString *strServer = [infoDic objectForKey:@"server"];
+                NSString *strRootDir =[strServer substringToIndex:strServer.length-[[strServer componentsSeparatedByString:@"/"]lastObject].length-1];
+                NSArray *arrSubs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:strRootDir error:nil];
+                for (int i=0; i<arrSubs.count; i++) {
+                    NSString *strSub = [arrSubs objectAtIndex:i];
+                    if ([strSub hasSuffix:@".xml"]) {
+                        NSString *strSrcTemplate = [NSString stringWithFormat:@"%@/%@",strRootDir,strSub];
+                        NSString *strDesTemplate = [NSString stringWithFormat:@"%@/Template/%@",[self getCustomerDirectory],strSub];
+                        strDesTemplate = [self formateNoneExistFileName:strDesTemplate isDir:NO];
+                        NSString *strNewSub = [[strDesTemplate componentsSeparatedByString:@"/"]lastObject];
+                        
+                        [[NSFileManager defaultManager]copyItemAtPath:strSrcTemplate toPath:strDesTemplate error:nil];
+                        [dicAddition setObject:strNewSub forKey:@"Template"];
+                        
+                        break;
+                    }
+                }
+            //}
+
+
+            NSMutableArray *arrTemp = [[NSMutableArray alloc]init];
             for (int i=0; i<importWorkspace.maps.count; i++) {
                 NSString *strMapName = [importWorkspace.maps get:i];
-                BOOL resMap = [self saveMapName:strMapName fromWorkspace:importWorkspace ofModule:nModule isNewMap:YES isResourcesModyfied:false];
+                NSString *strResName = [self saveMapName:strMapName fromWorkspace:importWorkspace ofModule:strModule withAddition:dicAddition isNewMap:YES isResourcesModyfied:false];
+                if(strResName!=nil){
+                    [arrTemp addObject:strResName];
+                }
             }
-            
-            result = true;
+            if(arrTemp.count>0){
+                arrResult = arrTemp;
+            }
         }
         
         [importWorkspace close];
         [importWorkspace dispose];
         
     }
-    return result;
+    return arrResult;
     
 }
 
+//
+// 返回保存成功地图名
 //
 // 导出(保存)工作空间中地图到模块
 // 参数：
@@ -1111,26 +1153,29 @@
 //      2.srcWorkspace包含地图
 //      3.模块存在
 //
--(BOOL)saveMapName:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(int)nModule isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified{
+-(NSString*)saveMapName:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(NSString*)strModule withAddition:(NSDictionary*)dicAddition isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified{
     
     if(srcWorkspace==nil || [srcWorkspace.maps indexOf:strMapAlians]==-1){
-        return false;
+        return nil;
     }
     
     NSString *strCustomer = [self getCustomerDirectory];
-    NSString *strModule = [self getModuleDirectory:nModule];
-    if (strModule == nil) {
-        return false;
-    }
+    //NSString *strModule = [self getModuleDirectory:nModule];
+//    if (strModule == nil) {
+//        return nil;
+//    }
     
     Map *mapExport = [[Map alloc]initWithWorkspace:srcWorkspace];
     
     if(![mapExport open:strMapAlians]){
         //打开失败
-        return false;
+        return nil;
     }
     
-    NSString* desDirMap =  [NSString stringWithFormat:@"%@/Map/%@",strCustomer,strModule];
+    NSString* desDirMap =  [NSString stringWithFormat:@"%@/Map",strCustomer];
+    if(strModule!=nil){
+        desDirMap = [NSString stringWithFormat:@"%@/%@",desDirMap,strModule];
+    }
     BOOL isDir = false;
     BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:desDirMap isDirectory:&isDir];
     if (!isExist || !isDir) {
@@ -1139,7 +1184,6 @@
     
     NSString *strMapName = strMapAlians;
     // map文件
-    // NSString* desPathMapXML = [NSString stringWithFormat:@"%@/%@.xml",strCustomer,strModule,strMapName];
     NSString* desPathMapXML = [NSString stringWithFormat:@"%@/%@.xml",desDirMap,strMapName];
     NSString* desPathMapExp ;
     if (!bNew) {
@@ -1149,7 +1193,6 @@
         if (isExist && !isDir) {
             [[NSFileManager defaultManager]removeItemAtPath:desPathMapXML error:nil];
         }
-        //desPathMapExp = [NSString stringWithFormat:@"%@/Map/%@/%@.exp",strCustomer,strModule,strMapName];
         desPathMapExp = [NSString stringWithFormat:@"%@/%@.exp",desDirMap,strMapName];
         isExist = [[NSFileManager defaultManager]fileExistsAtPath:desPathMapExp isDirectory:&isDir];
         if (isExist && !isDir) {
@@ -1162,7 +1205,6 @@
         NSString * desLastMap = [[desPathMapXML componentsSeparatedByString:@"/"]lastObject];
         // map文件名确定后其他文件（符号库）不需要判断，直接覆盖
         strMapName = [desLastMap substringToIndex:desLastMap.length-4];
-        //desPathMapExp = [NSString stringWithFormat:@"%@/Map/%@/%@.exp",strCustomer,strModule,strMapName];
         desPathMapExp = [NSString stringWithFormat:@"%@/%@.exp",desDirMap,strMapName];
     }
     
@@ -1216,7 +1258,10 @@
         
     }
     
-    NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource/%@",strCustomer,strModule];
+    NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",strCustomer];
+    if(strModule!=nil){
+        desDatasourceDir = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
+    }
     isDir = false;
     isExist = [[NSFileManager defaultManager] fileExistsAtPath:desDatasourceDir isDirectory:&isDir];
     if (!isExist || !isDir) {
@@ -1301,7 +1346,11 @@
         //user password
     }
     
-    NSString *desResourceDir = [NSString stringWithFormat:@"%@/Resource/%@",strCustomer,strModule];
+    NSString *desResourceDir = [NSString stringWithFormat:@"%@/Symbol",strCustomer];
+    if(strModule!=nil){
+        desResourceDir = [NSString stringWithFormat:@"%@/%@",desResourceDir,strModule];
+    }
+    
     isDir = false;
     isExist = [[NSFileManager defaultManager] fileExistsAtPath:desResourceDir isDirectory:&isDir];
     if (!isExist || !isDir) {
@@ -1309,7 +1358,6 @@
     }
     
     
-    //NSString* desResources = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
     NSString* desResources = [NSString stringWithFormat:@"%@/%@",desResourceDir,strMapName];
     //    if (bNew) {
     //        NSString *strSymTemp = [desResources stringByAppendingString:@".sym"];
@@ -1453,34 +1501,46 @@
         
     }
     
+    //NSDictionary *dicExp= @{ @"Datasources":arrExpDatasources , @"Resources": strMapName};
+    NSMutableDictionary *dictionaryExp = [[NSMutableDictionary alloc]init];
+    [dictionaryExp setObject:arrExpDatasources forKey:@"Datasources"];
+    [dictionaryExp setObject:strMapName forKey:@"Resources"];
+    //模板
+    if (dicAddition != nil) {
+        NSString *strTemplate = [dicAddition objectForKey:@"Template"];
+        if (strTemplate!=nil) {
+            [dictionaryExp setObject:strTemplate forKey:@"Template"];
+        }
+    }
     
-    NSDictionary *dicExp= @{ @"Datasources":arrExpDatasources , @"Resources": strMapName};
-    //[NSJSONSerialization JSONObjectWithData:[[features objectAtIndex:i] dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingAllowFragments error:&error];
-    // [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil]
-    
-    NSData *dataJson = [NSJSONSerialization dataWithJSONObject:dicExp options:NSJSONWritingPrettyPrinted error:nil];
+    NSData *dataJson = [NSJSONSerialization dataWithJSONObject:dictionaryExp options:NSJSONWritingPrettyPrinted error:nil];
     NSString *strExplorerJson = [[NSString alloc]initWithData:dataJson encoding:NSUTF8StringEncoding];
     [strExplorerJson writeToFile:desPathMapExp atomically:YES encoding:NSUTF8StringEncoding error:nil];
     
     [mapExport close];
     
-    return true;
+    return strMapName;
 }
 
 
 // 大工作空间打开本地地图
--(BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(int)nModule{
+-(BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(NSString *)strModule{
     
     if(desWorkspace==nil || [desWorkspace.maps indexOf:strMapName]!=-1){
         return false;
     }
     
     NSString *strCustomer = [self getCustomerDirectory];
-    NSString *strModule = [self getModuleDirectory:nModule];
-    if (strModule==nil) {
-        return false;
+    
+//    if (strModule==nil) {
+//        return false;
+//    }
+    NSString* srcPathMap;
+    if (strModule!=nil) {
+        srcPathMap = [NSString stringWithFormat:@"%@/Map/%@/%@",strCustomer,strModule,strMapName];
+    }else{
+        srcPathMap = [NSString stringWithFormat:@"%@/Map/%@",strCustomer,strMapName];
     }
-    NSString* srcPathMap = [NSString stringWithFormat:@"%@/Map/%@/%@",strCustomer,strModule,strMapName];
     NSString* srcPathXML = [NSString stringWithFormat:@"%@.xml",srcPathMap];
     BOOL isDir = true;
     BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathXML isDirectory:&isDir];
@@ -1503,7 +1563,10 @@
     // }
     NSDictionary *dicExp = [NSJSONSerialization JSONObjectWithData:[strMapEXP dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
     
-    NSString *srcDatasourceDir = [NSString stringWithFormat:@"%@/Datasource/%@",strCustomer,strModule];
+    NSString *srcDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",strCustomer];
+    if (strModule!=nil) {
+        srcDatasourceDir = [NSString stringWithFormat:@"%@/%@",srcDatasourceDir,strModule];
+    }
     
     // 重复的server处理
     //      1.文件型数据源：若bDatasourceRep，关闭原来数据源，拷贝新数据源并重新打开（alian保持原来的）
@@ -1571,7 +1634,12 @@
     }
     
     
-    NSString* srcResources = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
+    NSString* srcResources;// = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
+    if (strModule!=nil) {
+        srcResources = [NSString stringWithFormat:@"%@/Symbol/%@/%@",strCustomer,strModule,strMapName];
+    }else{
+         srcResources = [NSString stringWithFormat:@"%@/Symbol/%@/%@",strCustomer,strMapName];
+    }
     // Marker
     {
         if([desWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups indexofGroup:strMapName]!=-1){
@@ -1647,6 +1715,96 @@
     [desWorkspace.maps add:strMapName withXML:strMapXML];
     
     return true;
+}
+
+-(NSString*)importUDBFile:(NSString*)strFile ofModule:(NSString*)strModule{
+    
+    if (![self isDatasourceFileExist:strFile isUDB:YES]) {
+        return nil;
+    }
+    
+    NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",[self getCustomerDirectory]];
+    if (strModule!=nil) {
+        desDatasourceDir = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
+    }
+    BOOL isDir = false;
+    BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:desDatasourceDir isDirectory:&isDir];
+    if (!isExist || !isDir) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:desDatasourceDir withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    NSArray *arrSrcServer = [strFile componentsSeparatedByString:@"/"];
+    NSString *strFileName = [arrSrcServer lastObject];
+    // 导入工作空间名
+    NSString* strTargetFile = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strFileName];
+    
+    NSString * strSrcDatasourcePath = [strFile substringToIndex:strFile.length-4];
+    NSString * strTargetDatasourcePath = [strFile substringToIndex:strTargetFile.length-4];
+    
+    NSString *strResult = nil;
+    // 检查重复性
+    isDir = YES;
+    isExist = [[NSFileManager defaultManager] fileExistsAtPath:strTargetFile isDirectory:&isDir];
+    if (isExist && !isDir) {
+        //存在同名文件
+        //重名文件
+        strTargetFile = [self formateNoneExistFileName:strTargetFile isDir:NO];
+        strResult = [[strTargetFile componentsSeparatedByString:@"/"]lastObject];
+        strTargetDatasourcePath = [strTargetFile substringToIndex:strTargetFile.length-4];
+    }//exist
+    
+    // 拷贝udb
+    if(![[NSFileManager defaultManager] copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udb"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udb"] error:nil]){
+        return nil;
+    }
+    // 拷贝udd
+    if(![[NSFileManager defaultManager] copyItemAtPath:[strSrcDatasourcePath stringByAppendingString:@".udd"] toPath:[strTargetDatasourcePath stringByAppendingString:@".udd"] error:nil]){
+        return  nil;
+    }
+    return strResult;
+
+}
+
+-(NSString*)importDatasourceFile:(NSString*)strFile ofModule:(NSString*)strModule{
+    
+    NSString *strSuffix = [[strFile componentsSeparatedByString:@"."]lastObject];
+    if ([strFile.lowercaseString isEqualToString:@"udb"]) {
+        return [self importUDBFile:strFile ofModule:strModule];
+    }else{
+        if (![self isDatasourceFileExist:strFile isUDB:NO]) {
+            return nil;
+        }
+        NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",[self getCustomerDirectory]];
+        if (strModule!=nil) {
+            desDatasourceDir = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
+        }
+        BOOL isDir = false;
+        BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:desDatasourceDir isDirectory:&isDir];
+        if (!isExist || !isDir) {
+            [[NSFileManager defaultManager] createDirectoryAtPath:desDatasourceDir withIntermediateDirectories:YES attributes:nil error:nil];
+        }
+        NSArray *arrSrcServer = [strFile componentsSeparatedByString:@"/"];
+        NSString *strFileName = [arrSrcServer lastObject];
+        // 导入工作空间名
+        NSString* strTargetFile = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strFileName];
+        isDir = YES;
+        isExist = [[NSFileManager defaultManager] fileExistsAtPath:strTargetFile isDirectory:&isDir];
+        NSString *strResult = nil;
+        if (isExist && !isDir) {
+            //存在同名文件
+            //重名文件
+            strTargetFile = [self formateNoneExistFileName:strTargetFile isDir:NO];
+            strResult = [[strTargetFile componentsSeparatedByString:@"/"]lastObject];
+        }//exist
+        
+        
+        // 拷贝
+        if(![[NSFileManager defaultManager] copyItemAtPath:strFile toPath:strTargetFile error:nil]){
+            return nil;
+        }
+        
+        return strResult;
+    }
 }
 
 @end
