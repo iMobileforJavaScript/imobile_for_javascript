@@ -27,21 +27,32 @@
 
 - (BOOL)openWorkspace:(NSDictionary*)infoDic {
     @try {
-        bool openWsResult = YES;
-        if (infoDic && [infoDic objectForKey:@"server"] && ![SMap.singletonInstance.smMapWC.workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
-            if (SMap.singletonInstance.smMapWC.workspace && [SMap.singletonInstance.smMapWC.workspace.caption isEqualToString:@"UntitledWorkspace"]) {
-//                if (![SMap.singletonInstance.smMapWC.workspace.caption isEqualToString:@"UntitledWorkspace"]) {
-//                    [SMap.singletonInstance.smMapWC.workspace close];
-//                }
-                [SMap.singletonInstance.smMapWC.workspace dispose];
-                SMap.singletonInstance.smMapWC.workspace = [[Workspace alloc] init];
+        bool openWsResult = NO;
+//        if (infoDic && [infoDic objectForKey:@"server"] && ![SMap.singletonInstance.smMapWC.workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
+//            if (SMap.singletonInstance.smMapWC.workspace && [SMap.singletonInstance.smMapWC.workspace.caption isEqualToString:@"UntitledWorkspace"]) {
+////                if (![SMap.singletonInstance.smMapWC.workspace.caption isEqualToString:@"UntitledWorkspace"]) {
+////                    [SMap.singletonInstance.smMapWC.workspace close];
+////                }
+//                [SMap.singletonInstance.smMapWC.workspace dispose];
+//                SMap.singletonInstance.smMapWC.workspace = [[Workspace alloc] init];
+//            }
+//
+//            WorkspaceConnectionInfo* info = [[WorkspaceConnectionInfo alloc] init];
+//            info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
+//
+//            openWsResult = [SMap.singletonInstance.smMapWC.workspace open:info];
+//            [info dispose];
+//        }
+        if (infoDic && [infoDic objectForKey:@"server"]) {
+            if (SMap.singletonInstance.smMapWC.workspace && ![SMap.singletonInstance.smMapWC.workspace.caption isEqualToString:@"UntitledWorkspace"]) {
+                [SMap.singletonInstance.smMapWC.workspace close];
             }
+            [SMap.singletonInstance.smMapWC.workspace dispose];
+            SMap.singletonInstance.smMapWC.workspace = [[Workspace alloc] init];
             
-            WorkspaceConnectionInfo* info = [[WorkspaceConnectionInfo alloc] init];
-            info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
+            WorkspaceConnectionInfo* info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
             
             openWsResult = [SMap.singletonInstance.smMapWC.workspace open:info];
-            // SMap.singletonInstance.smMapWC.workspace =
             [info dispose];
         }
         
@@ -861,7 +872,7 @@
                 Layer *layer = [mapExport.layers getLayerAtIndex:i];
                 if(layer.dataset==nil){
                     if ([layer isKindOfClass:[LayerGroup class]]) {
-                        [arrDatasets addObjectsFromArray:[self allDatasetsFrom:(LayerGroup*)layer] ]
+                        [arrDatasets addObjectsFromArray:[self allDatasetsFrom:(LayerGroup*)layer] ];
                     }
                 }else{
                     [arrDatasets addObject:layer.dataset];
@@ -1257,7 +1268,7 @@
         Layer *layer = [mapExport.layers getLayerAtIndex:i];
         if(layer.dataset==nil){
             if ([layer isKindOfClass:[LayerGroup class]]) {
-                [arrDatasets addObjectsFromArray:[self allDatasetsFrom:(LayerGroup*)layer] ]
+                [arrDatasets addObjectsFromArray:[self allDatasetsFrom:(LayerGroup*)layer] ];
             }
         }else{
             [arrDatasets addObject:layer.dataset];
