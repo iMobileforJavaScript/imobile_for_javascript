@@ -621,6 +621,15 @@ export default (function () {
           console.error(e);  
         }
     }
+    
+    function export3DScenceName(strScenceName,strDesFolder){
+        try {
+            return SScene.export3DScenceName(strScenceName,strDesFolder)
+        } catch (error) {
+            console.error(e);
+        }
+    }
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -713,6 +722,7 @@ export default (function () {
         openScence,
         is3DWorkspace,
         setCustomerDirectory,
+        export3DScenceName,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
