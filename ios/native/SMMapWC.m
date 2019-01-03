@@ -856,12 +856,26 @@
             // 打开map
             [mapExport open:mapName];
             // 不重复的datasource保存
+            NSMutableArray *arrDatasets = [[NSMutableArray alloc]init];
             for (int i=0; i<mapExport.layers.getCount; i++) {
-                Datasource *datasource = [[[mapExport.layers getLayerAtIndex:i] dataset]datasource];
+                Layer *layer = [mapExport.layers getLayerAtIndex:i];
+                if(layer.dataset==nil){
+                    if ([layer isKindOfClass:[LayerGroup class]]) {
+                        [arrDatasets addObjectsFromArray:[self allDatasetsFrom:(LayerGroup*)layer] ]
+                    }
+                }else{
+                    [arrDatasets addObject:layer.dataset];
+                }
+            }
+            
+            NSMutableArray *arrDatasources = [[NSMutableArray alloc]init];
+            for (int i=0; i<arrDatasets.count; i++) {
+                Datasource* datasource = [(Dataset*)[arrDatasets objectAtIndex:i] datasource];
                 if (![arrDatasources containsObject:datasource]) {
                     [arrDatasources addObject:datasource];
                 }
             }
+            
             NSString* strMapXML = [mapExport toXML];
             [workspaceDes.maps add:mapName withXML:strMapXML];
             [mapExport close];
@@ -1076,6 +1090,21 @@
     }
 }
 
+-(NSArray*)allDatasetsFrom:(LayerGroup*)layerGroup {
+    NSMutableArray *arrRes =  [[NSMutableArray alloc]init];
+    for (int i=0;i<layerGroup.getCount; i++) {
+        Layer *layerTemp = [layerGroup getLayer:i];
+        if (layerTemp.dataset == nil) {
+            if ([layerTemp isKindOfClass: [LayerGroup class]]) {
+                [arrRes addObjectsFromArray:[self allDatasetsFrom:(LayerGroup*)layerTemp]];
+            }
+        }else{
+            [arrRes addObject:layerTemp.dataset];
+        }
+    }
+    return arrRes;
+}
+
 // 导入文件工作空间到程序目录
 //      拆分文件工作空间成为多个map.xml及其资源文件到程序相应目录
 // 目录结构：
@@ -1223,18 +1252,29 @@
     //    NSMutableArray *arrLineIDs = [[NSMutableArray alloc]init];
     //    NSMutableArray *arrFillIDs = [[NSMutableArray alloc]init];
     // datasources
-    NSMutableArray *arrDatasources = [[NSMutableArray alloc]init];
+    NSMutableArray *arrDatasets = [[NSMutableArray alloc]init];
     for (int i=0; i<mapExport.layers.getCount; i++) {
         Layer *layer = [mapExport.layers getLayerAtIndex:i];
-        
-        Datasource *datasource = [[layer dataset]datasource];
+        if(layer.dataset==nil){
+            if ([layer isKindOfClass:[LayerGroup class]]) {
+                [arrDatasets addObjectsFromArray:[self allDatasetsFrom:(LayerGroup*)layer] ]
+            }
+        }else{
+            [arrDatasets addObject:layer.dataset];
+        }
+    }
+    
+    NSMutableArray *arrDatasources = [[NSMutableArray alloc]init];
+    for (int i=0; i<arrDatasets.count; i++) {
+        Dataset *dataset = [arrDatasets objectAtIndex:i];
+        Datasource *datasource = [dataset datasource];
         if (![arrDatasources containsObject:datasource]) {
             [arrDatasources addObject:datasource];
         }
         //处理newSymbol
         //cad
-        if(bResourcesModified && layer.dataset.datasetType == CAD){
-            Recordset *recordset = [(DatasetVector*)layer.dataset recordset:NO cursorType:STATIC];
+        if(bResourcesModified && dataset.datasetType == CAD){
+            Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:STATIC];
             [recordset moveFirst];
             while ([recordset isEOF]) {
                 Geometry *geoTemp = [recordset geometry];
@@ -1255,7 +1295,6 @@
             }
             [recordset close];
         }
-        
     }
     
     NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",strCustomer];
