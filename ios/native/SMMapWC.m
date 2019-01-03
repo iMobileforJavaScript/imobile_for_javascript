@@ -861,7 +861,7 @@
                 Layer *layer = [mapExport.layers getLayerAtIndex:i];
                 if(layer.dataset==nil){
                     if ([layer isKindOfClass:[LayerGroup class]]) {
-                        [arrDatasets addObjectsFromArray:[self allDatasetsFrom:(LayerGroup*)layer] ]
+                        [arrDatasets addObjectsFromArray:[self allDatasetsFrom:(LayerGroup*)layer] ];
                     }
                 }else{
                     [arrDatasets addObject:layer.dataset];
@@ -1257,7 +1257,7 @@
         Layer *layer = [mapExport.layers getLayerAtIndex:i];
         if(layer.dataset==nil){
             if ([layer isKindOfClass:[LayerGroup class]]) {
-                [arrDatasets addObjectsFromArray:[self allDatasetsFrom:(LayerGroup*)layer] ]
+                [arrDatasets addObjectsFromArray:[self allDatasetsFrom:(LayerGroup*)layer] ];
             }
         }else{
             [arrDatasets addObject:layer.dataset];
