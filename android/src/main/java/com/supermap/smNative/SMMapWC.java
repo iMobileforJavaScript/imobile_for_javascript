@@ -118,10 +118,9 @@ public class SMMapWC {
 
                 result = SMap.getInstance().getSmMapWC().getWorkspace().open(info);
                 info.dispose();
-<<<<<<< HEAD
-//                SMap.getInstance().getSmMapWC().getMapControl().getMap().setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
-=======
->>>>>>> 3a652f85cd1e30687c2cf70af609f939bdfb4329
+
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
+
             }
 
             return result;
