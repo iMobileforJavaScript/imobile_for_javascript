@@ -1335,6 +1335,10 @@ public class SMMapWC {
                 }
             }
 
+            if (engineType == EngineType.UDB || engineType == EngineType.IMAGEPLUGINS){
+                strTargetServer =strTargetServer.substring(desDatasourceDir.length()+1);
+            }
+
             Map<String, String> dicDatasource = new HashMap<>();
             dicDatasource.put("Alians", strSrcAlian);
             dicDatasource.put("Server", strTargetServer);
@@ -1343,14 +1347,30 @@ public class SMMapWC {
             //user password
         }
 
-        String desResources = strCustomer + "/Resource/" + strModule + "/" + strMapName;
+        String desResourceDir = strCustomer + "/Symbol";
+        if(strModule!=null&&!strModule.equals("")){
+            desResourceDir=desResourceDir+"/"+strModule;
+        }
 
+        isDir=false;
+        File fileDesResourceDir=new File(desResourceDir);
+        isExist=fileDesResourceDir.exists();
+        isDir=fileDesResourceDir.isDirectory();
+        if(!isExist||!isDir){
+            fileDesResourceDir.mkdirs();
+        }
+
+        String desResources =desResourceDir+"/"+strMapName;
         if (bNew || bResourcesModified) {
             // Marker
             {
                 SymbolMarkerLibrary markerLibrary = new SymbolMarkerLibrary();
                 SymbolGroup desMarkerGroup = markerLibrary.getRootGroup();
                 SymbolGroup srcMarkerGroup = srcWorkspace.getResources().getMarkerLibrary().getRootGroup().getChildGroups().get(strMapAlians);
+                if(bNew&&!bResourcesModified){
+                    // 整个库都倒出
+                    srcMarkerGroup=srcWorkspace.getResources().getMarkerLibrary().getRootGroup();
+                }
                 if (srcMarkerGroup != null) {
                     importSymbolsFrom(srcMarkerGroup, desMarkerGroup, true, false);
                 }
@@ -1380,6 +1400,9 @@ public class SMMapWC {
 
                 SymbolGroup desLineGroup = lineLibrary.getRootGroup();
                 SymbolGroup srcLineGroup = srcWorkspace.getResources().getLineLibrary().getRootGroup().getChildGroups().get(strMapAlians);
+                if(bNew&&!bResourcesModified){
+                    srcLineGroup=srcWorkspace.getResources().getLineLibrary().getRootGroup();
+                }
                 if (srcLineGroup != null) {
                     importSymbolsFrom(srcLineGroup, desLineGroup, true, false);
                 }
@@ -1423,6 +1446,9 @@ public class SMMapWC {
 
                 SymbolGroup desFillGroup = fillLibrary.getRootGroup();
                 SymbolGroup srcFillGroup = srcWorkspace.getResources().getFillLibrary().getRootGroup().getChildGroups().get(strMapAlians);
+                if(bNew&&!bResourcesModified){
+                    srcFillGroup=srcWorkspace.getResources().getFillLibrary().getRootGroup();
+                }
                 if (srcFillGroup != null) {
                     importSymbolsFrom(srcFillGroup, desFillGroup, true, false);
                 }
@@ -1506,7 +1532,7 @@ public class SMMapWC {
 //            return false;
 //        }
         String srcPathMap;
-        if(strModule!=null){
+        if(strModule!=null&&!strModule.equals("")){
             srcPathMap=strCustomer + "/Map/" + strModule + "/" + strMapName;
         }else {
             srcPathMap=strCustomer + "/Map/" + strMapName;
@@ -1558,7 +1584,7 @@ public class SMMapWC {
 //        NSDictionary *dicExp = [NSJSONSerialization JSONObjectWithData:[strMapEXP dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
 
         String srcDatasourceDir=strCustomer+"/Datasource";
-        if(strModule!=null){
+        if(strModule!=null&&!strModule.equals("")){
             srcDatasourceDir=srcDatasourceDir+"/"+strModule;
         }
 
@@ -1596,7 +1622,8 @@ public class SMMapWC {
         for (Map<String, String> datasourceMap : datasourcesList) {
             String strAlian = datasourceMap.get("Alians");
             String strServer = datasourceMap.get("Server");
-            EngineType engineType = EngineType.newInstance(Integer.parseInt(datasourceMap.get("Type")));
+//            EngineType engineType = EngineType.newInstance(Integer.parseInt(datasourceMap.get("Type")));
+            EngineType engineType = (EngineType) Enum.parse(EngineType.class, Integer.parseInt(datasourceMap.get("Type")));
             // Alians重命名 同一个Server不要打开两次
             String strDesAlian = strAlian;
 
@@ -1608,6 +1635,7 @@ public class SMMapWC {
                 // 保证不重名
                 strDesAlian = formateNoneExistDatasourceAlian(strAlian, desWorkspace);
                 DatasourceConnectionInfo infoTemp = new DatasourceConnectionInfo();
+//                if (engineType.value() == EngineType.UDB.value() || engineType.value() == EngineType.IMAGEPLUGINS.value()) {
                 if (engineType == EngineType.UDB || engineType == EngineType.IMAGEPLUGINS) {
                     infoTemp.setServer(srcDatasourceDir + "/" + strServer);
                 } else {
@@ -1615,7 +1643,7 @@ public class SMMapWC {
                 }
                 infoTemp.setEngineType(engineType);
                 infoTemp.setAlias(strDesAlian);
-                if (desWorkspace.getDatasources().open(infoTemp) != null) {
+                if (desWorkspace.getDatasources().open(infoTemp) == null) {
 //                    if(![desWorkspace.datasources open:infoTemp]){
                     continue;
                 }
@@ -1629,7 +1657,7 @@ public class SMMapWC {
 
 
         String srcResources;// = strCustomer + "/Resource/" + strModule + "/" + strMapName;
-        if(strModule!=null){
+        if(strModule!=null&&!strModule.equals("")){
             srcResources=strCustomer + "/Symbol/" + strModule + "/" + strMapName;
         }else {
             srcResources=strCustomer+"/Symbol/"+strMapName;
