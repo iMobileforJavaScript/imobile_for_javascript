@@ -893,7 +893,7 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
         BOOL bResourcesModified = sMap.smMapWC.workspace.maps.count > 1;
         NSString* mapName = @"";
         if (mapSaved) {
-            mapName = [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:nil isNewMap:bNew isResourcesModyfied:bResourcesModified];
+            mapName = [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:withAddition isNewMap:bNew isResourcesModyfied:bResourcesModified];
         }
         
         resolve(mapName);
