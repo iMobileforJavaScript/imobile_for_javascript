@@ -7,7 +7,6 @@ import {
 import {
     EventConst
 } from '../constains'
-import SSceneTool from './SSceneTool'
 let SScene = NativeModules.SScene
 const nativeEvt = new NativeEventEmitter(SScene);
 export default (function () {
@@ -564,6 +563,54 @@ export default (function () {
           }
       }
 
+      function export3DScence(name,toPath){
+          try {
+              return SScene.export3DScence(name,toPath)
+          } catch (error) {
+            console.error(e);
+          }
+      }
+
+      function import3DWorkspace(infoDic){
+          try {
+            const type = infoDic.server.split('.').pop()
+            Object.assign(infoDic, {
+                type: getWorkspaceType(type)
+            })
+              return SScene.import3DWorkspace(infoDic)
+          } catch (error) {
+            console.error(e);
+          }
+      }
+
+      function openScence(name){
+          try {
+              return SScene.openScence(name)
+          } catch (error) {
+            console.error(e); 
+          }
+      }
+      
+      function is3DWorkspace(infoDic){
+          try {
+              console.warn("is3DWorkspace")
+            const type = infoDic.server.split('.').pop()
+            Object.assign(infoDic, {
+                type: getWorkspaceType(type)
+            })
+              return SScene.is3DWorkspace(infoDic)
+          } catch (error) {
+            console.error(e); 
+          }
+      }
+
+      function setCustomerDirectory(path){
+          try {
+              return SScene.setCustomerDirectory(path)
+          } catch (error) {
+            console.error(e);  
+          }
+      }
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -650,7 +697,11 @@ export default (function () {
         getLableAttributeList,
         flyToFeatureById,
         getSetting,
+        export3DScence,
+        import3DWorkspace,
+        openScence,
+        is3DWorkspace,
+        setCustomerDirectory,
     }
-    Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
 })()
