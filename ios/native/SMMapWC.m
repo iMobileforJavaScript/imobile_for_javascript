@@ -1062,7 +1062,7 @@
         if (bDirRetain) {
             NSString* subName = subGroup.name;
             int nAddNum = 1;
-            while ([desLib.rootGroup.childSymbolGroups indexofGroup:subName]!=-1) {
+            while ([desGroup.childSymbolGroups indexofGroup:subName]!=-1) {
                 subName = [NSString stringWithFormat:@"%@#%d",subGroup.name,nAddNum];
                 nAddNum++;
             }

@@ -292,7 +292,7 @@ static NSString *g_strCustomerDirectory = nil;
 
 -(BOOL)export3DScenceName:(NSString*)strScenceName toFolder:(NSString*)strDesFolder{
     
-    NSString * strDir = [NSString stringWithFormat:@"%@/Scence",[self getCustomerDirectory]];
+    NSString * strDir = [NSString stringWithFormat:@"%@/Data/Scene",[self getCustomerDirectory]];
     NSString* srcPathPXP = [NSString stringWithFormat:@"%@/%@.pxp",strDir,strScenceName];
     BOOL isDir = true;
     BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathPXP isDirectory:&isDir];
@@ -363,7 +363,7 @@ static NSString *g_strCustomerDirectory = nil;
             NSString * strSrcFolder = [strSrcServer substringToIndex:strSrcServer.length-strServerName.length-1];
             NSString * strFolderName = [[strSrcFolder  componentsSeparatedByString:@"/"] lastObject];
             
-            NSString * strDesDir = [NSString stringWithFormat:@"%@/Scence",[self getCustomerDirectory]];
+            NSString * strDesDir = [NSString stringWithFormat:@"%@/Data/Scene",[self getCustomerDirectory]];
             NSString * strDesFolder = [NSString stringWithFormat:@"%@/%@",strDesDir,strFolderName];
             //1.拷贝所有数据
             strDesFolder = [self formateNoneExistFileName:strDesFolder isDir:YES];
@@ -406,7 +406,7 @@ static NSString *g_strCustomerDirectory = nil;
     if(scenceControl.scene.workspace==nil){
         return false;
     }
-    NSString * strDir = [NSString stringWithFormat:@"%@/Scence",[self getCustomerDirectory]];
+    NSString * strDir = [NSString stringWithFormat:@"%@/Data/Scene",[self getCustomerDirectory]];
     NSString* srcPathPXP = [NSString stringWithFormat:@"%@/%@.pxp",strDir,strScenceName];
     BOOL isDir = true;
     BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathPXP isDirectory:&isDir];

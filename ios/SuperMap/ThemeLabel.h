@@ -89,6 +89,12 @@
 -(void)setLabelExpression:(NSString*)var;
 
 /**
+ * @brief 获取标注字段表达式。
+ * @return 标签专题图中的标注字段表达式。
+ */
+-(NSString*)getLabelExpression;
+
+/**
  * @brief 返回标签专题图中分段的个数。
  * <p>默认值为0。</p>
  * @return 标签专题图中分段的个数。
