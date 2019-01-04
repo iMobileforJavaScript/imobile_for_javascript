@@ -28,7 +28,7 @@ RCT_REMAP_METHOD(createThemeUniqueMap, createThemeUniqueMapWithResolver:(NSDicti
         NSString* datasourceAlias = @"";
         NSString* datasetName = @"";
         NSString* uniqueExpression = @"";
-        ColorGradientType colorGradientType = CGT_TERRAIN;//默认
+        ColorGradientType colorGradientType;//默认
         NSArray* array = [dataDic allKeys];
         if ([array containsObject:@"DatasetName"]) {
             datasetName = [dataDic objectForKey:@"DatasetName"];
@@ -39,6 +39,9 @@ RCT_REMAP_METHOD(createThemeUniqueMap, createThemeUniqueMapWithResolver:(NSDicti
         if ([array containsObject:@"ColorGradientType"]) {
             NSString* type = [dataDic objectForKey:@"ColorGradientType"];
             colorGradientType = [SMThemeCartography getColorGradientType:type];
+        }
+        else{
+            colorGradientType = CGT_GREENWHITE;
         }
         Dataset *dataset = nil;
         dataset = [SMThemeCartography getDataset:datasetName data:dataDic];
@@ -59,8 +62,23 @@ RCT_REMAP_METHOD(createThemeUniqueMap, createThemeUniqueMapWithResolver:(NSDicti
         }
         if (dataset != nil && ![uniqueExpression isEqualToString:@""]) {
             ThemeUnique* themeUnique = [ThemeUnique makeDefault:(DatasetVector*)dataset uniqueExpression:uniqueExpression colorType:colorGradientType];
-            GeoStyle* geoStyle = [SMThemeCartography getThemeUniqueGeoStyle:themeUnique.mDefaultStyle data:dataDic];
-            themeUnique.mDefaultStyle = geoStyle;
+            if ([array containsObject:@"ColorScheme"]) {
+                NSString* colorScheme = [dataDic objectForKey:@"ColorScheme"];
+                NSMutableDictionary* arrayColor = nil;
+                NSMutableArray* colorArray;
+                arrayColor = [SMThemeCartography getUniqueColors:colorScheme];
+                NSArray* arrKey = [arrayColor allKeys];
+                if ([arrKey containsObject:colorScheme]) {
+                    colorArray = [arrayColor objectForKey:colorScheme];
+                }
+                if (colorArray != nil) {
+                    int rangeCount = [themeUnique getCount];
+                    Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:colorArray];
+                    for (int i = 0; i < rangeCount; i++) {
+                        [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:[selectedColors get:i]];
+                    }
+                }
+            }
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [mapControl.map.layers addDataset:dataset Theme:themeUnique ToHead:true];
             [mapControl.map refresh];    
@@ -358,10 +376,26 @@ RCT_REMAP_METHOD(getThemeUniqueDefaultStyle, getThemeUniqueDefaultStyleWithResol
  * @param layerName 图层名称
  */
 
-RCT_REMAP_METHOD(getUniqueExpression, getUniqueExpressionWithResolver:(NSDictionary*)dataDic layerName:(NSString*)layerName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+RCT_REMAP_METHOD(getUniqueExpression, getUniqueExpressionWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
-        Layer *layer = nil;
-        layer = [SMThemeCartography getLayerByName:layerName];
+        NSString* layerName = @"";
+        int layerIndex = -1;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+        }
+        if ([array containsObject:@"LayerIndex"]) {
+            NSNumber* indexValue = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = indexValue.intValue;
+        }
+        Layer* layer = nil;
+        
+        if ([layerName isEqualToString:@""]) {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        } else {
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }
         if (layer != nil && layer.theme != nil) {
             ThemeUnique* themeUnique =(ThemeUnique*)layer.theme;
             NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
@@ -453,6 +487,10 @@ RCT_REMAP_METHOD(createUniformThemeLabelMap, createUniformThemeLabelMapWithResol
             if (fontSize != -1) {
                 [textStyle setFontHeight:fontSize];
                 [textStyle setFontWidth:fontSize];
+            }
+            else{
+                [textStyle setFontHeight:2];
+                [textStyle setFontWidth:2];
             }
             if (rotation != -1) {
                 [textStyle setRotation:rotation];
@@ -550,12 +588,10 @@ RCT_REMAP_METHOD(getUniformLabelExpression, getUniformLabelExpressionWithResolve
         }
         if (layer != nil && layer.theme != nil) {
             if (layer.theme.themeType == TT_label) {
-//                ThemeLabel* themeLabel =(ThemeLabel*)layer.theme;
-                NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
-                NSString* strExpression;
-//TODO          strExpression = [themeLabel getLabelExpression];
-                [dic setValue:strExpression forKey:@"LabelExpression"];
-                resolve(dic);
+                ThemeLabel* themeLabel =(ThemeLabel*)layer.theme;
+                NSString* strExpression = @"";
+                strExpression = [themeLabel getLabelExpression];
+                resolve(strExpression);
             }
         }
         else{
@@ -1566,7 +1602,8 @@ RCT_REMAP_METHOD(getThemeExpressionByLayerName, getThemeExpressionByLayerNameWit
             FieldInfo* fieldinfo = [fieldInfos get:i];
             NSString* strName = fieldinfo.name;
             NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
-            [info setObject:(strName) forKey:(@"title")];
+            [info setValue:(strName) forKey:(@"expression")];
+            [info setValue:false forKey:(@"isSelected")];
             [array addObject:info];
         }
         
@@ -1606,7 +1643,8 @@ RCT_REMAP_METHOD(getThemeExpressionByLayerIndex, getThemeExpressionByLayerIndexW
             FieldInfo* fieldinfo = [fieldInfos get:i];
             NSString* strName = fieldinfo.name;
             NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
-            [info setObject:(strName) forKey:(@"title")];
+            [info setValue:(strName) forKey:(@"expression")];
+            [info setValue:false forKey:(@"isSelected")];
             [array addObject:info];
         }
         NSMutableDictionary* mulDic2 = [[NSMutableDictionary alloc] init];

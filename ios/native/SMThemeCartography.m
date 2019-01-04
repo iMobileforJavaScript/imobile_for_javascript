@@ -67,7 +67,7 @@
             }
             int rgb_start = color_start.rgb;
             int rgb_end = color_end.rgb;
-            NSEnumerator* enumValue = [colorUniqueDic objectEnumerator];
+            NSEnumerator* enumValue = [[self getUniqueColors:@""] objectEnumerator];
             for (NSObject* object in enumValue) {
                 NSMutableArray* arrayColor = (NSMutableArray*)object;
                 NSUInteger count = arrayColor.count;
@@ -102,7 +102,7 @@
             }
             int rgb_start = color_start.rgb;
             int rgb_end = color_end.rgb;
-            NSEnumerator* enumValue = [colorRangeDic objectEnumerator];
+            NSEnumerator* enumValue = [[self getRangeColors:@""] objectEnumerator];
             for (NSObject* object in enumValue) {
                 NSMutableArray* arrayColor = (NSMutableArray*)object;
                 NSUInteger count = arrayColor.count;
@@ -115,6 +115,7 @@
                 }
             }
         }
+        return nil;
     }
     @catch (NSException *exception){
         @throw exception;
@@ -1666,6 +1667,35 @@ NSMutableDictionary* colorRangeDic = nil;
             [array addObject:color10];
             [array addObject:color11];
             [colorUniqueDic setValue:array forKey:@"FA_Red-Yellow-Blue"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            Color* color1 = [[Color alloc]initWithR:48  G:55 B:149];
+            Color* color2 = [[Color alloc]initWithR:71 G:117 B:181];
+            Color* color3 = [[Color alloc]initWithR:116 G:172 B:209];
+            Color* color4 = [[Color alloc]initWithR:171 G:217 B:233];
+            Color* color5 = [[Color alloc]initWithR:255 G:243 B:248];
+            Color* color6 = [[Color alloc]initWithR:255 G:255 B:191];
+            
+            Color* color7 = [[Color alloc]initWithR:254 G:225 B:143];
+            Color* color8 = [[Color alloc]initWithR:253 G:174 B:96];
+            Color* color9 = [[Color alloc]initWithR:245 G:107 B:69];
+            Color* color10 = [[Color alloc]initWithR:215 G:48 B:36];
+            Color* color11 = [[Color alloc]initWithR:165 G:0 B:36];
+            
+            [array addObject:color1];
+            [array addObject:color2];
+            [array addObject:color3];
+            [array addObject:color4];
+            [array addObject:color5];
+            [array addObject:color6];
+            
+            [array addObject:color7];
+            [array addObject:color8];
+            [array addObject:color9];
+            [array addObject:color10];
+            [array addObject:color11];
+            [colorUniqueDic setValue:array forKey:@"FA_Blue-Yellow-Red"];
         }
         {
             NSMutableArray* array = [[NSMutableArray alloc] init];

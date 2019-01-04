@@ -85,27 +85,44 @@ public class SMMapWC {
 
     public boolean openWorkspace(Map data) {
         try {
-            boolean result = true;
-            Workspace newWS = null;
+            boolean result = false;
 
-            Workspace _workspace = SMap.getInstance().getSmMapWC().getWorkspace();
-            if (_workspace != null && _workspace.getCaption().equals("UntitledWorkspace")) {
-                newWS = new Workspace();
+//            Workspace _workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+//            if (_workspace != null && _workspace.getCaption().equals("UntitledWorkspace")) {
+//                newWS = new Workspace();
+//                SMap.getInstance().getSmMapWC().setWorkspace(newWS);
+//            }
+//            if (data != null && data.get("server") != null && !SMap.getInstance().getSmMapWC().getWorkspace().getConnectionInfo().getServer().equals(data.get("server"))) {
+//                WorkspaceConnectionInfo info = setWorkspaceConnectionInfo(data, null);
+//
+//                result = SMap.getInstance().getSmMapWC().getWorkspace().open(info);
+//                info.dispose();
+////                SMap.getInstance().getSmMapWC().getMapControl().getMap().setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
+//            }
+//
+//            // 先设置在释放
+//            if (_workspace != null && _workspace.getCaption().equals("UntitledWorkspace")) {
+//                _workspace.dispose();
+//                setWorkspace(newWS);
+//            }
+
+            if (data != null && data.get("server") != null) {
+                Workspace _workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+                if (_workspace != null && !_workspace.getCaption().equals("UntitledWorkspace")) {
+                    _workspace.close();
+                }
+                _workspace.dispose();
+                Workspace newWS = new Workspace();
                 SMap.getInstance().getSmMapWC().setWorkspace(newWS);
-            }
-            if (data != null && data.get("server") != null && !SMap.getInstance().getSmMapWC().getWorkspace().getConnectionInfo().getServer().equals(data.get("server"))) {
                 WorkspaceConnectionInfo info = setWorkspaceConnectionInfo(data, null);
 
                 result = SMap.getInstance().getSmMapWC().getWorkspace().open(info);
                 info.dispose();
-//                SMap.getInstance().getSmMapWC().getMapControl().getMap().setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
+
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
+
             }
 
-            // 先设置在释放
-            if (_workspace != null && _workspace.getCaption().equals("UntitledWorkspace")) {
-                _workspace.dispose();
-                setWorkspace(newWS);
-            }
             return result;
         } catch (Exception e) {
             throw e;

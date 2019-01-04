@@ -1317,6 +1317,84 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     *
+     *
+     * @param data
+     * @param promise
+     */
+    @ReactMethod
+    public void import3DWorkspace(ReadableMap data, Promise promise) {
+        try {
+            sScene = getInstance();
+            Map params = data.toHashMap();
+            params.put("type",data.getInt("type")+"");
+            if(sScene.smSceneWc==null){
+                sScene.smSceneWc = new SMSceneWC();
+            }
+            boolean result = sScene.smSceneWc.import3DWorkspaceInfo(params);
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     *
+     *
+     * @param name
+     * @param promise
+     */
+    @ReactMethod
+    public void openScence(String name, Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+            boolean result=sScene.smSceneWc.openScenceName(name,sceneControl);
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     *
+     *
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void is3DWorkspace(ReadableMap data, Promise promise) {
+        try {
+            sScene = getInstance();
+            Map params = data.toHashMap();
+            params.put("type",data.getInt("type")+"");
+            if(sScene.smSceneWc==null){
+                sScene.smSceneWc = new SMSceneWC();
+            }
+            boolean result=sScene.smSceneWc.is3DWorkspaceInfo(params);
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     *
+     *
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void setCustomerDirectory(String path, Promise promise) {
+        try {
+            sScene = getInstance();
+            sScene.smSceneWc.setCustomerDirectory(path);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 
     /**
      * 关闭工作空间及地图控件
