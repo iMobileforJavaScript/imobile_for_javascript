@@ -249,7 +249,7 @@
 static NSString *g_strCustomerDirectory = nil;
 -(NSString *)getCustomerDirectory{
     if (g_strCustomerDirectory==nil) {
-        g_strCustomerDirectory = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer"];
+        g_strCustomerDirectory = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer/Data"];
     }
     return g_strCustomerDirectory;
     //return @"/Customer";
@@ -363,7 +363,7 @@ static NSString *g_strCustomerDirectory = nil;
             NSString * strSrcFolder = [strSrcServer substringToIndex:strSrcServer.length-strServerName.length-1];
             NSString * strFolderName = [[strSrcFolder  componentsSeparatedByString:@"/"] lastObject];
             
-            NSString * strDesDir = [NSString stringWithFormat:@"%@/Scence",[self getCustomerDirectory]];
+            NSString * strDesDir = [NSString stringWithFormat:@"%@/Scene",[self getCustomerDirectory]];
             NSString * strDesFolder = [NSString stringWithFormat:@"%@/%@",strDesDir,strFolderName];
             //1.拷贝所有数据
             strDesFolder = [self formateNoneExistFileName:strDesFolder isDir:YES];
