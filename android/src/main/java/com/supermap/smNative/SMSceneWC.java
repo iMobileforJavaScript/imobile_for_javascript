@@ -287,7 +287,7 @@ public class SMSceneWC {
 
     public boolean export3DScenceName(String strScenceName, String strDesFolder) {
 
-        String strDir = getCustomerDirectory() + "/Scence";
+        String strDir = getCustomerDirectory() + "/Scene";
         String srcPathPXP = strDir + "/" + strScenceName + ".pxp";
         boolean isDir = true;
         File fileSrcPathPXP = new File(srcPathPXP);
@@ -331,7 +331,7 @@ public class SMSceneWC {
         String[] arrServer = strServer.split("/");
         String strSrcFolder = strDir + "/" + arrServer[0];
 
-        copyFile(strSrcFolder, strDesFolder);
+        copyFolder(strSrcFolder, strDesFolder);
         result = true;
 
         return result;
@@ -408,7 +408,7 @@ public class SMSceneWC {
         if (this.workspace == null) {
             return false;
         }
-        String strDir = getCustomerDirectory() + "/Scence";
+        String strDir = getCustomerDirectory() + "/Scene";
         String srcPathPXP = strDir + "/" + strScenceName + ".pxp";
         boolean isDir = true;
         File filePathPXP = new File(srcPathPXP);

@@ -1397,6 +1397,23 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
+     *
+     *
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void export3DScenceName(String strScenceName, String strDesFolder, Promise promise) {
+        try {
+            sScene = getInstance();
+            sScene.smSceneWc.export3DScenceName(strScenceName,strDesFolder);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 关闭工作空间及地图控件
      */
     @ReactMethod

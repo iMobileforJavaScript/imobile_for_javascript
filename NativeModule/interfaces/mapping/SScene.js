@@ -571,13 +571,6 @@ export default (function () {
             console.error(e);
           }
       }
-      function export3DScence(name,toPath){
-        try {
-            return SScene.export3DScence(name,toPath)
-        } catch (error) {
-          console.error(e);
-        }
-    }
 
     function import3DWorkspace(infoDic){
         try {
@@ -717,7 +710,6 @@ export default (function () {
         getLableAttributeList,
         flyToFeatureById,
         getSetting,
-        export3DScence,
         import3DWorkspace,
         openScence,
         is3DWorkspace,
