@@ -410,15 +410,19 @@ public class SMap extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getUDBName(String path, Promise promise) {
         try {
+            File tempFile = new File(path.trim());
+            String[] strings = tempFile.getName().split("\\.");
+            String udbName = strings[0];
+
             sMap = getInstance();
             sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
             DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
-            if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf("switchudb") != -1) {
-                sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().close("switchudb");
+            if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
+                sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().close(udbName);
             }
             datasourceconnection.setEngineType(EngineType.UDB);
             datasourceconnection.setServer(path);
-            datasourceconnection.setAlias("switchudb");
+            datasourceconnection.setAlias(udbName);
             Datasource datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
             Datasets datasets = datasource.getDatasets();
             int count = datasets.getCount();
