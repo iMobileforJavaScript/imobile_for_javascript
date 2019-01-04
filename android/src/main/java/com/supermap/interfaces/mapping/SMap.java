@@ -1596,10 +1596,11 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param name
      * @param nModule
      * @param addition
+     * @param isNew
      * @param promise
      */
     @ReactMethod
-    public void saveMapName(String name, String nModule, ReadableMap addition, Promise promise) {
+    public void saveMapName(String name, String nModule, ReadableMap addition, boolean isNew, Promise promise) {
         try {
             sMap = SMap.getInstance();
             boolean mapSaved = false;
@@ -1609,6 +1610,8 @@ public class SMap extends ReactContextBaseJavaModule {
             if (map.getName() != null && !map.getName().equals("")) {
                 bNew = false;
             }
+
+            String oldName = map.getName();
 
             if (name == null || name.equals("")) {
                 if (map.getName() != null && !map.getName().equals("")) {
@@ -1634,7 +1637,7 @@ public class SMap extends ReactContextBaseJavaModule {
                     name = map.getName();
                 } else {
                     bNew = true;
-                    mapSaved = map.save(name);
+                    mapSaved = isNew ? map.saveAs(name) : map.save(name);
                 }
             }
 
@@ -1648,7 +1651,17 @@ public class SMap extends ReactContextBaseJavaModule {
                 additionInfo.put(key, addition.getString(key));
             }
             if (mapSaved) {
-                mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, additionInfo, bNew, bResourcesModified);
+                mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, additionInfo, (isNew || bNew), bResourcesModified);
+            }
+
+            // isNew为true，另存为后保证当前地图是原地图
+            boolean isOpen = false;
+            if (oldName != null && !oldName.equals("") && isNew) {
+                isOpen = map.open(oldName);
+                if (isOpen) {
+                    map.refresh();
+                    sMap.getSmMapWC().getWorkspace().getMaps().remove(mapName);
+                }
             }
 
             promise.resolve(mapName);

@@ -853,7 +853,7 @@ RCT_REMAP_METHOD(exportWorkspace, exportWorkspace:(NSArray*)arrMapnames toFile:(
 }
 
 #pragma mark 导出地图为xml
-RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)nModule withAddition:(NSDictionary *)withAddition resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)nModule withAddition:(NSDictionary *)withAddition isNew:(BOOL)isNew resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BOOL mapSaved = NO;
         sMap = [SMap singletonInstance];
@@ -863,6 +863,8 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
         if (map.name && ![map.name isEqualToString:@""]) {
             bNew = NO;
         }
+        
+        NSString* oldName = map.name;
         
         if (name == nil || [name isEqualToString:@""]) {
             if (map.name && ![map.name isEqualToString:@""]) {
@@ -887,13 +889,23 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
                 name = map.name;
             } else {
                 bNew = YES;
-                mapSaved = [map save:name];
+                mapSaved = isNew ? [map saveAs:name] : [map save:name];
             }
         }
         BOOL bResourcesModified = sMap.smMapWC.workspace.maps.count > 1;
         NSString* mapName = @"";
         if (mapSaved) {
-            mapName = [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:withAddition isNewMap:bNew isResourcesModyfied:bResourcesModified];
+            mapName = [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:withAddition isNewMap:(isNew || bNew) isResourcesModyfied:bResourcesModified];
+        }
+        
+        // isNew为true，另存为后保证当前地图是原地图
+        BOOL isOpen = NO;
+        if (oldName && ![oldName isEqualToString:@""] && isNew) {
+            isOpen = [map open:oldName];
+            if (isOpen) {
+                [map refresh];
+                [sMap.smMapWC.workspace.maps removeMapName:mapName];
+            }
         }
         
         resolve(mapName);
