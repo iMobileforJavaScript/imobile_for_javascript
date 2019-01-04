@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -1639,8 +1640,15 @@ public class SMap extends ReactContextBaseJavaModule {
 
             boolean bResourcesModified = sMap.smMapWC.getWorkspace().getMaps().getCount() > 1;
             String mapName = "";
+
+            Map<String, String> additionInfo = new HashMap<>();
+            ReadableMapKeySetIterator keys = addition.keySetIterator();
+            while (keys.hasNextKey()) {
+                String key = keys.nextKey();
+                additionInfo.put(key, addition.getString(key));
+            }
             if (mapSaved) {
-                mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, null, bNew, bResourcesModified);
+                mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, additionInfo, bNew, bResourcesModified);
             }
 
             promise.resolve(mapName);
