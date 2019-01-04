@@ -1395,6 +1395,9 @@ public class SMMapWC {
                 //SymbolGroup *desInlineGroup = [markerInlineLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
                 SymbolGroup desInlineGroup = markerInlineLibrary.getRootGroup();
                 SymbolGroup srcInlineGroup = srcWorkspace.getResources().getLineLibrary().getInlineMarkerLib().getRootGroup().getChildGroups().get(strMapAlians);
+                if(bNew&&!bResourcesModified){
+                    srcInlineGroup=srcWorkspace.getResources().getLineLibrary().getInlineMarkerLib().getRootGroup();
+                }
                 if (srcInlineGroup != null) {
                     importSymbolsFrom(srcInlineGroup, desInlineGroup, true, false);
                 }
@@ -1441,6 +1444,9 @@ public class SMMapWC {
                 //SymbolGroup *desInfillGroup = [markerInfillLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
                 SymbolGroup desInfillGroup = markerInfillLibrary.getRootGroup();
                 SymbolGroup srcInfillGroup = srcWorkspace.getResources().getFillLibrary().getInfillMarkerLib().getRootGroup().getChildGroups().get(strMapAlians);
+                if(bNew&&!bResourcesModified){
+                    srcInfillGroup=srcWorkspace.getResources().getFillLibrary().getInfillMarkerLib().getRootGroup();
+                }
                 if (srcInfillGroup != null) {
                     importSymbolsFrom(srcInfillGroup, desInfillGroup, true, false);
                 }
