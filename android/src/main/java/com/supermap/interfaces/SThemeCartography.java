@@ -1691,6 +1691,8 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 WritableMap writeMap = Arguments.createMap();
                 writeMap.putString("expression", name);
                 writeMap.putBoolean("isSelected", false);
+                writeMap.putString("datasourceName", dataset.getDatasource().getAlias());
+                writeMap.putString("datasetName", dataset.getName());
                 arr.pushMap(writeMap);
             }
 
