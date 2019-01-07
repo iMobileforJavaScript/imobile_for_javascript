@@ -477,6 +477,9 @@ RCT_REMAP_METHOD(openMap, openMapByName:(NSString*)name  resolver:(RCTPromiseRes
 RCT_REMAP_METHOD(is3DWorkspace, is3DWorkspaceByInfo:(NSDictionary*)infoDic  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sScene = [SScene singletonInstance];
+        if(sScene.smSceneWC==nil){
+            sScene.smSceneWC = [[SMSceneWC alloc] init];
+        }
         BOOL result = [sScene.smSceneWC is3DWorkspaceInfo:infoDic];
         resolve(@(result));
     }@catch (NSException *exception) {
@@ -501,6 +504,9 @@ RCT_REMAP_METHOD(openScence, openScenceByName:(NSString*)name  resolver:(RCTProm
 RCT_REMAP_METHOD(import3DWorkspace, import3DWorkspaceByInfo:(NSDictionary*)infoDic  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sScene = [SScene singletonInstance];
+        if(sScene.smSceneWC==nil){
+            sScene.smSceneWC = [[SMSceneWC alloc] init];
+        }
         BOOL result = [sScene.smSceneWC import3DWorkspaceInfo:infoDic];
         resolve(@(result));
     }@catch (NSException *exception) {
@@ -510,11 +516,23 @@ RCT_REMAP_METHOD(import3DWorkspace, import3DWorkspaceByInfo:(NSDictionary*)infoD
 /*
  导出pxp到工作空间
  */
-RCT_REMAP_METHOD(export3DScence, export3DScenceByName:(NSString*)name toFile:(NSString*)strFile resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(export3DScenceName, export3DScenceByName:(NSString*)name toFile:(NSString*)strFile resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sScene = [SScene singletonInstance];
         BOOL result = [sScene.smSceneWC export3DScenceName:name toFolder:strFile];
         resolve(@(result));
+    }@catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+/*
+ 设置CustomerDirectory
+ */
+RCT_REMAP_METHOD(setCustomerDirectory, setCustomerDirectory:(NSString*)path  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        [sScene.smSceneWC setCustomerDirectory:path];
+        resolve(@(1));
     }@catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
     }

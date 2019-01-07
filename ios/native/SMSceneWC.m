@@ -249,7 +249,7 @@
 static NSString *g_strCustomerDirectory = nil;
 -(NSString *)getCustomerDirectory{
     if (g_strCustomerDirectory==nil) {
-        g_strCustomerDirectory = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer/Data"];
+        g_strCustomerDirectory = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer"];
     }
     return g_strCustomerDirectory;
     //return @"/Customer";
@@ -292,7 +292,7 @@ static NSString *g_strCustomerDirectory = nil;
 
 -(BOOL)export3DScenceName:(NSString*)strScenceName toFolder:(NSString*)strDesFolder{
     
-    NSString * strDir = [NSString stringWithFormat:@"%@/Scence",[self getCustomerDirectory]];
+    NSString * strDir = [NSString stringWithFormat:@"%@/Data/Scene",[self getCustomerDirectory]];
     NSString* srcPathPXP = [NSString stringWithFormat:@"%@/%@.pxp",strDir,strScenceName];
     BOOL isDir = true;
     BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathPXP isDirectory:&isDir];
@@ -363,7 +363,8 @@ static NSString *g_strCustomerDirectory = nil;
             NSString * strSrcFolder = [strSrcServer substringToIndex:strSrcServer.length-strServerName.length-1];
             NSString * strFolderName = [[strSrcFolder  componentsSeparatedByString:@"/"] lastObject];
             
-            NSString * strDesDir = [NSString stringWithFormat:@"%@/Scene",[self getCustomerDirectory]];
+            NSString * strDesDir = [NSString stringWithFormat:@"%@/Data/Scene",[self getCustomerDirectory]];
+
             NSString * strDesFolder = [NSString stringWithFormat:@"%@/%@",strDesDir,strFolderName];
             //1.拷贝所有数据
             strDesFolder = [self formateNoneExistFileName:strDesFolder isDir:YES];
@@ -404,9 +405,10 @@ static NSString *g_strCustomerDirectory = nil;
 
 -(BOOL)openScenceName:(NSString *)strScenceName toScenceControl:(SceneControl*)scenceControl{
     if(scenceControl.scene.workspace==nil){
-        return false;
+        [scenceControl.scene setWorkspace:_workspace];
+        //return false;
     }
-    NSString * strDir = [NSString stringWithFormat:@"%@/Scence",[self getCustomerDirectory]];
+    NSString * strDir = [NSString stringWithFormat:@"%@/Data/Scene",[self getCustomerDirectory]];
     NSString* srcPathPXP = [NSString stringWithFormat:@"%@/%@.pxp",strDir,strScenceName];
     BOOL isDir = true;
     BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathPXP isDirectory:&isDir];
