@@ -900,12 +900,12 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
         
         // isNew为true，另存为后保证当前地图是原地图
         BOOL isOpen = NO;
-        if (oldName && ![oldName isEqualToString:@""] && isNew) {
+        if (oldName && ![oldName isEqualToString:@""] && ![oldName isEqualToString:mapName] && isNew) {
             isOpen = [map open:oldName];
-            if (isOpen) {
-                [map refresh];
+            if (isOpen && [sMap.smMapWC.workspace.maps indexOf:mapName] >= 0) {
                 [sMap.smMapWC.workspace.maps removeMapName:mapName];
             }
+            [map refresh];
         }
         
         resolve(mapName);
