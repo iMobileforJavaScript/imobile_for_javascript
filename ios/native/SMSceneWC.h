@@ -34,5 +34,5 @@
 -(BOOL)import3DWorkspaceInfo:(NSDictionary *)infoDic;
 -(BOOL)openScenceName:(NSString *)strScenceName toScenceControl:(SceneControl*)scenceControl;
 -(BOOL)is3DWorkspaceInfo:(NSDictionary *)infoDic;
-
+-(void)setCustomerDirectory:(NSString *)path;
 @end

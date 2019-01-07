@@ -242,7 +242,7 @@ public class SMSceneWC {
     private String getCustomerDirectory() {
         if (g_strCustomerDirectory == null) {
 //            g_strCustomerDirectory = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer"];
-            g_strCustomerDirectory = SDCARD + "/iTablet/User/Customer/Data";
+            g_strCustomerDirectory = SDCARD + "/iTablet/User/Customer";
         }
         return g_strCustomerDirectory;
 
@@ -287,7 +287,7 @@ public class SMSceneWC {
 
     public boolean export3DScenceName(String strScenceName, String strDesFolder) {
 
-        String strDir = getCustomerDirectory() + "/Scence";
+        String strDir = getCustomerDirectory() + "/Data/Scene";
         String srcPathPXP = strDir + "/" + strScenceName + ".pxp";
         boolean isDir = true;
         File fileSrcPathPXP = new File(srcPathPXP);
@@ -331,7 +331,7 @@ public class SMSceneWC {
         String[] arrServer = strServer.split("/");
         String strSrcFolder = strDir + "/" + arrServer[0];
 
-        copyFile(strSrcFolder, strDesFolder);
+        copyFolder(strSrcFolder, strDesFolder);
         result = true;
 
         return result;
@@ -356,7 +356,7 @@ public class SMSceneWC {
             String[] arrSrcFolder = strSrcFolder.split("/");
             String strFolderName = arrSrcFolder[arrSrcFolder.length - 1];
 
-            String strDesDir = getCustomerDirectory() + "/Scene";
+            String strDesDir = getCustomerDirectory() + "/Data/Scene";
 //                [NSString stringWithFormat:@"%@/Scence",[self getCustomerDirectory]];
             String strDesFolder = strDesDir + "/" + strFolderName;
             //1.拷贝所有数据
@@ -405,10 +405,10 @@ public class SMSceneWC {
     }
 
     public boolean openScenceName(String strScenceName, SceneControl sceneControl) {
-        if (this.workspace == null) {
-            return false;
+        if ( sceneControl.getScene().getWorkspace()== null) {
+            sceneControl.getScene().setWorkspace(this.workspace);
         }
-        String strDir = getCustomerDirectory() + "/Scence";
+        String strDir = getCustomerDirectory() + "/Data/Scene";
         String srcPathPXP = strDir + "/" + strScenceName + ".pxp";
         boolean isDir = true;
         File filePathPXP = new File(srcPathPXP);
@@ -458,10 +458,9 @@ public class SMSceneWC {
 
         WorkspaceConnectionInfo info = setWorkspaceConnectionInfo(dicInfo, null);
 
-        if (this.workspace.getCaption().equals("UntitledWorkspace")) {
+        if (sceneControl.getScene().getWorkspace().getCaption().equals("UntitledWorkspace")) {
             //工作空间未打开
-            if (this.workspace.open(info)) {
-                sceneControl.getScene().setWorkspace(this.workspace);
+            if (sceneControl.getScene().getWorkspace().open(info)) {
                 sceneControl.getScene().open(strName);
                 result = true;
             }

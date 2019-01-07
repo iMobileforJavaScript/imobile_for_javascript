@@ -1604,6 +1604,8 @@ RCT_REMAP_METHOD(getThemeExpressionByLayerName, getThemeExpressionByLayerNameWit
             NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
             [info setValue:(strName) forKey:(@"expression")];
             [info setValue:false forKey:(@"isSelected")];
+            [info setValue:dataset.datasource.alias forKey:@"datasourceName"];
+            [info setValue:dataset.name forKey:@"datasetName"];
             [array addObject:info];
         }
         

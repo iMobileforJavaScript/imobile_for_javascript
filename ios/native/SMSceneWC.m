@@ -364,6 +364,7 @@ static NSString *g_strCustomerDirectory = nil;
             NSString * strFolderName = [[strSrcFolder  componentsSeparatedByString:@"/"] lastObject];
             
             NSString * strDesDir = [NSString stringWithFormat:@"%@/Data/Scene",[self getCustomerDirectory]];
+
             NSString * strDesFolder = [NSString stringWithFormat:@"%@/%@",strDesDir,strFolderName];
             //1.拷贝所有数据
             strDesFolder = [self formateNoneExistFileName:strDesFolder isDir:YES];
@@ -404,7 +405,8 @@ static NSString *g_strCustomerDirectory = nil;
 
 -(BOOL)openScenceName:(NSString *)strScenceName toScenceControl:(SceneControl*)scenceControl{
     if(scenceControl.scene.workspace==nil){
-        return false;
+        [scenceControl.scene setWorkspace:_workspace];
+        //return false;
     }
     NSString * strDir = [NSString stringWithFormat:@"%@/Data/Scene",[self getCustomerDirectory]];
     NSString* srcPathPXP = [NSString stringWithFormat:@"%@/%@.pxp",strDir,strScenceName];

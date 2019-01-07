@@ -536,7 +536,7 @@ export default (function () {
           try {
               return SScene.doZipFiles(fileList,toPath)
           } catch (error) {
-            console.error(e);
+            console.error(error);
           }
       }
 
@@ -544,7 +544,7 @@ export default (function () {
           try {
               return SScene.getWorkspacePath()
           } catch (error) {
-            console.error(e);
+            console.error(error);
           }
       }
 
@@ -552,7 +552,7 @@ export default (function () {
           try {
               return SScene.getLableAttributeList()
           } catch (error) {
-            console.error(e);
+            console.error(error);
           }
       }
       
@@ -560,7 +560,7 @@ export default (function () {
           try {
               return SScene.flyToFeatureById()
           } catch (error) {
-            console.error(e);
+            console.error(error);
           }
       }
 
@@ -568,16 +568,9 @@ export default (function () {
           try {
               return SScene.getSetting()
           } catch (error) {
-            console.error(e);
+            console.error(error);
           }
       }
-      function export3DScence(name,toPath){
-        try {
-            return SScene.export3DScence(name,toPath)
-        } catch (error) {
-          console.error(e);
-        }
-    }
 
     function import3DWorkspace(infoDic){
         try {
@@ -587,7 +580,7 @@ export default (function () {
           })
             return SScene.import3DWorkspace(infoDic)
         } catch (error) {
-          console.error(e);
+          console.error(error);
         }
     }
 
@@ -595,7 +588,7 @@ export default (function () {
         try {
             return SScene.openScence(name)
         } catch (error) {
-          console.error(e); 
+          console.error(error); 
         }
     }
     
@@ -610,7 +603,7 @@ export default (function () {
           })
             return SScene.is3DWorkspace(infoDic)
         } catch (error) {
-          console.error(e); 
+          console.error(error); 
         }
     }
 
@@ -618,7 +611,7 @@ export default (function () {
         try {
             return SScene.setCustomerDirectory(path)
         } catch (error) {
-          console.error(e);  
+          console.error(error);  
         }
     }
     
@@ -626,7 +619,7 @@ export default (function () {
         try {
             return SScene.export3DScenceName(strScenceName,strDesFolder)
         } catch (error) {
-            console.error(e);
+            console.error(error);
         }
     }
 
@@ -717,7 +710,6 @@ export default (function () {
         getLableAttributeList,
         flyToFeatureById,
         getSetting,
-        export3DScence,
         import3DWorkspace,
         openScence,
         is3DWorkspace,
