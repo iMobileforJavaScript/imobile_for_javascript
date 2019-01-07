@@ -1703,10 +1703,10 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void openMapName(String strMapName, String nModule, Promise promise) {
+    public void openMapName(String strMapName, String nModule, Promise promise,boolean bPrivate) {
         try {
             sMap = SMap.getInstance();
-            boolean result = sMap.smMapWC.openMapName(strMapName, sMap.smMapWC.getWorkspace(), nModule);
+            boolean result = sMap.smMapWC.openMapName(strMapName, sMap.smMapWC.getWorkspace(), nModule,bPrivate);
 
             promise.resolve(result);
         } catch (Exception e) {

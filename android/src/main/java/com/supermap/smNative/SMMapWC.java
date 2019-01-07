@@ -1047,12 +1047,17 @@ public class SMMapWC {
         return;
     }
 
-    private String getCustomerDirectory() {
-        String strServer = SMap.getInstance().getSmMapWC().getWorkspace().getConnectionInfo().getServer();
-        String[] arrServer = strServer.split("/");
-        int endIndex = strServer.length() - arrServer[arrServer.length - 1].length() - 1;
-        String strRootFolder = strServer.substring(0, endIndex);
-        return strRootFolder;
+    private String getCustomerDirectory(boolean bPrivate) {
+        if(bPrivate) {
+            String strServer = SMap.getInstance().getSmMapWC().getWorkspace().getConnectionInfo().getServer();
+            String[] arrServer = strServer.split("/");
+            int endIndex = strServer.length() - arrServer[arrServer.length - 1].length() - 1;
+            String strRootFolder = strServer.substring(0, endIndex);
+            return strRootFolder;
+        }else {
+            String rootPath=android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+            return rootPath+"/Documents/iTablet/User/Customer";
+        }
     }
 
     private String getModuleDirectory(int nModule) {
@@ -1105,7 +1110,7 @@ public class SMMapWC {
                 String strSub = arrSubs.get(i);
                 if (strSub.endsWith(".xml")) {
                     String strSrcTemplate = strRootDir + "/" + strSub;
-                    String strDesTemplate = getCustomerDirectory() + "/Template/" + strSub;
+                    String strDesTemplate = getCustomerDirectory(true) + "/Template/" + strSub;
                     strDesTemplate = formateNoneExistFileName(strDesTemplate, false);
                     String[] arrDesTemplate = strDesTemplate.split("/");
                     String strNewSub = arrDesTemplate[arrDesTemplate.length - 1];
@@ -1157,7 +1162,7 @@ public class SMMapWC {
             return null;
         }
 
-        String strCustomer = getCustomerDirectory();
+        String strCustomer = getCustomerDirectory(true);
 //        String strModule = getModuleDirectory(nModule);
 //        if (strModule == null) {
 //            return null;
@@ -1529,14 +1534,14 @@ public class SMMapWC {
     }
 
     //大工作空间打开本地地图
-    public boolean openMapName(String strMapName, Workspace desWorkspace, String strModule) {
+    public boolean openMapName(String strMapName, Workspace desWorkspace, String strModule,boolean bPrivate) {
 
         if (desWorkspace == null || desWorkspace.getMaps().indexOf(strMapName) != -1) {
             return false;
         }
 
 
-        String strCustomer = getCustomerDirectory();
+        String strCustomer = getCustomerDirectory(bPrivate);
 //        if (strModule == null) {
 //            return false;
 //        }
