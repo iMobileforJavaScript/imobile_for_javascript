@@ -641,15 +641,15 @@ export default (function () {
   /**
    * 导出(保存)工作空间中地图到模块
    * @param strMapAlians
-   * @param srcWorkspace
    * @param nModule
-   * @param bNew
-   * @param bResourcesModified
+   * @param withAddition
+   * @param isNew  若为false，则自动判断名字是否存在，若存在，保存并导出覆盖原来的xml；若不存在，则创建新的xml。
+   *               若为true，创建新的xml地图文件
    * @returns {*}
    */
-  function saveMapName(strMapAlians = '', nModule = '', withAddition = {}) {
+  function saveMapName(strMapAlians = '', nModule = '', withAddition = {}, isNew = false) {
     try {
-      return SMap.saveMapName(strMapAlians, nModule, withAddition)
+      return SMap.saveMapName(strMapAlians, nModule, withAddition, isNew)
     } catch (e) {
       console.error(e)
       return e

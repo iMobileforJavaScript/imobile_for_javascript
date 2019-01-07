@@ -111,7 +111,6 @@ public class SMMapWC {
                 if (_workspace != null && !_workspace.getCaption().equals("UntitledWorkspace")) {
                     _workspace.close();
                 }
-                _workspace.dispose();
                 Workspace newWS = new Workspace();
                 SMap.getInstance().getSmMapWC().setWorkspace(newWS);
                 WorkspaceConnectionInfo info = setWorkspaceConnectionInfo(data, null);
@@ -121,6 +120,7 @@ public class SMMapWC {
 
                 SMap.getInstance().getSmMapWC().getMapControl().getMap().setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
 
+                _workspace.dispose();
             }
 
             return result;
