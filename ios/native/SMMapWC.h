@@ -36,5 +36,5 @@
 //-(BOOL)saveMapName:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(NSString *)nModule isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified;
 - (NSString *)saveMapName:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(NSString*)strModule withAddition:(NSDictionary*)dicAddition isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified;
 - (NSArray *)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString *)nModule;
-- (BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(NSString *)nModule;
+- (BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(NSString *)nModule isPrivate:(BOOL)bPrivate;
 @end

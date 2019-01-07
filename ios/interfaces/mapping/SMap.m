@@ -928,11 +928,11 @@ RCT_REMAP_METHOD(importWorkspaceInfo, importWorkspaceInfo:(NSDictionary *)infoDi
 }
 
 #pragma mark 大工作空间打开本地地图
-RCT_REMAP_METHOD(openMapName, openMapName:(NSString*)strMapName ofModule:(NSString *)nModule resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(openMapName, openMapName:(NSString*)strMapName ofModule:(NSString *)nModule isPrivate:(BOOL)bPrivate resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         sMap = [SMap singletonInstance];
-        BOOL result = [sMap.smMapWC openMapName:strMapName toWorkspace:sMap.smMapWC.workspace ofModule:nModule];
+        BOOL result = [sMap.smMapWC openMapName:strMapName toWorkspace:sMap.smMapWC.workspace ofModule:nModule isPrivate:bPrivate];
         
         resolve(@(result));
     } @catch (NSException *exception) {
