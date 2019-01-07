@@ -1660,12 +1660,12 @@ public class SMap extends ReactContextBaseJavaModule {
 
             // isNew为true，另存为后保证当前地图是原地图
             boolean isOpen = false;
-            if (oldName != null && !oldName.equals("") && isNew) {
+            if (oldName != null && !oldName.equals("") && !oldName.equals(mapName) && isNew) {
                 isOpen = map.open(oldName);
-                if (isOpen) {
-                    map.refresh();
+                if (isOpen && sMap.getSmMapWC().getWorkspace().getMaps().indexOf(mapName) >= 0) {
                     sMap.getSmMapWC().getWorkspace().getMaps().remove(mapName);
                 }
+                map.refresh();
             }
 
             promise.resolve(mapName);

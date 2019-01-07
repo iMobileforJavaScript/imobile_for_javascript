@@ -1076,10 +1076,16 @@
 }
 
 //static NSString *g_strCustomerDirectory = nil;
--(NSString *)getCustomerDirectory{
-    NSString *strServer = SMap.singletonInstance.smMapWC.workspace.connectionInfo.server;
-    NSString *strRootFolder = [strServer substringToIndex: strServer.length - [[strServer componentsSeparatedByString:@"/"]lastObject].length-1];
-    return strRootFolder;
+-(NSString *)getCustomerDirectory:(BOOL)bPrivate{
+    if(bPrivate){
+        NSString *strServer = SMap.singletonInstance.smMapWC.workspace.connectionInfo.server;
+        NSString *strRootFolder = [strServer substringToIndex: strServer.length - [[strServer componentsSeparatedByString:@"/"]lastObject].length-1];
+        return strRootFolder;
+    }else{
+        return [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer"];
+    }
+    
+    
     //    if (g_strCustomerDirectory==nil) {
     //        g_strCustomerDirectory = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer"];
     //    }
@@ -1144,7 +1150,7 @@
                     NSString *strSub = [arrSubs objectAtIndex:i];
                     if ([strSub hasSuffix:@".xml"]) {
                         NSString *strSrcTemplate = [NSString stringWithFormat:@"%@/%@",strRootDir,strSub];
-                        NSString *strDesTemplate = [NSString stringWithFormat:@"%@/Template/%@",[self getCustomerDirectory],strSub];
+                        NSString *strDesTemplate = [NSString stringWithFormat:@"%@/Template/%@",[self getCustomerDirectory:YES],strSub];
                         strDesTemplate = [self formateNoneExistFileName:strDesTemplate isDir:NO];
                         NSString *strNewSub = [[strDesTemplate componentsSeparatedByString:@"/"]lastObject];
                         
@@ -1199,7 +1205,7 @@
         return nil;
     }
     
-    NSString *strCustomer = [self getCustomerDirectory];
+    NSString *strCustomer = [self getCustomerDirectory:YES];
     //NSString *strModule = [self getModuleDirectory:nModule];
 //    if (strModule == nil) {
 //        return nil;
@@ -1574,13 +1580,13 @@
 
 
 // 大工作空间打开本地地图
--(BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(NSString *)strModule{
+-(BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(NSString *)strModule isPrivate:(BOOL)bPrivate{
     
     if(desWorkspace==nil || [desWorkspace.maps indexOf:strMapName]!=-1){
         return false;
     }
     
-    NSString *strCustomer = [self getCustomerDirectory];
+    NSString *strCustomer = [self getCustomerDirectory:bPrivate];
     
 //    if (strModule==nil) {
 //        return false;
@@ -1773,7 +1779,7 @@
         return nil;
     }
     
-    NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",[self getCustomerDirectory]];
+    NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",[self getCustomerDirectory:YES]];
     if (strModule!=nil) {
         desDatasourceDir = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
     }
@@ -1824,7 +1830,7 @@
         if (![self isDatasourceFileExist:strFile isUDB:NO]) {
             return nil;
         }
-        NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",[self getCustomerDirectory]];
+        NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",[self getCustomerDirectory:YES]];
         if (strModule!=nil) {
             desDatasourceDir = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
         }
