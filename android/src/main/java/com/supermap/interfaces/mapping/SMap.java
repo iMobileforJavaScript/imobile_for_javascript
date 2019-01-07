@@ -1713,4 +1713,41 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 设置地图反走样
+     * @param value
+     * @param promise
+     */
+    @ReactMethod
+    public void setAntialias(boolean value, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            com.supermap.mapping.Map map = sMap.getSmMapWC().getMapControl().getMap();
+            map.setAntialias(value);
+            map.refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取是否反走样
+     * @param promise
+     */
+    @ReactMethod
+    public void isAntialias(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            com.supermap.mapping.Map map = sMap.getSmMapWC().getMapControl().getMap();
+            boolean result = map.isAntialias();
+            map.refresh();
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 }

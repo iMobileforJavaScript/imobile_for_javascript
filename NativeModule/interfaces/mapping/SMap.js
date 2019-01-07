@@ -703,6 +703,24 @@ export default (function () {
       return e
     }
   }
+
+  /**设置是否反走样 */
+  function setAntialias(value) {
+    try {
+      return SMap.setAntialias(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**获取是否反走样 */
+  function isAntialias() {
+    try {
+      return SMap.isAntialias()
+    } catch (e) {
+      console.error(e)
+    }
+  }
   
   let SMapExp = {
     openWorkspace,
@@ -747,6 +765,8 @@ export default (function () {
     openMapName,
     removeMap,
     mapIsModified,
+    setAntialias,
+    isAntialias,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 
