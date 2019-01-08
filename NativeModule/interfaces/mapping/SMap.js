@@ -93,49 +93,6 @@ export default (function () {
   }
 
   /**
-   * 移除所有图层
-   * @param params
-   * @param value
-   * @returns {*}
-   */
-  function removeAllLayer() {
-    try {
-      return SMap.removeAllLayer()
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-
-  /**
-   * 移除指定图层
-   * @param params
-   * @param value    图层 index
-   * @returns {*}
-   */
-  function removeLayer(value) {
-    try {
-      return SMap.removeLayerWithIndex(value)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  /**
-   * 移除指定图层
-   * @param params
-   * @param value    图层名称
-   * @returns {*}
-   */
-  function removeLayerWithName(value) {
-    try {
-      return SMap.removeLayerWithName(value)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  /**
    *
    * @param value       序号或名称
    * @param viewEntire  (option)
@@ -753,8 +710,6 @@ export default (function () {
     saveAsMap,
     zoom,
     moveToCurrent,
-    removeLayer,
-    removeAllLayer,
     closeMap,
     getUDBName,
     submit,
@@ -771,7 +726,6 @@ export default (function () {
     saveMapToXML,
     openMapFromXML,
     getMapDatasourcesAlias,
-    removeLayerWithName,
     workspaceIsModified,
     getMapIndex,
     importWorkspace,

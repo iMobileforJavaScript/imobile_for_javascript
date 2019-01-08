@@ -212,6 +212,33 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 以数据源形式打开工作空间
+     *
+     * @param data
+     * @param defaultName 默认显示Map 图层名称
+     * @param promise
+     */
+    @ReactMethod
+    public void openDatasourceWithName(ReadableMap data, String defaultName, boolean toHead, Promise promise) {
+        try {
+            sMap = getInstance();
+            Map params = data.toHashMap();
+            Datasource datasource = sMap.smMapWC.openDatasource(params);
+            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
+
+            if (datasource != null && !defaultName.equals("")) {
+                Dataset ds = datasource.getDatasets().get(defaultName);
+                sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, toHead);
+            }
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 不同于上次选用的填充颜色的颜色
      *
      * @return
@@ -269,33 +296,6 @@ public class SMap extends ReactContextBaseJavaModule {
             fillColors[9] = new Color(174, 241, 176);
         }
         return fillColors;
-    }
-
-    /**
-     * 以数据源形式打开工作空间
-     *
-     * @param data
-     * @param defaultName 默认显示Map 图层名称
-     * @param promise
-     */
-    @ReactMethod
-    public void openDatasourceWithName(ReadableMap data, String defaultName, boolean toHead, Promise promise) {
-        try {
-            sMap = getInstance();
-            Map params = data.toHashMap();
-            Datasource datasource = sMap.smMapWC.openDatasource(params);
-            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
-
-            if (datasource != null && !defaultName.equals("")) {
-                Dataset ds = datasource.getDatasets().get(defaultName);
-                sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, toHead);
-            }
-            sMap.smMapWC.getMapControl().getMap().refresh();
-
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
     }
 
     /**
@@ -439,63 +439,6 @@ public class SMap extends ReactContextBaseJavaModule {
             }
             datasourceconnection.dispose();
             promise.resolve(arr);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-
-
-    /**
-     * 移除指定图层
-     *
-     * @param defaultIndex 默认显示Map 图层索引
-     * @param promise
-     */
-    @ReactMethod
-    public void removeLayerWithIndex(int defaultIndex, Promise promise) {
-        try {
-            sMap = getInstance();
-            sMap.smMapWC.getMapControl().getMap().getLayers().remove(defaultIndex);
-
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-
-
-    /**
-     * 移除所有图层
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void removeAllLayer(Promise promise) {
-        try {
-            sMap = getInstance();
-            sMap.smMapWC.getMapControl().getMap().getLayers().clear();
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-
-    /**
-     * 移除指定图层
-     *
-     * @param layerName 默认显示Map 图层名称
-     * @param promise
-     */
-    @ReactMethod
-    public void removeLayerWithName(String layerName, Promise promise) {
-        try {
-            sMap = getInstance();
-            sMap.smMapWC.getMapControl().getMap().getLayers().remove(layerName);
-
-            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
