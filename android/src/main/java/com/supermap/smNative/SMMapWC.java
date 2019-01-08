@@ -1214,7 +1214,11 @@ public class SMMapWC {
             String desLastMap = arrDesPathMapXML[arrDesPathMapXML.length - 1];
             // map文件名确定后其他文件（符号库）不需要判断，直接覆盖
             strMapName = desLastMap.substring(0, desLastMap.length() - 4);
-            desPathMapExp = strCustomer + "/Map/" + strModule + "/" + strMapName + ".exp";
+            if (strModule != null && !strModule.equals("")) {
+                desPathMapExp = strCustomer + "/Map/" + strModule + "/" + strMapName + ".exp";
+            } else {
+                desPathMapExp = strCustomer + "/Map/" + strMapName + ".exp";
+            }
         }
 
         // map xml
@@ -1271,7 +1275,10 @@ public class SMMapWC {
 
         }
 
-        String desDatasourceDir = strCustomer + "/Datasource/" + strModule;
+        String desDatasourceDir = strCustomer + "/Datasource";
+        if (strModule != null && !strModule.equals("")) {
+            desDatasourceDir += "/" + strModule;
+        }
 
         List<Map<String, String>> arrExpDatasources = new ArrayList<>();
         //[[NSFileManager defaultManager]createDirectoryAtPath:desDataDir withIntermediateDirectories:YES attributes:nil error:nil];

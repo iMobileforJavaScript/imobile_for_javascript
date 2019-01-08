@@ -198,4 +198,37 @@ RCT_REMAP_METHOD(addLayerByName, addLayerByName:(NSString *)datasourceName datas
         reject(@"LayerManager", exception.reason, nil);
     }
 }
+
+#pragma mark 根据图层名称移除图层
+RCT_REMAP_METHOD(removeLayerWithName, removeLayerWithNameByParams:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        BOOL result = [sMap.smMapWC.mapControl.map.layers removeWithName:layerName];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 根据索引移除图层
+RCT_REMAP_METHOD(removeLayerWithIndex, removeLayerWithIndexByParams:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        BOOL result = [sMap.smMapWC.mapControl.map.layers removeAt:index];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 根据索引移除图层
+RCT_REMAP_METHOD(removeAllLayer, removeAllLayer:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        [sMap.smMapWC.mapControl.map.layers clear];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
 @end

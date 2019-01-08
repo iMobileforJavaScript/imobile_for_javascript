@@ -167,26 +167,6 @@ RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)
     }
 }
 
-#pragma mark 根据图层名称移除图层
-RCT_REMAP_METHOD(removeLayerWithName, removeLayerWithNameByParams:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        [sMap.smMapWC.mapControl.map.layers removeWithName:layerName];
-        resolve([NSNumber numberWithBool:YES]);
-    } @catch (NSException *exception) {
-        reject(@"workspace", exception.reason, nil);
-    }
-}
-
-#pragma mark 根据索引移除图层
-RCT_REMAP_METHOD(removeLayerWithIndex, removeLayerWithIndexByParams:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        [sMap.smMapWC.mapControl.map.layers removeAt:index];
-        resolve([NSNumber numberWithBool:YES]);
-    } @catch (NSException *exception) {
-        reject(@"workspace", exception.reason, nil);
-    }
-}
-
 #pragma mark 以数据源形式打开工作空间, 默认根据Map 图层名称显示图层
 RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)params defaultName:(NSString *)defaultName toHead:(BOOL)toHead resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     

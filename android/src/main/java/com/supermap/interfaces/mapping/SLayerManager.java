@@ -277,4 +277,61 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+
+
+    /**
+     * 移除指定图层
+     *
+     * @param defaultIndex 默认显示Map 图层索引
+     * @param promise
+     */
+    @ReactMethod
+    public void removeLayerWithIndex(int defaultIndex, Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            boolean result = sMap.getSmMapWC().getMapControl().getMap().getLayers().remove(defaultIndex);
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 移除指定图层
+     *
+     * @param layerName 默认显示Map 图层名称
+     * @param promise
+     */
+    @ReactMethod
+    public void removeLayerWithName(String layerName, Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            boolean result = sMap.getSmMapWC().getMapControl().getMap().getLayers().remove(layerName);
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+
+    /**
+     * 移除所有图层
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void removeAllLayer(Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            sMap.getSmMapWC().getMapControl().getMap().getLayers().clear();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 }

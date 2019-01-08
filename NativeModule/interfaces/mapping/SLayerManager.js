@@ -139,6 +139,40 @@ function setLayerFieldInfo(layerPath = '', fieldInfo = {}, index = -1) {
   }
 }
 
+/**
+ * 移除所有图层
+ * @param params
+ * @param value
+ * @returns {*}
+ */
+function removeAllLayer() {
+  try {
+    return LayerManager.removeAllLayer()
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+
+/**
+ * 移除指定图层
+ * @param params
+ * @param value    图层 index
+ * @returns {*}
+ */
+function removeLayer(value = -1) {
+  try {
+    if (value < 0 || value === '' || (typeof value !=='number' && typeof value !== 'string')) return
+    if (typeof value === 'number') {
+      return LayerManager.removeLayerWithIndex(value)
+    } else {
+      return LayerManager.removeLayerWithName(value)
+    }
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 export {
   getLayersByType,
   getLayersByGroupPath,
@@ -149,4 +183,6 @@ export {
   getSelectionAttributeByLayer,
   addLayer,
   setLayerFieldInfo,
+  removeAllLayer,
+  removeLayer,
 }
