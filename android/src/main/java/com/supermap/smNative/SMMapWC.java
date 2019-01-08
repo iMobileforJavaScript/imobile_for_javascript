@@ -1056,7 +1056,7 @@ public class SMMapWC {
             return strRootFolder;
         }else {
             String rootPath=android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-            return rootPath+"/Documents/iTablet/User/Customer";
+            return rootPath+"/Documents/iTablet/User/Customer/Data";
         }
     }
 
