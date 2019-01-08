@@ -591,7 +591,7 @@ export default (function () {
    * @param breplaceDatasource   同名替换文件
    * @returns {*}
    */
-  function importWorkspace(info, toFile = '', breplaceDatasource = false){
+  function importWorkspace(info = {}, toFile = '', breplaceDatasource = false){
     try {
       return SMap.importWorkspace(info, toFile, breplaceDatasource)
     } catch (e) {
