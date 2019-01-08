@@ -1743,7 +1743,42 @@ public class SMap extends ReactContextBaseJavaModule {
             sMap = SMap.getInstance();
             com.supermap.mapping.Map map = sMap.getSmMapWC().getMapControl().getMap();
             boolean result = map.isAntialias();
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置固定比例尺
+     * @param value
+     * @param promise
+     */
+    @ReactMethod
+    public void setVisibleScalesEnabled(boolean value, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            com.supermap.mapping.Map map = sMap.getSmMapWC().getMapControl().getMap();
+            map.setVisibleScalesEnabled(value);
             map.refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取是否固定比例尺
+     * @param promise
+     */
+    @ReactMethod
+    public void isVisibleScalesEnabled(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            com.supermap.mapping.Map map = sMap.getSmMapWC().getMapControl().getMap();
+            boolean result = map.isVisibleScalesEnabled();
 
             promise.resolve(result);
         } catch (Exception e) {

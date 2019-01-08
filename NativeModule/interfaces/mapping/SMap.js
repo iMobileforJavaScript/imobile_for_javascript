@@ -721,6 +721,24 @@ export default (function () {
       console.error(e)
     }
   }
+
+  /**设置是否固定比例尺 */
+  function setVisibleScalesEnabled(value) {
+    try {
+      return SMap.setVisibleScalesEnabled(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**获取是否固定比例尺 */
+  function isVisibleScalesEnabled() {
+    try {
+      return SMap.isVisibleScalesEnabled()
+    } catch (e) {
+      console.error(e)
+    }
+  }
   
   let SMapExp = {
     openWorkspace,
@@ -767,6 +785,8 @@ export default (function () {
     mapIsModified,
     setAntialias,
     isAntialias,
+    setVisibleScalesEnabled,
+    isVisibleScalesEnabled,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 
