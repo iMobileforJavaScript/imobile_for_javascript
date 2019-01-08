@@ -83,6 +83,8 @@ public class SMap extends ReactContextBaseJavaModule {
 
     private SMMapWC smMapWC;
 
+    private Point2D defaultMapCenter = null;
+
     public SMap(ReactApplicationContext context) {
         super(context);
         this.context = context;
@@ -538,6 +540,7 @@ public class SMap extends ReactContextBaseJavaModule {
                         map.setCenter(point2D);
                     }
 
+                    defaultMapCenter = new Point2D(map.getCenter());
                     sMap.smMapWC.getMapControl().setAction(Action.PAN);
                     map.setVisibleScalesEnabled(false);
                     map.refresh();
@@ -584,7 +587,7 @@ public class SMap extends ReactContextBaseJavaModule {
                         Point2D point2D = new Point2D(x, y);
                         map.setCenter(point2D);
                     }
-
+                    defaultMapCenter = new Point2D(map.getCenter());
                     sMap.smMapWC.getMapControl().setAction(Action.PAN);
                     map.setVisibleScalesEnabled(false);
                     map.refresh();
@@ -652,7 +655,7 @@ public class SMap extends ReactContextBaseJavaModule {
             MapControl mapControl = sMap.smMapWC.getMapControl();
             Workspace workspace = sMap.smMapWC.getWorkspace();
             com.supermap.mapping.Map map = mapControl.getMap();
-
+            defaultMapCenter = null;
             map.close();
             map.dispose();
 //                mapControl.dispose();
@@ -679,7 +682,7 @@ public class SMap extends ReactContextBaseJavaModule {
             MapControl mapControl = sMap.smMapWC.getMapControl();
             if (mapControl != null) {
                 com.supermap.mapping.Map map = mapControl.getMap();
-
+                defaultMapCenter = null;
                 map.close();
             }
             promise.resolve(true);
@@ -1036,7 +1039,7 @@ public class SMap extends ReactContextBaseJavaModule {
             MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(promise);
             moveToCurrentThread.run();
 
-            promise.resolve(true);
+//            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -1058,24 +1061,31 @@ public class SMap extends ReactContextBaseJavaModule {
                 Collector collector = mapControl.getCollector();
 
                 collector.openGPS();
-                Point2D point2D = new Point2D(collector.getGPSPoint());
+                Point2D pt =collector.getGPSPoint();
+
                 Boolean isMove = false;
-                if (mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
-                    Point2Ds point2Ds = new Point2Ds();
-                    point2Ds.add(point2D);
-                    PrjCoordSys prjCoordSys = new PrjCoordSys();
-                    prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-                    CoordSysTransParameter parameter = new CoordSysTransParameter();
+                if(pt != null) {
+                   // Point2D point2D = new Point2D(pt);
 
-                    CoordSysTranslator.convert(point2Ds, prjCoordSys, mapControl.getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
-                    point2D = point2Ds.getItem(0);
+                    if (mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+                        Point2Ds point2Ds = new Point2Ds();
+                        point2Ds.add(pt);
+                        PrjCoordSys prjCoordSys = new PrjCoordSys();
+                        prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                        CoordSysTransParameter parameter = new CoordSysTransParameter();
+
+                        CoordSysTranslator.convert(point2Ds, prjCoordSys, mapControl.getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                        pt = point2Ds.getItem(0);
+                    }
                 }
-
-                if (mapControl.getMap().getBounds().contains(point2D)) {
-                    mapControl.getMap().setCenter(point2D);
+                if (pt!=null && mapControl.getMap().getBounds().contains(pt)) {
+                    mapControl.getMap().setCenter(pt);
                     isMove = true;
                 } else {
-                    mapControl.panTo(mapControl.getMap().getCenter(), 200);
+                    if(defaultMapCenter!=null){
+                        mapControl.getMap().setCenter(defaultMapCenter);
+                    }
+                  //  mapControl.panTo(mapControl.getMap().getCenter(), 200);
                 }
 
                 mapControl.getMap().refresh();
