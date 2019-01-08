@@ -676,9 +676,9 @@ export default (function () {
    * @param nModule 模块名（文件夹名）
    * @returns {*}
    */
-  function openMapName(strMapName, nModule = '') {
+  function openMapName(strMapName, nModule = '', isPrivate = false) {
     try {
-      return SMap.openMapName(strMapName, nModule)
+      return SMap.openMapName(strMapName, nModule, isPrivate)
     } catch (e) {
       console.error(e)
     }

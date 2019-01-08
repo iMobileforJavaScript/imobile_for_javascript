@@ -1082,7 +1082,7 @@
         NSString *strRootFolder = [strServer substringToIndex: strServer.length - [[strServer componentsSeparatedByString:@"/"]lastObject].length-1];
         return strRootFolder;
     }else{
-        return [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer"];
+        return [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer/Data"];
     }
     
     
