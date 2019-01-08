@@ -677,9 +677,11 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
-            com.supermap.mapping.Map map = mapControl.getMap();
+            if (mapControl != null) {
+                com.supermap.mapping.Map map = mapControl.getMap();
 
-            map.close();
+                map.close();
+            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
