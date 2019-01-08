@@ -1012,7 +1012,7 @@ public class SMMapWC {
 
 
     private void importSymbolsFrom(SymbolGroup srcGroup, SymbolGroup desGroup, boolean bDirRetain, boolean bSymReplace) {
-        if (desGroup.getLibrary() == null) {
+        if (desGroup == null || desGroup.getLibrary() == null) {
             //deGroup必须是必须在Lib中
             return;
         }
@@ -1056,7 +1056,7 @@ public class SMMapWC {
             return strRootFolder;
         }else {
             String rootPath=android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-            return rootPath+"/Documents/iTablet/User/Customer/Data";
+            return rootPath+"/iTablet/User/Customer/Data";
         }
     }
 
