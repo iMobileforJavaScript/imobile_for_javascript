@@ -1614,10 +1614,17 @@ public class SMMapWC {
             return false;
         }
 
-        String strUserName = getUserName();
-        if (strUserName==null){
-            return false;
+        String strUserName = null;
+        if (bPrivate){
+            strUserName = getUserName();
+            if (strUserName==null){
+                return false;
+            }
+        }else{
+            strUserName = "Customer";
         }
+
+
         String strRootPath = getRootPath();
         String strCustomer = strRootPath + "/" + strUserName + "/Data";
 
