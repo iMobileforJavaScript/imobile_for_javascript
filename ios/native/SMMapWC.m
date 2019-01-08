@@ -1074,27 +1074,41 @@
     
     return;
 }
+-(NSString *)getUserName{
+    NSString *strServer = SMap.singletonInstance.smMapWC.workspace.connectionInfo.server;
+    //NSString *strRootFolder = [strServer substringToIndex: strServer.length - [[strServer componentsSeparatedByString:@"/"]lastObject].length-1];
+    NSArray *arrServer = [strServer componentsSeparatedByString:@"/"];
+    int nCount = arrServer.count;
+    if (nCount>=3) {
+        return arrServer[arrServer.count-3];
+    }else{
+        return nil;
+    }
+}
+-(NSString *)getRootPath{
+     return [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User"];
+}
 
 //static NSString *g_strCustomerDirectory = nil;
--(NSString *)getCustomerDirectory:(BOOL)bPrivate{
-    if(bPrivate){
-        NSString *strServer = SMap.singletonInstance.smMapWC.workspace.connectionInfo.server;
-        NSString *strRootFolder = [strServer substringToIndex: strServer.length - [[strServer componentsSeparatedByString:@"/"]lastObject].length-1];
-        return strRootFolder;
-    }else{
-        return [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer/Data"];
-    }
-    
-    
-    //    if (g_strCustomerDirectory==nil) {
-    //        g_strCustomerDirectory = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer"];
-    //    }
-    //    return g_strCustomerDirectory;
-    //    //return @"/Customer";
-    //}
-    //-(void)setCustomerDirectory:(NSString *)strValue{
-    //    g_strCustomerDirectory = strValue;
-}
+//-(NSString *)getCustomerDirectory:(BOOL)bPrivate{
+//    if(bPrivate){
+//        NSString *strServer = SMap.singletonInstance.smMapWC.workspace.connectionInfo.server;
+//        NSString *strRootFolder = [strServer substringToIndex: strServer.length - [[strServer componentsSeparatedByString:@"/"]lastObject].length-1];
+//        return strRootFolder;
+//    }else{
+//        return [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer/Data"];
+//    }
+//
+//
+//    //    if (g_strCustomerDirectory==nil) {
+//    //        g_strCustomerDirectory = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer"];
+//    //    }
+//    //    return g_strCustomerDirectory;
+//    //    //return @"/Customer";
+//    //}
+//    //-(void)setCustomerDirectory:(NSString *)strValue{
+//    //    g_strCustomerDirectory = strValue;
+//}
 
 -(NSString*)getModuleDirectory:(int)nModule{
     switch (nModule) {
@@ -1138,6 +1152,12 @@
         WorkspaceConnectionInfo* info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
         
         if([importWorkspace open:info]){
+            NSString *strUserName = [self getUserName];
+            if (strUserName==nil) {
+                return arrResult;
+            }
+            NSString *strRootPath = [self getRootPath];
+            NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];
             
             NSMutableDictionary *dicAddition = [[NSMutableDictionary alloc]init];
             
@@ -1150,9 +1170,10 @@
                     NSString *strSub = [arrSubs objectAtIndex:i];
                     if ([strSub hasSuffix:@".xml"]) {
                         NSString *strSrcTemplate = [NSString stringWithFormat:@"%@/%@",strRootDir,strSub];
-                        NSString *strDesTemplate = [NSString stringWithFormat:@"%@/Template/%@",[self getCustomerDirectory:YES],strSub];
+                        NSString *strDesTemplate = [NSString stringWithFormat:@"%@/Template/%@",strCustomer,strSub];
                         strDesTemplate = [self formateNoneExistFileName:strDesTemplate isDir:NO];
-                        NSString *strNewSub = [[strDesTemplate componentsSeparatedByString:@"/"]lastObject];
+                        NSString *strNewSub =  [strDesTemplate substringFromIndex:strRootPath.length+1];
+                        //[[strDesTemplate componentsSeparatedByString:@"/"]lastObject];
                         
                         [[NSFileManager defaultManager]copyItemAtPath:strSrcTemplate toPath:strDesTemplate error:nil];
                         [dicAddition setObject:strNewSub forKey:@"Template"];
@@ -1205,7 +1226,12 @@
         return nil;
     }
     
-    NSString *strCustomer = [self getCustomerDirectory:YES];
+    NSString *strUserName = [self getUserName];
+    if (strUserName==nil) {
+        return false;
+    }
+    NSString *strRootPath = [self getRootPath];
+    NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];  //[self getCustomerDirectory:YES];
     //NSString *strModule = [self getModuleDirectory:nModule];
 //    if (strModule == nil) {
 //        return nil;
@@ -1242,7 +1268,7 @@
         desPathMapExp = [NSString stringWithFormat:@"%@/%@.exp",desDirMap,strMapName];
         isExist = [[NSFileManager defaultManager]fileExistsAtPath:desPathMapExp isDirectory:&isDir];
         if (isExist && !isDir) {
-            [[NSFileManager defaultManager]removeItemAtPath:desPathMapXML error:nil];
+            [[NSFileManager defaultManager]removeItemAtPath:desPathMapExp error:nil];
         }
         
     }else{
@@ -1394,7 +1420,13 @@
         }
         
         if (engineType == ET_UDB || engineType == ET_IMAGEPLUGINS){
-            strTargetServer = [strTargetServer substringFromIndex:desDatasourceDir.length+1];
+            //strTargetServer = [strTargetServer substringFromIndex:desDatasourceDir.length+1];
+            if (![strTargetServer hasPrefix:[NSString stringWithFormat:@"%@/%@",strRootPath,strUserName]] &&
+                ![strTargetServer hasPrefix:[NSString stringWithFormat:@"%@/%@",strRootPath,@"Customer"]]) {
+                // 不是当前用户
+                continue;
+            }
+            strTargetServer = [strTargetServer substringFromIndex:strRootPath.length+1];
         }
         
         NSDictionary *dicDatasource = @{ @"Alians":strSrcAlian , @"Server":strTargetServer , @"Type":[NSNumber numberWithInt:engineType] };
@@ -1560,7 +1592,8 @@
     //NSDictionary *dicExp= @{ @"Datasources":arrExpDatasources , @"Resources": strMapName};
     NSMutableDictionary *dictionaryExp = [[NSMutableDictionary alloc]init];
     [dictionaryExp setObject:arrExpDatasources forKey:@"Datasources"];
-    [dictionaryExp setObject:strMapName forKey:@"Resources"];
+    
+    [dictionaryExp setObject:[desResources substringFromIndex:strRootPath.length+1] forKey:@"Resources"];
     //模板
     if (dicAddition != nil) {
         NSString *strTemplate = [dicAddition objectForKey:@"Template"];
@@ -1586,7 +1619,17 @@
         return false;
     }
     
-    NSString *strCustomer = [self getCustomerDirectory:bPrivate];
+    NSString *strUserName;
+    if (!bPrivate) {
+        strUserName = @"Customer";
+    }else{
+        strUserName = [self getUserName];
+        if (strUserName==nil) {
+            return false;
+        }
+    }
+    NSString *strRootPath = [self getRootPath];
+    NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];
     
 //    if (strModule==nil) {
 //        return false;
@@ -1619,10 +1662,11 @@
     // }
     NSDictionary *dicExp = [NSJSONSerialization JSONObjectWithData:[strMapEXP dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
     
-    NSString *srcDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",strCustomer];
-    if (strModule!=nil) {
-        srcDatasourceDir = [NSString stringWithFormat:@"%@/%@",srcDatasourceDir,strModule];
-    }
+//    NSString *srcDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",strCustomer];
+//    if (strModule!=nil) {
+//        srcDatasourceDir = [NSString stringWithFormat:@"%@/%@",srcDatasourceDir,strModule];
+//    }
+    NSString *srcDatasourceDir = strRootPath;
     
     // 重复的server处理
     //      1.文件型数据源：若bDatasourceRep，关闭原来数据源，拷贝新数据源并重新打开（alian保持原来的）
@@ -1635,14 +1679,19 @@
         if (datasourceInfo.engineType == ET_UDB || datasourceInfo.engineType == ET_IMAGEPLUGINS) {
             //只要名字
             NSString* fullName = datasourceInfo.server;
-            NSArray * arrServer = [fullName componentsSeparatedByString:@"/"];
-            NSString* lastName = [arrServer lastObject];
-            NSString* fatherName = [fullName substringToIndex:fullName.length-lastName.length-1];
-            if ([fatherName isEqualToString:srcDatasourceDir]) {
-                //同级目录下的才会被替换
-                [arrTargetServers addObject:lastName];
+            if ([fullName hasPrefix:strRootPath]) {
+                NSString *relateName = [fullName substringFromIndex:strRootPath.length+1];
+                [arrTargetServers addObject:relateName];
                 [arrTargetAlians addObject:datasourceInfo.alias];
             }
+//            NSArray * arrServer = [fullName componentsSeparatedByString:@"/"];
+//            NSString* lastName = [arrServer lastObject];
+//            NSString* fatherName = [fullName substringToIndex:fullName.length-lastName.length-1];
+//            if ([fatherName isEqualToString:srcDatasourceDir]) {
+//                //同级目录下的才会被替换
+//                [arrTargetServers addObject:lastName];
+//                [arrTargetAlians addObject:datasourceInfo.alias];
+//            }
         }else{
             //网络数据集用完整url
             [arrTargetServers addObject:datasourceInfo.server];
@@ -1672,6 +1721,8 @@
             strDesAlian = [self formateNoneExistDatasourceAlian:strAlian ofWorkspace:desWorkspace];
             DatasourceConnectionInfo *infoTemp = [[DatasourceConnectionInfo alloc]init];
             if (engineType == ET_UDB || engineType == ET_IMAGEPLUGINS){
+                //strServer
+                
                 infoTemp.server = [NSString stringWithFormat:@"%@/%@",srcDatasourceDir,strServer];
             }else{
                 infoTemp.server = strServer;
@@ -1690,12 +1741,12 @@
     }
     
     
-    NSString* srcResources;// = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
-    if (strModule!=nil) {
-        srcResources = [NSString stringWithFormat:@"%@/Symbol/%@/%@",strCustomer,strModule,strMapName];
-    }else{
-         srcResources = [NSString stringWithFormat:@"%@/Symbol/%@/%@",strCustomer,strMapName];
-    }
+    NSString* srcResources = [NSString stringWithFormat:@"%@/%@",strRootPath,[dicExp objectForKey:@"Resources"]];// = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
+//    if (strModule!=nil) {
+//        srcResources = [NSString stringWithFormat:@"%@/Symbol/%@/%@",strCustomer,strModule,strMapName];
+//    }else{
+//         srcResources = [NSString stringWithFormat:@"%@/Symbol/%@",strCustomer,strMapName];
+//    }
     // Marker
     {
         if([desWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups indexofGroup:strMapName]!=-1){
@@ -1778,8 +1829,14 @@
     if (![self isDatasourceFileExist:strFile isUDB:YES]) {
         return nil;
     }
+    NSString *strUserName = [self getUserName];
+    if (strUserName==nil) {
+        return nil;
+    }
+    NSString *strRootPath = [self getRootPath];
+    NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];
     
-    NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",[self getCustomerDirectory:YES]];
+    NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",strCustomer];
     if (strModule!=nil) {
         desDatasourceDir = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
     }
@@ -1830,7 +1887,13 @@
         if (![self isDatasourceFileExist:strFile isUDB:NO]) {
             return nil;
         }
-        NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",[self getCustomerDirectory:YES]];
+        NSString *strUserName = [self getUserName];
+        if (strUserName==nil) {
+            return nil;
+        }
+        NSString *strRootPath = [self getRootPath];
+        NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];
+        NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",strCustomer];
         if (strModule!=nil) {
             desDatasourceDir = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
         }
