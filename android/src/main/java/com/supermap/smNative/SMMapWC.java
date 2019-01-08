@@ -1616,7 +1616,7 @@ public class SMMapWC {
 
         String strUserName = getUserName();
         if (strUserName==null){
-            return null;
+            return false;
         }
         String strRootPath = getRootPath();
         String strCustomer = strRootPath + "/" + strUserName + "/Data";
@@ -1656,7 +1656,7 @@ public class SMMapWC {
         // }
 
         List<Map<String, String>> datasourcesList = new ArrayList<>();
-        String strResources;
+        String strResources = "";
         //String templateStr;
         try {
             JSONObject jsonObject = new JSONObject(strMapEXP);
