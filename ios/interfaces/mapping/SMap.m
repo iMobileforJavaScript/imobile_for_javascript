@@ -388,7 +388,9 @@ RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve 
     @try {
         sMap = [SMap singletonInstance];
         MapControl* mapControl = sMap.smMapWC.mapControl;
-        [[mapControl map] close];
+        if (mapControl) {
+            [[mapControl map] close];
+        }
         defaultMapCenter = nil;
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
