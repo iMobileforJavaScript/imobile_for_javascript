@@ -1026,7 +1026,13 @@ public class SMMapWC {
         for (int i = 0; i < srcGroup.getCount(); i++) {
             Symbol sym = srcGroup.get(i);
             if (bSymReplace && desLib.contains(sym.getID())) {
-                desLib.remove(sym.getID());
+//                desLib.remove(sym.getID());
+                try {
+                    desLib.remove(sym.getID());
+                }catch (Exception e){
+                    Log.i("zym8",i+e.toString());
+
+                }
             }
             desLib.add(sym, desGroup);
         }
