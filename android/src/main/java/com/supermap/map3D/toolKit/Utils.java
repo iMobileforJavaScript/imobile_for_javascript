@@ -341,7 +341,9 @@ public class Utils {
 			} else {
 				strValue = value.toString();
 			}
-			attributeMap.put(name ,strValue);
+			if(name!=null) {
+				attributeMap.put(name, strValue);
+			}
 		}
 
 	}
