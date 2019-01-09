@@ -1018,7 +1018,9 @@ public class SMMapWC {
         }
         // group的名称 symbol的id 都需要desLib查重名
         SymbolLibrary desLib = desGroup.getLibrary();
-
+        if (srcGroup == null){
+            return;
+        }
         for (int i = 0; i < srcGroup.getCount(); i++) {
             Symbol sym = srcGroup.get(i);
             if (bSymReplace && desLib.contains(sym.getID())) {
@@ -1029,6 +1031,9 @@ public class SMMapWC {
 
         SymbolGroup desSubGroup = desGroup;
         SymbolGroups srcChildGroups = srcGroup.getChildGroups();
+        if (srcChildGroups == null){
+            return;
+        }
         for (int j = 0; j < srcChildGroups.getCount(); j++) {
             SymbolGroup subGroup = srcChildGroups.get(j);
 
