@@ -33,6 +33,7 @@ import com.supermap.data.WorkspaceType;
 import com.supermap.data.WorkspaceVersion;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
+import com.supermap.mapping.LayerGroup;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 import com.supermap.data.DatasetType;
@@ -40,6 +41,7 @@ import com.supermap.data.DatasetType;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -1052,16 +1054,32 @@ public class SMMapWC {
         return;
     }
 
-    private String getCustomerDirectory(boolean bPrivate) {
-        if(bPrivate) {
-            String strServer = SMap.getInstance().getSmMapWC().getWorkspace().getConnectionInfo().getServer();
-            String[] arrServer = strServer.split("/");
-            int endIndex = strServer.length() - arrServer[arrServer.length - 1].length() - 1;
-            String strRootFolder = strServer.substring(0, endIndex);
-            return strRootFolder;
-        }else {
-            String rootPath=android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-            return rootPath+"/iTablet/User/Customer/Data";
+//    private String getCustomerDirectory(boolean bPrivate) {
+//        if(bPrivate) {
+//            String strServer = SMap.getInstance().getSmMapWC().getWorkspace().getConnectionInfo().getServer();
+//            String[] arrServer = strServer.split("/");
+//            int endIndex = strServer.length() - arrServer[arrServer.length - 1].length() - 1;
+//            String strRootFolder = strServer.substring(0, endIndex);
+//            return strRootFolder;
+//        }else {
+//            String rootPath=android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+//            return rootPath+"/iTablet/User/Customer/Data";
+//        }
+//    }
+
+    private String getRootPath() {
+        String rootPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+        return rootPath + "/iTablet/User";
+    }
+
+    private String getUserName() {
+        String strServer = SMap.getInstance().getSmMapWC().getWorkspace().getConnectionInfo().getServer();
+        String[] arrServer = strServer.split("/");
+        int nCount = arrServer.length;
+        if (nCount >= 3) {
+            return arrServer[nCount - 3];
+        } else {
+            return null;
         }
     }
 
@@ -1075,6 +1093,26 @@ public class SMMapWC {
             default:
                 return null;
         }
+    }
+
+    private List<Dataset> allDatasetsOfLayerGroup(LayerGroup layerGroup) {
+        List<Dataset> arrRes = new ArrayList<Dataset>();
+        for (int i = 0; i < layerGroup.getCount(); i++) {
+            Layer layerTemp = layerGroup.get(i);
+            if (layerTemp.getDataset() == null) {
+
+                if (LayerGroup.class.isInstance(layerTemp)) {
+
+                    List<Dataset> arrTemp = allDatasetsOfLayerGroup((LayerGroup) layerTemp);
+                    arrRes.addAll(arrTemp);
+                }
+
+            } else {
+                arrRes.add(layerTemp.getDataset());
+            }
+
+        }
+        return arrRes;
     }
 
     // 导入文件工作空间到程序目录
@@ -1101,31 +1139,39 @@ public class SMMapWC {
             return null;
         }
 
+        String strUserName = getUserName();
+        if (strUserName == null) {
+            return arrResult;
+        }
+        String strRootPath = getRootPath();
+        String strCustomer = strRootPath + "/" + strUserName + "/Data";
+
         Map<String, String> dicAddition = new HashMap<>();
 
         //模版
 //        if (strModule.equals("Collection")/*采集模块*/) {
-            String strServer = (String) infoMap.get("server");
-            String[] arrServer = strServer.split("/");
-            int endIndex = strServer.length() - arrServer[arrServer.length - 1].length() - 1;
-            String strRootDir = strServer.substring(0, endIndex);
+        String strServer = (String) infoMap.get("server");
+        String[] arrServer = strServer.split("/");
+        int endIndex = strServer.length() - arrServer[arrServer.length - 1].length() - 1;
+        String strRootDir = strServer.substring(0, endIndex);
 
-            List<String> arrSubs = contentsOfDirectoryAtPath(strRootDir);
-            for (int i = 0; i < arrSubs.size(); i++) {
-                String strSub = arrSubs.get(i);
-                if (strSub.endsWith(".xml")) {
-                    String strSrcTemplate = strRootDir + "/" + strSub;
-                    String strDesTemplate = getCustomerDirectory(true) + "/Template/" + strSub;
-                    strDesTemplate = formateNoneExistFileName(strDesTemplate, false);
-                    String[] arrDesTemplate = strDesTemplate.split("/");
-                    String strNewSub = arrDesTemplate[arrDesTemplate.length - 1];
+        List<String> arrSubs = contentsOfDirectoryAtPath(strRootDir);
+        for (int i = 0; i < arrSubs.size(); i++) {
+            String strSub = arrSubs.get(i);
+            if (strSub.endsWith(".xml")) {
+                String strSrcTemplate = strRootDir + "/" + strSub;
+                String strDesTemplate = strCustomer + "/Template/" + strSub;
+                strDesTemplate = formateNoneExistFileName(strDesTemplate, false);
+                //String[] arrDesTemplate = strDesTemplate.split("/");
+                //String strNewSub = arrDesTemplate[arrDesTemplate.length - 1];
+                String strNewSub = strDesTemplate.substring(strRootPath.length() + 1);
 
-                    copyFile(strSrcTemplate, strDesTemplate);
-                    dicAddition.put("Template", strNewSub);
+                copyFile(strSrcTemplate, strDesTemplate);
+                dicAddition.put("Template", strNewSub);
 
-                    break;
-                }
+                break;
             }
+        }
 //        }
 
         List<String> arrTemp = new ArrayList<>();
@@ -1167,11 +1213,17 @@ public class SMMapWC {
             return null;
         }
 
-        String strCustomer = getCustomerDirectory(true);
+//        String strCustomer = getCustomerDirectory(true);
 //        String strModule = getModuleDirectory(nModule);
 //        if (strModule == null) {
 //            return null;
 //        }
+        String strUserName = getUserName();
+        if (strUserName == null) {
+            return null;
+        }
+        String strRootPath = getRootPath();
+        String strCustomer = strRootPath + "/" + strUserName + "/Data";
 
         com.supermap.mapping.Map mapExport = new com.supermap.mapping.Map(srcWorkspace);
         if (!mapExport.open(strMapAlians)) {
@@ -1179,9 +1231,9 @@ public class SMMapWC {
             return null;
         }
 
-        String desDirMap = strCustomer +"/Map";
-        if(strModule!=null){
-            desDirMap=desDirMap+"/"+strModule;
+        String desDirMap = strCustomer + "/Map";
+        if (strModule != null && !strModule.equals("")) {
+            desDirMap = desDirMap + "/" + strModule;
         }
         boolean isDir = false;
         File fileDesDirMap = new File(desDirMap);
@@ -1219,11 +1271,7 @@ public class SMMapWC {
             String desLastMap = arrDesPathMapXML[arrDesPathMapXML.length - 1];
             // map文件名确定后其他文件（符号库）不需要判断，直接覆盖
             strMapName = desLastMap.substring(0, desLastMap.length() - 4);
-            if (strModule != null && !strModule.equals("")) {
-                desPathMapExp = strCustomer + "/Map/" + strModule + "/" + strMapName + ".exp";
-            } else {
-                desPathMapExp = strCustomer + "/Map/" + strMapName + ".exp";
-            }
+            desPathMapExp = desDirMap + "/" + strMapName + ".exp";
         }
 
         // map xml
@@ -1241,22 +1289,36 @@ public class SMMapWC {
         Set<Integer> setLineIDs = new HashSet<>();
         Set<Integer> setFillIDs = new HashSet<>();
 
+        List<Dataset> arrDatasets = new ArrayList<>();
+        for (int i = 0; i < mapExport.getLayers().getCount(); i++) {
+            Layer layerTemp = mapExport.getLayers().get(i);
+            if (layerTemp.getDataset() == null) {
+
+                if (LayerGroup.class.isInstance(layerTemp)) {
+                    List<Dataset> arrTemp = allDatasetsOfLayerGroup((LayerGroup) layerTemp);
+                    arrDatasets.addAll(arrTemp);
+                }
+
+            } else {
+                arrDatasets.add(layerTemp.getDataset());
+            }
+        }
+
         //    NSMutableArray *arrMarkerIDs = [[NSMutableArray alloc]init];
         //    NSMutableArray *arrLineIDs = [[NSMutableArray alloc]init];
         //    NSMutableArray *arrFillIDs = [[NSMutableArray alloc]init];
         // datasources
         List<Datasource> arrDatasources = new ArrayList<>();
-        for (int i = 0; i < mapExport.getLayers().getCount(); i++) {
-            Layer layer = mapExport.getLayers().get(i);
-
-            Datasource datasource = layer.getDataset().getDatasource();
+        for (int i = 0; i < arrDatasets.size(); i++) {
+            Dataset dataset = arrDatasets.get(i);
+            Datasource datasource = dataset.getDatasource();
             if (!arrDatasources.contains(datasource)) {
                 arrDatasources.add(datasource);
             }
             //处理newSymbol
             //cad
-            if (bResourcesModified && layer.getDataset().getType() == DatasetType.CAD) {
-                Recordset recordset = ((DatasetVector) layer.getDataset()).getRecordset(false, CursorType.STATIC);
+            if (bResourcesModified && dataset.getType() == DatasetType.CAD) {
+                Recordset recordset = ((DatasetVector) dataset).getRecordset(false, CursorType.STATIC);
                 recordset.moveFirst();
                 while (recordset.isEOF()) {
                     Geometry geoTemp = recordset.getGeometry();
@@ -1282,7 +1344,7 @@ public class SMMapWC {
 
         String desDatasourceDir = strCustomer + "/Datasource";
         if (strModule != null && !strModule.equals("")) {
-            desDatasourceDir += "/" + strModule;
+            desDatasourceDir = desDatasourceDir + "/" + strModule;
         }
 
         List<Map<String, String>> arrExpDatasources = new ArrayList<>();
@@ -1355,8 +1417,13 @@ public class SMMapWC {
                 }
             }
 
-            if (engineType == EngineType.UDB || engineType == EngineType.IMAGEPLUGINS){
-                strTargetServer =strTargetServer.substring(desDatasourceDir.length()+1);
+            if (engineType == EngineType.UDB || engineType == EngineType.IMAGEPLUGINS) {
+                if (!strTargetServer.startsWith(strRootPath + "/" + strUserName) &&
+                        !strTargetServer.startsWith(strRootPath + "/Customer")) {
+                    continue;
+                }
+                //strTargetServer =strTargetServer.substring(desDatasourceDir.length()+1);
+                strTargetServer = strTargetServer.substring(strRootPath.length() + 1);
             }
 
             Map<String, String> dicDatasource = new HashMap<>();
@@ -1368,28 +1435,28 @@ public class SMMapWC {
         }
 
         String desResourceDir = strCustomer + "/Symbol";
-        if(strModule!=null&&!strModule.equals("")){
-            desResourceDir=desResourceDir+"/"+strModule;
+        if (strModule != null && !strModule.equals("")) {
+            desResourceDir = desResourceDir + "/" + strModule;
         }
 
-        isDir=false;
-        File fileDesResourceDir=new File(desResourceDir);
-        isExist=fileDesResourceDir.exists();
-        isDir=fileDesResourceDir.isDirectory();
-        if(!isExist||!isDir){
+        isDir = false;
+        File fileDesResourceDir = new File(desResourceDir);
+        isExist = fileDesResourceDir.exists();
+        isDir = fileDesResourceDir.isDirectory();
+        if (!isExist || !isDir) {
             fileDesResourceDir.mkdirs();
         }
 
-        String desResources =desResourceDir+"/"+strMapName;
+        String desResources = desResourceDir + "/" + strMapName;
         if (bNew || bResourcesModified) {
             // Marker
             {
                 SymbolMarkerLibrary markerLibrary = new SymbolMarkerLibrary();
                 SymbolGroup desMarkerGroup = markerLibrary.getRootGroup();
                 SymbolGroup srcMarkerGroup = srcWorkspace.getResources().getMarkerLibrary().getRootGroup().getChildGroups().get(strMapAlians);
-                if(bNew&&!bResourcesModified){
+                if (bNew && !bResourcesModified) {
                     // 整个库都倒出
-                    srcMarkerGroup=srcWorkspace.getResources().getMarkerLibrary().getRootGroup();
+                    srcMarkerGroup = srcWorkspace.getResources().getMarkerLibrary().getRootGroup();
                 }
                 if (srcMarkerGroup != null) {
                     importSymbolsFrom(srcMarkerGroup, desMarkerGroup, true, false);
@@ -1420,8 +1487,8 @@ public class SMMapWC {
 
                 SymbolGroup desLineGroup = lineLibrary.getRootGroup();
                 SymbolGroup srcLineGroup = srcWorkspace.getResources().getLineLibrary().getRootGroup().getChildGroups().get(strMapAlians);
-                if(bNew&&!bResourcesModified){
-                    srcLineGroup=srcWorkspace.getResources().getLineLibrary().getRootGroup();
+                if (bNew && !bResourcesModified) {
+                    srcLineGroup = srcWorkspace.getResources().getLineLibrary().getRootGroup();
                 }
                 if (srcLineGroup != null) {
                     importSymbolsFrom(srcLineGroup, desLineGroup, true, false);
@@ -1429,8 +1496,8 @@ public class SMMapWC {
                 //SymbolGroup *desInlineGroup = [markerInlineLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
                 SymbolGroup desInlineGroup = markerInlineLibrary.getRootGroup();
                 SymbolGroup srcInlineGroup = srcWorkspace.getResources().getLineLibrary().getInlineMarkerLib().getRootGroup().getChildGroups().get(strMapAlians);
-                if(bNew&&!bResourcesModified){
-                    srcInlineGroup=srcWorkspace.getResources().getLineLibrary().getInlineMarkerLib().getRootGroup();
+                if (bNew && !bResourcesModified) {
+                    srcInlineGroup = srcWorkspace.getResources().getLineLibrary().getInlineMarkerLib().getRootGroup();
                 }
                 if (srcInlineGroup != null) {
                     importSymbolsFrom(srcInlineGroup, desInlineGroup, true, false);
@@ -1469,8 +1536,8 @@ public class SMMapWC {
 
                 SymbolGroup desFillGroup = fillLibrary.getRootGroup();
                 SymbolGroup srcFillGroup = srcWorkspace.getResources().getFillLibrary().getRootGroup().getChildGroups().get(strMapAlians);
-                if(bNew&&!bResourcesModified){
-                    srcFillGroup=srcWorkspace.getResources().getFillLibrary().getRootGroup();
+                if (bNew && !bResourcesModified) {
+                    srcFillGroup = srcWorkspace.getResources().getFillLibrary().getRootGroup();
                 }
                 if (srcFillGroup != null) {
                     importSymbolsFrom(srcFillGroup, desFillGroup, true, false);
@@ -1478,8 +1545,8 @@ public class SMMapWC {
                 //SymbolGroup *desInfillGroup = [markerInfillLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
                 SymbolGroup desInfillGroup = markerInfillLibrary.getRootGroup();
                 SymbolGroup srcInfillGroup = srcWorkspace.getResources().getFillLibrary().getInfillMarkerLib().getRootGroup().getChildGroups().get(strMapAlians);
-                if(bNew&&!bResourcesModified){
-                    srcInfillGroup=srcWorkspace.getResources().getFillLibrary().getInfillMarkerLib().getRootGroup();
+                if (bNew && !bResourcesModified) {
+                    srcInfillGroup = srcWorkspace.getResources().getFillLibrary().getInfillMarkerLib().getRootGroup();
                 }
                 if (srcInfillGroup != null) {
                     importSymbolsFrom(srcInfillGroup, desInfillGroup, true, false);
@@ -1515,14 +1582,14 @@ public class SMMapWC {
 
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("Resources", strMapName);
+            jsonObject.put("Resources", desResources.substring(strRootPath.length() + 1));
             JSONArray jsonArray = new JSONArray();
             for (Map<String, String> arrExpDatasource : arrExpDatasources) {
                 jsonArray.put(new JSONObject(arrExpDatasource));
             }
             jsonObject.put("Datasources", jsonArray);
             //模板
-            if(dicAddition!=null) {
+            if (dicAddition != null) {
                 String strTemplate = dicAddition.get("Template");
                 if (strTemplate != null) {
                     jsonObject.put("Template", strTemplate);
@@ -1546,22 +1613,32 @@ public class SMMapWC {
     }
 
     //大工作空间打开本地地图
-    public boolean openMapName(String strMapName, Workspace desWorkspace, String strModule,boolean bPrivate) {
+    public boolean openMapName(String strMapName, Workspace desWorkspace, String strModule, boolean bPrivate) {
 
         if (desWorkspace == null || desWorkspace.getMaps().indexOf(strMapName) != -1) {
             return false;
         }
 
+        String strUserName = null;
+        if (bPrivate) {
+            strUserName = getUserName();
+            if (strUserName == null) {
+                return false;
+            }
+        } else {
+            strUserName = "Customer";
+        }
 
-        String strCustomer = getCustomerDirectory(bPrivate);
-//        if (strModule == null) {
-//            return false;
-//        }
+
+        String strRootPath = getRootPath();
+        String strCustomer = strRootPath + "/" + strUserName + "/Data";
+
+
         String srcPathMap;
-        if(strModule!=null&&!strModule.equals("")){
-            srcPathMap=strCustomer + "/Map/" + strModule + "/" + strMapName;
-        }else {
-            srcPathMap=strCustomer + "/Map/" + strMapName;
+        if (strModule != null && !strModule.equals("")) {
+            srcPathMap = strCustomer + "/Map/" + strModule + "/" + strMapName;
+        } else {
+            srcPathMap = strCustomer + "/Map/" + strMapName;
 
         }
         String srcPathXML = srcPathMap + ".xml";
@@ -1591,6 +1668,8 @@ public class SMMapWC {
         // }
 
         List<Map<String, String>> datasourcesList = new ArrayList<>();
+        String strResources = "";
+        //String templateStr;
         try {
             JSONObject jsonObject = new JSONObject(strMapEXP);
             JSONArray jsonArray = jsonObject.optJSONArray("Datasources");
@@ -1604,15 +1683,18 @@ public class SMMapWC {
                     datasourcesList.add(datasourceMap);
                 }
             }
+            strResources = jsonObject.optString("Resources");
+            //templateStr = jsonObject.optString("Template");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 //        NSDictionary *dicExp = [NSJSONSerialization JSONObjectWithData:[strMapEXP dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
 
-        String srcDatasourceDir=strCustomer+"/Datasource";
-        if(strModule!=null&&!strModule.equals("")){
-            srcDatasourceDir=srcDatasourceDir+"/"+strModule;
-        }
+        //String srcDatasourceDir=strCustomer+"/Datasource";
+        String srcDatasourceDir = strRootPath;
+//        if(strModule!=null&&!strModule.equals("")){
+//            srcDatasourceDir=srcDatasourceDir+"/"+strModule;
+//        }
 
         // 重复的server处理
         //      1.文件型数据源：若bDatasourceRep，关闭原来数据源，拷贝新数据源并重新打开（alian保持原来的）
@@ -1626,14 +1708,19 @@ public class SMMapWC {
             if (datasourceInfo.getEngineType() == EngineType.UDB || datasourceInfo.getEngineType() == EngineType.IMAGEPLUGINS) {
                 //只要名字
                 String fullName = datasourceInfo.getServer();
-                String[] arrServer = fullName.split("/");
-                String lastName = arrServer[arrServer.length - 1];
-                String fatherName = fullName.substring(0, fullName.length() - lastName.length() - 1);
-                if (fatherName.equals(srcDatasourceDir)) {
-                    //同级目录下的才会被替换
-                    arrTargetServers.add(lastName);
+                if (fullName.startsWith(strRootPath)) {
+                    String relateName = fullName.substring(strRootPath.length() + 1);
+                    arrTargetServers.add(relateName);
                     arrTargetAlians.add(datasourceInfo.getAlias());
                 }
+//                String[] arrServer = fullName.split("/");
+//                String lastName = arrServer[arrServer.length - 1];
+//                String fatherName = fullName.substring(0, fullName.length() - lastName.length() - 1);
+//                if (fatherName.equals(srcDatasourceDir)) {
+//                    //同级目录下的才会被替换
+//                    arrTargetServers.add(lastName);
+//                    arrTargetAlians.add(datasourceInfo.getAlias());
+//                }
             } else {
                 //网络数据集用完整url
                 arrTargetServers.add(datasourceInfo.getServer());
@@ -1682,12 +1769,12 @@ public class SMMapWC {
         }
 
 
-        String srcResources;// = strCustomer + "/Resource/" + strModule + "/" + strMapName;
-        if(strModule!=null&&!strModule.equals("")){
-            srcResources=strCustomer + "/Symbol/" + strModule + "/" + strMapName;
-        }else {
-            srcResources=strCustomer+"/Symbol/"+strMapName;
-        }
+        String srcResources = strRootPath + "/" + strResources;// = strCustomer + "/Resource/" + strModule + "/" + strMapName;
+//        if(strModule!=null&&!strModule.equals("")){
+//            srcResources=strCustomer + "/Symbol/" + strModule + "/" + strMapName;
+//        }else {
+//            srcResources=strCustomer+"/Symbol/"+strMapName;
+//        }
         // Marker
         {
             if (desWorkspace.getResources().getMarkerLibrary().getRootGroup().getChildGroups().indexOf(strMapName) != -1) {
@@ -1772,6 +1859,113 @@ public class SMMapWC {
 
 
     }
+
+    public String importUDBFile(String strFile, String strModule) {
+
+        if (!isDatasourceFileExist(strFile, true)) {
+            return null;
+        }
+
+        String rootPath = getRootPath();
+        String userName = getUserName();
+        String desDatasourceDir = rootPath + "/" + userName + "/Datasource";
+        //String desDatasourceDir =getCustomerDirectory()+"/Datasource";
+        if (strModule != null) {
+            desDatasourceDir = desDatasourceDir + "/" + strModule;
+        }
+        boolean isDir = false;
+        File fileDatasourceDir = new File(desDatasourceDir);
+        boolean isExist = fileDatasourceDir.exists();
+        if (!isExist || !isDir) {
+            fileDatasourceDir.mkdirs();
+        }
+
+        String[] arrSrcServer = strFile.split("/");
+        String strFileName = arrSrcServer[arrSrcServer.length - 1];
+        // 导入工作空间名
+        String strTargetFile = desDatasourceDir + "/" + strFileName;
+
+        String strSrcDatasourcePath = strFile.substring(0, strFile.length() - 4);
+        String strTargetDatasourcePath = strFile.substring(0, strTargetFile.length() - 4);
+
+        String strResult = null;
+        // 检查重复性
+        isDir = true;
+        File fileTargetFile = new File(strTargetFile);
+        isExist = fileTargetFile.exists();
+        isDir = fileTargetFile.isDirectory();
+        if (isExist && !isDir) {
+            //存在同名文件
+            //重名文件
+            strTargetFile = formateNoneExistFileName(strTargetFile, false);
+            String[] arrTargetFile = strTargetFile.split("/");
+            strResult = arrTargetFile[arrTargetFile.length - 1];
+            strTargetDatasourcePath = strTargetFile.substring(0, strTargetFile.length() - 4);
+        }//exist
+
+        // 拷贝udb
+        if (!copyFile(strSrcDatasourcePath + ".udb", strTargetDatasourcePath + ".udb")) {
+            return null;
+        }
+        // 拷贝udd
+        if (!copyFile(strSrcDatasourcePath + ".udd", strTargetDatasourcePath + ".udd")) {
+            return null;
+        }
+        return strResult;
+
+    }
+
+    public String importDatasourceFile(String strFile, String strModule) {
+
+        String[] arrFile = strFile.split(".");
+        String strSuffix = arrFile[arrFile.length - 1];
+        if (strSuffix.toLowerCase().equals("udb")) {
+            return importUDBFile(strFile, strModule);
+        } else {
+            if (!isDatasourceFileExist(strFile, false)) {
+                return null;
+            }
+            String rootPath = getRootPath();
+            String userName = getUserName();
+            String desDatasourceDir = rootPath + "/" + userName + "/Datasource";
+            //String desDatasourceDir =getCustomerDirectory()+"/Datasource";
+            if (strModule != null) {
+                desDatasourceDir = desDatasourceDir + "/" + strModule;
+            }
+            boolean isDir = false;
+            File fileDesDatasourceDir = new File(desDatasourceDir);
+            boolean isExist = fileDesDatasourceDir.exists();
+            isDir = fileDesDatasourceDir.isDirectory();
+            if (!isExist || !isDir) {
+                fileDesDatasourceDir.mkdirs();
+            }
+            String[] arrSrcServer = strFile.split("/");
+            String strFileName = arrSrcServer[arrSrcServer.length - 1];
+            // 导入工作空间名
+            String strTargetFile = desDatasourceDir + "/" + strFileName;
+            isDir = true;
+            File fileTargetFile = new File(strTargetFile);
+            isExist = fileTargetFile.exists();
+            isDir = fileTargetFile.isDirectory();
+            String strResult = null;
+            if (isExist && !isDir) {
+                //存在同名文件
+                //重名文件
+                strTargetFile = formateNoneExistFileName(strTargetFile, false);
+                String[] arrTargetFile = strTargetFile.split("/");
+                strResult = arrTargetFile[arrTargetFile.length - 1];
+            }//exist
+
+
+            // 拷贝
+            if (!copyFile(strFile, strTargetFile)) {
+                return null;
+            }
+
+            return strResult;
+        }
+    }
+
 
     /**
      * 获取文件夹下所有子文件名称
