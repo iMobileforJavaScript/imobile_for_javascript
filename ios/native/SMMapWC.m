@@ -1245,7 +1245,7 @@
     }
     
     NSString* desDirMap =  [NSString stringWithFormat:@"%@/Map",strCustomer];
-    if(strModule!=nil){
+    if(strModule!=nil && ![strModule isEqualToString:@""]){
         desDirMap = [NSString stringWithFormat:@"%@/%@",desDirMap,strModule];
     }
     BOOL isDir = false;
@@ -1341,7 +1341,7 @@
     }
     
     NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",strCustomer];
-    if(strModule!=nil){
+    if(strModule!=nil && ![strModule isEqualToString:@""]){
         desDatasourceDir = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
     }
     isDir = false;
@@ -1435,7 +1435,7 @@
     }
     
     NSString *desResourceDir = [NSString stringWithFormat:@"%@/Symbol",strCustomer];
-    if(strModule!=nil){
+    if(strModule!=nil && ![strModule isEqualToString:@""]){
         desResourceDir = [NSString stringWithFormat:@"%@/%@",desResourceDir,strModule];
     }
     
@@ -1635,7 +1635,7 @@
 //        return false;
 //    }
     NSString* srcPathMap;
-    if (strModule!=nil) {
+    if (strModule!=nil && ![strModule isEqualToString:@""]) {
         srcPathMap = [NSString stringWithFormat:@"%@/Map/%@/%@",strCustomer,strModule,strMapName];
     }else{
         srcPathMap = [NSString stringWithFormat:@"%@/Map/%@",strCustomer,strMapName];
@@ -1837,7 +1837,7 @@
     NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];
     
     NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",strCustomer];
-    if (strModule!=nil) {
+    if (strModule!=nil && ![strModule isEqualToString:@""]) {
         desDatasourceDir = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
     }
     BOOL isDir = false;
@@ -1894,7 +1894,7 @@
         NSString *strRootPath = [self getRootPath];
         NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];
         NSString *desDatasourceDir = [NSString stringWithFormat:@"%@/Datasource",strCustomer];
-        if (strModule!=nil) {
+        if (strModule!=nil && ![strModule isEqualToString:@""]) {
             desDatasourceDir = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strModule];
         }
         BOOL isDir = false;
