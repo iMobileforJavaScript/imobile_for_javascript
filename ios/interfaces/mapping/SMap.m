@@ -379,12 +379,14 @@ RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve 
 }
 
 #pragma mark 获取UDB数据源的数据集列表
-RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)name:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)path:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        if ([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:@"switchudb"]) {
-            [sMap.smMapWC.mapControl.map.workspace.datasources closeAlias:@"switchudb"];
+        path = [path stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString* udbName = [[path lastPathComponent] stringByDeletingPathExtension ];
+        if ([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:udbName] != -1) {
+            [sMap.smMapWC.mapControl.map.workspace.datasources closeAlias:udbName];
         }
-        NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[name,@219,@"switchudb"] forKeys:@[@"server",@"engineType",@"alias"]];
+        NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[path,@219,udbName] forKeys:@[@"server",@"engineType",@"alias"]];
         Datasource* dataSource = [sMap.smMapWC openDatasource:params];
         NSInteger count = [dataSource.datasets count];
         NSString* name;
@@ -917,6 +919,53 @@ RCT_REMAP_METHOD(openMapName, openMapName:(NSString*)strMapName ofModule:(NSStri
         BOOL result = [sMap.smMapWC openMapName:strMapName toWorkspace:sMap.smMapWC.workspace ofModule:nModule isPrivate:bPrivate];
         
         resolve(@(result));
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 设置地图反走样
+RCT_REMAP_METHOD(setAntialias, setAntialias:(bool)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        [sMap.smMapWC.mapControl.map setIsAntialias:value];
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve([NSNumber numberWithBool:true]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取是否反走样
+RCT_REMAP_METHOD(isAntialias, isAntialias:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        bool result = [sMap.smMapWC.mapControl.map isAntialias];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 设置固定比例尺
+RCT_REMAP_METHOD(setVisibleScalesEnabled, setVisibleScalesEnabled:(bool)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        [sMap.smMapWC.mapControl.map setIsVisibleScalesEnabled:value];
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve([NSNumber numberWithBool:true]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取是否固定比例尺
+RCT_REMAP_METHOD(isVisibleScalesEnabled, isVisibleScalesEnabled:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        bool result = [sMap.smMapWC.mapControl.map isVisibleScalesEnabled];
+        resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }

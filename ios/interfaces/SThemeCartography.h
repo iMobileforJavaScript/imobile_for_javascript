@@ -9,4 +9,8 @@
 #import <React/RCTBridgeModule.h>
 
 @interface SThemeCartography : NSObject<RCTBridgeModule>
+@property (nonatomic, strong)NSString* lastColorUnique;
+@property (nonatomic, strong)NSString* lastColorRange;
+@property (nonatomic, strong)NSMutableArray* lastColorUniqueArray;
+@property (nonatomic, strong)NSMutableArray* lastColorRangeArray;
 @end
