@@ -10,6 +10,7 @@ import com.supermap.data.GeoStyle;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Recordset;
+import com.supermap.data.Size2D;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.Layer;
@@ -142,6 +143,8 @@ public class SCollector extends ReactContextBaseJavaModule {
             if (style != null && !style.equals("")) {
                 geoStyle = new GeoStyle();
                 geoStyle.fromJson(style);
+                geoStyle.setMarkerSize(new Size2D(6,6));
+              //  geoStyle.setLineWidth(15);
                 ((LayerSettingVector)layer.getAdditionalSetting()).setStyle(geoStyle);
             }
 

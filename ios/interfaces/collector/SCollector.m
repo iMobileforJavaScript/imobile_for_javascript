@@ -28,7 +28,7 @@
 #import "SuperMap/PrjCoordSysType.h"
 #import "SuperMap/Recordset.h"
 #import "SMLayer.h"
-
+#import "SuperMap/Size2D.h"
 @implementation SCollector
 RCT_EXPORT_MODULE();
 
@@ -135,6 +135,7 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
         if (styleJson) {
             style = [[GeoStyle alloc] init];
             [style fromJson:styleJson];
+            [style setMarkerSize:[[Size2D alloc]initWithWidth:8 Height:8 ]];
             ((LayerSettingVector *)layer.layerSetting).geoStyle = style;
         }
         
