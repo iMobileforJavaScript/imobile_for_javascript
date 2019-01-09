@@ -924,7 +924,7 @@ RCT_REMAP_METHOD(openMapName, openMapName:(NSString*)strMapName ofModule:(NSStri
     }
 }
 
-#pragma mark 设置地图反走样
+#pragma mark 设置地图反走样式
 RCT_REMAP_METHOD(setAntialias, setAntialias:(bool)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
