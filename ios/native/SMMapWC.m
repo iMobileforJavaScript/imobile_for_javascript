@@ -69,13 +69,38 @@
         }
         DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
         Datasource* tempDs = [params objectForKey:@"alias"] ? [SMap.singletonInstance.smMapWC.workspace.datasources getAlias:[params objectForKey:@"alias"]] : nil;
-        BOOL isOpen = tempDs && [params objectForKey:@"server"] && [tempDs.datasourceConnectionInfo.server isEqualToString:[params objectForKey:@"server"]] && [tempDs isOpended];
+//        BOOL isOpen = tempDs && [params objectForKey:@"server"] && [tempDs.datasourceConnectionInfo.server isEqualToString:[params objectForKey:@"server"]] && [tempDs isOpended];
+        
+        BOOL isOpen = tempDs != nil && [tempDs isOpended];
+        
+        NSString* alias = @"";
+        NSString* server = @"";
+        if ([params objectForKey:@"alias"]) {
+            alias = [params objectForKey:@"alias"];
+        }
+        if ([params objectForKey:@"server"]) {
+            server = [params objectForKey:@"server"];
+        }
+        if (tempDs != nil && ![server isEqualToString:@""]) {
+            NSString* currentDSAlias = tempDs.datasourceConnectionInfo.alias;
+            NSString* currentDSServer = tempDs.datasourceConnectionInfo.server;
+            if ([currentDSAlias isEqualToString:alias] && ![currentDSServer isEqualToString:server]) {
+                int index = 1;
+                while ([currentDSAlias isEqualToString:alias] || [SMap.singletonInstance.smMapWC.workspace.datasources getAlias:alias] != nil) {
+                    alias = [NSString stringWithFormat:@"%@_%d", currentDSAlias, index];
+                    index++;
+                }
+                isOpen = false;
+            }
+        }
+        
         Datasource* dataSource = isOpen ? tempDs : nil;
         if (!isOpen) {
             NSArray* keyArr = [params allKeys];
             BOOL bDefault = YES;
             if ([keyArr containsObject:@"alias"]){
-                info.alias = [params objectForKey:@"alias"];
+//                info.alias = [params objectForKey:@"alias"];
+                info.alias = alias;
                 bDefault = NO;
             }
             if ([keyArr containsObject:@"engineType"]){
@@ -84,10 +109,10 @@
                 info.engineType = (EngineType)type;
             }
             if ([keyArr containsObject:@"server"]){
-                NSString* path = [params objectForKey:@"server"];
-                info.server = path;
+//                NSString* path = [params objectForKey:@"server"];
+                info.server = server;
                 if(bDefault){
-                    info.alias = [[path lastPathComponent] stringByDeletingPathExtension];
+                    info.alias = [[server lastPathComponent] stringByDeletingPathExtension];
                 }
             }
             

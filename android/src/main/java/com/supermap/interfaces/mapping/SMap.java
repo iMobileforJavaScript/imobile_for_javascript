@@ -415,17 +415,23 @@ public class SMap extends ReactContextBaseJavaModule {
             File tempFile = new File(path.trim());
             String[] strings = tempFile.getName().split("\\.");
             String udbName = strings[0];
+            Datasource datasource;
 
             sMap = getInstance();
             sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
             DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
+//            if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
+//                sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().close(udbName);
+//            }
             if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
-                sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().close(udbName);
+                datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().get(udbName);
+            } else {
+                datasourceconnection.setEngineType(EngineType.UDB);
+                datasourceconnection.setServer(path);
+                datasourceconnection.setAlias(udbName);
+                datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
             }
-            datasourceconnection.setEngineType(EngineType.UDB);
-            datasourceconnection.setServer(path);
-            datasourceconnection.setAlias(udbName);
-            Datasource datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
+
             Datasets datasets = datasource.getDatasets();
             int count = datasets.getCount();
 
