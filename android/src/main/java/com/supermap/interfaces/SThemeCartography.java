@@ -19,6 +19,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SThemeCartography";
     private static ReactApplicationContext context;
     private static Color[] lastUniqueColors = null;
+    private static Color[] lastRangeColors = null;
 
     public SThemeCartography(ReactApplicationContext context) {
         super(context);
@@ -1350,10 +1351,19 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     if (!data.containsKey("ColorGradientType")) {
                         Color[] colors = SMThemeCartography.getLastThemeColors(themeRangeLayer);
                         if (colors != null) {
+                            lastRangeColors = colors;
                             int rangeCount = tr.getCount();
                             Colors selectedColors = Colors.makeGradient(rangeCount, colors);
                             for (int i = 0; i < rangeCount; i++) {
                                 SMThemeCartography.setGeoStyleColor(dataset.getType(), tr.getItem(i).getStyle(), selectedColors.get(i));
+                            }
+                        } else {
+                            if (lastRangeColors != null) {
+                                int rangeCount = tr.getCount();
+                                Colors selectedColors = Colors.makeGradient(rangeCount, lastRangeColors);
+                                for (int i = 0; i < rangeCount; i++) {
+                                    SMThemeCartography.setGeoStyleColor(dataset.getType(), tr.getItem(i).getStyle(), selectedColors.get(i));
+                                }
                             }
                         }
                     }
