@@ -135,11 +135,36 @@ public class SMMapWC {
         try {
             DatasourceConnectionInfo info = new DatasourceConnectionInfo();
             Datasource ds = data.get("alias") != null ? SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get((String) data.get("alias")) : null;
-            Boolean isOpen = ds != null && data.get("server") != null && ds.getConnectionInfo().getServer().equals(data.get("server")) && ds.isOpened();
+//            Boolean isOpen = ds != null && data.get("server") != null
+//                    && ds.getConnectionInfo().getServer().equals(data.get("server"))
+//                    && ds.getConnectionInfo().getAlias().equals(data.get("alias"))
+//                    && ds.isOpened();
+            Boolean isOpen = ds != null && ds.isOpened();
+
+            String alias = "";
+            String server = "";
+            if (data.containsKey("alias")) {
+                alias = data.get("alias").toString();
+            }
+            if (data.containsKey("server")) {
+                server = data.get("server").toString();
+            }
+            if (ds != null && data.get("server") != null) {
+                String currentDSAlias = ds.getConnectionInfo().getAlias();
+                String currentDSServer = ds.getConnectionInfo().getServer();
+                if (currentDSAlias.equals(alias) && !currentDSServer.equals(server)) {
+                    int index = 1;
+                    while (currentDSAlias.equals(alias) || SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get(alias) != null) {
+                        alias = currentDSAlias + "_" + index;
+                        index++;
+                    }
+                    isOpen = false;
+                }
+            }
             Datasource dataSource = isOpen ? ds : null;
             if (!isOpen) {
                 if (data.containsKey("alias")) {
-                    String alias = data.get("alias").toString();
+//                    String alias = data.get("alias").toString();
                     info.setAlias(alias);
 
 //                    if (this.workspace.getDatasources().indexOf(alias) != -1) {
@@ -154,7 +179,7 @@ public class SMMapWC {
                     info.setEngineType((EngineType) Enum.parse(EngineType.class, type.intValue()));
                 }
                 if (data.containsKey("server")) {
-                    info.setServer(data.get("server").toString());
+                    info.setServer(server);
                 }
 
 
@@ -1025,14 +1050,9 @@ public class SMMapWC {
         }
         for (int i = 0; i < srcGroup.getCount(); i++) {
             Symbol sym = srcGroup.get(i);
-            if (bSymReplace && desLib.contains(sym.getID())) {
-//                desLib.remove(sym.getID());
-                try {
-                    desLib.remove(sym.getID());
-                }catch (Exception e){
-                    Log.i("zym8",i+e.toString());
-
-                }
+//            if (bSymReplace && desLib.contains(sym.getID())) {
+            if (bSymReplace && desLib.findSymbol(sym.getID())!=null) {
+                desLib.remove(sym.getID());
             }
             desLib.add(sym, desGroup);
         }
