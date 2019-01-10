@@ -222,7 +222,7 @@ RCT_REMAP_METHOD(removeLayerWithIndex, removeLayerWithIndexByParams:(int)index r
 }
 
 #pragma mark 根据索引移除图层
-RCT_REMAP_METHOD(removeAllLayer, removeAllLayer:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(removeAllLayer, removeAllLayerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
         [sMap.smMapWC.mapControl.map.layers clear];

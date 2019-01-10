@@ -383,9 +383,9 @@ RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)path:(RCTPromiseResolveBlock)
     @try {
         path = [path stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         NSString* udbName = [[path lastPathComponent] stringByDeletingPathExtension ];
-        if ([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:udbName] != -1) {
-            [sMap.smMapWC.mapControl.map.workspace.datasources closeAlias:udbName];
-        }
+//        if ([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:udbName] != -1) {
+//            [sMap.smMapWC.mapControl.map.workspace.datasources closeAlias:udbName];
+//        }
         NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[path,@219,udbName] forKeys:@[@"server",@"engineType",@"alias"]];
         Datasource* dataSource = [sMap.smMapWC openDatasource:params];
         NSInteger count = [dataSource.datasets count];
@@ -811,8 +811,9 @@ RCT_REMAP_METHOD(addDatasetToMap, addDatasetToMapWithResolver:(NSDictionary*)dat
         if(![datastourceName isEqualToString:@""] && ![datasetName isEqualToString:@""]){
             Datasource* datasource = [workspace.datasources getAlias:datastourceName];
             Dataset* dataset = [datasource.datasets getWithName:datasetName];
-            [sMap.smMapWC.mapControl.map.layers addDataset:dataset ToHead:true];
+            Layer* newLayer = [sMap.smMapWC.mapControl.map.layers addDataset:dataset ToHead:true];
             [sMap.smMapWC.mapControl.map refresh];
+            resolve([NSNumber numberWithBool:newLayer != nil]);
         }
         else{
             resolve([NSNumber numberWithBool:NO]);
