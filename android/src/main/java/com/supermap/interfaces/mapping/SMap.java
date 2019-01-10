@@ -1544,10 +1544,10 @@ public class SMap extends ReactContextBaseJavaModule {
                 Datasource datasource = workspace.getDatasources().get(datastourceName);
                 Dataset dataset = datasource.getDatasets().get(datasetName);
 
-                sMap.smMapWC.getMapControl().getMap().getLayers().add(dataset, true);
+                Layer newLayer = sMap.smMapWC.getMapControl().getMap().getLayers().add(dataset, true);
                 sMap.smMapWC.getMapControl().getMap().refresh();
 
-                promise.resolve(true);
+                promise.resolve(newLayer != null);
             } else {
                 promise.resolve(false);
             }
