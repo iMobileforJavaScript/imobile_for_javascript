@@ -18,6 +18,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
     public static final String REACT_CLASS = "SThemeCartography";
     private static ReactApplicationContext context;
+    private static Color[] lastUniqueColors = null;
 
     public SThemeCartography(ReactApplicationContext context) {
         super(context);
@@ -162,10 +163,20 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     if (!data.containsKey("ColorGradientType")) {
                         Color[] colors = SMThemeCartography.getLastThemeColors(themeUniqueLayer);
                         if (colors != null ) {
+                            lastUniqueColors = colors;
                             int rangeCount = tu.getCount();
                             Colors selectedColors = Colors.makeGradient(rangeCount, colors);
                             for (int i = 0; i < rangeCount; i++) {
                                 SMThemeCartography.setGeoStyleColor(dataset.getType(), tu.getItem(i).getStyle(), selectedColors.get(i));
+                            }
+                        } else {
+                            //用上次的颜色值
+                            if (lastUniqueColors != null) {
+                                int rangeCount = tu.getCount();
+                                Colors selectedColors = Colors.makeGradient(rangeCount, lastUniqueColors);
+                                for (int i = 0; i < rangeCount; i++) {
+                                    SMThemeCartography.setGeoStyleColor(dataset.getType(), tu.getItem(i).getStyle(), selectedColors.get(i));
+                                }
                             }
                         }
                     }

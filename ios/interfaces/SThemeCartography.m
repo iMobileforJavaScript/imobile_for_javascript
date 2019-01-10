@@ -1,7 +1,7 @@
 //
 //  SThemeCartography.m
 //  Supermap
-//
+//  专题制图
 //  Created by xianglong li on 2018/12/7.
 //  Copyright © 2018 Facebook. All rights reserved.
 //
@@ -62,6 +62,7 @@ RCT_REMAP_METHOD(createThemeUniqueMap, createThemeUniqueMapWithResolver:(NSDicti
         }
         if (dataset != nil && ![uniqueExpression isEqualToString:@""]) {
             ThemeUnique* themeUnique = [ThemeUnique makeDefault:(DatasetVector*)dataset uniqueExpression:uniqueExpression colorType:colorGradientType];
+            _lastColorUnique = @"";
             if ([array containsObject:@"ColorScheme"]) {
                 NSString* colorScheme = [dataDic objectForKey:@"ColorScheme"];
                 NSMutableDictionary* arrayColor = nil;
@@ -77,6 +78,7 @@ RCT_REMAP_METHOD(createThemeUniqueMap, createThemeUniqueMapWithResolver:(NSDicti
                     for (int i = 0; i < rangeCount; i++) {
                         [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:[selectedColors get:i]];
                     }
+                    _lastColorUnique = colorScheme;
                 }
             }
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
@@ -225,6 +227,14 @@ RCT_REMAP_METHOD(modifyThemeUniqueMap, modifyThemeUniqueMapWithResolver:(NSDicti
                     if (mulArray != nil) {
                         int rangeCount = [tu getCount];
                         Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:mulArray];
+                        for (int i = 0; i < rangeCount; i++) {
+                            [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tu getItem:i].mStyle color:[selectedColors get:i]];
+                        }
+                        _lastColorUniqueArray = mulArray;
+                    }
+                    else{
+                        int rangeCount = [tu getCount];
+                        Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:_lastColorUniqueArray];
                         for (int i = 0; i < rangeCount; i++) {
                             [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tu getItem:i].mStyle color:[selectedColors get:i]];
                         }
@@ -1204,6 +1214,7 @@ RCT_REMAP_METHOD(createThemeRangeMap, createThemeRangeMapMapWithResolver:(NSDict
             themeRange = [ThemeRange makeDefaultDataSet:(DatasetVector*)dataset RangeExpression:rangeExpression RangeMode:rangeMode RangeParameter:rangeParameter ColorGradientType:colorGradientType];
             if(themeRange != nil)
             {
+                _lastColorRange = @"";
                 if ([array containsObject:@"ColorScheme"]) {
                     NSString* colorScheme = [dataDic objectForKey:@"ColorScheme"];
                     NSMutableDictionary* arrayColor = nil;
@@ -1219,6 +1230,7 @@ RCT_REMAP_METHOD(createThemeRangeMap, createThemeRangeMapMapWithResolver:(NSDict
                         for (int i = 0; i < rangeCount; i++) {
                             [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[themeRange getItem:i].mStyle color:[selectedColors get:i]];
                         }
+                        _lastColorRange =colorScheme;
                     }
                 }
                 [[SMap singletonInstance].smMapWC.mapControl.map.layers addDataset:dataset Theme:themeRange ToHead:true];
@@ -1317,6 +1329,14 @@ RCT_REMAP_METHOD(modifyThemeRangeMap, modifyThemeRangeMapWithResolver:(NSDiction
                         for (int i = 0; i < rangeCount; i++) {
                             [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[themeRange getItem:i].mStyle color:[selectedColors get:i]];
                         }
+                        _lastColorRangeArray = mulArray;
+                    }
+                    else{
+                        int rangeCount = [themeRange getCount];
+                        Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:_lastColorRangeArray];
+                        for (int i = 0; i < rangeCount; i++) {
+                            [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[themeRange getItem:i].mStyle color:[selectedColors get:i]];
+                        }
                     }
                 }
                 
@@ -1380,6 +1400,7 @@ RCT_REMAP_METHOD(setUniqueColorScheme, setUniqueColorSchemeWithResolver:(NSDicti
                 for (int i = 0; i < rangeCount; i++) {
                     [SMThemeCartography setGeoStyleColor:layer.dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:[selectedColors get:i]];
                 }
+                _lastColorUnique = strColor;
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             }
@@ -1441,6 +1462,7 @@ RCT_REMAP_METHOD(setRangeColorScheme, setRangeColorSchemeWithResolver:(NSDiction
                 for (int i = 0; i < rangeCount; i++) {
                     [SMThemeCartography setGeoStyleColor:layer.dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:[selectedColors get:i]];
                 }
+                _lastColorRange = strColor;
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             }
