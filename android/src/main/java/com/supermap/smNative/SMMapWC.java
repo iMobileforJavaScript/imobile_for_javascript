@@ -1025,14 +1025,9 @@ public class SMMapWC {
         }
         for (int i = 0; i < srcGroup.getCount(); i++) {
             Symbol sym = srcGroup.get(i);
-            if (bSymReplace && desLib.contains(sym.getID())) {
-//                desLib.remove(sym.getID());
-                try {
-                    desLib.remove(sym.getID());
-                }catch (Exception e){
-                    Log.i("zym8",i+e.toString());
-
-                }
+//            if (bSymReplace && desLib.contains(sym.getID())) {
+            if (bSymReplace && desLib.findSymbol(sym.getID())!=null) {
+                desLib.remove(sym.getID());
             }
             desLib.add(sym, desGroup);
         }
