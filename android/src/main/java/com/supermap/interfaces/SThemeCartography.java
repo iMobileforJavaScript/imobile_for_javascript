@@ -6,8 +6,10 @@ import com.supermap.RNUtils.ColorParseUtil;
 import com.supermap.data.*;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.*;
+import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMThemeCartography;
 
+import java.io.File;
 import java.util.HashMap;
 
 /**
@@ -1865,6 +1867,64 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取指定数据源中的数据集
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void getDatasetsByDatasource(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String alias = null;
+
+            if (data.containsKey("Alias")) {
+                alias = data.get("Alias").toString();
+            }
+
+            Datasources datasources = SMap.getSMWorkspace().getWorkspace().getDatasources();
+
+            WritableArray WA = Arguments.createArray();
+            Datasource datasource = datasources.get(alias);
+            if (datasource == null) {
+                promise.resolve(false);
+                return;
+            }
+            if (datasource.getConnectionInfo().getEngineType() != EngineType.UDB) {
+                //除了UDB数据源都排除
+                promise.resolve(false);
+                return;
+            }
+
+            Datasets datasets = datasource.getDatasets();
+            int datasetsCount = datasets.getCount();
+
+            WritableArray arr = Arguments.createArray();
+            for (int j = 0; j < datasetsCount; j++) {
+                WritableMap writeMap = Arguments.createMap();
+                writeMap.putString("datasetName", datasets.get(j).getName());
+                writeMap.putString("datasetType", datasets.get(j).getType().toString());
+                writeMap.putString("datasourceName", datasource.getAlias());
+                arr.pushMap(writeMap);
+            }
+
+            WritableMap map = Arguments.createMap();
+            String datasourceAlias = datasource.getAlias();
+            map.putString("alias", datasourceAlias);
+
+            WritableMap writableMap = Arguments.createMap();
+            writableMap.putArray("list", arr);
+            writableMap.putMap("datasource", map);
+
+            WA.pushMap(writableMap);
+
+            promise.resolve(WA);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 获取专题图的颜色方案
      *
      * @param readableMap
@@ -1930,6 +1990,51 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             } else {
                 promise.resolve(false);
             }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取UDB中数据集名称
+     *  @param path UDB在内存中路径
+     * @param promise
+     */
+    @ReactMethod
+    public void getUDBName(String path, Promise promise) {
+        try {
+            File tempFile = new File(path.trim());
+            String[] strings = tempFile.getName().split("\\.");
+            String udbName = strings[0];
+            Datasource datasource;
+
+            SMap sMap = SMap.getInstance();
+            SMMapWC smMapWC = sMap.getSmMapWC();
+            smMapWC.getMapControl().getMap().setWorkspace(smMapWC.getWorkspace());
+            DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
+            if (smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
+                datasource = smMapWC.getMapControl().getMap().getWorkspace().getDatasources().get(udbName);
+            } else {
+                datasourceconnection.setEngineType(EngineType.UDB);
+                datasourceconnection.setServer(path);
+                datasourceconnection.setAlias(udbName);
+                datasource = smMapWC.getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
+            }
+
+            Datasets datasets = datasource.getDatasets();
+            int count = datasets.getCount();
+
+            WritableArray arr = Arguments.createArray();
+            for (int i=0;i<count;i++){
+                Dataset dataset = datasets.get(i);
+                WritableMap writeMap = Arguments.createMap();
+                writeMap.putString("datasetName", dataset.getName());
+                writeMap.putString("datasetType", dataset.getType().toString());
+                writeMap.putString("datasourceName", datasource.getAlias());
+                arr.pushMap(writeMap);
+            }
+            datasourceconnection.dispose();
+            promise.resolve(arr);
         } catch (Exception e) {
             promise.reject(e);
         }
