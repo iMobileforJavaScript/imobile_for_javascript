@@ -1746,4 +1746,25 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 检查是否有打开的地图
+     * @param promise
+     */
+    @ReactMethod
+    public void isAnyMapOpened(Promise promise) {
+        try {
+            sMap = getInstance();
+            Workspace workspace = sMap.smMapWC.getWorkspace();
+            Maps maps = workspace.getMaps();
+            boolean isAny = true;
+            if (maps.getCount() <= 0) {
+                isAny = false;
+            }
+
+            promise.resolve(isAny);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 }

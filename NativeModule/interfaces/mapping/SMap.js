@@ -697,6 +697,15 @@ export default (function () {
     }
   }
   
+  /**检查是否有打开的地图 */
+  function isAnyMapOpened() {
+    try {
+      return SMap.isAnyMapOpened()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
   let SMapExp = {
     openWorkspace,
     openDatasource,
@@ -741,6 +750,7 @@ export default (function () {
     isAntialias,
     setVisibleScalesEnabled,
     isVisibleScalesEnabled,
+    isAnyMapOpened,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 
