@@ -411,7 +411,7 @@ getDatasetsByDatasource = (params) => {
 /**获取UDB中数据集名称 */
 getUDBName = (path) => {
   try {
-    return SThemeCartography.getDatasetsByDatasource(path)
+    return SThemeCartography.getUDBName(path)
   } catch (error) {
     console.error(error)
   }
