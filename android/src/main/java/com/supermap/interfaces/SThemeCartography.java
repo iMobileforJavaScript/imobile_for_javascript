@@ -1830,6 +1830,11 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             WritableArray WA = Arguments.createArray();
             for (int i = 0; i < datasourcesCount; i++) {
                 Datasource datasource = datasources.get(i);
+                if (datasource.getConnectionInfo().getEngineType() != EngineType.UDB) {
+                    //除了UDB数据源都排除
+                    continue;
+                }
+
                 Datasets datasets = datasource.getDatasets();
                 int datasetsCount = datasets.getCount();
 
