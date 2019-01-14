@@ -1325,33 +1325,33 @@ RCT_REMAP_METHOD(modifyThemeRangeMap, modifyThemeRangeMapWithResolver:(NSDiction
         bool result = false;
 
         if (dataset != nil && themeRangeLayer.theme != nil && ![rangeExpression isEqualToString:@""] && isContainRangeMode && rangeParameter != -1 && isContainColorGradientType) {
-            ThemeRange* themeRange = nil;
-            themeRange = [ThemeRange makeDefaultDataSet:(DatasetVector*)dataset RangeExpression:rangeExpression RangeMode:rangeMode RangeParameter:rangeParameter ColorGradientType:colorGradientType];
-            if(themeRange != nil)
+            ThemeRange* tr = nil;
+            tr = [ThemeRange makeDefaultDataSet:(DatasetVector*)dataset RangeExpression:rangeExpression RangeMode:rangeMode RangeParameter:rangeParameter ColorGradientType:colorGradientType];
+            if(tr != nil)
             {
                 if(![array containsObject:@"ColorGradientType"]){
                     NSMutableArray* mulArray = nil;
                     mulArray =  [SMThemeCartography getLastThemeColors:themeRangeLayer];
                     if (mulArray != nil) {
-                        int rangeCount = [themeRange getCount];
+                        int rangeCount = [tr getCount];
                         Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:mulArray];
                         for (int i = 0; i < rangeCount; i++) {
-                            [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[themeRange getItem:i].mStyle color:[selectedColors get:i]];
+                            [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tr getItem:i].mStyle color:[selectedColors get:i]];
                         }
                         _lastColorRangeArray = mulArray;
                     }
                     else{
                         if (_lastColorRangeArray != nil) {
-                            int rangeCount = [themeRange getCount];
+                            int rangeCount = [tr getCount];
                             Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:_lastColorRangeArray];
                             for (int i = 0; i < rangeCount; i++) {
-                                [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[themeRange getItem:i].mStyle color:[selectedColors get:i]];
+                                [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tr getItem:i].mStyle color:[selectedColors get:i]];
                             }
                         }
                     }
                 }
                 
-                [themeRangeLayer.theme fromXML:[themeRange toXML]];
+                [themeRangeLayer.theme fromXML:[tr toXML]];
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 result = true;
             }
