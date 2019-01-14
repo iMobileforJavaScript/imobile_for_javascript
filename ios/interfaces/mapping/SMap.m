@@ -811,8 +811,9 @@ RCT_REMAP_METHOD(addDatasetToMap, addDatasetToMapWithResolver:(NSDictionary*)dat
         if(![datastourceName isEqualToString:@""] && ![datasetName isEqualToString:@""]){
             Datasource* datasource = [workspace.datasources getAlias:datastourceName];
             Dataset* dataset = [datasource.datasets getWithName:datasetName];
-            [sMap.smMapWC.mapControl.map.layers addDataset:dataset ToHead:true];
+            Layer* newLayer = [sMap.smMapWC.mapControl.map.layers addDataset:dataset ToHead:true];
             [sMap.smMapWC.mapControl.map refresh];
+            resolve([NSNumber numberWithBool:newLayer != nil]);
         }
         else{
             resolve([NSNumber numberWithBool:NO]);

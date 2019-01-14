@@ -389,10 +389,29 @@ saveMap = () => {
     console.error(error)
   }
 }
+
 /**设置统一标签背景颜色 */
 setUniformLabelBackColor = (params) => {
   try {
     return SThemeCartography.setUniformLabelBackColor(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**获取指定数据源中的数据集 */
+getDatasetsByDatasource = (params) => {
+  try {
+    return SThemeCartography.getDatasetsByDatasource(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**获取UDB中数据集名称 */
+getUDBName = (path) => {
+  try {
+    return SThemeCartography.getUDBName(path)
   } catch (error) {
     console.error(error)
   }
@@ -438,4 +457,6 @@ export default {
   getAllDatasetNames,
   getThemeColorSchemeName,
   saveMap,
+  getDatasetsByDatasource,
+  getUDBName,
 }
