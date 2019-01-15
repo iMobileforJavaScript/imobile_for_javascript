@@ -14,7 +14,7 @@
 #import "SuperMap/SnapSetting.h"
 
 @implementation SMCollector
-
+static SnapSetting *snapSeting = nil;
 + (BOOL)setCollector:(Collector *)collector mapControl:(MapControl *)mapControl type:(int)type {
     BOOL result = NO;
     switch (type) {
@@ -68,12 +68,13 @@
             result = NO;
             break;
     }
-    
-    SnapSetting *snapSeting = [[SnapSetting alloc] init];
+    if(!snapSeting){
+        snapSeting = [[SnapSetting alloc] init];
 //    [snapSeting setMode:POINT_ON_ENDPOINT bValue:YES];
 //    [snapSeting setMode:POINT_ON_POINT bValue:YES];
-    [snapSeting openDefault ];
-    [mapControl setSnapSetting:snapSeting];
+        [snapSeting openAll ];
+        [mapControl setSnapSetting:snapSeting];
+    }
     return result;
 }
 

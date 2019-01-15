@@ -229,7 +229,7 @@ public class SCollector extends ReactContextBaseJavaModule {
     @ReactMethod
     public void undo(int type, Promise promise) {
         try {
-            if (type == SCollectorType.LINE_HAND_PATH || type == SCollectorType.REGION_HAND_PATH || type == -1) {
+            if (type == SCollectorType.LINE_HAND_PATH || type == SCollectorType.REGION_HAND_PATH || type == -1 || type==SCollectorType.REGION_HAND_POINT || type==SCollectorType.LINE_HAND_POINT|| type==SCollectorType.POINT_HAND) {
                 SMap.getSMWorkspace().getMapControl().undo();
             } else {
                 collector = getCollector();
@@ -249,7 +249,7 @@ public class SCollector extends ReactContextBaseJavaModule {
     @ReactMethod
     public void redo(int type, Promise promise) {
         try {
-            if (type == SCollectorType.LINE_HAND_PATH || type == SCollectorType.REGION_HAND_PATH || type == -1) {
+            if (type == SCollectorType.LINE_HAND_PATH || type == SCollectorType.REGION_HAND_PATH || type == -1 || type==SCollectorType.REGION_HAND_POINT || type==SCollectorType.LINE_HAND_POINT|| type==SCollectorType.POINT_HAND) {
                 SMap.getSMWorkspace().getMapControl().redo();
             } else {
                 collector = getCollector();
@@ -269,7 +269,7 @@ public class SCollector extends ReactContextBaseJavaModule {
     @ReactMethod
     public void submit(int type, Promise promise) {
         try {
-            if (type == SCollectorType.LINE_HAND_PATH || type == SCollectorType.REGION_HAND_PATH || type == -1) {
+            if (type == SCollectorType.LINE_HAND_PATH || type == SCollectorType.REGION_HAND_PATH || type == -1 || type==SCollectorType.REGION_HAND_POINT || type==SCollectorType.LINE_HAND_POINT|| type==SCollectorType.POINT_HAND) {
                 SMap.getSMWorkspace().getMapControl().submit();
             } else {
                 collector = getCollector();

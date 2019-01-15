@@ -154,6 +154,8 @@ public class SMap extends ReactContextBaseJavaModule {
                 sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
             }
             sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
+            sMap.smMapWC.getMapControl().setMagnifierEnabled(true);
+            sMap.smMapWC.getMapControl().getMap().setAntialias(true);
             sMap.smMapWC.getMapControl().getMap().refresh();
 
             promise.resolve(result);
