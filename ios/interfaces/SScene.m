@@ -595,14 +595,14 @@ RCT_REMAP_METHOD(getLayerList, resolver:(RCTPromiseResolveBlock)resolve rejecter
     }
 }
 
-RCT_REMAP_METHOD(changeBaseMap, oldLayer:(NSString*)oldLayer Url:(NSString*) Url Layer3DType:(NSString*) layer3DType layerName:(NSString*) layerName imageFormatType:(NSString*) imageFormatType dpi:(double) dpi addToHead:(BOOL)addToHead resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addLayer3D,  Url:(NSString*) Url Layer3DType:(NSString*) layer3DType layerName:(NSString*) layerName imageFormatType:(NSString*) imageFormatType dpi:(double) dpi addToHead:(BOOL)addToHead resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     sScene = [SScene singletonInstance];
     Scene* scene = sScene.smSceneWC.sceneControl.scene;
     @try {
-        if (oldLayer != nil) {
-            [scene.layers removeLayerWithName:oldLayer];
-            //            scene.getLayers().get(oldLayer).setVisible(false);
-        }
+//        if (oldLayer != nil) {
+//            [scene.layers removeLayerWithName:oldLayer];
+//            //            scene.getLayers().get(oldLayer).setVisible(false);
+//        }
         Layer3DType nlayer3DType = 0;
         if([layer3DType isEqualToString:@"IMAGEFILE"]){
             nlayer3DType = IMAGEFILE;
