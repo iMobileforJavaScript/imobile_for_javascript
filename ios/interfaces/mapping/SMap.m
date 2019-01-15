@@ -379,7 +379,7 @@ RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve 
 }
 
 #pragma mark 获取UDB数据源的数据集列表
-RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)path:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         path = [path stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         NSString* udbName = [[path lastPathComponent] stringByDeletingPathExtension ];
@@ -967,6 +967,22 @@ RCT_REMAP_METHOD(isVisibleScalesEnabled, isVisibleScalesEnabled:(RCTPromiseResol
         sMap = [SMap singletonInstance];
         bool result = [sMap.smMapWC.mapControl.map isVisibleScalesEnabled];
         resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 检查是否有打开的地图
+RCT_REMAP_METHOD(isAnyMapOpened, isAnyMapOpened:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Workspace* workspace = sMap.smMapWC.workspace;
+        Maps* maps = workspace.maps;
+        bool isAny = true;
+        if (maps.count <= 0) {
+            isAny = false;
+        }
+        resolve([NSNumber numberWithBool:isAny]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }

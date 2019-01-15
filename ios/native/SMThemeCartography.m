@@ -122,6 +122,95 @@
     }
 }
 
++(NSString*)getThemeColorSchemeName:(Layer* )layer{
+    @try{
+        if (layer == nil) {
+            return nil;
+        }
+        Theme* theme = nil;
+        theme = layer.theme;
+        if (theme == nil) {
+            return nil;
+        }
+        Color* color_start = nil;
+        Color* color_end = nil;
+        if (theme.themeType == TT_Unique) {
+            ThemeUnique* themeUnique = (ThemeUnique*)theme;
+            int count = [themeUnique getCount];
+            NSString* strType = [self datasetTypeToString:layer.dataset.datasetType];
+            if ([strType isEqualToString:@"POINT"]) {
+                color_start = [[themeUnique getItem:0].mStyle getLineColor];
+                color_end = [[themeUnique getItem:(count-1)].mStyle getLineColor];
+            }
+            if ([strType isEqualToString:@"LINE"]) {
+                color_start = [[themeUnique getItem:0].mStyle getLineColor];
+                color_end = [[themeUnique getItem:(count-1)].mStyle getLineColor];
+            }
+            if ([strType isEqualToString:@"REGION"]) {
+                color_start = [[themeUnique getItem:0].mStyle getFillForeColor];
+                color_end = [[themeUnique getItem:(count-1)].mStyle getFillForeColor];
+            }
+            if(color_start == nil || color_end == nil)
+            {
+                return nil;
+            }
+            int rgb_start = color_start.rgb;
+            int rgb_end = color_end.rgb;
+            NSMutableDictionary* colorDic = [self getUniqueColors:@""];
+            for (NSString* key in colorDic) {
+                NSMutableArray* arrayColor = [colorDic objectForKey:key];
+                NSUInteger count = arrayColor.count;
+                Color* color01 =[arrayColor objectAtIndex:0];
+                int rgb01 = color01.rgb;
+                Color* color02 = [arrayColor objectAtIndex:count-1];
+                int rgb02 = color02.rgb;
+                if (rgb_start == rgb01 && rgb_end == rgb02) {
+                    return key;
+                }
+            }
+        }
+        else if (theme.themeType == TT_Range){
+            ThemeRange* themeRange = (ThemeRange*)theme;
+            int count = [themeRange getCount];
+            NSString* strType = [self datasetTypeToString:layer.dataset.datasetType];
+            if ([strType isEqualToString:@"POINT"]) {
+                color_start = [[themeRange getItem:0].mStyle getLineColor];
+                color_end = [[themeRange getItem:(count-1)].mStyle getLineColor];
+            }
+            if ([strType isEqualToString:@"LINE"]) {
+                color_start = [[themeRange getItem:0].mStyle getLineColor];
+                color_end = [[themeRange getItem:(count-1)].mStyle getLineColor];
+            }
+            if ([strType isEqualToString:@"REGION"]) {
+                color_start = [[themeRange getItem:0].mStyle getFillForeColor];
+                color_end = [[themeRange getItem:(count-1)].mStyle getFillForeColor];
+            }
+            if(color_start == nil || color_end == nil)
+            {
+                return nil;
+            }
+            int rgb_start = color_start.rgb;
+            int rgb_end = color_end.rgb;
+            NSMutableDictionary* colorDic = [self getRangeColors:@""];
+            for (NSString* key in colorDic) {
+                NSMutableArray* arrayColor = [colorDic objectForKey:key];
+                NSUInteger count = arrayColor.count;
+                Color* color01 =[arrayColor objectAtIndex:0];
+                int rgb01 = color01.rgb;
+                Color* color02 = [arrayColor objectAtIndex:count-1];
+                int rgb02 = color02.rgb;
+                if (rgb_start == rgb01 && rgb_end == rgb02) {
+                    return key;
+                }
+            }
+        }
+        return nil;
+    }
+    @catch (NSException *exception){
+        @throw exception;
+    }
+}
+
 +(Dataset* )getDataset:(NSString* ) datasetName datasourceIndex:(int) datasourceIndex{
     @try{
         Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;

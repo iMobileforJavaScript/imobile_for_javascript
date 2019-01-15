@@ -1794,6 +1794,9 @@ RCT_REMAP_METHOD(getAllDatasetNames, ggetAllDatasetNamesWithResolver:(RCTPromise
         NSMutableArray* array = [[NSMutableArray alloc] init];
         for (NSInteger i = 0; i < datasourcesCount; i++) {
             Datasource* datasource = [datasources get:i];
+            if (datasource.datasourceConnectionInfo.engineType!=ET_UDB) {
+                continue;
+            }
             Datasets* datasets = datasource.datasets;
             NSInteger datasetCount = datasets.count;
             NSMutableArray* array2 = [[NSMutableArray alloc] init];
@@ -1817,6 +1820,159 @@ RCT_REMAP_METHOD(getAllDatasetNames, ggetAllDatasetNamesWithResolver:(RCTPromise
     }
     @catch(NSException *exception){
         reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
+ * 获取指定数据源中的数据集
+ *
+ * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+ * @param promise
+ */
+RCT_REMAP_METHOD(getDatasetsByDatasource, getDatasetsByDatasourceWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        NSString* alias = @"";
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"Alias"]) {
+            alias = [dataDic objectForKey:@"Alias"];
+        }
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        NSMutableArray* WA = [[NSMutableArray alloc] init];
+        Datasource* datasource = nil;
+        datasource = [datasources getAlias:alias];
+        if (datasource == nil || datasource.datasourceConnectionInfo.engineType!=ET_UDB) {
+            resolve([NSNumber numberWithBool:false]);
+            return;
+        }
+        Datasets* datasets = datasource.datasets;
+        NSInteger datasetsCount = datasets.count;
+        NSMutableArray* arr = [[NSMutableArray alloc] init];
+        for (int i = 0; i < datasetsCount; i++) {
+            NSMutableDictionary* mulDic = [[NSMutableDictionary alloc] init];
+            [mulDic setValue:[datasets get:i].name forKey:@"datasetName"];
+            NSString* datasetType = [SMThemeCartography  datasetTypeToString:[datasets get:i].datasetType];
+            [mulDic setValue:datasetType forKey:@"datasetType"];
+            [mulDic setValue:datasource.alias forKey:@"datasourceName"];
+            [arr addObject:mulDic];
+        }
+        
+        NSMutableDictionary* mulDic2 = [[NSMutableDictionary alloc] init];
+        NSString* datasourceAlias = datasource.alias;
+        [mulDic2 setValue:datasourceAlias forKey:@"alias"];
+        
+        NSMutableDictionary* mulDic3 = [[NSMutableDictionary alloc] init];
+        [mulDic3 setValue:arr forKey:@"list"];
+        [mulDic3 setValue:mulDic2 forKey:@"datasource"];
+        
+        [WA addObject:mulDic3];
+        resolve(WA);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
+ * 获取专题图的颜色方案
+ *
+ * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+ * @param promise
+ */
+RCT_REMAP_METHOD(getThemeColorSchemeName, getThemeColorSchemeNameWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        NSString* layerName = @"";
+        int layerIndex = -1;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+        }
+        if ([array containsObject:@"LayerIndex"]) {
+            NSNumber* indexValue = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = indexValue.intValue;
+        }
+        
+        Layer* layer = nil;
+        
+        if ([layerName isEqualToString:@""]) {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        } else {
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }
+        
+        if (layer != nil && layer.theme != nil) {
+            NSString* themeColorSchemeName = nil;
+            themeColorSchemeName = [SMThemeCartography getThemeColorSchemeName:layer];
+            if (themeColorSchemeName != nil) {
+                resolve(themeColorSchemeName);
+            }
+            else{
+                resolve([NSNumber numberWithBool:false]);
+            }
+        }
+        else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
+ * 保存当前地图
+ *
+ * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+ * @param promise
+ */
+RCT_REMAP_METHOD(saveMap, saveMapWithResolver:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        MapControl* mapcontrol = [SMap singletonInstance].smMapWC.mapControl;
+        bool saveMap = [mapcontrol.map save];
+        bool saveWorkspace = [[SMap singletonInstance].smMapWC.workspace save];
+        if (saveMap && saveWorkspace) {
+            resolve([NSNumber numberWithBool:true]);
+        }
+        else{
+            resolve([NSNumber numberWithBool:false]);
+        }
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取UDB数据源的数据集列表
+RCT_REMAP_METHOD(getUDBName, getUDBNameWithResolver:(NSString*)path:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        path = [path stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString* udbName = [[path lastPathComponent] stringByDeletingPathExtension ];
+        Datasource* datasource = nil;
+        SMap* sMap = [SMap singletonInstance];
+        if ([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:udbName] != -1) {
+            datasource = [sMap.smMapWC.mapControl.map.workspace.datasources getAlias:udbName];
+        }
+        else{
+            NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[path,@219,udbName] forKeys:@[@"server",@"engineType",@"alias"]];
+            datasource = [sMap.smMapWC openDatasource:params];
+        }
+        NSInteger count = [datasource.datasets count];
+        NSString* name;
+        NSMutableArray* array = [[NSMutableArray alloc]init];
+        for(int i = 0; i < count; i++)
+        {
+            Dataset* dataset = [datasource.datasets get:i];
+            NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
+            [info setValue:dataset.name forKey:@"datasetName"];
+            NSString* datasetType = [SMThemeCartography datasetTypeToString:dataset.datasetType];
+            [info setValue:datasetType forKey:@"datasetType"];
+            [info setValue:datasource.alias forKey:@"datasourceName"];
+            [array addObject:info];
+        }
+        resolve(array);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
     }
 }
 @end
