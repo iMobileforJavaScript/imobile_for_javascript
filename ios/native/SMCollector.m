@@ -11,9 +11,10 @@
 #import "SuperMap/CollectorElement.h"
 #import "SuperMap/Action.h"
 #import "SuperMap/MapControl.h"
+#import "SuperMap/SnapSetting.h"
 
 @implementation SMCollector
-
+static SnapSetting *snapSeting = nil;
 + (BOOL)setCollector:(Collector *)collector mapControl:(MapControl *)mapControl type:(int)type {
     BOOL result = NO;
     switch (type) {
@@ -22,8 +23,10 @@
             [collector setIsSingleTapEnable:NO];
             break;
         case POINT_HAND: // POINT_HAND
-            result = [collector createElement:COL_POINT];
-            [collector setIsSingleTapEnable:YES];
+//            result = [collector createElement:COL_POINT];
+//            [collector setIsSingleTapEnable:YES];
+            [mapControl setAction:CREATEPOINT];
+            result = YES;
             break;
         case LINE_GPS_POINT: // LINE_GPS_POINT
             result = [collector createElement:COL_LINE];
@@ -34,8 +37,10 @@
             [collector setIsSingleTapEnable:NO];
             break;
         case LINE_HAND_POINT: // LINE_HAND_POINT
-            result = [collector createElement:COL_LINE];
-            [collector setIsSingleTapEnable:YES];
+//            result = [collector createElement:COL_LINE];
+//            [collector setIsSingleTapEnable:YES];
+            [mapControl setAction:CREATEPOLYLINE];
+            result = YES;
             break;
         case LINE_HAND_PATH: // LINE_HAND_PATH
             [mapControl setAction:CREATE_FREE_DRAW];
@@ -50,8 +55,10 @@
             [collector setIsSingleTapEnable:NO];
             break;
         case REGION_HAND_POINT: // REGION_HAND_POINT
-            result = [collector createElement:COL_POLYGON];
-            [collector setIsSingleTapEnable:YES];
+//            result = [collector createElement:COL_POLYGON];
+//            [collector setIsSingleTapEnable:YES];
+            [mapControl setAction:CREATEPOLYGON];
+            result = YES;
             break;
         case REGION_HAND_PATH: // REGION_HAND_PATH
             [mapControl setAction:CREATE_FREE_DRAWPOLYGON];
@@ -60,6 +67,13 @@
         default:
             result = NO;
             break;
+    }
+    if(!snapSeting){
+        snapSeting = [[SnapSetting alloc] init];
+//    [snapSeting setMode:POINT_ON_ENDPOINT bValue:YES];
+//    [snapSeting setMode:POINT_ON_POINT bValue:YES];
+        [snapSeting openAll ];
+        [mapControl setSnapSetting:snapSeting];
     }
     return result;
 }

@@ -218,7 +218,7 @@ RCT_REMAP_METHOD(addGPSPoint, addGPSPointWithResolver:(RCTPromiseResolveBlock)re
 #pragma mark 回退操作
 RCT_REMAP_METHOD(undo, undoWithType:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        if (type == LINE_HAND_PATH || type == REGION_HAND_PATH || type == -1) {
+        if (type == LINE_HAND_PATH || type == REGION_HAND_PATH || type == -1|| type==REGION_HAND_POINT || type==LINE_HAND_POINT|| type==POINT_HAND) {
             SMap* sMap = [SMap singletonInstance];
             [sMap.smMapWC.mapControl undo];
         } else {
@@ -235,7 +235,7 @@ RCT_REMAP_METHOD(undo, undoWithType:(int)type resolver:(RCTPromiseResolveBlock)r
 #pragma mark 重做操作
 RCT_REMAP_METHOD(redo, redoWithType:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        if (type == LINE_HAND_PATH || type == REGION_HAND_PATH || type == -1) {
+        if (type == LINE_HAND_PATH || type == REGION_HAND_PATH || type == -1|| type==REGION_HAND_POINT || type==LINE_HAND_POINT|| type==POINT_HAND) {
             SMap* sMap = [SMap singletonInstance];
             [sMap.smMapWC.mapControl redo];
         } else {
@@ -252,7 +252,8 @@ RCT_REMAP_METHOD(redo, redoWithType:(int)type resolver:(RCTPromiseResolveBlock)r
 RCT_REMAP_METHOD(submit, submitWithType:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         bool result;
-        if (type == LINE_HAND_PATH || type == REGION_HAND_PATH) {
+        if (type == LINE_HAND_PATH || type == REGION_HAND_PATH || type==REGION_HAND_POINT || type==LINE_HAND_POINT || type==POINT_HAND)
+        {
             SMap* sMap = [SMap singletonInstance];
             result = [sMap.smMapWC.mapControl submit];
         } else {
