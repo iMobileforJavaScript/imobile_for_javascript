@@ -169,7 +169,7 @@
             info.alias = datasourceName;
             info.engineType = ET_UDB;
             [SMFileUtil createFileDirectories:datasourcePath];
-            info.server = [NSString stringWithFormat:@"%@/%@.%@", datasourcePath, datasourceName, dsType];
+            info.server = [NSString stringWithFormat:@"%@%@.%@", datasourcePath, datasourceName, dsType];
             datasource = [SMap.singletonInstance.smMapWC.workspace.datasources create:info];
             if (datasource == nil) {
                 datasource = [SMap.singletonInstance.smMapWC.workspace.datasources open:info];
