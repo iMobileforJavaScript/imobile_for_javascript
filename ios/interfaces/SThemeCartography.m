@@ -2100,4 +2100,18 @@ RCT_REMAP_METHOD(getUDBName, getUDBNameWithResolver:(NSString*)path:(RCTPromiseR
         reject(@"MapControl", exception.reason, nil);
     }
 }
+
+#pragma mark 检查是否有打开的数据源
+RCT_REMAP_METHOD(isAnyOpenedDS, isAnyOpenedDS:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSInteger count = [SMap singletonInstance].smMapWC.workspace.datasources.count;
+        bool isAny = true;
+        if (count <= 0) {
+            isAny = false;
+        }
+        resolve([NSNumber numberWithBool:isAny]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
 @end
