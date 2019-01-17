@@ -173,6 +173,49 @@ function removeLayer(value = -1) {
   }
 }
 
+/**
+ * 移除指定图层
+ * @param params
+ * @param value    图层 index
+ * @returns {*}
+ */
+function renameLayer(layerName,relayerName) {
+  try {
+     return LayerManager.renameLayer(layerName,relayerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 向上移动图层
+ * @param params
+ * @param value    图层 index
+ * @returns {*}
+ */
+function moveUpLayer(layerName) {
+  try {
+    return LayerManager.moveUpLayer(layerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 向下移动图层
+ * @param params
+ * @param value    图层 index
+ * @returns {*}
+ */
+function moveDownLayer(layerName) {
+  try {
+    return LayerManager.moveDownLayer(layerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+
 export {
   getLayersByType,
   getLayersByGroupPath,
@@ -185,4 +228,7 @@ export {
   setLayerFieldInfo,
   removeAllLayer,
   removeLayer,
+  renameLayer,
+  moveUpLayer,
+  moveDownLayer,
 }
