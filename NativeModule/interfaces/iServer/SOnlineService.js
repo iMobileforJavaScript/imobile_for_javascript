@@ -75,7 +75,9 @@ function downloadFile(path, onlineDataName) {
   OnlineServiceNative.download(path, onlineDataName);
 }
 function cancelDownload() {
-  OnlineServiceNative.cancelDownload();
+  if(Platform.OS === 'ios'){
+    OnlineServiceNative.cancelDownload();
+  }
 }
 function downloadFileWithDataId(path, dataNameId) {
   OnlineServiceNative.downloadWithDataId(path, dataNameId);
