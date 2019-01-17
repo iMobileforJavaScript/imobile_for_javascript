@@ -2068,4 +2068,25 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 是否有打开的数据源
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void isAnyOpenedDS(Promise promise) {
+        try {
+            Workspace workspace = SMap.getSMWorkspace().getWorkspace();
+            int count = workspace.getDatasources().getCount();
+
+            boolean isAnyOpenedDS = true;
+            if (count <= 0) {
+                isAnyOpenedDS = false;
+            }
+            promise.resolve(isAnyOpenedDS);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 }
