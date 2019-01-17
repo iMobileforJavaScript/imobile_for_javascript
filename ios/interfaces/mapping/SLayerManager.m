@@ -231,4 +231,60 @@ RCT_REMAP_METHOD(removeAllLayer, removeAllLayerWithResolver:(RCTPromiseResolveBl
         reject(@"workspace", exception.reason, nil);
     }
 }
+
+#pragma mark 修改图层名
+RCT_REMAP_METHOD(renameLayer, renameLayerWithNameByParams:(NSString*)layerName relayerName:(NSString*)relayerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        Layer* layer = [sMap.smMapWC.mapControl.map.layers getLayerWithName:layerName];
+        [layer setCaption:relayerName];
+        resolve([NSNumber numberWithBool:true]);
+    } @catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 向上移动图层
+RCT_REMAP_METHOD(moveUpLayer, moveUpLayerWithIndexByParams:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
+        bool result =  false;
+        if (index <0 || index >= sMap.smMapWC.mapControl.map.layers.getCount) {
+            resolve([NSNumber numberWithBool:false]);
+            return;
+        }
+        if (index == 0) {
+            resolve([NSNumber numberWithBool:true]);
+            return;
+        }
+        result = [sMap.smMapWC.mapControl.map.layers moveTo:index desIndex:index-1];
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 向下移动图层
+RCT_REMAP_METHOD(moveDownLayer, moveDownLayerWithResolver:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
+        bool result =  false;
+        if (index <0 || index >= sMap.smMapWC.mapControl.map.layers.getCount) {
+            resolve([NSNumber numberWithBool:false]);
+            return;
+        }
+        if (index == sMap.smMapWC.mapControl.map.layers.getCount - 1) {
+            resolve([NSNumber numberWithBool:true]);
+            return;
+        }
+        result = [sMap.smMapWC.mapControl.map.layers moveTo:index desIndex:index+1];
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
 @end

@@ -976,10 +976,9 @@ RCT_REMAP_METHOD(isVisibleScalesEnabled, isVisibleScalesEnabled:(RCTPromiseResol
 RCT_REMAP_METHOD(isAnyMapOpened, isAnyMapOpened:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        Workspace* workspace = sMap.smMapWC.workspace;
-        Maps* maps = workspace.maps;
+        int count = sMap.smMapWC.mapControl.map.layers.getCount;
         bool isAny = true;
-        if (maps.count <= 0) {
+        if (count <= 0) {
             isAny = false;
         }
         resolve([NSNumber numberWithBool:isAny]);
