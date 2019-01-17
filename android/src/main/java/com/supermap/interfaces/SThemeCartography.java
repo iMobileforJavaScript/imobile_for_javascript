@@ -1711,11 +1711,13 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             for (int i=0;i<count;i++){
                 FieldInfo fieldInfo = fieldInfos.get(i);
                 String name = fieldInfo.getName();
+                String fieldType = SMThemeCartography.getFieldType(fieldInfo);//字段类型
                 WritableMap writeMap = Arguments.createMap();
                 writeMap.putString("expression", name);
                 writeMap.putBoolean("isSelected", false);
                 writeMap.putString("datasourceName", dataset.getDatasource().getAlias());
                 writeMap.putString("datasetName", dataset.getName());
+                writeMap.putString("fieldType", fieldType);
                 arr.pushMap(writeMap);
             }
 
@@ -1797,8 +1799,10 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             for (int i=0;i<count;i++){
                 FieldInfo fieldInfo = fieldInfos.get(i);
                 String name = fieldInfo.getName();
+                String fieldType = SMThemeCartography.getFieldType(fieldInfo);//字段类型
                 WritableMap writeMap = Arguments.createMap();
                 writeMap.putString("title", name);
+                writeMap.putString("fieldType", fieldType);
                 arr.pushMap(writeMap);
             }
 
@@ -1846,6 +1850,18 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     writeMap.putString("datasetName", datasets.get(j).getName());
                     writeMap.putString("datasetType", datasets.get(j).getType().toString());
                     writeMap.putString("datasourceName", datasource.getAlias());
+                    PrjCoordSys prjCoordSys = datasets.get(j).getPrjCoordSys();
+                    if (prjCoordSys != null) {
+                        GeoCoordSys geoCoordSys = prjCoordSys.getGeoCoordSys();//地理坐标系
+                        if (geoCoordSys != null && geoCoordSys.getType() != null) {
+                            GeoCoordSysType geoCoordSysType = geoCoordSys.getType();
+                            writeMap.putString("geoCoordSysType", geoCoordSysType.toString());
+                        }
+                        if (prjCoordSys.getType() != null) {
+                            PrjCoordSysType prjCoordSysType = prjCoordSys.getType();//投影坐标系
+                            writeMap.putString("prjCoordSysType", prjCoordSysType.toString());
+                        }
+                    }
                     arr.pushMap(writeMap);
                 }
 
@@ -2031,6 +2047,18 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 writeMap.putString("datasetName", dataset.getName());
                 writeMap.putString("datasetType", dataset.getType().toString());
                 writeMap.putString("datasourceName", datasource.getAlias());
+                PrjCoordSys prjCoordSys = dataset.getPrjCoordSys();
+                if (prjCoordSys != null) {
+                    GeoCoordSys geoCoordSys = prjCoordSys.getGeoCoordSys();//地理坐标系
+                    if (geoCoordSys != null && geoCoordSys.getType() != null) {
+                        GeoCoordSysType geoCoordSysType = geoCoordSys.getType();
+                        writeMap.putString("geoCoordSysType", geoCoordSysType.toString());
+                    }
+                    if (prjCoordSys.getType() != null) {
+                        PrjCoordSysType prjCoordSysType = prjCoordSys.getType();//投影坐标系
+                        writeMap.putString("prjCoordSysType", prjCoordSysType.toString());
+                    }
+                }
                 arr.pushMap(writeMap);
             }
             datasourceconnection.dispose();

@@ -81,8 +81,8 @@ public class SMCollector {
         if(snapSeting==null){
             snapSeting = new SnapSetting();
             snapSeting.openAll();
-            mapControl.setSnapSetting(snapSeting);
         }
+        mapControl.setSnapSetting(snapSeting);
         return result;
     }
 

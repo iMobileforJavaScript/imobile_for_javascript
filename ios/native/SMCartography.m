@@ -62,11 +62,12 @@
                     return geometry;
                 }
             }
-            return nil;
         }
+        return nil;
     }
     @catch(NSException *exception){
         @throw exception;
+        return nil;
     }
 }
 +(Recordset *)getRecordset:(int )geometryID layerName:(NSString *)layerName{
@@ -84,6 +85,7 @@
     }
     @catch(NSException *exception){
         @throw exception;
+        return nil;
     }
 }
 +(LayerSettingGrid *)getLayerSettingGrid:(NSString*)layerName{
@@ -95,14 +97,12 @@
                 layer.editable = true;
                 return (LayerSettingGrid* )layer.layerSetting;
             }
-            else
-            {
-                return nil;
-            }
         }
+        return nil;
     }
     @catch(NSException *exception){
         @throw exception;
+        return nil;
     }
 }
 +(LayerSettingVector *)getLayerSettingVector:(NSString*)layerName{
@@ -113,14 +113,12 @@
             {
                 return (LayerSettingVector* )layer.layerSetting;
             }
-            else
-            {
-                return nil;
-            }
         }
+        return nil;
     }
     @catch(NSException *exception){
         @throw exception;
+        return nil;
     }
 }
 
@@ -132,14 +130,12 @@
             {
                 return (LayerSettingVector* )layer.layerSetting;
             }
-            else
-            {
-                return nil;
-            }
         }
+        return nil;
     }
     @catch(NSException *exception){
         @throw exception;
+        return nil;
     }
 }
 
@@ -151,6 +147,7 @@
     }
     @catch(NSException *exception){
         @throw exception;
+        return nil;
     }
 }
 
@@ -162,6 +159,7 @@
     }
     @catch(NSException *exception){
         @throw exception;
+        return nil;
     }
 }
 
