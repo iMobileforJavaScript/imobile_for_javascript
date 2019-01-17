@@ -334,4 +334,59 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+
+    /**
+     * 修改图层名
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void renameLayer(String layerName,String relayerName,Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(layerName);
+            layer.setCaption(relayerName);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 向上移动图层
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void moveUpLayer(String layerName,Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
+            sMap.getSmMapWC().getMapControl().getMap().getLayers().moveUp(index);
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 向下移动图层
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void moveDownLayer(String layerName,Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
+            sMap.getSmMapWC().getMapControl().getMap().getLayers().moveDown(index);
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 }

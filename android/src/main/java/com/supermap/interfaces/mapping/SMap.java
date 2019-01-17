@@ -1757,10 +1757,10 @@ public class SMap extends ReactContextBaseJavaModule {
     public void isAnyMapOpened(Promise promise) {
         try {
             sMap = getInstance();
-            Workspace workspace = sMap.smMapWC.getWorkspace();
-            Maps maps = workspace.getMaps();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            int count = map.getLayers().getCount();
             boolean isAny = true;
-            if (maps.getCount() <= 0) {
+            if (count <= 0) {
                 isAny = false;
             }
 
