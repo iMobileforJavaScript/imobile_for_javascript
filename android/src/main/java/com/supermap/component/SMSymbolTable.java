@@ -102,7 +102,7 @@ public class SMSymbolTable extends SimpleViewManager<SymbolLibView> {
             view.setImageSize(style.getInt("imageSize"));
         }
         if (style.hasKey("textSize")) {
-            view.setTextSize(style.getInt("textSize"));
+            view.setTextSize(style.getInt("textSize") * 3 / 4);
         }
         if (style.hasKey("textColor")) {
             ReadableMap textColor = style.getMap("textColor");
