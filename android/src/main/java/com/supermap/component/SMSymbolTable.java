@@ -37,7 +37,7 @@ public class SMSymbolTable extends SimpleViewManager<SymbolLibView> {
     protected SymbolLibView createViewInstance(ThemedReactContext reactContext) {
         m_ThemedReactContext = reactContext;
         symbolLibView = new SymbolLibView(reactContext);
-        symbolLibView.setRowOrCol(5);
+//        symbolLibView.setRowOrCol(5);
         symbolLibView.setScrollDirection(SymbolLibView.Orientation.VERTICAL);
         int width = reactContext.getCurrentActivity().getWindowManager().getDefaultDisplay().getWidth();
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, 600);
@@ -120,6 +120,7 @@ public class SMSymbolTable extends SimpleViewManager<SymbolLibView> {
             int a = textColor.getInt("a") >= 0 ? textColor.getInt("r") : 255;
             view.setBackgroundColor(new Color(r, g, b, a));
         }
+        view.reloadView();
     }
 
     @ReactProp(name = "data")
