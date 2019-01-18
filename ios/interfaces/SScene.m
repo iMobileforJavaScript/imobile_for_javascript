@@ -567,7 +567,7 @@ RCT_REMAP_METHOD(getMapList, getMapListResolver:(RCTPromiseResolveBlock)resolve 
  *
  * @param promise
  */
-RCT_REMAP_METHOD(getLayerList, resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getLayerList, getLayerList:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sScene = [SScene singletonInstance];
         Scene* scene = sScene.smSceneWC.sceneControl.scene;
@@ -578,12 +578,38 @@ RCT_REMAP_METHOD(getLayerList, resolver:(RCTPromiseResolveBlock)resolve rejecter
             NSString* name = [scene.layers getLayerWithIndex:i].name;// .get(i).getName();
             BOOL visible = [scene.layers getLayerWithIndex:i].visible;
             BOOL selectable = [scene.layers getLayerWithIndex:i].selectable;// .isSelectable();
+            Layer3DType type = [[scene.layers getLayerWithIndex:i] type];
+            NSString *strType = nil;
+            switch (type) {
+                case IMAGEFILE:
+                    strType = @"IMAGEFILE";
+                    break;
+                case KML :
+                    strType = @"KML";
+                    break;
+                case VECTORFILE:
+                    strType = @"VECTORFILE";
+                    break;
+                case WMTS:
+                    strType = @"WMTS";
+                    break;
+                case OSGBFILE:
+                    strType = @"OSGBFILE";
+                    break;
+                case BINGMAPS:
+                    strType = @"BINGMAPS";
+                    break;
+                    
+                default:
+                    break;
+            }
+
             NSDictionary* map;
             if (i == count - 1) {
-                map = @{@"name":name,@"visible": @(visible),@"selectable": @(selectable),@"basemap":@(1)};
+                map = @{@"name":name,@"visible": @(visible),@"selectable": @(selectable),@"basemap":@(1),@"type":strType};
                // map.putBoolean("basemap", true);
             }
-            map = @{@"name":name,@"visible": @(visible),@"selectable": @(selectable)};
+            map = @{@"name":name,@"visible": @(visible),@"selectable": @(selectable),@"type":strType};
             
             
             [arr addObject:map];

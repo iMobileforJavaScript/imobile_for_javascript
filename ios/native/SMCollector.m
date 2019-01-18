@@ -72,7 +72,7 @@ static SnapSetting *snapSeting = nil;
         snapSeting = [[SnapSetting alloc] init];
 //    [snapSeting setMode:POINT_ON_ENDPOINT bValue:YES];
 //    [snapSeting setMode:POINT_ON_POINT bValue:YES];
-        [snapSeting openAll ];
+        [snapSeting openDefault ];
     }
     [mapControl setSnapSetting:snapSeting];
     return result;
