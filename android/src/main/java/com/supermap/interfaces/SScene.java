@@ -428,9 +428,11 @@ public class SScene extends ReactContextBaseJavaModule {
                     boolean visible = scene.getLayers().get(i).isVisible();
                     boolean selectable = scene.getLayers().get(i).isSelectable();
                     WritableMap map = Arguments.createMap();
+                    String type =scene.getLayers().get(i).getType().toString();
                     map.putString("name", name);
                     map.putBoolean("visible", visible);
                     map.putBoolean("selectable", selectable);
+                    map.putString("type",type);
                     arr.pushMap(map);
                 }
             }
@@ -698,7 +700,7 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
-            String path = sScene.smSceneWc.getWorkspace().getConnectionInfo().getServer();
+            String path = sceneControl.getScene().getWorkspace().getConnectionInfo().getServer();
             String result = path.substring(0, path.lastIndexOf("/")) + "/";
             FlyHelper.getInstence().init(sceneControl);
             ArrayList arrayList = FlyHelper.getInstence().getFlyRouteNames(result);
