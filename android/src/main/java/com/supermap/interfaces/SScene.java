@@ -164,12 +164,13 @@ public class SScene extends ReactContextBaseJavaModule {
      */
     private void initLabelHelper() {
         sScene=getInstance();
-        Workspace workspace = sScene.smSceneWc.getWorkspace();
+        SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+        Workspace workspace = sceneControl.getScene().getWorkspace();
         String path = workspace.getConnectionInfo().getServer();
         String result = path.substring(0, path.lastIndexOf("/")) + "/files/";
         final String kmlName = "NodeAnimation.kml";
         sScene=getInstance();
-        SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+
         LabelHelper.getInstence().initSceneControl(context, sceneControl, result, kmlName);
     }
 
