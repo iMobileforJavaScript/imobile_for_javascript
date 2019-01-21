@@ -705,6 +705,17 @@ export default (function () {
       console.error(e)
     }
   }
+
+  /**
+   * 批量添加图层
+   */
+  function addLayers(datasetNames, datasourceName) {
+    try {
+      return SMap.addLayers(datasetNames, datasourceName)
+    } catch (e) {
+      console.error(e)
+    }
+  }
   
   let SMapExp = {
     openWorkspace,
@@ -751,6 +762,7 @@ export default (function () {
     setVisibleScalesEnabled,
     isVisibleScalesEnabled,
     isAnyMapOpened,
+    addLayers,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 

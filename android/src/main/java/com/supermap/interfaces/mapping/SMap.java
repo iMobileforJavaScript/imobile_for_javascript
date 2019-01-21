@@ -3,6 +3,7 @@
  */
 package com.supermap.interfaces.mapping;
 
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
@@ -1766,6 +1767,40 @@ public class SMap extends ReactContextBaseJavaModule {
 
             promise.resolve(isAny);
         } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 批量添加图层
+     *
+     * @param datasetNames
+     * @param promise
+     */
+    @ReactMethod
+    public void addLayers(ReadableArray datasetNames, String datastourceName, Promise promise) {
+        try {
+            if (datasetNames == null || datasetNames.size() == 0 || datastourceName == null || datastourceName.isEmpty()) {
+                promise.resolve(false);
+                return;
+            }
+
+            Workspace workspace = sMap.smMapWC.getWorkspace();
+            Datasource datasource = workspace.getDatasources().get(datastourceName);
+            com.supermap.mapping.Map map =  sMap.smMapWC.getMapControl().getMap();
+            Layers layers = map.getLayers();
+            for (int i = 0; i < datasetNames.size(); i++) {
+                String datasetName = datasetNames.getString(i);
+                Dataset dataset = datasource.getDatasets().get(datasetName);
+
+                layers.add(dataset, true);
+            }
+            map.refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
             promise.reject(e);
         }
     }
