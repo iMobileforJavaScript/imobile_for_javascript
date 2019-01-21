@@ -492,7 +492,10 @@ RCT_REMAP_METHOD(is3DWorkspace, is3DWorkspaceByInfo:(NSDictionary*)infoDic  reso
 RCT_REMAP_METHOD(openScence, openScenceByName:(NSString*)name  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sScene = [SScene singletonInstance];
+        sScene.smSceneWC.sceneControl.isRender = NO;
         BOOL result = [sScene.smSceneWC openScenceName:name toScenceControl:sScene.smSceneWC.sceneControl];
+        sScene.smSceneWC.sceneControl.isRender = YES;
+        [sScene.smSceneWC.sceneControl.scene refresh];
         resolve(@(result));
     }@catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);

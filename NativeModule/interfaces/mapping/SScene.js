@@ -623,6 +623,14 @@ export default (function () {
         }
     }
 
+    function resetCamera(){
+        try {
+            return SScene.resetCamera()
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -715,6 +723,7 @@ export default (function () {
         is3DWorkspace,
         setCustomerDirectory,
         export3DScenceName,
+        resetCamera,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp

@@ -55,6 +55,7 @@ import java.util.TimerTask;
 public class SScene extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SScene";
     private static SScene sScene;
+    private static Camera camera;
     private static ReactApplicationContext context;
     private static MeasureListener mMeasureListener;
     private SMSceneWC smSceneWc;
@@ -1354,6 +1355,9 @@ public class SScene extends ReactContextBaseJavaModule {
             sScene = getInstance();
             SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
             boolean result=sScene.smSceneWc.openScenceName(name,sceneControl);
+            if(result){
+                camera=sceneControl.getScene().getCamera();
+            }
             promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
@@ -1417,6 +1421,27 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
+     *
+     *
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void resetCamera( Promise promise) {
+        try {
+            sScene = getInstance();
+            if(camera!=null){
+                sScene.smSceneWc.getSceneControl().getScene().setCamera(camera);
+                promise.resolve(true);
+            }else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 关闭工作空间及地图控件
      */
     @ReactMethod
@@ -1473,6 +1498,7 @@ public class SScene extends ReactContextBaseJavaModule {
                 if (workspace != null) {
                     workspace.close();
                 }
+                camera=null;
                 sScene.smSceneWc.setWorkspace(null);
                 promise.resolve(true);
             } catch (Exception e) {
