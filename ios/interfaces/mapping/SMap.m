@@ -926,7 +926,7 @@ RCT_REMAP_METHOD(openMapName, openMapName:(NSString*)strMapName ofModule:(NSStri
 }
 
 #pragma mark 设置地图反走样式
-RCT_REMAP_METHOD(setAntialias, setAntialias:(bool)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setAntialias, setAntialias:(int)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         sMap = [SMap singletonInstance];
@@ -950,7 +950,7 @@ RCT_REMAP_METHOD(isAntialias, isAntialias:(RCTPromiseResolveBlock)resolve reject
 }
 
 #pragma mark 设置固定比例尺
-RCT_REMAP_METHOD(setVisibleScalesEnabled, setVisibleScalesEnabled:(bool)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setVisibleScalesEnabled, setVisibleScalesEnabled:(int)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         [sMap.smMapWC.mapControl.map setIsVisibleScalesEnabled:value];
