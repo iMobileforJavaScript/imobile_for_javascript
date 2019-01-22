@@ -1102,13 +1102,17 @@
 -(NSString *)getUserName{
     NSString *strServer = SMap.singletonInstance.smMapWC.workspace.connectionInfo.server;
     //NSString *strRootFolder = [strServer substringToIndex: strServer.length - [[strServer componentsSeparatedByString:@"/"]lastObject].length-1];
-    NSArray *arrServer = [strServer componentsSeparatedByString:@"/"];
+    /*NSArray *arrServer = [strServer componentsSeparatedByString:@"/"];
     int nCount = arrServer.count;
     if (nCount>=3) {
         return arrServer[arrServer.count-3];
     }else{
         return nil;
-    }
+    }*/
+    NSString *strRoot = [self getRootPath];
+    NSString *strSub = [strServer substringFromIndex:strRoot.length+1];
+    NSArray * arrStr = [strSub componentsSeparatedByString:@"/"];
+    return arrStr[0];
 }
 -(NSString *)getRootPath{
      return [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User"];
@@ -1980,7 +1984,7 @@
             [self importSymbolsFrom:lib.rootGroup toGroup:resLib.rootGroup isDirRetain:YES isSymbolReplace:isReplace];
         }
         
-        return result
+        return result;
     } @catch (NSException *exception) {
         return NO;
     }

@@ -51,7 +51,10 @@ typedef enum{
 }SSceneTouchEvent;
 
 @interface SScene()<FlyHelper3DProgressDelegate,Analysis3DDelegate,LableHelper3DDelegate,Tracking3DDelegate>
-
+{
+    Camera defaultCamera;
+    BOOL bHasCamera;
+}
 @end
 
 static SScene* sScene = nil;
@@ -496,11 +499,34 @@ RCT_REMAP_METHOD(openScence, openScenceByName:(NSString*)name  resolver:(RCTProm
         BOOL result = [sScene.smSceneWC openScenceName:name toScenceControl:sScene.smSceneWC.sceneControl];
         sScene.smSceneWC.sceneControl.isRender = YES;
         [sScene.smSceneWC.sceneControl.scene refresh];
+        
+        bHasCamera = NO;
+        if(result){
+            defaultCamera = sScene.smSceneWC.sceneControl.scene.camera;
+            bHasCamera = YES;
+        }
         resolve(@(result));
     }@catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
     }
 }
+
+RCT_REMAP_METHOD(resetCamera, resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        if(bHasCamera){
+            sScene.smSceneWC.sceneControl.scene.camera = defaultCamera;
+            resolve(@(1));
+           // sScene.smSceneWc.getSceneControl().getScene().setCamera(defaultCamera);
+           // promise.resolve(true);
+        }else {
+             resolve(@(0));
+        }
+    }@catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
 /*
  导入3维工作空间成pxp
  */

@@ -732,7 +732,25 @@ export default (function () {
       console.error(e)
     }
   }
-  
+
+  /**获取是否压盖 */
+  function isOverlapDisplayed() {
+    try {
+      return SMap.isOverlapDisplayed()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**设置是否压盖 */
+  function setOverlapDisplayed(value) {
+    try {
+      return SMap.setOverlapDisplayed(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   let SMapExp = {
     openWorkspace,
     openDatasource,
@@ -780,6 +798,8 @@ export default (function () {
     isAnyMapOpened,
     addLayers,
     importSymbolLibrary,
+    isOverlapDisplayed,
+    setOverlapDisplayed,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 

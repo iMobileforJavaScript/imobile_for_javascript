@@ -999,7 +999,54 @@ RCT_REMAP_METHOD(importSymbolLibrary, importSymbolLibraryWithPath:(NSString *)pa
     }
 }
 
+#pragma mark 批量添加图层
+RCT_REMAP_METHOD(addLayers, addLayers:(NSArray*)datasetNames dataSourceName:(NSString*)dataSourceName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        if (datasetNames == nil || datasetNames.count == 0 || [dataSourceName isEqualToString:@""] || dataSourceName == nil) {
+            resolve([NSNumber numberWithBool:false]);
+            return;
+        }
+        sMap = [SMap singletonInstance];
+        Datasource* datasource = [sMap.smMapWC.workspace.datasources getAlias:dataSourceName];
+        Layers* layers = sMap.smMapWC.mapControl.map.layers;
+        NSInteger count = datasetNames.count;
+        for (int i = 0; i < count; i++) {
+            NSString* datasetName = [datasetNames objectAtIndex:i];
+            Dataset* dataset = [datasource.datasets getWithName:datasetName];
+            [layers addDataset:dataset ToHead:true];
+        }
+        [sMap.smMapWC.mapControl.map refresh];
+    
+        resolve([NSNumber numberWithBool:true]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
 
+#pragma mark 设置是否压盖
+RCT_REMAP_METHOD(setOverlapDisplayed, setOverlapDisplayed:(BOOL)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Map* map = sMap.smMapWC.mapControl.map;
+        [map setIsOverlapDisplay:value];
+        [map refresh];
+        resolve([NSNumber numberWithBool:true]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 是否已经开启压盖
+RCT_REMAP_METHOD(isOverlapDisplayed, isOverlapDisplayed:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Map* map = sMap.smMapWC.mapControl.map;
+        bool result = [map IsOverlapDisplay];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
 
 /************************************************ 监听事件 ************************************************/
 #pragma mark 监听事件
