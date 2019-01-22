@@ -1951,7 +1951,7 @@
     }
 }
 
-+ (BOOL)appendFromFile:(Resources *)resources path:(NSString *)path isReplace:(BOOL)isReplace {
+- (BOOL)appendFromFile:(Resources *)resources path:(NSString *)path isReplace:(BOOL)isReplace {
     @try {
         BOOL isDir = NO;
         BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];

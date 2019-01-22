@@ -991,12 +991,9 @@ RCT_REMAP_METHOD(isAnyMapOpened, isAnyMapOpened:(RCTPromiseResolveBlock)resolve 
 RCT_REMAP_METHOD(importSymbolLibrary, importSymbolLibraryWithPath:(NSString *)path isReplace:(BOOL)isReplace :(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        int count = sMap.smMapWC.mapControl.map.layers.getCount;
-        bool isAny = true;
-        if (count <= 0) {
-            isAny = false;
-        }
-        resolve([NSNumber numberWithBool:isAny]);
+        BOOL result = [sMap.smMapWC appendFromFile:sMap.smMapWC.workspace.resources path:path isReplace:isReplace];
+        
+        resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
