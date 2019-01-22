@@ -1951,4 +1951,39 @@
     }
 }
 
++ (BOOL)appendFromFile:(Resources *)resources path:(NSString *)path isReplace:(BOOL)isReplace {
+    @try {
+        BOOL isDir = NO;
+        BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
+        if (!isExist || isDir) {
+            return NO;
+        }
+        
+        SymbolLibrary* lib = nil;
+        SymbolLibrary* resLib = nil;
+        NSString* type = [[path pathExtension] lowercaseString];
+        if ([type isEqualToString:@"bru"]) {
+            lib = [[SymbolFillLibrary alloc] init];
+            resLib = resources.fillLibrary;
+        } else if ([type isEqualToString:@"lsl"]) {
+            lib = [[SymbolLineLibrary alloc] init];
+            resLib = resources.lineLibrary;
+        } else if ([type isEqualToString:@"sym"]) {
+            lib = [[SymbolMarkerLibrary alloc] init];
+            resLib = resources.markerLibrary;
+        }
+        
+        if (lib == nil) return NO;
+        BOOL result = [lib appendFromFile:path isReplace:isReplace];
+        
+        if (result) {
+            [self importSymbolsFrom:lib.rootGroup toGroup:resLib.rootGroup isDirRetain:YES isSymbolReplace:isReplace];
+        }
+        
+        return result
+    } @catch (NSException *exception) {
+        return NO;
+    }
+}
+
 @end

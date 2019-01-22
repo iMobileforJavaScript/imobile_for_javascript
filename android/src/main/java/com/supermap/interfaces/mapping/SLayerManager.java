@@ -329,6 +329,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         try {
             SMap sMap = SMap.getInstance();
             sMap.getSmMapWC().getMapControl().getMap().getLayers().clear();
+            SMap.getInstance().getSmMapWC().getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

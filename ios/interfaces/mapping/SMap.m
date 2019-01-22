@@ -838,7 +838,7 @@ RCT_REMAP_METHOD(exportWorkspace, exportWorkspace:(NSArray*)arrMapnames toFile:(
 }
 
 #pragma mark 导出地图为xml
-RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)nModule withAddition:(NSDictionary *)withAddition isNew:(BOOL)isNew resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)nModule withAddition:(NSDictionary *)withAddition isNew:(BOOL)isNew bResourcesModified:(BOOL)bResourcesModified resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BOOL mapSaved = NO;
         sMap = [SMap singletonInstance];
@@ -877,7 +877,7 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
                 mapSaved = isNew ? [map saveAs:name] : [map save:name];
             }
         }
-        BOOL bResourcesModified = sMap.smMapWC.workspace.maps.count > 1;
+//        BOOL bResourcesModified = sMap.smMapWC.workspace.maps.count > 1;
         NSString* mapName = @"";
         if (mapSaved) {
             mapName = [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:withAddition isNewMap:(isNew || bNew) isResourcesModyfied:bResourcesModified];
@@ -986,6 +986,22 @@ RCT_REMAP_METHOD(isAnyMapOpened, isAnyMapOpened:(RCTPromiseResolveBlock)resolve 
         reject(@"MapControl", exception.reason, nil);
     }
 }
+
+#pragma mark 导入符号库
+RCT_REMAP_METHOD(importSymbolLibrary, importSymbolLibraryWithPath:(NSString *)path isReplace:(BOOL)isReplace :(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        int count = sMap.smMapWC.mapControl.map.layers.getCount;
+        bool isAny = true;
+        if (count <= 0) {
+            isAny = false;
+        }
+        resolve([NSNumber numberWithBool:isAny]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 
 
 /************************************************ 监听事件 ************************************************/

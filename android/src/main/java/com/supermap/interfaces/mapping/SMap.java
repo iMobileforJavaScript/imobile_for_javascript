@@ -42,6 +42,9 @@ import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
+
+import org.apache.http.cookie.SM;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -1568,7 +1571,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void saveMapName(String name, String nModule, ReadableMap addition, boolean isNew, Promise promise) {
+    public void saveMapName(String name, String nModule, ReadableMap addition, boolean isNew,  boolean bResourcesModified, Promise promise) {
         try {
             sMap = SMap.getInstance();
             boolean mapSaved = false;
@@ -1609,7 +1612,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 }
             }
 
-            boolean bResourcesModified = sMap.smMapWC.getWorkspace().getMaps().getCount() > 1;
+//            boolean bResourcesModified = sMap.smMapWC.getWorkspace().getMaps().getCount() > 1;
             String mapName = "";
 
             Map<String, String> additionInfo = new HashMap<>();
@@ -1798,6 +1801,26 @@ public class SMap extends ReactContextBaseJavaModule {
             map.refresh();
 
             promise.resolve(true);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 导入符号库
+     * @param path
+     * @param isReplace 是否替换
+     * @param promise
+     */
+    @ReactMethod
+    public void importSymbolLibrary(String path, boolean isReplace, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            boolean result = sMap.smMapWC.appendFromFile(SMap.getInstance().smMapWC.getWorkspace().getResources(), path, isReplace);
+
+            promise.resolve(result);
         } catch (Exception e) {
             Log.e(REACT_CLASS, e.getMessage());
             e.printStackTrace();

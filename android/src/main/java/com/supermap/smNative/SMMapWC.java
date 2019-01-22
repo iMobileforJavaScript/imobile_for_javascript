@@ -18,6 +18,7 @@ import com.supermap.data.Enum;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
 import com.supermap.data.Recordset;
+import com.supermap.data.Resources;
 import com.supermap.data.Symbol;
 import com.supermap.data.SymbolFill;
 import com.supermap.data.SymbolFillLibrary;
@@ -1100,13 +1101,17 @@ public class SMMapWC {
 
     private String getUserName() {
         String strServer = SMap.getInstance().getSmMapWC().getWorkspace().getConnectionInfo().getServer();
-        String[] arrServer = strServer.split("/");
-        int nCount = arrServer.length;
-        if (nCount >= 3) {
-            return arrServer[nCount - 3];
-        } else {
-            return null;
-        }
+//        String[] arrServer = strServer.split("/");
+//        int nCount = arrServer.length;
+//        if (nCount >= 3) {
+//            return arrServer[nCount - 3];
+//        } else {
+//            return null;
+//        }
+        String strRoot = getRootPath();
+        String strSub = strServer.substring(strRoot.length()+1);
+        String[] arrServer = strSub.split("/");
+        return arrServer[0];
     }
 
     private String getModuleDirectory(int nModule) {
@@ -2161,6 +2166,36 @@ public class SMMapWC {
         //        catch (Exception e){
         //            return false;
         //        }
+    }
+
+    public boolean appendFromFile(Resources resources, String path, boolean isReplace) {
+        try {
+            File file = new File(path);
+            if (!file.exists() || !file.isFile()) {
+                return false;
+            }
+            SymbolLibrary lib = null;
+            SymbolLibrary resLib = null;
+            String type = path.substring(path.lastIndexOf(".") + 1).toLowerCase();
+            if (type.equals("bru")) {
+                lib = new SymbolFillLibrary();
+                resLib = resources.getFillLibrary();
+            } else if (type.equals("lsl")) {
+                lib = new SymbolLineLibrary();
+                resLib = resources.getLineLibrary();
+            } else if (type.equals("sym")) {
+                lib = new SymbolMarkerLibrary();
+                resLib = resources.getMarkerLibrary();
+            }
+            if (lib == null) return false;
+            boolean result = lib.appendFromFile(path, isReplace);
+            if (result) {
+                importSymbolsFrom(lib.getRootGroup(), resLib.getRootGroup(), true, isReplace);
+            }
+            return result;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }
