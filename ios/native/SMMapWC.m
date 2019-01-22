@@ -1010,7 +1010,7 @@
     }
     
     // symbol lib
-    NSString*serverResourceBase = [fileName substringToIndex:fileName.length-strWorkspaceSuffix.length];
+    NSString*serverResourceBase = [fileName substringToIndex:fileName.length-strWorkspaceSuffix.length-1];
     NSString*strMarkerPath = [serverResourceBase stringByAppendingString:@".sym"];
     NSString*strLinePath = [serverResourceBase stringByAppendingString:@".lsl"];
     NSString*strFillPath = [serverResourceBase stringByAppendingString:@".bru"];
