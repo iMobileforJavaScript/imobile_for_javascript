@@ -863,17 +863,17 @@ public class SMMapWC {
                 mapExport.open(mapName);
                 // 不重复的datasource保存
                 Layers exportLayes = mapExport.getLayers();
-                //判读是否有不需要导出的
-                if(notExportMap!=null&&notExportMap.hasKey(mapName)){
-                    ReadableArray indexArray=notExportMap.getArray(mapName);
-                    for (int index = 0; index < indexArray.size(); index++) {
-                        exportLayes.remove(indexArray.getInt(index));
-                    }
-                }
                 for (int j = 0; j < exportLayes.getCount(); j++) {
                     Datasource datasource = exportLayes.get(j).getDataset().getDatasource();
                     if (!arrDatasources.contains(datasource)) {
                         arrDatasources.add(datasource);
+                    }
+                }
+                //判读是否有不需要导出的图层
+                if(notExportMap!=null&&notExportMap.hasKey(mapName)){
+                    ReadableArray indexArray=notExportMap.getArray(mapName);
+                    for (int index = 0; index < indexArray.size(); index++) {
+                        exportLayes.remove(indexArray.getInt(index));
                     }
                 }
                 String strMapXML = mapExport.toXML();
@@ -1081,6 +1081,7 @@ public class SMMapWC {
             if (bDirRetain) {
                 String subName = subGroup.getName();
                 int nAddNum = 1;
+//                while (desLib.getRootGroup().getChildGroups().contains(subName)) {
                 while (desGroup.getChildGroups().contains(subName)) {
                     subName = subGroup.getName() + "#" + nAddNum;
                     nAddNum++;
