@@ -505,10 +505,6 @@ RCT_REMAP_METHOD(createUniformThemeLabelMap, createUniformThemeLabelMapWithResol
                 [textStyle setFontHeight:fontSize];
                 [textStyle setFontWidth:fontSize];
             }
-            else{
-                [textStyle setFontHeight:2];
-                [textStyle setFontWidth:2];
-            }
             if (rotation != -1) {
                 [textStyle setRotation:rotation];
             }
@@ -949,10 +945,7 @@ RCT_REMAP_METHOD(getUniformLabelFontSize, getUniformLabelFontSizeWithResolver:(N
                 ThemeLabel* themeLabel =(ThemeLabel*)layer.theme;
                 TextStyle* style = themeLabel.mUniformStyle;
                 double fontSize = [style getFontHeight];
-                NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
-                NSNumber* num = [NSNumber numberWithDouble:fontSize];;
-                [dic setValue:num forKey:@"FontSize"];
-                resolve(dic);
+                resolve([NSNumber numberWithDouble:fontSize]);
             }
         }
         else{
@@ -1051,10 +1044,7 @@ RCT_REMAP_METHOD(getUniformLabelRotaion, getUniformLabelRotaionWithResolver:(NSD
                 ThemeLabel* themeLabel =(ThemeLabel*)layer.theme;
                 TextStyle* style = themeLabel.mUniformStyle;
                 double rotation = [style getRotation];
-                NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
-                NSNumber* num = [NSNumber numberWithDouble:rotation];;
-                [dic setValue:num forKey:@"FontSize"];
-                resolve(dic);
+                resolve([NSNumber numberWithDouble:rotation]);
             }
         }
         else{
