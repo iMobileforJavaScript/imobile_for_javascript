@@ -4,6 +4,7 @@ import android.util.JsonToken;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
@@ -770,7 +771,7 @@ public class SMMapWC {
     //      5.导出符号库，workspace打开符号库
     //      5.设置workspaceConnectionInfo，保存workspace
 
-    public boolean exportMapNames(ReadableArray arrMapNames, String strFileName, boolean isFileReplace) {
+    public boolean exportMapNames(ReadableArray arrMapNames, String strFileName, boolean isFileReplace,ReadableMap extraMap) {
         Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
         if (SMap.getInstance().getSmMapWC().getWorkspace() == null || strFileName == null || strFileName.length() == 0 || arrMapNames == null || arrMapNames.size() == 0 ||
                 workspace.getConnectionInfo().getServer().equalsIgnoreCase(strFileName)) {
@@ -851,6 +852,10 @@ public class SMMapWC {
 
         ArrayList<Datasource> arrDatasources = new ArrayList<Datasource>();
 
+        ReadableMap notExportMap = null;
+        if(extraMap!=null&&extraMap.hasKey("notExport")) {
+            notExportMap = extraMap.getMap("notExport");
+        }
         for (int i = 0; i < arrMapNames.size(); i++) {
             String mapName = arrMapNames.getString(i);
             if (workspace.getMaps().indexOf(mapName) != -1) {
@@ -858,6 +863,13 @@ public class SMMapWC {
                 mapExport.open(mapName);
                 // 不重复的datasource保存
                 Layers exportLayes = mapExport.getLayers();
+                //判读是否有不需要导出的
+                if(notExportMap!=null&&notExportMap.hasKey(mapName)){
+                    ReadableArray indexArray=notExportMap.getArray(mapName);
+                    for (int index = 0; index < indexArray.size(); index++) {
+                        exportLayes.remove(indexArray.getInt(index));
+                    }
+                }
                 for (int j = 0; j < exportLayes.getCount(); j++) {
                     Datasource datasource = exportLayes.get(j).getDataset().getDatasource();
                     if (!arrDatasources.contains(datasource)) {
@@ -1069,7 +1081,7 @@ public class SMMapWC {
             if (bDirRetain) {
                 String subName = subGroup.getName();
                 int nAddNum = 1;
-                while (desLib.getRootGroup().getChildGroups().contains(subName)) {
+                while (desGroup.getChildGroups().contains(subName)) {
                     subName = subGroup.getName() + "#" + nAddNum;
                     nAddNum++;
                 }

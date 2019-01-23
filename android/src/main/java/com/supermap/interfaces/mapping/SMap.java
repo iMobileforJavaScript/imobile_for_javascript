@@ -1315,11 +1315,11 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void exportWorkspace(ReadableArray arrMapNames , String strFileName , boolean isFileReplace, Promise promise) {
+    public void exportWorkspace(ReadableArray arrMapNames , String strFileName , boolean isFileReplace, ReadableMap extraMap, Promise promise) {
         try {
 
             sMap = getInstance();
-            boolean result = sMap.smMapWC.exportMapNames(arrMapNames,strFileName,isFileReplace);
+            boolean result = sMap.smMapWC.exportMapNames(arrMapNames,strFileName,isFileReplace,extraMap);
             promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
