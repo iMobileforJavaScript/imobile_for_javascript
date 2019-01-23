@@ -1550,10 +1550,32 @@ public class SMap extends ReactContextBaseJavaModule {
                 Datasource datasource = workspace.getDatasources().get(datastourceName);
                 Dataset dataset = datasource.getDatasets().get(datasetName);
 
-                Layer newLayer = sMap.smMapWC.getMapControl().getMap().getLayers().add(dataset, true);
-                sMap.smMapWC.getMapControl().getMap().refresh();
+                com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                Layer layer = map.getLayers().add(dataset, true);
+                if (dataset.getType() == DatasetType.REGION ) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineSymbolID(5);
+                }
+                if (dataset.getType() == DatasetType.REGION || dataset.getType() == DatasetType.REGION3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setFillForeColor(getFillColor());
+                    setting.getStyle().setLineColor(getLineColor());
+                } else if (dataset.getType() == DatasetType.LINE || dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D
+                        || dataset.getType() == DatasetType.LINE3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineColor(getLineColor());
+                    if (dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D) {
+                        map.getLayers().add(((DatasetVector) dataset).getChildDataset(), true);
+                    }
+                } else if (dataset.getType() == DatasetType.POINT || dataset.getType() == DatasetType.POINT3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineColor(getLineColor());
+                }
 
-                promise.resolve(newLayer != null);
+                map.setVisibleScalesEnabled(false);
+                map.refresh();
+
+                promise.resolve(layer != null);
             } else {
                 promise.resolve(false);
             }
@@ -1796,8 +1818,28 @@ public class SMap extends ReactContextBaseJavaModule {
                 String datasetName = datasetNames.getString(i);
                 Dataset dataset = datasource.getDatasets().get(datasetName);
 
-                layers.add(dataset, true);
+                Layer layer = layers.add(dataset, true);
+                if (dataset.getType() == DatasetType.REGION ) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineSymbolID(5);
+                }
+                if (dataset.getType() == DatasetType.REGION || dataset.getType() == DatasetType.REGION3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setFillForeColor(getFillColor());
+                    setting.getStyle().setLineColor(getLineColor());
+                } else if (dataset.getType() == DatasetType.LINE || dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D
+                        || dataset.getType() == DatasetType.LINE3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineColor(getLineColor());
+                    if (dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D) {
+                        map.getLayers().add(((DatasetVector) dataset).getChildDataset(), true);
+                    }
+                } else if (dataset.getType() == DatasetType.POINT || dataset.getType() == DatasetType.POINT3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineColor(getLineColor());
+                }
             }
+            map.setVisibleScalesEnabled(false);
             map.refresh();
 
             promise.resolve(true);
