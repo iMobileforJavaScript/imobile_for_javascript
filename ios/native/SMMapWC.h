@@ -37,4 +37,5 @@
 - (NSString *)saveMapName:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(NSString*)strModule withAddition:(NSDictionary*)dicAddition isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified;
 - (NSArray *)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString *)nModule;
 - (BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(NSString *)nModule isPrivate:(BOOL)bPrivate;
+- (BOOL)appendFromFile:(Resources *)resources path:(NSString *)path isReplace:(BOOL)isReplace;
 @end

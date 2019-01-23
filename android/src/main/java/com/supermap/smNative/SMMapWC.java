@@ -4,6 +4,7 @@ import android.util.JsonToken;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
@@ -18,6 +19,7 @@ import com.supermap.data.Enum;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
 import com.supermap.data.Recordset;
+import com.supermap.data.Resources;
 import com.supermap.data.Symbol;
 import com.supermap.data.SymbolFill;
 import com.supermap.data.SymbolFillLibrary;
@@ -769,7 +771,7 @@ public class SMMapWC {
     //      5.导出符号库，workspace打开符号库
     //      5.设置workspaceConnectionInfo，保存workspace
 
-    public boolean exportMapNames(ReadableArray arrMapNames, String strFileName, boolean isFileReplace) {
+    public boolean exportMapNames(ReadableArray arrMapNames, String strFileName, boolean isFileReplace,ReadableMap extraMap) {
         Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
         if (SMap.getInstance().getSmMapWC().getWorkspace() == null || strFileName == null || strFileName.length() == 0 || arrMapNames == null || arrMapNames.size() == 0 ||
                 workspace.getConnectionInfo().getServer().equalsIgnoreCase(strFileName)) {
@@ -850,6 +852,10 @@ public class SMMapWC {
 
         ArrayList<Datasource> arrDatasources = new ArrayList<Datasource>();
 
+        ReadableMap notExportMap = null;
+        if(extraMap!=null&&extraMap.hasKey("notExport")) {
+            notExportMap = extraMap.getMap("notExport");
+        }
         for (int i = 0; i < arrMapNames.size(); i++) {
             String mapName = arrMapNames.getString(i);
             if (workspace.getMaps().indexOf(mapName) != -1) {
@@ -861,6 +867,13 @@ public class SMMapWC {
                     Datasource datasource = exportLayes.get(j).getDataset().getDatasource();
                     if (!arrDatasources.contains(datasource)) {
                         arrDatasources.add(datasource);
+                    }
+                }
+                //判读是否有不需要导出的图层
+                if(notExportMap!=null&&notExportMap.hasKey(mapName)){
+                    ReadableArray indexArray=notExportMap.getArray(mapName);
+                    for (int index = 0; index < indexArray.size(); index++) {
+                        exportLayes.remove(indexArray.getInt(index));
                     }
                 }
                 String strMapXML = mapExport.toXML();
@@ -1068,7 +1081,8 @@ public class SMMapWC {
             if (bDirRetain) {
                 String subName = subGroup.getName();
                 int nAddNum = 1;
-                while (desLib.getRootGroup().getChildGroups().contains(subName)) {
+//                while (desLib.getRootGroup().getChildGroups().contains(subName)) {
+                while (desGroup.getChildGroups().contains(subName)) {
                     subName = subGroup.getName() + "#" + nAddNum;
                     nAddNum++;
                 }
@@ -1100,13 +1114,17 @@ public class SMMapWC {
 
     private String getUserName() {
         String strServer = SMap.getInstance().getSmMapWC().getWorkspace().getConnectionInfo().getServer();
-        String[] arrServer = strServer.split("/");
-        int nCount = arrServer.length;
-        if (nCount >= 3) {
-            return arrServer[nCount - 3];
-        } else {
-            return null;
-        }
+//        String[] arrServer = strServer.split("/");
+//        int nCount = arrServer.length;
+//        if (nCount >= 3) {
+//            return arrServer[nCount - 3];
+//        } else {
+//            return null;
+//        }
+        String strRoot = getRootPath();
+        String strSub = strServer.substring(strRoot.length()+1);
+        String[] arrServer = strSub.split("/");
+        return arrServer[0];
     }
 
     private String getModuleDirectory(int nModule) {
@@ -2161,6 +2179,36 @@ public class SMMapWC {
         //        catch (Exception e){
         //            return false;
         //        }
+    }
+
+    public boolean appendFromFile(Resources resources, String path, boolean isReplace) {
+        try {
+            File file = new File(path);
+            if (!file.exists() || !file.isFile()) {
+                return false;
+            }
+            SymbolLibrary lib = null;
+            SymbolLibrary resLib = null;
+            String type = path.substring(path.lastIndexOf(".") + 1).toLowerCase();
+            if (type.equals("bru")) {
+                lib = new SymbolFillLibrary();
+                resLib = resources.getFillLibrary();
+            } else if (type.equals("lsl")) {
+                lib = new SymbolLineLibrary();
+                resLib = resources.getLineLibrary();
+            } else if (type.equals("sym")) {
+                lib = new SymbolMarkerLibrary();
+                resLib = resources.getMarkerLibrary();
+            }
+            if (lib == null) return false;
+            boolean result = lib.appendFromFile(path, isReplace);
+            if (result) {
+                importSymbolsFrom(lib.getRootGroup(), resLib.getRootGroup(), true, isReplace);
+            }
+            return result;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }

@@ -55,7 +55,7 @@ import java.util.TimerTask;
 public class SScene extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SScene";
     private static SScene sScene;
-    private static Camera camera;
+    private static Camera defaultCamera;
     private static ReactApplicationContext context;
     private static MeasureListener mMeasureListener;
     private SMSceneWC smSceneWc;
@@ -1356,7 +1356,7 @@ public class SScene extends ReactContextBaseJavaModule {
             SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
             boolean result=sScene.smSceneWc.openScenceName(name,sceneControl);
             if(result){
-                camera=sceneControl.getScene().getCamera();
+                defaultCamera=sceneControl.getScene().getCamera();
             }
             promise.resolve(result);
         } catch (Exception e) {
@@ -1430,8 +1430,8 @@ public class SScene extends ReactContextBaseJavaModule {
     public void resetCamera( Promise promise) {
         try {
             sScene = getInstance();
-            if(camera!=null){
-                sScene.smSceneWc.getSceneControl().getScene().setCamera(camera);
+            if(defaultCamera!=null){
+                sScene.smSceneWc.getSceneControl().getScene().setCamera(defaultCamera);
                 promise.resolve(true);
             }else {
                 promise.resolve(false);
@@ -1498,7 +1498,7 @@ public class SScene extends ReactContextBaseJavaModule {
                 if (workspace != null) {
                     workspace.close();
                 }
-                camera=null;
+                defaultCamera=null;
                 sScene.smSceneWc.setWorkspace(null);
                 promise.resolve(true);
             } catch (Exception e) {
