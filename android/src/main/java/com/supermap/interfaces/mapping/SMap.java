@@ -1814,9 +1814,31 @@ public class SMap extends ReactContextBaseJavaModule {
             Datasource datasource = workspace.getDatasources().get(datastourceName);
             com.supermap.mapping.Map map =  sMap.smMapWC.getMapControl().getMap();
             Layers layers = map.getLayers();
+
+            ArrayList<Dataset> datasets_point = new ArrayList<>();
+            ArrayList<Dataset> datasets_line = new ArrayList<>();
+            ArrayList<Dataset> datasets_region = new ArrayList<>();
             for (int i = 0; i < datasetNames.size(); i++) {
                 String datasetName = datasetNames.getString(i);
                 Dataset dataset = datasource.getDatasets().get(datasetName);
+
+                if (dataset.getType() == DatasetType.REGION || dataset.getType() == DatasetType.REGION3D) {
+                    datasets_region.add(dataset);
+                } else if (dataset.getType() == DatasetType.LINE || dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D
+                        || dataset.getType() == DatasetType.LINE3D) {
+                    datasets_line.add(dataset);
+                } else if (dataset.getType() == DatasetType.POINT || dataset.getType() == DatasetType.POINT3D) {
+                    datasets_point.add(dataset);
+                }
+            }
+
+            ArrayList<Dataset> datasets = new ArrayList<>();
+            datasets.addAll(datasets_region);
+            datasets.addAll(datasets_line);
+            datasets.addAll(datasets_point);
+
+            for (int i = 0; i < datasets.size(); i++) {
+                Dataset dataset = datasets.get(i);
 
                 Layer layer = layers.add(dataset, true);
                 if (dataset.getType() == DatasetType.REGION ) {
