@@ -334,4 +334,23 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+
+    /**
+     * 修改图层名
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void renameLayer(String layerName,String relayerName,Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(layerName);
+            layer.setCaption(relayerName);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 }

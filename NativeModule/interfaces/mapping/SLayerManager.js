@@ -173,6 +173,21 @@ function removeLayer(value = -1) {
   }
 }
 
+/**
+ * 移除指定图层
+ * @param params
+ * @param value    图层 index
+ * @returns {*}
+ */
+function renameLayer(layerName,relayerName) {
+  try {
+     return LayerManager.renameLayer(layerName,relayerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+
 export {
   getLayersByType,
   getLayersByGroupPath,
@@ -185,4 +200,5 @@ export {
   setLayerFieldInfo,
   removeAllLayer,
   removeLayer,
+  renameLayer,
 }
