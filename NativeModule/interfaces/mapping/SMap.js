@@ -561,11 +561,12 @@ export default (function () {
    * @param arrMapnames  地图名字
    * @param strFileName  导出完整路径（包含工作空间后缀名）
    * @param fileReplace  同名替换文件
+   * @param extra        额外信息
    * @returns {*}
    */
-  function exportWorkspace(arrMapnames = [], strFileName = '', fileReplace = false){
+  function exportWorkspace(arrMapnames = [], strFileName = '', fileReplace = false, extra = {}){
     try {
-      return SMap.exportWorkspace(arrMapnames, strFileName, fileReplace)
+      return SMap.exportWorkspace(arrMapnames, strFileName, fileReplace, extra)
     } catch (e) {
       console.error(e)
     }
