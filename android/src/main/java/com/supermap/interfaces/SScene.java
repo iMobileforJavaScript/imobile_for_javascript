@@ -507,7 +507,7 @@ public class SScene extends ReactContextBaseJavaModule {
 
             }
             else {
-               scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
+               scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead, "c768f9fd3e388eb0d155405f8d8c6999");
             }
             scene.refresh();
             promise.resolve(true);

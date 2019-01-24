@@ -811,7 +811,7 @@
 //      5.导出符号库，workspace打开符号库
 //      5.设置workspaceConnectionInfo，保存workspace
 
--(BOOL)exportMapNamed:(NSArray*)arrMapNames toFile:(NSString*)fileName isReplaceFile:(BOOL)bFileRep extra:(NSMutableDictionary*)extraDic{
+-(BOOL)exportMapNamed:(NSArray*)arrMapNames toFile:(NSString*)fileName isReplaceFile:(BOOL)bFileRep extra:(NSDictionary*)extraDic{
     if (SMap.singletonInstance.smMapWC.workspace==nil || fileName==nil||fileName.length==0||arrMapNames==nil||[arrMapNames count]==0||[SMap.singletonInstance.smMapWC.workspace.connectionInfo.server isEqualToString:fileName]) {
         return false;
     }
