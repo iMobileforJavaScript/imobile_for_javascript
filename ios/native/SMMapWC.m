@@ -811,7 +811,7 @@
 //      5.导出符号库，workspace打开符号库
 //      5.设置workspaceConnectionInfo，保存workspace
 
--(BOOL)exportMapNamed:(NSArray*)arrMapNames toFile:(NSString*)fileName isReplaceFile:(BOOL)bFileRep{
+-(BOOL)exportMapNamed:(NSArray*)arrMapNames toFile:(NSString*)fileName isReplaceFile:(BOOL)bFileRep extra:(NSMutableDictionary*)extraDic{
     if (SMap.singletonInstance.smMapWC.workspace==nil || fileName==nil||fileName.length==0||arrMapNames==nil||[arrMapNames count]==0||[SMap.singletonInstance.smMapWC.workspace.connectionInfo.server isEqualToString:fileName]) {
         return false;
     }
@@ -885,7 +885,10 @@
     NSMutableArray *arrDatasources = [[NSMutableArray alloc]init];
     
     Map *mapExport = [[Map alloc]initWithWorkspace:SMap.singletonInstance.smMapWC.workspace];
-    
+    NSMutableDictionary *notExportMap=NULL;
+    if(extraDic&&[extraDic objectForKey:@"notExport"]){
+        notExportMap=[extraDic objectForKey:@"notExport"];
+    }
     for (int k=0; k<arrMapNames.count; k++) {
         NSString *mapName = [arrMapNames objectAtIndex:k];
         if ([SMap.singletonInstance.smMapWC.workspace.maps indexOf:mapName]!=-1) {
@@ -912,6 +915,14 @@
                 }
             }
             
+            //判断是否有不需要导出的图层
+            if(notExportMap&&[notExportMap objectForKey:mapName]){
+                NSMutableArray *indexArray=[notExportMap objectForKey:mapName];
+                for (int index=0; index<indexArray.count; index++) {
+                    NSNumber *indexLayer=[indexArray objectAtIndex:index];
+                    [mapExport.layers removeAt:[indexLayer intValue]];
+                }
+            }
             NSString* strMapXML = [mapExport toXML];
             [workspaceDes.maps add:mapName withXML:strMapXML];
             [mapExport close];
