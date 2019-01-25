@@ -696,7 +696,7 @@ RCT_REMAP_METHOD(addLayer3D,  Url:(NSString*) Url Layer3DType:(NSString*) layer3
             layer3d = [scene.layers addLayerWithURL:Url type:nlayer3DType dataLayerName:layerName toHead:addToHead];
            // scene.getLayers().add(Url, layer3DType, layerName, addToHead);
         } else {
-           layer3d = [scene.layers  addLayerWithTiandituURL:Url type:nlayer3DType dataLayerName:layerName imageFormatType:imageFormatType1 dpi:dpi toHead:dpi];
+            layer3d = [scene.layers  addLayerWithTiandituURL:Url type:nlayer3DType dataLayerName:layerName imageFormatType:imageFormatType1 dpi:dpi toHead:dpi token:@"c768f9fd3e388eb0d155405f8d8c6999"];
            // scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
         }
         
