@@ -820,33 +820,38 @@ public class SMap extends ReactContextBaseJavaModule {
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             boolean mapSaved = false;
             boolean wsSaved = false;
-            if (name == null || name.equals("")) {
+            String _name = name;
+            if (_name == null || _name.equals("")) {
                 if (map.getName() != null && !map.getName().equals("")) {
                     mapSaved = map.save();
                 } else if (map.getLayers().getCount() > 0) {
-                    name = map.getLayers().get(0).getName();
+                    _name = map.getLayers().get(0).getName();
                     int i = 0;
                     if (autoNaming) {
                         while (!mapSaved) {
-                            String newName = i == 0 ? name : (name + i);
+                            _name = i == 0 ? name : (name + i);
                             try {
-                                mapSaved = map.save(newName);
+                                mapSaved = map.save(_name);
                             } catch (Exception e) {
                                 mapSaved = false;
                             }
                             i++;
                         }
                     } else {
-                        mapSaved = map.save(name);
+                        mapSaved = map.save(_name);
                     }
                 }
             } else {
-                mapSaved = map.save(name);
+                mapSaved = map.save(_name);
             }
             wsSaved = sMap.smMapWC.getWorkspace().save();
 //            wsSaved = true;
 
-            promise.resolve(mapSaved && wsSaved);
+            if (mapSaved && wsSaved) {
+                promise.resolve(_name);
+            } else {
+                promise.resolve(mapSaved && wsSaved);
+            }
         } catch (Exception e) {
             promise.reject(e);
         }
