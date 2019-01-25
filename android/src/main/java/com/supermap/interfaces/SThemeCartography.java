@@ -1718,6 +1718,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 writeMap.putString("datasourceName", dataset.getDatasource().getAlias());
                 writeMap.putString("datasetName", dataset.getName());
                 writeMap.putString("fieldType", fieldType);
+                writeMap.putBoolean("isSystemField", fieldInfo.isSystemField());//是否系统字段
                 arr.pushMap(writeMap);
             }
 
@@ -1801,8 +1802,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 String name = fieldInfo.getName();
                 String fieldType = SMThemeCartography.getFieldType(fieldInfo);//字段类型
                 WritableMap writeMap = Arguments.createMap();
-                writeMap.putString("title", name);
+                writeMap.putString("expression", name);
                 writeMap.putString("fieldType", fieldType);
+                writeMap.putBoolean("isSystemField", fieldInfo.isSystemField());//是否系统字段
                 arr.pushMap(writeMap);
             }
 
