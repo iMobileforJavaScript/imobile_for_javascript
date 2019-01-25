@@ -226,6 +226,7 @@ RCT_REMAP_METHOD(removeAllLayer, removeAllLayerWithResolver:(RCTPromiseResolveBl
     @try {
         SMap* sMap = [SMap singletonInstance];
         [sMap.smMapWC.mapControl.map.layers clear];
+        [sMap.smMapWC.mapControl.map refresh];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"workspace", exception.reason, nil);

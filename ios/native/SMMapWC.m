@@ -811,7 +811,7 @@
 //      5.导出符号库，workspace打开符号库
 //      5.设置workspaceConnectionInfo，保存workspace
 
--(BOOL)exportMapNamed:(NSArray*)arrMapNames toFile:(NSString*)fileName isReplaceFile:(BOOL)bFileRep{
+-(BOOL)exportMapNamed:(NSArray*)arrMapNames toFile:(NSString*)fileName isReplaceFile:(BOOL)bFileRep extra:(NSDictionary*)extraDic{
     if (SMap.singletonInstance.smMapWC.workspace==nil || fileName==nil||fileName.length==0||arrMapNames==nil||[arrMapNames count]==0||[SMap.singletonInstance.smMapWC.workspace.connectionInfo.server isEqualToString:fileName]) {
         return false;
     }
@@ -885,7 +885,10 @@
     NSMutableArray *arrDatasources = [[NSMutableArray alloc]init];
     
     Map *mapExport = [[Map alloc]initWithWorkspace:SMap.singletonInstance.smMapWC.workspace];
-    
+    NSMutableDictionary *notExportMap=NULL;
+    if(extraDic&&[extraDic objectForKey:@"notExport"]){
+        notExportMap=[extraDic objectForKey:@"notExport"];
+    }
     for (int k=0; k<arrMapNames.count; k++) {
         NSString *mapName = [arrMapNames objectAtIndex:k];
         if ([SMap.singletonInstance.smMapWC.workspace.maps indexOf:mapName]!=-1) {
@@ -912,6 +915,14 @@
                 }
             }
             
+            //判断是否有不需要导出的图层
+            if(notExportMap&&[notExportMap objectForKey:mapName]){
+                NSMutableArray *indexArray=[notExportMap objectForKey:mapName];
+                for (int index=0; index<indexArray.count; index++) {
+                    NSNumber *indexLayer=[indexArray objectAtIndex:index];
+                    [mapExport.layers removeAt:[indexLayer intValue]];
+                }
+            }
             NSString* strMapXML = [mapExport toXML];
             [workspaceDes.maps add:mapName withXML:strMapXML];
             [mapExport close];
@@ -1010,7 +1021,7 @@
     }
     
     // symbol lib
-    NSString*serverResourceBase = [fileName substringToIndex:fileName.length-strWorkspaceSuffix.length];
+    NSString*serverResourceBase = [fileName substringToIndex:fileName.length-strWorkspaceSuffix.length-1];
     NSString*strMarkerPath = [serverResourceBase stringByAppendingString:@".sym"];
     NSString*strLinePath = [serverResourceBase stringByAppendingString:@".lsl"];
     NSString*strFillPath = [serverResourceBase stringByAppendingString:@".bru"];
@@ -1102,13 +1113,17 @@
 -(NSString *)getUserName{
     NSString *strServer = SMap.singletonInstance.smMapWC.workspace.connectionInfo.server;
     //NSString *strRootFolder = [strServer substringToIndex: strServer.length - [[strServer componentsSeparatedByString:@"/"]lastObject].length-1];
-    NSArray *arrServer = [strServer componentsSeparatedByString:@"/"];
+    /*NSArray *arrServer = [strServer componentsSeparatedByString:@"/"];
     int nCount = arrServer.count;
     if (nCount>=3) {
         return arrServer[arrServer.count-3];
     }else{
         return nil;
-    }
+    }*/
+    NSString *strRoot = [self getRootPath];
+    NSString *strSub = [strServer substringFromIndex:strRoot.length+1];
+    NSArray * arrStr = [strSub componentsSeparatedByString:@"/"];
+    return arrStr[0];
 }
 -(NSString *)getRootPath{
      return [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User"];
@@ -1948,6 +1963,41 @@
         }
         
         return strResult;
+    }
+}
+
+- (BOOL)appendFromFile:(Resources *)resources path:(NSString *)path isReplace:(BOOL)isReplace {
+    @try {
+        BOOL isDir = NO;
+        BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
+        if (!isExist || isDir) {
+            return NO;
+        }
+        
+        SymbolLibrary* lib = nil;
+        SymbolLibrary* resLib = nil;
+        NSString* type = [[path pathExtension] lowercaseString];
+        if ([type isEqualToString:@"bru"]) {
+            lib = [[SymbolFillLibrary alloc] init];
+            resLib = resources.fillLibrary;
+        } else if ([type isEqualToString:@"lsl"]) {
+            lib = [[SymbolLineLibrary alloc] init];
+            resLib = resources.lineLibrary;
+        } else if ([type isEqualToString:@"sym"]) {
+            lib = [[SymbolMarkerLibrary alloc] init];
+            resLib = resources.markerLibrary;
+        }
+        
+        if (lib == nil) return NO;
+        BOOL result = [lib appendFromFile:path isReplace:isReplace];
+        
+        if (result) {
+            [self importSymbolsFrom:lib.rootGroup toGroup:resLib.rootGroup isDirRetain:YES isSymbolReplace:isReplace];
+        }
+        
+        return result;
+    } @catch (NSException *exception) {
+        return NO;
     }
 }
 

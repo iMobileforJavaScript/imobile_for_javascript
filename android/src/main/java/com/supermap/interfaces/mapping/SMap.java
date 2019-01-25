@@ -42,6 +42,9 @@ import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
+
+import org.apache.http.cookie.SM;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -1312,11 +1315,11 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void exportWorkspace(ReadableArray arrMapNames , String strFileName , boolean isFileReplace, Promise promise) {
+    public void exportWorkspace(ReadableArray arrMapNames , String strFileName , boolean isFileReplace, ReadableMap extraMap, Promise promise) {
         try {
 
             sMap = getInstance();
-            boolean result = sMap.smMapWC.exportMapNames(arrMapNames,strFileName,isFileReplace);
+            boolean result = sMap.smMapWC.exportMapNames(arrMapNames,strFileName,isFileReplace,extraMap);
             promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
@@ -1547,10 +1550,32 @@ public class SMap extends ReactContextBaseJavaModule {
                 Datasource datasource = workspace.getDatasources().get(datastourceName);
                 Dataset dataset = datasource.getDatasets().get(datasetName);
 
-                Layer newLayer = sMap.smMapWC.getMapControl().getMap().getLayers().add(dataset, true);
-                sMap.smMapWC.getMapControl().getMap().refresh();
+                com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                Layer layer = map.getLayers().add(dataset, true);
+                if (dataset.getType() == DatasetType.REGION ) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineSymbolID(5);
+                }
+                if (dataset.getType() == DatasetType.REGION || dataset.getType() == DatasetType.REGION3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setFillForeColor(getFillColor());
+                    setting.getStyle().setLineColor(getLineColor());
+                } else if (dataset.getType() == DatasetType.LINE || dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D
+                        || dataset.getType() == DatasetType.LINE3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineColor(getLineColor());
+                    if (dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D) {
+                        map.getLayers().add(((DatasetVector) dataset).getChildDataset(), true);
+                    }
+                } else if (dataset.getType() == DatasetType.POINT || dataset.getType() == DatasetType.POINT3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineColor(getLineColor());
+                }
 
-                promise.resolve(newLayer != null);
+                map.setVisibleScalesEnabled(false);
+                map.refresh();
+
+                promise.resolve(layer != null);
             } else {
                 promise.resolve(false);
             }
@@ -1568,7 +1593,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void saveMapName(String name, String nModule, ReadableMap addition, boolean isNew, Promise promise) {
+    public void saveMapName(String name, String nModule, ReadableMap addition, boolean isNew,  boolean bResourcesModified, Promise promise) {
         try {
             sMap = SMap.getInstance();
             boolean mapSaved = false;
@@ -1609,7 +1634,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 }
             }
 
-            boolean bResourcesModified = sMap.smMapWC.getWorkspace().getMaps().getCount() > 1;
+//            boolean bResourcesModified = sMap.smMapWC.getWorkspace().getMaps().getCount() > 1;
             String mapName = "";
 
             Map<String, String> additionInfo = new HashMap<>();
@@ -1789,15 +1814,77 @@ public class SMap extends ReactContextBaseJavaModule {
             Datasource datasource = workspace.getDatasources().get(datastourceName);
             com.supermap.mapping.Map map =  sMap.smMapWC.getMapControl().getMap();
             Layers layers = map.getLayers();
+
+            ArrayList<Dataset> datasets_point = new ArrayList<>();
+            ArrayList<Dataset> datasets_line = new ArrayList<>();
+            ArrayList<Dataset> datasets_region = new ArrayList<>();
             for (int i = 0; i < datasetNames.size(); i++) {
                 String datasetName = datasetNames.getString(i);
                 Dataset dataset = datasource.getDatasets().get(datasetName);
 
-                layers.add(dataset, true);
+                if (dataset.getType() == DatasetType.REGION || dataset.getType() == DatasetType.REGION3D) {
+                    datasets_region.add(dataset);
+                } else if (dataset.getType() == DatasetType.LINE || dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D
+                        || dataset.getType() == DatasetType.LINE3D) {
+                    datasets_line.add(dataset);
+                } else if (dataset.getType() == DatasetType.POINT || dataset.getType() == DatasetType.POINT3D) {
+                    datasets_point.add(dataset);
+                }
             }
+
+            ArrayList<Dataset> datasets = new ArrayList<>();
+            datasets.addAll(datasets_region);
+            datasets.addAll(datasets_line);
+            datasets.addAll(datasets_point);
+
+            for (int i = 0; i < datasets.size(); i++) {
+                Dataset dataset = datasets.get(i);
+
+                Layer layer = layers.add(dataset, true);
+                if (dataset.getType() == DatasetType.REGION ) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineSymbolID(5);
+                }
+                if (dataset.getType() == DatasetType.REGION || dataset.getType() == DatasetType.REGION3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setFillForeColor(getFillColor());
+                    setting.getStyle().setLineColor(getLineColor());
+                } else if (dataset.getType() == DatasetType.LINE || dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D
+                        || dataset.getType() == DatasetType.LINE3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineColor(getLineColor());
+                    if (dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D) {
+                        map.getLayers().add(((DatasetVector) dataset).getChildDataset(), true);
+                    }
+                } else if (dataset.getType() == DatasetType.POINT || dataset.getType() == DatasetType.POINT3D) {
+                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                    setting.getStyle().setLineColor(getLineColor());
+                }
+            }
+            map.setVisibleScalesEnabled(false);
             map.refresh();
 
             promise.resolve(true);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 导入符号库
+     * @param path
+     * @param isReplace 是否替换
+     * @param promise
+     */
+    @ReactMethod
+    public void importSymbolLibrary(String path, boolean isReplace, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            boolean result = sMap.smMapWC.appendFromFile(SMap.getInstance().smMapWC.getWorkspace().getResources(), path, isReplace);
+
+            promise.resolve(result);
         } catch (Exception e) {
             Log.e(REACT_CLASS, e.getMessage());
             e.printStackTrace();

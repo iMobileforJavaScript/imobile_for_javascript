@@ -4,10 +4,11 @@
  E-mail: yangshanglong@supermap.com
  Description: 地图工具类
  **********************************************************************************/
-import { NativeModules, Platform } from 'react-native'
+import { NativeModules, Platform, NativeEventEmitter, DeviceEventEmitter } from 'react-native'
 import { EventConst } from '../../constains/index'
 let SMap = NativeModules.SMap
-const Action = NativeModules.Action
+const Action = NativeModules.JSAction
+const nativeEvt = new NativeEventEmitter(SMap);
 
 /** 选择 **/
 function select() {
@@ -198,17 +199,17 @@ function measureArea(callBack = () => {}) {
   try {
     SMap.setAction(Action.MEASUREAREA)
     addMeasureListener({
-      lengthMeasured: callBack,
+      areaMeasured: callBack,
     })
   } catch (e) {
     console.error(e)
   }
 }
 
-/**  面积量算  **/
+/**  角度量算  **/
 function measureAngle(callBack = () => {}) {
   try {
-    SMap.setAction(Action.MEASUREAREA)
+    SMap.setAction(Action.MEASUREANGLE)
     addMeasureListener({
       angleMeasured: callBack,
     })
@@ -220,7 +221,7 @@ function measureAngle(callBack = () => {}) {
 /**  量算监听  **/
 function addMeasureListener(events) {
   try {
-    SMap.addMeasureListener(Action.MEASUREAREA).then(result => {
+    SMap.addMeasureListener().then(result => {
       if (!result) return
       let emitter = Platform.OS === 'ios' ? nativeEvt : DeviceEventEmitter
       if (typeof events.lengthMeasured === 'function') {
@@ -245,16 +246,16 @@ function addMeasureListener(events) {
 }
 
 /**  停止量算监听  **/
-function removeMeasureListener(events) {
+function removeMeasureListener() {
   try {
-    SMap.addMeasureListener(Action.MEASUREAREA)
+    SMap.removeMeasureListener()
   } catch (e) {
     console.error(e)
   }
 }
 
 /**  无操作  **/
-function pan(isResetAction = true) {
+function pan() {
   try {
     SMap.setAction(Action.PAN)
   } catch (e) {

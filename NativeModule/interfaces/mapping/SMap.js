@@ -561,11 +561,12 @@ export default (function () {
    * @param arrMapnames  地图名字
    * @param strFileName  导出完整路径（包含工作空间后缀名）
    * @param fileReplace  同名替换文件
+   * @param extra        额外信息
    * @returns {*}
    */
-  function exportWorkspace(arrMapnames = [], strFileName = '', fileReplace = false){
+  function exportWorkspace(arrMapnames = [], strFileName = '', fileReplace = false, extra = {}){
     try {
-      return SMap.exportWorkspace(arrMapnames, strFileName, fileReplace)
+      return SMap.exportWorkspace(arrMapnames, strFileName, fileReplace, extra)
     } catch (e) {
       console.error(e)
     }
@@ -602,11 +603,13 @@ export default (function () {
    * @param withAddition
    * @param isNew  若为false，则自动判断名字是否存在，若存在，保存并导出覆盖原来的xml；若不存在，则创建新的xml。
    *               若为true，创建新的xml地图文件
+   * @param bResourcesModified  若为false，则导出所有的Resources；
+   *                            若为true，则导出是用的Resources
    * @returns {*}
    */
-  function saveMapName(strMapAlians = '', nModule = '', withAddition = {}, isNew = false) {
+  function saveMapName(strMapAlians = '', nModule = '', withAddition = {}, isNew = false, bResourcesModified = false) {
     try {
-      return SMap.saveMapName(strMapAlians, nModule, withAddition, isNew)
+      return SMap.saveMapName(strMapAlians, nModule, withAddition, isNew, bResourcesModified)
     } catch (e) {
       console.error(e)
       return e
@@ -717,6 +720,20 @@ export default (function () {
     }
   }
   
+  /**
+   * 导入符号库
+   * @param path
+   * @param isReplace 是否替换
+   * @returns {*}
+   */
+  function importSymbolLibrary(path, isReplace = true) {
+    try {
+      return SMap.importSymbolLibrary(path, isReplace)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   /**获取是否压盖 */
   function isOverlapDisplayed() {
     try {
@@ -781,6 +798,7 @@ export default (function () {
     isVisibleScalesEnabled,
     isAnyMapOpened,
     addLayers,
+    importSymbolLibrary,
     isOverlapDisplayed,
     setOverlapDisplayed,
   }
