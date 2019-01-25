@@ -1500,6 +1500,47 @@ RCT_REMAP_METHOD( closeAnalysis,  closeAnalysisResolver:(RCTPromiseResolveBlock)
     }
 }
 
+RCT_REMAP_METHOD(setNavigationControlVisible,  setNavigationControlVisible:(BOOL)bVisable resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        [sceneControl setNavigationControlVisible:bVisable];
+        
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
 
+RCT_REMAP_METHOD(setAction,  setAction:(NSString*)strAction resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        
+        if ([strAction isEqualToString:@"CREATELINE3D"]) {
+            [sceneControl setAction3D:CREATELINE3D];
+        }else if([strAction isEqualToString:@"CREATEPOINT3D"]){
+            [sceneControl setAction3D:CREATEPOINT3D];
+        }else if([strAction isEqualToString:@"CREATEPOLYGON3D"]){
+            [sceneControl setAction3D:CREATEPOLYGON3D];
+        }else if([strAction isEqualToString:@"CREATEPOLYLINE3D"]){
+            [sceneControl setAction3D:CREATEPOLYLINE3D];
+        }else if([strAction isEqualToString:@"MEASUREAREA3D"]){
+            [sceneControl setAction3D:MEASUREAREA3D];
+        }else if([strAction isEqualToString:@"MEASUREDISTANCE3D"]){
+            [sceneControl setAction3D:MEASUREDISTANCE3D];
+        }else if([strAction isEqualToString:@"NULL"]){
+            [sceneControl setAction3D:NONEACTION3D];
+        }else if([strAction isEqualToString:@"PAN3D"]){
+            [sceneControl setAction3D:PAN3D];
+        }else if([strAction isEqualToString:@"PANSELECT3D"]){
+            [sceneControl setAction3D:PANSELECT3D];
+        }
+        
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
 
 @end
