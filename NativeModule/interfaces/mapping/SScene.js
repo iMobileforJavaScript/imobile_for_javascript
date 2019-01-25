@@ -360,10 +360,10 @@ export default (function () {
         }
     }
 
-    function addLayer3D(Url, Layer3DType, layerName, imageFormatType, dpi, addToHead) {
+    function addLayer3D(Url, Layer3DType, layerName, imageFormatType, dpi, addToHead,token) {
         try {
             // console.log(SScene.addLayer3D)
-            return SScene.addLayer3D( Url, Layer3DType, layerName, imageFormatType, dpi, addToHead)
+            return SScene.addLayer3D( Url, Layer3DType, layerName, imageFormatType, dpi, addToHead,token)
         } catch (error) {
             console.log(error)
         }
@@ -630,6 +630,14 @@ export default (function () {
             console.error(error);
         }
     }
+    
+    function setNavigationControlVisible(value){
+        try {
+            return SScene.setNavigationControlVisible(value)
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     getWorkspaceType = (type) => {
         var value
@@ -724,6 +732,7 @@ export default (function () {
         setCustomerDirectory,
         export3DScenceName,
         resetCamera,
+        setNavigationControlVisible,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
