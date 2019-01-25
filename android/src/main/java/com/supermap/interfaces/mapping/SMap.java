@@ -1818,6 +1818,8 @@ public class SMap extends ReactContextBaseJavaModule {
             ArrayList<Dataset> datasets_point = new ArrayList<>();
             ArrayList<Dataset> datasets_line = new ArrayList<>();
             ArrayList<Dataset> datasets_region = new ArrayList<>();
+            ArrayList<Dataset> datasets_text = new ArrayList<>();
+            ArrayList<Dataset> datasets_else = new ArrayList<>();
             for (int i = 0; i < datasetNames.size(); i++) {
                 String datasetName = datasetNames.getString(i);
                 Dataset dataset = datasource.getDatasets().get(datasetName);
@@ -1829,13 +1831,19 @@ public class SMap extends ReactContextBaseJavaModule {
                     datasets_line.add(dataset);
                 } else if (dataset.getType() == DatasetType.POINT || dataset.getType() == DatasetType.POINT3D) {
                     datasets_point.add(dataset);
+                } else if (dataset.getType() == DatasetType.TEXT) {
+                    datasets_text.add(dataset);
+                } else {
+                    datasets_else.add(dataset);
                 }
             }
 
             ArrayList<Dataset> datasets = new ArrayList<>();
+            datasets.addAll(datasets_else);
             datasets.addAll(datasets_region);
             datasets.addAll(datasets_line);
             datasets.addAll(datasets_point);
+            datasets.addAll(datasets_text);
 
             for (int i = 0; i < datasets.size(); i++) {
                 Dataset dataset = datasets.get(i);
