@@ -8,10 +8,14 @@ import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.DataUtil;
 import com.supermap.data.Resources;
 import com.supermap.data.Symbol;
+import com.supermap.data.SymbolFillLibrary;
 import com.supermap.data.SymbolGroup;
 import com.supermap.data.SymbolGroups;
 import com.supermap.data.SymbolLibrary;
+import com.supermap.data.SymbolLineLibrary;
+import com.supermap.data.SymbolMarkerLibrary;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -37,14 +37,14 @@ public class SMSymbolTable extends SimpleViewManager<SymbolLibView> {
     protected SymbolLibView createViewInstance(ThemedReactContext reactContext) {
         m_ThemedReactContext = reactContext;
         symbolLibView = new SymbolLibView(reactContext);
-        symbolLibView.setRowOrCol(5);
+//        symbolLibView.setRowOrCol(5);
         symbolLibView.setScrollDirection(SymbolLibView.Orientation.VERTICAL);
         int width = reactContext.getCurrentActivity().getWindowManager().getDefaultDisplay().getWidth();
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, 600);
         symbolLibView.setLayoutParams(params);
 //        symbolLibView.setBackgroundColor(new Color(255, 0 ,0));
-        symbolLibView.setImageSize(50);
-        symbolLibView.setTextSize(15);
+        symbolLibView.setImageSize(40);
+        symbolLibView.setTextSize(12);
         symbolLibView.setItemPadding(10);
         symbolLibView.setTextColor(new Color(255, 255, 255));
         symbolLibView.setOnItemClickListener(new SymbolLibView.OnItemClickListener() {
@@ -102,14 +102,14 @@ public class SMSymbolTable extends SimpleViewManager<SymbolLibView> {
             view.setImageSize(style.getInt("imageSize"));
         }
         if (style.hasKey("textSize")) {
-            view.setTextSize(style.getInt("textSize"));
+            view.setTextSize(style.getInt("textSize") * 3 / 4);
         }
         if (style.hasKey("textColor")) {
             ReadableMap textColor = style.getMap("textColor");
             int r = textColor.getInt("r");
             int g = textColor.getInt("g");
             int b = textColor.getInt("b");
-            int a = textColor.getInt("a") >= 0 ? textColor.getInt("r") : 255;
+            int a = textColor.getInt("a") >= 0 ? textColor.getInt("r") * 255 : 255;
             view.setTextColor(new Color(r, g, b, a));
         }
         if (style.hasKey("legendBackgroundColor")) {
@@ -117,9 +117,10 @@ public class SMSymbolTable extends SimpleViewManager<SymbolLibView> {
             int r = textColor.getInt("r");
             int g = textColor.getInt("g");
             int b = textColor.getInt("b");
-            int a = textColor.getInt("a") >= 0 ? textColor.getInt("r") : 255;
+            int a = textColor.getInt("a") >= 0 ? textColor.getInt("r") * 255 : 255;
             view.setBackgroundColor(new Color(r, g, b, a));
         }
+        view.reloadView();
     }
 
     @ReactProp(name = "data")

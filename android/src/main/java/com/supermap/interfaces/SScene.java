@@ -55,6 +55,7 @@ import java.util.TimerTask;
 public class SScene extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SScene";
     private static SScene sScene;
+    private static Camera defaultCamera;
     private static ReactApplicationContext context;
     private static MeasureListener mMeasureListener;
     private SMSceneWC smSceneWc;
@@ -164,12 +165,13 @@ public class SScene extends ReactContextBaseJavaModule {
      */
     private void initLabelHelper() {
         sScene=getInstance();
-        Workspace workspace = sScene.smSceneWc.getWorkspace();
+        SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+        Workspace workspace = sceneControl.getScene().getWorkspace();
         String path = workspace.getConnectionInfo().getServer();
         String result = path.substring(0, path.lastIndexOf("/")) + "/files/";
         final String kmlName = "NodeAnimation.kml";
         sScene=getInstance();
-        SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+
         LabelHelper.getInstence().initSceneControl(context, sceneControl, result, kmlName);
     }
 
@@ -428,9 +430,11 @@ public class SScene extends ReactContextBaseJavaModule {
                     boolean visible = scene.getLayers().get(i).isVisible();
                     boolean selectable = scene.getLayers().get(i).isSelectable();
                     WritableMap map = Arguments.createMap();
+                    String type =scene.getLayers().get(i).getType().toString();
                     map.putString("name", name);
                     map.putBoolean("visible", visible);
                     map.putBoolean("selectable", selectable);
+                    map.putString("type",type);
                     arr.pushMap(map);
                 }
             }
@@ -503,7 +507,7 @@ public class SScene extends ReactContextBaseJavaModule {
 
             }
             else {
-               scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
+               scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead, "c768f9fd3e388eb0d155405f8d8c6999");
             }
             scene.refresh();
             promise.resolve(true);
@@ -698,7 +702,7 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
-            String path = sScene.smSceneWc.getWorkspace().getConnectionInfo().getServer();
+            String path = sceneControl.getScene().getWorkspace().getConnectionInfo().getServer();
             String result = path.substring(0, path.lastIndexOf("/")) + "/";
             FlyHelper.getInstence().init(sceneControl);
             ArrayList arrayList = FlyHelper.getInstence().getFlyRouteNames(result);
@@ -1351,6 +1355,9 @@ public class SScene extends ReactContextBaseJavaModule {
             sScene = getInstance();
             SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
             boolean result=sScene.smSceneWc.openScenceName(name,sceneControl);
+            if(result){
+                defaultCamera=sceneControl.getScene().getCamera();
+            }
             promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
@@ -1414,6 +1421,27 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
+     *
+     *
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void resetCamera( Promise promise) {
+        try {
+            sScene = getInstance();
+            if(defaultCamera!=null){
+                sScene.smSceneWc.getSceneControl().getScene().setCamera(defaultCamera);
+                promise.resolve(true);
+            }else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 关闭工作空间及地图控件
      */
     @ReactMethod
@@ -1470,6 +1498,7 @@ public class SScene extends ReactContextBaseJavaModule {
                 if (workspace != null) {
                     workspace.close();
                 }
+                defaultCamera=null;
                 sScene.smSceneWc.setWorkspace(null);
                 promise.resolve(true);
             } catch (Exception e) {

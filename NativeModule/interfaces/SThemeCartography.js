@@ -417,6 +417,14 @@ getUDBName = (path) => {
   }
 }
 
+isAnyOpenedDS = () => {
+  try {
+    return SThemeCartography.isAnyOpenedDS()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   //单值
   createThemeUniqueMap,
@@ -459,4 +467,5 @@ export default {
   saveMap,
   getDatasetsByDatasource,
   getUDBName,
+  isAnyOpenedDS,
 }

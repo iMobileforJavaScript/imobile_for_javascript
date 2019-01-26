@@ -329,6 +329,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         try {
             SMap sMap = SMap.getInstance();
             sMap.getSmMapWC().getMapControl().getMap().getLayers().clear();
+            SMap.getInstance().getSmMapWC().getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -347,6 +348,78 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             SMap sMap = SMap.getInstance();
             Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(layerName);
             layer.setCaption(relayerName);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 向上移动图层
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void moveUpLayer(String layerName,Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
+            sMap.getSmMapWC().getMapControl().getMap().getLayers().moveUp(index);
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 向下移动图层
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void moveDownLayer(String layerName,Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
+            sMap.getSmMapWC().getMapControl().getMap().getLayers().moveDown(index);
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 移动到顶层
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void moveToTop(String layerName,Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
+            sMap.getSmMapWC().getMapControl().getMap().getLayers().moveToTop(index);
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 移动到底层
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void moveToBottom(String layerName,Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
+            sMap.getSmMapWC().getMapControl().getMap().getLayers().moveToBottom(index);
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

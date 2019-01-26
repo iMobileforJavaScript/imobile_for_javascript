@@ -187,6 +187,62 @@ function renameLayer(layerName,relayerName) {
   }
 }
 
+/**
+ * 向上移动图层
+ * @param params
+ * @param value    图层 index
+ * @returns {*}
+ */
+function moveUpLayer(layerName) {
+  try {
+    return LayerManager.moveUpLayer(layerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 向下移动图层
+ * @param params
+ * @param value    图层 index
+ * @returns {*}
+ */
+function moveDownLayer(layerName) {
+  try {
+    return LayerManager.moveDownLayer(layerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 置顶图层
+ * @param params
+ * @param value    图层 index
+ * @returns {*}
+ */
+function moveToTop(layerName) {
+  try {
+    return LayerManager.moveToTop(layerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 置底图层
+ * @param params
+ * @param value    图层 index
+ * @returns {*}
+ */
+function moveToBottom(layerName) {
+  try {
+    return LayerManager.moveToBottom(layerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 
 export {
   getLayersByType,
@@ -201,4 +257,8 @@ export {
   removeAllLayer,
   removeLayer,
   renameLayer,
+  moveUpLayer,
+  moveDownLayer,
+  moveToTop,
+  moveToBottom,
 }
