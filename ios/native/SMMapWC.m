@@ -1297,7 +1297,7 @@
                                     
                                     if(engineType == ET_UDB){
                                         [self reNameFile:[[strOldServer substringToIndex:strOldServer.length-4] stringByAppendingString:@".udd"]
-                                                    with:[[strNewServer substringToIndex:strOldServer.length-4] stringByAppendingString:@".udd"]
+                                                    with:[[strNewServer substringToIndex:strNewServer.length-4] stringByAppendingString:@".udd"]
                                                 inFolder:strRootPath];
                                         
                                     }
