@@ -446,7 +446,7 @@ public class SScene extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void addLayer3D(String Url, String Layer3DType, String layerName, String imageFormatType, double dpi, Boolean addToHead,Promise promise) {
+    public void addLayer3D(String Url, String Layer3DType, String layerName, String imageFormatType, double dpi, Boolean addToHead,String token,Promise promise) {
         try {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
@@ -507,7 +507,12 @@ public class SScene extends ReactContextBaseJavaModule {
 
             }
             else {
+<<<<<<< HEAD
                scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead, "c768f9fd3e388eb0d155405f8d8c6999");
+=======
+               scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead,token);
+
+>>>>>>> 3edb4023dd2e53f44ac5c6cd3201fa195b3b9267
             }
             scene.refresh();
             promise.resolve(true);
@@ -1017,11 +1022,6 @@ public class SScene extends ReactContextBaseJavaModule {
                     sScene.startLabelOperate();
                     sScene.endShowCirclePoint();
                     break;
-                    //切换到绕点飞行
-                case "startShowCirclePoint":
-                    sScene.startShowCirclePoint();
-                    sScene.endShowCirclePoint();
-                    break;
             }
             promise.resolve(true);
         } catch (Exception e) {
@@ -1441,8 +1441,14 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+<<<<<<< HEAD
     /**
      * 关闭工作空间及地图控件
+=======
+
+    /**
+     *
+>>>>>>> 3edb4023dd2e53f44ac5c6cd3201fa195b3b9267
      */
     @ReactMethod
     public void flyToFeatureById(int id,Promise promise) {
@@ -1463,6 +1469,70 @@ public class SScene extends ReactContextBaseJavaModule {
                     promise.resolve(true);
                 }
             }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     *
+     *
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void setNavigationControlVisible(Boolean value,Promise promise) {
+        try {
+            sScene = getInstance();
+            sScene.smSceneWc.getSceneControl().setNavigationControlVisible(value);
+            promise.resolve(false);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     *
+     *
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void setAction(String action,Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+            switch (action){
+                case "CREATELINE3D":
+                    sceneControl.setAction(Action3D.CREATELINE3D);
+                 break;
+                case "CREATEPOINT3D":
+                    sceneControl.setAction(Action3D.CREATEPOINT3D);
+                    break;
+                case "CREATEPOLYGON3D":
+                    sceneControl.setAction(Action3D.CREATEPOLYGON3D);
+                    break;
+                case "CREATEPOLYLINE3D":
+                    sceneControl.setAction(Action3D.CREATEPOLYLINE3D);
+                    break;
+                case "MEASUREAREA3D":
+                    sceneControl.setAction(Action3D.MEASUREAREA3D);
+                    break;
+                case "MEASUREDISTANCE3D":
+                    sceneControl.setAction(Action3D.MEASUREDISTANCE3D);
+                    break;
+                case "NULL":
+                    sceneControl.setAction(Action3D.NULL);
+                    break;
+                case "PAN3D":
+                    sceneControl.setAction(Action3D.PAN3D);
+                    break;
+                case "PANSELECT3D":
+                    sceneControl.setAction(Action3D.PANSELECT3D);
+                    break;
+            }
+            promise.resolve(false);
         } catch (Exception e) {
             promise.reject(e);
         }

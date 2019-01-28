@@ -169,7 +169,7 @@
             info.alias = datasourceName;
             info.engineType = ET_UDB;
             [SMFileUtil createFileDirectories:datasourcePath];
-            info.server = [NSString stringWithFormat:@"%@/%@.%@", datasourcePath, datasourceName, dsType];
+            info.server = [NSString stringWithFormat:@"%@%@.%@", datasourcePath, datasourceName, dsType];
             datasource = [SMap.singletonInstance.smMapWC.workspace.datasources create:info];
             if (datasource == nil) {
                 datasource = [SMap.singletonInstance.smMapWC.workspace.datasources open:info];
@@ -282,6 +282,23 @@
     return info;
 }
 
+-(BOOL)reNameFile:(NSString*)strOldName with:(NSString*)strNewName inFolder:(NSString*)strFolder{
+    NSString *strOld = [NSString stringWithFormat:@"%@/%@",strFolder,strOldName];
+    NSString *strNew = [NSString stringWithFormat:@"%@/%@",strFolder,strNewName];
+    
+    BOOL bFolder = true;
+    if([[NSFileManager defaultManager]fileExistsAtPath:strOld isDirectory:&bFolder] && !bFolder){
+        //存在
+        bFolder = true;
+        if([[NSFileManager defaultManager]fileExistsAtPath:strNew isDirectory:&bFolder] && !bFolder){
+            [[NSFileManager defaultManager] removeItemAtPath:strNew error:nil];
+        }
+        [[NSFileManager defaultManager] moveItemAtPath:strOld toPath:strNew error:nil];
+        return true;
+    }else{
+        return false;
+    }
+}
 
 -(NSString*)formateNoneExistFileName:(NSString*)strPath isDir:(BOOL)bDirFile{
     
@@ -811,7 +828,7 @@
 //      5.导出符号库，workspace打开符号库
 //      5.设置workspaceConnectionInfo，保存workspace
 
--(BOOL)exportMapNamed:(NSArray*)arrMapNames toFile:(NSString*)fileName isReplaceFile:(BOOL)bFileRep{
+-(BOOL)exportMapNamed:(NSArray*)arrMapNames toFile:(NSString*)fileName isReplaceFile:(BOOL)bFileRep extra:(NSDictionary*)extraDic{
     if (SMap.singletonInstance.smMapWC.workspace==nil || fileName==nil||fileName.length==0||arrMapNames==nil||[arrMapNames count]==0||[SMap.singletonInstance.smMapWC.workspace.connectionInfo.server isEqualToString:fileName]) {
         return false;
     }
@@ -885,7 +902,10 @@
     NSMutableArray *arrDatasources = [[NSMutableArray alloc]init];
     
     Map *mapExport = [[Map alloc]initWithWorkspace:SMap.singletonInstance.smMapWC.workspace];
-    
+    NSMutableDictionary *notExportMap=NULL;
+    if(extraDic&&[extraDic objectForKey:@"notExport"]){
+        notExportMap=[extraDic objectForKey:@"notExport"];
+    }
     for (int k=0; k<arrMapNames.count; k++) {
         NSString *mapName = [arrMapNames objectAtIndex:k];
         if ([SMap.singletonInstance.smMapWC.workspace.maps indexOf:mapName]!=-1) {
@@ -912,6 +932,14 @@
                 }
             }
             
+            //判断是否有不需要导出的图层
+            if(notExportMap&&[notExportMap objectForKey:mapName]){
+                NSMutableArray *indexArray=[notExportMap objectForKey:mapName];
+                for (int index=0; index<indexArray.count; index++) {
+                    NSNumber *indexLayer=[indexArray objectAtIndex:index];
+                    [mapExport.layers removeAt:[indexLayer intValue]];
+                }
+            }
             NSString* strMapXML = [mapExport toXML];
             [workspaceDes.maps add:mapName withXML:strMapXML];
             [mapExport close];
@@ -1010,7 +1038,7 @@
     }
     
     // symbol lib
-    NSString*serverResourceBase = [fileName substringToIndex:fileName.length-strWorkspaceSuffix.length];
+    NSString*serverResourceBase = [fileName substringToIndex:fileName.length-strWorkspaceSuffix.length-1];
     NSString*strMarkerPath = [serverResourceBase stringByAppendingString:@".sym"];
     NSString*strLinePath = [serverResourceBase stringByAppendingString:@".lsl"];
     NSString*strFillPath = [serverResourceBase stringByAppendingString:@".bru"];
@@ -1102,13 +1130,17 @@
 -(NSString *)getUserName{
     NSString *strServer = SMap.singletonInstance.smMapWC.workspace.connectionInfo.server;
     //NSString *strRootFolder = [strServer substringToIndex: strServer.length - [[strServer componentsSeparatedByString:@"/"]lastObject].length-1];
-    NSArray *arrServer = [strServer componentsSeparatedByString:@"/"];
+    /*NSArray *arrServer = [strServer componentsSeparatedByString:@"/"];
     int nCount = arrServer.count;
     if (nCount>=3) {
         return arrServer[arrServer.count-3];
     }else{
         return nil;
-    }
+    }*/
+    NSString *strRoot = [self getRootPath];
+    NSString *strSub = [strServer substringFromIndex:strRoot.length+1];
+    NSArray * arrStr = [strSub componentsSeparatedByString:@"/"];
+    return arrStr[0];
 }
 -(NSString *)getRootPath{
      return [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User"];
@@ -1208,13 +1240,160 @@
                 }
             //}
 
-
+            NSString *strMapRename = [infoDic objectForKey:@"name_for_map"];
+            NSString *strDataRename = [infoDic objectForKey:@"name_for_data"];
+            
+            int indexForData = 0;
+            
+            NSString* strDesMapDir =  [NSString stringWithFormat:@"%@/Map",strCustomer];
+            if(strModule!=nil && ![strModule isEqualToString:@""]){
+                strDesMapDir = [NSString stringWithFormat:@"%@/%@",strDesMapDir,strModule];
+            }
+            
+            
             NSMutableArray *arrTemp = [[NSMutableArray alloc]init];
             for (int i=0; i<importWorkspace.maps.count; i++) {
                 NSString *strMapName = [importWorkspace.maps get:i];
                 NSString *strResName = [self saveMapName:strMapName fromWorkspace:importWorkspace ofModule:strModule withAddition:dicAddition isNewMap:YES isResourcesModyfied:false];
+                
                 if(strResName!=nil){
-                    [arrTemp addObject:strResName];
+                    if(strMapRename!=nil && ![strMapRename isEqualToString:@""]){
+                        //1. 重命名xml和exp
+                        [self reNameFile:[strResName stringByAppendingString:@".xml"] with:[strMapRename stringByAppendingString:@".xml"] inFolder:strDesMapDir];
+                        
+                        [self reNameFile:[strResName stringByAppendingString:@".exp"] with:[strMapRename stringByAppendingString:@".exp"] inFolder:strDesMapDir];
+                        
+                        NSString *strPathEXP = [NSString stringWithFormat:@"%@/%@.exp",strDesMapDir,strMapRename];
+
+                        NSString* strMapEXP = [NSString stringWithContentsOfFile:strPathEXP encoding:NSUTF8StringEncoding error:nil];
+                        NSDictionary *dicExp = [NSJSONSerialization JSONObjectWithData:[strMapEXP dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
+                        NSMutableDictionary *dicNewExp = [[NSMutableDictionary alloc]initWithDictionary:dicExp];
+                        
+                        //2. 更名datasource
+                        if(strDataRename!=nil && ![strDataRename isEqualToString:@""]){
+                            //datasource
+                            NSArray *arrDatasources = [dicNewExp objectForKey:@"Datasources"];
+                            NSMutableArray *arrNewDatasources = [[NSMutableArray alloc]init];
+                            for(int k=0;k<arrDatasources.count;k++){
+                                NSDictionary *dicTemp = [arrDatasources objectAtIndex:k];
+                                EngineType engineType = (EngineType)[[dicTemp objectForKey:@"Type"] intValue];
+                                if (engineType == ET_UDB || engineType == ET_IMAGEPLUGINS){
+
+                                    NSString *strDsRename = [NSString stringWithFormat:@"%@_%d",strDataRename,indexForData];
+                                    if(indexForData==0){
+                                        strDsRename = strDataRename;
+                                    }
+                                    indexForData++;
+                                    
+                                    NSString *strOldServer = [dicTemp objectForKey:@"Server"];
+                                    NSString *strOldName = [[strOldServer componentsSeparatedByString:@"/"]lastObject];
+                                    //NSArray *arrOldName = [strOldName componentsSeparatedByString:@"."];
+                                    NSString *strSuffix = [[strOldName componentsSeparatedByString:@"."]lastObject];
+                                    
+                                    
+                                    NSString *strNewServer = [NSString stringWithFormat:@"%@/%@.%@",[strOldServer substringToIndex:strOldServer.length-strOldName.length-1],strDsRename,strSuffix];
+                                    
+                                    [self reNameFile:strOldServer with:strNewServer inFolder:strRootPath];
+                                    
+                                    if(engineType == ET_UDB){
+                                        [self reNameFile:[[strOldServer substringToIndex:strOldServer.length-4] stringByAppendingString:@".udd"]
+                                                    with:[[strNewServer substringToIndex:strNewServer.length-4] stringByAppendingString:@".udd"]
+                                                inFolder:strRootPath];
+                                        
+                                    }
+
+                                    NSMutableDictionary *dicNew = [[NSMutableDictionary alloc]initWithDictionary:dicTemp];
+                                    [dicNew setObject:strNewServer forKey:@"Server"];
+                                    [arrNewDatasources addObject:dicNew];
+                                    
+                                }else{
+                                    [arrNewDatasources addObject:dicTemp];
+                                }
+
+                                
+                            }
+                            
+                            [dicNewExp setObject:arrNewDatasources forKey:@"Datasources"];
+                            
+                        }
+                        
+                        //resource
+                        NSString *strOldResource = [dicNewExp objectForKey:@"Resources"];
+                        NSString *strOldName = [[strOldResource componentsSeparatedByString:@"/"]lastObject];
+                        NSString *strNewResource = [[strOldResource substringToIndex:strOldResource.length-strOldName.length]stringByAppendingString:strMapRename];
+                        [self reNameFile:[strOldResource stringByAppendingString:@".sym"] with:[strNewResource stringByAppendingString:@".sym"] inFolder:strRootPath];
+                        [self reNameFile:[strOldResource stringByAppendingString:@".lsl"] with:[strNewResource stringByAppendingString:@".lsl"] inFolder:strRootPath];
+                        [self reNameFile:[strOldResource stringByAppendingString:@".bru"] with:[strNewResource stringByAppendingString:@".bru"] inFolder:strRootPath];
+                        [dicNewExp setObject:strNewResource forKey:@"Resources"];
+                        
+                        NSData *dataJson = [NSJSONSerialization dataWithJSONObject:dicNewExp options:NSJSONWritingPrettyPrinted error:nil];
+                        NSString *strExplorerJson = [[NSString alloc]initWithData:dataJson encoding:NSUTF8StringEncoding];
+                        [strExplorerJson writeToFile:strPathEXP atomically:YES encoding:NSUTF8StringEncoding error:nil];
+                        
+                        
+                        [arrTemp addObject:strMapRename];
+                        strMapRename = [NSString stringWithFormat:@"%@_%d", [infoDic objectForKey:@"name_for_map"] ,i];
+                    }else{
+                        
+                        //2. 更名datasource symbol
+                        if(strDataRename!=nil && ![strDataRename isEqualToString:@""]){
+                            NSString *strPathEXP = [NSString stringWithFormat:@"%@/%@.exp",strDesMapDir,strResName];
+                            
+                            NSString* strMapEXP = [NSString stringWithContentsOfFile:strPathEXP encoding:NSUTF8StringEncoding error:nil];
+                            NSDictionary *dicExp = [NSJSONSerialization JSONObjectWithData:[strMapEXP dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
+                            NSMutableDictionary *dicNewExp = [[NSMutableDictionary alloc]initWithDictionary:dicExp];
+                            //datasource
+                            NSArray *arrDatasources = [dicNewExp objectForKey:@"Datasources"];
+                            NSMutableArray *arrNewDatasources = [[NSMutableArray alloc]init];
+                            for(int k=0;k<arrDatasources.count;k++){
+                                NSDictionary *dicTemp = [arrDatasources objectAtIndex:k];
+                                EngineType engineType = (EngineType)[[dicTemp objectForKey:@"Type"] intValue];
+                                if (engineType == ET_UDB || engineType == ET_IMAGEPLUGINS){
+                                    
+                                    NSString *strDsRename = [NSString stringWithFormat:@"%@_%d",strDataRename,indexForData];
+                                    if(indexForData==0){
+                                        strDsRename = strDataRename;
+                                    }
+                                    indexForData++;
+                                    
+                                    NSString *strOldServer = [dicTemp objectForKey:@"Server"];
+                                    NSString *strOldName = [[strOldServer componentsSeparatedByString:@"/"]lastObject];
+                                    //NSArray *arrOldName = [strOldName componentsSeparatedByString:@"."];
+                                    NSString *strSuffix = [[strOldName componentsSeparatedByString:@"."]lastObject];
+                                    
+                                    
+                                    NSString *strNewServer = [NSString stringWithFormat:@"%@/%@.%@",[strOldServer substringToIndex:strOldServer.length-strOldName.length-1],strDsRename,strSuffix];
+                                    
+                                    [self reNameFile:strOldServer with:strNewServer inFolder:strRootPath];
+                                    
+                                    if(engineType == ET_UDB){
+                                        [self reNameFile:[[strOldServer substringToIndex:strOldServer.length-4] stringByAppendingString:@".udd"]
+                                                    with:[[strNewServer substringToIndex:strOldServer.length-4] stringByAppendingString:@".udd"]
+                                                inFolder:strRootPath];
+                                        
+                                    }
+                                    
+                                    NSMutableDictionary *dicNew = [[NSMutableDictionary alloc]initWithDictionary:dicTemp];
+                                    [dicNew setObject:strNewServer forKey:@"Server"];
+                                    [arrNewDatasources addObject:dicNew];
+                                    
+                                }else{
+                                    [arrNewDatasources addObject:dicTemp];
+                                }
+                                
+                                
+                            }
+                            
+                            [dicNewExp setObject:arrNewDatasources forKey:@"Datasources"];
+                            NSData *dataJson = [NSJSONSerialization dataWithJSONObject:dicNewExp options:NSJSONWritingPrettyPrinted error:nil];
+                            NSString *strExplorerJson = [[NSString alloc]initWithData:dataJson encoding:NSUTF8StringEncoding];
+                            [strExplorerJson writeToFile:strPathEXP atomically:YES encoding:NSUTF8StringEncoding error:nil];
+
+                        }
+
+                        [arrTemp addObject:strResName];
+                    }
+
                 }
             }
             if(arrTemp.count>0){
@@ -1948,6 +2127,41 @@
         }
         
         return strResult;
+    }
+}
+
+- (BOOL)appendFromFile:(Resources *)resources path:(NSString *)path isReplace:(BOOL)isReplace {
+    @try {
+        BOOL isDir = NO;
+        BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
+        if (!isExist || isDir) {
+            return NO;
+        }
+        
+        SymbolLibrary* lib = nil;
+        SymbolLibrary* resLib = nil;
+        NSString* type = [[path pathExtension] lowercaseString];
+        if ([type isEqualToString:@"bru"]) {
+            lib = [[SymbolFillLibrary alloc] init];
+            resLib = resources.fillLibrary;
+        } else if ([type isEqualToString:@"lsl"]) {
+            lib = [[SymbolLineLibrary alloc] init];
+            resLib = resources.lineLibrary;
+        } else if ([type isEqualToString:@"sym"]) {
+            lib = [[SymbolMarkerLibrary alloc] init];
+            resLib = resources.markerLibrary;
+        }
+        
+        if (lib == nil) return NO;
+        BOOL result = [lib appendFromFile:path isReplace:isReplace];
+        
+        if (result) {
+            [self importSymbolsFrom:lib.rootGroup toGroup:resLib.rootGroup isDirRetain:YES isSymbolReplace:isReplace];
+        }
+        
+        return result;
+    } @catch (NSException *exception) {
+        return NO;
     }
 }
 

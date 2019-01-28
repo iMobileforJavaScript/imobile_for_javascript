@@ -1718,6 +1718,14 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 writeMap.putString("datasourceName", dataset.getDatasource().getAlias());
                 writeMap.putString("datasetName", dataset.getName());
                 writeMap.putString("fieldType", fieldType);
+<<<<<<< HEAD
+=======
+                if (name.equals("SmGeoPosition")) {
+                    writeMap.putBoolean("isSystemField", true);//SmGeoPosition会被误判为非系统字段，暂做处理
+                } else  {
+                    writeMap.putBoolean("isSystemField", fieldInfo.isSystemField());//是否系统字段
+                }
+>>>>>>> 3edb4023dd2e53f44ac5c6cd3201fa195b3b9267
                 arr.pushMap(writeMap);
             }
 
@@ -1801,8 +1809,18 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 String name = fieldInfo.getName();
                 String fieldType = SMThemeCartography.getFieldType(fieldInfo);//字段类型
                 WritableMap writeMap = Arguments.createMap();
+<<<<<<< HEAD
                 writeMap.putString("title", name);
                 writeMap.putString("fieldType", fieldType);
+=======
+                writeMap.putString("expression", name);
+                writeMap.putString("fieldType", fieldType);
+                if (name.equals("SmGeoPosition")) {
+                    writeMap.putBoolean("isSystemField", true);//SmGeoPosition会被误判为非系统字段，暂做处理
+                } else  {
+                    writeMap.putBoolean("isSystemField", fieldInfo.isSystemField());//是否系统字段
+                }
+>>>>>>> 3edb4023dd2e53f44ac5c6cd3201fa195b3b9267
                 arr.pushMap(writeMap);
             }
 

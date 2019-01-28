@@ -215,6 +215,7 @@ function moveDownLayer(layerName) {
   }
 }
 
+<<<<<<< HEAD
 /**
  * 置顶图层
  * @param params
@@ -243,6 +244,8 @@ function moveToBottom(layerName) {
   }
 }
 
+=======
+>>>>>>> 3edb4023dd2e53f44ac5c6cd3201fa195b3b9267
 
 export {
   getLayersByType,
@@ -259,6 +262,9 @@ export {
   renameLayer,
   moveUpLayer,
   moveDownLayer,
+<<<<<<< HEAD
   moveToTop,
   moveToBottom,
+=======
+>>>>>>> 3edb4023dd2e53f44ac5c6cd3201fa195b3b9267
 }

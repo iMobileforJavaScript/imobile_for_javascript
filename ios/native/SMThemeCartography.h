@@ -21,6 +21,10 @@
 +(NSMutableDictionary* )getThemeUniqueDefaultStyle:(GeoStyle* )style;
 +(ColorGradientType) getColorGradientType:(NSString*) type;
 +(RangeMode)getRangeMode:(NSString*) strMode;
++(NSString*)rangeModeToStr:(RangeMode) mode;
++(NSString*)getFieldType:(FieldInfo*) info;
++(NSString*)getGeoCoordSysType:(GeoCoordSysType) type;
++(NSString*)getPrjCoordSysType:(PrjCoordSysType) type;
 +(LabelBackShape)getLabelBackShape:(NSString*) shape;
 +(NSString*)getLabelBackShapeString:(LabelBackShape) shape;
 +(NSArray*)getColorList;

@@ -390,6 +390,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         }
     }
 
+<<<<<<< HEAD
     /**
      * 移动到顶层
      *
@@ -426,4 +427,6 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         }
     }
 
+=======
+>>>>>>> 3edb4023dd2e53f44ac5c6cd3201fa195b3b9267
 }

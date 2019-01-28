@@ -51,7 +51,7 @@
  * @param toHead 是否将添加的三维图层置顶。
  * @return 返回添加的三维图层对象。
  */
-- (Layer3D *)addLayerWithTiandituURL:(NSString *)tiandituURL type:(Layer3DType)type dataLayerName:(NSString *)dataLayerName imageFormatType:(ImageFormatType)imageFormatType dpi:(double)dpi toHead:(BOOL)toHead;
+- (Layer3D *)addLayerWithTiandituURL:(NSString *)tiandituURL type:(Layer3DType)type dataLayerName:(NSString *)dataLayerName imageFormatType:(ImageFormatType)imageFormatType dpi:(double)dpi toHead:(BOOL)toHead token:(NSString *)token;
 
 /**@brief 返回三维图层集合中指定索引的三维图层对象，三维图层集合中三维图层的索引从0开始编号。
  @param  index 要查找的三维图层对象的索引。

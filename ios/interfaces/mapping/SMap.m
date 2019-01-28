@@ -569,31 +569,36 @@ RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)auto
     @try {
         BOOL mapSaved = NO;
         BOOL wsSaved = NO;
+        NSString* _name = name;
         Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
-        if (name == nil || [name isEqualToString:@""]) {
+        if (_name == nil || [_name isEqualToString:@""]) {
             if (map.name && ![map.name isEqualToString:@""]) {
                 mapSaved = [map save];
             } else if (map.layers.getCount > 0) {
                 Layer* layer = [map.layers getLayerAtIndex:map.layers.getCount - 1];
                 NSArray* nameArr = [layer.name componentsSeparatedByString:@"@"];
-                name = nameArr[0];
+                _name = nameArr[0];
                 if (autoNaming) {
                     int i = 0;
                     while (!mapSaved) {
-                        NSString* newName = i == 0 ? name : [NSString stringWithFormat:@"%@#%d", name, i];
-                        mapSaved = [map save:newName];
+                        _name = i == 0 ? name : [NSString stringWithFormat:@"%@#%d", name, i];
+                        mapSaved = [map save:_name];
                         i++;
                     }
                 } else {
-                    mapSaved = [map save:name];
+                    mapSaved = [map save:_name];
                 }
             }
         } else {
-            mapSaved = [map save:name];
+            mapSaved = [map save:_name];
         }
         wsSaved = [[SMap singletonInstance].smMapWC.workspace save];
         
-        resolve([NSNumber numberWithBool:mapSaved && wsSaved]);
+        if (mapSaved && wsSaved) {
+            resolve(_name);
+        } else {
+            resolve([NSNumber numberWithBool:mapSaved && wsSaved]);
+        }
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
@@ -825,11 +830,11 @@ RCT_REMAP_METHOD(addDatasetToMap, addDatasetToMapWithResolver:(NSDictionary*)dat
 }
 
 #pragma mark 导出工作空间
-RCT_REMAP_METHOD(exportWorkspace, exportWorkspace:(NSArray*)arrMapnames toFile:(NSString*)strFileName fileReplace:(BOOL)bFileReplace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(exportWorkspace, exportWorkspace:(NSArray*)arrMapnames toFile:(NSString*)strFileName fileReplace:(BOOL)bFileReplace extra:(NSDictionary*)extraDic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         sMap = [SMap singletonInstance];
-        BOOL result = [sMap.smMapWC exportMapNamed:arrMapnames toFile:strFileName isReplaceFile:bFileReplace];
+        BOOL result = [sMap.smMapWC exportMapNamed:arrMapnames toFile:strFileName isReplaceFile:bFileReplace extra:extraDic];
         
         resolve(@(result));
     } @catch (NSException *exception) {
@@ -838,7 +843,7 @@ RCT_REMAP_METHOD(exportWorkspace, exportWorkspace:(NSArray*)arrMapnames toFile:(
 }
 
 #pragma mark 导出地图为xml
-RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)nModule withAddition:(NSDictionary *)withAddition isNew:(BOOL)isNew resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)nModule withAddition:(NSDictionary *)withAddition isNew:(BOOL)isNew bResourcesModified:(BOOL)bResourcesModified resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BOOL mapSaved = NO;
         sMap = [SMap singletonInstance];
@@ -877,7 +882,7 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
                 mapSaved = isNew ? [map saveAs:name] : [map save:name];
             }
         }
-        BOOL bResourcesModified = sMap.smMapWC.workspace.maps.count > 1;
+//        BOOL bResourcesModified = sMap.smMapWC.workspace.maps.count > 1;
         NSString* mapName = @"";
         if (mapSaved) {
             mapName = [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:withAddition isNewMap:(isNew || bNew) isResourcesModyfied:bResourcesModified];
@@ -926,7 +931,7 @@ RCT_REMAP_METHOD(openMapName, openMapName:(NSString*)strMapName ofModule:(NSStri
 }
 
 #pragma mark 设置地图反走样式
-RCT_REMAP_METHOD(setAntialias, setAntialias:(bool)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setAntialias, setAntialias:(int)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         sMap = [SMap singletonInstance];
@@ -950,7 +955,7 @@ RCT_REMAP_METHOD(isAntialias, isAntialias:(RCTPromiseResolveBlock)resolve reject
 }
 
 #pragma mark 设置固定比例尺
-RCT_REMAP_METHOD(setVisibleScalesEnabled, setVisibleScalesEnabled:(bool)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setVisibleScalesEnabled, setVisibleScalesEnabled:(int)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         [sMap.smMapWC.mapControl.map setIsVisibleScalesEnabled:value];
@@ -976,10 +981,9 @@ RCT_REMAP_METHOD(isVisibleScalesEnabled, isVisibleScalesEnabled:(RCTPromiseResol
 RCT_REMAP_METHOD(isAnyMapOpened, isAnyMapOpened:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        Workspace* workspace = sMap.smMapWC.workspace;
-        Maps* maps = workspace.maps;
+        int count = sMap.smMapWC.mapControl.map.layers.getCount;
         bool isAny = true;
-        if (maps.count <= 0) {
+        if (count <= 0) {
             isAny = false;
         }
         resolve([NSNumber numberWithBool:isAny]);
@@ -988,6 +992,66 @@ RCT_REMAP_METHOD(isAnyMapOpened, isAnyMapOpened:(RCTPromiseResolveBlock)resolve 
     }
 }
 
+#pragma mark 导入符号库
+RCT_REMAP_METHOD(importSymbolLibrary, importSymbolLibraryWithPath:(NSString *)path isReplace:(BOOL)isReplace :(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL result = [sMap.smMapWC appendFromFile:sMap.smMapWC.workspace.resources path:path isReplace:isReplace];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 批量添加图层
+RCT_REMAP_METHOD(addLayers, addLayers:(NSArray*)datasetNames dataSourceName:(NSString*)dataSourceName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        if (datasetNames == nil || datasetNames.count == 0 || [dataSourceName isEqualToString:@""] || dataSourceName == nil) {
+            resolve([NSNumber numberWithBool:false]);
+            return;
+        }
+        sMap = [SMap singletonInstance];
+        Datasource* datasource = [sMap.smMapWC.workspace.datasources getAlias:dataSourceName];
+        Layers* layers = sMap.smMapWC.mapControl.map.layers;
+        NSInteger count = datasetNames.count;
+        for (int i = 0; i < count; i++) {
+            NSString* datasetName = [datasetNames objectAtIndex:i];
+            Dataset* dataset = [datasource.datasets getWithName:datasetName];
+            [layers addDataset:dataset ToHead:true];
+        }
+        [sMap.smMapWC.mapControl.map refresh];
+    
+        resolve([NSNumber numberWithBool:true]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 设置是否压盖
+RCT_REMAP_METHOD(setOverlapDisplayed, setOverlapDisplayed:(BOOL)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Map* map = sMap.smMapWC.mapControl.map;
+        [map setIsOverlapDisplay:value];
+        [map refresh];
+        resolve([NSNumber numberWithBool:true]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 是否已经开启压盖
+RCT_REMAP_METHOD(isOverlapDisplayed, isOverlapDisplayed:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Map* map = sMap.smMapWC.mapControl.map;
+        bool result = [map IsOverlapDisplay];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
 
 /************************************************ 监听事件 ************************************************/
 #pragma mark 监听事件

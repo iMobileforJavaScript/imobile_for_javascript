@@ -10,6 +10,8 @@
 #import "SMap.h"
 #include "STranslate.h"
 
+
+
 @implementation SMThemeCartography
 
 +(void)setGeoStyleColor:(DatasetType)type geoStyle:(GeoStyle*)geoStyle color:(Color*)color{
@@ -543,6 +545,93 @@
         return RM_STDDEVIATION;
     }
     return RM_CUSTOMINTERVAL;
+}
+
++(NSString*)rangeModeToStr:(RangeMode) mode{
+    NSString* strMode = @"";
+    switch (mode) {
+        case RM_CUSTOMINTERVAL:
+            strMode = @"CUSTOMINTERVAL";
+            break;
+        case RM_EQUALINTERVAL:
+            strMode = @"EQUALINTERVAL";
+            break;
+        case RM_LOGARITHM:
+            strMode = @"LOGARITHM";
+            break;
+        case RM_None:
+            strMode = @"NONE";
+            break;
+        case RM_QUANTILE:
+            strMode = @"QUANTILE";
+            break;
+        case RM_SQUAREROOT:
+            strMode = @"SQUAREROOT";
+            break;
+        case RM_STDDEVIATION:
+            strMode = @"STDDEVIATION";
+            break;
+        default:
+            break;
+    }
+    return strMode;
+}
+
++(NSString*)getFieldType:(FieldInfo*) info{
+    NSString* type =@"未知";
+    switch (info.fieldType) {
+        case FT_BOOLEAN:
+            type = @"布尔型字段";
+            break;
+        case FT_BYTE:
+            type = @"字节型字段";
+            break;
+        case FT_INT16:
+            type = @"16位整型字段";
+            break;
+        case FT_INT32:
+            type = @"32位整型字段";
+            break;
+        case FT_INT64:
+            type = @"64位整型字段";
+            break;
+        case FT_SINGLE:
+            type = @"32位精度浮点型字段";
+            break;
+        case FT_DOUBLE:
+            type = @"64位精度浮点型字段";
+            break;
+        case FT_DATE:
+            type = @"时间型字段";
+            break;
+        case FT_DATETIME:
+            type = @"日期型字段";
+            break;
+        case FT_LONGBINARY:
+            type = @"二进制型字段";
+            break;
+        case FT_TEXT:
+            type = @"变长的文本型字段";
+            break;
+        case FT_CHAR:
+            type = @"定长的文本类型字段";
+            break;
+        case FT_WTEXT:
+            type = @"宽字符类型字段";
+            break;
+        default:
+            break;
+    }
+    return type;
+}
+
++(NSString*)getGeoCoordSysType:(GeoCoordSysType) type{
+    //TODO  这个类型枚举较长，解析代码后面再补
+    return @"";
+}
++(NSString*)getPrjCoordSysType:(PrjCoordSysType) type{
+    //TODO  这个类型枚举较长，解析代码后面再补
+    return @"";
 }
 
 +(LabelBackShape)getLabelBackShape:(NSString*) shape{

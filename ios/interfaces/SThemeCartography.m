@@ -505,10 +505,6 @@ RCT_REMAP_METHOD(createUniformThemeLabelMap, createUniformThemeLabelMapWithResol
                 [textStyle setFontHeight:fontSize];
                 [textStyle setFontWidth:fontSize];
             }
-            else{
-                [textStyle setFontHeight:2];
-                [textStyle setFontWidth:2];
-            }
             if (rotation != -1) {
                 [textStyle setRotation:rotation];
             }
@@ -949,10 +945,7 @@ RCT_REMAP_METHOD(getUniformLabelFontSize, getUniformLabelFontSizeWithResolver:(N
                 ThemeLabel* themeLabel =(ThemeLabel*)layer.theme;
                 TextStyle* style = themeLabel.mUniformStyle;
                 double fontSize = [style getFontHeight];
-                NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
-                NSNumber* num = [NSNumber numberWithDouble:fontSize];;
-                [dic setValue:num forKey:@"FontSize"];
-                resolve(dic);
+                resolve([NSNumber numberWithDouble:fontSize]);
             }
         }
         else{
@@ -1051,10 +1044,7 @@ RCT_REMAP_METHOD(getUniformLabelRotaion, getUniformLabelRotaionWithResolver:(NSD
                 ThemeLabel* themeLabel =(ThemeLabel*)layer.theme;
                 TextStyle* style = themeLabel.mUniformStyle;
                 double rotation = [style getRotation];
-                NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
-                NSNumber* num = [NSNumber numberWithDouble:rotation];;
-                [dic setValue:num forKey:@"FontSize"];
-                resolve(dic);
+                resolve([NSNumber numberWithDouble:rotation]);
             }
         }
         else{
@@ -1537,6 +1527,93 @@ RCT_REMAP_METHOD(setRangeExpression, setRangeExpressionWithResolver:(NSDictionar
 }
 
 /**
+ * 获取分段专题图的分段方法
+ *
+ * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+ * @param promise
+ */
+RCT_REMAP_METHOD(getRangeMode, getRangeModeWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        NSString* layerName = @"";
+        int layerIndex = -1;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+        }
+        if ([array containsObject:@"LayerIndex"]) {
+            NSNumber* indexValue = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = indexValue.intValue;
+        }
+        
+        Layer* layer = nil;
+        
+        if ([layerName isEqualToString:@""]) {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        } else {
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }
+        
+        if (layer != nil && layer.theme != nil) {
+            if (layer.theme.themeType == TT_Range) {
+                ThemeRange* themeLabel = (ThemeRange*)layer.theme;
+                NSString* strMode = [SMThemeCartography rangeModeToStr:themeLabel.mRangeMode];
+                resolve(strMode);
+            }
+        }
+        else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
+ * 获取分段专题图的分段数
+ *
+ * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+ * @param promise
+ */
+RCT_REMAP_METHOD(getRangeCount, getRangeCountWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        NSString* layerName = @"";
+        int layerIndex = -1;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+        }
+        if ([array containsObject:@"LayerIndex"]) {
+            NSNumber* indexValue = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = indexValue.intValue;
+        }
+        
+        Layer* layer = nil;
+        
+        if ([layerName isEqualToString:@""]) {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        } else {
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }
+        
+        if (layer != nil && layer.theme != nil) {
+            if (layer.theme.themeType == TT_Range) {
+                ThemeRange* themeLabel = (ThemeRange*)layer.theme;
+                resolve([NSNumber numberWithInt:[themeLabel getCount]]);
+            }
+        }
+        else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
  * 获取分段专题图的分段字段表达式
  *
  * @param dataDic 单值专题图字段表达式 图层名称 图层索引
@@ -1633,12 +1710,14 @@ RCT_REMAP_METHOD(getThemeExpressionByLayerName, getThemeExpressionByLayerNameWit
         for(int i = 0; i < count; i++)
         {
             FieldInfo* fieldinfo = [fieldInfos get:i];
+            NSString* fieldType = [SMThemeCartography getFieldType:fieldinfo];
             NSString* strName = fieldinfo.name;
             NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
             [info setValue:(strName) forKey:(@"expression")];
             [info setValue:false forKey:(@"isSelected")];
             [info setValue:dataset.datasource.alias forKey:@"datasourceName"];
             [info setValue:dataset.name forKey:@"datasetName"];
+            [info setValue:fieldType forKey:@"fieldType"];
             [array addObject:info];
         }
         
@@ -1718,9 +1797,11 @@ RCT_REMAP_METHOD(getThemeExpressionByDatasetName, getThemeExpressionByDatasetNam
         for(int i = 0; i < count; i++)
         {
             FieldInfo* fieldinfo = [fieldInfos get:i];
+            NSString* fieldType = [SMThemeCartography getFieldType:fieldinfo];
             NSString* strName = fieldinfo.name;
             NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
             [info setObject:(strName) forKey:(@"title")];
+            [info setObject:(fieldType) forKey:(@"fieldType")];
             [array addObject:info];
         }
         NSMutableDictionary* mulDic2 = [[NSMutableDictionary alloc] init];
@@ -1806,6 +1887,23 @@ RCT_REMAP_METHOD(getAllDatasetNames, ggetAllDatasetNamesWithResolver:(RCTPromise
                 NSString *strType = [SMThemeCartography datasetTypeToString:[datasets get:j].datasetType];
                 [mulDic2 setValue:strType forKey:@"datasetType"];
                 [mulDic2 setValue:datasource.alias forKey:@"datasourceName"];
+                PrjCoordSys* prjCoordSys = nil;
+                prjCoordSys = [datasets get:j].prjCoordSys;
+                if (prjCoordSys != nil) {
+                    GeoCoordSys* geoCoordSys = nil;
+                    geoCoordSys = prjCoordSys.geoCoordSys;
+                    if (geoCoordSys != nil) {
+                        GeoCoordSysType geoCoordSysType = geoCoordSys.geoCoordSysType;
+                        NSString* strGeoCoordSysType = [SMThemeCartography getGeoCoordSysType:geoCoordSysType];
+                        [mulDic2 setValue:strGeoCoordSysType forKey:@"geoCoordSysType"];
+                        
+                    }
+                    if (prjCoordSys.type) {
+                        PrjCoordSysType prjCoordSysType = prjCoordSys.type;
+                        NSString* strPrjCoordSysType = [SMThemeCartography getPrjCoordSysType:prjCoordSysType];
+                        [mulDic2 setValue:strPrjCoordSysType forKey:@"prjCoordSysType"];
+                    }
+                }
                 [array2 addObject:mulDic2];
             }
             NSMutableDictionary* mulDic3 = [[NSMutableDictionary alloc] init];
@@ -1968,9 +2066,40 @@ RCT_REMAP_METHOD(getUDBName, getUDBNameWithResolver:(NSString*)path:(RCTPromiseR
             NSString* datasetType = [SMThemeCartography datasetTypeToString:dataset.datasetType];
             [info setValue:datasetType forKey:@"datasetType"];
             [info setValue:datasource.alias forKey:@"datasourceName"];
+            PrjCoordSys* prjCoordSys = nil;
+            prjCoordSys = dataset.prjCoordSys;
+            if (prjCoordSys != nil) {
+                GeoCoordSys* geoCoordSys = nil;
+                geoCoordSys = prjCoordSys.geoCoordSys;
+                if (geoCoordSys != nil) {
+                    GeoCoordSysType geoCoordSysType = geoCoordSys.geoCoordSysType;
+                    NSString* strGeoCoordSysType = [SMThemeCartography getGeoCoordSysType:geoCoordSysType];
+                    [info setValue:strGeoCoordSysType forKey:@"geoCoordSysType"];
+                    
+                }
+                if (prjCoordSys.type) {
+                    PrjCoordSysType prjCoordSysType = prjCoordSys.type;
+                    NSString* strPrjCoordSysType = [SMThemeCartography getPrjCoordSysType:prjCoordSysType];
+                    [info setValue:strPrjCoordSysType forKey:@"prjCoordSysType"];
+                }
+            }
             [array addObject:info];
         }
         resolve(array);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 检查是否有打开的数据源
+RCT_REMAP_METHOD(isAnyOpenedDS, isAnyOpenedDS:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSInteger count = [SMap singletonInstance].smMapWC.workspace.datasources.count;
+        bool isAny = true;
+        if (count <= 0) {
+            isAny = false;
+        }
+        resolve([NSNumber numberWithBool:isAny]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
