@@ -215,6 +215,34 @@ function moveDownLayer(layerName) {
   }
 }
 
+/**
+ * 置顶图层
+ * @param params
+ * @param value    图层 index
+ * @returns {*}
+ */
+function moveToTop(layerName) {
+  try {
+    return LayerManager.moveToTop(layerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 置底图层
+ * @param params
+ * @param value    图层 index
+ * @returns {*}
+ */
+function moveToBottom(layerName) {
+  try {
+    return LayerManager.moveToBottom(layerName)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 
 export {
   getLayersByType,
@@ -231,4 +259,6 @@ export {
   renameLayer,
   moveUpLayer,
   moveDownLayer,
+  moveToTop,
+  moveToBottom,
 }
