@@ -630,8 +630,7 @@ export default (function () {
             console.error(error);
         }
     }
-<<<<<<< HEAD
-=======
+
     
     function setNavigationControlVisible(value){
         try {
@@ -640,7 +639,6 @@ export default (function () {
             console.error(error);
         }
     }
->>>>>>> 3edb4023dd2e53f44ac5c6cd3201fa195b3b9267
 
     getWorkspaceType = (type) => {
         var value
@@ -735,10 +733,7 @@ export default (function () {
         setCustomerDirectory,
         export3DScenceName,
         resetCamera,
-<<<<<<< HEAD
-=======
         setNavigationControlVisible,
->>>>>>> 3edb4023dd2e53f44ac5c6cd3201fa195b3b9267
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
