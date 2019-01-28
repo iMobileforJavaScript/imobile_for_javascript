@@ -124,6 +124,7 @@ public class TouchUtil {
 
         FieldInfos fieldInfos = layer.getFieldInfos();
         int filedInfosCount = fieldInfos.getCount();
+
         Layer3DOSGBFile layer3d=null;
         if (layer.getType() == Layer3DType.OSGBFILE){
              layer3d = (Layer3DOSGBFile) layer;
