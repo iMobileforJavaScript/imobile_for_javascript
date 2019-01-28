@@ -650,7 +650,7 @@ RCT_REMAP_METHOD(getLayerList, getLayerList:(RCTPromiseResolveBlock)resolve reje
     }
 }
 
-RCT_REMAP_METHOD(addLayer3D,  Url:(NSString*) Url Layer3DType:(NSString*) layer3DType layerName:(NSString*) layerName imageFormatType:(NSString*) imageFormatType dpi:(double) dpi addToHead:(BOOL)addToHead resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addLayer3D,  Url:(NSString*) Url Layer3DType:(NSString*) layer3DType layerName:(NSString*) layerName imageFormatType:(NSString*) imageFormatType dpi:(double) dpi addToHead:(BOOL)addToHead  token:(NSString*)token resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     sScene = [SScene singletonInstance];
     Scene* scene = sScene.smSceneWC.sceneControl.scene;
     @try {
@@ -696,7 +696,7 @@ RCT_REMAP_METHOD(addLayer3D,  Url:(NSString*) Url Layer3DType:(NSString*) layer3
             layer3d = [scene.layers addLayerWithURL:Url type:nlayer3DType dataLayerName:layerName toHead:addToHead];
            // scene.getLayers().add(Url, layer3DType, layerName, addToHead);
         } else {
-           layer3d = [scene.layers  addLayerWithTiandituURL:Url type:nlayer3DType dataLayerName:layerName imageFormatType:imageFormatType1 dpi:dpi toHead:dpi];
+            layer3d = [scene.layers  addLayerWithTiandituURL:Url type:nlayer3DType dataLayerName:layerName imageFormatType:imageFormatType1 dpi:dpi toHead:dpi token:token];
            // scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
         }
         
@@ -1500,6 +1500,47 @@ RCT_REMAP_METHOD( closeAnalysis,  closeAnalysisResolver:(RCTPromiseResolveBlock)
     }
 }
 
+RCT_REMAP_METHOD(setNavigationControlVisible,  setNavigationControlVisible:(BOOL)bVisable resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        [sceneControl setNavigationControlVisible:bVisable];
+        
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
 
+RCT_REMAP_METHOD(setAction,  setAction:(NSString*)strAction resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        
+        if ([strAction isEqualToString:@"CREATELINE3D"]) {
+            [sceneControl setAction3D:CREATELINE3D];
+        }else if([strAction isEqualToString:@"CREATEPOINT3D"]){
+            [sceneControl setAction3D:CREATEPOINT3D];
+        }else if([strAction isEqualToString:@"CREATEPOLYGON3D"]){
+            [sceneControl setAction3D:CREATEPOLYGON3D];
+        }else if([strAction isEqualToString:@"CREATEPOLYLINE3D"]){
+            [sceneControl setAction3D:CREATEPOLYLINE3D];
+        }else if([strAction isEqualToString:@"MEASUREAREA3D"]){
+            [sceneControl setAction3D:MEASUREAREA3D];
+        }else if([strAction isEqualToString:@"MEASUREDISTANCE3D"]){
+            [sceneControl setAction3D:MEASUREDISTANCE3D];
+        }else if([strAction isEqualToString:@"NULL"]){
+            [sceneControl setAction3D:NONEACTION3D];
+        }else if([strAction isEqualToString:@"PAN3D"]){
+            [sceneControl setAction3D:PAN3D];
+        }else if([strAction isEqualToString:@"PANSELECT3D"]){
+            [sceneControl setAction3D:PANSELECT3D];
+        }
+        
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
 
 @end

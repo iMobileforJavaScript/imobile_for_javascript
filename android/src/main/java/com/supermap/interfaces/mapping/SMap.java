@@ -820,33 +820,38 @@ public class SMap extends ReactContextBaseJavaModule {
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             boolean mapSaved = false;
             boolean wsSaved = false;
-            if (name == null || name.equals("")) {
+            String _name = name;
+            if (_name == null || _name.equals("")) {
                 if (map.getName() != null && !map.getName().equals("")) {
                     mapSaved = map.save();
                 } else if (map.getLayers().getCount() > 0) {
-                    name = map.getLayers().get(0).getName();
+                    _name = map.getLayers().get(0).getName();
                     int i = 0;
                     if (autoNaming) {
                         while (!mapSaved) {
-                            String newName = i == 0 ? name : (name + i);
+                            _name = i == 0 ? name : (name + i);
                             try {
-                                mapSaved = map.save(newName);
+                                mapSaved = map.save(_name);
                             } catch (Exception e) {
                                 mapSaved = false;
                             }
                             i++;
                         }
                     } else {
-                        mapSaved = map.save(name);
+                        mapSaved = map.save(_name);
                     }
                 }
             } else {
-                mapSaved = map.save(name);
+                mapSaved = map.save(_name);
             }
             wsSaved = sMap.smMapWC.getWorkspace().save();
 //            wsSaved = true;
 
-            promise.resolve(mapSaved && wsSaved);
+            if (mapSaved && wsSaved) {
+                promise.resolve(_name);
+            } else {
+                promise.resolve(mapSaved && wsSaved);
+            }
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -1818,9 +1823,12 @@ public class SMap extends ReactContextBaseJavaModule {
             ArrayList<Dataset> datasets_point = new ArrayList<>();
             ArrayList<Dataset> datasets_line = new ArrayList<>();
             ArrayList<Dataset> datasets_region = new ArrayList<>();
+            ArrayList<Dataset> datasets_text = new ArrayList<>();
+            ArrayList<Dataset> datasets_else = new ArrayList<>();
             for (int i = 0; i < datasetNames.size(); i++) {
                 String datasetName = datasetNames.getString(i);
                 Dataset dataset = datasource.getDatasets().get(datasetName);
+
 
                 if (dataset.getType() == DatasetType.REGION || dataset.getType() == DatasetType.REGION3D) {
                     datasets_region.add(dataset);
@@ -1829,13 +1837,19 @@ public class SMap extends ReactContextBaseJavaModule {
                     datasets_line.add(dataset);
                 } else if (dataset.getType() == DatasetType.POINT || dataset.getType() == DatasetType.POINT3D) {
                     datasets_point.add(dataset);
+                } else if (dataset.getType() == DatasetType.TEXT) {
+                    datasets_text.add(dataset);
+                } else {
+                    datasets_else.add(dataset);
                 }
             }
 
             ArrayList<Dataset> datasets = new ArrayList<>();
+            datasets.addAll(datasets_else);
             datasets.addAll(datasets_region);
             datasets.addAll(datasets_line);
             datasets.addAll(datasets_point);
+            datasets.addAll(datasets_text);
 
             for (int i = 0; i < datasets.size(); i++) {
                 Dataset dataset = datasets.get(i);

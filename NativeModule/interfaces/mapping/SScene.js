@@ -630,6 +630,7 @@ export default (function () {
             console.error(error);
         }
     }
+
     
     function setNavigationControlVisible(value){
         try {

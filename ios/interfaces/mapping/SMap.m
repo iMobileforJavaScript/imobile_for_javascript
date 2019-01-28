@@ -569,31 +569,36 @@ RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)auto
     @try {
         BOOL mapSaved = NO;
         BOOL wsSaved = NO;
+        NSString* _name = name;
         Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
-        if (name == nil || [name isEqualToString:@""]) {
+        if (_name == nil || [_name isEqualToString:@""]) {
             if (map.name && ![map.name isEqualToString:@""]) {
                 mapSaved = [map save];
             } else if (map.layers.getCount > 0) {
                 Layer* layer = [map.layers getLayerAtIndex:map.layers.getCount - 1];
                 NSArray* nameArr = [layer.name componentsSeparatedByString:@"@"];
-                name = nameArr[0];
+                _name = nameArr[0];
                 if (autoNaming) {
                     int i = 0;
                     while (!mapSaved) {
-                        NSString* newName = i == 0 ? name : [NSString stringWithFormat:@"%@#%d", name, i];
-                        mapSaved = [map save:newName];
+                        _name = i == 0 ? name : [NSString stringWithFormat:@"%@#%d", name, i];
+                        mapSaved = [map save:_name];
                         i++;
                     }
                 } else {
-                    mapSaved = [map save:name];
+                    mapSaved = [map save:_name];
                 }
             }
         } else {
-            mapSaved = [map save:name];
+            mapSaved = [map save:_name];
         }
         wsSaved = [[SMap singletonInstance].smMapWC.workspace save];
         
-        resolve([NSNumber numberWithBool:mapSaved && wsSaved]);
+        if (mapSaved && wsSaved) {
+            resolve(_name);
+        } else {
+            resolve([NSNumber numberWithBool:mapSaved && wsSaved]);
+        }
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
