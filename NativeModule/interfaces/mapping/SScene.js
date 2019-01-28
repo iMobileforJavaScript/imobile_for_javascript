@@ -638,7 +638,21 @@ export default (function () {
             console.error(error);
         }
     }
-
+    function setAction(action3d){
+        try {
+            return SScene.setAction(action3d)
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    
+    function getAttributeByName(name){
+        try {
+            return SScene.getAttributeByName(name)
+        } catch (error) {
+            console.error(error);
+        }
+    }
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -733,6 +747,8 @@ export default (function () {
         export3DScenceName,
         resetCamera,
         setNavigationControlVisible,
+        setAction,
+        getAttributeByName,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
