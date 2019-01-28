@@ -1819,21 +1819,17 @@ public class SMap extends ReactContextBaseJavaModule {
             Datasource datasource = workspace.getDatasources().get(datastourceName);
             com.supermap.mapping.Map map =  sMap.smMapWC.getMapControl().getMap();
             Layers layers = map.getLayers();
-<<<<<<< HEAD
-=======
 
             ArrayList<Dataset> datasets_point = new ArrayList<>();
             ArrayList<Dataset> datasets_line = new ArrayList<>();
             ArrayList<Dataset> datasets_region = new ArrayList<>();
             ArrayList<Dataset> datasets_text = new ArrayList<>();
             ArrayList<Dataset> datasets_else = new ArrayList<>();
->>>>>>> 3edb4023dd2e53f44ac5c6cd3201fa195b3b9267
             for (int i = 0; i < datasetNames.size(); i++) {
                 String datasetName = datasetNames.getString(i);
                 Dataset dataset = datasource.getDatasets().get(datasetName);
 
-<<<<<<< HEAD
-=======
+
                 if (dataset.getType() == DatasetType.REGION || dataset.getType() == DatasetType.REGION3D) {
                     datasets_region.add(dataset);
                 } else if (dataset.getType() == DatasetType.LINE || dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D
@@ -1858,7 +1854,6 @@ public class SMap extends ReactContextBaseJavaModule {
             for (int i = 0; i < datasets.size(); i++) {
                 Dataset dataset = datasets.get(i);
 
->>>>>>> 3edb4023dd2e53f44ac5c6cd3201fa195b3b9267
                 Layer layer = layers.add(dataset, true);
                 if (dataset.getType() == DatasetType.REGION ) {
                     LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();

@@ -507,12 +507,8 @@ public class SScene extends ReactContextBaseJavaModule {
 
             }
             else {
-<<<<<<< HEAD
-               scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead, "c768f9fd3e388eb0d155405f8d8c6999");
-=======
                scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead,token);
 
->>>>>>> 3edb4023dd2e53f44ac5c6cd3201fa195b3b9267
             }
             scene.refresh();
             promise.resolve(true);
@@ -1441,14 +1437,10 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
-<<<<<<< HEAD
-    /**
-     * 关闭工作空间及地图控件
-=======
+
 
     /**
      *
->>>>>>> 3edb4023dd2e53f44ac5c6cd3201fa195b3b9267
      */
     @ReactMethod
     public void flyToFeatureById(int id,Promise promise) {
