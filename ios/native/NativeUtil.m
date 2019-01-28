@@ -67,8 +67,8 @@
     }
     
     NSMutableArray* recordArray = [[NSMutableArray alloc] init];
-//    while(( ![recordset isEOF] && count < size ) ){
-    while(recordset.recordCount > 0 && ![recordset isEOF]){
+    while(( ![recordset isEOF] && count < size ) ){
+    //while(recordset.recordCount > 0 && ![recordset isEOF]){
         NSMutableArray* arr = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics];
         [recordArray addObject:arr];
         [recordset moveNext];

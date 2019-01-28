@@ -108,7 +108,8 @@ public class JsonUtil {
         //JS数组，存放
         WritableArray recordArray = Arguments.createArray();
 
-        while (!recordset.isEmpty() && !recordset.isEOF() && count < size) {
+        while (!recordset.isEmpty() && !recordset.isEOF() && count < size)
+        {
 //            WritableMap recordsMap = parseRecordset(recordset, fields);
 //            recordArray.pushMap(recordsMap);
             WritableArray recordArr = parseRecordset(recordset, fields);
