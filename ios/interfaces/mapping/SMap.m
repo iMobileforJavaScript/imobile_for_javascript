@@ -1014,11 +1014,40 @@ RCT_REMAP_METHOD(addLayers, addLayers:(NSArray*)datasetNames dataSourceName:(NSS
         sMap = [SMap singletonInstance];
         Datasource* datasource = [sMap.smMapWC.workspace.datasources getAlias:dataSourceName];
         Layers* layers = sMap.smMapWC.mapControl.map.layers;
+        
+        NSMutableArray* dataset_Point = [[NSMutableArray alloc] init];
+        NSMutableArray* dataset_Line = [[NSMutableArray alloc] init];
+        NSMutableArray* dataset_Region = [[NSMutableArray alloc] init];
+        NSMutableArray* dataset_Text = [[NSMutableArray alloc] init];
+        NSMutableArray* dataset_Else = [[NSMutableArray alloc] init];
         NSInteger count = datasetNames.count;
         for (int i = 0; i < count; i++) {
             NSString* datasetName = [datasetNames objectAtIndex:i];
             Dataset* dataset = [datasource.datasets getWithName:datasetName];
-            [layers addDataset:dataset ToHead:true];
+            if (dataset.datasetType == REGION || dataset.datasetType == RegionZ) {
+                [dataset_Region addObject:dataset];
+            }
+            else if (dataset.datasetType == LINE || dataset.datasetType == Network || dataset.datasetType == NETWORK3D|| dataset.datasetType == LineZ) {
+                [dataset_Line addObject:dataset];
+            }
+            else if (dataset.datasetType == POINT || dataset.datasetType == PointZ) {
+                [dataset_Point addObject:dataset];
+            }
+            else if (dataset.datasetType == TEXT) {
+                [dataset_Text addObject:dataset];
+            }
+            else{
+                [dataset_Else addObject:dataset];
+            }
+        }
+        NSMutableArray* datasets = [[NSMutableArray alloc] init];
+        [datasets addObjectsFromArray:dataset_Region];
+        [datasets addObjectsFromArray:dataset_Line];
+        [datasets addObjectsFromArray:dataset_Point];
+        [datasets addObjectsFromArray:dataset_Text];
+        [datasets addObjectsFromArray:dataset_Else];
+        for (int i = 0; i < datasets.count; i++) {
+            [layers addDataset:[datasets objectAtIndex:i] ToHead:true];
         }
         [sMap.smMapWC.mapControl.map refresh];
     
