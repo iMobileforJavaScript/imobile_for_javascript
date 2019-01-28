@@ -10,6 +10,7 @@ import com.supermap.realspace.Feature3D;
 import com.supermap.realspace.Feature3DSearchOption;
 import com.supermap.realspace.Feature3Ds;
 import com.supermap.realspace.Layer3D;
+import com.supermap.realspace.Layer3DOSGBFile;
 import com.supermap.realspace.Layer3DType;
 import com.supermap.realspace.Layer3Ds;
 import com.supermap.realspace.Scene;
@@ -90,6 +91,112 @@ public class TouchUtil {
         }
         attributeMap.clear();
         return attributeMap;
+    }
+
+
+    /**
+     *获取有图层的所有对象的属性
+     *
+     * @param mSceneControl
+     */
+    public static Map<String, String> getAllAttribute(Layer3D layer,SceneControl mSceneControl) {
+        Map<String, String> attributeMap = new HashMap<>();
+        if (layer == null || layer.getName() == null) {
+              return null;
+        }
+        //如果是kml图层
+        if (layer.getType() == Layer3DType.KML) {
+            Feature3Ds feature3Ds = layer.getFeatures();
+            int feature3DsCount = feature3Ds.getCount();
+            for (int featureIndex = 0; featureIndex < feature3DsCount; featureIndex++) {
+                Feature3D feature3D = (Feature3D) feature3Ds.get(featureIndex);
+                String value = feature3D.getDescription();
+                String value1 = feature3D.getName();
+                attributeMap.put("name:", value1);
+                attributeMap.put("description:", value);
+
+            }
+        }
+
+        Scene tempScene = mSceneControl.getScene();
+        String sceneUrl = tempScene.getUrl();
+
+
+        FieldInfos fieldInfos = layer.getFieldInfos();
+        int filedInfosCount = fieldInfos.getCount();
+
+        Layer3DOSGBFile layer3d=null;
+        if (layer.getType() == Layer3DType.OSGBFILE){
+             layer3d = (Layer3DOSGBFile) layer;
+        }
+
+        Feature3Ds feature3Ds = layer3d.getFeatures();
+        int feature3DsCount = feature3Ds.getCount();
+        for (int featureIndex = 0; featureIndex < feature3DsCount; featureIndex++) {
+            Feature3D feature3D = (Feature3D) feature3Ds.get(featureIndex);
+            if (filedInfosCount > 0) {
+                vect(feature3D, layer, fieldInfos, attributeMap);
+            } else {
+                // 在线和本地是不一样 本地是UDB 在线是Json
+                if (sceneUrl == null || sceneUrl.isEmpty() || sceneUrl.equals("")) {
+                    Workspace mWorkspace = null;
+                    mWorkspace = new Workspace();
+                    Utils.urlNUll(tempScene, feature3D.getID(), mWorkspace, attributeMap);
+                }else {
+                    Utils.urlNoNULL(mSceneControl, sceneUrl, feature3D.getID(), attributeMap);
+                }
+
+            }
+            return attributeMap;
+        }
+
+        return attributeMap;
+    }
+
+
+    // 属性查询时的矢量数据
+    public static void vect(Feature3D feature3D, Layer3D layer, FieldInfos fieldInfos, Map<String, String> attributeMap) {
+        Feature3D feature = null;
+        Layer3DOSGBFile layer3d = null;
+        if (layer.getType() == Layer3DType.OSGBFILE) {
+
+            layer3d = (Layer3DOSGBFile) layer;
+            //Selection3D selection3d = layer3d.getSelection();
+        } else if (layer.getType() == Layer3DType.VECTORFILE) {
+            feature = feature3D;
+        }
+        int count = 0;
+        Object[] str = null;
+        if (feature == null) {
+            str = layer3d.getAllFieldValueOfLastSelectedObject();
+            if (str != null) {
+                count = str.length;
+            }
+        } else {
+            count = fieldInfos.getCount();
+        }
+
+        for (int j = 0; j < count; j++) {
+            String name = fieldInfos.get(j).getName();
+            //是否过滤
+            if (name.toLowerCase().startsWith("sm")) {
+                continue;
+            }
+            String strValue;
+            Object value;
+            if (feature == null) {
+                value = str[j];
+            } else {
+                value = feature.getFieldValue(name);
+            }
+            if (value.equals("NULL")) {
+                strValue = "";
+            } else {
+                strValue = value.toString();
+            }
+            attributeMap.put(name, strValue);
+        }
+
     }
 
     /**
