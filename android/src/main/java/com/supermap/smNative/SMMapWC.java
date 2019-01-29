@@ -311,7 +311,24 @@ public class SMMapWC {
         return info;
     }
 
-    ////////////////////
+    private boolean reNameFile(String strOldName, String strNewName, String strFolder) {
+        String strOld = strFolder + "/" + strOldName;
+        String strNew = strFolder + "/" + strNewName;
+
+//        boolean bFolder=true;
+        File oldFile = new File(strOld);
+        if (oldFile.exists() && !oldFile.isDirectory()) {
+            //存在
+            File newFile = new File(strNew);
+            if (newFile.exists() && !newFile.isDirectory()) {
+                newFile.delete();
+            }
+            copyFile(strOld, strNew);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     private String formateNoneExistDatasourceAlian(String alian, Workspace workspaceTemp) {
         if (workspaceTemp == null) {
@@ -1218,12 +1235,225 @@ public class SMMapWC {
         }
 //        }
 
+        String strMapRename = (String) infoMap.get("name_for_map");
+        String strDataRename = (String) infoMap.get("name_for_data");
+
+        int indexForData = 0;
+
+        String strDesMapDir = strCustomer + "/Map";
+        if (strModule != null && !strModule.equals("")) {
+            strDesMapDir = strDesMapDir + "/" + strModule;
+        }
+
         List<String> arrTemp = new ArrayList<>();
         for (int i = 0; i < importWorkspace.getMaps().getCount(); i++) {
             String strMapName = importWorkspace.getMaps().get(i);
             String strResName = saveMapName(strMapName, importWorkspace, strModule, dicAddition, true, false);
             if (strResName != null) {
-                arrTemp.add(strResName);
+//                arrTemp.add(strResName);
+
+                {
+                    if (strMapRename != null && !strMapRename.equals("")) {
+                        //1. 重命名xml和exp
+                        reNameFile(strResName + ".xml", strMapRename + ".xml", strDesMapDir);
+
+                        reNameFile(strResName + ".exp", strMapRename + ".exp", strDesMapDir);
+
+                        String strPathEXP = strDesMapDir + "/" + strMapRename + ".exp";
+
+                        String strMapEXP = stringWithContentsOfFile(strPathEXP, encodingUTF8);
+                        List<Map<String, String>> arrDatasources = new ArrayList<>();
+                        String strResources = "";
+                        String templateStr = null;
+                        try {
+                            JSONObject jsonObject = new JSONObject(strMapEXP);
+                            JSONArray jsonArray = jsonObject.optJSONArray("Datasources");
+                            if (jsonArray != null) {
+                                for (int index = 0; index < jsonArray.length(); index++) {
+                                    JSONObject datasourceObject = jsonArray.getJSONObject(index);
+                                    Map<String, String> datasourceMap = new HashMap<>();
+                                    datasourceMap.put("Alians", datasourceObject.optString("Alians"));
+                                    datasourceMap.put("Type", datasourceObject.optString("Type"));
+                                    datasourceMap.put("Server", datasourceObject.optString("Server"));
+                                    arrDatasources.add(datasourceMap);
+                                }
+                            }
+                            strResources = jsonObject.optString("Resources", null);
+                            templateStr = jsonObject.optString("Template", null);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        //2. 更名datasource
+                        List<Map<String, String>> arrNewDatasources = new ArrayList<>();
+                        if (strDataRename != null && !strDataRename.equals("")) {
+                            //datasource
+                            for (int k = 0; k < arrDatasources.size(); k++) {
+                                Map<String, String> dicTemp = arrDatasources.get(k);
+                                EngineType engineType = (EngineType) Enum.parse(EngineType.class, Integer.parseInt(dicTemp.get("Type")));
+                                if (engineType == EngineType.UDB || engineType == EngineType.IMAGEPLUGINS) {
+                                    String strDsRename = strDataRename + "_" + indexForData;
+                                    if (indexForData == 0) {
+                                        strDsRename = strDataRename;
+                                    }
+                                    indexForData++;
+
+                                    String strOldServer = dicTemp.get("Server");
+                                    String[] arrOldServer = strOldServer.split("/");
+                                    String strOldName = arrOldServer[arrOldServer.length - 1];
+                                    String[] arrOldName = strOldName.split("\\.");
+                                    String strSuffix = arrOldName[arrOldName.length - 1];
+
+                                    String strNewServer = strOldServer.substring(0, strOldServer.length() - strOldName.length() - 1) + "/" + strDsRename + "." + strSuffix;
+                                    reNameFile(strOldServer, strNewServer, strRootPath);
+
+                                    if (engineType == EngineType.UDB) {
+                                        reNameFile((strOldServer.substring(0, strOldServer.length() - 4) + ".udd")
+                                                , strNewServer.substring(0, strNewServer.length() - 4) + ".udd"
+                                                , strRootPath);
+                                    }
+
+                                    Map<String, String> dicNew = new HashMap<>();
+                                    dicNew.putAll(dicTemp);
+                                    dicNew.put("Server", strNewServer);
+                                    arrNewDatasources.add(dicNew);
+
+                                } else {
+                                    arrNewDatasources.add(dicTemp);
+                                }
+                            }
+                        } else {
+                            arrNewDatasources.addAll(arrDatasources);
+                        }
+
+                        //resource
+                        String strOldResource = strResources;
+                        String[] arrOldResource = strOldResource.split("/");
+                        String strOldName = arrOldResource[arrOldResource.length - 1];
+                        String strNewResource = strOldResource.substring(0, strOldResource.length() - strOldName.length()) + strMapName;
+                        reNameFile(strOldResource + ".sym", strNewResource + ".sym", strRootPath);
+                        reNameFile(strOldResource + ".lsl", strNewResource + ".lsl", strRootPath);
+                        reNameFile(strOldResource + ".bru", strNewResource + ".bru", strRootPath);
+
+
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put("Resources", strNewResource);
+                            JSONArray jsonArray = new JSONArray();
+                            for (Map<String, String> arrExpDatasource : arrNewDatasources) {
+                                jsonArray.put(new JSONObject(arrExpDatasource));
+                            }
+                            jsonObject.put("Datasources", jsonArray);
+                            //模板
+                            if (templateStr != null) {
+                                jsonObject.put("Template", templateStr);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        String strExplorerJson = jsonObject.toString();
+                        try {
+                            Writer outWriter = new OutputStreamWriter(new FileOutputStream(strPathEXP, true), encodingUTF8);
+                            outWriter.write(strExplorerJson);
+                            outWriter.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        arrTemp.add(strMapRename);
+                        strMapRename = new String(strMapRename + "_" + i);
+                    } else {
+
+                        //2. 更名datasource symbol
+                        if (strDataRename != null && !strDataRename.equals("")) {
+                            String strPathEXP = strDesMapDir + "/" + strResName + ".exp";
+
+                            String strMapEXP = stringWithContentsOfFile(strPathEXP, encodingUTF8);
+                            List<Map<String, String>> arrDatasources = new ArrayList<>();
+                            String strResources = "";
+                            String templateStr = null;
+                            try {
+                                JSONObject jsonObject = new JSONObject(strMapEXP);
+                                JSONArray jsonArray = jsonObject.optJSONArray("Datasources");
+                                if (jsonArray != null) {
+                                    for (int index = 0; index < jsonArray.length(); index++) {
+                                        JSONObject datasourceObject = jsonArray.getJSONObject(index);
+                                        Map<String, String> datasourceMap = new HashMap<>();
+                                        datasourceMap.put("Alians", datasourceObject.optString("Alians"));
+                                        datasourceMap.put("Type", datasourceObject.optString("Type"));
+                                        datasourceMap.put("Server", datasourceObject.optString("Server"));
+                                        arrDatasources.add(datasourceMap);
+                                    }
+                                }
+                                strResources = jsonObject.optString("Resources", "");
+                                templateStr = jsonObject.optString("Template", null);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            List<Map<String, String>> arrNewDatasources = new ArrayList<>();
+                            arrNewDatasources.addAll(arrDatasources);
+                            for (int k = 0; k < arrDatasources.size(); k++) {
+                                Map<String, String> dicTemp = arrDatasources.get(k);
+                                EngineType engineType = (EngineType) Enum.parse(EngineType.class, Integer.parseInt(dicTemp.get("Type")));
+                                if (engineType == EngineType.UDB || engineType == EngineType.IMAGEPLUGINS) {
+
+                                    String strDsRename = strDataRename + "_" + indexForData;
+                                    if (indexForData == 0) {
+                                        strDsRename = strDataRename;
+                                    }
+                                    indexForData++;
+
+                                    String strOldServer = dicTemp.get("Server");
+                                    String[] arrOldServer = strOldServer.split("/");
+                                    String strOldName = arrOldServer[arrOldServer.length - 1];
+                                    String[] arrOldName = strOldName.split("\\.");
+                                    String strSuffix = arrOldName[arrOldName.length - 1];
+
+                                    String strNewServer = strOldServer.substring(0, strOldServer.length() - strOldName.length() - 1)
+                                            + "/" + strDsRename + "." + strSuffix;
+                                    reNameFile(strOldServer, strNewServer, strRootPath);
+
+                                    if (engineType == EngineType.UDB) {
+                                        reNameFile(strOldServer.substring(0, strOldServer.length() - 4) + ".udd"
+                                                , strNewServer.substring(0, strNewServer.length() - 4) + ".udd", strRootPath);
+                                    }
+
+                                    dicTemp.put("Server", strNewServer);
+                                    arrNewDatasources.add(dicTemp);
+                                } else {
+                                    arrNewDatasources.add(dicTemp);
+                                }
+
+
+                            }
+
+                            JSONObject jsonObject = new JSONObject();
+                            try {
+                                jsonObject.put("Resources", strResources);
+                                JSONArray jsonArray = new JSONArray();
+                                for (Map<String, String> arrExpDatasource : arrNewDatasources) {
+                                    jsonArray.put(new JSONObject(arrExpDatasource));
+                                }
+                                jsonObject.put("Datasources", jsonArray);
+                                //模板
+                                if (templateStr != null) {
+                                    jsonObject.put("Template", templateStr);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            String strExplorerJson = jsonObject.toString();
+                            try {
+                                Writer outWriter = new OutputStreamWriter(new FileOutputStream(strPathEXP, true), encodingUTF8);
+                                outWriter.write(strExplorerJson);
+                                outWriter.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        arrTemp.add(strResName);
+                    }
+                }
             }
         }
 
