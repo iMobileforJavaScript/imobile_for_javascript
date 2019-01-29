@@ -1240,7 +1240,7 @@ public class SMMapWC {
 
         int indexForData = 0;
 
-        String strDesMapDir = strCustomer + "Map";
+        String strDesMapDir = strCustomer + "/Map";
         if (strModule != null && !strModule.equals("")) {
             strDesMapDir = strDesMapDir + "/" + strModule;
         }
