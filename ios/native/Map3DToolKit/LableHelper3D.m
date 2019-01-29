@@ -297,7 +297,11 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
             for (int index = 0; index < myPoint3DArrayList.count; index++) {
                 GeoPoint3D* point3D = myPoint3DArrayList[index];
                 GeoPlacemark* geoPlacemark = [[GeoPlacemark alloc]initWithName:geoTextStrList[index] andGeomentry:point3D];//new GeoPlacemark(geoTextStrList.get(index), new GeoPoint3D(point3D));
+                GeoStyle3D* textStyle3D = [[GeoStyle3D alloc]init];
+                textStyle3D.altitudeMode = Absolute3D; // setAltitudeMode(AltitudeMode.ABSOLUTE);
+                geoPlacemark.style3D = textStyle3D;
                 TextStyle* textStyle = [[TextStyle alloc]init];;
+                
                 [textStyle setForeColor:[ [Color alloc]initWithR:255 G:255 B:255]];
                 [textStyle setFontWidth:22];
                 [textStyle setFontHeight:12];
