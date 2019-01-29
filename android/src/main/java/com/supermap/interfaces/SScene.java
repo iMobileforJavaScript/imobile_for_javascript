@@ -46,6 +46,7 @@ import android.os.Looper;
 
 import java.io.File;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Timer;
@@ -1211,6 +1212,9 @@ public class SScene extends ReactContextBaseJavaModule {
             AnalysisHelper.getInstence().setMeasureDisCallBack(new AnalysisHelper.DistanceCallBack() {
                 @Override
                 public void distanceResult(double distance) {
+
+                    DecimalFormat df = new DecimalFormat("#.000000");
+                    df.format(distance);
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ANALYST_MEASURELINE, distance);
                 }
             }).startMeasureAnalysis();
