@@ -540,6 +540,17 @@ RCT_REMAP_METHOD(getAllUserSymbolLibList,getAllUserSymbolLibList:(NSInteger)curr
         reject(kTAG,@"getAllUserSymbolLibList failed",nil);
     }
 }
+#pragma mark ---------------------------- removeCookie
+RCT_REMAP_METHOD(removeCookie, removeCookieResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        for (NSHTTPCookie *cookie in cookieStorage.cookies) {
+            [cookieStorage deleteCookie:cookie];
+        }
+    }@catch(NSException* exception){
+        reject(kTAG,@"getAllUserSymbolLibList failed",nil);
+    }
+}
 # pragma mark ---------------------------- 下载协议
 - (void)bytesWritten:(int64_t) bytesWritten totalBytesWritten:(int64_t) totalBytesWritten
 totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
