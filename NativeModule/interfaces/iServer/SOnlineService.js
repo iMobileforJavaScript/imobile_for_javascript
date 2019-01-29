@@ -22,13 +22,7 @@ function syncAndroidCookie() {
   }
   return 'undefined'
 }
-/** 仅支持android*/
-function removeCookie() {
-  if(Platform.OS === 'android'){
-    return OnlineServiceNative.removeCookie()
-  }
-  return 'undefined'
-}
+
 /** 仅支持android*/
 function cacheImage(imageUrl,saveImagePath) {
   if(Platform.OS === 'android'){
@@ -36,9 +30,12 @@ function cacheImage(imageUrl,saveImagePath) {
   }
   return '不支持ios的缓存'
 }
+function removeCookie() {
+  return OnlineServiceNative.removeCookie()
+}
 
 function objCallBack(){
-  return callBackIOS;
+  return new NativeEventEmitter(OnlineServiceNative);
 }
 
 function uploadFile(path, dataName, handler) {
@@ -68,8 +65,6 @@ function uploadFile(path, dataName, handler) {
   }
   OnlineServiceNative.upload(path, dataName);
 }
-
-
 
 function downloadFile(path, onlineDataName) {
   OnlineServiceNative.download(path, onlineDataName);

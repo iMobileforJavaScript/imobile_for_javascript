@@ -1330,7 +1330,7 @@ public class SMMapWC {
                         String strOldResource = strResources;
                         String[] arrOldResource = strOldResource.split("/");
                         String strOldName = arrOldResource[arrOldResource.length - 1];
-                        String strNewResource = strOldResource.substring(0, strOldResource.length() - strOldName.length()) + strMapName;
+                        String strNewResource = strOldResource.substring(0, strOldResource.length() - strOldName.length()) + strMapRename;
                         reNameFile(strOldResource + ".sym", strNewResource + ".sym", strRootPath);
                         reNameFile(strOldResource + ".lsl", strNewResource + ".lsl", strRootPath);
                         reNameFile(strOldResource + ".bru", strNewResource + ".bru", strRootPath);
@@ -1353,7 +1353,7 @@ public class SMMapWC {
                         }
                         String strExplorerJson = jsonObject.toString();
                         try {
-                            Writer outWriter = new OutputStreamWriter(new FileOutputStream(strPathEXP, true), encodingUTF8);
+                            Writer outWriter = new OutputStreamWriter(new FileOutputStream(strPathEXP, false), encodingUTF8);
                             outWriter.write(strExplorerJson);
                             outWriter.close();
                         } catch (IOException e) {
@@ -1444,7 +1444,7 @@ public class SMMapWC {
                             }
                             String strExplorerJson = jsonObject.toString();
                             try {
-                                Writer outWriter = new OutputStreamWriter(new FileOutputStream(strPathEXP, true), encodingUTF8);
+                                Writer outWriter = new OutputStreamWriter(new FileOutputStream(strPathEXP, false), encodingUTF8);
                                 outWriter.write(strExplorerJson);
                                 outWriter.close();
                             } catch (IOException e) {
