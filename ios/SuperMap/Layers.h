@@ -1,4 +1,4 @@
-﻿//
+//
 //  Layers.h
 //  Visualization
 //
@@ -105,6 +105,30 @@
 	 * @return 成功返回真。
  */
 -(BOOL)moveTo:(int)srcIndex desIndex:(int)desIndex;
+/**
+ * @brief 图层上移。
+ * @param srcIndex 将要移动图层索引，desIndex 移动图层位置。
+ * @return 成功返回真。
+ */
+-(BOOL)moveUp:(int)srcIndex;
+/**
+ * @brief 图层下移。
+ * @param srcIndex 将要移动图层索引，desIndex 移动图层位置。
+ * @return 成功返回真。
+ */
+-(BOOL)moveDown:(int)srcIndex;
+/**
+ * @brief 图层置顶。
+ * @param srcIndex 将要移动图层索引，desIndex 移动图层位置。
+ * @return 成功返回真。
+ */
+-(BOOL)moveTop:(int)srcIndex;
+/**
+ * @brief 图层置底。
+ * @param srcIndex 将要移动图层索引，desIndex 移动图层位置。
+ * @return 成功返回真。
+ */
+-(BOOL)moveBottom:(int)srcIndex;
 
 /**
  * 通过SLD文件，向图层集合中添加图层

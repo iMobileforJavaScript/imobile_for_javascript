@@ -251,15 +251,7 @@ RCT_REMAP_METHOD(moveUpLayer, moveUpLayerWithIndexByParams:(NSString*)layerName 
         SMap* sMap = [SMap singletonInstance];
         int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
         bool result =  false;
-        if (index <0 || index >= sMap.smMapWC.mapControl.map.layers.getCount) {
-            resolve([NSNumber numberWithBool:false]);
-            return;
-        }
-        if (index == 0) {
-            resolve([NSNumber numberWithBool:true]);
-            return;
-        }
-        result = [sMap.smMapWC.mapControl.map.layers moveTo:index desIndex:index-1];
+        result = [sMap.smMapWC.mapControl.map.layers moveUp:index];
         [sMap.smMapWC.mapControl.map refresh];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
@@ -273,15 +265,35 @@ RCT_REMAP_METHOD(moveDownLayer, moveDownLayerWithResolver:(NSString*)layerName r
         SMap* sMap = [SMap singletonInstance];
         int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
         bool result =  false;
-        if (index <0 || index >= sMap.smMapWC.mapControl.map.layers.getCount) {
-            resolve([NSNumber numberWithBool:false]);
-            return;
-        }
-        if (index == sMap.smMapWC.mapControl.map.layers.getCount - 1) {
-            resolve([NSNumber numberWithBool:true]);
-            return;
-        }
-        result = [sMap.smMapWC.mapControl.map.layers moveTo:index desIndex:index+1];
+        result = [sMap.smMapWC.mapControl.map.layers moveDown:index];
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 移动到顶层
+RCT_REMAP_METHOD(moveToTop, moveToTopWithResolver:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
+        bool result =  false;
+        result = [sMap.smMapWC.mapControl.map.layers moveTop:index];
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 移动到底层
+RCT_REMAP_METHOD(moveToBottom, moveToBottomWithResolver:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
+        bool result =  false;
+        result = [sMap.smMapWC.mapControl.map.layers moveBottom:index];
         [sMap.smMapWC.mapControl.map refresh];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
