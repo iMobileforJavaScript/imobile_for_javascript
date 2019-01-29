@@ -1453,6 +1453,7 @@ RCT_REMAP_METHOD(setMeasureLineAnalyst, setMeasureLineAnalystResolver:(RCTPromis
     }
 }
 -(void)distanceResult:(double)distance{
+    distance = ((int)(distance*1000000+0.5))/1000000.0;
     [self sendEventWithName:ANALYST_MEASURELINE body:@(distance)];
 }
 
