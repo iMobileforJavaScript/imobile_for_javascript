@@ -761,6 +761,7 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void flyStart(Promise promise) {
         try {
+            FlyHelper.getInstence().flyPause();
             FlyHelper.getInstence().flyStart();
             promise.resolve(true);
         } catch (Exception e) {

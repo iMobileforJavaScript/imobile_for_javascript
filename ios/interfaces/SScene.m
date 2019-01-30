@@ -965,6 +965,7 @@ RCT_REMAP_METHOD(setPosition, index:(int)index setPosition:(RCTPromiseResolveBlo
  */
 RCT_REMAP_METHOD(flyStart,  flyStart:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+        [[FlyHelper3D sharedInstance] flyPause];
         [[FlyHelper3D sharedInstance] flyStart];
         resolve(@(1));
     } @catch (NSException *exception) {
