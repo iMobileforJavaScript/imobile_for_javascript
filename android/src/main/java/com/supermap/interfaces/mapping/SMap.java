@@ -1028,7 +1028,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void moveTo(ReadableMap point, Promise promise) {
+    public void moveToPoint(ReadableMap point, Promise promise) {
         try {
             if (point.hasKey("x") && point.hasKey("y")) {
                 Point2D point2D = new Point2D(point.getDouble("x"), point.getDouble("y"));

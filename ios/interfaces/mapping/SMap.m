@@ -560,7 +560,7 @@ RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBloc
 }
 
 #pragma mark 移动到指定位置
-RCT_REMAP_METHOD(moveTo, moveToWithPoint:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(moveToPoint, moveToPointWithPoint:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         if (![[point allKeys] containsObject:@"x"] || !![[point allKeys] containsObject:@"y"]){
             resolve([NSNumber numberWithBool:NO]);

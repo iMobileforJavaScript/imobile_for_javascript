@@ -234,11 +234,12 @@ export default (function () {
    * 移动到指定位置
    * 默认北京
    */
-  function moveTo(point = {x: 116.35805, y: 39.70361}) {
+  function moveToPoint(point = {x: 116.35805, y: 39.70361}) {
     try {
-      console.log('moveTo')
-      if (point.x === undefined || point.y === undefined)
-      return SMap.moveTo(point)
+      console.warn('moveToPoint 1' + JSON.stringify(point))
+      if (point.x === undefined || point.y === undefined) return
+      console.warn('moveToPoint 2' + JSON.stringify(point))
+      return SMap.moveToPoint(point)
     } catch (e) {
       console.error(e)
     }
@@ -792,7 +793,7 @@ export default (function () {
     zoom,
     setScale,
     moveToCurrent,
-    moveTo,
+    moveToPoint,
     closeMap,
     getUDBName,
     submit,
