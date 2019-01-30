@@ -210,9 +210,35 @@ export default (function () {
   /**
    * 地图放大缩小
    */
+  function setScale(scale) {
+    try {
+      if (scale === undefined) return false
+      return SMap.setScale(scale)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移动到当前位置
+   */
   function moveToCurrent() {
     try {
       return SMap.moveToCurrent()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移动到指定位置
+   * 默认北京
+   */
+  function moveTo(point = {x: 116.35805, y: 39.70361}) {
+    try {
+      console.log('moveTo')
+      if (point.x === undefined || point.y === undefined)
+      return SMap.moveTo(point)
     } catch (e) {
       console.error(e)
     }
@@ -764,7 +790,9 @@ export default (function () {
     saveMap,
     saveAsMap,
     zoom,
+    setScale,
     moveToCurrent,
+    moveTo,
     closeMap,
     getUDBName,
     submit,
