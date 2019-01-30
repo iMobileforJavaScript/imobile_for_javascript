@@ -166,7 +166,8 @@ public class SMLayer {
         DatasetVector dv = (DatasetVector) layer.getDataset();
 
         Recordset recordset = dv.getRecordset(false, CursorType.DYNAMIC);
-        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, recordset.getRecordCount());
+        int nCount = recordset.getRecordCount()>20 ?20:recordset.getRecordCount();
+        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, nCount);
         return recordArray;
     }
 
@@ -175,7 +176,8 @@ public class SMLayer {
         Selection selection = layer.getSelection();
 
         Recordset recordset = selection.toRecordset();
-        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, recordset.getRecordCount());
+        int nCount = recordset.getRecordCount()>20 ?20:recordset.getRecordCount();
+        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, nCount);
         recordset.dispose();
         recordset = null;
         return recordArray;
