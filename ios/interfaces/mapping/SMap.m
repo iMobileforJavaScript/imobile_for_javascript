@@ -249,6 +249,46 @@ RCT_REMAP_METHOD(closeMapControl, closeMapControlWithResolver:(RCTPromiseResolve
 }
 
 #pragma mark 根据名字显示图层
+RCT_REMAP_METHOD(openMapsByFile, openMapsByFile:(NSString*)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSString* type = [path pathExtension];
+        WorkspaceType workspaceType;
+        
+        if ( [type isEqualToString:@"sxw"] ) {
+            workspaceType = SM_SXW;
+        }else if( [type isEqualToString:@"smw"] ){
+            workspaceType = SM_SMW;
+        }else if( [type isEqualToString:@"sxwu"] ){
+            workspaceType = SM_SXWU;
+        }else if( [type isEqualToString:@"smwu"] ){
+            workspaceType = SM_SMWU;
+        }
+        
+        Workspace* ws = [[Workspace alloc] init];
+        WorkspaceConnectionInfo* wsInfo = [[WorkspaceConnectionInfo alloc] init];
+        wsInfo.server = path;
+        wsInfo.type = workspaceType;
+        
+        BOOL result = [ws open:wsInfo];
+        
+        NSMutableArray* mapArr = [[NSMutableArray alloc] init];
+        if (result && ws.maps.count > 0) {
+            for (int i = 0; i < ws.maps.count; i++) {
+                [mapArr addObject:[ws.maps get:i]];
+            }
+        }
+        
+        [ws close];
+        [wsInfo dispose];
+        [ws dispose];
+        
+        resolve(mapArr);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 根据名字显示图层
 RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)viewEntire center:(NSDictionary *)center resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
