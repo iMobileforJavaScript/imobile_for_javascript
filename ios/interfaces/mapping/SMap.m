@@ -927,6 +927,10 @@ RCT_REMAP_METHOD(addDatasetToMap, addDatasetToMapWithResolver:(NSDictionary*)dat
 }
 
 #pragma mark 导出地图为工作空间
+// strMapName 地图名字（不含后缀）
+// ofModule 模块名（默认传空）
+// isPrivate 是否是用户数据
+// exportWorkspacePath 导出的工作空间绝对路径（含后缀）
 RCT_REMAP_METHOD(exportWorkspaceByMap, exportWorkspaceByMap:(NSString*)strMapName ofModule:(NSString *)nModule isPrivate:(BOOL)bPrivate exportWorkspacePath:(NSString *)exportWorkspacePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
