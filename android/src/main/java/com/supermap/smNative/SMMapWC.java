@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.DoubleBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -885,7 +886,11 @@ public class SMMapWC {
                     ArrayList<Object> list = indexArray.toArrayList();
                     ArrayList<Integer> list2 = new ArrayList<>();
                     for (int i1 = 0; i1 < list.size(); i1++) {
-                        list2.add(Integer.parseInt((String)list.get(i1)));
+                        String ind = list.get(i1).toString();
+                        if (ind.lastIndexOf(".") > 0) {
+                            ind = ind.substring(0, ind.lastIndexOf("."));
+                        }
+                        list2.add(Integer.parseInt(ind));
                     }
                     Collections.reverse(list2);
                     for (int index = 0; index < list2.size(); index++) {
