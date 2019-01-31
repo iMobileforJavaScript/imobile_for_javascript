@@ -176,7 +176,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void openDatasourceWithIndex(ReadableMap data, int defaultIndex, boolean toHead, Promise promise) {
+    public void openDatasourceWithIndex(ReadableMap data, int defaultIndex, boolean toHead, boolean visable, Promise promise) {
         try {
             sMap = getInstance();
             Map params = data.toHashMap();
@@ -187,6 +187,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 Dataset ds = datasource.getDatasets().get(defaultIndex);
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                 Layer layer = map.getLayers().add(ds, toHead);
+                layer.setVisible(visable);
                  if (ds.getType() == DatasetType.REGION ) {
                     LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
                     setting.getStyle().setLineSymbolID(5);
@@ -225,7 +226,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void openDatasourceWithName(ReadableMap data, String defaultName, boolean toHead, Promise promise) {
+    public void openDatasourceWithName(ReadableMap data, String defaultName, boolean toHead,  boolean visable, Promise promise) {
         try {
             sMap = getInstance();
             Map params = data.toHashMap();
@@ -234,7 +235,8 @@ public class SMap extends ReactContextBaseJavaModule {
 
             if (datasource != null && !defaultName.equals("")) {
                 Dataset ds = datasource.getDatasets().get(defaultName);
-                sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, toHead);
+                Layer layer = sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, toHead);
+                layer.setVisible(visable);
             }
             sMap.smMapWC.getMapControl().getMap().refresh();
 
