@@ -1383,6 +1383,32 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+    // mapName 地图名字（不含后缀）
+    // ofModule 模块名（默认传空）
+    // isPrivate 是否是用户数据
+    // exportWorkspacePath 导出的工作空间绝对路径（含后缀）
+    @ReactMethod
+    public void exportWorkspaceByMap(String mapName,String moduleName,boolean isPrivate,String exportWorkspacePath, Promise promise) {
+        try {
+            sMap = getInstance();
+            boolean openResult = sMap.getSmMapWC().openMapName(mapName,sMap.getSmMapWC().getWorkspace(),moduleName,isPrivate);
+            boolean exportResult = false;
+            if(openResult){
+                WritableArray array = Arguments.createArray();
+                ((WritableArray) array).pushString(mapName);
+                exportResult = sMap.getSmMapWC().exportMapNames(array,exportWorkspacePath,true,null);
+                Maps maps = sMap.getSmMapWC().getWorkspace().getMaps();
+                maps.clear();
+                SMap.getInstance().getSmMapWC().getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(mapName,false);
+                SMap.getInstance().getSmMapWC().getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(mapName,false);
+                SMap.getInstance().getSmMapWC().getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(mapName,false);
+                sMap.getSmMapWC().getWorkspace().getDatasources().closeAll();
+            }
+            promise.resolve(exportResult);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 
     /**
      * 获取图层标题列表及对应的数据集类型

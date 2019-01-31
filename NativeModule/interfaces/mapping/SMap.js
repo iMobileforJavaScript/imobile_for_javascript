@@ -598,7 +598,23 @@ export default (function () {
       console.error(e)
     }
   }
-  
+
+  /**
+   * 导出工作空间
+   * @param mapName  地图名字（不含后缀）
+   * @param moduleName  模块名（默认传空）
+   * @param isPrivate  是否是用户数据
+   * @param exportWorkspacePath        导出的工作空间绝对路径（含后缀）
+   * @returns {*}
+   */
+  function exportWorkspaceByMap(mapName, moduleName = '', isPrivate = false, exportWorkspacePath){
+    try {
+      return SMap.exportWorkspaceByMap(mapName, moduleName, isPrivate, exportWorkspacePath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   /**
    * 获取地图信息
    * @returns {*}
@@ -855,6 +871,7 @@ export default (function () {
     setOverlapDisplayed,
     getMapsByFile,
     viewEntire,
+    exportWorkspaceByMap,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 
