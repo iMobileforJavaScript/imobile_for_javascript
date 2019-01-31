@@ -35,14 +35,14 @@ export default (function () {
    * @param value    图层 index / name
    * @returns {*}
    */
-  function openDatasource(params, value, toHead = true) {
+  function openDatasource(params, value, toHead = true ,visable = true) {
     try {
       if (typeof value === 'number') {
         value = value >= 0 ? value : -1
-        return SMap.openDatasourceWithIndex(params, value, toHead)
+        return SMap.openDatasourceWithIndex(params, value, toHead , visable)
       } else {
         value = value || ''
-        return SMap.openDatasourceWithName(params, value, toHead)
+        return SMap.openDatasourceWithName(params, value, toHead , visable)
       }
     } catch (e) {
       console.error(e)
