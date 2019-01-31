@@ -890,7 +890,7 @@ public class SMap extends ReactContextBaseJavaModule {
             boolean result = false;
             if (maps.getCount() > 0 && index < maps.getCount()) {
                 if (index == -1) {
-                    for (int i = 0; i < maps.getCount(); i++) {
+                    for (int i = maps.getCount() - 1; i >= 0; i--) {
                         String name = maps.get(i);
                         result = maps.remove(i) && result;
                         sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(name, false);
