@@ -240,7 +240,7 @@ RCT_REMAP_METHOD(cancelDownload, cancelDownloadResolver:(RCTPromiseResolveBlock)
         NSNumber* number =[NSNumber numberWithBool:YES];
         resolve(number);
     } @catch (NSException *exception) {
-        reject(kTAG, @"download failed", nil);
+        reject(kTAG, @"cancelDownload failed", nil);
     }
 }
 #pragma mark ---------------------------- cancelAllDownload
@@ -269,7 +269,7 @@ RCT_REMAP_METHOD(upload, uploadByPath:(NSString *)path fileName:(NSString *)file
         NSNumber* number =[NSNumber numberWithBool:YES];
         resolve(number);
     } @catch (NSException *exception) {
-        reject(kTAG, @"download failed", nil);
+        reject(kTAG, @"upload failed", nil);
     }
 }
 
@@ -536,6 +536,17 @@ RCT_REMAP_METHOD(getAllUserSymbolLibList,getAllUserSymbolLibList:(NSInteger)curr
                 resolve(dataJson);
             }
         }];
+    }@catch(NSException* exception){
+        reject(kTAG,@"getAllUserSymbolLibList failed",nil);
+    }
+}
+#pragma mark ---------------------------- removeCookie
+RCT_REMAP_METHOD(removeCookie, removeCookieResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        for (NSHTTPCookie *cookie in cookieStorage.cookies) {
+            [cookieStorage deleteCookie:cookie];
+        }
     }@catch(NSException* exception){
         reject(kTAG,@"getAllUserSymbolLibList failed",nil);
     }

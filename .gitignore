@@ -3,6 +3,11 @@
 ios/iPhoneOS.sdk
 ios/iPhoneSimulator.sdk
 ios/MessageQueue.sdk
+<<<<<<< HEAD
+=======
+ios/Supermap.xcodeproj/project.xcworkspace/xcuserdata/xianglongli.xcuserdatad/
+ios/Supermap.xcodeproj/xcuserdata/xianglongli.xcuserdatad/
+>>>>>>> 3631dc66a250c7a1e1f0f0434f1388d444064d1e
 
 android/imobile_for_reactnative.iml
 android/local.properties
@@ -23,5 +28,8 @@ android/src/.gradle/buildOutputCleanup/cache.properties.lock
 android/build.gradle
 android/build.gradle
 android/libs
+<<<<<<< HEAD
 ios/Supermap.xcodeproj/project.xcworkspace/xcuserdata/xianglongli.xcuserdatad/
 ios/Supermap.xcodeproj/xcuserdata/xianglongli.xcuserdatad/
+=======
+>>>>>>> 3631dc66a250c7a1e1f0f0434f1388d444064d1e

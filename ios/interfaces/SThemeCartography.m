@@ -1718,6 +1718,13 @@ RCT_REMAP_METHOD(getThemeExpressionByLayerName, getThemeExpressionByLayerNameWit
             [info setValue:dataset.datasource.alias forKey:@"datasourceName"];
             [info setValue:dataset.name forKey:@"datasetName"];
             [info setValue:fieldType forKey:@"fieldType"];
+            if ([strName isEqualToString:@"SmGeoPosition"]){
+                [info setObject:[NSNumber numberWithBool:true] forKey:(@"isSystemField")];
+            }
+            else{
+                NSNumber* num_IsSys = [NSNumber numberWithBool:fieldinfo.isSystemField];
+                [info setObject:num_IsSys forKey:(@"isSystemField")];
+            }
             [array addObject:info];
         }
         
@@ -1800,8 +1807,15 @@ RCT_REMAP_METHOD(getThemeExpressionByDatasetName, getThemeExpressionByDatasetNam
             NSString* fieldType = [SMThemeCartography getFieldType:fieldinfo];
             NSString* strName = fieldinfo.name;
             NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
-            [info setObject:(strName) forKey:(@"title")];
+            [info setObject:(strName) forKey:(@"expression")];
             [info setObject:(fieldType) forKey:(@"fieldType")];
+            if ([strName isEqualToString:@"SmGeoPosition"]){
+                [info setObject:[NSNumber numberWithBool:true] forKey:(@"isSystemField")];
+            }
+            else{
+                NSNumber* num_IsSys = [NSNumber numberWithBool:fieldinfo.isSystemField];
+                [info setObject:num_IsSys forKey:(@"isSystemField")];
+            }
             [array addObject:info];
         }
         NSMutableDictionary* mulDic2 = [[NSMutableDictionary alloc] init];

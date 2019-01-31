@@ -210,9 +210,36 @@ export default (function () {
   /**
    * 地图放大缩小
    */
+  function setScale(scale) {
+    try {
+      if (scale === undefined) return false
+      return SMap.setScale(scale)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移动到当前位置
+   */
   function moveToCurrent() {
     try {
       return SMap.moveToCurrent()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移动到指定位置
+   * 默认北京
+   */
+  function moveToPoint(point = {x: 116.35805, y: 39.70361}) {
+    try {
+      console.warn('moveToPoint 1' + JSON.stringify(point))
+      if (point.x === undefined || point.y === undefined) return
+      console.warn('moveToPoint 2' + JSON.stringify(point))
+      return SMap.moveToPoint(point)
     } catch (e) {
       console.error(e)
     }
@@ -752,6 +779,17 @@ export default (function () {
     }
   }
 
+  /**获取工作空间内地图的名称，返回一个数组，
+   * path：工作空间的绝对路径
+   * */
+  function getMapsByFile(path){
+    try{
+      return SMap.getMapsByFile(path)
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
   let SMapExp = {
     openWorkspace,
     openDatasource,
@@ -764,7 +802,9 @@ export default (function () {
     saveMap,
     saveAsMap,
     zoom,
+    setScale,
     moveToCurrent,
+    moveToPoint,
     closeMap,
     getUDBName,
     submit,
@@ -801,6 +841,7 @@ export default (function () {
     importSymbolLibrary,
     isOverlapDisplayed,
     setOverlapDisplayed,
+    getMapsByFile,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 

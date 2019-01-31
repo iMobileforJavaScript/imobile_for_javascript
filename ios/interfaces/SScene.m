@@ -965,6 +965,7 @@ RCT_REMAP_METHOD(setPosition, index:(int)index setPosition:(RCTPromiseResolveBlo
  */
 RCT_REMAP_METHOD(flyStart,  flyStart:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+        [[FlyHelper3D sharedInstance] flyPause];
         [[FlyHelper3D sharedInstance] flyStart];
         resolve(@(1));
     } @catch (NSException *exception) {
@@ -1453,6 +1454,7 @@ RCT_REMAP_METHOD(setMeasureLineAnalyst, setMeasureLineAnalystResolver:(RCTPromis
     }
 }
 -(void)distanceResult:(double)distance{
+    distance = ((int)(distance*1000000+0.5))/1000000.0;
     [self sendEventWithName:ANALYST_MEASURELINE body:@(distance)];
 }
 
@@ -1476,6 +1478,7 @@ RCT_REMAP_METHOD(setMeasureSquareAnalyst, setMeasureSquareAnalystResolver:(RCTPr
     }
 }
 -(void)areaResult:(double)area{
+    area = ((int)(area*1000000+0.5))/1000000.0;
     [self sendEventWithName:ANALYST_MEASURESQUARE body:@(area)];
 }
 

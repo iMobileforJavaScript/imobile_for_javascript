@@ -797,6 +797,24 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 设置比例尺
+     * @param scale
+     * @param promise
+     */
+    @ReactMethod
+    public void setScale(double scale, Promise promise) {
+        try {
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            map.setScale(scale);
+            map.refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     @ReactMethod
     public void submit(Promise promise) {
         try {
@@ -1007,12 +1025,40 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 移动到当前位置
+     * @param promise
+     */
+    @ReactMethod
+    public void moveToPoint(ReadableMap point, Promise promise) {
+        try {
+            if (point.hasKey("x") && point.hasKey("y")) {
+                Point2D point2D = new Point2D(point.getDouble("x"), point.getDouble("y"));
+                MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(point2D, promise);
+                moveToCurrentThread.run();
+
+//                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     class MoveToCurrentThread implements Runnable {
 
         private Promise promise;
+        private Point2D point2D;
 
         public MoveToCurrentThread(Promise promise) {
             this.promise = promise;
+        }
+
+        public MoveToCurrentThread(Point2D point2D, Promise promise) {
+            this.promise = promise;
+            this.point2D = point2D;
         }
 
         @Override
@@ -1022,8 +1068,13 @@ public class SMap extends ReactContextBaseJavaModule {
                 MapControl mapControl = sMap.smMapWC.getMapControl();
                 Collector collector = mapControl.getCollector();
 
-                collector.openGPS();
-                Point2D pt =collector.getGPSPoint();
+                Point2D pt;
+                if (this.point2D == null) {
+                    collector.openGPS();
+                    pt = collector.getGPSPoint();
+                } else {
+                    pt = this.point2D;
+                }
 
                 Boolean isMove = false;
                 if(pt != null) {
@@ -1940,6 +1991,44 @@ public class SMap extends ReactContextBaseJavaModule {
 
             promise.resolve(result);
         } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getMapsByFile(String path,Promise promise){
+        try{
+            WorkspaceType type = null;
+            if(path.contains("sxwu")){
+                type = WorkspaceType.SXWU;
+            }
+            else if(path.contains("smwu")){
+                type = WorkspaceType.SMWU;
+            }
+            else if(path.contains("sxw")){
+                type = WorkspaceType.SXW;
+            }
+            else if(path.contains("smw")){
+                type = WorkspaceType.SMW;
+            }
+            Workspace workspace = new Workspace();
+            WorkspaceConnectionInfo wsInfo = new WorkspaceConnectionInfo();
+            wsInfo.setServer(path);
+            wsInfo.setType(type);
+            boolean result = workspace.open(wsInfo);
+            WritableArray arr = Arguments.createArray();
+            if(result == true){
+                for(int i = 0; i < workspace.getMaps().getCount();i++){
+                    arr.pushString(workspace.getMaps().get(i));
+                }
+            }
+
+            workspace.close();
+            wsInfo.dispose();
+            workspace.dispose();
+
+            promise.resolve(arr);
+        }catch (Exception e){
             promise.reject(e);
         }
     }

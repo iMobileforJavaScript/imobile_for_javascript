@@ -761,6 +761,7 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void flyStart(Promise promise) {
         try {
+            FlyHelper.getInstence().flyPause();
             FlyHelper.getInstence().flyStart();
             promise.resolve(true);
         } catch (Exception e) {
@@ -1211,6 +1212,7 @@ public class SScene extends ReactContextBaseJavaModule {
             AnalysisHelper.getInstence().setMeasureDisCallBack(new AnalysisHelper.DistanceCallBack() {
                 @Override
                 public void distanceResult(double distance) {
+                    distance = ((int)(distance*1000000+0.5))/1000000.0;
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ANALYST_MEASURELINE, distance);
                 }
             }).startMeasureAnalysis();
@@ -1230,6 +1232,7 @@ public class SScene extends ReactContextBaseJavaModule {
             AnalysisHelper.getInstence().setMeasureAreaCallBack(new AnalysisHelper.AreaCallBack() {
                 @Override
                 public void areaResult(double area) {
+                    area = ((int)(area*1000000+0.5))/1000000.0;
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ANALYST_MEASURESQUARE, area);
                 }
 
@@ -1525,6 +1528,36 @@ public class SScene extends ReactContextBaseJavaModule {
                     break;
             }
             promise.resolve(false);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+
+    /**
+     *
+     *根据name获取图层属性
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void getAttributeByName(String name,Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
+            Layer3D layer3D=sceneControl.getScene().getLayers().get(name);
+            if(layer3D==null){
+                promise.resolve(null);
+            }else {
+                Map<String, String> attributeMap= TouchUtil.getAllAttribute(layer3D,sceneControl);
+                WritableMap map = Arguments.createMap();
+                for (Map.Entry<String, String> entry : attributeMap.entrySet()) {
+                    map.putString(entry.getKey(), entry.getValue());
+                }
+                promise.resolve(map);
+            }
+
         } catch (Exception e) {
             promise.reject(e);
         }

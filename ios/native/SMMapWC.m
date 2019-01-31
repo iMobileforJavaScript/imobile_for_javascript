@@ -911,6 +911,19 @@
         if ([SMap.singletonInstance.smMapWC.workspace.maps indexOf:mapName]!=-1) {
             // 打开map
             [mapExport open:mapName];
+            
+            //判断是否有不需要导出的图层
+            if(notExportMap&&[notExportMap objectForKey:mapName]){
+                NSMutableArray *indexArray=[notExportMap objectForKey:mapName];
+                indexArray = (NSMutableArray *)[[indexArray reverseObjectEnumerator] allObjects];
+                
+                for (int index=0; index<indexArray.count; index++) {
+                    NSNumber *indexLayer=[indexArray objectAtIndex:index];
+                    [mapExport.layers removeAt:[indexLayer intValue]];
+//                    [[mapExport.layers getLayerAtIndex:indexLayer.integerValue] setVisible:NO];
+                }
+            }
+            
             // 不重复的datasource保存
             NSMutableArray *arrDatasets = [[NSMutableArray alloc]init];
             for (int i=0; i<mapExport.layers.getCount; i++) {
@@ -924,20 +937,11 @@
                 }
             }
             
-            NSMutableArray *arrDatasources = [[NSMutableArray alloc]init];
+            //NSMutableArray *arrDatasources = [[NSMutableArray alloc]init];
             for (int i=0; i<arrDatasets.count; i++) {
                 Datasource* datasource = [(Dataset*)[arrDatasets objectAtIndex:i] datasource];
                 if (![arrDatasources containsObject:datasource]) {
                     [arrDatasources addObject:datasource];
-                }
-            }
-            
-            //判断是否有不需要导出的图层
-            if(notExportMap&&[notExportMap objectForKey:mapName]){
-                NSMutableArray *indexArray=[notExportMap objectForKey:mapName];
-                for (int index=0; index<indexArray.count; index++) {
-                    NSNumber *indexLayer=[indexArray objectAtIndex:index];
-                    [mapExport.layers removeAt:[indexLayer intValue]];
                 }
             }
             NSString* strMapXML = [mapExport toXML];

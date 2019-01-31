@@ -134,7 +134,8 @@
     DatasetVector* dv = (DatasetVector *)layer.dataset;
     
     Recordset* recordSet = [dv recordset:false cursorType:DYNAMIC];
-    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet count:0 size:1];
+    int nCount = recordSet.recordCount>20 ?20:recordSet.recordCount;
+    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet count:0 size:recordSet.recordCount];
     return dic;
 }
 
@@ -144,7 +145,8 @@
     Recordset* recordSet = selection.toRecordset;
     
     [recordSet moveFirst];
-    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet count:0 size:1];
+    int nCount = recordSet.recordCount>20 ?20:recordSet.recordCount;
+    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet count:0 size:recordSet.recordCount];
     [recordSet dispose];
     recordSet = nil;
     return dic;

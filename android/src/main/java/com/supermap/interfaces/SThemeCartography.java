@@ -10,6 +10,7 @@ import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMThemeCartography;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -2089,8 +2090,21 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             Workspace workspace = SMap.getSMWorkspace().getWorkspace();
             int count = workspace.getDatasources().getCount();
 
+            Datasources datasources = workspace.getDatasources();
+            int datasourcesCount = datasources.getCount();
+            ArrayList<Datasource> list = new ArrayList<>();
+            for (int i = 0; i < datasourcesCount; i++) {
+                Datasource datasource = datasources.get(i);
+                if (datasource.getConnectionInfo().getEngineType() == EngineType.UDB) {
+                    //除了UDB数据源都排除
+                    list.add(datasource);
+                }
+            }
+
             boolean isAnyOpenedDS = true;
             if (count <= 0) {
+                isAnyOpenedDS = false;
+            } else if (list.size() == 0) {
                 isAnyOpenedDS = false;
             }
             promise.resolve(isAnyOpenedDS);

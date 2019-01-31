@@ -248,6 +248,46 @@ RCT_REMAP_METHOD(closeMapControl, closeMapControlWithResolver:(RCTPromiseResolve
     }
 }
 
+#pragma mark 根据工作空间名字获取地图
+RCT_REMAP_METHOD(getMapsByFile, getMapsByFile:(NSString*)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSString* type = [path pathExtension];
+        WorkspaceType workspaceType;
+        
+        if ( [type isEqualToString:@"sxw"] ) {
+            workspaceType = SM_SXW;
+        }else if( [type isEqualToString:@"smw"] ){
+            workspaceType = SM_SMW;
+        }else if( [type isEqualToString:@"sxwu"] ){
+            workspaceType = SM_SXWU;
+        }else if( [type isEqualToString:@"smwu"] ){
+            workspaceType = SM_SMWU;
+        }
+        
+        Workspace* ws = [[Workspace alloc] init];
+        WorkspaceConnectionInfo* wsInfo = [[WorkspaceConnectionInfo alloc] init];
+        wsInfo.server = path;
+        wsInfo.type = workspaceType;
+        
+        BOOL result = [ws open:wsInfo];
+        
+        NSMutableArray* mapArr = [[NSMutableArray alloc] init];
+        if (result && ws.maps.count > 0) {
+            for (int i = 0; i < ws.maps.count; i++) {
+                [mapArr addObject:[ws.maps get:i]];
+            }
+        }
+        
+        [ws close];
+        [wsInfo dispose];
+        [ws dispose];
+        
+        resolve(mapArr);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 #pragma mark 根据名字显示图层
 RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)viewEntire center:(NSDictionary *)center resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -505,6 +545,18 @@ RCT_REMAP_METHOD(zoom, zoomByScale:(double)scale resolver:(RCTPromiseResolveBloc
     }
 }
 
+#pragma mark 设置比例尺
+RCT_REMAP_METHOD(setScale, setScale:(double)scale resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [mapControl.map setScale:scale];
+        [mapControl.map refresh];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 #pragma mark 移动到当前位置
 RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -547,13 +599,56 @@ RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBloc
     }
 }
 
+#pragma mark 移动到指定位置
+RCT_REMAP_METHOD(moveToPoint, moveToPointWithPoint:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        if (![[point allKeys] containsObject:@"x"] || !![[point allKeys] containsObject:@"y"]){
+            resolve([NSNumber numberWithBool:NO]);
+            return;
+        }
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //            [collector moveToCurrentPos];
+            BOOL isMove = NO;
+            NSNumber* x = [point objectForKey:@"x"];
+            NSNumber* y = [point objectForKey:@"y"];
+            Point2D* pt = [[Point2D alloc] initWithX:x.doubleValue Y:y.doubleValue];
+            if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+                Point2Ds *points = [[Point2Ds alloc]init];
+                [points add:pt];
+                PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+                [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+                CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+
+                //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+                [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+                pt = [points getItem:0];
+            }
+            
+            if ([mapControl.map.bounds containsPoint2D:pt]) {
+                mapControl.map.center = pt;
+                isMove = YES;
+            } else {
+                if(defaultMapCenter){
+                    mapControl.map.center = defaultMapCenter;
+                }
+            }
+            
+            [mapControl.map refresh];
+            resolve([NSNumber numberWithBool:isMove]);
+        });
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 -(void)openGPS {
     MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
     Collector* collector = [mapControl getCollector];
     [collector openGPS];
 }
 
-#pragma mark 移动到当前位置
+#pragma mark 提交
 RCT_REMAP_METHOD(submit, submitWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
@@ -1014,11 +1109,40 @@ RCT_REMAP_METHOD(addLayers, addLayers:(NSArray*)datasetNames dataSourceName:(NSS
         sMap = [SMap singletonInstance];
         Datasource* datasource = [sMap.smMapWC.workspace.datasources getAlias:dataSourceName];
         Layers* layers = sMap.smMapWC.mapControl.map.layers;
+        
+        NSMutableArray* dataset_Point = [[NSMutableArray alloc] init];
+        NSMutableArray* dataset_Line = [[NSMutableArray alloc] init];
+        NSMutableArray* dataset_Region = [[NSMutableArray alloc] init];
+        NSMutableArray* dataset_Text = [[NSMutableArray alloc] init];
+        NSMutableArray* dataset_Else = [[NSMutableArray alloc] init];
         NSInteger count = datasetNames.count;
         for (int i = 0; i < count; i++) {
             NSString* datasetName = [datasetNames objectAtIndex:i];
             Dataset* dataset = [datasource.datasets getWithName:datasetName];
-            [layers addDataset:dataset ToHead:true];
+            if (dataset.datasetType == REGION || dataset.datasetType == RegionZ) {
+                [dataset_Region addObject:dataset];
+            }
+            else if (dataset.datasetType == LINE || dataset.datasetType == Network || dataset.datasetType == NETWORK3D|| dataset.datasetType == LineZ) {
+                [dataset_Line addObject:dataset];
+            }
+            else if (dataset.datasetType == POINT || dataset.datasetType == PointZ) {
+                [dataset_Point addObject:dataset];
+            }
+            else if (dataset.datasetType == TEXT) {
+                [dataset_Text addObject:dataset];
+            }
+            else{
+                [dataset_Else addObject:dataset];
+            }
+        }
+        NSMutableArray* datasets = [[NSMutableArray alloc] init];
+        [datasets addObjectsFromArray:dataset_Region];
+        [datasets addObjectsFromArray:dataset_Line];
+        [datasets addObjectsFromArray:dataset_Point];
+        [datasets addObjectsFromArray:dataset_Text];
+        [datasets addObjectsFromArray:dataset_Else];
+        for (int i = 0; i < datasets.count; i++) {
+            [layers addDataset:[datasets objectAtIndex:i] ToHead:true];
         }
         [sMap.smMapWC.mapControl.map refresh];
     
