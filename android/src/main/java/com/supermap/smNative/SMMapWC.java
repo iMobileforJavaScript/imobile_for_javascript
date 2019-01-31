@@ -1021,9 +1021,9 @@ public class SMMapWC {
         workspace.getResources().getLineLibrary().saveAs(strLinePath);
         workspace.getResources().getFillLibrary().saveAs(strFillPath);
 
-        workspaceDes.getResources().getMarkerLibrary().appendFromFile(strMarkerPath, true);
-        workspaceDes.getResources().getLineLibrary().appendFromFile(strLinePath, true);
-        workspaceDes.getResources().getFillLibrary().appendFromFile(strFillPath, true);
+        boolean marker=workspaceDes.getResources().getMarkerLibrary().fromFile(strMarkerPath);
+        workspaceDes.getResources().getLineLibrary().fromFile(strLinePath);
+        workspaceDes.getResources().getFillLibrary().fromFile(strFillPath);
 
         if (workspaceType != WorkspaceType.SXWU) {
             File fileMarker = new File(strMarkerPath);
