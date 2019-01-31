@@ -779,6 +779,17 @@ export default (function () {
     }
   }
 
+  /**获取工作空间内地图的名称，返回一个数组，
+   * path：工作空间的绝对路径
+   * */
+  function getMapsByFile(path){
+    try{
+      return SMap.getMapsByFile(path)
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
   let SMapExp = {
     openWorkspace,
     openDatasource,
@@ -830,6 +841,7 @@ export default (function () {
     importSymbolLibrary,
     isOverlapDisplayed,
     setOverlapDisplayed,
+    getMapsByFile,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 
