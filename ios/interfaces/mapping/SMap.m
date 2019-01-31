@@ -248,8 +248,8 @@ RCT_REMAP_METHOD(closeMapControl, closeMapControlWithResolver:(RCTPromiseResolve
     }
 }
 
-#pragma mark 根据名字显示图层
-RCT_REMAP_METHOD(openMapsByFile, openMapsByFile:(NSString*)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+#pragma mark 根据工作空间名字获取地图
+RCT_REMAP_METHOD(getMapsByFile, getMapsByFile:(NSString*)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         NSString* type = [path pathExtension];
         WorkspaceType workspaceType;

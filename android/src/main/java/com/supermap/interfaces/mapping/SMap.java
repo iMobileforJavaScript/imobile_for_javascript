@@ -1992,4 +1992,42 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void getMapsByFile(String path,Promise promise){
+        try{
+            WorkspaceType type = null;
+            if(path.contains("sxwu")){
+                type = WorkspaceType.SXWU;
+            }
+            else if(path.contains("smwu")){
+                type = WorkspaceType.SMWU;
+            }
+            else if(path.contains("sxw")){
+                type = WorkspaceType.SXW;
+            }
+            else if(path.contains("smw")){
+                type = WorkspaceType.SMW;
+            }
+            Workspace workspace = new Workspace();
+            WorkspaceConnectionInfo wsInfo = new WorkspaceConnectionInfo();
+            wsInfo.setServer(path);
+            wsInfo.setType(type);
+            boolean result = workspace.open(wsInfo);
+            WritableArray arr = Arguments.createArray();
+            if(result == true){
+                for(int i = 0; i < workspace.getMaps().getCount();i++){
+                    arr.pushString(workspace.getMaps().get(i));
+                }
+            }
+
+            workspace.close();
+            wsInfo.dispose();
+            workspace.dispose();
+
+            promise.resolve(arr);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 }
