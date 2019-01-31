@@ -1222,6 +1222,11 @@ RCT_REMAP_METHOD(createThemeRangeMap, createThemeRangeMapMapWithResolver:(NSDict
                     }
                     if (colorArray != nil) {
                         int rangeCount = [themeRange getCount];
+                        if(rangeCount <= 0)
+                        {
+                            resolve([NSNumber numberWithBool:false]);
+                            return;
+                        }
                         Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:colorArray];
                         for (int i = 0; i < rangeCount; i++) {
                             [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[themeRange getItem:i].mStyle color:[selectedColors get:i]];
