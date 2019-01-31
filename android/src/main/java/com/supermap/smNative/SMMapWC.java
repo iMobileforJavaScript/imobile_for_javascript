@@ -1,6 +1,5 @@
 package com.supermap.smNative;
 
-import android.util.JsonToken;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReadableArray;
@@ -43,14 +42,12 @@ import com.supermap.data.DatasetType;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -58,6 +55,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -878,21 +876,44 @@ public class SMMapWC {
             if (workspace.getMaps().indexOf(mapName) != -1) {
                 // 打开map
                 mapExport.open(mapName);
-                // 不重复的datasource保存
+
                 Layers exportLayes = mapExport.getLayers();
+
+                //判断是否有不需要导出的图层
+                if(notExportMap!=null&&notExportMap.hasKey(mapName)){
+                    ReadableArray indexArray = notExportMap.getArray(mapName);
+                    ArrayList<Object> list = indexArray.toArrayList();
+                    ArrayList<Integer> list2 = new ArrayList<>();
+                    for (int i1 = 0; i1 < list.size(); i1++) {
+                        list2.add(Integer.parseInt((String)list.get(i1)));
+                    }
+                    Collections.reverse(list2);
+                    for (int index = 0; index < list2.size(); index++) {
+                        exportLayes.remove(list2.get(index));
+                    }
+                }
+
+                // 不重复的datasource保存
+                List<Dataset> datasourceList=new ArrayList<>();
                 for (int j = 0; j < exportLayes.getCount(); j++) {
-                    Datasource datasource = exportLayes.get(j).getDataset().getDatasource();
-                    if (!arrDatasources.contains(datasource)) {
+                    Layer layer=exportLayes.get(j);
+                    if(layer.getDataset()==null){
+                        if(layer instanceof LayerGroup){
+                            datasourceList.addAll(allDatasetsOfLayerGroup((LayerGroup) layer));
+                        }
+                    }else {
+                        datasourceList.add(layer.getDataset());
+                    }
+                }
+
+                for (int j = 0; j < datasourceList.size(); j++) {
+                    Datasource datasource=datasourceList.get(j).getDatasource();
+                    if(!arrDatasources.contains(datasource)){
                         arrDatasources.add(datasource);
                     }
                 }
-                //判读是否有不需要导出的图层
-                if(notExportMap!=null&&notExportMap.hasKey(mapName)){
-                    ReadableArray indexArray=notExportMap.getArray(mapName);
-                    for (int index = 0; index < indexArray.size(); index++) {
-                        exportLayes.remove(indexArray.getInt(index));
-                    }
-                }
+
+
                 String strMapXML = mapExport.toXML();
                 workspaceDes.getMaps().add(mapName, strMapXML);
 

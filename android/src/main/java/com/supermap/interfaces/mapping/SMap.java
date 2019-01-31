@@ -2032,4 +2032,22 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 显示全幅
+     * @param promise
+     */
+    @ReactMethod
+    public void viewEntire(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            com.supermap.mapping.Map map = sMap.getSmMapWC().getMapControl().getMap();
+            map.viewEntire();
+            map.refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 }

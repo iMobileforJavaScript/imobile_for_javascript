@@ -1179,6 +1179,19 @@ RCT_REMAP_METHOD(isOverlapDisplayed, isOverlapDisplayed:(RCTPromiseResolveBlock)
     }
 }
 
+#pragma mark 显示全幅
+RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Map* map = sMap.smMapWC.mapControl.map;
+        [map viewEntire];
+        [map refresh];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 /************************************************ 监听事件 ************************************************/
 #pragma mark 监听事件
 -(void) boundsChanged:(Point2D*) newMapCenter{

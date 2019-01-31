@@ -35,14 +35,14 @@ export default (function () {
    * @param value    图层 index / name
    * @returns {*}
    */
-  function openDatasource(params, value, toHead = true ,visable = true) {
+  function openDatasource(params, value, toHead = true , isVisible = true) {
     try {
       if (typeof value === 'number') {
         value = value >= 0 ? value : -1
-        return SMap.openDatasourceWithIndex(params, value, toHead , visable)
+        return SMap.openDatasourceWithIndex(params, value, toHead , isVisible)
       } else {
         value = value || ''
-        return SMap.openDatasourceWithName(params, value, toHead , visable)
+        return SMap.openDatasourceWithName(params, value, toHead , isVisible)
       }
     } catch (e) {
       console.error(e)
@@ -789,6 +789,18 @@ export default (function () {
       console.error(e)
     }
   }
+  
+  /**
+   * 显示全幅
+   * @returns {*|Promise.<void>}
+   */
+  function viewEntire(){
+    try{
+      return SMap.viewEntire()
+    }catch (e) {
+      console.error(e)
+    }
+  }
 
   let SMapExp = {
     openWorkspace,
@@ -842,6 +854,7 @@ export default (function () {
     isOverlapDisplayed,
     setOverlapDisplayed,
     getMapsByFile,
+    viewEntire,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 
