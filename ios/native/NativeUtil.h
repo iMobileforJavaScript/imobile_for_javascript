@@ -13,5 +13,5 @@
 @interface NativeUtil : NSObject
 +(UIColor*)uiColorTransFromArr:(NSArray<NSNumber*>*)arr;
 +(Color*)smColorTransFromArr:(NSArray<NSNumber*>*)arr;
-+(NSMutableDictionary *)recordsetToJsonArray:(Recordset*)recordset count:(NSInteger)count size:(NSInteger)size;
++(NSMutableDictionary *)recordsetToJsonArray:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size;
 @end

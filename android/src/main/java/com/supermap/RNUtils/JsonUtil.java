@@ -85,11 +85,11 @@ public class JsonUtil {
     /**
      * 将记录集recordset转换成JSON数组（非GeoJSON）
      * @param recordset 动态记录集
-     * @param count 计数器
-     * @param size 记录数
+     * @param page 页码
+     * @param size 每页的数量
      * @return
      */
-    public static WritableArray recordsetToJsonArray(Recordset recordset,int count,int size){
+    public static WritableArray recordsetToJsonArray(Recordset recordset, int page, int size){
         //获取字段信息
         FieldInfos fieldInfos = recordset.getFieldInfos();
         Map<String, Map<String, Object>> fields = new HashMap<>();
@@ -108,14 +108,22 @@ public class JsonUtil {
         //JS数组，存放
         WritableArray recordArray = Arguments.createArray();
 
-        while (!recordset.isEmpty() && !recordset.isEOF() && count < size)
+        // 计算分页，并移动到指定起始位置
+        int currentIndex = page * size;
+        int endIndex = currentIndex + size;
+        if (currentIndex >= recordset.getRecordCount()) {
+            return recordArray;
+        }
+        recordset.moveTo(currentIndex);
+
+        while (!recordset.isEmpty() && !recordset.isEOF() && currentIndex < endIndex)
         {
 //            WritableMap recordsMap = parseRecordset(recordset, fields);
 //            recordArray.pushMap(recordsMap);
             WritableArray recordArr = parseRecordset(recordset, fields);
             recordArray.pushArray(recordArr);
             recordset.moveNext();
-            count++;
+            currentIndex++;
         }
 
         recordset.dispose();

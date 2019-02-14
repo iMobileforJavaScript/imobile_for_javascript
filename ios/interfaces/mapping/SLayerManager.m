@@ -67,9 +67,9 @@ RCT_REMAP_METHOD(getLayerIndex, getLayerIndex:(NSString *)name value:(BOOL)value
 }
 
 #pragma mark 获取图层属性
-RCT_REMAP_METHOD(getLayerAttribute, getLayerAttribute:(NSString *)layerPath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getLayerAttribute, getLayerAttribute:(NSString *)layerPath page:(int)page size:(int)size resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        NSDictionary* dic = [SMLayer getLayerAttribute:layerPath];
+        NSDictionary* dic = [SMLayer getLayerAttribute:layerPath page:page size:size];
         resolve(dic);
     } @catch (NSException *exception) {
         reject(@"LayerManager", exception.reason, nil);

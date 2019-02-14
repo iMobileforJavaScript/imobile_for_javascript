@@ -42,12 +42,15 @@
         @throw exception;
     }
 }
-+(NSMutableArray *)recordsetToJsonArray:(Recordset*)recordset count:(NSInteger)count size:(NSInteger)size{
++(NSMutableArray *)recordsetToJsonArray:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size{
     FieldInfos* fieldInfos = [recordset fieldInfos];
-    NSMutableDictionary* fieldsDics= [[NSMutableDictionary alloc]initWithCapacity:7];
+    NSMutableArray* recordArray = [[NSMutableArray alloc] init];
+    
+    // 获取recordset中fieldInfo的属性
+    NSMutableDictionary* fieldsDics= [[NSMutableDictionary alloc] initWithCapacity:7];
     int count2 = (int)[fieldInfos count];
     for(int i = 0;i < count2;i++){
-        NSMutableDictionary* fieldsDic = [[NSMutableDictionary alloc]initWithCapacity:7];
+        NSMutableDictionary* fieldsDic = [[NSMutableDictionary alloc] initWithCapacity:7];
         NSString* caption = [fieldInfos get:i].caption;
         NSString* defaultValue = [fieldInfos get:i].defaultValue;
         FieldType type = [fieldInfos get:i].fieldType;
@@ -66,18 +69,28 @@
         [fieldsDics setObject:fieldsDic forKey:fieldName];
     }
     
-    NSMutableArray* recordArray = [[NSMutableArray alloc] init];
-    while(( ![recordset isEOF] && count < size ) ){
+    // 计算分页，并移动到指定起始位置
+    long currentIndex = page * size;
+    long endIndex = currentIndex + size;
+    
+    if (currentIndex >= recordset.recordCount) {
+        return recordArray;
+    }
+    [recordset moveTo:currentIndex];
+    
+    // 获取所有recordset中fieldInfo属性对应的值
+    while(( ![recordset isEOF] && currentIndex < endIndex ) ){
     //while(recordset.recordCount > 0 && ![recordset isEOF]){
         NSMutableArray* arr = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics];
         [recordArray addObject:arr];
         [recordset moveNext];
-        count++;
+        currentIndex++;
     }
     [recordset dispose];
     recordset = nil;
     return recordArray;
 }
+
 +(NSMutableArray *)parseRecordset:(Recordset *)recordset fieldsDics:(NSMutableDictionary*)fieldsDics{
     int fieldsDicsCount = (int)[fieldsDics count];
     NSMutableArray* array =[[NSMutableArray alloc]init];

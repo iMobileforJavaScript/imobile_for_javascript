@@ -23,7 +23,7 @@
 + (NSArray *)getLayersByGroupPath:(NSString *)path;
 + (void)setLayerVisible:(NSString *)path value:(BOOL)value;
 + (void)setLayerEditable:(NSString *)path value:(BOOL)value;
-+ (NSDictionary *)getLayerAttribute:(NSString *)path;
++ (NSDictionary *)getLayerAttribute:(NSString *)path page:(int)page size:(int)size;
 + (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path;
 + (Layer *)findLayerByPath:(NSString *)path;
 + (NSString *)getLayerPath:(Layer *)layer;

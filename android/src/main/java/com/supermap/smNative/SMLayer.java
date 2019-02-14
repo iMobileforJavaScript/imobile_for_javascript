@@ -161,13 +161,13 @@ public class SMLayer {
         return index;
     }
 
-    public static WritableArray getLayerAttribute(String path) {
+    public static WritableArray getLayerAttribute(String path, int page, int size) {
         Layer layer = findLayerByPath(path);
         DatasetVector dv = (DatasetVector) layer.getDataset();
 
         Recordset recordset = dv.getRecordset(false, CursorType.DYNAMIC);
-        int nCount = recordset.getRecordCount()>20 ?20:recordset.getRecordCount();
-        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, nCount);
+        int nCount = recordset.getRecordCount() > size ? size : recordset.getRecordCount();
+        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, page, nCount);
         return recordArray;
     }
 

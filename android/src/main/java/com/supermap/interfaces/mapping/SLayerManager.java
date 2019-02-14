@@ -129,9 +129,9 @@ public class SLayerManager extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void getLayerAttribute(String layerPath, Promise promise) {
+    public void getLayerAttribute(String layerPath, int page, int size, Promise promise) {
         try {
-            WritableArray data = SMLayer.getLayerAttribute(layerPath);
+            WritableArray data = SMLayer.getLayerAttribute(layerPath, page, size);
             promise.resolve(data);
         } catch (Exception e) {
             promise.reject(e);

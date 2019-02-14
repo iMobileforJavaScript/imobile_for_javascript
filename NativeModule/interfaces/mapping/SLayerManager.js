@@ -74,13 +74,13 @@ function getLayerIndexByName(name) {
  * @param path
  * @returns {*}
  */
-function getLayerAttribute(path) {
+function getLayerAttribute(path, page = 0, size = 20) {
   try {
     if (!path) {
       console.warn('path is null')
       return
     }
-    return LayerManager.getLayerAttribute(path)
+    return LayerManager.getLayerAttribute(path, page, size)
   } catch (e) {
     console.error(e)
   }

@@ -125,7 +125,7 @@ RCT_REMAP_METHOD(getFieldInfosArray,getFieldInfosArrayById:(NSString*)recordsetI
     @try{
         Recordset* recordset = [JSObjManager getObjWithKey:recordsetId];
         [recordset moveFirst];
-        NSMutableArray* recordsetArray = [NativeUtil recordsetToJsonArray:recordset count:count size:size];
+        NSMutableArray* recordsetArray = [NativeUtil recordsetToJsonArray:recordset page:count size:size];
         resolve(recordsetArray);
     }
     @catch(NSException *exception){
@@ -136,7 +136,7 @@ RCT_REMAP_METHOD(getFieldInfo,getFieldInfoById:(NSString*)recordsetId  resolver:
     @try{
         Recordset* recordset = [JSObjManager getObjWithKey:recordsetId];
         [recordset moveFirst];
-        NSMutableArray* recordsetArray = [NativeUtil recordsetToJsonArray:recordset count:0 size:1];
+        NSMutableArray* recordsetArray = [NativeUtil recordsetToJsonArray:recordset page:0 size:1];
         resolve(recordsetArray);
     }
     @catch(NSException *exception){

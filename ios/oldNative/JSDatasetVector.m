@@ -542,7 +542,7 @@ RCT_REMAP_METHOD(getFieldInfosArray, getFieldInfosArrayById:(NSString*)dsVectorI
         DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
         Recordset* recordSet = [dsVector recordset:false cursorType:DYNAMIC];
         [recordSet moveFirst];
-        NSMutableArray* recordsetArray = [NativeUtil recordsetToJsonArray:recordSet count:count size:size];
+        NSMutableArray* recordsetArray = [NativeUtil recordsetToJsonArray:recordSet page:count size:size];
         resolve(recordsetArray);
         [recordSet dispose];
         
