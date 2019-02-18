@@ -148,7 +148,7 @@ RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBl
 
 
 #pragma mark 以数据源形式打开工作空间, 默认根据Map 图层索引显示图层
-RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)params defaultIndex:(int)defaultIndex toHead:(BOOL)toHead resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)params defaultIndex:(int)defaultIndex toHead:(BOOL)toHead visible:(BOOL)visible resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try {
         Datasource* dataSource = [sMap.smMapWC openDatasource:params];
@@ -156,7 +156,8 @@ RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)
         
         if (dataSource && defaultIndex >= 0 && dataSource.datasets.count > 0) {
             Dataset* ds = [dataSource.datasets get:defaultIndex];
-            [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:toHead];
+            Layer* layer = [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:toHead];
+            layer.visible = visible;
             sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
         }
         [sMap.smMapWC.mapControl.map refresh];
@@ -168,7 +169,7 @@ RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)
 }
 
 #pragma mark 以数据源形式打开工作空间, 默认根据Map 图层名称显示图层
-RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)params defaultName:(NSString *)defaultName toHead:(BOOL)toHead resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)params defaultName:(NSString *)defaultName toHead:(BOOL)toHead visible:(BOOL)visible resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try {
         if(params){
@@ -177,7 +178,8 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
             
             if (defaultName != nil && defaultName.length > 0) {
                 Dataset* ds = [dataSource.datasets getWithName:defaultName];
-                [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:toHead];
+                Layer* layer = [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:toHead];
+                layer.visible = visible;
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
             }
             [self openGPS];
@@ -706,7 +708,7 @@ RCT_REMAP_METHOD(removeMapByIndex, removeMapWithIndex:(int)index resolver:(RCTPr
         Maps* maps = SMap.singletonInstance.smMapWC.workspace.maps;
         if (maps.count > 0 && index < maps.count) {
             if (index < 0) {
-                for (int i = 0; i < maps.count; i++) {
+                for (int i = maps.count - 1; i >= 0; i--) {
                     NSString* name = [maps get:i];
                     result = [maps removeMapAtIndex:i] && result;
                     [SMap.singletonInstance.smMapWC.workspace.resources.markerLibrary.rootGroup.childSymbolGroups removeGroupWith:name isUpMove:NO];
@@ -921,6 +923,40 @@ RCT_REMAP_METHOD(addDatasetToMap, addDatasetToMapWithResolver:(NSDictionary*)dat
     }
     @catch(NSException *exception){
         reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 导出地图为工作空间
+// strMapName 地图名字（不含后缀）
+// ofModule 模块名（默认传空）
+// isPrivate 是否是用户数据
+// exportWorkspacePath 导出的工作空间绝对路径（含后缀）
+RCT_REMAP_METHOD(exportWorkspaceByMap, exportWorkspaceByMap:(NSString*)strMapName ofModule:(NSString *)nModule isPrivate:(BOOL)bPrivate exportWorkspacePath:(NSString *)exportWorkspacePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        // 先把地图导入大工作空间
+        BOOL openResult = [sMap.smMapWC openMapName:strMapName toWorkspace:sMap.smMapWC.workspace ofModule:nModule isPrivate:bPrivate];
+        BOOL exportResult = NO;
+        if (openResult) {
+            // 先把地图导出
+            NSArray* exportMaps = [NSArray arrayWithObject:strMapName];
+            exportResult = [sMap.smMapWC exportMapNamed:exportMaps toFile:exportWorkspacePath isReplaceFile:YES extra:nil];
+            
+            // 关闭所有地图
+            Maps* maps = sMap.smMapWC.workspace.maps;
+            [maps clear];
+            // 清除符号库
+            [SMap.singletonInstance.smMapWC.workspace.resources.markerLibrary.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
+            [SMap.singletonInstance.smMapWC.workspace.resources.lineLibrary.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
+            [SMap.singletonInstance.smMapWC.workspace.resources.fillLibrary.rootGroup.childSymbolGroups removeGroupWith:strMapName isUpMove:NO];
+            // 删除数据源
+            [sMap.smMapWC.workspace.datasources closeAll];
+        }
+        
+        resolve(@(exportResult));
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
     }
 }
 
@@ -1172,6 +1208,19 @@ RCT_REMAP_METHOD(isOverlapDisplayed, isOverlapDisplayed:(RCTPromiseResolveBlock)
         Map* map = sMap.smMapWC.mapControl.map;
         bool result = [map IsOverlapDisplay];
         resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 显示全幅
+RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Map* map = sMap.smMapWC.mapControl.map;
+        [map viewEntire];
+        [map refresh];
+        resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }

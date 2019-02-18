@@ -890,7 +890,7 @@ public class SMap extends ReactContextBaseJavaModule {
             boolean result = false;
             if (maps.getCount() > 0 && index < maps.getCount()) {
                 if (index == -1) {
-                    for (int i = 0; i < maps.getCount(); i++) {
+                    for (int i = maps.getCount() - 1; i >= 0; i--) {
                         String name = maps.get(i);
                         result = maps.remove(i) && result;
                         sMap.smMapWC.getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(name, false);
@@ -1379,6 +1379,32 @@ public class SMap extends ReactContextBaseJavaModule {
             sMap = getInstance();
             boolean result = sMap.smMapWC.exportMapNames(arrMapNames,strFileName,isFileReplace,extraMap);
             promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    // mapName 地图名字（不含后缀）
+    // ofModule 模块名（默认传空）
+    // isPrivate 是否是用户数据
+    // exportWorkspacePath 导出的工作空间绝对路径（含后缀）
+    @ReactMethod
+    public void exportWorkspaceByMap(String mapName,String moduleName,boolean isPrivate,String exportWorkspacePath, Promise promise) {
+        try {
+            sMap = getInstance();
+            boolean openResult = sMap.getSmMapWC().openMapName(mapName,sMap.getSmMapWC().getWorkspace(),moduleName,isPrivate);
+            boolean exportResult = false;
+            if(openResult){
+                WritableArray array = Arguments.createArray();
+                ((WritableArray) array).pushString(mapName);
+                exportResult = sMap.getSmMapWC().exportMapNames(array,exportWorkspacePath,true,null);
+                Maps maps = sMap.getSmMapWC().getWorkspace().getMaps();
+                maps.clear();
+                SMap.getInstance().getSmMapWC().getWorkspace().getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(mapName,false);
+                SMap.getInstance().getSmMapWC().getWorkspace().getResources().getLineLibrary().getRootGroup().getChildGroups().remove(mapName,false);
+                SMap.getInstance().getSmMapWC().getWorkspace().getResources().getFillLibrary().getRootGroup().getChildGroups().remove(mapName,false);
+                sMap.getSmMapWC().getWorkspace().getDatasources().closeAll();
+            }
+            promise.resolve(exportResult);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -2029,6 +2055,24 @@ public class SMap extends ReactContextBaseJavaModule {
 
             promise.resolve(arr);
         }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 显示全幅
+     * @param promise
+     */
+    @ReactMethod
+    public void viewEntire(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            com.supermap.mapping.Map map = sMap.getSmMapWC().getMapControl().getMap();
+            map.viewEntire();
+            map.refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
             promise.reject(e);
         }
     }

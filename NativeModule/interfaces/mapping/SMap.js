@@ -35,14 +35,14 @@ export default (function () {
    * @param value    图层 index / name
    * @returns {*}
    */
-  function openDatasource(params, value, toHead = true ,visable = true) {
+  function openDatasource(params, value, toHead = true , isVisible = true) {
     try {
       if (typeof value === 'number') {
         value = value >= 0 ? value : -1
-        return SMap.openDatasourceWithIndex(params, value, toHead , visable)
+        return SMap.openDatasourceWithIndex(params, value, toHead , isVisible)
       } else {
         value = value || ''
-        return SMap.openDatasourceWithName(params, value, toHead , visable)
+        return SMap.openDatasourceWithName(params, value, toHead , isVisible)
       }
     } catch (e) {
       console.error(e)
@@ -598,7 +598,23 @@ export default (function () {
       console.error(e)
     }
   }
-  
+
+  /**
+   * 导出工作空间
+   * @param mapName  地图名字（不含后缀）
+   * @param moduleName  模块名（默认传空）
+   * @param isPrivate  是否是用户数据
+   * @param exportWorkspacePath        导出的工作空间绝对路径（含后缀）
+   * @returns {*}
+   */
+  function exportWorkspaceByMap(mapName, moduleName = '', isPrivate = false, exportWorkspacePath){
+    try {
+      return SMap.exportWorkspaceByMap(mapName, moduleName, isPrivate, exportWorkspacePath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   /**
    * 获取地图信息
    * @returns {*}
@@ -789,6 +805,18 @@ export default (function () {
       console.error(e)
     }
   }
+  
+  /**
+   * 显示全幅
+   * @returns {*|Promise.<void>}
+   */
+  function viewEntire(){
+    try{
+      return SMap.viewEntire()
+    }catch (e) {
+      console.error(e)
+    }
+  }
 
   let SMapExp = {
     openWorkspace,
@@ -842,6 +870,8 @@ export default (function () {
     isOverlapDisplayed,
     setOverlapDisplayed,
     getMapsByFile,
+    viewEntire,
+    exportWorkspaceByMap,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 
