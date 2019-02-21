@@ -126,7 +126,7 @@ public class JsonUtil {
             currentIndex++;
         }
 
-        recordset.dispose();
+//        recordset.dispose();
 
         return recordArray;
     }

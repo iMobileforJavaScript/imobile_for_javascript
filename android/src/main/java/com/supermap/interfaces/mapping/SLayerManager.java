@@ -15,8 +15,10 @@ import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.Datasets;
 import com.supermap.data.Datasources;
+import com.supermap.data.Enum;
 import com.supermap.data.FieldInfo;
 import com.supermap.data.FieldType;
+import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Layers;
@@ -144,9 +146,9 @@ public class SLayerManager extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void getSelectionAttributeByLayer(String layerPath, Promise promise) {
+    public void getSelectionAttributeByLayer(String layerPath, int page, int size, Promise promise) {
         try {
-            WritableArray data = SMLayer.getSelectionAttributeByLayer(layerPath);
+            WritableArray data = SMLayer.getSelectionAttributeByLayer(layerPath, page, size);
             promise.resolve(data);
         } catch (Exception e) {
             promise.reject(e);
@@ -219,16 +221,55 @@ public class SLayerManager extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setLayerFieldInfo(String layerPath, ReadableArray fieldInfos, int index, Promise promise) {
+    public void setLayerFieldInfo(String layerPath, ReadableArray fieldInfos, ReadableMap params, Promise promise) {
         try {
             Layer layer = SMLayer.findLayerByPath(layerPath);
 
-            if (layer != null) {
-                DatasetVector dv = (DatasetVector)layer.getDataset();
-                Recordset recordset = dv.getRecordset(false, CursorType.DYNAMIC);
+            Layers layers = SMap.getInstance().getSmMapWC().getMapControl().getMap().getLayers();
+            Layer editableLayer = null;
 
-                index = index >= 0 ? index : (recordset.getRecordCount() - 1);
-                recordset.moveTo(index);
+            if (layer != null) {
+                // 找到原来可编辑图层并记录
+                // 三种情况：1.目标图层即为可编辑图层；2.目标图层不为可编辑图层，且layers中不存在编辑图层；3.layers中存在可编辑图层，但不是目标图层
+                int status = 1;
+                if (!layer.isEditable()) {
+                    for (int i = 0; i < layers.getCount(); i++) {
+                        if (layers.get(i).isEditable()) {
+                            editableLayer = layers.get(i);
+                            status = 3;
+                            break;
+                        }
+                    }
+
+                    layer.setEditable(true);
+                    if (editableLayer != null) {
+                        status = 2;
+                    }
+                }
+
+
+                DatasetVector dv = (DatasetVector)layer.getDataset();
+                Recordset recordset;
+
+                if (params.hasKey("filter")) {
+                    String filter = params.getString("filter");
+                    CursorType cursorType = CursorType.DYNAMIC;
+                    if (params.hasKey("cursorType")) {
+                        cursorType = (CursorType) Enum.parse(CursorType.class, params.getInt("cursorType"));
+                    }
+                    QueryParameter queryParameter = new QueryParameter();
+                    queryParameter.setAttributeFilter(filter);
+                    queryParameter.setCursorType(cursorType);
+                    recordset = dv.query(queryParameter);
+                } else {
+                    recordset = dv.getRecordset(false, CursorType.DYNAMIC);
+                    if (params.hasKey("index")) {
+                        int index = params.getInt("index");
+                        index = index >= 0 ? index : (recordset.getRecordCount() - 1);
+                        recordset.moveTo(index);
+                    }
+                }
+
                 recordset.edit();
 
                 for (int i = 0; i < fieldInfos.size(); i++) {
@@ -270,7 +311,22 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                 recordset.update();
                 recordset.dispose();
                 recordset = null;
+
+                // 还原编辑之前的图层可编辑状态
+                switch (status) {
+                    case 2:
+                        layer.setEditable(false);
+                        break;
+                    case 3:
+                        editableLayer.setEditable(true);
+                        break;
+                    case 1:
+                    default:
+                        break;
+                }
             }
+
+
 
             promise.resolve(true);
         } catch (Exception e) {

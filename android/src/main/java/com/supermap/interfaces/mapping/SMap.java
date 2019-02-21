@@ -143,6 +143,23 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 刷新地图
+     * @param data
+     * @param promise
+     */
+    @ReactMethod
+    public void refreshMap(ReadableMap data, Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 打开工作空间
      *
      * @param data
@@ -641,6 +658,35 @@ public class SMap extends ReactContextBaseJavaModule {
                 com.supermap.mapping.Map map = mapControl.getMap();
                 defaultMapCenter = null;
                 map.close();
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 框选：第一次设置框选；再次使用，会清除Selection
+     * @param promise
+     */
+    @ReactMethod
+    public void selectByRectangle(Promise promise) {
+        try {
+            sMap = getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            if (mapControl.getAction().equals(Action.SELECT_BY_RECTANGLE)) {
+                Layers layers = mapControl.getMap().getLayers();
+                for (int i = 0; i < layers.getCount(); i++) {
+                    Selection selection = layers.get(i).getSelection();
+                    if (selection != null) {
+                        selection.clear();
+                    }
+
+                    mapControl.getMap().refresh();
+                }
+            } else {
+                mapControl.setAction(Action.SELECT_BY_RECTANGLE);
             }
             promise.resolve(true);
         } catch (Exception e) {
@@ -1242,30 +1288,66 @@ public class SMap extends ReactContextBaseJavaModule {
 
                 @Override
                 public void geometryMultiSelected(ArrayList<GeometrySelectedEvent> events) {
-                    WritableArray array = Arguments.createArray();
-                    for (int i = 0; i < events.size(); i++) {
-                        GeometrySelectedEvent event = events.get(i);
-                        int id = event.getGeometryID();
-                        Layer layer = event.getLayer();
+                    try {
+                        ArrayList<Map> arr = new ArrayList();
+                        WritableArray array = Arguments.createArray();
+                        for (int i = 0; i < events.size(); i++) {
+                            GeometrySelectedEvent event = events.get(i);
+                            int id = event.getGeometryID();
+                            Layer layer = event.getLayer();
 
-                        WritableMap map = Arguments.createMap();
-                        WritableMap layerInfo = Arguments.createMap();
+                            boolean isExist = false;
+                            for (int j = 0; j < arr.size(); j++) {
+                                String name = ((WritableMap) arr.get(j).get("layerInfo")).getString("name");
+                                if (layer.getName().equals(name)) {
+                                    isExist = true;
+                                    WritableArray ids = ((WritableArray)arr.get(j).get("ids"));
+                                    ids.pushInt(id);
+                                }
+                            }
 
-                        map.putInt("id", id);
-                        layerInfo.putString("name", layer.getName());
-                        layerInfo.putString("caption", layer.getCaption());
-                        layerInfo.putBoolean("editable", layer.isEditable());
-                        layerInfo.putBoolean("visible", layer.isVisible());
-                        layerInfo.putBoolean("selectable", layer.isSelectable());
-                        layerInfo.putInt("type", layer.getDataset().getType().value());
-                        layerInfo.putString("path", SMLayer.getLayerPath(layer));
-                        array.pushMap(map);
+
+                            if (!isExist) {
+                                Map<String, Object> layerSelection = new HashMap<>();
+
+//                                WritableMap layerSelection = Arguments.createMap();
+
+                                WritableArray ids = Arguments.createArray();
+                                WritableMap layerInfo = Arguments.createMap();
+
+                                layerInfo.putString("name", layer.getName());
+                                layerInfo.putString("caption", layer.getCaption());
+                                layerInfo.putBoolean("editable", layer.isEditable());
+                                layerInfo.putBoolean("visible", layer.isVisible());
+                                layerInfo.putBoolean("selectable", layer.isSelectable());
+                                layerInfo.putInt("type", layer.getDataset().getType().value());
+                                layerInfo.putString("path", SMLayer.getLayerPath(layer));
+
+//                                layerSelection.putMap("layerInfo", layerInfo);
+//                                layerSelection.putArray("ids", ids);
+
+                                layerSelection.put("layerInfo", layerInfo);
+                                layerSelection.put("ids", ids);
+
+                                arr.add(layerSelection);
+                            }
+                        }
+
+                        for (int k = 0; k < arr.size(); k++) {
+                            WritableMap map = Arguments.createMap();
+                            map.putMap("layerInfo", (WritableMap)arr.get(k).get("layerInfo"));
+                            map.putArray("ids", (WritableArray)arr.get(k).get("ids"));
+                            array.pushMap(map);
+                        }
+
+                        WritableMap geometries = Arguments.createMap();
+                        geometries.putArray("geometries", array);
+                        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                .emit(EventConst.MAP_GEOMETRY_MULTI_SELECTED, geometries);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
 
-                    WritableMap geometries = Arguments.createMap();
-                    geometries.putArray("geometries", array);
-                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(EventConst.MAP_GEOMETRY_MULTI_SELECTED, geometries);
                 }
             };
             sMap = getInstance();

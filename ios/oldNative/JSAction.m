@@ -37,6 +37,7 @@ RCT_EXPORT_MODULE();
              @"DRAWREGION_ERASE_REGION":@(DRAWREGION_ERASE_REGION),
              @"CREATEPLOT":@(CREATE_PLOT),
              @"MOVE_GEOMETRY":@(MOVE_GEOMETRY),
+             @"SELECT_BY_RECTANGLE":@(SELECT_BY_RECTANGLE),
              };
 }
 @end

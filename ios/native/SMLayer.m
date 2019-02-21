@@ -136,18 +136,21 @@
     Recordset* recordSet = [dv recordset:false cursorType:STATIC];
     long nCount = recordSet.recordCount > size ? size : recordSet.recordCount;
     NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet page:page size:nCount];
+    [recordSet dispose];
     return dic;
 }
 
-+ (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path {
++ (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path page:(int)page size:(int)size {
     Layer* layer = [self findLayerByPath:path];
     Selection* selection = [layer getSelection];
     Recordset* recordSet = selection.toRecordset;
     
     [recordSet moveFirst];
-    long nCount = recordSet.recordCount > 20 ? 20 : recordSet.recordCount;
-    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet page:0 size:nCount];
+    long nCount = recordSet.recordCount > size ? size : recordSet.recordCount;
+    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet page:page size:nCount]; // recordSet已经dispose了
+    
     [recordSet dispose];
+    [selection dispose];
     recordSet = nil;
     return dic;
 }

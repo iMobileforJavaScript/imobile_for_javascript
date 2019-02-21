@@ -86,8 +86,8 @@
         [recordset moveNext];
         currentIndex++;
     }
-    [recordset dispose];
-    recordset = nil;
+//    [recordset dispose];
+//    recordset = nil;
     return recordArray;
 }
 

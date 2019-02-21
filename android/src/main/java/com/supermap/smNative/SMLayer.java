@@ -171,15 +171,18 @@ public class SMLayer {
         return recordArray;
     }
 
-    public static WritableArray getSelectionAttributeByLayer(String path) {
+    public static WritableArray getSelectionAttributeByLayer(String path, int page, int size) {
         Layer layer = findLayerByPath(path);
         Selection selection = layer.getSelection();
 
         Recordset recordset = selection.toRecordset();
-        int nCount = recordset.getRecordCount()>20 ?20:recordset.getRecordCount();
-        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, nCount);
+        recordset.moveFirst();
+
+        int nCount = recordset.getRecordCount() > size ? size : recordset.getRecordCount();
+        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, page, nCount);
+
         recordset.dispose();
-        recordset = null;
+
         return recordArray;
     }
 
