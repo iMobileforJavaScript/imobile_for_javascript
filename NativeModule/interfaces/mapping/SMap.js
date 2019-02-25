@@ -818,6 +818,19 @@ export default (function () {
     }
   }
 
+  /**
+   * 开启动态投影
+   * @returns {*|Promise.<void>}
+   */
+  function setDynamicProjection(){
+    try{
+      return SMap.setDynamicProjection()
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+
   let SMapExp = {
     openWorkspace,
     openDatasource,
@@ -872,6 +885,7 @@ export default (function () {
     getMapsByFile,
     viewEntire,
     exportWorkspaceByMap,
+    setDynamicProjection,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 
