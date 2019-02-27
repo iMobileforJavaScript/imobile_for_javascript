@@ -22,6 +22,19 @@ createThemeUniqueMap = (params) => {
 }
 
 /**
+ * 新建单值风格标签专题图
+ *
+ * @param params (数据源的索引/数据源的别名、 数据集名称、 单值专题图字段表达式、 颜色表样式)
+ */
+createUniqueThemeLabelMap = (params) => {
+  try {
+    return SThemeCartography.createUniqueThemeLabelMap(params)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  * 设置单值专题图的默认风格
  * 
  * @param params 显示风格
@@ -435,6 +448,7 @@ export default {
   getThemeUniqueDefaultStyle,
   getUniqueExpression,
   setUniqueColorScheme,
+  createUniqueThemeLabelMap,
   //分段
   createThemeRangeMap,
   setRangeExpression,

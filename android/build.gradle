@@ -38,4 +38,14 @@ dependencies {
     api 'com.android.support:recyclerview-v7:27.1.1'
     api 'com.facebook.react:react-native:+'
     api files('libs/TencentMapLBSApi_v3.0.jar')
+    implementation files('libs/com.supermap.analyst_v911.jar')
+    implementation files('libs/com.supermap.data_v911.jar')
+    implementation files('libs/com.supermap.mapping_v911.jar')
+    implementation files('libs/com.supermap.mdatacollector_v911.jar')
+    implementation files('libs/com.supermap.messagequeue_v911.jar')
+    implementation files('libs/com.supermap.navigation_v911.jar')
+    implementation files('libs/com.supermap.plot_v911.jar')
+    implementation files('libs/com.supermap.realspace_v911.jar')
+    implementation files('libs/com.supermap.services_v911.jar')
+    implementation files('libs/com.supermap.track_v911.jar')
 }

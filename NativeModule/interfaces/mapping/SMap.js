@@ -15,6 +15,18 @@ const nativeEvt = new NativeEventEmitter(SMap);
 
 export default (function () {
   /**
+   * 刷新地图
+   * @returns {*}
+   */
+  function refreshMap() {
+    try {
+      return SMap.refreshMap()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
    * 打开工作空间
    * @param infoDic
    * @returns {Promise}
@@ -817,6 +829,19 @@ export default (function () {
       console.error(e)
     }
   }
+  
+  /**
+   * 框选
+   * 第一次设置框选；再次使用，会清除Selection
+   * @returns {*}
+   */
+  function selectByRectangle(){
+    try{
+      return SMap.selectByRectangle()
+    }catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
    * 开启动态投影
@@ -832,6 +857,7 @@ export default (function () {
 
 
   let SMapExp = {
+    refreshMap,
     openWorkspace,
     openDatasource,
     saveWorkspace,
@@ -886,6 +912,7 @@ export default (function () {
     viewEntire,
     exportWorkspaceByMap,
     setDynamicProjection,
+    selectByRectangle,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 

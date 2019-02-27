@@ -15,6 +15,7 @@
 #import "SuperMap/Recordset.h"
 #import "SuperMap/CursorType.h"
 #import "SuperMap/Layer.h"
+#import "SuperMap/QueryParameter.h"
 #import "SMap.h"
 #import "NativeUtil.h"
 
@@ -23,8 +24,8 @@
 + (NSArray *)getLayersByGroupPath:(NSString *)path;
 + (void)setLayerVisible:(NSString *)path value:(BOOL)value;
 + (void)setLayerEditable:(NSString *)path value:(BOOL)value;
-+ (NSDictionary *)getLayerAttribute:(NSString *)path;
-+ (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path;
++ (NSDictionary *)getLayerAttribute:(NSString *)path page:(int)page size:(int)size;
++ (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path page:(int)page size:(int)size;
 + (Layer *)findLayerByPath:(NSString *)path;
 + (NSString *)getLayerPath:(Layer *)layer;
 + (Layer *)findLayerByDatasetName:(NSString *)datasetName;
