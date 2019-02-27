@@ -42,6 +42,7 @@ import com.supermap.mapping.Selection;
 import com.supermap.mapping.TrackingLayer;
 import com.supermap.rnsupermap.JSLayer;
 import com.supermap.rnsupermap.JSMap;
+import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMParameter;
 import com.supermap.smNative.SMSceneWC;
 
@@ -155,20 +156,17 @@ public class SAnalyst extends ReactContextBaseJavaModule {
      *
      */
     @ReactMethod
-    public void overlayAnalyst(String datasourceName,String dataset,String clipDataset,String analystType,ReadableMap map,Promise promise) {
+    public void overlayAnalyst(String datasourceName,String datasetPath,String clipDatasetPath,String analystType,ReadableMap map,Promise promise) {
         try {
-            SMSceneWC smSceneWC=SScene.getSMWorkspace();
-            Workspace workspace=smSceneWC.getWorkspace();
-            Datasource datasource=workspace.getDatasources().get(datasourceName);
-            DatasetVector datasetCliped=(DatasetVector)datasource.getDatasets().get(dataset);
-            DatasetVector datasetClip=(DatasetVector)datasource.getDatasets().get(clipDataset);
-            String resultDatasetClipName=datasource.getDatasets().getAvailableDatasetName("resultDatasetClip");
+            DatasetVector datasetCliped=(DatasetVector)SMLayer.findLayerByPath(datasetPath).getDataset();
+            DatasetVector datasetClip=(DatasetVector)SMLayer.findLayerByPath(clipDatasetPath).getDataset();
+            String resultDatasetClipName=datasetClip.getDatasource().getDatasets().getAvailableDatasetName("resultDatasetClip");
             DatasetVectorInfo datasetVectorInfoClip=new DatasetVectorInfo();
             DatasetType datasetType=datasetCliped.getType();
             datasetVectorInfoClip.setType(datasetType);
             datasetVectorInfoClip.setName(resultDatasetClipName);
             datasetVectorInfoClip.setEncodeType(EncodeType.NONE);
-            DatasetVector resultDatasetClip=datasource.getDatasets().create(datasetVectorInfoClip);
+            DatasetVector resultDatasetClip=datasetClip.getDatasource().getDatasets().create(datasetVectorInfoClip);
             Map params=map.toHashMap();
             OverlayAnalystParameter overlayAnalystParameter=SMParameter.setOverlayParameter(params);
             Boolean result=false;
@@ -207,19 +205,16 @@ public class SAnalyst extends ReactContextBaseJavaModule {
      *
      */
     @ReactMethod
-    public void createbuffer(String datasourceName,String dataset,boolean isUnion,boolean isAttributeRetained,ReadableMap map,Promise promise) {
+    public void createbuffer(String datasetPath,boolean isUnion,boolean isAttributeRetained,ReadableMap map,Promise promise) {
         try {
-            SMSceneWC smSceneWC=SScene.getSMWorkspace();
-            Workspace workspace=smSceneWC.getWorkspace();
-            Datasource datasource=workspace.getDatasources().get(datasourceName);
-            DatasetVector sourceDataset=(DatasetVector)datasource.getDatasets().get(dataset);
-            String resultDatasetName=datasource.getDatasets().getAvailableDatasetName("resultDatasetBuffer");
+            DatasetVector sourceDataset= (DatasetVector)SMLayer.findLayerByPath(datasetPath).getDataset();
+            String resultDatasetName=sourceDataset.getDatasource().getDatasets().getAvailableDatasetName("resultDatasetBuffer");
             DatasetVectorInfo datasetVectorInfo=new DatasetVectorInfo();
             DatasetType datasetType=sourceDataset.getType();
             datasetVectorInfo.setType(datasetType);
             datasetVectorInfo.setName(resultDatasetName);
             datasetVectorInfo.setEncodeType(EncodeType.NONE);
-            DatasetVector resultDatasetBuffer=datasource.getDatasets().create(datasetVectorInfo);
+            DatasetVector resultDatasetBuffer=sourceDataset.getDatasource().getDatasets().create(datasetVectorInfo);
             Map params=map.toHashMap();
             BufferAnalystParameter bufferAnalystParameter=SMParameter.setBufferParameter(params);
             Boolean result=BufferAnalyst.createBuffer(sourceDataset,resultDatasetBuffer,bufferAnalystParameter,isUnion,isAttributeRetained);
@@ -230,19 +225,16 @@ public class SAnalyst extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void createMultiBuffer(String datasourceName,String dataset,ReadableArray arrBufferRadius, int bufferRadiusUnit, int semicircleSegment, Boolean isUnion, Boolean isAttributeRetained,Boolean isRing, Promise promise){
+    public void createMultiBuffer(String datasetPath,ReadableArray arrBufferRadius, int bufferRadiusUnit, int semicircleSegment, Boolean isUnion, Boolean isAttributeRetained,Boolean isRing, Promise promise){
         try{
-            SMSceneWC smSceneWC=SScene.getSMWorkspace();
-            Workspace workspace=smSceneWC.getWorkspace();
-            Datasource datasource=workspace.getDatasources().get(datasourceName);
-            DatasetVector sourceDataset=(DatasetVector)datasource.getDatasets().get(dataset);
-            String resultDatasetName=datasource.getDatasets().getAvailableDatasetName("resultDatasetBuffer");
+            DatasetVector sourceDataset= (DatasetVector)SMLayer.findLayerByPath(datasetPath).getDataset();
+            String resultDatasetName=sourceDataset.getDatasource().getDatasets().getAvailableDatasetName("resultDatasetBuffer");
             DatasetVectorInfo datasetVectorInfo=new DatasetVectorInfo();
             DatasetType datasetType=sourceDataset.getType();
             datasetVectorInfo.setType(datasetType);
             datasetVectorInfo.setName(resultDatasetName);
             datasetVectorInfo.setEncodeType(EncodeType.NONE);
-            DatasetVector resultDatasetBuffer=datasource.getDatasets().create(datasetVectorInfo);
+            DatasetVector resultDatasetBuffer=sourceDataset.getDatasource().getDatasets().create(datasetVectorInfo);
             BufferRadiusUnit unit = (BufferRadiusUnit) Enum.parse(BufferRadiusUnit.class,bufferRadiusUnit);
             ArrayList listArr = arrBufferRadius.toArrayList();
             Object[] objArr = listArr.toArray();
@@ -261,19 +253,16 @@ public class SAnalyst extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void createLineOneSideMultiBuffer(String datasourceName,String dataset,ReadableArray arrBufferRadius, int bufferRadiusUnit, int semicircleSegment, Boolean isLeft, Boolean isUnion, Boolean isAttributeRetained, Boolean isRing, Promise promise){
+    public void createLineOneSideMultiBuffer(String datasetPath,ReadableArray arrBufferRadius, int bufferRadiusUnit, int semicircleSegment, Boolean isLeft, Boolean isUnion, Boolean isAttributeRetained, Boolean isRing, Promise promise){
         try{
-            SMSceneWC smSceneWC=SScene.getSMWorkspace();
-            Workspace workspace=smSceneWC.getWorkspace();
-            Datasource datasource=workspace.getDatasources().get(datasourceName);
-            DatasetVector sourceDataset=(DatasetVector)datasource.getDatasets().get(dataset);
-            String resultDatasetName=datasource.getDatasets().getAvailableDatasetName("resultDatasetBuffer");
+            DatasetVector sourceDataset= (DatasetVector)SMLayer.findLayerByPath(datasetPath).getDataset();
+            String resultDatasetName=sourceDataset.getDatasource().getDatasets().getAvailableDatasetName("resultDatasetBuffer");
             DatasetVectorInfo datasetVectorInfo=new DatasetVectorInfo();
             DatasetType datasetType=sourceDataset.getType();
             datasetVectorInfo.setType(datasetType);
             datasetVectorInfo.setName(resultDatasetName);
             datasetVectorInfo.setEncodeType(EncodeType.NONE);
-            DatasetVector resultDatasetBuffer=datasource.getDatasets().create(datasetVectorInfo);
+            DatasetVector resultDatasetBuffer=sourceDataset.getDatasource().getDatasets().create(datasetVectorInfo);
             BufferRadiusUnit unit = (BufferRadiusUnit) Enum.parse(BufferRadiusUnit.class,bufferRadiusUnit);
 
             ArrayList listArr = arrBufferRadius.toArrayList();
@@ -296,7 +285,8 @@ public class SAnalyst extends ReactContextBaseJavaModule {
      *对矢量数据集进行查询
      *
      */
-    public Recordset query(DatasetVector datasetVector,Object includeObj,ReadableMap map) {
+    public Recordset query(String datasetPath,Object includeObj,ReadableMap map) {
+            DatasetVector datasetVector= (DatasetVector)SMLayer.findLayerByPath(datasetPath).getDataset();
             Map params=map.toHashMap();
             QueryParameter queryParameter=SMParameter.setQueryParameter(params);
             if(includeObj!=null){
