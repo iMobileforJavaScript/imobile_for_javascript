@@ -654,6 +654,92 @@ export default (function () {
             console.error(error);
         }
     }
+
+    function saveCurrentRoutStop(){
+        try {
+            return SScene.saveCurrentRoutStop()
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function saveRoutStop(){
+        try {
+            return SScene.saveRoutStop()
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    
+    function clearRoutStops(){
+        try {
+            return SScene.clearRoutStops()
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function initPointSearch(){
+        try {
+             return SScene.initPointSearch()
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+
+    function pointSearch(key){
+        try {
+            return SScene.pointSearch(key)
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function setPointSearchListener(handlers){
+        try {
+            if (Platform.OS === 'ios' && handlers) {
+                if (typeof handlers.callback === 'function') {
+                   nativeEvt.addListener(EventConst.POINTSEARCH_KEYWORDS, function (e) {
+                    handlers.callback(e)
+                  })
+                }
+              } else if (Platform.OS === 'android' && handlers) {
+                if (typeof handlers.callback === "function") {
+                    DeviceEventEmitter.addListener(EventConst.POINTSEARCH_KEYWORDS, function (e) {
+                    handlers.callback(e);
+                  });
+                }
+              }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function toLocationPoint(index){
+        try {
+            return SScene.toLocationPoint(index)
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function savePoint(index,pointType){
+        try {
+            return SScene.savePoint(index,pointType)
+        } catch (error) {
+            console.error(error); 
+        }
+    }
+
+    function navigationLine(){
+        try {
+            return  SScene.navigationLine()
+        } catch (error) {
+            console.error(error); 
+        }
+    }
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -750,6 +836,15 @@ export default (function () {
         setNavigationControlVisible,
         setAction,
         getAttributeByName,
+        saveCurrentRoutStop,
+        saveRoutStop,
+        clearRoutStops,
+        initPointSearch,
+        pointSearch,
+        setPointSearchListener,
+        toLocationPoint,
+        savePoint,
+        navigationLine,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
