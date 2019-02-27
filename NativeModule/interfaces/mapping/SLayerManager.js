@@ -74,13 +74,13 @@ function getLayerIndexByName(name) {
  * @param path
  * @returns {*}
  */
-function getLayerAttribute(path) {
+function getLayerAttribute(path, page = 0, size = 20) {
   try {
     if (!path) {
       console.warn('path is null')
       return
     }
-    return LayerManager.getLayerAttribute(path)
+    return LayerManager.getLayerAttribute(path, page, size)
   } catch (e) {
     console.error(e)
   }
@@ -89,15 +89,17 @@ function getLayerAttribute(path) {
 /**
  * 获取Selection中对象的属性
  * @param path
+ * @param page
+ * @param size
  * @returns {*}
  */
-function getSelectionAttributeByLayer(path) {
+function getSelectionAttributeByLayer(path, page = 0, size = 20) {
   try {
     if (!path) {
       console.warn('path is null')
       return
     }
-    return LayerManager.getSelectionAttributeByLayer(path)
+    return LayerManager.getSelectionAttributeByLayer(path, page, size)
   } catch (e) {
     console.error(e)
   }
@@ -128,12 +130,19 @@ function addLayer(datasourceNameOrIndex, datasetIndex = -1) {
  * 根据图层路径，找到对应的图层并修改指定recordset中的FieldInfo
  * @param layerPath
  * @param fieldInfo
- * @param index
+ * @param params
+   {
+     index: int,      // 当前对象所在记录集中的位置
+     filter: string,  // 过滤条件
+     cursorType: int, // 2: DYNAMIC, 3: STATIC
+   }
  * @returns {*}
  */
-function setLayerFieldInfo(layerPath = '', fieldInfo = {}, index = -1) {
+function setLayerFieldInfo(layerPath = '', fieldInfo = {}, params) {
   try {
-    return LayerManager.setLayerFieldInfo(layerPath, fieldInfo, index)
+    if (JSON.stringify(fieldInfo) === JSON.stringify({})) return false
+    if (!params) params = {index: -1}
+    return LayerManager.setLayerFieldInfo(layerPath, fieldInfo, params)
   } catch (e) {
     console.error(e)
   }

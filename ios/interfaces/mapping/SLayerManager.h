@@ -12,6 +12,8 @@
 #import <SuperMap/DatasetVector.h>
 #import <SuperMap/FieldInfos.h>
 #import <SuperMap/FieldInfo.h>
+#import <SuperMap/QueryParameter.h>
+#import <SuperMap/CursorType.h>
 
 @interface SLayerManager : NSObject<RCTBridgeModule>
 
