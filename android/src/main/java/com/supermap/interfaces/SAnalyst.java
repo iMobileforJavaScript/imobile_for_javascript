@@ -156,7 +156,7 @@ public class SAnalyst extends ReactContextBaseJavaModule {
      *
      */
     @ReactMethod
-    public void overlayAnalyst(String datasourceName,String datasetPath,String clipDatasetPath,String analystType,ReadableMap map,Promise promise) {
+    public void overlayAnalyst(String datasetPath,String clipDatasetPath,String analystType,ReadableMap map,Promise promise) {
         try {
             DatasetVector datasetCliped=(DatasetVector)SMLayer.findLayerByPath(datasetPath).getDataset();
             DatasetVector datasetClip=(DatasetVector)SMLayer.findLayerByPath(clipDatasetPath).getDataset();
