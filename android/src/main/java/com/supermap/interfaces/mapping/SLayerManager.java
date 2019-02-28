@@ -23,6 +23,7 @@ import com.supermap.data.Recordset;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.Map;
+import com.supermap.mapping.Selection;
 import com.supermap.smNative.SMLayer;
 
 import org.apache.http.cookie.SM;
@@ -475,6 +476,44 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             SMap sMap = SMap.getInstance();
             int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
             sMap.getSmMapWC().getMapControl().getMap().getLayers().moveToBottom(index);
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 选中指定图层中的对象
+     * @param layerPath
+     * @param ids
+     * @param promise
+     */
+    @ReactMethod
+    public void selectObj(String layerPath, ReadableArray ids, Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+            Selection selection = layer.getSelection();
+            selection.clear();
+
+            boolean selectable = layer.isSelectable();
+
+            if (ids.size() > 0) {
+                if (!layer.isSelectable()) {
+                    layer.setEditable(true);
+                }
+
+                for (int i = 0; i < ids.size(); i++) {
+                    int id = ids.getInt(i);
+                    selection.add(id);
+                }
+            }
+
+            if (!selectable) {
+                layer.setSelectable(false);
+            }
+
             sMap.getSmMapWC().getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
