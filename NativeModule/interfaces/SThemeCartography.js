@@ -148,6 +148,19 @@ createThemeRangeMap = (params) => {
 }
 
 /**
+ * 新建分段标签图层
+ *
+ * @param params(数据源的索引 / 数据源的别名 / 打开本地数据源、 数据集名称、 分段字段表达式、 分段模式、 分段参数、 颜色渐变模式)
+ */
+createRangeThemeLabelMap = (params) => {
+  try {
+    return SThemeCartography.createRangeThemeLabelMap(params)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  * 设置分段专题图的分段字段表达式
  *
  * @param params 分段字段表达式 图层名称 图层索引
@@ -457,6 +470,7 @@ export default {
   getRangeExpression,
   getRangeMode,
   getRangeCount,
+  createRangeThemeLabelMap,
   //统一标签
   createUniformThemeLabelMap,
   setUniformLabelExpression,
