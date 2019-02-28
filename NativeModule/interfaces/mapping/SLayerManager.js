@@ -252,6 +252,14 @@ function moveToBottom(layerName) {
   }
 }
 
+function selectObj(layerPath = '', ids = []) {
+  try {
+    return LayerManager.selectObj(layerPath, ids)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 
 export {
   getLayersByType,
@@ -270,4 +278,5 @@ export {
   moveDownLayer,
   moveToTop,
   moveToBottom,
+  selectObj,
 }

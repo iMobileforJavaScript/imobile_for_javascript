@@ -354,4 +354,38 @@ RCT_REMAP_METHOD(moveToBottom, moveToBottomWithResolver:(NSString*)layerName res
         reject(@"SMap", exception.reason, nil);
     }
 }
+
+#pragma mark 选中指定图层中的对象
+RCT_REMAP_METHOD(selectObj, selectObjWith:(NSString *)layerPath ids:(NSArray *)ids resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        Layer* layer = [SMLayer findLayerByPath:layerPath];
+        Selection* selection = [layer getSelection];
+        [selection clear];
+        
+        BOOL selectable = layer.selectable;
+        
+        if (ids.count > 0) {
+            if (!layer.selectable) {
+                layer.selectable = YES;
+            } else {
+                
+            }
+            
+            for (int i = 0; i < ids.count; i++) {
+                NSNumber* _ID = ids[i];
+                [selection add:_ID.intValue];
+            }
+        }
+        
+        if (!selectable) {
+            layer.selectable = NO;
+        }
+        
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"SMap", exception.reason, nil);
+    }
+}
 @end
