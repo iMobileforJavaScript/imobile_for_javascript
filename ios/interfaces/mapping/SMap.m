@@ -1368,12 +1368,15 @@ RCT_REMAP_METHOD(selectByRectangle, selectByRectangleWithResolve:(RCTPromiseReso
     for (id layerAndId in layersAndIds) {
         if ([layerAndId isKindOfClass:[NSArray class]] && [layerAndId[0] isKindOfClass:[Layer class]]) {
             Layer* layer = layerAndId[0];
+            Dataset* dataset = layer.dataset;
+            int type = (int)dataset.datasetType;
             NSMutableDictionary *layerInfo = [[NSMutableDictionary alloc] init];
             [layerInfo setObject:layer.name forKey:@"name"];
             [layerInfo setObject:[NSNumber numberWithBool:layer.editable] forKey:@"editable"];
             [layerInfo setObject:[NSNumber numberWithBool:layer.visible] forKey:@"visible"];
             [layerInfo setObject:[NSNumber numberWithBool:layer.selectable] forKey:@"selectable"];
             [layerInfo setObject:[SMLayer getLayerPath:layer] forKey:@"path"];
+            [layerInfo setObject:[NSNumber numberWithInteger:type] forKey:@"type"];
             
             NSMutableDictionary* layerData = [[NSMutableDictionary alloc] init];
             [layerData setObject:layerInfo forKey:@"layerInfo"];
