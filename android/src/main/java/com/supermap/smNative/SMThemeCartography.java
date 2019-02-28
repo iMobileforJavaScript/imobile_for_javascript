@@ -1395,6 +1395,15 @@ public class SMThemeCartography {
         }
     }
 
+    public static void setItemTextStyleColor(TextStyle textStyle, Color color) {
+        try {
+            textStyle.setForeColor(color);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     //获取字段类型
     public static String getFieldType(FieldInfo fieldInfo) {
         String type = "未知";

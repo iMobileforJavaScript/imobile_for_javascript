@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.RNUtils.JsonUtil;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
@@ -17,6 +18,7 @@ import com.supermap.data.Datasets;
 import com.supermap.data.Datasources;
 import com.supermap.data.Enum;
 import com.supermap.data.FieldInfo;
+import com.supermap.data.FieldInfos;
 import com.supermap.data.FieldType;
 import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
@@ -151,6 +153,45 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         try {
             WritableArray data = SMLayer.getSelectionAttributeByLayer(layerPath, page, size);
             promise.resolve(data);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     *根据key和filter查询属性
+     * @param layerPath
+     * @param key
+     * @param filter
+     * @param promise
+     */
+    @ReactMethod
+    public void getAttributeByKey(String layerPath,String key,String filter,int start,int number, Promise promise) {
+        try {
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+            DatasetVector dv = (DatasetVector) layer.getDataset();
+            QueryParameter queryParameter=new QueryParameter();
+            Recordset recordset=null;
+            if(filter==null){
+                FieldInfos fieldInfos=dv.getFieldInfos();
+                int count=fieldInfos.getCount();
+                String str=null;
+                String sql="";
+                for (int i = 0; i <count ; i++) {
+                    str=str+fieldInfos.get(i).getName()+",";
+                    if(i==count-1){
+                        str=str+fieldInfos.get(i).getName();
+                    }
+                }
+                sql="CONCAT("+str+")LIKE"+""+"%"+key+"%"+"";
+                queryParameter.setAttributeFilter(sql);
+            }else {
+                queryParameter.setAttributeFilter(filter);
+                recordset=dv.query(queryParameter);
+            }
+//            int nCount = recordset.getRecordCount()>20 ?20:recordset.getRecordCount();
+            WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, start, number);
+            promise.resolve(recordArray);
         } catch (Exception e) {
             promise.reject(e);
         }

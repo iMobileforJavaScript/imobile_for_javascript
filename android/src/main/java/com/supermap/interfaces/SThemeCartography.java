@@ -426,6 +426,98 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
      /*标签专题图
     * ********************************************************************************************/
     /**
+     * 新建单值标签图层
+     *
+     * @param readableMap (数据源的索引/数据源的别名/打开本地数据源、数据集名称、 分段字段表达式、分段模式、分段参数、颜色渐变模式)
+     * @param promise
+     */
+    @ReactMethod
+    public void createUniqueThemeLabelMap(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            int datasourceIndex = -1;
+            String datasourceAlias = null;
+            String datasetName = null;
+            String rangeExpression = null;//分段字段表达式
+            RangeMode rangeMode = null;//分段模式
+            double rangeParameter = -1;//分段参数
+            ColorGradientType colorGradientType = null;
+
+            if (data.containsKey("DatasetName")){
+                datasetName = data.get("DatasetName").toString();
+            }
+            if (data.containsKey("RangeExpression")){
+                rangeExpression  = data.get("RangeExpression").toString();
+            }
+            if (data.containsKey("RangeMode")){
+                String mode = data.get("RangeMode").toString();
+                rangeMode  = SMThemeCartography.getRangeMode(mode);
+            }
+            if (data.containsKey("RangeParameter")){
+                String rangParam = data.get("RangeParameter").toString();
+                rangeParameter  = Double.parseDouble(rangParam);
+            }
+            if (data.containsKey("ColorGradientType")){
+                String type = data.get("ColorGradientType").toString();
+                colorGradientType = SMThemeCartography.getColorGradientType(type);
+            } else {
+                colorGradientType = ColorGradientType.GREENWHITE;
+            }
+
+            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
+            if (dataset == null) {
+                if (data.containsKey("DatasourceIndex")){
+                    String index = data.get("DatasourceIndex").toString();
+                    datasourceIndex = Integer.parseInt(index);
+                }
+                if (data.containsKey("DatasourceAlias")){
+                    datasourceAlias = data.get("DatasourceAlias").toString();
+                }
+
+                if (datasourceAlias != null) {
+                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
+                }  else {
+                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
+                }
+            }
+
+            boolean result = false;
+            if (dataset != null && rangeExpression != null && rangeMode != null && rangeParameter != -1) {
+                ThemeLabel themeLabel = ThemeLabel.makeDefault((DatasetVector) dataset, rangeExpression, rangeMode, rangeParameter, colorGradientType);
+                if (themeLabel != null) {
+                    themeLabel.setLabelExpression(rangeExpression);
+                    themeLabel.setFlowEnabled(true);
+                    if (data.containsKey("ColorScheme")) {
+                        String colorScheme = data.get("ColorScheme").toString();
+                        Color[] rangeColors = SMThemeCartography.getRangeColors(colorScheme);
+
+                        if (rangeColors != null) {
+                            int rangeCount = themeLabel.getCount();
+                            Colors selectedColors = Colors.makeGradient(rangeCount, rangeColors);
+
+                            for (int i = 0; i < rangeCount; i++) {
+                                SMThemeCartography.setItemTextStyleColor(themeLabel.getItem(i).getStyle(), selectedColors.get(i));
+                            }
+                        }
+                    }
+
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getMap().getLayers().add(dataset, themeLabel, true);
+                    mapControl.getMap().refresh();
+
+                    result = true;
+                }
+            }
+            promise.resolve(result);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 新建统一标签专题图
      *
      * @param readableMap

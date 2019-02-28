@@ -3,9 +3,21 @@ package com.supermap.map3D;
 import android.os.Handler;
 import android.os.Message;
 
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
+import com.supermap.data.AltitudeMode;
+import com.supermap.data.Color;
+import com.supermap.data.GeoLine3D;
+import com.supermap.data.GeoStyle3D;
+import com.supermap.data.Point3D;
+import com.supermap.data.Point3Ds;
 import com.supermap.realspace.Action3D;
+import com.supermap.realspace.Camera;
 import com.supermap.realspace.FlyManager;
 import com.supermap.realspace.FlyStatus;
+import com.supermap.realspace.Route;
+import com.supermap.realspace.RouteStop;
+import com.supermap.realspace.RouteStops;
 import com.supermap.realspace.Routes;
 import com.supermap.realspace.SceneControl;
 
@@ -50,6 +62,9 @@ public class FlyHelper {
 
     private FlyProgress flyProgress;
 
+    private RouteStops mRouteStops;
+    private Point3Ds point3Ds=new Point3Ds();
+    private Route route;
     /**
      * 初始化飞行场景
      *
@@ -126,6 +141,7 @@ public class FlyHelper {
                 flyManager = mSceneControl.getScene().getFlyManager();
                 routes = flyManager.getRoutes();
                 routes.fromFile(flyRoute);
+
                 routes.setCurrentRoute(routeIndex);
                 isStop = false;
             }
@@ -183,7 +199,9 @@ public class FlyHelper {
         if (flyManager != null) {
             flyManager.stop();
             mSceneControl.setAction(Action3D.PANSELECT3D);
-            flyProgressTimerTask.cancel();
+            if(flyProgressTimerTask!=null){
+                flyProgressTimerTask.cancel();
+            }
             isFlying = false;
             isStop = true;
         }
@@ -263,5 +281,76 @@ public class FlyHelper {
             }
         }
         return null;
+    }
+
+    public void saveCurrentRouteStop(){
+        if(mRouteStops==null){
+            route=new Route();
+            route.setStopsVisible(true);
+            route.setLinesVisible(true);
+            route.setFlyAlongTheRoute(true);
+            mRouteStops=route.getStops();
+        }
+        RouteStop routeStop=new RouteStop();
+        Camera camera=new Camera(mSceneControl.getScene().getFirstPersonCamera());
+        routeStop.setCamera(camera);
+        mRouteStops.add(routeStop);
+        point3Ds.add(new Point3D(camera.getLongitude(),camera.getLatitude(),camera.getAltitude()));
+        if(point3Ds.getCount()>=2){
+            GeoStyle3D lineStyle3D=new GeoStyle3D();
+            lineStyle3D.setLineColor(new Color(255,255,0));
+            lineStyle3D.setAltitudeMode(AltitudeMode.ABSOLUTE);
+            lineStyle3D.setLineWidth(5);
+            GeoLine3D geoLine3D=new GeoLine3D(point3Ds);
+            geoLine3D.setStyle3D(lineStyle3D);
+            mSceneControl.getScene().getTrackingLayer().add(geoLine3D,"line");
+        }
+    }
+
+    public void saveRoutStop(){
+        flyManager=mSceneControl.getScene().getFlyManager();
+        Routes routes=flyManager.getRoutes();
+        int index=routes.add(route);
+        routes.setCurrentRoute(index);
+        flyManager.play();
+        try {
+            mSceneControl.getScene().getWorkspace().save();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void clearRoutStops (){
+        point3Ds.clear();
+        mSceneControl.getScene().getTrackingLayer().clear();
+        int count =mRouteStops.getCount();
+        for (int i=0;i<count;i++){
+            mRouteStops.remove(0);
+        }
+    }
+
+    public WritableArray getStopList(){
+        WritableArray array = null;
+        int count =mRouteStops.getCount();
+        for (int i = 0; i <count ; i++) {
+            WritableMap map = null;
+            map.putString("Name",mRouteStops.get(i).getName());
+            array.pushMap(map);
+        }
+        return array;
+    }
+
+    public RouteStop getStop(String name){
+        RouteStop routeStop=mRouteStops.get(name);
+        return routeStop;
+    }
+
+    public boolean removeStop(String name){
+        if( mRouteStops.get(name)!=null){
+            mRouteStops.remove(name);
+            return true;
+        }else {
+            return false;
+        }
     }
 }
