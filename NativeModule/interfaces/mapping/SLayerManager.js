@@ -105,6 +105,17 @@ function getSelectionAttributeByLayer(path, page = 0, size = 20) {
   }
 }
 
+function getAttributeByLayer(path, ids = []) {
+  try {
+    if (ids.length === 0) {
+      return []
+    }
+    return LayerManager.getAttributeByLayer(path, ids)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 /**
  * 根据数据源名称/序号 和 数据集序号，添加图层
  * @param datasourceNameOrIndex
@@ -252,9 +263,28 @@ function moveToBottom(layerName) {
   }
 }
 
+/**
+ * 选中指定图层中的对象
+ * @param layerPath
+ * @param ids
+ * @returns {*}
+ */
 function selectObj(layerPath = '', ids = []) {
   try {
     return LayerManager.selectObj(layerPath, ids)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 选中多个图层中的对象
+ * @param data [{layerPath = '', ids = []}, ...]
+ * @returns {*}
+ */
+function selectObjs(data = []) {
+  try {
+    return LayerManager.selectObjs(data)
   } catch (e) {
     console.error(e)
   }
@@ -269,6 +299,7 @@ export {
   getLayerIndexByName,
   getLayerAttribute,
   getSelectionAttributeByLayer,
+  getAttributeByLayer,
   addLayer,
   setLayerFieldInfo,
   removeAllLayer,
@@ -279,4 +310,5 @@ export {
   moveToTop,
   moveToBottom,
   selectObj,
+  selectObjs,
 }

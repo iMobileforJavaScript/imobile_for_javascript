@@ -159,6 +159,22 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取指定图层和ID的对象的属性
+     * @param layerPath
+     * @param ids
+     * @param promise
+     */
+    @ReactMethod
+    public void getAttributeByLayer(String layerPath, ReadableArray ids, Promise promise) {
+        try {
+            WritableArray data = SMLayer.getAttributeByLayer(layerPath, ids);
+            promise.resolve(data);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      *根据key和filter查询属性
      * @param layerPath
      * @param key
@@ -553,6 +569,50 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
             if (!selectable) {
                 layer.setSelectable(false);
+            }
+
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 选中多个图层中的对象
+     * @param data
+     * @param promise
+     */
+    @ReactMethod
+    public void selectObjs(ReadableArray data, Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+
+            for (int i = 0; i < data.size(); i++) {
+                ReadableMap item = data.getMap(i);
+                String layerPath = item.getString("layerPath");
+                ReadableArray ids = item.getArray("ids");
+
+                Layer layer = SMLayer.findLayerByPath(layerPath);
+                Selection selection = layer.getSelection();
+                selection.clear();
+
+                boolean selectable = layer.isSelectable();
+
+                if (ids.size() > 0) {
+                    if (!layer.isSelectable()) {
+                        layer.setEditable(true);
+                    }
+
+                    for (int j = 0; j < ids.size(); j++) {
+                        int id = ids.getInt(j);
+                        selection.add(id);
+                    }
+                }
+
+                if (!selectable) {
+                    layer.setSelectable(false);
+                }
             }
 
             sMap.getSmMapWC().getMapControl().getMap().refresh();

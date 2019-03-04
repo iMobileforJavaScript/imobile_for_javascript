@@ -26,6 +26,7 @@
 + (void)setLayerEditable:(NSString *)path value:(BOOL)value;
 + (NSDictionary *)getLayerAttribute:(NSString *)path page:(int)page size:(int)size;
 + (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path page:(int)page size:(int)size;
++ (NSDictionary *)getAttributeByLayer:(NSString *)path ids:(NSArray *)ids;
 + (Layer *)findLayerByPath:(NSString *)path;
 + (NSString *)getLayerPath:(Layer *)layer;
 + (Layer *)findLayerByDatasetName:(NSString *)datasetName;

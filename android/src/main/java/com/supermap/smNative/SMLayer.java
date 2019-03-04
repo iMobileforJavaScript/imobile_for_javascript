@@ -1,6 +1,7 @@
 package com.supermap.smNative;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.JsonUtil;
@@ -9,6 +10,7 @@ import com.supermap.data.Dataset;
 import com.supermap.data.DatasetType;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.Enum;
+import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
@@ -180,6 +182,33 @@ public class SMLayer {
 
         int nCount = recordset.getRecordCount() > size ? size : recordset.getRecordCount();
         WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, page, nCount);
+
+        recordset.dispose();
+
+        return recordArray;
+    }
+
+    public static WritableArray getAttributeByLayer(String path, ReadableArray ids) {
+        Layer layer = findLayerByPath(path);
+        String filter = "";
+
+        for (int i = 0; i < ids.size(); i++) {
+            if (i == 0) {
+                filter = "SmID=" + ids.getInt(i);
+            } else {
+                filter += "OR SmID=" + ids.getInt(i);
+            }
+        }
+
+        QueryParameter queryParameter = new QueryParameter();
+        queryParameter.setCursorType(CursorType.STATIC);
+        queryParameter.setAttributeFilter(filter);
+
+        Recordset recordset = ((DatasetVector)layer.getDataset()).query(queryParameter);
+        recordset.moveFirst();
+
+        int nCount = recordset.getRecordCount();
+        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, nCount);
 
         recordset.dispose();
 
