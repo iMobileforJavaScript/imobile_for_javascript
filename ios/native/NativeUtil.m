@@ -42,7 +42,12 @@
         @throw exception;
     }
 }
-+(NSMutableArray *)recordsetToJsonArray:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size{
+
++(NSMutableArray *)recordsetToJsonArray:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size {
+    return [self recordsetToJsonArray:recordset page:page size:size filterKey:nil];
+}
+
++(NSMutableArray *)recordsetToJsonArray:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size filterKey:(NSString *)filterKey {
     FieldInfos* fieldInfos = [recordset fieldInfos];
     NSMutableArray* recordArray = [[NSMutableArray alloc] init];
     
@@ -81,21 +86,37 @@
     // 获取所有recordset中fieldInfo属性对应的值
     while(( ![recordset isEOF] && currentIndex < endIndex ) ){
     //while(recordset.recordCount > 0 && ![recordset isEOF]){
-        NSMutableArray* arr = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics];
-        [recordArray addObject:arr];
+        NSMutableArray* arr;
+        
+        if (filterKey != nil && ![filterKey isEqualToString:@""]) {
+            arr = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics filterKey:filterKey];
+        } else {
+            arr = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics];
+        }
+        
+        if (arr != nil) {
+            [recordArray addObject:arr];
+            currentIndex++;
+        }
         [recordset moveNext];
-        currentIndex++;
     }
 //    [recordset dispose];
 //    recordset = nil;
     return recordArray;
 }
 
-+(NSMutableArray *)parseRecordset:(Recordset *)recordset fieldsDics:(NSMutableDictionary*)fieldsDics{
++(NSMutableArray *)parseRecordset:(Recordset *)recordset fieldsDics:(NSMutableDictionary*)fieldsDics {
+    NSMutableArray* arr = [self parseRecordset:recordset fieldsDics:fieldsDics filterKey:@""];
+    return arr;
+}
+
++(NSMutableArray *)parseRecordset:(Recordset *)recordset fieldsDics:(NSMutableDictionary*)fieldsDics filterKey:(NSString *)filterKey {
     int fieldsDicsCount = (int)[fieldsDics count];
     NSMutableArray* array =[[NSMutableArray alloc]init];
     NSArray* keys = fieldsDics.allKeys;
     NSArray* values = fieldsDics.allValues;
+    
+    BOOL isMatching = NO;
     
     for(int i = 0;i < fieldsDicsCount;i++){
         NSMutableDictionary* keyMap =[[NSMutableDictionary alloc]init];
@@ -118,6 +139,11 @@
             [itemWMap setObject:values2[a] forKey:keyName2];
             if([keyName2 isEqualToString:@"type"]){
                 NSObject* object = [recordset getFieldValueWithString:keyName];
+                NSString* objStr = [NSString stringWithFormat: @"%@", object];
+                if (filterKey != nil && ![filterKey isEqualToString:@""] && !isMatching) {
+                    isMatching = [objStr containsString:filterKey]; // 判断是否匹配
+                }
+                
                 if(object == nil){
                     [keyMap setObject:@"" forKey:@"value"];
                 } else {
@@ -137,6 +163,11 @@
         
 //        [map setObject:keyMap forKey:keyName];
     }
+    
+    if (filterKey != nil && ![filterKey isEqualToString:@""]) {
+        return isMatching ? array : nil;
+    }
+    
     return array;
 }
 @end

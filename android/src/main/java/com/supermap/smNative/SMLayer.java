@@ -2,6 +2,7 @@ package com.supermap.smNative;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.JsonUtil;
@@ -10,6 +11,7 @@ import com.supermap.data.Dataset;
 import com.supermap.data.DatasetType;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.Enum;
+import com.supermap.data.FieldInfos;
 import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
 import com.supermap.interfaces.mapping.SMap;
@@ -221,5 +223,64 @@ public class SMLayer {
             path = layer.getParentGroup().getName() + "/" + path;
         }
         return path;
+    }
+
+    public static WritableArray searchLayerAttribute(String layerPath, ReadableMap params, int start, int number) {
+        String filter = params.hasKey("filter") ? params.getString("filter") : "";
+        String key = params.hasKey("key") ? params.getString("key") : "";
+
+        Layer layer = SMLayer.findLayerByPath(layerPath);
+        DatasetVector dv = (DatasetVector) layer.getDataset();
+        QueryParameter queryParameter = new QueryParameter();
+        Recordset recordset = null;
+
+        if (filter != null && filter.length() > 0) {
+            queryParameter.setAttributeFilter(filter);
+            queryParameter.setCursorType(CursorType.STATIC);
+            recordset = dv.query(queryParameter);
+        } else if (key != null && key.length() > 0) {
+            FieldInfos fieldInfos = dv.getFieldInfos();
+            int count = fieldInfos.getCount();
+//            String str = "";
+            String sql = "";
+            for (int i = 0; i < count; i++) {
+//                    str = str + fieldInfos.get(i).getName() + ",";
+//                    if (i == count - 1) {
+//                        str = str + fieldInfos.get(i).getName();
+//                    }
+
+                if (i == 0) {
+                    sql = fieldInfos.get(i).getName() + " LIKE '%" + key + "%'";
+                } else {
+                    sql = sql + " OR " + fieldInfos.get(i).getName() + " LIKE '%" + key + "%'";
+                }
+            }
+//                sql = "CONCAT(" + str + ") LIKE '%" + key + "%'";
+            queryParameter.setAttributeFilter(sql);
+            queryParameter.setCursorType(CursorType.STATIC);
+            recordset = dv.query(queryParameter);
+        } else {
+            recordset = ((DatasetVector) layer.getDataset()).getRecordset(false, CursorType.STATIC);
+        }
+//            int nCount = recordset.getRecordCount()>20 ?20:recordset.getRecordCount();
+        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, start, number);
+        recordset.dispose();
+
+        return recordArray;
+    }
+
+    public static WritableArray searchSelectionAttribute(String path, String searchKey, int page, int size) {
+        Layer layer = findLayerByPath(path);
+        Selection selection = layer.getSelection();
+
+        Recordset recordset = selection.toRecordset();
+        recordset.moveFirst();
+
+        int nCount = recordset.getRecordCount() > size ? size : recordset.getRecordCount();
+        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, page, nCount, searchKey);
+
+        recordset.dispose();
+
+        return recordArray;
     }
 }

@@ -82,6 +82,10 @@ public class JsonUtil {
         return r;
     }
 
+    public static WritableArray recordsetToJsonArray(Recordset recordset, int page, int size) {
+        return recordsetToJsonArray(recordset, page, size, null);
+    }
+
     /**
      * 将记录集recordset转换成JSON数组（非GeoJSON）
      * @param recordset 动态记录集
@@ -89,7 +93,7 @@ public class JsonUtil {
      * @param size 每页的数量
      * @return
      */
-    public static WritableArray recordsetToJsonArray(Recordset recordset, int page, int size){
+    public static WritableArray recordsetToJsonArray(Recordset recordset, int page, int size, String filterKey) {
         //获取字段信息
         FieldInfos fieldInfos = recordset.getFieldInfos();
         Map<String, Map<String, Object>> fields = new HashMap<>();
@@ -120,15 +124,27 @@ public class JsonUtil {
         {
 //            WritableMap recordsMap = parseRecordset(recordset, fields);
 //            recordArray.pushMap(recordsMap);
-            WritableArray recordArr = parseRecordset(recordset, fields);
-            recordArray.pushArray(recordArr);
+            WritableArray recordArr;
+            if (filterKey != null && !filterKey.equals("")){
+                recordArr = parseRecordset(recordset, fields, filterKey);
+            } else {
+                recordArr = parseRecordset(recordset, fields);
+            }
+
+            if (recordArr != null) {
+                recordArray.pushArray(recordArr);
+                currentIndex++;
+            }
             recordset.moveNext();
-            currentIndex++;
         }
 
 //        recordset.dispose();
 
         return recordArray;
+    }
+
+    private static WritableArray parseRecordset(Recordset recordset, Map<String, Map<String, Object>> fields) {
+        return parseRecordset(recordset, fields, null);
     }
 
     /**
@@ -138,10 +154,12 @@ public class JsonUtil {
      * @param fields    该记录中的所有属性
      * @return
      */
-    private static WritableArray parseRecordset(Recordset recordset, Map<String, Map<String, Object>> fields) {
+    private static WritableArray parseRecordset(Recordset recordset, Map<String, Map<String, Object>> fields, String filterKey) {
 //        WritableMap map = Arguments.createMap();
         WritableArray array = Arguments.createArray();
         ArrayList<WritableMap> list = new ArrayList();
+
+        boolean isMatching = false;
 
         for (Map.Entry<String,  Map<String, Object>> field : fields.entrySet()) {
             WritableMap keyMap = Arguments.createMap();
@@ -157,6 +175,7 @@ public class JsonUtil {
                     itemWMap.putString(key, "");
                     continue;
                 }
+
                 switch (key) {
                     case "caption":
                     case "defaultValue":
@@ -202,6 +221,12 @@ public class JsonUtil {
                         } else {
                             keyMap.putBoolean("value", (Boolean) fieldValue);
                         }
+
+                        if (filterKey != null && !filterKey.equals("") && !isMatching){
+                            String strV = fieldValue.toString();
+                            isMatching = strV.contains(filterKey);
+                        }
+
                         break;
                 }
             }
@@ -215,6 +240,16 @@ public class JsonUtil {
             } else {
                 list.add(keyMap);
             }
+        }
+
+        if (filterKey != null && !filterKey.equals("")){
+            if (isMatching) {
+                for (int i = 0; i < list.size(); i++) {
+                    array.pushMap(list.get(i));
+                }
+                return array;
+            }
+            return null;
         }
 
         for (int i = 0; i < list.size(); i++) {

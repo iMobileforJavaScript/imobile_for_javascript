@@ -33,7 +33,7 @@ import org.apache.http.cookie.SM;
 public class SLayerManager extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SLayerManager";
     private static SLayerManager analyst;
-//    private static ReactApplicationContext context;
+    //    private static ReactApplicationContext context;
     ReactContext mReactContext;
 
     public SLayerManager(ReactApplicationContext context) {
@@ -49,6 +49,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
     /**
      * 获取制定类型的图层, type = -1 为所有类型
+     *
      * @param type
      * @param path
      * @param promise
@@ -65,13 +66,15 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
     /**
      * 获取指定名字的LayerGroup
+     *
      * @param path
      * @param promise
      */
     @ReactMethod
     public void getLayersByGroupPath(String path, Promise promise) {
         try {
-            if (path == null || path.equals("")) promise.reject(new Error("Group name can not be empty"));
+            if (path == null || path.equals(""))
+                promise.reject(new Error("Group name can not be empty"));
             WritableArray layers = SMLayer.getLayersByGroupPath(path);
             promise.resolve(layers);
         } catch (Exception e) {
@@ -81,6 +84,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
     /**
      * 设置制定名字图层是否可见
+     *
      * @param path
      * @param value
      * @param promise
@@ -98,6 +102,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
     /**
      * 设置制定名字图层是否可编辑
+     *
      * @param path
      * @param value
      * @param promise
@@ -115,6 +120,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
     /**
      * 获取指定名字的图层索引
+     *
      * @param name
      * @param promise
      */
@@ -130,6 +136,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
     /**
      * 获取图层属性
+     *
      * @param layerPath
      * @param promise
      */
@@ -145,13 +152,13 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
     /**
      * 获取Selection中对象的属性
+     *
      * @param layerPath
      * @param promise
      */
     @ReactMethod
     public void getSelectionAttributeByLayer(String layerPath, int page, int size, Promise promise) {
-        try {
-            WritableArray data = SMLayer.getSelectionAttributeByLayer(layerPath, page, size);
+        try { WritableArray data = SMLayer.getSelectionAttributeByLayer(layerPath, page, size);
             promise.resolve(data);
         } catch (Exception e) {
             promise.reject(e);
@@ -160,6 +167,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
     /**
      * 获取指定图层和ID的对象的属性
+     *
      * @param layerPath
      * @param ids
      * @param promise
@@ -175,38 +183,27 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     }
 
     /**
-     *根据key和filter查询属性
+     * 根据key和filter查询属性
      * @param layerPath
-     * @param key
-     * @param filter
+     * @param params { filter, key, isSelection }// filter 优先级高于key
+     * @param page
+     * @param size
      * @param promise
      */
     @ReactMethod
-    public void getAttributeByKey(String layerPath,String key,String filter,int start,int number, Promise promise) {
+    public void searchLayerAttribute(String layerPath, ReadableMap params, int page, int size, Promise promise) {
         try {
-            Layer layer = SMLayer.findLayerByPath(layerPath);
-            DatasetVector dv = (DatasetVector) layer.getDataset();
-            QueryParameter queryParameter=new QueryParameter();
-            Recordset recordset=null;
-            if(filter==null){
-                FieldInfos fieldInfos=dv.getFieldInfos();
-                int count=fieldInfos.getCount();
-                String str=null;
-                String sql="";
-                for (int i = 0; i <count ; i++) {
-                    str=str+fieldInfos.get(i).getName()+",";
-                    if(i==count-1){
-                        str=str+fieldInfos.get(i).getName();
-                    }
-                }
-                sql="CONCAT("+str+")LIKE"+""+"%"+key+"%"+"";
-                queryParameter.setAttributeFilter(sql);
-            }else {
-                queryParameter.setAttributeFilter(filter);
-                recordset=dv.query(queryParameter);
-            }
-//            int nCount = recordset.getRecordCount()>20 ?20:recordset.getRecordCount();
-            WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, start, number);
+            WritableArray recordArray = SMLayer.searchLayerAttribute(layerPath, params, page, size);
+            promise.resolve(recordArray);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void searchSelectionAttribute(String layerPath, String searchKey, int page, int size, Promise promise) {
+        try {
+            WritableArray recordArray = SMLayer.searchSelectionAttribute(layerPath, searchKey, page, size);
             promise.resolve(recordArray);
         } catch (Exception e) {
             promise.reject(e);
@@ -215,6 +212,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
     /**
      * 根据数据源序号和数据集序号，添加图层
+     *
      * @param datasourceIndex
      * @param datasetIndex
      * @param promise
@@ -244,6 +242,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
     /**
      * 根据数据源名称和数据集序号，添加图层
+     *
      * @param datasourceName
      * @param datasetIndex
      * @param promise
@@ -274,6 +273,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
     /**
      * 根据图层路径，找到对应的图层并修改指定recordset中的FieldInfo
+     *
      * @param layerPath
      * @param fieldInfos
      * @param promise
@@ -306,7 +306,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                 }
 
 
-                DatasetVector dv = (DatasetVector)layer.getDataset();
+                DatasetVector dv = (DatasetVector) layer.getDataset();
                 Recordset recordset;
 
                 if (params.hasKey("filter")) {
@@ -385,13 +385,11 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             }
 
 
-
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
-
 
 
     /**
@@ -432,7 +430,6 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     }
 
 
-
     /**
      * 移除所有图层
      *
@@ -457,7 +454,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void renameLayer(String layerName,String relayerName,Promise promise) {
+    public void renameLayer(String layerName, String relayerName, Promise promise) {
         try {
             SMap sMap = SMap.getInstance();
             Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(layerName);
@@ -474,7 +471,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void moveUpLayer(String layerName,Promise promise) {
+    public void moveUpLayer(String layerName, Promise promise) {
         try {
             SMap sMap = SMap.getInstance();
             int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
@@ -492,7 +489,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void moveDownLayer(String layerName,Promise promise) {
+    public void moveDownLayer(String layerName, Promise promise) {
         try {
             SMap sMap = SMap.getInstance();
             int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
@@ -510,7 +507,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void moveToTop(String layerName,Promise promise) {
+    public void moveToTop(String layerName, Promise promise) {
         try {
             SMap sMap = SMap.getInstance();
             int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
@@ -528,7 +525,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void moveToBottom(String layerName,Promise promise) {
+    public void moveToBottom(String layerName, Promise promise) {
         try {
             SMap sMap = SMap.getInstance();
             int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
@@ -542,6 +539,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
     /**
      * 选中指定图层中的对象
+     *
      * @param layerPath
      * @param ids
      * @param promise
@@ -580,6 +578,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
     /**
      * 选中多个图层中的对象
+     *
      * @param data
      * @param promise
      */

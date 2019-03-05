@@ -16,6 +16,8 @@
 #import "SuperMap/CursorType.h"
 #import "SuperMap/Layer.h"
 #import "SuperMap/QueryParameter.h"
+#import "SuperMap/FieldInfos.h"
+#import "SuperMap/FieldInfo.h"
 #import "SMap.h"
 #import "NativeUtil.h"
 
@@ -30,4 +32,7 @@
 + (Layer *)findLayerByPath:(NSString *)path;
 + (NSString *)getLayerPath:(Layer *)layer;
 + (Layer *)findLayerByDatasetName:(NSString *)datasetName;
+//+ (NSArray *)searchLayerAttribute:(NSString *)path key:(NSString *)key filter:(NSString *)filter page:(int *)page size:(int *)size;
++ (NSArray *)searchLayerAttribute:(NSString *)path params:(NSDictionary *)params page:(int *)page size:(int *)size;
++ (NSMutableArray *)searchSelectionAttribute:(NSString *)path searchKey:(NSString *)searchKey page:(int)page size:(int)size;
 @end
