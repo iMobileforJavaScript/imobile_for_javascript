@@ -3,10 +3,9 @@ package com.supermap.interfaces;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
+
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -25,12 +24,14 @@ import com.supermap.data.GeoPoint3D;
 import com.supermap.data.ImageFormatType;
 import com.supermap.data.Point3D;
 import com.supermap.data.Workspace;
+import com.supermap.interfaces.mapping.SMap;
 import com.supermap.map3D.AnalysisHelper;
 import com.supermap.map3D.FlyHelper;
 import com.supermap.map3D.LabelHelper;
 import com.supermap.map3D.PoiSearchHelper;
 import com.supermap.map3D.toolKit.PoiGsonBean;
 import com.supermap.map3D.toolKit.TouchUtil;
+import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.realspace.Action3D;
 import com.supermap.realspace.Camera;
@@ -42,22 +43,16 @@ import com.supermap.realspace.SceneControl;
 import com.supermap.realspace.Tracking3DEvent;
 import com.supermap.realspace.Tracking3DListener;
 import com.supermap.smNative.SMSceneWC;
-import android.os.Looper;
 
-import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-//import java.util.logging.Handler;
+
 
 public class SScene extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SScene";
     private static SScene sScene;
     private static Camera defaultCamera;
     private static ReactApplicationContext context;
-    private static MeasureListener mMeasureListener;
     private SMSceneWC smSceneWc;
     ReactContext mReactContext;
     private static SingleTapUpAction singleTapUpAction=SingleTapUpAction.NULL;
@@ -65,6 +60,10 @@ public class SScene extends ReactContextBaseJavaModule {
     private TouchUtil.OsgbAttributeCallBack osgbAttributeCallBack;
     private Tracking3DListener tracking3DListener;
     private static gestureListener gestureListener;
+//    private ArrayList<PoiGsonBean.PoiInfos> pointList;
+    private ArrayList <ArrayList<PoiGsonBean.PoiInfos>> pointList=new ArrayList<ArrayList<PoiGsonBean.PoiInfos>>();
+    private PoiGsonBean.PoiInfos firstPoint;
+    private PoiGsonBean.PoiInfos secondPoint;
     public SScene(ReactApplicationContext context) {
         super(context);
         this.context = context;
@@ -656,7 +655,6 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void pointSearch(String name, final Promise promise) {
         try {
-
             PoiSearchHelper.getInstence().poiSearch(name, new PoiSearchHelper.PoiSearchCallBack() {
                 @Override
                 public void poiSearchInfos(ArrayList<PoiGsonBean.PoiInfos> poiInfos) {
@@ -667,6 +665,10 @@ public class SScene extends ReactContextBaseJavaModule {
                         map.putString("pointName", pointName);
                         arr.pushMap(map);
                     }
+                    if(poiInfos.size()>0){
+                        pointList.add(poiInfos);
+                    }
+
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.POINTSEARCH_KEYWORDS, arr);
                 }
             });
@@ -681,13 +683,76 @@ public class SScene extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void pointSearch(Promise promise) {
+    public void initPointSearch(Promise promise) {
         try {
             sScene = getInstance();
             SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
-            String dataPath = getReactApplicationContext().getFilesDir().getAbsolutePath();
+            String dataPath = context.getApplicationContext().getFilesDir().getAbsolutePath();
             PoiSearchHelper.getInstence().init(sceneControl, dataPath);
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 根据index获取位置并飞行到该位置
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void toLocationPoint(int index,Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            sceneControl.getScene().getTrackingLayer().clear();
+            PoiGsonBean.PoiInfos poiInfos= (PoiGsonBean.PoiInfos) pointList.get(pointList.size()-1).get(index);
+            PoiSearchHelper.getInstence().toLocationPoint(poiInfos);
+            sceneControl.getScene().refresh();
+            pointList.clear();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 记录起点与终点
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void savePoint(int index,String pointType,Promise promise) {
+        try {
+
+            int count=pointList.size();
+            switch (pointType){
+                case "firstPoint":
+                    firstPoint=(PoiGsonBean.PoiInfos) pointList.get(count-1).get(index);
+                    break;
+                case "secondPoint":
+                    secondPoint=(PoiGsonBean.PoiInfos) pointList.get(count-1).get(index);
+                    break;
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 三维在线路径分析
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void navigationLine(Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            PoiSearchHelper.getInstence().clearPoint(sceneControl);
+            PoiSearchHelper.getInstence().navigationLine(firstPoint,secondPoint,promise);
+            pointList.clear();
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -1562,6 +1627,74 @@ public class SScene extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 添加飞行站点
+     */
+    @ReactMethod
+    public void saveCurrentRoutStop(Promise promise) {
+        try {
+            FlyHelper.getInstence().saveCurrentRouteStop();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 记录站点并飞行
+     */
+    @ReactMethod
+    public void saveRoutStop(Promise promise) {
+        try {
+            FlyHelper.getInstence().saveRoutStop();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 清除所有站点
+     */
+    @ReactMethod
+    public void clearRoutStops(Promise promise) {
+        try {
+            FlyHelper.getInstence().clearRoutStops();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取所有站点
+     */
+    @ReactMethod
+    public void getRoutStops(Promise promise) {
+        try {
+            ReadableArray array=FlyHelper.getInstence().getStopList();
+            promise.resolve(array);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 移除站点
+     */
+    @ReactMethod
+    public void removeByName(String name,Promise promise) {
+        try {
+              FlyHelper.getInstence().removeStop(name);
+              promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+
 
     /**
      * 关闭工作空间及地图控件

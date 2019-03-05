@@ -67,9 +67,9 @@ RCT_REMAP_METHOD(getLayerIndex, getLayerIndex:(NSString *)name value:(BOOL)value
 }
 
 #pragma mark 获取图层属性
-RCT_REMAP_METHOD(getLayerAttribute, getLayerAttribute:(NSString *)layerPath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getLayerAttribute, getLayerAttribute:(NSString *)layerPath page:(int)page size:(int)size resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        NSDictionary* dic = [SMLayer getLayerAttribute:layerPath];
+        NSDictionary* dic = [SMLayer getLayerAttribute:layerPath page:page size:size];
         resolve(dic);
     } @catch (NSException *exception) {
         reject(@"LayerManager", exception.reason, nil);
@@ -77,9 +77,19 @@ RCT_REMAP_METHOD(getLayerAttribute, getLayerAttribute:(NSString *)layerPath reso
 }
 
 #pragma mark - 获取Selection中对象的属性
-RCT_REMAP_METHOD(getSelectionAttributeByLayer, getSelectionAttributeByLayer:(NSString *)layerPath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getSelectionAttributeByLayer, getSelectionAttributeByLayer:(NSString *)layerPath page:(int)page size:(int)size resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        NSDictionary* dic = [SMLayer getSelectionAttributeByLayer:layerPath];
+        NSDictionary* dic = [SMLayer getSelectionAttributeByLayer:layerPath page:page size:size];
+        resolve(dic);
+    } @catch (NSException *exception) {
+        reject(@"LayerManager", exception.reason, nil);
+    }
+}
+
+#pragma mark - 获取指定图层和ID的对象的属性
+RCT_REMAP_METHOD(getAttributeByLayer, getAttributeByLayer:(NSString *)layerPath ids:(NSArray *)ids resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSDictionary* dic = [SMLayer getAttributeByLayer:layerPath ids:ids];
         resolve(dic);
     } @catch (NSException *exception) {
         reject(@"LayerManager", exception.reason, nil);
@@ -108,16 +118,57 @@ RCT_REMAP_METHOD(addLayerByIndex, addLayerByIndex:(int)datasourceIndex datasetIn
 }
 
 #pragma mark - 根据图层路径，找到对应的图层并修改指定recordset中的FieldInfo
-RCT_REMAP_METHOD(setLayerFieldInfo, setLayerFieldByLayerPath:(NSString *)layerPath fieldInfos:(NSArray *)fieldInfos index:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setLayerFieldInfo, setLayerFieldByLayerPath:(NSString *)layerPath fieldInfos:(NSArray *)fieldInfos params:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         Layer* layer = [SMLayer findLayerByPath:layerPath];
         
+        Layers* layers = [SMap singletonInstance].smMapWC.mapControl.map.layers;
+        Layer* editableLayer = nil;
+        
         if (layer) {
-            DatasetVector* dsVector = (DatasetVector *)layer.dataset;
-            Recordset* recordset = [dsVector recordset:false cursorType:DYNAMIC];
             
-            index = index >= 0 ? index : (recordset.recordCount - 1);
-            [recordset moveTo:index];
+            // 找到原来可编辑图层并记录
+            // 三种情况：1.目标图层即为可编辑图层；2.目标图层不为可编辑图层，且layers中不存在编辑图层；3.layers中存在可编辑图层，但不是目标图层
+            int status = 1;
+            if (!layer.editable) {
+                for (int i = 0; i < layers.getCount; i++) {
+                    if ([layers getLayerAtIndex:i].editable) {
+                        editableLayer = [layers getLayerAtIndex:i];
+                        status = 3;
+                        break;
+                    }
+                }
+                
+                layer.editable = YES;
+                if (!editableLayer) {
+                    status = 2;
+                }
+            }
+            
+            DatasetVector* dsVector = (DatasetVector *)layer.dataset;
+            Recordset* recordset;
+            
+            if ([params objectForKey:@"filter"]) {
+                NSString* filter = [params objectForKey:@"filter"];
+                CursorType cursorType = DYNAMIC;
+                if ([params objectForKey:@"cursorType"]) {
+                    NSNumber* cType = [params objectForKey:@"cursorType"];
+                    cursorType = cType.intValue;
+                }
+                
+                QueryParameter* queryParams = [[QueryParameter alloc] init];
+                [queryParams setAttriButeFilter:filter];
+                [queryParams setCursorType:cursorType];
+                recordset = [dsVector query:queryParams];
+            } else {
+                recordset = [dsVector recordset:false cursorType:DYNAMIC];
+                if ([params objectForKey:@"index"] >= 0){
+                    NSNumber* indexNum = [params objectForKey:@"index"];
+                    long index = indexNum.longValue;
+                    index = index >= 0 ? index : (recordset.recordCount - 1);
+                    [recordset moveTo:index];
+                }
+            }
             [recordset edit];
             
             for (int i = 0; i < fieldInfos.count; i++) {
@@ -171,6 +222,19 @@ RCT_REMAP_METHOD(setLayerFieldInfo, setLayerFieldByLayerPath:(NSString *)layerPa
             [recordset update];
             [recordset dispose];
             recordset = nil;
+            
+            // 还原编辑之前的图层可编辑状态
+            switch (status) {
+                case 2:
+                    layer.editable = NO;
+                    break;
+                case 3:
+                    editableLayer.editable = YES;
+                    break;
+                case 1:
+                default:
+                    break;
+            }
         }
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
@@ -283,7 +347,7 @@ RCT_REMAP_METHOD(moveToTop, moveToTopWithResolver:(NSString*)layerName resolver:
         [sMap.smMapWC.mapControl.map refresh];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
-        reject(@"workspace", exception.reason, nil);
+        reject(@"SMap", exception.reason, nil);
     }
 }
 
@@ -297,7 +361,81 @@ RCT_REMAP_METHOD(moveToBottom, moveToBottomWithResolver:(NSString*)layerName res
         [sMap.smMapWC.mapControl.map refresh];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
-        reject(@"workspace", exception.reason, nil);
+        reject(@"SMap", exception.reason, nil);
+    }
+}
+
+#pragma mark 选中指定图层中的对象
+RCT_REMAP_METHOD(selectObj, selectObjWith:(NSString *)layerPath ids:(NSArray *)ids resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        Layer* layer = [SMLayer findLayerByPath:layerPath];
+        Selection* selection = [layer getSelection];
+        [selection clear];
+        
+        BOOL selectable = layer.selectable;
+        
+        if (ids.count > 0) {
+            if (!layer.selectable) {
+                layer.selectable = YES;
+            } else {
+                
+            }
+            
+            for (int i = 0; i < ids.count; i++) {
+                NSNumber* _ID = ids[i];
+                [selection add:_ID.intValue];
+            }
+        }
+        
+        if (!selectable) {
+            layer.selectable = NO;
+        }
+        
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"SMap", exception.reason, nil);
+    }
+}
+
+#pragma mark 选中多个图层中的对象
+RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        
+        for (int i = 0; i < data.count; i++) {
+            NSDictionary* item = data[i];
+            NSString* layerPath = [item objectForKey:@"layerPath"];
+            NSArray* ids = [item objectForKey:@"ids"];
+            Layer* layer = [SMLayer findLayerByPath:layerPath];
+            Selection* selection = [layer getSelection];
+            [selection clear];
+            
+            BOOL selectable = layer.selectable;
+            
+            if (ids.count > 0) {
+                if (!layer.selectable) {
+                    layer.selectable = YES;
+                } else {
+                    
+                }
+                
+                for (int j = 0; j < ids.count; j++) {
+                    NSNumber* _ID = ids[j];
+                    [selection add:_ID.intValue];
+                }
+            }
+            
+            if (!selectable) {
+                layer.selectable = NO;
+            }
+        }
+        
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"SMap", exception.reason, nil);
     }
 }
 @end

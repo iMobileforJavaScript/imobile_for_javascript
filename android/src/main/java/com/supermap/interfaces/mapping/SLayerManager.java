@@ -10,17 +10,22 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.RNUtils.JsonUtil;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.Datasets;
 import com.supermap.data.Datasources;
+import com.supermap.data.Enum;
 import com.supermap.data.FieldInfo;
+import com.supermap.data.FieldInfos;
 import com.supermap.data.FieldType;
+import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.Map;
+import com.supermap.mapping.Selection;
 import com.supermap.smNative.SMLayer;
 
 import org.apache.http.cookie.SM;
@@ -129,9 +134,9 @@ public class SLayerManager extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void getLayerAttribute(String layerPath, Promise promise) {
+    public void getLayerAttribute(String layerPath, int page, int size, Promise promise) {
         try {
-            WritableArray data = SMLayer.getLayerAttribute(layerPath);
+            WritableArray data = SMLayer.getLayerAttribute(layerPath, page, size);
             promise.resolve(data);
         } catch (Exception e) {
             promise.reject(e);
@@ -144,10 +149,65 @@ public class SLayerManager extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void getSelectionAttributeByLayer(String layerPath, Promise promise) {
+    public void getSelectionAttributeByLayer(String layerPath, int page, int size, Promise promise) {
         try {
-            WritableArray data = SMLayer.getSelectionAttributeByLayer(layerPath);
+            WritableArray data = SMLayer.getSelectionAttributeByLayer(layerPath, page, size);
             promise.resolve(data);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取指定图层和ID的对象的属性
+     * @param layerPath
+     * @param ids
+     * @param promise
+     */
+    @ReactMethod
+    public void getAttributeByLayer(String layerPath, ReadableArray ids, Promise promise) {
+        try {
+            WritableArray data = SMLayer.getAttributeByLayer(layerPath, ids);
+            promise.resolve(data);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     *根据key和filter查询属性
+     * @param layerPath
+     * @param key
+     * @param filter
+     * @param promise
+     */
+    @ReactMethod
+    public void getAttributeByKey(String layerPath,String key,String filter,int start,int number, Promise promise) {
+        try {
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+            DatasetVector dv = (DatasetVector) layer.getDataset();
+            QueryParameter queryParameter=new QueryParameter();
+            Recordset recordset=null;
+            if(filter==null){
+                FieldInfos fieldInfos=dv.getFieldInfos();
+                int count=fieldInfos.getCount();
+                String str=null;
+                String sql="";
+                for (int i = 0; i <count ; i++) {
+                    str=str+fieldInfos.get(i).getName()+",";
+                    if(i==count-1){
+                        str=str+fieldInfos.get(i).getName();
+                    }
+                }
+                sql="CONCAT("+str+")LIKE"+""+"%"+key+"%"+"";
+                queryParameter.setAttributeFilter(sql);
+            }else {
+                queryParameter.setAttributeFilter(filter);
+                recordset=dv.query(queryParameter);
+            }
+//            int nCount = recordset.getRecordCount()>20 ?20:recordset.getRecordCount();
+            WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, start, number);
+            promise.resolve(recordArray);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -219,16 +279,55 @@ public class SLayerManager extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setLayerFieldInfo(String layerPath, ReadableArray fieldInfos, int index, Promise promise) {
+    public void setLayerFieldInfo(String layerPath, ReadableArray fieldInfos, ReadableMap params, Promise promise) {
         try {
             Layer layer = SMLayer.findLayerByPath(layerPath);
 
-            if (layer != null) {
-                DatasetVector dv = (DatasetVector)layer.getDataset();
-                Recordset recordset = dv.getRecordset(false, CursorType.DYNAMIC);
+            Layers layers = SMap.getInstance().getSmMapWC().getMapControl().getMap().getLayers();
+            Layer editableLayer = null;
 
-                index = index >= 0 ? index : (recordset.getRecordCount() - 1);
-                recordset.moveTo(index);
+            if (layer != null) {
+                // 找到原来可编辑图层并记录
+                // 三种情况：1.目标图层即为可编辑图层；2.目标图层不为可编辑图层，且layers中不存在编辑图层；3.layers中存在可编辑图层，但不是目标图层
+                int status = 1;
+                if (!layer.isEditable()) {
+                    for (int i = 0; i < layers.getCount(); i++) {
+                        if (layers.get(i).isEditable()) {
+                            editableLayer = layers.get(i);
+                            status = 3;
+                            break;
+                        }
+                    }
+
+                    layer.setEditable(true);
+                    if (editableLayer != null) {
+                        status = 2;
+                    }
+                }
+
+
+                DatasetVector dv = (DatasetVector)layer.getDataset();
+                Recordset recordset;
+
+                if (params.hasKey("filter")) {
+                    String filter = params.getString("filter");
+                    CursorType cursorType = CursorType.DYNAMIC;
+                    if (params.hasKey("cursorType")) {
+                        cursorType = (CursorType) Enum.parse(CursorType.class, params.getInt("cursorType"));
+                    }
+                    QueryParameter queryParameter = new QueryParameter();
+                    queryParameter.setAttributeFilter(filter);
+                    queryParameter.setCursorType(cursorType);
+                    recordset = dv.query(queryParameter);
+                } else {
+                    recordset = dv.getRecordset(false, CursorType.DYNAMIC);
+                    if (params.hasKey("index")) {
+                        int index = params.getInt("index");
+                        index = index >= 0 ? index : (recordset.getRecordCount() - 1);
+                        recordset.moveTo(index);
+                    }
+                }
+
                 recordset.edit();
 
                 for (int i = 0; i < fieldInfos.size(); i++) {
@@ -270,7 +369,22 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                 recordset.update();
                 recordset.dispose();
                 recordset = null;
+
+                // 还原编辑之前的图层可编辑状态
+                switch (status) {
+                    case 2:
+                        layer.setEditable(false);
+                        break;
+                    case 3:
+                        editableLayer.setEditable(true);
+                        break;
+                    case 1:
+                    default:
+                        break;
+                }
             }
+
+
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -419,6 +533,88 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             SMap sMap = SMap.getInstance();
             int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
             sMap.getSmMapWC().getMapControl().getMap().getLayers().moveToBottom(index);
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 选中指定图层中的对象
+     * @param layerPath
+     * @param ids
+     * @param promise
+     */
+    @ReactMethod
+    public void selectObj(String layerPath, ReadableArray ids, Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+            Selection selection = layer.getSelection();
+            selection.clear();
+
+            boolean selectable = layer.isSelectable();
+
+            if (ids.size() > 0) {
+                if (!layer.isSelectable()) {
+                    layer.setEditable(true);
+                }
+
+                for (int i = 0; i < ids.size(); i++) {
+                    int id = ids.getInt(i);
+                    selection.add(id);
+                }
+            }
+
+            if (!selectable) {
+                layer.setSelectable(false);
+            }
+
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 选中多个图层中的对象
+     * @param data
+     * @param promise
+     */
+    @ReactMethod
+    public void selectObjs(ReadableArray data, Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+
+            for (int i = 0; i < data.size(); i++) {
+                ReadableMap item = data.getMap(i);
+                String layerPath = item.getString("layerPath");
+                ReadableArray ids = item.getArray("ids");
+
+                Layer layer = SMLayer.findLayerByPath(layerPath);
+                Selection selection = layer.getSelection();
+                selection.clear();
+
+                boolean selectable = layer.isSelectable();
+
+                if (ids.size() > 0) {
+                    if (!layer.isSelectable()) {
+                        layer.setEditable(true);
+                    }
+
+                    for (int j = 0; j < ids.size(); j++) {
+                        int id = ids.getInt(j);
+                        selection.add(id);
+                    }
+                }
+
+                if (!selectable) {
+                    layer.setSelectable(false);
+                }
+            }
+
             sMap.getSmMapWC().getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {

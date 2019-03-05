@@ -129,24 +129,53 @@
     return layer;
 }
 
-+ (NSDictionary *)getLayerAttribute:(NSString *)path {
++ (NSDictionary *)getLayerAttribute:(NSString *)path page:(int)page size:(int)size {
     Layer* layer = [self findLayerByPath:path];
     DatasetVector* dv = (DatasetVector *)layer.dataset;
     
-    Recordset* recordSet = [dv recordset:false cursorType:DYNAMIC];
-    int nCount = recordSet.recordCount>20 ?20:recordSet.recordCount;
-    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet count:0 size:recordSet.recordCount];
+    Recordset* recordSet = [dv recordset:false cursorType:STATIC];
+    long nCount = recordSet.recordCount > size ? size : recordSet.recordCount;
+    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet page:page size:nCount];
+    [recordSet dispose];
     return dic;
 }
 
-+ (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path {
++ (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path page:(int)page size:(int)size {
     Layer* layer = [self findLayerByPath:path];
     Selection* selection = [layer getSelection];
     Recordset* recordSet = selection.toRecordset;
     
     [recordSet moveFirst];
-    int nCount = recordSet.recordCount>20 ?20:recordSet.recordCount;
-    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet count:0 size:recordSet.recordCount];
+    long nCount = recordSet.recordCount > size ? size : recordSet.recordCount;
+    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet page:page size:nCount]; // recordSet已经dispose了
+    
+    [recordSet dispose];
+    [selection dispose];
+    recordSet = nil;
+    return dic;
+}
+
++ (NSDictionary *)getAttributeByLayer:(NSString *)path ids:(NSArray *)ids {
+    Layer* layer = [self findLayerByPath:path];
+    NSString* filter = @"";
+    for (int i = 0; i < ids.count; i++) {
+        NSNumber* ID = ids[i];
+        if (i == 0) {
+            filter = [NSString stringWithFormat:@"SmID=%d", ID.intValue];
+        } else {
+            filter = [NSString stringWithFormat:@"%@ OR SmID=%d", filter, ID.intValue];
+        }
+    }
+    QueryParameter* qp = [[QueryParameter alloc] init];
+    [qp setAttriButeFilter:filter];
+    [qp setCursorType:STATIC];
+    
+    DatasetVector* dv = (DatasetVector *)layer.dataset;;
+    Recordset* recordSet = [dv query:qp];
+    
+    [recordSet moveFirst];
+    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet page:0 size:recordSet.recordCount]; // recordSet已经dispose了
+    
     [recordSet dispose];
     recordSet = nil;
     return dic;

@@ -68,6 +68,17 @@ RCT_EXPORT_MODULE();
     sMap.smMapWC.mapControl.geometrySelectedDelegate = self;
 }
 
+#pragma mark 刷新地图
+RCT_REMAP_METHOD(refreshMap, refreshMapWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"SMap", exception.reason, nil);
+    }
+}
+
 #pragma mark 打开工作空间
 RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -1226,6 +1237,28 @@ RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resol
     }
 }
 
+#pragma mark 框选：第一次设置框选；再次使用，会清除Selection
+RCT_REMAP_METHOD(selectByRectangle, selectByRectangleWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        if (sMap.smMapWC.mapControl.action == SELECT_BY_RECTANGLE) {
+            Layers* layers = sMap.smMapWC.mapControl.map.layers;
+            for (int i = 0; i < layers.getCount; i++) {
+                Selection* selection = [[layers getLayerAtIndex:i] getSelection];
+                [selection clear];
+                [selection dispose];
+                
+                [sMap.smMapWC.mapControl.map refresh];
+            }
+        } else {
+            [sMap.smMapWC.mapControl setAction:SELECT_BY_RECTANGLE];
+        }
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 /************************************************ 监听事件 ************************************************/
 #pragma mark 监听事件
 -(void) boundsChanged:(Point2D*) newMapCenter{
@@ -1331,17 +1364,25 @@ RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resol
 }
 
 -(void)geometryMultiSelected:(NSArray*)layersAndIds{
-    NSMutableArray* layersIdAndIds = [[NSMutableArray alloc]initWithCapacity:10];
+    NSMutableArray* layersIdAndIds = [[NSMutableArray alloc] init];
     for (id layerAndId in layersAndIds) {
         if ([layerAndId isKindOfClass:[NSArray class]] && [layerAndId[0] isKindOfClass:[Layer class]]) {
             Layer* layer = layerAndId[0];
+            Dataset* dataset = layer.dataset;
+            int type = (int)dataset.datasetType;
             NSMutableDictionary *layerInfo = [[NSMutableDictionary alloc] init];
             [layerInfo setObject:layer.name forKey:@"name"];
             [layerInfo setObject:[NSNumber numberWithBool:layer.editable] forKey:@"editable"];
             [layerInfo setObject:[NSNumber numberWithBool:layer.visible] forKey:@"visible"];
             [layerInfo setObject:[NSNumber numberWithBool:layer.selectable] forKey:@"selectable"];
             [layerInfo setObject:[SMLayer getLayerPath:layer] forKey:@"path"];
-            [layersIdAndIds addObject:@[layerInfo, layerAndId[1]]];
+            [layerInfo setObject:[NSNumber numberWithInteger:type] forKey:@"type"];
+            
+            NSMutableDictionary* layerData = [[NSMutableDictionary alloc] init];
+            [layerData setObject:layerInfo forKey:@"layerInfo"];
+            [layerData setObject:layerAndId[1] forKey:@"ids"];
+            
+            [layersIdAndIds addObject:layerData];
         }
     }
     [self sendEventWithName:MAP_GEOMETRY_MULTI_SELECTED body:@{@"geometries":(NSArray*)layersIdAndIds}];

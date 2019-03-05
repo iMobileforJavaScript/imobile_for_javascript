@@ -2,6 +2,9 @@ package com.supermap.map3D;
 
 
 
+import android.util.Log;
+
+import com.facebook.react.bridge.Promise;
 import com.supermap.data.AltitudeMode;
 import com.supermap.data.GeoLine;
 import com.supermap.data.GeoPlacemark;
@@ -93,12 +96,13 @@ public class PoiSearchHelper {
 
     public void toLocationPoint(PoiGsonBean.PoiInfos poiInfos){
         Point3D point3d = new Point3D(poiInfos.getLocation().getX(), poiInfos.getLocation().getY(),
-                1000);
-        mSceneControl.getScene().flyToPoint(point3d);
-        Feature3D param = addMarkFile(mSceneControl, poiInfos.getName(), point3d,
+                1500);
+        Point3D point3d2 = new Point3D(poiInfos.getLocation().getX(), poiInfos.getLocation().getY(),
+                500);
+        Feature3D param = addMarkFile(mSceneControl, poiInfos.getName(), point3d2,
                 dataPath, GlobalControlHelper.getCurrentFeature());
         GlobalControlHelper.setCurrentFeature(param);
-
+        mSceneControl.getScene().flyToPoint(point3d);
     }
 
 
@@ -113,9 +117,7 @@ public class PoiSearchHelper {
         pointStyle3D.setAltitudeMode(AltitudeMode.ABSOLUTE);
         geoPoint.setStyle3D(pointStyle3D);
         Feature3Ds feature3Ds = null;
-        String layerKMlPath = null;
-        layerKMlPath = currentSceneKMLPath;
-        Layer3D layer3d = sceneControl.getScene().getLayers().get("Favorite_KML");
+        Layer3D layer3d = sceneControl.getScene().getLayers().get("NodeAnimation");
         if (layer3d != null) {
             feature3Ds = layer3d.getFeatures();
         }
@@ -124,20 +126,20 @@ public class PoiSearchHelper {
         feature3D.setGeometry(geoPlacemark);
 
         if (mCurrentFeature3D != null) {
-
             feature3Ds.remove(mCurrentFeature3D);
             mCurrentFeature3D = null;
 
         }
         if (feature3Ds != null) {
             mCurrentFeature3D = feature3Ds.add(feature3D);
+
         }
         return mCurrentFeature3D;
 
     }
 
 
-    public void navigationLine(PoiGsonBean.PoiInfos poiInfoStart,PoiGsonBean.PoiInfos poiInfoEnd){
+    public void navigationLine(PoiGsonBean.PoiInfos poiInfoStart, PoiGsonBean.PoiInfos poiInfoEnd, final Promise promise){
         final String testNavigationUrl = NavigationUrl
                 + ".rjson?pathAnalystParameters=[%7BstartPoint:%7BX:" + poiInfoStart.getLocation().getX()
                 + ",y:" + poiInfoStart.getLocation().getY() + "%7D,endPoint:%7Bx:" + poiInfoEnd.getLocation().getX() + ",y:"
@@ -158,6 +160,7 @@ public class PoiSearchHelper {
                         list.clear();
                         list=JsonPara.parseNavigation(infoo);
                         doNavigationHandler(mSceneControl, dataPath);
+                        promise.resolve(true);
                     }
                 }
 
@@ -186,7 +189,6 @@ public class PoiSearchHelper {
         sceneControl.getScene().getTrackingLayer().add(geoline, "navigation");
         Rectangle2D rectangle2D = geoline.getBounds();
         sceneControl.getScene().ensureVisible(rectangle2D);
-
     }
 
     // 路径导航时的起点 添加TrackLayer；
@@ -222,7 +224,16 @@ public class PoiSearchHelper {
 
     }
 
-
+    public void clearPoint(SceneControl sceneControl){
+        Layer3D layer3d = sceneControl.getScene().getLayers().get("NodeAnimation");
+        if (layer3d != null) {
+            Feature3Ds feature3Ds = layer3d.getFeatures();
+            if (GlobalControlHelper.getCurrentFeature()!= null) {
+                feature3Ds.remove(GlobalControlHelper.getCurrentFeature());
+                GlobalControlHelper.setCurrentFeature(null);
+            }
+        }
+    }
 
 
     public interface PoiSearchCallBack{

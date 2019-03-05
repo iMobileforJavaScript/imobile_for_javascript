@@ -1,14 +1,9 @@
 import {
   NativeModules,
-  DeviceEventEmitter,
-  NativeEventEmitter,
-  Platform
 } from 'react-native';
-import {
-  EventConst
-} from '../constains'
+
 let Analyst = NativeModules.SAnalyst;
-const nativeEvt = new NativeEventEmitter(Analyst);
+// const nativeEvt = new NativeEventEmitter(Analyst);
 async function bufferAnalyst(layerName, params) {
   try {
     return await Analyst.analystBuffer(layerName, params);
@@ -26,71 +21,44 @@ async function clear(map) {
   }
 }
 
-async function clearLineAnalyst(){
-  await Analyst.setMeasureLineAnalyst()
-}
 
-async function clearSquareAnalyst(){
-  await Analyst.setMeasureSquareAnalyst()
-}
-
-async function setMeasureLineAnalyst(handlers) {
+async function overlayAnalyst(datasetPath,clipDatasetPath,analystType){
   try {
-    if (Platform.OS === 'ios' && handlers) {
-      if (typeof handlers.callback === 'function') {
-         nativeEvt.addListener(EventConst.ANALYST_MEASURELINE, function (e) {
-          handlers.callback(e)
-        })
-      }
-    } else if (Platform.OS === 'android' && handlers) {
-      if (typeof handlers.callback === "function") {
-          let listener=DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURELINE, function (e) {
-          handlers.callback(e,listener);
-        });
-      }
-    }
-    await Analyst.setMeasureLineAnalyst()
-  } catch (e) {
-    console.error(e);
+    await Analyst.overlayAnalyst(datasetPath,clipDatasetPath,analystType)
+  } catch (error) {
+    console.error(error);
   }
 }
 
-
-async function setMeasureSquareAnalyst(handlers) {
+async function createbuffer( datasetPath, isUnion, isAttributeRetained){
   try {
-    if (Platform.OS === 'ios' && handlers) {
-      if (typeof handlers.callback === 'function') {
-        nativeEvt.addListener(EventConst.ANALYST_MEASURESQUARE, function (e) {
-          handlers.callback(e)
-        })
-      }
-    } else if (Platform.OS === 'android' && handlers) {
-      if (typeof handlers.callback === "function") {
-        let listener= DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURESQUARE, function (e) {
-          handlers.callback(e,listener);
-        });
-      }
-    }
-    await Analyst.setMeasureSquareAnalyst()
-  } catch (e) {
-    console.error(e);
+    await Analyst.createbuffer( datasetPath, isUnion, isAttributeRetained)
+  } catch (error) {
+    console.error(error);
   }
 }
 
-
-async function closeAnalysis() {
+async function createMultiBuffer(  datasetPath, arrBufferRadius,  bufferRadiusUnit,  semicircleSegment,  isUnion,  isAttributeRetained, isRing){
   try {
-    await Analyst.closeAnalysis()
-  } catch (e) {
-    console.error(e);
+    await Analyst.createMultiBuffer( datasetPath, arrBufferRadius,  bufferRadiusUnit,  semicircleSegment,  isUnion,  isAttributeRetained, isRing)
+  } catch (error) {
+    console.error(error);
   }
 }
+
+async function createLineOneSideMultiBuffer( datasetPath, arrBufferRadius,  bufferRadiusUnit,  semicircleSegment,  isLeft,  isUnion,  isAttributeRetained,  isRing){
+  try {
+    await Analyst.createLineOneSideMultiBuffer( datasetPath, arrBufferRadius,  bufferRadiusUnit,  semicircleSegment,  isLeft,  isUnion,  isAttributeRetained,  isRing)
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export default {
   bufferAnalyst,
   clear,
-  setMeasureLineAnalyst,
-  setMeasureSquareAnalyst,
-  closeAnalysis,
-  clearLineAnalyst,
-  clearSquareAnalyst,
+  overlayAnalyst,
+  createbuffer,
+  createMultiBuffer,
+  createLineOneSideMultiBuffer,
 }
