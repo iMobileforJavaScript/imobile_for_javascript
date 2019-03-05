@@ -155,6 +155,32 @@
     return dic;
 }
 
++ (NSDictionary *)getAttributeByLayer:(NSString *)path ids:(NSArray *)ids {
+    Layer* layer = [self findLayerByPath:path];
+    NSString* filter = @"";
+    for (int i = 0; i < ids.count; i++) {
+        NSNumber* ID = ids[i];
+        if (i == 0) {
+            filter = [NSString stringWithFormat:@"SmID=%d", ID.intValue];
+        } else {
+            filter = [NSString stringWithFormat:@"%@ OR SmID=%d", filter, ID.intValue];
+        }
+    }
+    QueryParameter* qp = [[QueryParameter alloc] init];
+    [qp setAttriButeFilter:filter];
+    [qp setCursorType:STATIC];
+    
+    DatasetVector* dv = (DatasetVector *)layer.dataset;;
+    Recordset* recordSet = [dv query:qp];
+    
+    [recordSet moveFirst];
+    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet page:0 size:recordSet.recordCount]; // recordSet已经dispose了
+    
+    [recordSet dispose];
+    recordSet = nil;
+    return dic;
+}
+
 + (NSString *)getLayerPath:(Layer *)layer {
     NSString* path = layer.name;
     while (layer.parentGroup != nil) {

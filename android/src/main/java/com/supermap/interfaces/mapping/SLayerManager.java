@@ -25,6 +25,7 @@ import com.supermap.data.Recordset;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.Map;
+import com.supermap.mapping.Selection;
 import com.supermap.smNative.SMLayer;
 
 import org.apache.http.cookie.SM;
@@ -151,6 +152,22 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     public void getSelectionAttributeByLayer(String layerPath, int page, int size, Promise promise) {
         try {
             WritableArray data = SMLayer.getSelectionAttributeByLayer(layerPath, page, size);
+            promise.resolve(data);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取指定图层和ID的对象的属性
+     * @param layerPath
+     * @param ids
+     * @param promise
+     */
+    @ReactMethod
+    public void getAttributeByLayer(String layerPath, ReadableArray ids, Promise promise) {
+        try {
+            WritableArray data = SMLayer.getAttributeByLayer(layerPath, ids);
             promise.resolve(data);
         } catch (Exception e) {
             promise.reject(e);
@@ -516,6 +533,88 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             SMap sMap = SMap.getInstance();
             int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
             sMap.getSmMapWC().getMapControl().getMap().getLayers().moveToBottom(index);
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 选中指定图层中的对象
+     * @param layerPath
+     * @param ids
+     * @param promise
+     */
+    @ReactMethod
+    public void selectObj(String layerPath, ReadableArray ids, Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+            Selection selection = layer.getSelection();
+            selection.clear();
+
+            boolean selectable = layer.isSelectable();
+
+            if (ids.size() > 0) {
+                if (!layer.isSelectable()) {
+                    layer.setEditable(true);
+                }
+
+                for (int i = 0; i < ids.size(); i++) {
+                    int id = ids.getInt(i);
+                    selection.add(id);
+                }
+            }
+
+            if (!selectable) {
+                layer.setSelectable(false);
+            }
+
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 选中多个图层中的对象
+     * @param data
+     * @param promise
+     */
+    @ReactMethod
+    public void selectObjs(ReadableArray data, Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+
+            for (int i = 0; i < data.size(); i++) {
+                ReadableMap item = data.getMap(i);
+                String layerPath = item.getString("layerPath");
+                ReadableArray ids = item.getArray("ids");
+
+                Layer layer = SMLayer.findLayerByPath(layerPath);
+                Selection selection = layer.getSelection();
+                selection.clear();
+
+                boolean selectable = layer.isSelectable();
+
+                if (ids.size() > 0) {
+                    if (!layer.isSelectable()) {
+                        layer.setEditable(true);
+                    }
+
+                    for (int j = 0; j < ids.size(); j++) {
+                        int id = ids.getInt(j);
+                        selection.add(id);
+                    }
+                }
+
+                if (!selectable) {
+                    layer.setSelectable(false);
+                }
+            }
+
             sMap.getSmMapWC().getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {

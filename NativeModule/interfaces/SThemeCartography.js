@@ -22,6 +22,19 @@ createThemeUniqueMap = (params) => {
 }
 
 /**
+ * 新建单值风格标签专题图
+ *
+ * @param params (数据源的索引/数据源的别名、 数据集名称、 单值专题图字段表达式、 颜色表样式)
+ */
+createUniqueThemeLabelMap = (params) => {
+  try {
+    return SThemeCartography.createUniqueThemeLabelMap(params)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  * 设置单值专题图的默认风格
  * 
  * @param params 显示风格
@@ -129,6 +142,19 @@ getThemeExpressionByLayerIndex = (layerIndex) => {
 createThemeRangeMap = (params) => {
   try {
     return SThemeCartography.createThemeRangeMap(params)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 新建分段标签图层
+ *
+ * @param params(数据源的索引 / 数据源的别名 / 打开本地数据源、 数据集名称、 分段字段表达式、 分段模式、 分段参数、 颜色渐变模式)
+ */
+createRangeThemeLabelMap = (params) => {
+  try {
+    return SThemeCartography.createRangeThemeLabelMap(params)
   } catch (e) {
     console.error(e)
   }
@@ -435,6 +461,7 @@ export default {
   getThemeUniqueDefaultStyle,
   getUniqueExpression,
   setUniqueColorScheme,
+  createUniqueThemeLabelMap,
   //分段
   createThemeRangeMap,
   setRangeExpression,
@@ -443,6 +470,7 @@ export default {
   getRangeExpression,
   getRangeMode,
   getRangeCount,
+  createRangeThemeLabelMap,
   //统一标签
   createUniformThemeLabelMap,
   setUniformLabelExpression,

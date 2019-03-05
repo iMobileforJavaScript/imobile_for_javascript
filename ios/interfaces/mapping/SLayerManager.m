@@ -86,6 +86,16 @@ RCT_REMAP_METHOD(getSelectionAttributeByLayer, getSelectionAttributeByLayer:(NSS
     }
 }
 
+#pragma mark - 获取指定图层和ID的对象的属性
+RCT_REMAP_METHOD(getAttributeByLayer, getAttributeByLayer:(NSString *)layerPath ids:(NSArray *)ids resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSDictionary* dic = [SMLayer getAttributeByLayer:layerPath ids:ids];
+        resolve(dic);
+    } @catch (NSException *exception) {
+        reject(@"LayerManager", exception.reason, nil);
+    }
+}
+
 #pragma mark - 根据数据源序号和数据集序号，添加图层
 RCT_REMAP_METHOD(addLayerByIndex, addLayerByIndex:(int)datasourceIndex datasetIndex:(int)datasetIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -350,6 +360,80 @@ RCT_REMAP_METHOD(moveToBottom, moveToBottomWithResolver:(NSString*)layerName res
         result = [sMap.smMapWC.mapControl.map.layers moveBottom:index];
         [sMap.smMapWC.mapControl.map refresh];
         resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"SMap", exception.reason, nil);
+    }
+}
+
+#pragma mark 选中指定图层中的对象
+RCT_REMAP_METHOD(selectObj, selectObjWith:(NSString *)layerPath ids:(NSArray *)ids resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        Layer* layer = [SMLayer findLayerByPath:layerPath];
+        Selection* selection = [layer getSelection];
+        [selection clear];
+        
+        BOOL selectable = layer.selectable;
+        
+        if (ids.count > 0) {
+            if (!layer.selectable) {
+                layer.selectable = YES;
+            } else {
+                
+            }
+            
+            for (int i = 0; i < ids.count; i++) {
+                NSNumber* _ID = ids[i];
+                [selection add:_ID.intValue];
+            }
+        }
+        
+        if (!selectable) {
+            layer.selectable = NO;
+        }
+        
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"SMap", exception.reason, nil);
+    }
+}
+
+#pragma mark 选中多个图层中的对象
+RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        
+        for (int i = 0; i < data.count; i++) {
+            NSDictionary* item = data[i];
+            NSString* layerPath = [item objectForKey:@"layerPath"];
+            NSArray* ids = [item objectForKey:@"ids"];
+            Layer* layer = [SMLayer findLayerByPath:layerPath];
+            Selection* selection = [layer getSelection];
+            [selection clear];
+            
+            BOOL selectable = layer.selectable;
+            
+            if (ids.count > 0) {
+                if (!layer.selectable) {
+                    layer.selectable = YES;
+                } else {
+                    
+                }
+                
+                for (int j = 0; j < ids.count; j++) {
+                    NSNumber* _ID = ids[j];
+                    [selection add:_ID.intValue];
+                }
+            }
+            
+            if (!selectable) {
+                layer.selectable = NO;
+            }
+        }
+        
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"SMap", exception.reason, nil);
     }
