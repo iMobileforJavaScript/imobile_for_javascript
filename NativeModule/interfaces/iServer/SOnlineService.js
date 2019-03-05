@@ -286,6 +286,21 @@ function publishServiceWithDataId(dataId) {
   }
   return OnlineServiceNative.publishServiceWithDataId(dataId);
 }
+function modifyPassword(oldPassword, newPassword) {
+  return OnlineServiceNative.modifyPassword(oldPassword, newPassword);
+}
+function modifyNickname(nickname) {
+  return OnlineServiceNative.modifyNickname(nickname);
+}
+function sendVerficationCode(phoneNumber) {
+  return OnlineServiceNative.sendVerficationCode(phoneNumber);
+}
+function bindPhoneNumber(phoneNumber, verifyCode) {
+  return OnlineServiceNative.bindPhoneNumber(phoneNumber, verifyCode);
+}
+function bindEmail(email) {
+  return OnlineServiceNative.bindEmail(email);
+}
 export default {
   init,
   uploadFile,
@@ -323,4 +338,9 @@ export default {
   syncAndroidCookie,
   removeCookie,
   cancelDownload,
+  modifyPassword,
+  modifyNickname,
+  sendVerficationCode,
+  bindPhoneNumber,
+  bindEmail,
 }

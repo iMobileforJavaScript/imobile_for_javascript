@@ -95,8 +95,8 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
  */
 -(void)downloadFileWithDataId:(NSString*)dataId filePath:(NSString*)filePath;
 /**
- 暂停下载
- @param index 暂停第index次下载
+  暂停下载
+  @param index 暂停第index次下载
  */
 -(void) pauseDownloadTask:(NSInteger) index;
 /**
@@ -246,7 +246,7 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
 
 /**
  获取所有用户公开的第currentPage页数据信息,dataJson为第currentPage页的json数据
- @param currentPage 第几页
+  @param currentPage 第几页
  */
 -(void)getAllUserDataList:(NSInteger)currentPage completionHandler:(void(^)(NSString* dataJson,NSString* error))completionHandler;
 /**
@@ -254,4 +254,31 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
  @param currentPage 第几页
  */
 -(void)getAllUserSymbolLibList:(NSInteger)currentPage completionHandler:(void(^)(NSString* dataJson,NSString* error))completionHandler;
+/**
+ 修改密码
+ @param oldPassword 旧密码
+ @param newPassword 新密码
+ */
+-(void) modifyPassword:(NSString*) oldPassword newPassword:(NSString*)newPassword completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
+/**
+ 修改昵称
+ @param nickname 昵称
+ */
+-(void) modifyNickname:(NSString*) nickname completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
+/**
+ 发送绑定手机的验证码
+ @param phoneNumber 手机号
+ */
+-(void)sendVerficationCode:(NSString*)phoneNumber completionHandler:(void(^)(BOOL result,NSString* info))completionHandler;
+/**
+ 绑定手机号
+ @param phoneNumber 手机号
+ @param verifyCode 手机号验证码
+ */
+-(void) bindPhoneNumber:(NSString*) phoneNumber verifyCode:(NSString*)verifyCode completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
+/**
+ 绑定邮箱
+ @param email 邮箱
+ */
+-(void) bindEmail:(NSString*)email completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
 @end
