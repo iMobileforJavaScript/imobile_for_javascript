@@ -105,12 +105,53 @@ function getSelectionAttributeByLayer(path, page = 0, size = 20) {
   }
 }
 
+/**
+ * 根据图层和对象ID获取对象属性
+ * @param path
+ * @param ids
+ * @returns {*}
+ */
 function getAttributeByLayer(path, ids = []) {
   try {
     if (ids.length === 0) {
       return []
     }
     return LayerManager.getAttributeByLayer(path, ids)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 搜索图层属性
+ *
+ * @param path
+ * @param params { filter, key, isSelection }// filter 优先级高于key
+ * @param page
+ * @param size
+ * @returns {*}
+ */
+function searchLayerAttribute(path = '', params = {}, page = 0, size = 0) {
+  try {
+    if (path === '' || (params.key === '' && params.filter === '')) return []
+    return LayerManager.searchLayerAttribute(path, params, page, size)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 获取指定图层中Selection对象的属性
+ * @param path
+ * @param searchKey
+ * @param page
+ * @param size
+ * @returns {*}
+ */
+function searchSelectionAttribute(path = '', searchKey = '', page = 0, size = 0) {
+  try {
+    if (path === '') return []
+    return LayerManager.searchSelectionAttribute(path, searchKey, page, size)
   } catch (e) {
     console.error(e)
   }
@@ -300,6 +341,8 @@ export {
   getLayerAttribute,
   getSelectionAttributeByLayer,
   getAttributeByLayer,
+  searchLayerAttribute,
+  searchSelectionAttribute,
   addLayer,
   setLayerFieldInfo,
   removeAllLayer,

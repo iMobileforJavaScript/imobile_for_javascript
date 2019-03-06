@@ -551,6 +551,76 @@ RCT_REMAP_METHOD(removeCookie, removeCookieResolver:(RCTPromiseResolveBlock)reso
         reject(kTAG,@"getAllUserSymbolLibList failed",nil);
     }
 }
+#pragma mark ---------------------------- modifyPassword
+RCT_REMAP_METHOD(modifyPassword,oldPassword:(NSString*)oldPassword newPassword:(NSString*)newPassword resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        [m_onlineService modifyPassword:oldPassword newPassword:newPassword completionHandler:^(BOOL result, NSString *error) {
+            if(error){
+                resolve(error);
+            }else{
+                resolve(@(YES));
+            }
+        }];
+    }@catch(NSException* exception){
+        reject(kTAG,@"modifyPassword failed",nil);
+    }
+}
+#pragma mark ---------------------------- modifyNickname
+RCT_REMAP_METHOD(modifyNickname,nickname:(NSString*)nickname resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        [m_onlineService modifyNickname:nickname completionHandler:^(BOOL result, NSString *error) {
+            if(error){
+                resolve(error);
+            }else{
+                resolve(@(YES));
+            }
+        }];
+    
+    }@catch(NSException* exception){
+        reject(kTAG,@"modifyNickname failed",nil);
+    }
+}
+#pragma mark ---------------------------- sendVerficationCode
+RCT_REMAP_METHOD(sendVerficationCode,phoneNumber:(NSString*)phoneNumber resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        [m_onlineService sendVerficationCode:phoneNumber completionHandler:^(BOOL result, NSString *info) {
+            if(info){
+                resolve(info);
+            }else{
+                resolve(@(YES));
+            }
+        }];
+    }@catch(NSException* exception){
+        reject(kTAG,@"sendVerficationCode failed",nil);
+    }
+}
+#pragma mark ---------------------------- bindPhoneNumber
+RCT_REMAP_METHOD(bindPhoneNumber,phoneNumber:(NSString*)phoneNumber verifyCode:(NSString*)verifyCode resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        [m_onlineService bindPhoneNumber:phoneNumber verifyCode:verifyCode completionHandler:^(BOOL result, NSString *error) {
+            if(error){
+                resolve(error);
+            }else{
+                resolve(@(YES));
+            }
+        }];
+    }@catch(NSException* exception){
+        reject(kTAG,@"bindPhoneNumber failed",nil);
+    }
+}
+#pragma mark ---------------------------- bindEmail
+RCT_REMAP_METHOD(bindEmail,email:(NSString*)email resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        [m_onlineService bindEmail:email completionHandler:^(BOOL result, NSString *info) {
+            resolve(@{@"result":@(result),
+                      @"info":info
+                      });
+        }];
+    
+    }@catch(NSException* exception){
+        reject(kTAG,@"bindEmail failed",nil);
+    }
+}
 # pragma mark ---------------------------- 下载协议
 - (void)bytesWritten:(int64_t) bytesWritten totalBytesWritten:(int64_t) totalBytesWritten
 totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {

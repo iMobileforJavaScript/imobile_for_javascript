@@ -96,6 +96,26 @@ RCT_REMAP_METHOD(getAttributeByLayer, getAttributeByLayer:(NSString *)layerPath 
     }
 }
 
+#pragma mark - 搜索指定图层匹配对象的属性
+RCT_REMAP_METHOD(searchLayerAttribute, searchLayerAttribute:(NSString *)layerPath params:(NSDictionary *)params page:(int *)page size:(int *)size resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSArray* arr = [SMLayer searchLayerAttribute:layerPath params:params page:page size:size];
+        resolve(arr);
+    } @catch (NSException *exception) {
+        reject(@"LayerManager", exception.reason, nil);
+    }
+}
+
+#pragma mark - 搜索指定图层中Selection匹配对象的属性
+RCT_REMAP_METHOD(searchSelectionAttribute, searchSelectionAttribute:(NSString *)layerPath searchKey:(NSString *)searchKey page:(int *)page size:(int *)size resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSArray* arr = [SMLayer searchSelectionAttribute:layerPath searchKey:searchKey page:page size:size];
+        resolve(arr);
+    } @catch (NSException *exception) {
+        reject(@"LayerManager", exception.reason, nil);
+    }
+}
+
 #pragma mark - 根据数据源序号和数据集序号，添加图层
 RCT_REMAP_METHOD(addLayerByIndex, addLayerByIndex:(int)datasourceIndex datasetIndex:(int)datasetIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
