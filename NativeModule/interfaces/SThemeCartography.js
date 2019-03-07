@@ -451,6 +451,71 @@ isAnyOpenedDS = () => {
   }
 }
 
+/**
+ * 新建统计专题图
+ *
+ * @param params 
+ */
+createThemeGraphMap = (params) => {
+  try {
+    return SThemeCartography.createThemeGraphMap(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 设置统计专题图的表达式
+ *
+ * @param params 
+ */
+setThemeGraphExpressions = (params) => {
+  try {
+    return SThemeCartography.setThemeGraphExpressions(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 设置统计专题图的颜色方案
+ *
+ * @param params 
+ */
+setThemeGraphColorScheme = (params) => {
+  try {
+    return SThemeCartography.setThemeGraphColorScheme(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 设置统计专题图的类型
+ *
+ * @param params 
+ */
+setThemeGraphType = (params) => {
+  try {
+    return SThemeCartography.setThemeGraphType(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 设置统计专题图的统计值的计算方法
+ *
+ * @param params 
+ */
+setThemeGraphGraduatedMode = (params) => {
+  try {
+    return SThemeCartography.setThemeGraphGraduatedMode(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   //单值
   createThemeUniqueMap,
@@ -486,6 +551,12 @@ export default {
   getUniformLabelRotaion,
   getUniformLabelColor,
   setUniformLabelBackColor,
+  //统计专题图
+  createThemeGraphMap,
+  setThemeGraphExpressions,
+  setThemeGraphColorScheme,
+  setThemeGraphType,
+  setThemeGraphGraduatedMode,
   //其他
   getThemeExpressionByLayerName,
   getThemeExpressionByLayerIndex,
