@@ -452,7 +452,7 @@ isAnyOpenedDS = () => {
 }
 
 /**
- * 新建统计专题图
+ * 数据集->新建统计专题图
  *
  * @param params 
  */
@@ -462,6 +462,19 @@ createThemeGraphMap = (params) => {
   } catch (error) {
     console.error(error)
   }
+}
+
+/**
+ * 图层->新建统计专题图
+ *
+ * @param params 
+ */
+createThemeGraphMapByLayer = (params) => {
+    try {
+      return SThemeCartography.createThemeGraphMapByLayer(params)
+    } catch (error) {
+      console.error(error)
+    }
 }
 
 /**
@@ -553,6 +566,7 @@ export default {
   setUniformLabelBackColor,
   //统计专题图
   createThemeGraphMap,
+  createThemeGraphMapByLayer,
   setThemeGraphExpressions,
   setThemeGraphColorScheme,
   setThemeGraphType,

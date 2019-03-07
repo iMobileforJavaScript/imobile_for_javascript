@@ -1894,7 +1894,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     /*统计专题图
      * ********************************************************************************************/
     /**
-     * 新建统计专题图层
+     * 数据集->新建统计专题图层
      *
      * @param readableMap
      * @param promise
@@ -1944,6 +1944,106 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 }  else {
                     dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
                 }
+            }
+
+            boolean result = false;
+            if (dataset != null && graphExpressions != null && graphExpressions.size() > 0 && themeGraphType != null && colors != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                Map map = mapControl.getMap();
+
+                ThemeGraph themeGraph = new ThemeGraph();
+
+                ThemeGraphItem themeGraphItem = new ThemeGraphItem();
+                themeGraphItem.setGraphExpression(graphExpressions.get(0));
+                themeGraphItem.setCaption(graphExpressions.get(0));
+                themeGraph.insert(0, themeGraphItem);
+                themeGraph.setGraphType(themeGraphType);
+                themeGraph.getAxesTextStyle().setFontHeight(6);
+
+                Point pointStart = new Point(0,0);
+                Point pointEnd = new Point(0, (int)(mapControl.getMapWidth() / 3));
+                Point2D point2DStart = map.pixelToMap(pointStart);
+                Point2D point2DEnd = map.pixelToMap(pointEnd);
+                Point pointMinEnd = new Point(0, (int)(mapControl.getMapWidth() / 18));
+                Point2D point2DMinEnd = map.pixelToMap(pointMinEnd);
+                themeGraph.setMaxGraphSize(Math.sqrt(Math.pow(point2DEnd.getX() - point2DStart.getX(), 2) + Math.pow(point2DEnd.getY() - point2DStart.getY(), 2)));
+                themeGraph.setMinGraphSize(Math.sqrt((Math.pow(point2DMinEnd.getX() - point2DStart.getX(), 2) + Math.pow(point2DMinEnd.getY() - point2DStart.getY(), 2))));
+
+                int count = themeGraph.getCount();
+                Colors selectedColors = Colors.makeGradient(colors.length, colors);
+                if (count > 0) {
+                    for (int i = 0; i < count; i++) {
+                        themeGraph.getItem(i).getUniformStyle().setFillForeColor(selectedColors.get(i));
+                    }
+                }
+
+                //若有多个表达式，则从第二个开始添加
+                for (int i = 1; i < graphExpressions.size(); i++) {
+                    SMThemeCartography.addGraphItem(themeGraph, graphExpressions.get(i), colors);
+                }
+
+                mapControl.getMap().getLayers().add(dataset, themeGraph, true);
+                mapControl.getMap().refresh();
+
+                result = true;
+            }
+            promise.resolve(result);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 图层->新建统计专题图层
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void createThemeGraphMapByLayer(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;//图层名称
+            int layerIndex = -1;
+            ArrayList<String> graphExpressions = null;//字段表达式
+            ThemeGraphType themeGraphType = null;//统计图类型
+            Color[] colors = null;//颜色方案
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Layer layer = null;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (data.containsKey("GraphExpressions")){
+                graphExpressions  = (ArrayList<String>) data.get("GraphExpressions");
+            }
+            if (data.containsKey("ThemeGraphType")){
+                String type = data.get("ThemeGraphType").toString();
+                themeGraphType  = SMThemeCartography.getThemeGraphType(type);
+            }
+            if (data.containsKey("GraphColorType")){
+                String type = data.get("GraphColorType").toString();
+                colors = SMThemeCartography.getGraphColors(type);
+            } else {
+                colors = SMThemeCartography.getGraphColors("HA_Calm");//默认
+            }
+
+            Dataset dataset = null;
+            if (layer != null) {
+                dataset = layer.getDataset();
             }
 
             boolean result = false;
