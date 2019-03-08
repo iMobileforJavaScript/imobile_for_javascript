@@ -763,96 +763,96 @@ public class SOnlineService extends ReactContextBaseJavaModule{
         }
     }
 
-    @ReactMethod
-    public void modifyPassword(String oldPassword, String newPassword, final Promise promise){
-        OnlineService.modifyPassword(oldPassword, newPassword, new OnlineCallBack.CallBackString() {
-            @Override
-            public void onSucceed(String s) {
-                promise.resolve(true);
-            }
-
-            @Override
-            public void onError(String s) {
-                promise.resolve(s);
-            }
-        });
-    }
-    @ReactMethod
-    public void modifyNickname(final String nickname, final Promise promise){
-
-        OnlineService.validateUserNickname(nickname, new OnlineCallBack.CallBackString() {
-            @Override
-            public void onSucceed(String s) {
-                OnlineService.modifyNickname(nickname, new OnlineCallBack.CallBackString() {
-                    @Override
-                    public void onSucceed(String s) {
-                        promise.resolve(true);
-                    }
-
-                    @Override
-                    public void onError(String s) {
-                        promise.resolve(s);
-                    }
-                });
-            }
-
-            @Override
-            public void onError(String s) {
-                promise.resolve(s);
-            }
-        });
-
-    }
-    @ReactMethod
-    public void sendVerficationCode(String phoneNumber,final Promise promise){
-        OnlineService.sendVerficationCode(phoneNumber, new OnlineCallBack.CallBackString() {
-            @Override
-            public void onSucceed(String s) {
-                promise.resolve(true);
-            }
-
-            @Override
-            public void onError(String s) {
-                promise.resolve(s);
-            }
-        });
-    }
-    @ReactMethod
-    public void bindPhoneNumber(String phoneNumber, String verifyCode, final Promise promise){
-        OnlineService.bindPhoneNumber(phoneNumber, verifyCode, new OnlineCallBack.CallBackString() {
-            @Override
-            public void onSucceed(String s) {
-                promise.resolve(true);
-            }
-
-            @Override
-            public void onError(String s) {
-                promise.resolve(s);
-            }
-        });
-    }
-    @ReactMethod
-    public void bindEmail(String email, final Promise promise){
-
-        OnlineService.bindEmail(email, new OnlineCallBack.CallBackString() {
-            @Override
-            public void onSucceed(String s) {
-                WritableMap map = Arguments.createMap();
-                map.putBoolean("result",true);
-                map.putString("info",s);
-                promise.resolve(map);
-
-            }
-
-            @Override
-            public void onError(String s) {
-                WritableMap map = Arguments.createMap();
-                map.putBoolean("result",false);
-                map.putString("info",s);
-                promise.resolve(map);
-            }
-        });
-    }
+//    @ReactMethod
+//    public void modifyPassword(String oldPassword, String newPassword, final Promise promise){
+//        OnlineService.modifyPassword(oldPassword, newPassword, new OnlineCallBack.CallBackString() {
+//            @Override
+//            public void onSucceed(String s) {
+//                promise.resolve(true);
+//            }
+//
+//            @Override
+//            public void onError(String s) {
+//                promise.resolve(s);
+//            }
+//        });
+//    }
+//    @ReactMethod
+//    public void modifyNickname(final String nickname, final Promise promise){
+//
+//        OnlineService.validateUserNickname(nickname, new OnlineCallBack.CallBackString() {
+//            @Override
+//            public void onSucceed(String s) {
+//                OnlineService.modifyNickname(nickname, new OnlineCallBack.CallBackString() {
+//                    @Override
+//                    public void onSucceed(String s) {
+//                        promise.resolve(true);
+//                    }
+//
+//                    @Override
+//                    public void onError(String s) {
+//                        promise.resolve(s);
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onError(String s) {
+//                promise.resolve(s);
+//            }
+//        });
+//
+//    }
+//    @ReactMethod
+//    public void sendVerficationCode(String phoneNumber,final Promise promise){
+//        OnlineService.sendVerficationCode(phoneNumber, new OnlineCallBack.CallBackString() {
+//            @Override
+//            public void onSucceed(String s) {
+//                promise.resolve(true);
+//            }
+//
+//            @Override
+//            public void onError(String s) {
+//                promise.resolve(s);
+//            }
+//        });
+//    }
+//    @ReactMethod
+//    public void bindPhoneNumber(String phoneNumber, String verifyCode, final Promise promise){
+//        OnlineService.bindPhoneNumber(phoneNumber, verifyCode, new OnlineCallBack.CallBackString() {
+//            @Override
+//            public void onSucceed(String s) {
+//                promise.resolve(true);
+//            }
+//
+//            @Override
+//            public void onError(String s) {
+//                promise.resolve(s);
+//            }
+//        });
+//    }
+//    @ReactMethod
+//    public void bindEmail(String email, final Promise promise){
+//
+//        OnlineService.bindEmail(email, new OnlineCallBack.CallBackString() {
+//            @Override
+//            public void onSucceed(String s) {
+//                WritableMap map = Arguments.createMap();
+//                map.putBoolean("result",true);
+//                map.putString("info",s);
+//                promise.resolve(map);
+//
+//            }
+//
+//            @Override
+//            public void onError(String s) {
+//                WritableMap map = Arguments.createMap();
+//                map.putBoolean("result",false);
+//                map.putString("info",s);
+//                promise.resolve(map);
+//            }
+//        });
+//    }
 
 
 }
