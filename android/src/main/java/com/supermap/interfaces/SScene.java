@@ -18,19 +18,20 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.supermap.analyst.spatialanalyst.OverlayAnalystParameter;
 import com.supermap.containts.EventConst;
 import com.supermap.data.AltitudeMode;
 import com.supermap.data.GeoPoint3D;
 import com.supermap.data.ImageFormatType;
 import com.supermap.data.Point3D;
 import com.supermap.data.Workspace;
+import com.supermap.interfaces.mapping.SMap;
 import com.supermap.map3D.AnalysisHelper;
 import com.supermap.map3D.FlyHelper;
 import com.supermap.map3D.LabelHelper;
 import com.supermap.map3D.PoiSearchHelper;
 import com.supermap.map3D.toolKit.PoiGsonBean;
 import com.supermap.map3D.toolKit.TouchUtil;
+import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.realspace.Action3D;
 import com.supermap.realspace.Camera;
@@ -702,9 +703,12 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void toLocationPoint(int index,Promise promise) {
         try {
-            int count=pointList.size();
-            PoiGsonBean.PoiInfos poiInfos= (PoiGsonBean.PoiInfos) pointList.get(count-1).get(index);
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            sceneControl.getScene().getTrackingLayer().clear();
+            PoiGsonBean.PoiInfos poiInfos= (PoiGsonBean.PoiInfos) pointList.get(pointList.size()-1).get(index);
             PoiSearchHelper.getInstence().toLocationPoint(poiInfos);
+            sceneControl.getScene().refresh();
             pointList.clear();
             promise.resolve(true);
         } catch (Exception e) {
@@ -744,25 +748,11 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void navigationLine(Promise promise) {
         try {
-             PoiSearchHelper.getInstence().navigationLine(firstPoint,secondPoint,promise);
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            PoiSearchHelper.getInstence().clearPoint(sceneControl);
+            PoiSearchHelper.getInstence().navigationLine(firstPoint,secondPoint,promise);
             pointList.clear();
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    /**
-     * 清空三维跟踪层
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void clearTrackingLayer(Promise promise) {
-        try {
-            sScene=getInstance();
-            SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
-            sceneControl.getScene().getTrackingLayer().clear();
-            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }

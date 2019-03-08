@@ -17,8 +17,9 @@ import java.util.Map;
 public class SMThemeCartography {
     private static final String TAG = "SMThemeCartography";
 
-    private static ArrayList<HashMap<String, Object>> listUniqueColors = new ArrayList<>();
-    private static ArrayList<HashMap<String, Object>> listRangeColors = new ArrayList<>();
+    private static ArrayList<HashMap<String, Object>> listUniqueColors = new ArrayList<>();//单值专题图颜色方案
+    private static ArrayList<HashMap<String, Object>> listRangeColors = new ArrayList<>();//分段专题图颜色方案
+    private static ArrayList<HashMap<String, Object>> listGraphColors = new ArrayList<>();//统计专题图颜色方案
 
     private static HashMap<String, Object> createColorScheme(Color[] colors, String name) {
         HashMap<String, Object> colorsHashMap = new HashMap<>();
@@ -630,6 +631,225 @@ public class SMThemeCartography {
                     new Color(174, 163, 128),
                     new Color(130, 107, 109)};
             listRangeColors.add(createColorScheme(colors, "ZK_Altitude 3"));
+        }
+
+        {
+            Color[] colors = new Color[]{
+                    new Color(255, 244, 91),
+                    new Color(252, 216, 219),
+                    new Color(129, 195, 231)};
+            listGraphColors.add(createColorScheme(colors, "CA_Red Rose"));
+            colors = new Color[]{
+                    new Color(244, 198, 162),
+                    new Color(252, 237, 136),
+                    new Color(93, 187, 197)};
+            listGraphColors.add(createColorScheme(colors, "CB_Childish"));
+            colors = new Color[]{
+                    new Color(235, 241, 221),
+                    new Color(121, 232, 208),
+                    new Color(255, 251, 0)};
+            listGraphColors.add(createColorScheme(colors, "CC_Blue-Yellow"));
+            colors = new Color[]{
+                    new Color(183, 221, 200),
+                    new Color(87, 150, 204),
+                    new Color(149, 208, 222)};
+            listGraphColors.add(createColorScheme(colors, "CD_Concise"));
+            colors = new Color[]{
+                    new Color(233, 163, 202),
+                    new Color(247, 247, 247),
+                    new Color(161, 215, 105)};
+            listGraphColors.add(createColorScheme(colors, "CE_Reposeful"));
+            colors = new Color[]{
+                    new Color(253, 140, 90),
+                    new Color(255, 255, 191),
+                    new Color(144, 207, 96)};
+            listGraphColors.add(createColorScheme(colors, "CF_Home"));
+            colors = new Color[]{
+                    new Color(182, 162, 222),
+                    new Color(46, 199, 201),
+                    new Color(90, 177, 239)};
+            listGraphColors.add(createColorScheme(colors, "CG_Cold"));
+            colors = new Color[]{
+                    new Color(202, 134, 34),
+                    new Color(145, 199, 174),
+                    new Color(47, 69, 84)};
+            listGraphColors.add(createColorScheme(colors, "CH_Naive"));
+            colors = new Color[]{
+                    new Color(176, 220, 233),
+                    new Color(228, 226, 103),
+                    new Color(236, 80, 94),
+                    new Color(172, 229, 194)};
+            listGraphColors.add(createColorScheme(colors, "DA_Limber"));
+            colors = new Color[]{
+                    new Color(255, 86, 0),
+                    new Color(0, 153, 102),
+                    new Color(204, 204, 0),
+                    new Color(23, 146, 192)};
+            listGraphColors.add(createColorScheme(colors, "DB_Field"));
+            colors = new Color[]{
+                    new Color(47, 69, 84),
+                    new Color(194, 53, 49),
+                    new Color(212, 130, 101),
+                    new Color(145, 199, 174)};
+            listGraphColors.add(createColorScheme(colors, "DC_Dressy"));
+            colors = new Color[]{
+                    new Color(140, 211, 200),
+                    new Color(255, 255, 180),
+                    new Color(190, 186, 218),
+                    new Color(252, 128, 114)};
+            listGraphColors.add(createColorScheme(colors, "DD_Set"));
+            colors = new Color[]{
+                    new Color(103, 76, 133),
+                    new Color(183, 87, 115),
+                    new Color(212, 129, 121),
+                    new Color(244, 217, 135)};
+            listGraphColors.add(createColorScheme(colors, "DE_Shock"));
+            colors = new Color[]{
+                    new Color(119, 200, 204),
+                    new Color(240, 244, 183),
+                    new Color(204, 154, 189),
+                    new Color(245, 146, 27)};
+            listGraphColors.add(createColorScheme(colors, "DF_Summer"));
+            colors = new Color[]{
+                    new Color(240, 154, 189),
+                    new Color(243, 202, 148),
+                    new Color(255, 251, 118),
+                    new Color(185, 221, 125)};
+            listGraphColors.add(createColorScheme(colors, "DG_Common"));
+            colors = new Color[]{
+                    new Color(202, 0, 31),
+                    new Color(245, 165, 130),
+                    new Color(145, 197, 223),
+                    new Color(0, 113, 176)};
+            listGraphColors.add(createColorScheme(colors, "DH_Red-Blue"));
+            colors = new Color[]{
+                    new Color(205, 228, 200),
+                    new Color(229, 146, 106),
+                    new Color(243, 209, 119),
+                    new Color(236, 216, 179),
+                    new Color(221, 90, 62)};
+            listGraphColors.add(createColorScheme(colors, "EA_Orange"));
+            colors = new Color[]{
+                    new Color(129, 194, 214),
+                    new Color(129, 146, 214),
+                    new Color(217, 179, 230),
+                    new Color(220, 247, 161),
+                    new Color(131, 252, 216)};
+            listGraphColors.add(createColorScheme(colors, "EB_Cold"));
+            colors = new Color[]{
+                    new Color(246, 134, 32),
+                    new Color(236, 28, 35),
+                    new Color(254, 236, 125),
+                    new Color(80, 76, 170),
+                    new Color(179, 227, 170)};
+            listGraphColors.add(createColorScheme(colors, "EC_Distinct"));
+            colors = new Color[]{
+                    new Color(103, 205, 227),
+                    new Color(165, 226, 228),
+                    new Color(99, 192, 190),
+                    new Color(183, 229, 193),
+                    new Color(102, 201, 147)};
+            listGraphColors.add(createColorScheme(colors, "XXXXX"));
+            colors = new Color[]{
+                    new Color(234, 181, 162),
+                    new Color(234, 229, 162),
+                    new Color(162, 234, 218),
+                    new Color(197, 162, 234),
+                    new Color(234, 200, 162)};
+            listGraphColors.add(createColorScheme(colors, "ED_Pastal"));
+            colors = new Color[]{
+                    new Color(254, 242, 0),
+                    new Color(104, 189, 178),
+                    new Color(185, 219, 65),
+                    new Color(206, 232, 142),
+                    new Color(29, 151, 121)};
+            listGraphColors.add(createColorScheme(colors, "EE_Grass"));
+            colors = new Color[]{
+                    new Color(97, 255, 105),
+                    new Color(184, 247, 136),
+                    new Color(88, 210, 232),
+                    new Color(242, 182, 182),
+                    new Color(232, 237, 81)};
+            listGraphColors.add(createColorScheme(colors, "EF_Blind"));
+            colors = new Color[]{
+                    new Color(235, 74, 19),
+                    new Color(234, 217, 0),
+                    new Color(0, 234, 180),
+                    new Color(114, 0, 234),
+                    new Color(234, 124, 0)};
+            listGraphColors.add(createColorScheme(colors, "EG_Passion"));
+            colors = new Color[]{
+                    new Color(31, 60, 255),
+                    new Color(255, 68, 255),
+                    new Color(145, 59, 255),
+                    new Color(122, 255, 201),
+                    new Color(218, 97, 74)};
+            listGraphColors.add(createColorScheme(colors, "EH_Amazing"));
+            colors = new Color[]{
+                    new Color(217,77,77),
+                    new Color(135,171,102),
+                    new Color(251,180,72),
+                    new Color(103,205,204),
+                    new Color(171,58,107),
+                    new Color(81,48,135),
+                    new Color(4,101,137),
+                    new Color(146,2,64)};
+            listGraphColors.add(createColorScheme(colors, "HA_Calm"));
+            colors = new Color[]{
+                    new Color(66, 80, 99),
+                    new Color(94, 213, 209),
+                    new Color(58, 154, 217),
+                    new Color(48, 173, 167),
+                    new Color(253, 224, 214),
+
+                    new Color(235, 114, 96),
+                    new Color(243, 152, 0),
+                    new Color(211, 50, 73)};
+            listGraphColors.add(createColorScheme(colors, "HB_Distance"));
+            colors = new Color[]{
+                    new Color(15, 99, 161),
+                    new Color(37, 143, 185),
+                    new Color(104, 161, 49),
+                    new Color(167, 202, 34),
+                    new Color(238, 119, 26),
+
+                    new Color(245, 193, 28),
+                    new Color(124, 61, 146),
+                    new Color(229, 74, 120)};
+            listGraphColors.add(createColorScheme(colors, "HC_Exotic"));
+            colors = new Color[]{
+                    new Color(228, 26, 28),
+                    new Color(55, 126, 184),
+                    new Color(77, 175, 74),
+                    new Color(152, 78, 163),
+                    new Color(255, 127, 0),
+
+                    new Color(255, 255, 51),
+                    new Color(166, 86, 40),
+                    new Color(247, 129, 191)};
+            listGraphColors.add(createColorScheme(colors, "HD_Luck"));
+            colors = new Color[]{
+                    new Color(91, 155, 213),
+                    new Color(237, 125, 49),
+                    new Color(165, 165, 165),
+                    new Color(255, 192, 0),
+                    new Color(68, 114, 196),
+
+                    new Color(112, 173, 71),
+                    new Color(158, 72, 14),
+                    new Color(67, 104, 43)};
+            listGraphColors.add(createColorScheme(colors, "HE_Moist"));
+            colors = new Color[]{
+                    new Color(237, 125, 49),
+                    new Color(255, 192, 0),
+                    new Color(112, 173, 71),
+                    new Color(158, 72, 14),
+                    new Color(153, 115, 0),
+
+                    new Color(67, 104, 43),
+                    new Color(227, 108, 9),
+                    new Color(182, 170, 0)};
+            listGraphColors.add(createColorScheme(colors, "HF_Warm"));
         }
     }
 
@@ -1277,6 +1497,29 @@ public class SMThemeCartography {
                         return colors;
                     }
                 }
+            } else if (theme.getType() == ThemeType.GRAPH) {
+                ThemeGraph themeGraph = (ThemeGraph) theme;
+                int count = themeGraph.getCount();
+
+                color_start = themeGraph.getItem(0).getUniformStyle().getFillForeColor();
+                color_end = themeGraph.getItem(count - 1).getUniformStyle().getFillForeColor();
+
+                if (color_start == null || color_end == null){
+                    return null;
+                }
+
+                int rgb_start = color_start.getRGB();
+                int rgb_end = color_end.getRGB();
+
+                for (int i = 0; i < listGraphColors.size(); i++) {
+                    HashMap<String, Object> hashMap = listGraphColors.get(i);
+                    Color[] colors = (Color[]) hashMap.get("Colors");
+                    int rgb01 = colors[0].getRGB();
+                    int rgb02 = colors[colors.length - 1].getRGB();
+                    if (rgb_start == rgb01 && rgb_end == rgb02) {
+                        return colors;
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1285,7 +1528,7 @@ public class SMThemeCartography {
         return null;
     }
 
-    //获取专题图层上次设置的颜色方案
+    //获取专题图层上次设置的颜色方案名称
     public static String getThemeColorSchemeName(Layer layer) {
         try {
             if (layer == null) {
@@ -1360,6 +1603,29 @@ public class SMThemeCartography {
 
                 for (int i = 0; i < listRangeColors.size(); i++) {
                     HashMap<String, Object> hashMap = listRangeColors.get(i);
+                    Color[] colors = (Color[]) hashMap.get("Colors");
+                    int rgb01 = colors[0].getRGB();
+                    int rgb02 = colors[colors.length - 1].getRGB();
+                    if (rgb_start == rgb01 && rgb_end == rgb02) {
+                        return (String) hashMap.get("ColorScheme");
+                    }
+                }
+            } else if (theme.getType() == ThemeType.GRAPH) {
+                ThemeGraph themeGraph = (ThemeGraph) theme;
+                int count = themeGraph.getCount();
+
+                color_start = themeGraph.getItem(0).getUniformStyle().getFillForeColor();
+                color_end = themeGraph.getItem(count - 1).getUniformStyle().getFillForeColor();
+
+                if (color_start == null || color_end == null){
+                    return null;
+                }
+
+                int rgb_start = color_start.getRGB();
+                int rgb_end = color_end.getRGB();
+
+                for (int i = 0; i < listGraphColors.size(); i++) {
+                    HashMap<String, Object> hashMap = listGraphColors.get(i);
                     Color[] colors = (Color[]) hashMap.get("Colors");
                     int rgb01 = colors[0].getRGB();
                     int rgb02 = colors[colors.length - 1].getRGB();
@@ -1451,5 +1717,155 @@ public class SMThemeCartography {
             e.printStackTrace();
             return  type;
         }
+    }
+
+    /**
+     * 新增统计专题图子项
+     * @return
+     */
+    public static boolean addGraphItem(ThemeGraph themeGraph, String graphExpression, Color[] colors){
+        boolean isSuccess = false;
+        try {
+            ArrayList<String> existItems = new ArrayList<>();
+            for (int i = 0; i < themeGraph.getCount(); i++) {
+                existItems.add(themeGraph.getItem(i).getGraphExpression());
+            }
+
+            ThemeGraphItem item = new ThemeGraphItem();
+            String caption = getCaption(graphExpression);
+            item.setGraphExpression(graphExpression);
+            item.setCaption(caption);
+
+            if (!itemExist(item, existItems)) {
+                themeGraph.add(item);
+            }
+            Colors selectedColors = Colors.makeGradient(colors.length, colors);
+            int num = themeGraph.getCount() - 1;
+            if (num >= selectedColors.getCount()) {
+                num = num % selectedColors.getCount();
+            }
+            themeGraph.getItem(themeGraph.getCount() - 1).getUniformStyle().setFillForeColor(selectedColors.get(num));
+
+            isSuccess = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+
+        }
+
+        return isSuccess;
+    }
+
+    private static boolean itemExist(ThemeGraphItem item, ArrayList<String> existItems) {
+        for (int i = 0; i < existItems.size(); i++) {
+            if (existItems.get(i).equals(item.getGraphExpression())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static String getCaption(String graphExpression) {
+        String caption = graphExpression;
+        if (graphExpression.indexOf(".") > 0) {
+            String[] info = graphExpression.split("\\.");
+            if (info.length == 2) {
+                caption = graphExpression.substring(graphExpression.indexOf(".") + 1, graphExpression.length());
+            }
+        }
+        return caption;
+    }
+
+    /**
+     * 获取统计专题图类型
+     * @param type
+     * @return
+     */
+    public static ThemeGraphType getThemeGraphType(String type) {
+        ThemeGraphType themeGraphType = null;
+        switch (type) {
+            case "面积图":
+                themeGraphType = ThemeGraphType.AREA;
+                break;
+            case "阶梯图":
+                themeGraphType = ThemeGraphType.STEP;
+                break;
+            case "折线图":
+                themeGraphType = ThemeGraphType.LINE;
+                break;
+            case "点状图":
+                themeGraphType = ThemeGraphType.POINT;
+                break;
+            case "柱状图":
+                themeGraphType = ThemeGraphType.BAR;
+                break;
+            case "三维柱状图":
+                themeGraphType = ThemeGraphType.BAR3D;
+                break;
+            case "饼图":
+                themeGraphType = ThemeGraphType.PIE;
+                break;
+            case "三维饼图":
+                themeGraphType = ThemeGraphType.PIE3D;
+                break;
+            case "玫瑰图":
+                themeGraphType = ThemeGraphType.ROSE;
+                break;
+            case "三维玫瑰图":
+                themeGraphType = ThemeGraphType.ROSE3D;
+                break;
+            case "堆叠柱状图":
+                themeGraphType = ThemeGraphType.STACK_BAR;
+                break;
+            case "三维堆叠柱状图":
+                themeGraphType = ThemeGraphType.STACK_BAR3D;
+                break;
+            case "环状图":
+                themeGraphType = ThemeGraphType.RING;
+                break;
+        }
+        return themeGraphType;
+    }
+
+    /**
+     * 获取统计专题图颜色方案
+     * @param colorType
+     * @return
+     */
+    public static Color[] getGraphColors(String colorType) {
+        try{
+            for (int i = 0; i < listGraphColors.size(); i++) {
+                HashMap<String, Object> hashMap = listGraphColors.get(i);
+                String colorScheme = (String) hashMap.get("ColorScheme");
+                if (colorScheme.equals(colorType)) {
+                    return (Color[]) hashMap.get("Colors");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
+    /**
+     * 获取统计专题图分级模式
+     * @param type
+     * @return
+     */
+    public static GraduatedMode getGraduatedMode(String type) {
+        GraduatedMode graduatedMode = null;
+        switch (type) {
+            case "CONSTANT":
+                graduatedMode = GraduatedMode.CONSTANT;
+                break;
+            case "LOGARITHM":
+                graduatedMode = GraduatedMode.LOGARITHM;
+                break;
+            case "SQUAREROOT":
+                graduatedMode = GraduatedMode.SQUAREROOT;
+                break;
+        }
+        return graduatedMode;
     }
 }

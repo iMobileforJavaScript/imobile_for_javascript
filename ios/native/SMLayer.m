@@ -155,6 +155,32 @@
     return dic;
 }
 
++ (NSDictionary *)getAttributeByLayer:(NSString *)path ids:(NSArray *)ids {
+    Layer* layer = [self findLayerByPath:path];
+    NSString* filter = @"";
+    for (int i = 0; i < ids.count; i++) {
+        NSNumber* ID = ids[i];
+        if (i == 0) {
+            filter = [NSString stringWithFormat:@"SmID=%d", ID.intValue];
+        } else {
+            filter = [NSString stringWithFormat:@"%@ OR SmID=%d", filter, ID.intValue];
+        }
+    }
+    QueryParameter* qp = [[QueryParameter alloc] init];
+    [qp setAttriButeFilter:filter];
+    [qp setCursorType:STATIC];
+    
+    DatasetVector* dv = (DatasetVector *)layer.dataset;;
+    Recordset* recordSet = [dv query:qp];
+    
+    [recordSet moveFirst];
+    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet page:0 size:recordSet.recordCount]; // recordSet已经dispose了
+    
+    [recordSet dispose];
+    recordSet = nil;
+    return dic;
+}
+
 + (NSString *)getLayerPath:(Layer *)layer {
     NSString* path = layer.name;
     while (layer.parentGroup != nil) {
@@ -180,6 +206,61 @@
     }
     
     return targetLayer;
+}
+
++ (NSArray *)searchLayerAttribute:(NSString *)path params:(NSDictionary *)params page:(int *)page size:(int *)size {
+    NSString* filter = [params objectForKey:@"filter"];
+    NSString* key = [params objectForKey:@"key"];
+    
+    Layer* layer = [self findLayerByPath:path];
+    DatasetVector* dv = (DatasetVector*) layer.dataset;
+    
+    QueryParameter* qp = [[QueryParameter alloc] init];
+    Recordset* recordset;
+    
+    if (filter != nil && ![filter isEqualToString:@""]) {
+        qp.attriButeFilter = filter;
+        qp.cursorType = STATIC;
+        recordset = [dv query:qp];
+    } else if (key != nil && ![key isEqualToString:@""]) {
+        FieldInfos* infos = dv.fieldInfos;
+        NSString* sql = @"";
+        for (int i = 0; i < infos.count; i++) {
+            NSString* fieldName = [infos get:i].name;
+            if (i == 0) {
+                sql = [NSString stringWithFormat:@"%@ LIKE '%%%@%%'", fieldName, key];
+            } else {
+                sql = [NSString stringWithFormat:@"%@ OR %@ LIKE '%%%@%%'", sql, fieldName, key];
+            }
+        }
+        qp.attriButeFilter = sql;
+        qp.cursorType = STATIC;
+        recordset = [dv query:qp];
+    } else {
+        recordset = [dv recordset:NO cursorType:STATIC];
+    }
+    
+    [recordset moveFirst];
+    NSArray* arr = [NativeUtil recordsetToJsonArray:recordset page:page size:size]; // recordSet已经dispose了
+    
+    [recordset dispose];
+    recordset = nil;
+    return arr;
+}
+
++ (NSMutableArray *)searchSelectionAttribute:(NSString *)path searchKey:(NSString *)searchKey page:(int)page size:(int)size {
+    Layer* layer = [self findLayerByPath:path];
+    Selection* selection = [layer getSelection];
+    Recordset* recordSet = selection.toRecordset;
+    
+    [recordSet moveFirst];
+    long nCount = recordSet.recordCount > size ? size : recordSet.recordCount;
+    NSMutableArray* arr = [NativeUtil recordsetToJsonArray:recordSet page:page size:nCount filterKey:searchKey]; // recordSet已经dispose了
+    
+    [recordSet dispose];
+    [selection dispose];
+    recordSet = nil;
+    return arr;
 }
 
 @end

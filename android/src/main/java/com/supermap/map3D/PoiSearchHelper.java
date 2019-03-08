@@ -126,7 +126,6 @@ public class PoiSearchHelper {
         feature3D.setGeometry(geoPlacemark);
 
         if (mCurrentFeature3D != null) {
-
             feature3Ds.remove(mCurrentFeature3D);
             mCurrentFeature3D = null;
 
@@ -225,7 +224,16 @@ public class PoiSearchHelper {
 
     }
 
-
+    public void clearPoint(SceneControl sceneControl){
+        Layer3D layer3d = sceneControl.getScene().getLayers().get("NodeAnimation");
+        if (layer3d != null) {
+            Feature3Ds feature3Ds = layer3d.getFeatures();
+            if (GlobalControlHelper.getCurrentFeature()!= null) {
+                feature3Ds.remove(GlobalControlHelper.getCurrentFeature());
+                GlobalControlHelper.setCurrentFeature(null);
+            }
+        }
+    }
 
 
     public interface PoiSearchCallBack{
