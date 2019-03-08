@@ -66,6 +66,7 @@ public class SMap extends ReactContextBaseJavaModule {
     public static int fillNum;
     public static Color[] fillColors;
     public static Random random;// 用于保存产生随机的线风格颜色的Random对象
+    String rootPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 
     public Selection getSelection() {
         return selection;
@@ -864,7 +865,7 @@ public class SMap extends ReactContextBaseJavaModule {
     @ReactMethod
     public void submit(Promise promise) {
         try {
-            sMap = getInstance();
+            sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().submit();
 
             promise.resolve(true);
@@ -2176,4 +2177,130 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 新建标注数据集
+     * @param promise
+     */
+    @ReactMethod
+    public void newTaggingDataset(String name,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
+            Datasource opendatasource = workspace.getDatasources().get("Lable");
+            if(opendatasource==null){
+                DatasourceConnectionInfo info = new DatasourceConnectionInfo();
+                info.setAlias("Lable");
+                info.setEngineType(EngineType.UDB);
+                info.setServer(rootPath + "/iTablet/User/Customer/Data/Lable/Lable.udb");
+                Datasource datasource = workspace.getDatasources().open(info);
+                if(datasource!=null){
+                    Datasets datasets = datasource.getDatasets();
+                    String datasetName = datasets.getAvailableDatasetName(name);
+                    DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+                    datasetVectorInfo.setType(DatasetType.CAD);
+                    datasetVectorInfo.setEncodeType(EncodeType.NONE);
+                    datasetVectorInfo.setName(datasetName);
+                    DatasetVector datasetVector = datasets.create(datasetVectorInfo);
+                    Dataset ds = datasets.get(datasetName);
+                    com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                    Layer layer = map.getLayers().add(ds,true);
+                    layer.setEditable(true);
+                    datasetVectorInfo.dispose();
+                    datasetVector.close();
+                }
+                info.dispose();
+                promise.resolve(true);
+            }else {
+                    Datasets datasets = opendatasource.getDatasets();
+                    String datasetName = datasets.getAvailableDatasetName(name);
+                    DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+                    datasetVectorInfo.setType(DatasetType.CAD);
+                    datasetVectorInfo.setEncodeType(EncodeType.NONE);
+                    datasetVectorInfo.setName(datasetName);
+                    DatasetVector datasetVector = datasets.create(datasetVectorInfo);
+                    Dataset ds = datasets.get(datasetName);
+                    com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                    Layer layer = map.getLayers().add(ds,true);
+                    layer.setEditable(true);
+                    datasetVectorInfo.dispose();
+                    datasetVector.close();
+
+                promise.resolve(true);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 删除标注数据集
+     * @param promise
+     */
+    @ReactMethod
+    public void removeTaggingDataset(String name,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
+            Datasource opendatasource = workspace.getDatasources().get("Lable");
+            if(opendatasource==null){
+                DatasourceConnectionInfo info = new DatasourceConnectionInfo();
+                info.setAlias("Lable");
+                info.setEngineType(EngineType.UDB);
+                info.setServer(rootPath + "/iTablet/User/Customer/Data/Lable/Lable.udb");
+                Datasource datasource = workspace.getDatasources().open(info);
+                if(datasource!=null){
+                    Datasets datasets = datasource.getDatasets();
+                    datasets.delete(name);
+                }
+                info.dispose();
+                promise.resolve(true);
+            }else {
+                Datasets datasets = opendatasource.getDatasets();
+                datasets.delete(name);
+                promise.resolve(true);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 导入标注数据集
+     * @param promise
+     */
+    @ReactMethod
+    public void openTaggingDataset(String name,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
+            Datasource opendatasource = workspace.getDatasources().get("Lable");
+            if(opendatasource==null){
+                DatasourceConnectionInfo info = new DatasourceConnectionInfo();
+                info.setAlias("Lable");
+                info.setEngineType(EngineType.UDB);
+                info.setServer(rootPath + "/iTablet/User/Customer/Data/Lable/Lable.udb");
+                Datasource datasource = workspace.getDatasources().open(info);
+                if(datasource!=null){
+                    Datasets datasets = datasource.getDatasets();
+                    Dataset ds = datasets.get(name);
+                    com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                    Layer layer = map.getLayers().add(ds,true);
+                    layer.setEditable(true);
+                }
+                info.dispose();
+                promise.resolve(true);
+            }else {
+                Datasets datasets = opendatasource.getDatasets();
+                Dataset ds = datasets.get(name);
+                com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                Layer layer = map.getLayers().add(ds,true);
+                layer.setEditable(true);
+                promise.resolve(true);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 }
