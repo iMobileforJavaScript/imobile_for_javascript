@@ -2295,7 +2295,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     public void setThemeGraphGraduatedMode(ReadableMap readableMap, Promise promise) {
         try {
             HashMap<String, Object> data = readableMap.toHashMap();
-
+            
             String layerName = null;
             int layerIndex = -1;
 
@@ -2329,6 +2329,59 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     SMap.getSMWorkspace().getMapControl().getMap().refresh();
 
                     promise.resolve(true);
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取统计专题图的表达式
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getGraphExpressions(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.GRAPH) {
+                    ThemeGraph themeGraph = (ThemeGraph) layer.getTheme();
+                    WritableArray array = Arguments.createArray();
+                    for (int i = 0; i < themeGraph.getCount(); i++) {
+                        array.pushString(themeGraph.getItem(i).getGraphExpression());
+                    }
+
+                    WritableMap writableMap = Arguments.createMap();
+                    writableMap.putArray("list", array);
+                    promise.resolve(writableMap);
+                } else {
+                    promise.resolve(false);
                 }
             } else {
                 promise.resolve(false);
