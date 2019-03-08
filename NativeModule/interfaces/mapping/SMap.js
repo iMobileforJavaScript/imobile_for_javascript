@@ -60,7 +60,7 @@ export default (function () {
       console.error(e)
     }
   }
-  
+
   /**
    * 获取工作空间地图列表
    * @returns {*|Promise.<Maps>}
@@ -855,6 +855,43 @@ export default (function () {
     }
   }
 
+  /**
+   * 新建标注数据集
+   * @returns {*|Promise.<void>}
+   */
+  function newTaggingDataset(name){
+    try{
+      return SMap.newTaggingDataset(name)
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移除标注数据集
+   * @returns {*|Promise.<void>}
+   */
+  function removeTaggingDataset(name){
+    try{
+      return SMap.removeTaggingDataset(name)
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 导入标注数据集
+   * @returns {*|Promise.<void>}
+   */
+  function openTaggingDataset(name){
+    try{
+      return SMap.openTaggingDataset(name)
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+
 
   let SMapExp = {
     refreshMap,
@@ -913,6 +950,9 @@ export default (function () {
     exportWorkspaceByMap,
     setDynamicProjection,
     selectByRectangle,
+    newTaggingDataset,
+    removeTaggingDataset,
+    openTaggingDataset,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 
