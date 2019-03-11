@@ -830,14 +830,26 @@ export default (function () {
     }
   }
   
+  // /**
+  //  * 框选
+  //  * 第一次设置框选；再次使用，会清除Selection
+  //  * @returns {*}
+  //  */
+  // function selectByRectangle(){
+  //   try{
+  //     return SMap.selectByRectangle()
+  //   }catch (e) {
+  //     console.error(e)
+  //   }
+  // }
+  
   /**
-   * 框选
-   * 第一次设置框选；再次使用，会清除Selection
+   * 清除Selection
    * @returns {*}
    */
-  function selectByRectangle(){
+  function clearSelection(){
     try{
-      return SMap.selectByRectangle()
+      return SMap.clearSelection()
     }catch (e) {
       console.error(e)
     }
@@ -949,7 +961,8 @@ export default (function () {
     viewEntire,
     exportWorkspaceByMap,
     setDynamicProjection,
-    selectByRectangle,
+    // selectByRectangle,
+    clearSelection,
     newTaggingDataset,
     removeTaggingDataset,
     openTaggingDataset,

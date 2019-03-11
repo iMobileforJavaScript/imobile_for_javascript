@@ -667,27 +667,23 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 框选：第一次设置框选；再次使用，会清除Selection
+     * 清除Selection
      * @param promise
      */
     @ReactMethod
-    public void selectByRectangle(Promise promise) {
+    public void clearSelection(Promise promise) {
         try {
             sMap = getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
 
-            if (mapControl.getAction().equals(Action.SELECT_BY_RECTANGLE)) {
-                Layers layers = mapControl.getMap().getLayers();
-                for (int i = 0; i < layers.getCount(); i++) {
-                    Selection selection = layers.get(i).getSelection();
-                    if (selection != null) {
-                        selection.clear();
-                    }
-
-                    mapControl.getMap().refresh();
+            Layers layers = mapControl.getMap().getLayers();
+            for (int i = 0; i < layers.getCount(); i++) {
+                Selection selection = layers.get(i).getSelection();
+                if (selection != null) {
+                    selection.clear();
                 }
-            } else {
-                mapControl.setAction(Action.SELECT_BY_RECTANGLE);
+
+                mapControl.getMap().refresh();
             }
             promise.resolve(true);
         } catch (Exception e) {
