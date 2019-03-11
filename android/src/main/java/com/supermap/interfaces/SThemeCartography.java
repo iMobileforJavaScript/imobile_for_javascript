@@ -11,9 +11,7 @@ import com.supermap.smNative.SMThemeCartography;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * 专题制图
@@ -25,6 +23,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     private static ReactApplicationContext context;
     private static Color[] lastUniqueColors = null;
     private static Color[] lastRangeColors = null;
+    private static Color[] lastGraphColors = null;
 
     public SThemeCartography(ReactApplicationContext context) {
         super(context);
@@ -1979,7 +1978,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
                 //若有多个表达式，则从第二个开始添加
                 for (int i = 1; i < graphExpressions.size(); i++) {
-                    SMThemeCartography.addGraphItem(themeGraph, graphExpressions.get(i), colors);
+                    SMThemeCartography.addGraphItem(themeGraph, graphExpressions.get(i), selectedColors);
                 }
 
                 mapControl.getMap().getLayers().add(dataset, themeGraph, true);
@@ -2079,7 +2078,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
                 //若有多个表达式，则从第二个开始添加
                 for (int i = 1; i < graphExpressions.size(); i++) {
-                    SMThemeCartography.addGraphItem(themeGraph, graphExpressions.get(i), colors);
+                    SMThemeCartography.addGraphItem(themeGraph, graphExpressions.get(i), selectedColors);
                 }
 
                 mapControl.getMap().getLayers().add(dataset, themeGraph, true);
@@ -2122,36 +2121,69 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 graphExpressions  = (ArrayList<String>) data.get("GraphExpressions");
             }
 
-            Layer layer;
+            Layer themeGraphLayer;
             if (layerName != null) {
-                layer = SMThemeCartography.getLayerByName(layerName);
+                themeGraphLayer = SMThemeCartography.getLayerByName(layerName);
             } else {
-                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+                themeGraphLayer = SMThemeCartography.getLayerByIndex(layerIndex);
             }
 
-            if (layer != null && graphExpressions != null && graphExpressions.size() > 0 && layer.getTheme() != null) {
-                if (layer.getTheme().getType() == ThemeType.GRAPH) {
-                    ThemeGraph themeGraph = (ThemeGraph) layer.getTheme();
+            if (themeGraphLayer != null && graphExpressions != null && graphExpressions.size() > 0 && themeGraphLayer.getTheme() != null) {
+                if (themeGraphLayer.getTheme().getType() == ThemeType.GRAPH) {
+                    ThemeGraph themeGraph = (ThemeGraph) themeGraphLayer.getTheme();
                     int count = themeGraph.getCount();
+                    ArrayList<String> listExpression = new ArrayList<>();
+                    for (int i = 0; i < count; i++) {
+                        listExpression.add(themeGraph.getItem(i).getGraphExpression());
+                    }
 
-                    ArrayList<String> listExpressions = new ArrayList<>();
-                    for (int i = 0; i < graphExpressions.size(); i++) {
-                        for (int j = 0; j < count; j++) {
-                            String graphExpression = themeGraph.getItem(j).getGraphExpression();
-                            if (!graphExpression.equals(graphExpressions.get(i))) {
-                                listExpressions.add(graphExpressions.get(i));
-                            }
+                    ArrayList<String> listremovedExpressions = new ArrayList<>();//移除的表达式
+                    for (int i = 0; i < count; i++) {
+                        String expression = themeGraph.getItem(i).getGraphExpression();
+                        if (!graphExpressions.contains(expression)) {
+                            listremovedExpressions.add(expression);
                         }
                     }
 
-                    if (listExpressions.size() > 0) {
-                        Color[] colors = SMThemeCartography.getLastThemeColors(layer);
-
-                        for (int i = 0; i < listExpressions.size(); i++) {
-                            SMThemeCartography.addGraphItem(themeGraph, listExpressions.get(i), colors);
+                    ArrayList<String> listAddedExpressions = new ArrayList<>();//新增的表达式
+                    for (int i = 0; i < graphExpressions.size(); i++) {
+                        String expression = graphExpressions.get(i);
+                        if (!listExpression.contains(expression)) {
+                            listAddedExpressions.add(expression);
                         }
-                        SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    }
 
+                    if (listremovedExpressions.size() > 0 || listAddedExpressions.size() > 0) {
+                        Color[] colors = SMThemeCartography.getLastThemeColors(themeGraphLayer);
+                        if (colors != null) {
+                            lastGraphColors = colors;
+                        } else {
+                            if (lastGraphColors != null) {
+                                colors = lastGraphColors;
+                            } else {
+                                colors = SMThemeCartography.getGraphColors("HA_Calm");//默认
+                            }
+                        }
+                        Colors selectedColors = Colors.makeGradient(colors.length, colors);
+
+                        //移除
+                        for (int i = 0; i < listremovedExpressions.size(); i++) {
+                            themeGraph.remove(themeGraph.indexOf(listremovedExpressions.get(i)));
+                        }
+                        //防止因为修改字段表达式造成的颜色值重复，遍历设置每个子项的颜色值
+                        for (int i = 0; i < themeGraph.getCount(); i++) {
+                            int index = i;
+                            if (index >= selectedColors.getCount()) {
+                                index = index % selectedColors.getCount();
+                            }
+                            themeGraph.getItem(i).getUniformStyle().setFillForeColor(selectedColors.get(index));
+                        }
+                        //添加
+                        for (int i = 0; i < listAddedExpressions.size(); i++) {
+                            SMThemeCartography.addGraphItem(themeGraph, listAddedExpressions.get(i), selectedColors);
+                        }
+
+                        SMap.getSMWorkspace().getMapControl().getMap().refresh();
                         promise.resolve(true);
                     } else {
                         promise.resolve(false);
