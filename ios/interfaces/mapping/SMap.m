@@ -1237,21 +1237,17 @@ RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resol
     }
 }
 
-#pragma mark 框选：第一次设置框选；再次使用，会清除Selection
-RCT_REMAP_METHOD(selectByRectangle, selectByRectangleWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+#pragma mark 清除Selection
+RCT_REMAP_METHOD(clearSelection, clearSelectionWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        if (sMap.smMapWC.mapControl.action == SELECT_BY_RECTANGLE) {
-            Layers* layers = sMap.smMapWC.mapControl.map.layers;
-            for (int i = 0; i < layers.getCount; i++) {
-                Selection* selection = [[layers getLayerAtIndex:i] getSelection];
-                [selection clear];
-                [selection dispose];
-                
-                [sMap.smMapWC.mapControl.map refresh];
-            }
-        } else {
-            [sMap.smMapWC.mapControl setAction:SELECT_BY_RECTANGLE];
+        Layers* layers = sMap.smMapWC.mapControl.map.layers;
+        for (int i = 0; i < layers.getCount; i++) {
+            Selection* selection = [[layers getLayerAtIndex:i] getSelection];
+            [selection clear];
+            [selection dispose];
+            
+            [sMap.smMapWC.mapControl.map refresh];
         }
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
