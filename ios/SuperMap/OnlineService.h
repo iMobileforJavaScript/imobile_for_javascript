@@ -281,4 +281,13 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
  @param email 邮箱
  */
 -(void) bindEmail:(NSString*)email completionHandler:(void(^)(BOOL result,NSString* error))completionHandler;
+/**
+通过昵称获取用户唯一id
+ @param nickname 昵称
+ */
+-(void)getUserIdByNickname:(NSString*)nickname completionHandler:(void(^)(NSString* userId,NSString* error))completionHandler;
+/**
+ 获取个人用户信息
+ */
+-(void)getAccountInfo:(void(^)(NSString* nickname,NSString* phoneNumber,NSString* email,NSString* error))completionHandler;
 @end

@@ -18,6 +18,7 @@
 @class Color;
 @class DynamicView,SnapSetting;
 @class DatasourceConnectionInfo;
+@class EditHistory;
 @protocol TouchableViewDelegate;
 @protocol MapEditDelegate;
 @protocol MapMeasureDelegate;
@@ -278,6 +279,8 @@
 -(void)removePlotLibrary:(int)libraryID;
 //通过libraryID 和 symbolCode绘制态势标绘符号
 -(void)setPlotSymbol:(int)libraryID symbolCode:(long)symbolCode;
+
+-(EditHistory*)getEditHistory;
 
 @end
 

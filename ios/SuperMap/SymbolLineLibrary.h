@@ -12,7 +12,7 @@
  * <p>点状符号库类、线型符号库类和填充符号库类都继承自该抽象类。用来管理符号对象，包括符号对象的添加、删除。
  */
 @interface SymbolLineLibrary : SymbolLibrary
-
+// 得到内部点符号库
 -(SymbolMarkerLibrary*)getInlineMarkerLib;
 -(void)dispose;
 

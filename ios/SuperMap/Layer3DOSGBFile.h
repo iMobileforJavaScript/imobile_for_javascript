@@ -44,6 +44,8 @@
  */
 - (void)makeObjectsVisibleWithIndexs:(NSArray *)indexs visible:(BOOL)visible;
 
+- (void)makeOnlyObjectsVisibleWithIndexs:(NSArray *)indexs visible:(BOOL)visible;
+
 /*
 ** 设置、获取、重置或清除对象的颜色
 */
@@ -96,5 +98,9 @@
 ** 获取最后一个选中的对象的所有属性
 */
 - (NSArray *)allFieldValuesOfLastSelectedObject;
+
+//获取多数据集属性信息接口
+-(NSMutableArray *)getDatasetInfos:(NSMutableArray *)startid Endid:(NSMutableArray *)endid;
+
 
 @end
