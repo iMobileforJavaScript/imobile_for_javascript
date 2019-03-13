@@ -47,6 +47,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void createThemeUniqueMap(ReadableMap readableMap, Promise promise) {
         try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
             HashMap<String, Object> data = readableMap.toHashMap();
 
             int datasourceIndex = -1;
@@ -103,7 +106,6 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         }
                     }
 
-                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                     mapControl.getMap().getLayers().add(dataset, themeUnique, true);
                     mapControl.getMap().refresh();
 
@@ -164,6 +166,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             boolean result = false;
             if (dataset != null && themeUniqueLayer.getTheme() != null && uniqueExpression != null && colorGradientType != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 ThemeUnique tu = ThemeUnique.makeDefault((DatasetVector) dataset, uniqueExpression, colorGradientType);
                 if (tu != null){
                     if (!data.containsKey("ColorGradientType")) {
@@ -188,7 +193,6 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     }
 
                     themeUniqueLayer.getTheme().fromXML(tu.toXML());
-                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                     mapControl.getMap().refresh();
 
                     result = true;
@@ -215,12 +219,15 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             Layer layer = SMThemeCartography.getLayerByName(layerName);
             if (layer != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.UNIQUE) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeUnique themeUnique = (ThemeUnique) layer.getTheme();
                     HashMap<String, Object> data = readableMap.toHashMap();
                     GeoStyle geoStyle = SMThemeCartography.getThemeUniqueGeoStyle(themeUnique.getDefaultStyle(), data);
                     themeUnique.setDefaultStyle(geoStyle);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -247,6 +254,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
         try {
             Layer layer = SMThemeCartography.getLayerByName(layerName);
             if (layer != null && layer.getTheme() != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 if (layer.getTheme().getType() == ThemeType.UNIQUE) {
                     ThemeUnique themeUnique = (ThemeUnique) layer.getTheme();
                     ThemeUniqueItem uniqueItem = themeUnique.getItem(itemIndex);
@@ -255,7 +265,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     GeoStyle geoStyle = SMThemeCartography.getThemeUniqueGeoStyle(uniqueItem.getStyle(), data);
                     uniqueItem.setStyle(geoStyle);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -304,10 +314,13 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && uniqueExpression != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.UNIQUE) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeUnique themeUnique = (ThemeUnique) layer.getTheme();
                     themeUnique.setUniqueExpression(uniqueExpression);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -436,6 +449,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void createUniqueThemeLabelMap(ReadableMap readableMap, Promise promise) {
         try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
             HashMap<String, Object> data = readableMap.toHashMap();
 
             int datasourceIndex = -1;
@@ -510,7 +526,6 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         }
                     }
 
-                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                     mapControl.getMap().getLayers().add(dataset, themeLabel, true);
                     mapControl.getMap().refresh();
 
@@ -534,6 +549,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void createRangeThemeLabelMap(ReadableMap readableMap, Promise promise) {
         try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
             HashMap<String, Object> data = readableMap.toHashMap();
 
             int datasourceIndex = -1;
@@ -609,7 +627,6 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         }
                     }
 
-                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                     mapControl.getMap().getLayers().add(dataset, themeLabel, true);
                     mapControl.getMap().refresh();
 
@@ -633,6 +650,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void createUniformThemeLabelMap(ReadableMap readableMap, Promise promise) {
         try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
             HashMap<String, Object> data = readableMap.toHashMap();
 
             int datasourceIndex = -1;
@@ -712,7 +732,6 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 }
                 themeLabel.setUniformStyle(textStyle);
 
-                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                 mapControl.getMap().getLayers().add(dataset, themeLabel, true);
                 mapControl.getMap().refresh();
 
@@ -762,10 +781,13 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && labelExpression != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     themeLabel.setLabelExpression(labelExpression);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -860,10 +882,13 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && labelBackShape != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     themeLabel.setBackShape(labelBackShape);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -963,11 +988,14 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && fontName != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     TextStyle uniformStyle = themeLabel.getUniformStyle();
                     uniformStyle.setFontName(fontName);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -1064,12 +1092,15 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && fontSize != -1 && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     TextStyle uniformStyle = themeLabel.getUniformStyle();
                     uniformStyle.setFontHeight(fontSize);
 //                    uniformStyle.setFontWidth(fontSize);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -1166,6 +1197,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && rotation != -1 && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     TextStyle uniformStyle = themeLabel.getUniformStyle();
                     double lastRotation = uniformStyle.getRotation();
@@ -1176,7 +1210,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     }
                     uniformStyle.setRotation(lastRotation + rotation);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -1272,11 +1306,14 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && color != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     TextStyle uniformStyle = themeLabel.getUniformStyle();
                     uniformStyle.setForeColor(ColorParseUtil.getColor(color));
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -1325,11 +1362,14 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && color != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     GeoStyle backStyle = themeLabel.getBackStyle();
                     backStyle.setFillForeColor(ColorParseUtil.getColor(color));
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -1374,6 +1414,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     TextStyle uniformStyle = themeLabel.getUniformStyle();
                     Color foreColor = uniformStyle.getForeColor();
@@ -1401,6 +1444,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void createThemeRangeMap(ReadableMap readableMap, Promise promise) {
         try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
             HashMap<String, Object> data = readableMap.toHashMap();
 
             int datasourceIndex = -1;
@@ -1467,7 +1513,6 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         }
                     }
 
-                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                     mapControl.getMap().getLayers().add(dataset, themeRange, true);
                     mapControl.getMap().refresh();
 
@@ -1548,6 +1593,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             boolean result = false;
             if (dataset != null && themeRangeLayer.getTheme() != null && rangeExpression != null && rangeMode != null && rangeParameter != -1 && colorGradientType != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 ThemeRange tr = ThemeRange.makeDefault((DatasetVector) dataset, rangeExpression, rangeMode, rangeParameter, colorGradientType);
                 if (tr != null){
                     if (!data.containsKey("ColorGradientType")) {
@@ -1571,7 +1619,6 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     }
 
                     themeRangeLayer.getTheme().fromXML(tr.toXML());
-                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                     mapControl.getMap().refresh();
 
                     result = true;
@@ -1622,6 +1669,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && rangeColors != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.UNIQUE) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeUnique themeUnique = (ThemeUnique) layer.getTheme();
                     int rangeCount = themeUnique.getCount();
                     Colors selectedColors = Colors.makeGradient(rangeCount, rangeColors);
@@ -1629,7 +1679,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     for (int i = 0; i < rangeCount; i++) {
                         SMThemeCartography.setGeoStyleColor(layer.getDataset().getType(), themeUnique.getItem(i).getStyle(), selectedColors.get(i));
                     }
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -1680,6 +1730,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && rangeColors != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.RANGE) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeRange themeRange = (ThemeRange) layer.getTheme();
                     int rangeCount = themeRange.getCount();
                     Colors selectedColors = Colors.makeGradient(rangeCount, rangeColors);
@@ -1687,7 +1740,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     for (int i = 0; i < rangeCount; i++) {
                         SMThemeCartography.setGeoStyleColor(layer.getDataset().getType(), themeRange.getItem(i).getStyle(), selectedColors.get(i));
                     }
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -1736,10 +1789,13 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && rangeExpression != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.RANGE) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeRange themeRange = (ThemeRange) layer.getTheme();
                     themeRange.setRangeExpression(rangeExpression);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -1902,6 +1958,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void createThemeGraphMap(ReadableMap readableMap, Promise promise) {
         try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
             HashMap<String, Object> data = readableMap.toHashMap();
 
             int datasourceIndex = -1;
@@ -1948,7 +2007,6 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             boolean result = false;
             if (dataset != null && graphExpressions != null && graphExpressions.size() > 0 && themeGraphType != null && colors != null) {
-                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                 Map map = mapControl.getMap();
 
                 ThemeGraph themeGraph = new ThemeGraph();
@@ -2004,6 +2062,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void createThemeGraphMapByLayer(ReadableMap readableMap, Promise promise) {
         try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
             HashMap<String, Object> data = readableMap.toHashMap();
 
             String layerName = null;//图层名称
@@ -2048,7 +2109,6 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             boolean result = false;
             if (dataset != null && graphExpressions != null && graphExpressions.size() > 0 && themeGraphType != null && colors != null) {
-                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                 Map map = mapControl.getMap();
 
                 ThemeGraph themeGraph = new ThemeGraph();
@@ -2131,6 +2191,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && graphExpressions != null && graphExpressions.size() > 0 && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.GRAPH) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeGraph themeGraph = (ThemeGraph) layer.getTheme();
                     int count = themeGraph.getCount();
 
@@ -2150,7 +2213,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         for (int i = 0; i < listExpressions.size(); i++) {
                             SMThemeCartography.addGraphItem(themeGraph, listExpressions.get(i), colors);
                         }
-                        SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                        mapControl.getMap().refresh();
 
                         promise.resolve(true);
                     } else {
@@ -2205,6 +2268,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && colors != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.GRAPH) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeGraph themeGraph = (ThemeGraph) layer.getTheme();
                     int count = themeGraph.getCount();
                     Colors selectedColors = Colors.makeGradient(colors.length, colors);
@@ -2216,7 +2282,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         }
                         themeGraph.getItem(i).getUniformStyle().setFillForeColor(selectedColors.get(index));
                     }
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -2268,10 +2334,13 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && themeGraphType != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.GRAPH) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeGraph themeGraph = (ThemeGraph) layer.getTheme();
                     themeGraph.setGraphType(themeGraphType);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
@@ -2323,10 +2392,13 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (layer != null && graduatedMode != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.GRAPH) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     ThemeGraph themeGraph = (ThemeGraph) layer.getTheme();
                     themeGraph.setGraduatedMode(graduatedMode);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 }
