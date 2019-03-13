@@ -60,7 +60,7 @@ export default (function () {
       console.error(e)
     }
   }
-  
+
   /**
    * 获取工作空间地图列表
    * @returns {*|Promise.<Maps>}
@@ -830,14 +830,26 @@ export default (function () {
     }
   }
   
+  // /**
+  //  * 框选
+  //  * 第一次设置框选；再次使用，会清除Selection
+  //  * @returns {*}
+  //  */
+  // function selectByRectangle(){
+  //   try{
+  //     return SMap.selectByRectangle()
+  //   }catch (e) {
+  //     console.error(e)
+  //   }
+  // }
+  
   /**
-   * 框选
-   * 第一次设置框选；再次使用，会清除Selection
+   * 清除Selection
    * @returns {*}
    */
-  function selectByRectangle(){
+  function clearSelection(){
     try{
-      return SMap.selectByRectangle()
+      return SMap.clearSelection()
     }catch (e) {
       console.error(e)
     }
@@ -854,6 +866,43 @@ export default (function () {
       console.error(e)
     }
   }
+
+  /**
+   * 新建标注数据集
+   * @returns {*|Promise.<void>}
+   */
+  function newTaggingDataset(name){
+    try{
+      return SMap.newTaggingDataset(name)
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移除标注数据集
+   * @returns {*|Promise.<void>}
+   */
+  function removeTaggingDataset(name){
+    try{
+      return SMap.removeTaggingDataset(name)
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 导入标注数据集
+   * @returns {*|Promise.<void>}
+   */
+  function openTaggingDataset(name){
+    try{
+      return SMap.openTaggingDataset(name)
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
 
 
   let SMapExp = {
@@ -912,7 +961,11 @@ export default (function () {
     viewEntire,
     exportWorkspaceByMap,
     setDynamicProjection,
-    selectByRectangle,
+    // selectByRectangle,
+    clearSelection,
+    newTaggingDataset,
+    removeTaggingDataset,
+    openTaggingDataset,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 

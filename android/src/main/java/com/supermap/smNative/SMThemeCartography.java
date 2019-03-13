@@ -749,13 +749,6 @@ public class SMThemeCartography {
                     new Color(99, 192, 190),
                     new Color(183, 229, 193),
                     new Color(102, 201, 147)};
-            listGraphColors.add(createColorScheme(colors, "XXXXX"));
-            colors = new Color[]{
-                    new Color(234, 181, 162),
-                    new Color(234, 229, 162),
-                    new Color(162, 234, 218),
-                    new Color(197, 162, 234),
-                    new Color(234, 200, 162)};
             listGraphColors.add(createColorScheme(colors, "ED_Pastal"));
             colors = new Color[]{
                     new Color(254, 242, 0),
@@ -1498,26 +1491,72 @@ public class SMThemeCartography {
                     }
                 }
             } else if (theme.getType() == ThemeType.GRAPH) {
+//                //统计专题图不一定有首尾颜色值，因为有可能只有一个子项
+//                ThemeGraph themeGraph = (ThemeGraph) theme;
+//                int count = themeGraph.getCount();
+//
+//                if (count == 0) {
+//                    return null;
+//                } else if (count == 1) {
+//                    color_start = themeGraph.getItem(0).getUniformStyle().getFillForeColor();
+//
+//                    if (color_start == null){
+//                        return null;
+//                    }
+//
+//                    int rgb_start = color_start.getRGB();
+//
+//                    for (int i = 0; i < listGraphColors.size(); i++) {
+//                        HashMap<String, Object> hashMap = listGraphColors.get(i);
+//                        Color[] colors = (Color[]) hashMap.get("Colors");
+//                        int rgb01 = colors[0].getRGB();
+//                        if (rgb_start == rgb01) {
+//                            return colors;
+//                        }
+//                    }
+//                } else {
+//                    color_start = themeGraph.getItem(0).getUniformStyle().getFillForeColor();
+//                    color_end = themeGraph.getItem(count - 1).getUniformStyle().getFillForeColor();
+//
+//                    if (color_start == null || color_end == null){
+//                        return null;
+//                    }
+//
+//                    int rgb_start = color_start.getRGB();
+//                    int rgb_end = color_end.getRGB();
+//
+//                    for (int i = 0; i < listGraphColors.size(); i++) {
+//                        HashMap<String, Object> hashMap = listGraphColors.get(i);
+//                        Color[] colors = (Color[]) hashMap.get("Colors");
+//                        int rgb01 = colors[0].getRGB();
+//                        int rgb02 = colors[colors.length - 1].getRGB();
+//                        if (rgb_start == rgb01 && rgb_end == rgb02) {
+//                            return colors;
+//                        }
+//                    }
+//                }
+                //统计专题图用首颜色值来判别
                 ThemeGraph themeGraph = (ThemeGraph) theme;
                 int count = themeGraph.getCount();
 
-                color_start = themeGraph.getItem(0).getUniformStyle().getFillForeColor();
-                color_end = themeGraph.getItem(count - 1).getUniformStyle().getFillForeColor();
-
-                if (color_start == null || color_end == null){
+                if (count == 0) {
                     return null;
-                }
+                } else {
+                    color_start = themeGraph.getItem(0).getUniformStyle().getFillForeColor();
 
-                int rgb_start = color_start.getRGB();
-                int rgb_end = color_end.getRGB();
+                    if (color_start == null){
+                        return null;
+                    }
 
-                for (int i = 0; i < listGraphColors.size(); i++) {
-                    HashMap<String, Object> hashMap = listGraphColors.get(i);
-                    Color[] colors = (Color[]) hashMap.get("Colors");
-                    int rgb01 = colors[0].getRGB();
-                    int rgb02 = colors[colors.length - 1].getRGB();
-                    if (rgb_start == rgb01 && rgb_end == rgb02) {
-                        return colors;
+                    int rgb_start = color_start.getRGB();
+
+                    for (int i = 0; i < listGraphColors.size(); i++) {
+                        HashMap<String, Object> hashMap = listGraphColors.get(i);
+                        Color[] colors = (Color[]) hashMap.get("Colors");
+                        int rgb01 = colors[0].getRGB();
+                        if (rgb_start == rgb01) {
+                            return colors;
+                        }
                     }
                 }
             }
@@ -1723,7 +1762,7 @@ public class SMThemeCartography {
      * 新增统计专题图子项
      * @return
      */
-    public static boolean addGraphItem(ThemeGraph themeGraph, String graphExpression, Color[] colors){
+    public static boolean addGraphItem(ThemeGraph themeGraph, String graphExpression, Colors colors){
         boolean isSuccess = false;
         try {
             ArrayList<String> existItems = new ArrayList<>();
@@ -1739,12 +1778,11 @@ public class SMThemeCartography {
             if (!itemExist(item, existItems)) {
                 themeGraph.add(item);
             }
-            Colors selectedColors = Colors.makeGradient(colors.length, colors);
             int num = themeGraph.getCount() - 1;
-            if (num >= selectedColors.getCount()) {
-                num = num % selectedColors.getCount();
+            if (num >= colors.getCount()) {
+                num = num % colors.getCount();
             }
-            themeGraph.getItem(themeGraph.getCount() - 1).getUniformStyle().setFillForeColor(selectedColors.get(num));
+            themeGraph.getItem(themeGraph.getCount() - 1).getUniformStyle().setFillForeColor(colors.get(num));
 
             isSuccess = true;
         } catch (Exception e) {

@@ -529,6 +529,19 @@ setThemeGraphGraduatedMode = (params) => {
   }
 }
 
+/**
+ * 获取统计专题图的表达式
+ * 
+ * @param params
+ */
+getGraphExpressions = (params) => {
+  try {
+    return SThemeCartography.getGraphExpressions(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   //单值
   createThemeUniqueMap,
@@ -571,6 +584,7 @@ export default {
   setThemeGraphColorScheme,
   setThemeGraphType,
   setThemeGraphGraduatedMode,
+  getGraphExpressions,
   //其他
   getThemeExpressionByLayerName,
   getThemeExpressionByLayerIndex,
