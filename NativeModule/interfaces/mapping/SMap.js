@@ -891,6 +891,42 @@ export default (function () {
     }
   }
 
+  /**
+   * 添加数据集属性字段
+   * @returns {*|Promise.<void>}
+   */
+  function addRecordset(dataname,recname,name){
+    try{
+      return SMap.addRecordset(dataname,recname,name)
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 设置最小比例尺
+   * @returns {*|Promise.<void>}
+   */
+  function setMinVisibleScale(value,number){
+    try{
+      return SMap.setMinVisibleScale(value,number)
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 设置最大比例尺
+   * @returns {*|Promise.<void>}
+   */
+  function setMaxVisibleScale(value,number){
+    try{
+      return SMap.setMaxVisibleScale(value,number)
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
 
 
   let SMapExp = {
@@ -953,6 +989,9 @@ export default (function () {
     newTaggingDataset,
     removeTaggingDataset,
     openTaggingDataset,
+    addRecordset,
+    setMinVisibleScale,
+    setMaxVisibleScale,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 
