@@ -336,6 +336,8 @@ typedef enum{
  * @throws Exception
  */
 -(BOOL)save;
+-(BOOL)fromXML:(NSString*)strXML;
+
 
 /**
  * 以指定名称保存当前地图，但不能与工作空间中现有地图重名

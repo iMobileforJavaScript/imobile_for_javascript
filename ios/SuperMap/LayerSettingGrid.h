@@ -33,19 +33,15 @@
  * @brief  获取设置片元值。
  */
 @property(nonatomic,assign)NSUInteger specialValue;
--(int)getOpaqueRate;
 
--(void)setOpaqueRate:(int)opavalue;
-
--(int)getContrast;
-
--(void)setContrast:(int)opavalue;
-
--(int)getBrightness;
-
--(void)setBrightness:(int)opavalue;
 /**
  * @brief  释放该对象所占用的资源。当调用该方法之后，此对象不再可用。
  */
+-(int)getOpaqueRate;
+-(void)setOpaqueRate:(int)opavalue;
+-(int)getContrast;
+-(void)setContrast:(int)opavalue;
+-(int)getBrightness;
+-(void)setBrightness:(int)opavalue;
 - (void)dispose;
 @end

@@ -10,6 +10,7 @@ import com.supermap.data.*;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.LayerSettingGrid;
 import com.supermap.mapping.LayerSettingVector;
+import com.supermap.mapping.MapControl;
 import com.supermap.smNative.SMCartography;
 
 /**
@@ -43,11 +44,14 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setMarkerSymbolID(makerSymbolID);
                 layerSettingVector.setStyle(style);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -69,11 +73,14 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setMarkerSize(new Size2D(mm, mm));
                 layerSettingVector.setStyle(style);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -120,13 +127,16 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 com.supermap.data.Color makerColor = ColorParseUtil.getColor(color);
 
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setLineColor(makerColor);
                 layerSettingVector.setStyle(style);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -148,11 +158,14 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setMarkerAngle(angle);
                 layerSettingVector.setStyle(style);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -196,11 +209,14 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoStyle style = layerSettingVector.getStyle();
                 style.setFillOpaqueRate(100 - alpha);
                 layerSettingVector.setStyle(style);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -247,11 +263,14 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setLineSymbolID(lineSymbolID);
                 layerSettingVector.setStyle(geoStyle);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -276,11 +295,14 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVectorByIndex(layerIndex);
             if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setLineSymbolID(lineSymbolID);
                 layerSettingVector.setStyle(geoStyle);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -302,12 +324,15 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 double width = (double) mm / 10;
                 geoStyle.setLineWidth(width);
                 layerSettingVector.setStyle(geoStyle);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -351,12 +376,15 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVectorByIndex(layerIndex);
             if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 double width = (double) mm / 10;
                 geoStyle.setLineWidth(width);
                 layerSettingVector.setStyle(geoStyle);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -378,13 +406,16 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 com.supermap.data.Color color = ColorParseUtil.getColor(lineColor);
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setLineColor(color);
                 layerSettingVector.setStyle(geoStyle);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -437,11 +468,14 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setFillSymbolID(FillSymbolID);
                 layerSettingVector.setStyle(geoStyle);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -463,13 +497,16 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 com.supermap.data.Color color = ColorParseUtil.getColor(fillForeColor);
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setFillForeColor(color);
                 layerSettingVector.setStyle(geoStyle);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -491,13 +528,16 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 com.supermap.data.Color color = ColorParseUtil.getColor(fillBackColor);
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setFillBackColor(color);
                 layerSettingVector.setStyle(geoStyle);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -519,11 +559,14 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoStyle geoStyle = layerSettingVector.getStyle();
                 geoStyle.setFillOpaqueRate(100 - fillOpaqueRate);//此接口是设置不透明度
                 layerSettingVector.setStyle(geoStyle);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -568,11 +611,14 @@ public class SCartography extends ReactContextBaseJavaModule {
             if (!Environment.isOpenGLMode()) {
                 LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
                 if (layerSettingVector != null) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     GeoStyle geoStyle = layerSettingVector.getStyle();
                     geoStyle.setFillGradientMode(FillGradientMode.LINEAR);
                     layerSettingVector.setStyle(geoStyle);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 } else {
@@ -599,11 +645,14 @@ public class SCartography extends ReactContextBaseJavaModule {
             if (!Environment.isOpenGLMode()) {
                 LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
                 if (layerSettingVector != null) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     GeoStyle geoStyle = layerSettingVector.getStyle();
                     geoStyle.setFillGradientMode(FillGradientMode.RADIAL);
                     layerSettingVector.setStyle(geoStyle);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 } else {
@@ -630,11 +679,14 @@ public class SCartography extends ReactContextBaseJavaModule {
             if (!Environment.isOpenGLMode()) {
                 LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
                 if (layerSettingVector != null) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     GeoStyle geoStyle = layerSettingVector.getStyle();
                     geoStyle.setFillGradientMode(FillGradientMode.SQUARE);
                     layerSettingVector.setStyle(geoStyle);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 } else {
@@ -661,11 +713,14 @@ public class SCartography extends ReactContextBaseJavaModule {
             if (!Environment.isOpenGLMode()) {
                 LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
                 if (layerSettingVector != null) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
                     GeoStyle geoStyle = layerSettingVector.getStyle();
                     geoStyle.setFillGradientMode(FillGradientMode.NONE);
                     layerSettingVector.setStyle(geoStyle);
 
-                    SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                    mapControl.getMap().refresh();
 
                     promise.resolve(true);
                 } else {
@@ -696,9 +751,12 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerName);
             if (layerSettingGrid != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 layerSettingGrid.setOpaqueRate(100 - gridOpaqueRate);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -741,9 +799,12 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerName);
             if (layerSettingGrid != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 layerSettingGrid.setContrast(gridContrast);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -786,9 +847,12 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingGrid layerSettingGrid = SMCartography.getLayerSettingGrid(layerName);
             if (layerSettingGrid != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 layerSettingGrid.setBrightness(gridBrightness);
 
-                SMap.getSMWorkspace().getMapControl().getMap().refresh();
+                mapControl.getMap().refresh();
 
                 promise.resolve(true);
             } else {
@@ -824,6 +888,9 @@ public class SCartography extends ReactContextBaseJavaModule {
     /*文本风格
     * ********************************************************************************************/
     private boolean saveGeoText(Recordset recordset, Geometry geometry) {
+        MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+        mapControl.getEditHistory().addMapHistory();
+
         recordset.edit();
         recordset.setGeometry(geometry);
         boolean update = recordset.update();
@@ -848,6 +915,9 @@ public class SCartography extends ReactContextBaseJavaModule {
             Recordset recordset = SMCartography.getRecordset(geometryID, layerName);
             Geometry geometry = SMCartography.getGeoText(recordset);
             if (recordset != null && geometry != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoText geoText = (GeoText) geometry;
                 TextStyle textStyle = geoText.getTextStyle();
                 textStyle.setFontName(fontName);
@@ -876,6 +946,9 @@ public class SCartography extends ReactContextBaseJavaModule {
             Recordset recordset = SMCartography.getRecordset(geometryID, layerName);
             Geometry geometry = SMCartography.getGeoText(recordset);
             if (recordset != null && geometry != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoText geoText = (GeoText) geometry;
                 TextStyle textStyle = geoText.getTextStyle();
                 textStyle.setFontHeight((double) size);
@@ -904,6 +977,9 @@ public class SCartography extends ReactContextBaseJavaModule {
             Recordset recordset = SMCartography.getRecordset(geometryID, layerName);
             Geometry geometry = SMCartography.getGeoText(recordset);
             if (recordset != null && geometry != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 com.supermap.data.Color textColor = ColorParseUtil.getColor(color);
 
                 GeoText geoText = (GeoText) geometry;
@@ -934,6 +1010,9 @@ public class SCartography extends ReactContextBaseJavaModule {
             Recordset recordset = SMCartography.getRecordset(geometryID, layerName);
             Geometry geometry = SMCartography.getGeoText(recordset);
             if (recordset != null && geometry != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoText geoText = (GeoText) geometry;
                 TextStyle textStyle = geoText.getTextStyle();
                 textStyle.setRotation(angle);
@@ -962,6 +1041,9 @@ public class SCartography extends ReactContextBaseJavaModule {
             Recordset recordset = SMCartography.getRecordset(geometryID, layerName);
             Geometry geometry = SMCartography.getGeoText(recordset);
             if (recordset != null && geometry != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoText geoText = (GeoText) geometry;
                 TextStyle textStyle = geoText.getTextStyle();
                 TextAlignment alignment = SMCartography.getTextAlignment(textAlignment);
@@ -994,6 +1076,9 @@ public class SCartography extends ReactContextBaseJavaModule {
             Recordset recordset = SMCartography.getRecordset(geometryID, layerName);
             Geometry geometry = SMCartography.getGeoText(recordset);
             if (recordset != null && geometry != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
                 GeoText geoText = (GeoText) geometry;
                 TextStyle textStyle = geoText.getTextStyle();
                 switch (style) {

@@ -43,6 +43,9 @@
 @property (nonatomic,strong) Color* textColor;
 /* 设置cell单元格的背景色*/
 @property (nonatomic,strong) Color* legendBackgroundColor;
+/* 设置支持高亮*/
+@property (nonatomic,assign) BOOL isHighlightEnable;
+@property (nonatomic,assign) Color* highlightColor;
 
 /* 根据传入参数调整布局，布局参数更改后需要手动调用（show函数中有隐式调用） */
 -(void)reloadLegend;
@@ -51,6 +54,7 @@
 -(void)showSymbolGroup:(SymbolGroup*)symbolGroup;
 /* 显示symbolArray中所有symbol */
 -(void)showSymbols:(NSArray*)symbolArray;
+
 
 @end
 

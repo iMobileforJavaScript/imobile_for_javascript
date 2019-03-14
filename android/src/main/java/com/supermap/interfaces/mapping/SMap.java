@@ -704,6 +704,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 MapControl mapControl = sMap.smMapWC.getMapControl();
                 Workspace workspace = sMap.smMapWC.getWorkspace();
                 com.supermap.mapping.Map map = mapControl.getMap();
+                mapControl.getEditHistory().dispose();
 
                 map.close();
                 map.dispose();
@@ -738,6 +739,7 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             sMap.smMapWC.getMapControl().undo();
+            sMap.smMapWC.getMapControl().getMap().refresh();
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -750,6 +752,7 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             sMap.smMapWC.getMapControl().redo();
+            sMap.smMapWC.getMapControl().getMap().refresh();
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -820,6 +823,7 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+    /******************************************** 地图工具 *****************************************************/
     /**
      * 放大缩小
      * @param scale
@@ -850,6 +854,38 @@ public class SMap extends ReactContextBaseJavaModule {
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             map.setScale(scale);
             map.refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置地图手势旋转是否可用
+     * @param enable
+     * @param promise
+     */
+    @ReactMethod
+    public void enableRotateTouch(boolean enable, Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smMapWC.getMapControl().enableRotateTouch(enable);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置地图手势俯仰是否可用
+     * @param enable
+     * @param promise
+     */
+    @ReactMethod
+    public void enableSlantTouch(boolean enable, Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smMapWC.getMapControl().enableSlantTouch(enable);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -2007,32 +2043,37 @@ public class SMap extends ReactContextBaseJavaModule {
             datasets.addAll(datasets_point);
             datasets.addAll(datasets_text);
 
-            for (int i = 0; i < datasets.size(); i++) {
-                Dataset dataset = datasets.get(i);
+            if (datasets.size() > 0) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
 
-                Layer layer = layers.add(dataset, true);
-                if (dataset.getType() == DatasetType.REGION ) {
-                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
-                    setting.getStyle().setLineSymbolID(5);
-                }
-                if (dataset.getType() == DatasetType.REGION || dataset.getType() == DatasetType.REGION3D) {
-                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
-                    setting.getStyle().setFillForeColor(getFillColor());
-                    setting.getStyle().setLineColor(getLineColor());
-                } else if (dataset.getType() == DatasetType.LINE || dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D
-                        || dataset.getType() == DatasetType.LINE3D) {
-                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
-                    setting.getStyle().setLineColor(getLineColor());
-                    if (dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D) {
-                        map.getLayers().add(((DatasetVector) dataset).getChildDataset(), true);
+                for (int i = 0; i < datasets.size(); i++) {
+                    Dataset dataset = datasets.get(i);
+
+                    Layer layer = layers.add(dataset, true);
+                    if (dataset.getType() == DatasetType.REGION ) {
+                        LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                        setting.getStyle().setLineSymbolID(5);
                     }
-                } else if (dataset.getType() == DatasetType.POINT || dataset.getType() == DatasetType.POINT3D) {
-                    LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
-                    setting.getStyle().setLineColor(getLineColor());
+                    if (dataset.getType() == DatasetType.REGION || dataset.getType() == DatasetType.REGION3D) {
+                        LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                        setting.getStyle().setFillForeColor(getFillColor());
+                        setting.getStyle().setLineColor(getLineColor());
+                    } else if (dataset.getType() == DatasetType.LINE || dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D
+                            || dataset.getType() == DatasetType.LINE3D) {
+                        LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                        setting.getStyle().setLineColor(getLineColor());
+                        if (dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D) {
+                            map.getLayers().add(((DatasetVector) dataset).getChildDataset(), true);
+                        }
+                    } else if (dataset.getType() == DatasetType.POINT || dataset.getType() == DatasetType.POINT3D) {
+                        LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
+                        setting.getStyle().setLineColor(getLineColor());
+                    }
                 }
+                map.setVisibleScalesEnabled(false);
+                map.refresh();
             }
-            map.setVisibleScalesEnabled(false);
-            map.refresh();
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -2120,7 +2161,7 @@ public class SMap extends ReactContextBaseJavaModule {
             wsInfo.setType(type);
             boolean result = workspace.open(wsInfo);
             WritableArray arr = Arguments.createArray();
-            if(result == true){
+            if(result){
                 for(int i = 0; i < workspace.getMaps().getCount();i++){
                     arr.pushString(workspace.getMaps().get(i));
                 }
@@ -2297,6 +2338,7 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+
     /**
      * 添加数据集属性字段
      * @param promise
@@ -2436,8 +2478,8 @@ public class SMap extends ReactContextBaseJavaModule {
                     x[0] = e.getX();
                     y[0] = e.getY();
                     WritableMap writeMap = Arguments.createMap();
-                    writeMap.putDouble("x",x[0]);
-                    writeMap.putDouble("y",y[0]);
+                    writeMap.putDouble("x", x[0]);
+                    writeMap.putDouble("y", y[0]);
                     promise.resolve(writeMap);
                     sMap.smMapWC.getMapControl().deleteGestureDetector();
                 }
@@ -2462,9 +2504,24 @@ public class SMap extends ReactContextBaseJavaModule {
                     return false;
                 }
             }));
+        }
+    }
+/************************************** 地图编辑历史操作 ****************************************/
+
+    /**
+     * 把对地图操作记录到历史
+     * @param promise
+     */
+    @ReactMethod
+    public void addMapHistory(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
-
 }

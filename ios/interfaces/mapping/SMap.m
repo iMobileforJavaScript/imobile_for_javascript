@@ -474,6 +474,7 @@ RCT_REMAP_METHOD(undo, undoWithResolver:(RCTPromiseResolveBlock)resolve rejecter
         sMap = [SMap singletonInstance];
         MapControl* mapControl = sMap.smMapWC.mapControl;
         [mapControl undo];
+//        [[mapControl map] refresh];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
@@ -486,6 +487,7 @@ RCT_REMAP_METHOD(redo, redoWithResolver:(RCTPromiseResolveBlock)resolve rejecter
         sMap = [SMap singletonInstance];
         MapControl* mapControl = sMap.smMapWC.mapControl;
         [mapControl redo];
+//        [[mapControl map] refresh];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
@@ -546,6 +548,7 @@ RCT_REMAP_METHOD(removeMeasureListener, removeMeasureListenerWithResolver:(RCTPr
     }
 }
 
+/******************************************** 地图工具 *****************************************************/
 #pragma mark 将地图放大缩小到指定比例
 RCT_REMAP_METHOD(zoom, zoomByScale:(double)scale resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -564,6 +567,28 @@ RCT_REMAP_METHOD(setScale, setScale:(double)scale resolver:(RCTPromiseResolveBlo
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
         [mapControl.map setScale:scale];
         [mapControl.map refresh];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 设置地图手势旋转是否可用
+RCT_REMAP_METHOD(enableRotateTouch, enableRotateTouch:(BOOL)enable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [mapControl enableRotateTouch:enable];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 设置地图手势俯仰是否可用
+RCT_REMAP_METHOD(enableSlantTouch, enableSlantTouch:(BOOL)enable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [mapControl enableSlantTouch:enable];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
@@ -1188,10 +1213,16 @@ RCT_REMAP_METHOD(addLayers, addLayers:(NSArray*)datasetNames dataSourceName:(NSS
         [datasets addObjectsFromArray:dataset_Point];
         [datasets addObjectsFromArray:dataset_Text];
         [datasets addObjectsFromArray:dataset_Else];
-        for (int i = 0; i < datasets.count; i++) {
-            [layers addDataset:[datasets objectAtIndex:i] ToHead:true];
+        
+        if (datasets.count > 0) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
+            for (int i = 0; i < datasets.count; i++) {
+                [layers addDataset:[datasets objectAtIndex:i] ToHead:true];
+            }
+            [mapControl.map refresh];
         }
-        [sMap.smMapWC.mapControl.map refresh];
     
         resolve([NSNumber numberWithBool:true]);
     } @catch (NSException *exception) {
@@ -1249,6 +1280,20 @@ RCT_REMAP_METHOD(clearSelection, clearSelectionWithResolve:(RCTPromiseResolveBlo
             
             [sMap.smMapWC.mapControl.map refresh];
         }
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+/************************************** 地图编辑历史操作 ****************************************/
+#pragma mark 把对地图操作记录到历史
+RCT_REMAP_METHOD(addMapHistory, addMapHistoryWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);

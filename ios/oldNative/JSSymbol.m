@@ -30,15 +30,15 @@ RCT_REMAP_METHOD(dispose, disposeById:(NSString *)symbolId resolver:(RCTPromiseR
 RCT_REMAP_METHOD(draw, drawById:(NSString *)symbolId width:(int)width height:(int)height resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         Symbol* symbol = [JSObjManager getObjWithKey:symbolId];
-        CGImageRef imgRef = [symbol drawBmpWidth:width height:height];
-
-        NSNumber* number;
-        if (imgRef) {
-            number = [NSNumber numberWithBool:YES];
-        } else {
-            number = [NSNumber numberWithBool:NO];
-        }
-        resolve(number);
+//        CGImageRef imgRef = [symbol drawBmpWidth:width height:height];
+//
+//        NSNumber* number;
+//        if (imgRef) {
+//            number = [NSNumber numberWithBool:YES];
+//        } else {
+//            number = [NSNumber numberWithBool:NO];
+//        }
+        resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"JSLayerGroup", exception.reason, nil);
     }

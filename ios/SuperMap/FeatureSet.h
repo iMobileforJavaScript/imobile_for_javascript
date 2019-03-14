@@ -38,8 +38,8 @@
 -(id)initWithQueryFeature:(id)mJsonObject;
 
 /**@brief  根据要素资源和字段信息集合参数构造一个新的FeatureSet对象。
- @param  features  要素资源。
- @param  fields  字段信息集合。
+ @param  features  要素资源。json串数组
+ @param  fields  字段信息集合。json串数组
  @return  根据要素资源和字段信息几何参数构造的一个新的FeatureSet对象。
  */
 -(id)initWithFeatureSet:(NSMutableArray *)features FieldID:(NSMutableArray*)fields;
@@ -203,5 +203,6 @@
 -(Feature *)getFeature;
 
 -(BOOL)toRecordset:(Recordset**)recordset;
+//只转最多10条信息
 -(BOOL)fromRecordset:(Recordset*)recordset;
 @end

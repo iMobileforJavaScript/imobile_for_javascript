@@ -1,4 +1,4 @@
-﻿//
+//
 //  Selection3D.h
 //  Realspace
 //
@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @class Feature3D;
-
+@class GeoStyle3D;
 
  ///三维选择集类。
 @interface Selection3D : NSObject {
@@ -60,5 +60,16 @@
 ** 刷新selection
 */
 -(void)updateData;
+
+/**
+ *  设置风格
+ *  @param GeoStyle3D
+ */
+-(void)setStyle:(GeoStyle3D *)geostyle3D;
+
+/*
+ ** 获取GeoStyle3D
+ */
+-(GeoStyle3D *)getStyle;
 
 @end
