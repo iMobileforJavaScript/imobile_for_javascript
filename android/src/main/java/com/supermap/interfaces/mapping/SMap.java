@@ -35,6 +35,8 @@ import com.supermap.mapping.GeometrySelectedListener;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
+import com.supermap.mapping.Legend;
+import com.supermap.mapping.LegendView;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.Selection;
@@ -2508,6 +2510,29 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 添加地图图例
+     * @param promise
+     */
+    @ReactMethod
+    public void addLegend(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            Legend lengend = new Legend(map);
+            LegendView legendView = new LegendView(context);
+            legendView.setRowHeight(5);
+            legendView.setTextSize(10);
+            legendView.setTextColor(android.graphics.Color.RED);
+            lengend.connectLegendView(legendView);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 /************************************** 地图编辑历史操作 ****************************************/
 
     /**

@@ -1001,7 +1001,7 @@ export default (function () {
       console.error(e)
     }
   }
-<<<<<<< HEAD
+
 
   /**
    * 添加文字标注
@@ -1028,9 +1028,7 @@ export default (function () {
   }
 
 
-=======
-  
->>>>>>> 4eb80a4568f68ba96501ab7a396dfa37d23258f5
+
 
   let SMapExp = {
     refreshMap,
