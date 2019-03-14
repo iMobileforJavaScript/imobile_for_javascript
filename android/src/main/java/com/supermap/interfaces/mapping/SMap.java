@@ -2245,9 +2245,9 @@ public class SMap extends ReactContextBaseJavaModule {
                     layer.setEditable(true);
                     datasetVectorInfo.dispose();
                     datasetVector.close();
+                    info.dispose();
+                    promise.resolve(datasetName);
                 }
-                info.dispose();
-                promise.resolve(true);
             }else {
                     Datasets datasets = opendatasource.getDatasets();
                     String datasetName = datasets.getAvailableDatasetName(name);
@@ -2263,7 +2263,7 @@ public class SMap extends ReactContextBaseJavaModule {
                     datasetVectorInfo.dispose();
                     datasetVector.close();
 
-                promise.resolve(true);
+                promise.resolve(datasetName);
             }
         } catch (Exception e) {
             promise.reject(e);
@@ -2340,6 +2340,93 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+
+    /**
+     * 添加数据集属性字段
+     * @param promise
+     */
+    @ReactMethod
+    public void addRecordset(String dataname,String recname,String name,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
+            Datasource opendatasource = workspace.getDatasources().get("Lable");
+            if(opendatasource==null){
+                DatasourceConnectionInfo info = new DatasourceConnectionInfo();
+                info.setAlias("Lable");
+                info.setEngineType(EngineType.UDB);
+                info.setServer(rootPath + "/iTablet/User/Customer/Data/Lable/Lable.udb");
+                Datasource datasource = workspace.getDatasources().open(info);
+                if(datasource!=null){
+                    Datasets datasets = datasource.getDatasets();
+                    DatasetVector dataset = (DatasetVector) datasets.get(dataname);
+                    dataset.setReadOnly(false);
+                    FieldInfos fieldInfos = dataset.getFieldInfos();
+                    fieldInfos.remove(recname);
+                    FieldInfo fieldinfo = new FieldInfo();
+                    fieldinfo.setCaption(name);
+                    fieldinfo.setName(recname);
+                    fieldinfo.setType(FieldType.TEXT);
+                    fieldinfo.setDefaultValue(name);
+                    fieldInfos.add(fieldinfo);
+                    fieldinfo.dispose();
+                }
+                info.dispose();
+                promise.resolve(true);
+            }else {
+                Datasets datasets = opendatasource.getDatasets();
+                DatasetVector dataset = (DatasetVector) datasets.get(dataname);
+                dataset.setReadOnly(false);
+                FieldInfos fieldInfos = dataset.getFieldInfos();
+                fieldInfos.remove(recname);
+                FieldInfo fieldinfo = new FieldInfo();
+                fieldinfo.setCaption(name);
+                fieldinfo.setName(recname);
+                fieldinfo.setType(FieldType.TEXT);
+                fieldinfo.setDefaultValue(name);
+                fieldInfos.add(fieldinfo);
+                fieldinfo.dispose();
+                promise.resolve(true);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置最小比例尺范围
+     * @param promise
+     */
+    @ReactMethod
+    public void setMinVisibleScale(String name,double number,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
+            double scale = 1/number;
+            layer.setMinVisibleScale(scale);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置最小比例尺范围
+     * @param promise
+     */
+    @ReactMethod
+    public void setMaxVisibleScale(String name,double number,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
+            double scale = 1/number;
+            layer.setMaxVisibleScale(scale);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 /************************************** 地图编辑历史操作 ****************************************/
 
     /**
@@ -2354,10 +2441,8 @@ public class SMap extends ReactContextBaseJavaModule {
             mapControl.getEditHistory().addMapHistory();
 
             promise.resolve(true);
-
         } catch (Exception e) {
             promise.reject(e);
         }
     }
-
 }
