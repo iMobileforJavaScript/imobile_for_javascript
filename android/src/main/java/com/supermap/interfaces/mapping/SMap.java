@@ -2504,6 +2504,8 @@ public class SMap extends ReactContextBaseJavaModule {
                     return false;
                 }
             }));
+        } catch (Exception e) {
+            promise.reject(e);
         }
     }
 /************************************** 地图编辑历史操作 ****************************************/
