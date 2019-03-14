@@ -43,8 +43,6 @@ import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 
-import org.apache.http.cookie.SM;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -2380,6 +2378,90 @@ public class SMap extends ReactContextBaseJavaModule {
             double scale = 1/number;
             layer.setMaxVisibleScale(scale);
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 添加文字标注
+     * @param promise
+     */
+    @ReactMethod
+    public void addTextRecordset(String dataname,String name,int x,int y,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Point2D p =sMap.smMapWC.getMapControl().getMap().pixelToMap(new Point(x,y));
+            Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
+            Datasource opendatasource = workspace.getDatasources().get("Lable");
+            Datasets datasets = opendatasource.getDatasets();
+            DatasetVector dataset = (DatasetVector) datasets.get(dataname);
+            dataset.setReadOnly(false);
+            Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
+            TextPart textPart = new TextPart();
+            textPart.setAnchorPoint(p);
+            textPart.setText(name);
+            GeoText geoText = new GeoText();
+            geoText.addPart(textPart);
+            recordset.addNew(geoText);
+            recordset.update();
+            recordset.close();
+            geoText.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取点击坐标
+     * @param promise
+     */
+    @ReactMethod
+    public void getGestureDetector(final Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            final float[] x = new float[1];
+            final float[] y = new float[1];
+            sMap.smMapWC.getMapControl().setGestureDetector(new GestureDetector(context, new GestureDetector.OnGestureListener() {
+                @Override
+                public boolean onDown(MotionEvent e) {
+                    return false;
+                }
+
+                @Override
+                public void onShowPress(MotionEvent e) {
+                    x[0] = e.getX();
+                    y[0] = e.getY();
+                    WritableMap writeMap = Arguments.createMap();
+                    writeMap.putDouble("x",x[0]);
+                    writeMap.putDouble("y",y[0]);
+                    promise.resolve(writeMap);
+                    sMap.smMapWC.getMapControl().deleteGestureDetector();
+                }
+
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return false;
+                }
+
+                @Override
+                public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                    return false;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+
+                }
+
+                @Override
+                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                    return false;
+                }
+            }));
         } catch (Exception e) {
             promise.reject(e);
         }

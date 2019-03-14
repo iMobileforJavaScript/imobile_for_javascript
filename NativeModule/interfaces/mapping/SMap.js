@@ -939,6 +939,30 @@ export default (function () {
     }
   }
 
+  /**
+   * 添加文字标注
+   * @returns {*|Promise.<void>}
+   */
+  function addTextRecordset(value,name,x,y){
+    try{
+      return SMap.addTextRecordset(value,name,x,y)
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取屏幕坐标点
+   * @returns {*|Promise.<void>}
+   */
+  function getGestureDetector(){
+    try{
+      return SMap.getGestureDetector()
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
 
 
   let SMapExp = {
@@ -1005,6 +1029,8 @@ export default (function () {
     addRecordset,
     setMinVisibleScale,
     setMaxVisibleScale,
+    addTextRecordset,
+    getGestureDetector,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 
