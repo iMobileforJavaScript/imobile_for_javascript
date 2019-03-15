@@ -928,6 +928,18 @@ export default (function () {
       console.error(e)
     }
   }
+
+  /**
+   * 添加地图图例
+   * @returns {*|Promise.<void>}
+   */
+  function addLegend () {
+    try {
+      return SMap.addLegend()
+    } catch (e) {
+      console.error(e)
+    }
+  }
   
   /************************************** 地图编辑历史操作 ****************************************/
   /**
@@ -1096,6 +1108,7 @@ export default (function () {
     newTaggingDataset,
     removeTaggingDataset,
     openTaggingDataset,
+    addLegend,
     
     /** 地图编辑历史操作 **/
     undo,

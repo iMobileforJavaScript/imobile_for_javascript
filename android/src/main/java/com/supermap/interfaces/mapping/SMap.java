@@ -2224,12 +2224,12 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Lable");
+            Datasource opendatasource = workspace.getDatasources().get("Label");
             if(opendatasource==null){
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Lable");
+                info.setAlias("Label");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/Customer/Data/Lable/Lable.udb");
+                info.setServer(rootPath + "/iTablet/User/Customer/Data/Label/Label.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if(datasource!=null){
                     Datasets datasets = datasource.getDatasets();
@@ -2279,12 +2279,12 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Lable");
+            Datasource opendatasource = workspace.getDatasources().get("Label");
             if(opendatasource==null){
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Lable");
+                info.setAlias("Label");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/Customer/Data/Lable/Lable.udb");
+                info.setServer(rootPath + "/iTablet/User/Customer/Data/Label/Label.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if(datasource!=null){
                     Datasets datasets = datasource.getDatasets();
@@ -2311,12 +2311,12 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Lable");
+            Datasource opendatasource = workspace.getDatasources().get("Label");
             if(opendatasource==null){
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Lable");
+                info.setAlias("Label");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/Customer/Data/Lable/Lable.udb");
+                info.setServer(rootPath + "/iTablet/User/Customer/Data/Label/Label.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if(datasource!=null){
                     Datasets datasets = datasource.getDatasets();
@@ -2350,12 +2350,12 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Lable");
+            Datasource opendatasource = workspace.getDatasources().get("Label");
             if(opendatasource==null){
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Lable");
+                info.setAlias("Label");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/Customer/Data/Lable/Lable.udb");
+                info.setServer(rootPath + "/iTablet/User/Customer/Data/Label/Label.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if(datasource!=null){
                     Datasets datasets = datasource.getDatasets();
@@ -2437,7 +2437,7 @@ public class SMap extends ReactContextBaseJavaModule {
             sMap = SMap.getInstance();
             Point2D p =sMap.smMapWC.getMapControl().getMap().pixelToMap(new Point(x,y));
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Lable");
+            Datasource opendatasource = workspace.getDatasources().get("Label");
             Datasets datasets = opendatasource.getDatasets();
             DatasetVector dataset = (DatasetVector) datasets.get(dataname);
             dataset.setReadOnly(false);
@@ -2526,7 +2526,7 @@ public class SMap extends ReactContextBaseJavaModule {
             legendView.setTextSize(10);
             legendView.setTextColor(android.graphics.Color.RED);
             lengend.connectLegendView(legendView);
-
+            sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
