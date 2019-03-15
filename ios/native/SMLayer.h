@@ -33,6 +33,6 @@
 + (NSString *)getLayerPath:(Layer *)layer;
 + (Layer *)findLayerByDatasetName:(NSString *)datasetName;
 //+ (NSArray *)searchLayerAttribute:(NSString *)path key:(NSString *)key filter:(NSString *)filter page:(int *)page size:(int *)size;
-+ (NSArray *)searchLayerAttribute:(NSString *)path params:(NSDictionary *)params page:(int *)page size:(int *)size;
-+ (NSMutableArray *)searchSelectionAttribute:(NSString *)path searchKey:(NSString *)searchKey page:(int)page size:(int)size;
++ (NSMutableDictionary *)searchLayerAttribute:(NSString *)path params:(NSDictionary *)params page:(int *)page size:(int *)size;
++ (NSMutableDictionary *)searchSelectionAttribute:(NSString *)path searchKey:(NSString *)searchKey page:(int)page size:(int)size;
 @end

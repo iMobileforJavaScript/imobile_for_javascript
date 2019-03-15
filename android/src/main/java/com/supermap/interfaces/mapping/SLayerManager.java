@@ -143,7 +143,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getLayerAttribute(String layerPath, int page, int size, Promise promise) {
         try {
-            WritableArray data = SMLayer.getLayerAttribute(layerPath, page, size);
+            WritableMap data = SMLayer.getLayerAttribute(layerPath, page, size);
             promise.resolve(data);
         } catch (Exception e) {
             promise.reject(e);
@@ -158,7 +158,8 @@ public class SLayerManager extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void getSelectionAttributeByLayer(String layerPath, int page, int size, Promise promise) {
-        try { WritableArray data = SMLayer.getSelectionAttributeByLayer(layerPath, page, size);
+        try {
+            WritableMap data = SMLayer.getSelectionAttributeByLayer(layerPath, page, size);
             promise.resolve(data);
         } catch (Exception e) {
             promise.reject(e);
@@ -175,7 +176,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getAttributeByLayer(String layerPath, ReadableArray ids, Promise promise) {
         try {
-            WritableArray data = SMLayer.getAttributeByLayer(layerPath, ids);
+            WritableMap data = SMLayer.getAttributeByLayer(layerPath, ids);
             promise.resolve(data);
         } catch (Exception e) {
             promise.reject(e);
@@ -193,7 +194,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     @ReactMethod
     public void searchLayerAttribute(String layerPath, ReadableMap params, int page, int size, Promise promise) {
         try {
-            WritableArray recordArray = SMLayer.searchLayerAttribute(layerPath, params, page, size);
+            WritableMap recordArray = SMLayer.searchLayerAttribute(layerPath, params, page, size);
             promise.resolve(recordArray);
         } catch (Exception e) {
             promise.reject(e);
@@ -203,7 +204,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     @ReactMethod
     public void searchSelectionAttribute(String layerPath, String searchKey, int page, int size, Promise promise) {
         try {
-            WritableArray recordArray = SMLayer.searchSelectionAttribute(layerPath, searchKey, page, size);
+            WritableMap recordArray = SMLayer.searchSelectionAttribute(layerPath, searchKey, page, size);
             promise.resolve(recordArray);
         } catch (Exception e) {
             promise.reject(e);

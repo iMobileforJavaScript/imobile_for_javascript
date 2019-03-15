@@ -1396,7 +1396,7 @@ RCT_REMAP_METHOD(addMapHistory, addMapHistoryWithResolve:(RCTPromiseResolveBlock
     [layerInfo setObject:[SMLayer getLayerPath:layer] forKey:@"path"];
     
 //    Recordset* r = [layer.getSelection.getDataset recordset:NO cursorType:STATIC];
-//    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:r count:0 size:1];
+//    NSMutableDictionary* dic = [NativeUtil recordsetToDictionary:r count:0 size:1];
 //    [SMap singletonInstance].selection = [layer getSelection];
     
     [self sendEventWithName:MAP_GEOMETRY_SELECTED body:@{@"layerInfo":layerInfo,

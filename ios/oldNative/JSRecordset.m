@@ -123,10 +123,10 @@ RCT_REMAP_METHOD(getFieldCount,getFieldCountById:(NSString*)recordsetId resolver
 }
 RCT_REMAP_METHOD(getFieldInfosArray,getFieldInfosArrayById:(NSString*)recordsetId count:(NSInteger)count size:(NSInteger)size resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try{
-        Recordset* recordset = [JSObjManager getObjWithKey:recordsetId];
-        [recordset moveFirst];
-        NSMutableArray* recordsetArray = [NativeUtil recordsetToJsonArray:recordset page:count size:size];
-        resolve(recordsetArray);
+//        Recordset* recordset = [JSObjManager getObjWithKey:recordsetId];
+//        [recordset moveFirst];
+//        NSMutableArray* recordsetArray = [NativeUtil recordsetToDictionary:recordset page:count size:size];
+//        resolve(recordsetArray);
     }
     @catch(NSException *exception){
         reject(@"JSRecordset",@"JSRecordset getFieldInfosArray expection",nil);
@@ -134,10 +134,10 @@ RCT_REMAP_METHOD(getFieldInfosArray,getFieldInfosArrayById:(NSString*)recordsetI
 }
 RCT_REMAP_METHOD(getFieldInfo,getFieldInfoById:(NSString*)recordsetId  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try{
-        Recordset* recordset = [JSObjManager getObjWithKey:recordsetId];
-        [recordset moveFirst];
-        NSMutableArray* recordsetArray = [NativeUtil recordsetToJsonArray:recordset page:0 size:1];
-        resolve(recordsetArray);
+//        Recordset* recordset = [JSObjManager getObjWithKey:recordsetId];
+//        [recordset moveFirst];
+//        NSMutableArray* recordsetArray = [NativeUtil recordsetToDictionary:recordset page:0 size:1];
+//        resolve(recordsetArray);
     }
     @catch(NSException *exception){
 
