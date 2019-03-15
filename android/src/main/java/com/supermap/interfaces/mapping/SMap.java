@@ -35,6 +35,8 @@ import com.supermap.mapping.GeometrySelectedListener;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
+import com.supermap.mapping.Legend;
+import com.supermap.mapping.LegendView;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.Selection;
@@ -42,8 +44,6 @@ import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
-
-import org.apache.http.cookie.SM;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -442,22 +442,30 @@ public class SMap extends ReactContextBaseJavaModule {
             String[] strings = tempFile.getName().split("\\.");
             String udbName = strings[0];
             Datasource datasource;
-
+            Workspace workspace = null;
             sMap = getInstance();
-            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
             DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
+
 //            if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
 //                sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().close(udbName);
 //            }
-            if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
-                datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().get(udbName);
-            } else {
+            if(sMap.smMapWC.getMapControl()==null){
+                workspace=new Workspace();
                 datasourceconnection.setEngineType(EngineType.UDB);
                 datasourceconnection.setServer(path);
                 datasourceconnection.setAlias(udbName);
-                datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
+                datasource=workspace.getDatasources().open(datasourceconnection);
+            }else {
+                sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
+                if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
+                    datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().get(udbName);
+                } else {
+                    datasourceconnection.setEngineType(EngineType.UDB);
+                    datasourceconnection.setServer(path);
+                    datasourceconnection.setAlias(udbName);
+                    datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
+                }
             }
-
             Datasets datasets = datasource.getDatasets();
             int count = datasets.getCount();
 
@@ -468,6 +476,9 @@ public class SMap extends ReactContextBaseJavaModule {
                 WritableMap writeMap = Arguments.createMap();
                 writeMap.putString("title",name);
                 arr.pushMap(writeMap);
+            }
+            if(workspace!=null){
+                workspace.dispose();
             }
             datasourceconnection.dispose();
             promise.resolve(arr);
@@ -2224,12 +2235,12 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Lable");
+            Datasource opendatasource = workspace.getDatasources().get("Label");
             if(opendatasource==null){
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Lable");
+                info.setAlias("Label");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/Customer/Data/Lable/Lable.udb");
+                info.setServer(rootPath + "/iTablet/User/Customer/Data/Label/Label.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if(datasource!=null){
                     Datasets datasets = datasource.getDatasets();
@@ -2279,12 +2290,12 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Lable");
+            Datasource opendatasource = workspace.getDatasources().get("Label");
             if(opendatasource==null){
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Lable");
+                info.setAlias("Label");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/Customer/Data/Lable/Lable.udb");
+                info.setServer(rootPath + "/iTablet/User/Customer/Data/Label/Label.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if(datasource!=null){
                     Datasets datasets = datasource.getDatasets();
@@ -2311,12 +2322,12 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Lable");
+            Datasource opendatasource = workspace.getDatasources().get("Label");
             if(opendatasource==null){
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Lable");
+                info.setAlias("Label");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/Customer/Data/Lable/Lable.udb");
+                info.setServer(rootPath + "/iTablet/User/Customer/Data/Label/Label.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if(datasource!=null){
                     Datasets datasets = datasource.getDatasets();
@@ -2350,12 +2361,12 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Lable");
+            Datasource opendatasource = workspace.getDatasources().get("Label");
             if(opendatasource==null){
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Lable");
+                info.setAlias("Label");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/Customer/Data/Lable/Lable.udb");
+                info.setServer(rootPath + "/iTablet/User/Customer/Data/Label/Label.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if(datasource!=null){
                     Datasets datasets = datasource.getDatasets();
@@ -2421,6 +2432,112 @@ public class SMap extends ReactContextBaseJavaModule {
             Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
             double scale = 1/number;
             layer.setMaxVisibleScale(scale);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 添加文字标注
+     * @param promise
+     */
+    @ReactMethod
+    public void addTextRecordset(String dataname,String name,int x,int y,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Point2D p =sMap.smMapWC.getMapControl().getMap().pixelToMap(new Point(x,y));
+            Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
+            Datasource opendatasource = workspace.getDatasources().get("Label");
+            Datasets datasets = opendatasource.getDatasets();
+            DatasetVector dataset = (DatasetVector) datasets.get(dataname);
+            dataset.setReadOnly(false);
+            Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
+            TextPart textPart = new TextPart();
+            textPart.setAnchorPoint(p);
+            textPart.setText(name);
+            GeoText geoText = new GeoText();
+            geoText.addPart(textPart);
+            recordset.addNew(geoText);
+            recordset.update();
+            recordset.close();
+            geoText.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取点击坐标
+     * @param promise
+     */
+    @ReactMethod
+    public void getGestureDetector(final Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            final float[] x = new float[1];
+            final float[] y = new float[1];
+            sMap.smMapWC.getMapControl().setGestureDetector(new GestureDetector(context, new GestureDetector.OnGestureListener() {
+                @Override
+                public boolean onDown(MotionEvent e) {
+                    return false;
+                }
+
+                @Override
+                public void onShowPress(MotionEvent e) {
+                    x[0] = e.getX();
+                    y[0] = e.getY();
+                    WritableMap writeMap = Arguments.createMap();
+                    writeMap.putDouble("x", x[0]);
+                    writeMap.putDouble("y", y[0]);
+                    promise.resolve(writeMap);
+                    sMap.smMapWC.getMapControl().deleteGestureDetector();
+                }
+
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return false;
+                }
+
+                @Override
+                public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                    return false;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+
+                }
+
+                @Override
+                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                    return false;
+                }
+            }));
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 添加地图图例
+     * @param promise
+     */
+    @ReactMethod
+    public void addLegend(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            Legend lengend = new Legend(map);
+            LegendView legendView = new LegendView(context);
+            legendView.setRowHeight(5);
+            legendView.setTextSize(10);
+            legendView.setTextColor(android.graphics.Color.RED);
+            lengend.connectLegendView(legendView);
+            sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

@@ -97,10 +97,28 @@ function deleteDatasource(path = '') {
   }
 }
 
+function removeDatasetByName(path,name){
+  try {
+    return SDatasource.removeDatasetByName(path,name)
+  } catch (error) {
+    console.error(e)
+  }
+}
+
+function copyDataset(datasoucePath,toDatasourcePath,datasets){
+  try {
+    return SDatasource.copyDataset(datasoucePath,toDatasourcePath,datasets)
+  } catch (error) {
+    console.error(e)
+  }
+}
+
 export {
   createDatasource,
   // openDatasource,
   renameDatasource,
   closeDatasource,
   deleteDatasource,
+  removeDatasetByName,
+  copyDataset,
 }

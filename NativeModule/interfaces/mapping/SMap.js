@@ -928,6 +928,18 @@ export default (function () {
       console.error(e)
     }
   }
+
+  /**
+   * 添加地图图例
+   * @returns {*|Promise.<void>}
+   */
+  function addLegend () {
+    try {
+      return SMap.addLegend()
+    } catch (e) {
+      console.error(e)
+    }
+  }
   
   /************************************** 地图编辑历史操作 ****************************************/
   /**
@@ -1001,7 +1013,34 @@ export default (function () {
       console.error(e)
     }
   }
-  
+
+
+  /**
+   * 添加文字标注
+   * @returns {*|Promise.<void>}
+   */
+  function addTextRecordset(value,name,x,y){
+    try{
+      return SMap.addTextRecordset(value,name,x,y)
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取屏幕坐标点
+   * @returns {*|Promise.<void>}
+   */
+  function getGestureDetector(){
+    try{
+      return SMap.getGestureDetector()
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+
+
 
   let SMapExp = {
     refreshMap,
@@ -1069,6 +1108,7 @@ export default (function () {
     newTaggingDataset,
     removeTaggingDataset,
     openTaggingDataset,
+    addLegend,
     
     /** 地图编辑历史操作 **/
     undo,
@@ -1077,6 +1117,8 @@ export default (function () {
     addRecordset,
     setMinVisibleScale,
     setMaxVisibleScale,
+    addTextRecordset,
+    getGestureDetector,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource)
   
