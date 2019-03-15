@@ -196,7 +196,7 @@ public class SDatasource extends ReactContextBaseJavaModule {
                 datasource=workspace.getDatasources().open(datasourceconnection);
                 toDataSource=workspace.getDatasources().open(datasourceconnection2);
                 for (int i = 0; i < datasets.size(); i++) {
-                    DatasetVector datasetVector= (DatasetVector) datasource.getDatasets().get(datasets.getInt(i));
+                    DatasetVector datasetVector= (DatasetVector) datasource.getDatasets().get(datasets.getString(i));
                     String datasetName=toDataSource.getDatasets().getAvailableDatasetName(datasetVector.getName());
                     toDataSource.copyDataset(datasetVector,datasetName,EncodeType.INT32);
                 }
