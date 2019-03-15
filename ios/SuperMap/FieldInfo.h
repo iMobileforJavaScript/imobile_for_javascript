@@ -113,4 +113,6 @@
      */
 -(void) dispose;
 
+-(NSString*)toJson;
+
 @end

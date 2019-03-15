@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "UIKit/UIKit.h"
 
-@class GeoStyle;
+@class GeoStyle,Color;
 
 typedef enum{
     Symbol_NONE = -1,   // 未知符号 只用于查找
@@ -35,7 +35,7 @@ typedef enum{
 // 返回包含符号ID和名称的字符串
 -(NSString*)toString;
 // 将符号输出图像（bitmap），nBmpWidth和nBmpHeight分别指示图像的宽和高
--(CGImageRef)drawBmpWidth:(int)nBmpWidth height:(int)nBmpHeight;
+-(CGImageRef)drawBmpWidth:(int)nBmpWidth height:(int)nBmpHeight withBack:(Color*)backColor;
 // 设置符号的风格
 -(void)setSymbolStyle:(GeoStyle*)style;
 

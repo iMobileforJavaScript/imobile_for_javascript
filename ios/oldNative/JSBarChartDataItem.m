@@ -9,6 +9,7 @@
 #import "JSBarChartDataItem.h"
 #import "SuperMap/ChartData.h"
 #import "JSObjManager.h"
+#import <UIKit/UIKit.h>
 
 @implementation JSBarChartDataItem
 RCT_EXPORT_MODULE();

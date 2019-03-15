@@ -780,6 +780,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 //    @ReactMethod
 //    public void modifyNickname(final String nickname, final Promise promise){
 //
+
 //        OnlineService.validateUserNickname(nickname, new OnlineCallBack.CallBackString() {
 //            @Override
 //            public void onSucceed(String s) {
@@ -801,8 +802,10 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 //                promise.resolve(s);
 //            }
 //        });
+
 //
 //    }
+
 
     @ReactMethod
     public void sendVerficationCode(String phoneNumber,final Promise promise){
