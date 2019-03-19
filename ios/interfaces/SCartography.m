@@ -24,9 +24,11 @@ RCT_REMAP_METHOD(setMakerSymbolID, setMakerSymbolIDWithResolver:(int) makerSymbo
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
             GeoStyle *style = layerSettingVector.geoStyle;
             [style setMarkerSymbolID:makerSymbolID];
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -38,15 +40,19 @@ RCT_REMAP_METHOD(setMakerSymbolID, setMakerSymbolIDWithResolver:(int) makerSymbo
     }
 }
 
-#pragma 设置点符号的大小：1-100mm
+#pragma 设置点符号的大小: 1-100mm
 RCT_REMAP_METHOD(setMarkerSize, setMarkerSizeWithResolver:(int) mm layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoStyle *style = layerSettingVector.geoStyle;
             Size2D  *size = [[Size2D alloc] initWithWidth:mm Height:mm];
             [style setMarkerSize:size];
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -79,15 +85,19 @@ RCT_REMAP_METHOD(getMarkerSize, getMarkerSizeWithResolver:(NSString *)layername 
     }
 }
 
-#pragma 设置点符号的颜色，color: 十六进制颜色码
+#pragma 设置点符号的颜色, color: 十六进制颜色码
 RCT_REMAP_METHOD(setMarkerColor, setMarkerColorWithResolver:(NSString*) strcolor layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             Color *color = [STranslate colorFromHexString:strcolor];
             GeoStyle *style = layerSettingVector.geoStyle;
             [style setLineColor:color];
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -99,14 +109,18 @@ RCT_REMAP_METHOD(setMarkerColor, setMarkerColorWithResolver:(NSString*) strcolor
     }
 }
 
-#pragma 设置点符号的旋转角度：0-360°
+#pragma 设置点符号的旋转角度: 0-360°
 RCT_REMAP_METHOD(setMarkerAngle, setMarkerAngleWithResolver:(int) angle layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoStyle *style = layerSettingVector.geoStyle;
             [style setMarkerAngle:angle];
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -118,7 +132,7 @@ RCT_REMAP_METHOD(setMarkerAngle, setMarkerAngleWithResolver:(int) angle layerNam
     }
 }
 
-#pragma 设置点符号的旋转角度：0-360°
+#pragma 设置点符号的旋转角度: 0-360°
 RCT_REMAP_METHOD(getMarkerAngle, getMarkerAngleWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
@@ -136,14 +150,18 @@ RCT_REMAP_METHOD(getMarkerAngle, getMarkerAngleWithResolver:(NSString *)layernam
     }
 }
 
-#pragma 设置点符号的透明度：0-100%
+#pragma 设置点符号的透明度: 0-100%
 RCT_REMAP_METHOD(setMarkerAlpha, setMarkerAlphaWithResolver:(int) alpha layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoStyle *style = layerSettingVector.geoStyle;
             [style setFillOpaqueRate:100-alpha];
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -155,7 +173,7 @@ RCT_REMAP_METHOD(setMarkerAlpha, setMarkerAlphaWithResolver:(int) alpha layerNam
     }
 }
 
-#pragma 设置点符号的透明度：0-100%
+#pragma 设置点符号的透明度: 0-100%
 RCT_REMAP_METHOD(getMarkerAlpha, getMarkerAlphaWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
@@ -180,9 +198,13 @@ RCT_REMAP_METHOD(setLineSymbolID, setLineSymbolIDWithResolver:(int) lineSymbolID
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoStyle *style = layerSettingVector.geoStyle;
             [style setLineSymbolID:lineSymbolID];
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -194,15 +216,19 @@ RCT_REMAP_METHOD(setLineSymbolID, setLineSymbolIDWithResolver:(int) lineSymbolID
     }
 }
 
-#pragma 设置线宽：1-10mm(边框符号宽度)
+#pragma 设置线宽: 1-10mm(边框符号宽度)
 RCT_REMAP_METHOD(setLineWidth, setLineWidthWithResolver:(int) mm layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoStyle *style = layerSettingVector.geoStyle;
             double width = (double) mm / 10;
             [style setLineWidth:width];
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -214,7 +240,7 @@ RCT_REMAP_METHOD(setLineWidth, setLineWidthWithResolver:(int) mm layerName:(NSSt
     }
 }
 
-#pragma 设置线宽：1-10mm(边框符号宽度)
+#pragma 设置线宽: 1-10mm(边框符号宽度)
 RCT_REMAP_METHOD(getLineWidth, getLineWidthWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
@@ -232,15 +258,19 @@ RCT_REMAP_METHOD(getLineWidth, getLineWidthWithResolver:(NSString *)layername re
     }
 }
 
-#pragma 设置线宽：1-10mm(边框符号宽度)
+#pragma 设置线宽: 1-10mm(边框符号宽度)
 RCT_REMAP_METHOD(setLineWidthByIndex, setLineWidthByIndexWithResolver:(int) mm layerIndex:(int)layerIndex resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVectorByIndex:layerIndex];
         if (layerSettingVector != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoStyle *style = layerSettingVector.geoStyle;
             double width = (double) mm / 10;
             [style setLineWidth:width];
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -257,10 +287,14 @@ RCT_REMAP_METHOD(setLineColor, setLineColorWithResolver:(NSString *) lineColor l
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoStyle *style = layerSettingVector.geoStyle;
             Color *color = [STranslate colorFromHexString:lineColor];
             [style setLineColor:color];
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -279,9 +313,13 @@ RCT_REMAP_METHOD(setFillSymbolID, setFillSymbolIDWithResolver:(int) FillSymbolID
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoStyle *style = layerSettingVector.geoStyle;
             [style setFillSymbolID:FillSymbolID];
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -298,10 +336,14 @@ RCT_REMAP_METHOD(setFillForeColor, setFillForeColorWithResolver:(NSString *) fil
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoStyle *style = layerSettingVector.geoStyle;
             Color *color = [STranslate colorFromHexString:fillForeColor];
             [style setFillForeColor:color];
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -318,10 +360,14 @@ RCT_REMAP_METHOD(setFillBackColor, setFillBackColorWithResolver:(NSString *) fil
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoStyle *style = layerSettingVector.geoStyle;
             Color *color = [STranslate colorFromHexString:fillBackColor];
             [style setFillBackColor:color];
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -333,14 +379,18 @@ RCT_REMAP_METHOD(setFillBackColor, setFillBackColorWithResolver:(NSString *) fil
     }
 }
 
-#pragma 设置透明度（0-100）
+#pragma 设置透明度(0-100)
 RCT_REMAP_METHOD(setFillOpaqueRate, setFillOpaqueRateWithResolver:(int) fillOpaqueRate layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoStyle *style = layerSettingVector.geoStyle;
             [style setFillOpaqueRate:100-fillOpaqueRate];
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -352,7 +402,7 @@ RCT_REMAP_METHOD(setFillOpaqueRate, setFillOpaqueRateWithResolver:(int) fillOpaq
     }
 }
 
-#pragma 设置透明度（0-100）
+#pragma 设置透明度(0-100)
 RCT_REMAP_METHOD(getFillOpaqueRate, getFillOpaqueRateWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
@@ -376,9 +426,13 @@ RCT_REMAP_METHOD(setFillLinearGradient, setFillLinearGradientWithResolver:(NSStr
         if (![Environment isOpenGLMode]) {
             LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
             if (layerSettingVector != nil) {
+                MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+                [[mapControl getEditHistory] addMapHistory];
+                
                 GeoStyle *style = layerSettingVector.geoStyle;
                 [style setFillGradientMode:FGM_LINEAR];
-                [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+                
+                [mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             } else {
                 resolve([NSNumber numberWithBool:NO]);
@@ -400,9 +454,13 @@ RCT_REMAP_METHOD(setFillRadialGradient, setFillRadialGradientWithResolver:(NSStr
         if (![Environment isOpenGLMode]) {
             LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
             if (layerSettingVector != nil) {
+                MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+                [[mapControl getEditHistory] addMapHistory];
+                
                 GeoStyle *style = layerSettingVector.geoStyle;
                 [style setFillGradientMode:FGM_RADIAL];
-                [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+
+                [mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             } else {
                 resolve([NSNumber numberWithBool:NO]);
@@ -424,9 +482,13 @@ RCT_REMAP_METHOD(setFillSquareGradient, setFillSquareGradientWithResolver:(NSStr
         if (![Environment isOpenGLMode]) {
             LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
             if (layerSettingVector != nil) {
+                MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+                [[mapControl getEditHistory] addMapHistory];
+                
                 GeoStyle *style = layerSettingVector.geoStyle;
                 [style setFillGradientMode:FGM_SQUARE];
-                [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+                
+                [mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             } else {
                 resolve([NSNumber numberWithBool:NO]);
@@ -448,9 +510,13 @@ RCT_REMAP_METHOD(setFillNoneGradient, setFillNoneGradientWithResolver:(NSString 
         if (![Environment isOpenGLMode]) {
             LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
             if (layerSettingVector != nil) {
+                MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+                [[mapControl getEditHistory] addMapHistory];
+                
                 GeoStyle *style = layerSettingVector.geoStyle;
                 [style setFillGradientMode:FGM_NONE];
-                [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+                
+                [mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             } else {
                 resolve([NSNumber numberWithBool:NO]);
@@ -468,13 +534,17 @@ RCT_REMAP_METHOD(setFillNoneGradient, setFillNoneGradientWithResolver:(NSString 
 
 /*栅格风格
  * ********************************************************************************************/
-#pragma 设置点符号的透明度：0-100%
+#pragma 设置点符号的透明度: 0-100%
 RCT_REMAP_METHOD(setGridOpaqueRate, setGridOpaqueRateWithResolver:(int) gridOpaqueRate layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingGrid *layerSettingVector = [SMCartography getLayerSettingGrid:layername];
         if (layerSettingVector != nil) {
-//            layerSettingGrid.setOpaqueRate(100 - gridOpaqueRate); //新增接口，待打开
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
+//            layerSettingGrid.setOpaqueRate(100 - gridOpaqueRate); //新增接口, 待打开
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -486,7 +556,7 @@ RCT_REMAP_METHOD(setGridOpaqueRate, setGridOpaqueRateWithResolver:(int) gridOpaq
     }
 }
 
-#pragma 设置点符号的透明度：0-100%
+#pragma 设置点符号的透明度: 0-100%
 RCT_REMAP_METHOD(getGridOpaqueRate, getGridOpaqueRateWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingGrid *layerSettingVector = [SMCartography getLayerSettingGrid:layername];
@@ -503,7 +573,7 @@ RCT_REMAP_METHOD(getGridOpaqueRate, getGridOpaqueRateWithResolver:(NSString *)la
     }
 }
 
-#pragma 设置点符号的透明度：0-100%
+#pragma 设置点符号的透明度: 0-100%
 RCT_REMAP_METHOD(getGridContrast, getGridContrastWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingGrid *layerSettingVector = [SMCartography getLayerSettingGrid:layername];
@@ -520,7 +590,7 @@ RCT_REMAP_METHOD(getGridContrast, getGridContrastWithResolver:(NSString *)layern
     }
 }
 
-#pragma 设置点符号的透明度：0-100%
+#pragma 设置点符号的透明度: 0-100%
 RCT_REMAP_METHOD(getGridBrightness, getGridBrightnessWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingGrid *layerSettingVector = [SMCartography getLayerSettingGrid:layername];
@@ -542,8 +612,12 @@ RCT_REMAP_METHOD(setGridContrast, setGridContrastWithResolver:(int) gridContrast
     @try{
         LayerSettingGrid *layerSettingVector = [SMCartography getLayerSettingGrid:layername];
         if (layerSettingVector != nil) {
-            //           layerSettingGrid.setContrast(gridContrast); //新增接口，待打开
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
+            //           layerSettingGrid.setContrast(gridContrast); //新增接口, 待打开
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -560,8 +634,12 @@ RCT_REMAP_METHOD(setGridBrightness, setGridBrightnessWithResolver:(int) gridBrig
     @try{
         LayerSettingGrid *layerSettingVector = [SMCartography getLayerSettingGrid:layername];
         if (layerSettingVector != nil) {
-            //             layerSettingGrid.setBrightness(gridBrightness); //新增接口，待打开
-            [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
+            //             layerSettingGrid.setBrightness(gridBrightness); //新增接口, 待打开
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -577,10 +655,13 @@ RCT_REMAP_METHOD(setGridBrightness, setGridBrightnessWithResolver:(int) gridBrig
  * ********************************************************************************************/
 - (BOOL ) saveGeoText: (Recordset *)recordset geometry:(Geometry* ) geometry
 {
+    MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+    [[mapControl getEditHistory] addMapHistory];
+    
     [recordset edit];
     [recordset setGeometry:geometry];
     bool bUpdate = [recordset update];
-    [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+    
     [recordset close];
     [recordset dispose];
     return bUpdate;
@@ -592,11 +673,15 @@ RCT_REMAP_METHOD(setTextFontSize, setTextFontSizeWithResolver:(int) size geometr
         Recordset* recordset = [SMCartography getRecordset:geometryID layerName:layerName];
         Geometry* geometry = [SMCartography getGeoText:recordset];
         if (recordset != nil && geometry != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoText* geotext = (GeoText* )geometry;
             TextStyle* textStyle = [geotext getTextStyle];
             [textStyle setFontHeight:(double)size];
             [geotext setTextStyle:textStyle];
             bool bUpdate = [self saveGeoText:recordset geometry:geometry];
+            
             resolve([NSNumber numberWithBool:bUpdate]);
         }
         else
@@ -615,12 +700,16 @@ RCT_REMAP_METHOD(setTextFontColor, setTextFontColorWithResolver:(NSString*) colo
         Recordset* recordset = [SMCartography getRecordset:geometryID layerName:layerName];
         Geometry* geometry = [SMCartography getGeoText:recordset];
         if (recordset != nil && geometry != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             Color *co = [STranslate colorFromHexString:color];
             GeoText* geotext = (GeoText* )geometry;
             TextStyle* textStyle = [geotext getTextStyle];
             [textStyle setForeColor:co];
             [geotext setTextStyle:textStyle];
             bool bUpdate = [self saveGeoText:recordset geometry:geometry];
+            
             resolve([NSNumber numberWithBool:bUpdate]);
         }
         else
@@ -639,11 +728,16 @@ RCT_REMAP_METHOD(setTextFontRotation, setTextFontRotationWithResolver:(int) angl
         Recordset* recordset = [SMCartography getRecordset:geometryID layerName:layerName];
         Geometry* geometry = [SMCartography getGeoText:recordset];
         if (recordset != nil && geometry != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoText* geotext = (GeoText* )geometry;
             TextStyle* textStyle = [geotext getTextStyle];
             [textStyle setRotation:angle];
             [geotext setTextStyle:textStyle];
             bool bUpdate = [self saveGeoText:recordset geometry:geometry];
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:bUpdate]);
         }
         else
@@ -662,13 +756,17 @@ RCT_REMAP_METHOD(setTextFontPosition, setTextFontPositionSizeWithResolver:(NSStr
         Recordset* recordset = [SMCartography getRecordset:geometryID layerName:layerName];
         Geometry* geometry = [SMCartography getGeoText:recordset];
         if (recordset != nil && geometry != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoText* geotext = (GeoText* )geometry;
             TextStyle* textStyle = [geotext getTextStyle];
             TextAlignment alignment = [SMCartography getTextAlignment:textAlignment];
             [textStyle setAlignment:alignment];
             [geotext setTextStyle:textStyle];
             bool bUpdate = [self saveGeoText:recordset geometry:geometry];
-            resolve([NSNumber numberWithBool:bUpdate]);
+            
+            [mapControl.map refresh];
         }
         else
         {
@@ -686,6 +784,9 @@ RCT_REMAP_METHOD(setTextStyle, setTextStyleWithResolver:(NSString*) style whethe
         Recordset* recordset = [SMCartography getRecordset:geometryID layerName:layerName];
         Geometry* geometry = [SMCartography getGeoText:recordset];
         if (recordset != nil && geometry != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
             GeoText* geotext = (GeoText* )geometry;
             TextStyle* textStyle = [geotext getTextStyle];
             if ([style isEqualToString:@"BOLD"]) {
@@ -708,6 +809,8 @@ RCT_REMAP_METHOD(setTextStyle, setTextStyleWithResolver:(NSString*) style whethe
             }
             [geotext setTextStyle:textStyle];
             bool bUpdate = [self saveGeoText:recordset geometry:geometry];
+            
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:bUpdate]);
         }
         else

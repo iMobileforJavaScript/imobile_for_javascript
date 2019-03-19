@@ -777,32 +777,36 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             }
         });
     }
-    @ReactMethod
-    public void modifyNickname(final String nickname, final Promise promise){
+//    @ReactMethod
+//    public void modifyNickname(final String nickname, final Promise promise){
+//
 
-        OnlineService.validateUserNickname(nickname, new OnlineCallBack.CallBackString() {
-            @Override
-            public void onSucceed(String s) {
-                OnlineService.modifyNickname(nickname, new OnlineCallBack.CallBackString() {
-                    @Override
-                    public void onSucceed(String s) {
-                        promise.resolve(true);
-                    }
+//        OnlineService.validateUserNickname(nickname, new OnlineCallBack.CallBackString() {
+//            @Override
+//            public void onSucceed(String s) {
+//                OnlineService.modifyNickname(nickname, new OnlineCallBack.CallBackString() {
+//                    @Override
+//                    public void onSucceed(String s) {
+//                        promise.resolve(true);
+//                    }
+//
+//                    @Override
+//                    public void onError(String s) {
+//                        promise.resolve(s);
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onError(String s) {
+//                promise.resolve(s);
+//            }
+//        });
 
-                    @Override
-                    public void onError(String s) {
-                        promise.resolve(s);
-                    }
-                });
-            }
+//
+//    }
 
-            @Override
-            public void onError(String s) {
-                promise.resolve(s);
-            }
-        });
 
-    }
     @ReactMethod
     public void sendVerficationCode(String phoneNumber,final Promise promise){
         OnlineService.sendVerficationCode(phoneNumber, new OnlineCallBack.CallBackString() {

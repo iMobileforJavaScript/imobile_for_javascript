@@ -539,14 +539,14 @@ RCT_REMAP_METHOD(getFieldCount, getFieldCountById:(NSString*)dsVectorId resolver
 
 RCT_REMAP_METHOD(getFieldInfosArray, getFieldInfosArrayById:(NSString*)dsVectorId count:(NSInteger)count size:(NSInteger)size resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
-        Recordset* recordSet = [dsVector recordset:false cursorType:DYNAMIC];
-        [recordSet moveFirst];
-        NSMutableArray* recordsetArray = [NativeUtil recordsetToJsonArray:recordSet page:count size:size];
-        resolve(recordsetArray);
-        [recordSet dispose];
-        
-        resolve([NSNumber numberWithInt:count]);
+//        DatasetVector* dsVector = [JSObjManager getObjWithKey:dsVectorId];
+//        Recordset* recordSet = [dsVector recordset:false cursorType:DYNAMIC];
+//        [recordSet moveFirst];
+//        NSMutableArray* recordsetArray = [NativeUtil recordsetToDictionary:recordSet page:count size:size];
+//        resolve(recordsetArray);
+//        [recordSet dispose];
+//        
+//        resolve([NSNumber numberWithInt:count]);
     } @catch (NSException *exception) {
         reject(@"datasetVector", exception.reason, nil);
     }

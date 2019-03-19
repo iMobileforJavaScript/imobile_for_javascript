@@ -114,7 +114,7 @@ function getSelectionAttributeByLayer(path, page = 0, size = 20) {
 function getAttributeByLayer(path, ids = []) {
   try {
     if (ids.length === 0) {
-      return []
+      return {}
     }
     return LayerManager.getAttributeByLayer(path, ids)
   } catch (e) {
@@ -133,7 +133,7 @@ function getAttributeByLayer(path, ids = []) {
  */
 function searchLayerAttribute(path = '', params = {}, page = 0, size = 0) {
   try {
-    if (path === '' || (params.key === '' && params.filter === '')) return []
+    if (path === '' || (params.key === '' && params.filter === '')) return {}
     return LayerManager.searchLayerAttribute(path, params, page, size)
   } catch (e) {
     console.error(e)
@@ -150,7 +150,7 @@ function searchLayerAttribute(path = '', params = {}, page = 0, size = 0) {
  */
 function searchSelectionAttribute(path = '', searchKey = '', page = 0, size = 0) {
   try {
-    if (path === '') return []
+    if (path === '') return {}
     return LayerManager.searchSelectionAttribute(path, searchKey, page, size)
   } catch (e) {
     console.error(e)
