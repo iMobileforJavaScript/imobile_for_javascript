@@ -1,4 +1,4 @@
-﻿//
+//
 //  Scene.h
 //  Realspace
 //
@@ -75,6 +75,12 @@
 /// 获取或设置大气层可见性
 @property (assign, nonatomic, getter=isAtmosphereVisible) BOOL atmosphereVisible;
 
+///开启文字避让
+@property (assign, nonatomic, getter=isOverlapDisplayed) BOOL overlapDisplayed;
+
+
+-(double)GetFPS;
+
 /**@brief 打开指定名称的三维场景。
  @param  sceneName 三维场景名称。
  <p>注：只支持打开通过iDesktop 7C版本生成的只包含iOS场景缓存的三维场景。使用此方法必须配置三维许可，否则打开失败。
@@ -99,6 +105,9 @@
  */
 - (BOOL)openSceneWithUrl:(NSString *)url Name:(NSString *)sceneName Password:(NSString *)password;
 
+//打开带有token令牌加密认证的数据服务
+-(BOOL)openTokenServiceWithUrl:(NSString *)iserverUrl Name:(NSString *)sceneName Token:(NSString *)token;
+
 /**@brief 通过Online数据私有服务打开三维场景(需登陆后使用)。
  @param  url Online数据私有服务的URL(如：http://118.186.246.138:8091/iserver/services/realspace-Scene/rest/realspace)。
  @param  sceneName 指定的三维场景名称。
@@ -115,6 +124,10 @@
  @param  camera 指定相机位置。
  */
 - (void)flyToCamera:(Camera)camera;
+
+-(void)flyToCamera:(Camera)camera milliseconds:(NSInteger)time isDirect:(BOOL)bdirect;
+
+-(void)flyToLookAt:(LookAt *)lookat milliseconds:(NSInteger)time isDirect:(BOOL)bdirect;
 
 /**@brief 飞行到指定的经纬度范围。
  @param  bounds 指定的经纬度范围。

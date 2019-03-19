@@ -8,6 +8,8 @@
 
 #import "JSSymbol.h"
 #import "SuperMap/Symbol.h"
+#import "SuperMap/Color.h"
+
 #import "SuperMap/GeoStyle.h"
 #import "JSObjManager.h"
 
@@ -30,7 +32,7 @@ RCT_REMAP_METHOD(dispose, disposeById:(NSString *)symbolId resolver:(RCTPromiseR
 RCT_REMAP_METHOD(draw, drawById:(NSString *)symbolId width:(int)width height:(int)height resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         Symbol* symbol = [JSObjManager getObjWithKey:symbolId];
-        CGImageRef imgRef = [symbol drawBmpWidth:width height:height];
+        CGImageRef imgRef = [symbol drawBmpWidth:width height:height withBack:nil];
 
         NSNumber* number;
         if (imgRef) {

@@ -66,6 +66,46 @@ function uploadFile(path, dataName, handler) {
   OnlineServiceNative.upload(path, dataName);
 }
 
+
+function downloadFileWithCallBack(path, dataName, handler) {
+
+  if (Platform.OS === 'ios' && handler) {
+    if (typeof handler.onProgress === 'function') {
+      callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (obj) {
+        console.log("progress: " + obj.progress);
+        handler.onProgress(obj.progress);
+      })
+    }
+    if (typeof handler.onResult === 'function') {
+      callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (value) {
+        handler.onResult(value);
+      })
+    }
+    if (typeof handler.onResult === 'function') {
+      callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (value) {
+        handler.onResult(value);
+      })
+    }
+  }else{
+    if (typeof handler.onProgress === 'function'&& handler) {
+      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (progress) {
+        handler.onProgress(progress);
+      })
+    }
+    if (typeof handler.onResult === 'function'&& handler) {
+      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (result) {
+        handler.onResult(result);
+      })
+    }
+    if (typeof handler.onResult === 'function'&& handler) {
+      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (result) {
+        handler.onResult(result);
+      })
+    }
+  }
+  OnlineServiceNative.download(path, dataName);
+}
+
 function downloadFile(path, onlineDataName) {
   OnlineServiceNative.download(path, onlineDataName);
 }
@@ -83,6 +123,16 @@ function login(userName, password) {
     return;
   }
   return OnlineServiceNative.login(userName, password);
+}
+
+function getUserInfo() {
+
+  return OnlineServiceNative.getUserInfo();
+}
+
+function getUserInfoBy(name,type) {
+
+  return OnlineServiceNative.getUserInfoBy(name,type);
 }
 
 function loginWithPhoneNumber(phoneNumber,password){
@@ -334,6 +384,7 @@ export default {
   changeServiceVisibilityWithServiceId,
   changeDataVisibilityWithDataId,
   downloadFileWithDataId,
+  downloadFileWithCallBack,
   publishServiceWithDataId,
   syncAndroidCookie,
   removeCookie,
@@ -343,4 +394,6 @@ export default {
   sendVerficationCode,
   bindPhoneNumber,
   bindEmail,
+  getUserInfo,
+  getUserInfoBy,
 }
