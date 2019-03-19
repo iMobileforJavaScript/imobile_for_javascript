@@ -42,6 +42,8 @@ import static com.supermap.onlineservices.utils.EnumServiceType.RESTMAP;
 public class SOnlineService extends ReactContextBaseJavaModule{
     private OnlineService mOnlineService = null;
     private static  final String TAG = "SOnlineService"; //
+    private static  final String downloadId = "fileName"; //
+    private static  final String uploadId = "uploadId"; //
     private ReactApplicationContext mContext = null;
     String rootPath = android.os.Environment.getExternalStorageDirectory().getPath().toString();
     public SOnlineService(ReactApplicationContext reactContext) {
@@ -110,6 +112,57 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void getUserInfo(final Promise promise){
+        try{
+            OnlineService.getAccountInfo(new OnlineService.AccountInfoCallback() {
+                @Override
+                void accountInfoSuccess(String nickName,String phoneNumber,String email){
+                    WritableMap map = Arguments.createMap();
+                    map.putString("nickname",nickName);
+                    map.putString("phoneNumber",phoneNumber);
+                    map.putString("email",email);
+                    promise.resolve(map);
+
+                }
+
+                @Override
+                void accountInfoFailed(String errInfo){
+                    promise.resolve(errInfo);
+                }
+            });
+        }catch (Exception e){
+            promise.reject(e);
+        }
+
+    }
+
+    @ReactMethod
+    public void getUserInfoBy(String name,int type,final Promise promise){
+        try{
+            OnlineService.getAccountInfoByType(new OnlineService.AccountInfoByTypeCallback() {
+                @Override
+                void accountInfoByTypeSuccess(String nickName,String userId){
+                    WritableArray array = Arguments.createArray();
+                    array.pushString(nickName);
+                    array.pushString(userId);
+                    promise.resolve(array);
+
+                }
+
+                @Override
+                void accountInfoByTypeFailed(String errInfo){
+                    promise.resolve(errInfo);
+                }
+            });
+        }catch (Exception e){
+            promise.reject(e);
+        }
+
+    }
+
+
     @ReactMethod
     public void logout(final Promise promise){
         try{
