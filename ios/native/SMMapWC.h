@@ -38,4 +38,6 @@
 - (NSArray *)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString *)nModule;
 - (BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(NSString *)nModule isPrivate:(BOOL)bPrivate;
 - (BOOL)appendFromFile:(Resources *)resources path:(NSString *)path isReplace:(BOOL)isReplace;
+
+- (BOOL)copyDatasetsFrom:(NSString*)strSrcUDB to:(NSString*)strDesUDB;
 @end

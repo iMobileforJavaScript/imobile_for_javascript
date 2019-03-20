@@ -2169,4 +2169,51 @@
     }
 }
 
+-(BOOL)copyDatasetsFrom:(NSString *)strSrcUDB to:(NSString *)strDesUDB{
+    
+    BOOL result = false;
+    
+    Workspace *workspaceTemp = [[Workspace alloc]init];
+    
+    DatasourceConnectionInfo* srcInfo = [[DatasourceConnectionInfo alloc]init];
+    srcInfo.server = strSrcUDB;
+    srcInfo.engineType = ET_UDB;
+    srcInfo.alias = @"src";
+    Datasource * srcDs = [workspaceTemp.datasources open:srcInfo];
+    if (srcDs!=nil) {
+        DatasourceConnectionInfo* desInfo = [[DatasourceConnectionInfo alloc]init];
+        desInfo.server = strDesUDB;
+        desInfo.engineType = ET_UDB;
+        desInfo.alias = @"des";
+        Datasource * desDs = [workspaceTemp.datasources open:desInfo];
+
+        if (desDs!=nil) {
+            for(int i=0;i<srcDs.datasets.count;i++){
+                Dataset *dataset = [srcDs.datasets get:i];
+                NSString *strDesName = dataset.name;
+                int nAddNum = 1;
+                while ([desDs.datasets contain:strDesName]) {
+                    strDesName = [NSString stringWithFormat:@"%@_%d",dataset.name,nAddNum];
+                    nAddNum++;
+                }
+                
+                [desDs copyDataset:dataset desDatasetName:strDesName encodeType:dataset.encodeType];
+            }
+            
+            [desDs saveDatasource];
+            result = true;
+        }
+        [desInfo dispose];
+
+    }
+    
+    [srcInfo dispose];
+    
+    [workspaceTemp close];
+    [workspaceTemp dispose];
+    
+    return result;
+
+}
+
 @end
