@@ -130,7 +130,7 @@ RCT_REMAP_METHOD(getDatasources, getDatasourcesWithResolver:(RCTPromiseResolveBl
             
             [dsList addObject:dicInfo];
         }
-        
+            
         resolve(dsList);
     } @catch (NSException *exception) {
         reject(@"Datasource", exception.reason, nil);
