@@ -2467,4 +2467,45 @@ public class SMMapWC {
         }
     }
 
+    public boolean copyDataset(String strSrcUDB,String strDesUDB){
+
+        boolean result = false;
+
+        Workspace workspaceTemp = new Workspace();
+
+        DatasourceConnectionInfo srcinfo = new DatasourceConnectionInfo();
+        srcinfo.setServer(strSrcUDB);
+        srcinfo.setEngineType(EngineType.UDB);
+        srcinfo.setAlias(@"src");
+        Datasource srcDs = workspaceTemp.getDatasources().open(srcinfo);
+        if (srcDs!=null){
+            DatasourceConnectionInfo desinfo = new DatasourceConnectionInfo();
+            desinfo.setServer(strDesUDB);
+            desinfo.setEngineType(EngineType.UDB);
+            desinfo.setAlias(@"des");
+            Datasource desDs = workspaceTemp.getDatasources().open(desinfo);
+            if (desDs!=null){
+                for (int i=0;i<srcDs.getDatasets().getCount();i++){
+                    Dataset dataset = srcDs.getDatasets().get(i);
+                    String strDesName = dataset.getName();
+                    int nAddNum = 1;
+                    while (desDs.getDatasets().contains(strDesName)){
+                        strDesName = dataset.getName() + "_" + nAddNum;
+                        nAddNum++;
+                    }
+                    desDs.copyDataset(dataset,strDesName,dataset.getEncodeType());
+                }
+                desDs.saveDatasource();
+                result = true;
+            }
+            desinfo.dispose();
+        }
+        srcinfo.dispose();
+
+        workspaceTemp.close();
+        workspaceTemp.dispose();
+
+        return result;
+    }
+
 }
