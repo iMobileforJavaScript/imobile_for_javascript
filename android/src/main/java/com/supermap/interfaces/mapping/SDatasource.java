@@ -1,5 +1,6 @@
 package com.supermap.interfaces.mapping;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -8,6 +9,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
@@ -254,6 +256,42 @@ public class SDatasource extends ReactContextBaseJavaModule {
             }
             datasourceconnection.dispose();
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 获取数据源列表
+     * @param path
+     * @param name
+     * @param promise
+     */
+    @ReactMethod
+    public void getDatasources(String path,String name, Promise promise) {
+        try {
+            WritableArray dsArr = Arguments.createArray();
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+
+            for (int i = 0; i < datasources.getCount(); i++) {
+                Datasource datasource = datasources.get(i);
+                DatasourceConnectionInfo info = datasource.getConnectionInfo();
+
+                WritableMap dataInfo = Arguments.createMap();
+                dataInfo.putString("alias", info.getAlias());
+                dataInfo.putInt("engineType", info.getEngineType().value());
+                dataInfo.putString("server", info.getServer());
+                dataInfo.putString("driver", info.getDriver());
+                dataInfo.putString("user", info.getUser());
+                dataInfo.putBoolean("readOnly", info.isReadOnly());
+                dataInfo.putString("password", info.getPassword());
+
+                dsArr.pushMap(dataInfo);
+            }
+
+            promise.resolve(dsArr);
         } catch (Exception e) {
             promise.reject(e);
         }
