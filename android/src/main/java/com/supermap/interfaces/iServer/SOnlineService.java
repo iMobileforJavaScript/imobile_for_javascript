@@ -22,6 +22,7 @@ import com.supermap.onlineservices.DownLoadFile;
 import com.supermap.onlineservices.OnlineCallBack;
 import com.supermap.onlineservices.OnlineService;
 import com.supermap.onlineservices.UpLoadFile;
+import com.supermap.onlineservices.utils.AccountInfoType;
 
 
 import java.io.File;
@@ -118,7 +119,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
         try{
             OnlineService.getAccountInfo(new OnlineService.AccountInfoCallback() {
                 @Override
-                void accountInfoSuccess(String nickName,String phoneNumber,String email){
+                public void accountInfoSuccess(String nickName, String phoneNumber, String email){
                     WritableMap map = Arguments.createMap();
                     map.putString("nickname",nickName);
                     map.putString("phoneNumber",phoneNumber);
@@ -128,7 +129,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
                 }
 
                 @Override
-                void accountInfoFailed(String errInfo){
+                public void accountInfoFailed(String errInfo){
                     promise.resolve(errInfo);
                 }
             });
@@ -141,9 +142,9 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     @ReactMethod
     public void getUserInfoBy(String name,int type,final Promise promise){
         try{
-            OnlineService.getAccountInfoByType(new OnlineService.AccountInfoByTypeCallback() {
+            OnlineService.getAccountInfoByType(name,AccountInfoType.values()[type],new OnlineService.AccountInfoByTypeCallback() {
                 @Override
-                void accountInfoByTypeSuccess(String nickName,String userId){
+                public void accountInfoByTypeSuccess(String nickName, String userId){
                     WritableArray array = Arguments.createArray();
                     array.pushString(nickName);
                     array.pushString(userId);
@@ -152,7 +153,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
                 }
 
                 @Override
-                void accountInfoByTypeFailed(String errInfo){
+                public void accountInfoByTypeFailed(String errInfo){
                     promise.resolve(errInfo);
                 }
             });

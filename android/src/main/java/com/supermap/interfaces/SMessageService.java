@@ -17,8 +17,9 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
 import com.supermap.messagequeue.AMQPManager;
 import com.supermap.messagequeue.AMQPReceiver;
+import com.supermap.messagequeue.AMQPReturnMessage;
 import com.supermap.messagequeue.AMQPSender;
-//import com.supermap.messagequeue.AMQPExchangeType;
+import com.supermap.messagequeue.AMQPExchangeType;
 
 
 public class SMessageService extends ReactContextBaseJavaModule {
@@ -37,6 +38,11 @@ public class SMessageService extends ReactContextBaseJavaModule {
     static String sGroupExchange = "message.group";
 
     ReactContext mReactContext;
+
+    @Override
+    public String getName() {
+        return REACT_CLASS;
+    }
 
     public SMessageService(ReactApplicationContext context) {
         super(context);
@@ -256,10 +262,10 @@ public class SMessageService extends ReactContextBaseJavaModule {
             }
 
             //异步消息发送
-            public class MessageReceiveThread extends Thread{
+             class MessageReceiveThread extends Thread{
                 @Override
                 public void run(){
-                    while (1){
+                    while (true){
                         if(g_AMQPReceiver!=null){
                             AMQPReturnMessage resMessage = g_AMQPReceiver.receiveMessage();
                             String sQueue = resMessage.getQueue();
@@ -278,7 +284,11 @@ public class SMessageService extends ReactContextBaseJavaModule {
                             break;
                         }
 
-                        Thread.sleep(1000);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
 
 
@@ -321,5 +331,6 @@ public class SMessageService extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
 
 }
