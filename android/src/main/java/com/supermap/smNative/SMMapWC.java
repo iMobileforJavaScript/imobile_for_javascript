@@ -2476,13 +2476,13 @@ public class SMMapWC {
         DatasourceConnectionInfo srcinfo = new DatasourceConnectionInfo();
         srcinfo.setServer(strSrcUDB);
         srcinfo.setEngineType(EngineType.UDB);
-        srcinfo.setAlias(@"src");
+        srcinfo.setAlias("src");
         Datasource srcDs = workspaceTemp.getDatasources().open(srcinfo);
         if (srcDs!=null){
             DatasourceConnectionInfo desinfo = new DatasourceConnectionInfo();
             desinfo.setServer(strDesUDB);
             desinfo.setEngineType(EngineType.UDB);
-            desinfo.setAlias(@"des");
+            desinfo.setAlias("des");
             Datasource desDs = workspaceTemp.getDatasources().open(desinfo);
             if (desDs!=null){
                 for (int i=0;i<srcDs.getDatasets().getCount();i++){
