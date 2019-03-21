@@ -300,7 +300,7 @@ RCT_REMAP_METHOD(closeGPS, closeGPSWesolver:(RCTPromiseResolveBlock)resolve reje
     }
 }
 
-#pragma mark 关闭GPS
+#pragma mark 删除对象
 RCT_REMAP_METHOD(remove, removeById:(int)geoId layerPath:(NSString *)layerPath closeGPSWesolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
@@ -309,6 +309,29 @@ RCT_REMAP_METHOD(remove, removeById:(int)geoId layerPath:(NSString *)layerPath c
         Recordset* recordset = layer.getSelection.toRecordset;
         [recordset seekID:geoId];
         bool result = [recordset delete];
+        
+        [sMap.smMapWC.mapControl.map refresh];
+        
+        NSNumber* num = [NSNumber numberWithBool:result];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"SCollector", exception.reason, nil);
+    }
+}
+
+#pragma mark 删除多个对象
+RCT_REMAP_METHOD(removeByIds, removeByIds:(NSArray *)geoIds layerPath:(NSString *)layerPath closeGPSWesolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        Layer* layer = [SMLayer findLayerByPath: layerPath];
+        
+        Recordset* recordset = layer.getSelection.toRecordset;
+        
+        bool result = YES;
+        for (int i = 0; i < geoIds.count; i++) {
+            [recordset seekID:geoIds[i]];
+            result = result && [recordset delete];
+        }
         
         [sMap.smMapWC.mapControl.map refresh];
         

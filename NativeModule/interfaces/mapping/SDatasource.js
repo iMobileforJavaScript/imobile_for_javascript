@@ -113,6 +113,18 @@ function copyDataset(datasoucePath,toDatasourcePath,datasets){
   }
 }
 
+/**
+ * 获取数据源列表
+ * @returns {Promise.<Datasources>}
+ */
+function getDatasources(){
+  try {
+    return SDatasource.getDatasources()
+  } catch (error) {
+    console.error(e)
+  }
+}
+
 export {
   createDatasource,
   // openDatasource,
@@ -121,4 +133,5 @@ export {
   deleteDatasource,
   removeDatasetByName,
   copyDataset,
+  getDatasources,
 }

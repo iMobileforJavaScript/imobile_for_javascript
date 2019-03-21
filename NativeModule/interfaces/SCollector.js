@@ -125,6 +125,14 @@ async function remove(id, layerPath) {
   }
 }
 
+async function removeByIds(ids = [], layerPath) {
+  try {
+    return Collector.removeByIds(ids, layerPath)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 export default {
   setStyle,
   getStyle,
@@ -137,4 +145,5 @@ export default {
   cancel,
   addGPSPoint,
   remove,
+  removeByIds,
 }
