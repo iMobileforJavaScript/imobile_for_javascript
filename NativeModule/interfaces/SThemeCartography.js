@@ -594,6 +594,45 @@ modifyGraduatedSymbolThemeMap = (params) => {
   }
 }
 
+/**
+ * 获取点密度专题图表达式
+ * @param params
+ */
+getDotDensityExpression = (params) => {
+  try {
+    return SThemeCartography.getDotDensityExpression(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取点密度专题图单点代表值
+ * @param params
+ * @returns {*}
+ */
+getDotDensityValue = (params) => {
+  try {
+    return SThemeCartography.getDotDensityValue(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取点密度专题图的点大小
+ * @param params
+ * @returns {Promise<void>}
+ */
+getDotDensityDotSize= (params) => {
+  try {
+    return SThemeCartography.getDotDensityDotSize(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+
 export default {
   //单值
   createThemeUniqueMap,
@@ -640,6 +679,9 @@ export default {
   //点密度专题图
   createDotDensityThemeMap,
   modifyDotDensityThemeMap,
+  getDotDensityExpression,
+  getDotDensityValue,
+  getDotDensityDotSize,
   //等级符号专题图
   createGraduatedSymbolThemeMap,
   modifyGraduatedSymbolThemeMap,

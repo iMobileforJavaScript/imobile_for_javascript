@@ -2034,7 +2034,9 @@ public class SMap extends ReactContextBaseJavaModule {
                 String datasetName = datasetNames.getString(i);
                 Dataset dataset = datasource.getDatasets().get(datasetName);
 
-
+                if (dataset == null) {
+                    continue;
+                }
                 if (dataset.getType() == DatasetType.REGION || dataset.getType() == DatasetType.REGION3D) {
                     datasets_region.add(dataset);
                 } else if (dataset.getType() == DatasetType.LINE || dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D
