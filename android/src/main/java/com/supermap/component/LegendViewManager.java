@@ -1,4 +1,4 @@
-package com.supermap.rnsupermap;
+package com.supermap.component;
 
 import com.supermap.RNUtils.N_R_EventSender;
 import com.supermap.RNUtils.RNLegendView;
@@ -7,6 +7,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.supermap.mapping.Legend;
 import com.supermap.mapping.Map;
+import com.supermap.rnsupermap.JSMap;
 
 /**
  * Created by will on 2016/9/6.

@@ -3,6 +3,8 @@
  */
 package com.supermap.interfaces.mapping;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -36,6 +38,7 @@ import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.Legend;
+import com.supermap.mapping.LegendItem;
 import com.supermap.mapping.LegendView;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
@@ -47,6 +50,7 @@ import com.supermap.smNative.SMSymbol;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -2520,12 +2524,18 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            Legend lengend = new Legend(map);
-            LegendView legendView = new LegendView(context);
-            legendView.setRowHeight(5);
-            legendView.setTextSize(10);
-            legendView.setTextColor(android.graphics.Color.RED);
-            lengend.connectLegendView(legendView);
+            Legend lengend = map.getLegend();
+            LegendItem legendItem = new LegendItem();
+            FileInputStream in = null;
+            try {
+                in = new FileInputStream(rootPath+"/Pictures/Screenshots/aa.png");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            Bitmap bitmap = BitmapFactory.decodeStream(in);
+            legendItem.setBitmap(bitmap);
+            legendItem.setCaption("测试");
+            lengend.addUserDefinedLegendItem(legendItem);
             sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
@@ -2545,7 +2555,6 @@ public class SMap extends ReactContextBaseJavaModule {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
             mapControl.getEditHistory().addMapHistory();
-
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

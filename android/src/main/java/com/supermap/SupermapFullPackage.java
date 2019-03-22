@@ -14,7 +14,9 @@ import com.supermap.interfaces.mapping.SMap;
 import com.supermap.interfaces.SScene;
 import com.supermap.interfaces.*;
 import com.supermap.interfaces.iServer.SOnlineService;
+import com.supermap.component.SMLegendView;
 import com.supermap.rnsupermap.*;
+import com.supermap.component.LegendViewManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +36,7 @@ public class SupermapFullPackage implements ReactPackage {
         return Arrays.<ViewManager>asList(
                 new MapViewManager(),new LegendViewManager(),
                 new LayerListViewManager(),new ScaleViewManager(),new CallOutManager()
-                ,new SceneViewManager(), new SMSymbolTable()
+                ,new SceneViewManager(), new SMSymbolTable(),new SMLegendView()
         );
     }
 
