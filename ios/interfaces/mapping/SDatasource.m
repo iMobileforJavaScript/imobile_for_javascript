@@ -108,4 +108,32 @@ RCT_REMAP_METHOD(deleteDatasource, deleteDatasource:(NSString *)path resolver:(R
         reject(@"Datasource", exception.reason, nil);
     }
 }
+
+#pragma mark 获取数据源列表
+RCT_REMAP_METHOD(getDatasources, getDatasourcesWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Workspace* workspace = [SMap singletonInstance].smMapWC.workspace;
+        Datasources* datasources = workspace.datasources;
+        
+        NSMutableArray* dsList = [[NSMutableArray alloc] init];
+        for (int i = 0; i < datasources.count; i++) {
+            NSMutableDictionary* dicInfo = [[NSMutableDictionary alloc] init];
+            Datasource* ds = [datasources get:i];
+            DatasourceConnectionInfo* info = ds.datasourceConnectionInfo;
+            [dicInfo setObject:info.alias forKey:@"alias"];
+            [dicInfo setObject:[NSNumber numberWithInt:info.engineType] forKey:@"engineType"];
+            [dicInfo setObject:info.server forKey:@"server"];
+            [dicInfo setObject:info.driver forKey:@"driver"];
+            [dicInfo setObject:info.user forKey:@"user"];
+            [dicInfo setObject:[NSNumber numberWithBool:info.readOnly] forKey:@"readOnly"];
+            [dicInfo setObject:info.password forKey:@"password"];
+            
+            [dsList addObject:dicInfo];
+        }
+            
+        resolve(dsList);
+    } @catch (NSException *exception) {
+        reject(@"Datasource", exception.reason, nil);
+    }
+}
 @end

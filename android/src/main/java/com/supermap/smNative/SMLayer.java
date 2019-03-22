@@ -131,6 +131,7 @@ public class SMLayer {
         if (dataset != null && intType >= 0) { // 没有数据集的Layer是LayerGroup
             wMap.putInt("type", intType);
             wMap.putString("datasetName", dataset.getName());
+            wMap.putString("datasourceAlias", dataset.getDatasource().getConnectionInfo().getAlias());
         } else {
             wMap.putString("type", "layerGroup");
         }
