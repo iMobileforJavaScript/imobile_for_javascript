@@ -1702,8 +1702,8 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void closeWorkspace(Promise promise) {
         try {
-            getCurrentActivity().runOnUiThread(new DisposeThread(promise));
             LabelHelper.getInstence().closePage();
+            getCurrentActivity().runOnUiThread(new DisposeThread(promise));
         } catch (Exception e) {
             promise.reject(e);
         }

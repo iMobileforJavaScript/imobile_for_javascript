@@ -4,6 +4,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.supermap.data.Dataset;
 import com.supermap.data.GeoStyle;
@@ -344,6 +345,32 @@ public class SCollector extends ReactContextBaseJavaModule {
             Recordset recordset = layer.getSelection().toRecordset();
             recordset.seekID(id);
             boolean result = recordset.delete();
+            recordset.dispose();
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 删除对象
+     * @param ids
+     * @param promise
+     */
+    @ReactMethod
+    public void removeByIds(ReadableArray ids, String layerPath, Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+            Recordset recordset = layer.getSelection().toRecordset();
+
+            boolean result = true;
+            for (int i = 0; i < ids.size(); i++) {
+                recordset.seekID(ids.getInt(i));
+                result = result && recordset.delete();
+            }
+
             recordset.dispose();
             sMap.getSmMapWC().getMapControl().getMap().refresh();
             promise.resolve(result);

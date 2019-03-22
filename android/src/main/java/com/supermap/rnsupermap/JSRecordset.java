@@ -244,13 +244,13 @@ public class JSRecordset extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getFieldInfosArray(String recordsetId, int count, int size, Promise promise){
         try{
-            Recordset recordset = m_RecordsetList.get(recordsetId);
-
-            recordset.moveFirst();
-
-            WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, count, size);
-
-            promise.resolve(recordArray);
+//            Recordset recordset = m_RecordsetList.get(recordsetId);
+//
+//            recordset.moveFirst();
+//
+//            WritableArray recordArray = JsonUtil.recordsetToMap(recordset, count, size);
+//
+//            promise.resolve(recordArray);
         }catch (Exception e){
             promise.reject(e);
         }
@@ -264,10 +264,10 @@ public class JSRecordset extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getFieldInfo(String recordsetId, Promise promise){
         try{
-            Recordset recordset = m_RecordsetList.get(recordsetId);
-            WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, 1);
-
-            promise.resolve(recordArray);
+//            Recordset recordset = m_RecordsetList.get(recordsetId);
+//            WritableArray recordArray = JsonUtil.recordsetToMap(recordset, 0, 1);
+//
+//            promise.resolve(recordArray);
         }catch (Exception e){
             promise.reject(e);
         }

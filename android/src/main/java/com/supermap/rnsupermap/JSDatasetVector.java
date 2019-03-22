@@ -931,13 +931,13 @@ public class JSDatasetVector extends JSDataset {
     @ReactMethod
     public void getFieldInfosArray(String dataVectorId, int count, int size, Promise promise){
         try{
-            Recordset recordset = getObjFromList(dataVectorId).getRecordset(false, CursorType.DYNAMIC);
-
-            recordset.moveFirst();
-
-            WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, count, size);
-            recordset.dispose();
-            promise.resolve(recordArray);
+//            Recordset recordset = getObjFromList(dataVectorId).getRecordset(false, CursorType.DYNAMIC);
+//
+//            recordset.moveFirst();
+//
+//            WritableArray recordArray = JsonUtil.recordsetToMap(recordset, count, size);
+//            recordset.dispose();
+//            promise.resolve(recordArray);
         }catch (Exception e){
             promise.reject(e);
         }

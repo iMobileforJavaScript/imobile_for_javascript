@@ -21,6 +21,9 @@ NSString * const ONLINE_SERVICE_UPLOADING = @"com.supermap.RN.Mapcontrol.online_
 NSString * const ONLINE_SERVICE_UPLOADED = @"com.supermap.RN.Mapcontrol.online_service_uploaded";
 NSString * const ONLINE_SERVICE_UPLOADFAILURE = @"com.supermap.RN.Mapcontrol.online_service_uploadfailure";
 
+/** 消息服务 **/
+NSString * const MESSAGE_SERVICE_RECEIVE = @"com.supermap.RN.Mapcontrol.message_service_receive";
+
 /** 量算 **/
 NSString * const MEASURE_LENGTH = @"com.supermap.RN.Mapcontrol.length_measured";
 NSString * const MEASURE_AREA = @"com.supermap.RN.Mapcontrol.area_measured";

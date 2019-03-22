@@ -17,6 +17,9 @@ extern NSString* const ONLINE_SERVICE_DOWNLOADFAILURE;
 extern NSString* const ONLINE_SERVICE_UPLOADING;
 extern NSString* const ONLINE_SERVICE_UPLOADED;
 extern NSString* const ONLINE_SERVICE_UPLOADFAILURE;
+
+extern NSString* const MESSAGE_SERVICE_RECEIVE;
+
 extern NSString* const MEASURE_LENGTH;
 extern NSString* const MEASURE_AREA;
 extern NSString* const MEASURE_ANGLE;

@@ -93,6 +93,7 @@
     if (layer.dataset != nil) {
         [dictionary setValue:[NSNumber numberWithInteger:layer.dataset.datasetType] forKey:@"type"];
         [dictionary setValue:datasetName forKey:@"datasetName"];
+        [dictionary setValue:layer.dataset.datasource.datasourceConnectionInfo.alias forKey:@"datasourceAlias"];
     } else {
         [dictionary setValue:@"layerGroup" forKey:@"type"];
     }
@@ -135,7 +136,7 @@
     
     Recordset* recordSet = [dv recordset:false cursorType:STATIC];
     long nCount = recordSet.recordCount > size ? size : recordSet.recordCount;
-    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet page:page size:nCount];
+    NSMutableDictionary* dic = [NativeUtil recordsetToDictionary:recordSet page:page size:nCount];
     [recordSet dispose];
     return dic;
 }
@@ -147,7 +148,7 @@
     
     [recordSet moveFirst];
     long nCount = recordSet.recordCount > size ? size : recordSet.recordCount;
-    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet page:page size:nCount]; // recordSet已经dispose了
+    NSMutableDictionary* dic = [NativeUtil recordsetToDictionary:recordSet page:page size:nCount]; // recordSet已经dispose了
     
     [recordSet dispose];
     [selection dispose];
@@ -174,7 +175,7 @@
     Recordset* recordSet = [dv query:qp];
     
     [recordSet moveFirst];
-    NSMutableDictionary* dic = [NativeUtil recordsetToJsonArray:recordSet page:0 size:recordSet.recordCount]; // recordSet已经dispose了
+    NSMutableDictionary* dic = [NativeUtil recordsetToDictionary:recordSet page:0 size:recordSet.recordCount]; // recordSet已经dispose了
     
     [recordSet dispose];
     recordSet = nil;
@@ -208,7 +209,7 @@
     return targetLayer;
 }
 
-+ (NSArray *)searchLayerAttribute:(NSString *)path params:(NSDictionary *)params page:(int *)page size:(int *)size {
++ (NSMutableDictionary *)searchLayerAttribute:(NSString *)path params:(NSDictionary *)params page:(int *)page size:(int *)size {
     NSString* filter = [params objectForKey:@"filter"];
     NSString* key = [params objectForKey:@"key"];
     
@@ -241,26 +242,26 @@
     }
     
     [recordset moveFirst];
-    NSArray* arr = [NativeUtil recordsetToJsonArray:recordset page:page size:size]; // recordSet已经dispose了
+    NSMutableDictionary* dic = [NativeUtil recordsetToDictionary:recordset page:page size:size]; // recordSet已经dispose了
     
     [recordset dispose];
     recordset = nil;
-    return arr;
+    return dic;
 }
 
-+ (NSMutableArray *)searchSelectionAttribute:(NSString *)path searchKey:(NSString *)searchKey page:(int)page size:(int)size {
++ (NSMutableDictionary *)searchSelectionAttribute:(NSString *)path searchKey:(NSString *)searchKey page:(int)page size:(int)size {
     Layer* layer = [self findLayerByPath:path];
     Selection* selection = [layer getSelection];
     Recordset* recordSet = selection.toRecordset;
     
     [recordSet moveFirst];
     long nCount = recordSet.recordCount > size ? size : recordSet.recordCount;
-    NSMutableArray* arr = [NativeUtil recordsetToJsonArray:recordSet page:page size:nCount filterKey:searchKey]; // recordSet已经dispose了
+    NSMutableDictionary* dic = [NativeUtil recordsetToDictionary:recordSet page:page size:nCount filterKey:searchKey]; // recordSet已经dispose了
     
     [recordSet dispose];
     [selection dispose];
     recordSet = nil;
-    return arr;
+    return dic;
 }
 
 @end

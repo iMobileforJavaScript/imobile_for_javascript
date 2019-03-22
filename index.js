@@ -165,7 +165,6 @@ import ElementPolygon from './NativeModule/ElementPolygon'
 
 import SpeechManager from './NativeModule/SpeechManager'
 import OnlineService from './NativeModule/OnlineService'
-
 import Environment from './NativeModule/Environment'
 /*
  import Datasets from './NativeModule/Datasets.js';
@@ -184,6 +183,7 @@ import {
   SCartography,
   SThemeCartography,
   SOnlineService,
+  SMessageService
 } from './NativeModule/interfaces'
 let SMCollectorType = NativeModules.SCollectorType;
 
@@ -370,4 +370,7 @@ export {
   SThemeCartography,
   /*在线模块*/
   SOnlineService,
+
+  /**消息服务*/
+  SMessageService
 };

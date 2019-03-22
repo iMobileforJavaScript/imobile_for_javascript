@@ -1,23 +1,31 @@
 package com.supermap.interfaces.mapping;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.data.Dataset;
+import com.supermap.data.DatasetVector;
 import com.supermap.data.Datasets;
 import com.supermap.data.Datasource;
 import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.Datasources;
+import com.supermap.data.EncodeType;
+import com.supermap.data.EngineType;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Map;
 import com.supermap.smNative.SMDatasource;
 import com.supermap.smNative.SMLayer;
+
+import java.io.File;
 
 public class SDatasource extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SDatasource";
@@ -154,6 +162,136 @@ public class SDatasource extends ReactContextBaseJavaModule {
             boolean result = FileUtil.deleteFile(path);
 
             promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 从不同数据源中复制数据机
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void copyDataset(String dataSourcePath, String toDataSourcePath, ReadableArray datasets, Promise promise) {
+        try {
+            File tempFile = new File(dataSourcePath.trim());
+            File tempFile2 = new File(toDataSourcePath.trim());
+            String[] strings = tempFile.getName().split("\\.");
+            String[] strings2 = tempFile2.getName().split("\\.");
+            String udbName = strings[0];
+            String udbName2 = strings2[0];
+            Datasource datasource;
+            Datasource toDataSource;
+            Workspace workspace = null;
+            SMap sMap = SMap.getInstance();
+            DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
+            DatasourceConnectionInfo datasourceconnection2 = new DatasourceConnectionInfo();
+            datasourceconnection.setEngineType(EngineType.UDB);
+            datasourceconnection.setServer(dataSourcePath);
+            datasourceconnection.setAlias(udbName);
+            datasourceconnection2.setEngineType(EngineType.UDB);
+            datasourceconnection2.setServer(toDataSourcePath);
+            datasourceconnection2.setAlias(udbName2);
+            if(sMap.getSmMapWC().getMapControl()==null){
+                workspace=new Workspace();
+                datasource=workspace.getDatasources().open(datasourceconnection);
+                toDataSource=workspace.getDatasources().open(datasourceconnection2);
+                for (int i = 0; i < datasets.size(); i++) {
+                    DatasetVector datasetVector= (DatasetVector) datasource.getDatasets().get(datasets.getString(i));
+                    String datasetName=toDataSource.getDatasets().getAvailableDatasetName(datasetVector.getName());
+                    toDataSource.copyDataset(datasetVector,datasetName,EncodeType.INT32);
+                }
+            }
+            workspace.dispose();
+            datasourceconnection.dispose();
+            datasourceconnection2.dispose();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     *  根据名称移除UDB中数据集
+     *  @param path UDB在内存中路径
+     * @param promise
+     */
+    @ReactMethod
+    public void removeDatasetByName(String path,String name, Promise promise) {
+        try {
+            File tempFile = new File(path.trim());
+            String[] strings = tempFile.getName().split("\\.");
+            String udbName = strings[0];
+            Datasource datasource;
+            Workspace workspace = null;
+            SMap sMap = SMap.getInstance();
+            DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
+
+//            if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
+//                sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().close(udbName);
+//            }
+            if(sMap.getSmMapWC().getMapControl()==null){
+                workspace=new Workspace();
+                datasourceconnection.setEngineType(EngineType.UDB);
+                datasourceconnection.setServer(path);
+                datasourceconnection.setAlias(udbName);
+                datasource=workspace.getDatasources().open(datasourceconnection);
+                datasource.getDatasets().delete(name);
+            }else {
+                sMap.getSmMapWC().getMapControl().getMap().setWorkspace(sMap.getSmMapWC().getWorkspace());
+                if (sMap.getSmMapWC().getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
+                    datasource = sMap.getSmMapWC().getMapControl().getMap().getWorkspace().getDatasources().get(udbName);
+                    datasource.getDatasets().delete(name);
+                } else {
+                    datasourceconnection.setEngineType(EngineType.UDB);
+                    datasourceconnection.setServer(path);
+                    datasourceconnection.setAlias(udbName);
+                    datasource = sMap.getSmMapWC().getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
+                    datasource.getDatasets().delete(name);
+                }
+            }
+            if(workspace!=null){
+                workspace.dispose();
+            }
+            datasourceconnection.dispose();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 获取数据源列表
+     * @param path
+     * @param name
+     * @param promise
+     */
+    @ReactMethod
+    public void getDatasources(String path,String name, Promise promise) {
+        try {
+            WritableArray dsArr = Arguments.createArray();
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+
+            for (int i = 0; i < datasources.getCount(); i++) {
+                Datasource datasource = datasources.get(i);
+                DatasourceConnectionInfo info = datasource.getConnectionInfo();
+
+                WritableMap dataInfo = Arguments.createMap();
+                dataInfo.putString("alias", info.getAlias());
+                dataInfo.putInt("engineType", info.getEngineType().value());
+                dataInfo.putString("server", info.getServer());
+                dataInfo.putString("driver", info.getDriver());
+                dataInfo.putString("user", info.getUser());
+                dataInfo.putBoolean("readOnly", info.isReadOnly());
+                dataInfo.putString("password", info.getPassword());
+
+                dsArr.pushMap(dataInfo);
+            }
+
+            promise.resolve(dsArr);
         } catch (Exception e) {
             promise.reject(e);
         }

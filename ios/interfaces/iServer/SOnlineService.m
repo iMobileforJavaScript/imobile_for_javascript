@@ -66,6 +66,41 @@ RCT_REMAP_METHOD(loginWithPhone, loginByPhoneNumber:(NSString *)phoneNumber pass
         reject(kTAG, @"login failed", nil);
     }
 }
+
+#pragma mark ---------------------------- getUserInfo
+RCT_REMAP_METHOD(getUserInfo, getUserInfoResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [m_onlineService getAccountInfo:^(NSString *nickname, NSString *phoneNumber, NSString *email, NSString *error) {
+            if (error == nil) {
+                
+                resolve(@{@"nickname":nickname,@"phoneNumber":phoneNumber,@"email":email});
+            } else {
+                NSNumber* number =[NSNumber numberWithBool:NO];
+                resolve(number);
+            }
+        }];
+    } @catch (NSException *exception) {
+        reject(kTAG, @"login failed", nil);
+    }
+}
+
+#pragma mark ---------------------------- getUserInfo
+RCT_REMAP_METHOD(getUserInfoBy, getUserInfoBy:(NSString *)name type:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [m_onlineService getAccountInfoBy:name type:type completionHandler:^(NSString *userId, NSString* nickName,NSString *error) {
+            if (error == nil) {
+                
+                resolve(@[userId,nickName]);
+            } else {
+                NSNumber* number =[NSNumber numberWithBool:NO];
+                resolve(number);
+            }
+        }];
+    } @catch (NSException *exception) {
+        reject(kTAG, @"login failed", nil);
+    }
+}
+
 #pragma mark ---------------------------- logout
 RCT_REMAP_METHOD(logout,logoutWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -624,23 +659,23 @@ RCT_REMAP_METHOD(bindEmail,email:(NSString*)email resolver:(RCTPromiseResolveBlo
 # pragma mark ---------------------------- 下载协议
 - (void)bytesWritten:(int64_t) bytesWritten totalBytesWritten:(int64_t) totalBytesWritten
 totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
-    @try {
-        NSNumber* written = [NSNumber numberWithLongLong:totalBytesWritten];
-        NSNumber* total = [NSNumber numberWithLongLong:totalBytesExpectedToWrite];
-        float progress = [written floatValue] / [total floatValue] * 100;
-        //        float progress = totalBytesWritten / totalBytesExpectedToWrite;
-        NSLog(@"downloading: %f", progress);
-        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADING
-                           body:@{
-                                  @"progress": [NSNumber numberWithFloat:progress],
-                                  @"downloaded": [NSNumber numberWithLongLong:totalBytesWritten],
-                                  @"total": [NSNumber numberWithLongLong:totalBytesExpectedToWrite],
-                                  @"id":downloadId
-                                  }];
-    } @catch (NSException *exception) {
-        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADFAILURE
-                           body:exception.reason];
-    }
+//    @try {
+//        NSNumber* written = [NSNumber numberWithLongLong:totalBytesWritten];
+//        NSNumber* total = [NSNumber numberWithLongLong:totalBytesExpectedToWrite];
+//        float progress = [written floatValue] / [total floatValue] * 100;
+//        //        float progress = totalBytesWritten / totalBytesExpectedToWrite;
+//        NSLog(@"downloading: %f", progress);
+//        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADING
+//                           body:@{
+//                                  @"progress": [NSNumber numberWithFloat:progress],
+//                                  @"downloaded": [NSNumber numberWithLongLong:totalBytesWritten],
+//                                  @"total": [NSNumber numberWithLongLong:totalBytesExpectedToWrite],
+//                                  @"id":downloadId
+//                                  }];
+//    } @catch (NSException *exception) {
+//        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADFAILURE
+//                           body:exception.reason];
+//    }
 }
 
 - (void)downloadResult:(NSString*)error {

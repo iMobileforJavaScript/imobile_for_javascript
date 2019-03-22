@@ -43,12 +43,14 @@
     }
 }
 
-+(NSMutableArray *)recordsetToJsonArray:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size {
-    return [self recordsetToJsonArray:recordset page:page size:size filterKey:nil];
++(NSMutableDictionary *)recordsetToDictionary:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size {
+    return [self recordsetToDictionary:recordset page:page size:size filterKey:nil];
 }
 
-+(NSMutableArray *)recordsetToJsonArray:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size filterKey:(NSString *)filterKey {
++(NSMutableDictionary *)recordsetToDictionary:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size filterKey:(NSString *)filterKey {
     FieldInfos* fieldInfos = [recordset fieldInfos];
+    
+    NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
     NSMutableArray* recordArray = [[NSMutableArray alloc] init];
     
     // 获取recordset中fieldInfo的属性
@@ -78,31 +80,33 @@
     long currentIndex = page * size;
     long endIndex = currentIndex + size;
     
-    if (currentIndex >= recordset.recordCount) {
-        return recordArray;
-    }
-    [recordset moveTo:currentIndex];
+    [dic setObject:[NSNumber numberWithInteger:recordset.recordCount] forKey:@"total"];
+    [dic setObject:[NSNumber numberWithInteger:page] forKey:@"currentPage"];
     
-    // 获取所有recordset中fieldInfo属性对应的值
-    while(( ![recordset isEOF] && currentIndex < endIndex ) ){
-    //while(recordset.recordCount > 0 && ![recordset isEOF]){
-        NSMutableArray* arr;
+    if (currentIndex < recordset.recordCount) {
+        [recordset moveTo:currentIndex];
         
-        if (filterKey != nil && ![filterKey isEqualToString:@""]) {
-            arr = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics filterKey:filterKey];
-        } else {
-            arr = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics];
+        // 获取所有recordset中fieldInfo属性对应的值
+        while(( ![recordset isEOF] && currentIndex < endIndex ) ){
+            //while(recordset.recordCount > 0 && ![recordset isEOF]){
+            NSMutableArray* arr;
+            
+            if (filterKey != nil && ![filterKey isEqualToString:@""]) {
+                arr = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics filterKey:filterKey];
+            } else {
+                arr = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics];
+            }
+            
+            if (arr != nil) {
+                [recordArray addObject:arr];
+                currentIndex++;
+            }
+            [recordset moveNext];
         }
-        
-        if (arr != nil) {
-            [recordArray addObject:arr];
-            currentIndex++;
-        }
-        [recordset moveNext];
     }
-//    [recordset dispose];
-//    recordset = nil;
-    return recordArray;
+    [dic setObject:recordArray forKey:@"data"];
+    
+    return dic;
 }
 
 +(NSMutableArray *)parseRecordset:(Recordset *)recordset fieldsDics:(NSMutableDictionary*)fieldsDics {

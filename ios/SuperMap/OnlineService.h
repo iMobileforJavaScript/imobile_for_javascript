@@ -285,7 +285,7 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
 通过昵称获取用户唯一id
  @param nickname 昵称
  */
--(void)getUserIdByNickname:(NSString*)nickname completionHandler:(void(^)(NSString* userId,NSString* error))completionHandler;
+-(void)getAccountInfoBy:(NSString*)name type:(int)type completionHandler:(void(^)(NSString* userId,NSString* nickName, NSString* error))completionHandler;
 /**
  获取个人用户信息
  */

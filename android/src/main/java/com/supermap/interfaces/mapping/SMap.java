@@ -446,22 +446,30 @@ public class SMap extends ReactContextBaseJavaModule {
             String[] strings = tempFile.getName().split("\\.");
             String udbName = strings[0];
             Datasource datasource;
-
+            Workspace workspace = null;
             sMap = getInstance();
-            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
             DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
+
 //            if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
 //                sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().close(udbName);
 //            }
-            if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
-                datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().get(udbName);
-            } else {
+            if(sMap.smMapWC.getMapControl()==null){
+                workspace=new Workspace();
                 datasourceconnection.setEngineType(EngineType.UDB);
                 datasourceconnection.setServer(path);
                 datasourceconnection.setAlias(udbName);
-                datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
+                datasource=workspace.getDatasources().open(datasourceconnection);
+            }else {
+                sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
+                if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
+                    datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().get(udbName);
+                } else {
+                    datasourceconnection.setEngineType(EngineType.UDB);
+                    datasourceconnection.setServer(path);
+                    datasourceconnection.setAlias(udbName);
+                    datasource = sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
+                }
             }
-
             Datasets datasets = datasource.getDatasets();
             int count = datasets.getCount();
 
@@ -472,6 +480,9 @@ public class SMap extends ReactContextBaseJavaModule {
                 WritableMap writeMap = Arguments.createMap();
                 writeMap.putString("title",name);
                 arr.pushMap(writeMap);
+            }
+            if(workspace!=null){
+                workspace.dispose();
             }
             datasourceconnection.dispose();
             promise.resolve(arr);

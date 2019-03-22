@@ -131,6 +131,7 @@ public class SMLayer {
         if (dataset != null && intType >= 0) { // 没有数据集的Layer是LayerGroup
             wMap.putInt("type", intType);
             wMap.putString("datasetName", dataset.getName());
+            wMap.putString("datasourceAlias", dataset.getDatasource().getConnectionInfo().getAlias());
         } else {
             wMap.putString("type", "layerGroup");
         }
@@ -165,17 +166,17 @@ public class SMLayer {
         return index;
     }
 
-    public static WritableArray getLayerAttribute(String path, int page, int size) {
+    public static WritableMap getLayerAttribute(String path, int page, int size) {
         Layer layer = findLayerByPath(path);
         DatasetVector dv = (DatasetVector) layer.getDataset();
 
         Recordset recordset = dv.getRecordset(false, CursorType.DYNAMIC);
         int nCount = recordset.getRecordCount() > size ? size : recordset.getRecordCount();
-        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, page, nCount);
-        return recordArray;
+        WritableMap data = JsonUtil.recordsetToMap(recordset, page, nCount);
+        return data;
     }
 
-    public static WritableArray getSelectionAttributeByLayer(String path, int page, int size) {
+    public static WritableMap getSelectionAttributeByLayer(String path, int page, int size) {
         Layer layer = findLayerByPath(path);
         Selection selection = layer.getSelection();
 
@@ -183,14 +184,14 @@ public class SMLayer {
         recordset.moveFirst();
 
         int nCount = recordset.getRecordCount() > size ? size : recordset.getRecordCount();
-        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, page, nCount);
+        WritableMap data = JsonUtil.recordsetToMap(recordset, page, nCount);
 
         recordset.dispose();
 
-        return recordArray;
+        return data;
     }
 
-    public static WritableArray getAttributeByLayer(String path, ReadableArray ids) {
+    public static WritableMap getAttributeByLayer(String path, ReadableArray ids) {
         Layer layer = findLayerByPath(path);
         String filter = "";
 
@@ -210,11 +211,11 @@ public class SMLayer {
         recordset.moveFirst();
 
         int nCount = recordset.getRecordCount();
-        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, 0, nCount);
+        WritableMap data = JsonUtil.recordsetToMap(recordset, 0, nCount);
 
         recordset.dispose();
 
-        return recordArray;
+        return data;
     }
 
     public static String getLayerPath(Layer layer) {
@@ -225,7 +226,7 @@ public class SMLayer {
         return path;
     }
 
-    public static WritableArray searchLayerAttribute(String layerPath, ReadableMap params, int start, int number) {
+    public static WritableMap searchLayerAttribute(String layerPath, ReadableMap params, int start, int number) {
         String filter = params.hasKey("filter") ? params.getString("filter") : "";
         String key = params.hasKey("key") ? params.getString("key") : "";
 
@@ -263,13 +264,13 @@ public class SMLayer {
             recordset = ((DatasetVector) layer.getDataset()).getRecordset(false, CursorType.STATIC);
         }
 //            int nCount = recordset.getRecordCount()>20 ?20:recordset.getRecordCount();
-        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, start, number);
+        WritableMap data = JsonUtil.recordsetToMap(recordset, start, number);
         recordset.dispose();
 
-        return recordArray;
+        return data;
     }
 
-    public static WritableArray searchSelectionAttribute(String path, String searchKey, int page, int size) {
+    public static WritableMap searchSelectionAttribute(String path, String searchKey, int page, int size) {
         Layer layer = findLayerByPath(path);
         Selection selection = layer.getSelection();
 
@@ -277,10 +278,10 @@ public class SMLayer {
         recordset.moveFirst();
 
         int nCount = recordset.getRecordCount() > size ? size : recordset.getRecordCount();
-        WritableArray recordArray = JsonUtil.recordsetToJsonArray(recordset, page, nCount, searchKey);
+        WritableMap data = JsonUtil.recordsetToMap(recordset, page, nCount, searchKey);
 
         recordset.dispose();
 
-        return recordArray;
+        return data;
     }
 }

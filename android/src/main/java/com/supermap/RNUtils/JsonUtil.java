@@ -82,18 +82,19 @@ public class JsonUtil {
         return r;
     }
 
-    public static WritableArray recordsetToJsonArray(Recordset recordset, int page, int size) {
-        return recordsetToJsonArray(recordset, page, size, null);
+    public static WritableMap recordsetToMap(Recordset recordset, int page, int size) {
+        return recordsetToMap(recordset, page, size, null);
     }
 
     /**
-     * 将记录集recordset转换成JSON数组（非GeoJSON）
+     * 将记录集recordset转换成Map
      * @param recordset 动态记录集
-     * @param page 页码
-     * @param size 每页的数量
+     * @param page      页码
+     * @param size      每页的数量
+     * @param filterKey 过滤条件
      * @return
      */
-    public static WritableArray recordsetToJsonArray(Recordset recordset, int page, int size, String filterKey) {
+    public static WritableMap recordsetToMap(Recordset recordset, int page, int size, String filterKey) {
         //获取字段信息
         FieldInfos fieldInfos = recordset.getFieldInfos();
         Map<String, Map<String, Object>> fields = new HashMap<>();
@@ -111,36 +112,35 @@ public class JsonUtil {
         }
         //JS数组，存放
         WritableArray recordArray = Arguments.createArray();
+        WritableMap map = Arguments.createMap();
+
+        map.putInt("total", recordset.getRecordCount());
+        map.putInt("currentPage", page);
 
         // 计算分页，并移动到指定起始位置
         int currentIndex = page * size;
         int endIndex = currentIndex + size;
-        if (currentIndex >= recordset.getRecordCount()) {
-            return recordArray;
-        }
-        recordset.moveTo(currentIndex);
+        if (currentIndex < recordset.getRecordCount()) {
+            recordset.moveTo(currentIndex);
 
-        while (!recordset.isEmpty() && !recordset.isEOF() && currentIndex < endIndex)
-        {
-//            WritableMap recordsMap = parseRecordset(recordset, fields);
-//            recordArray.pushMap(recordsMap);
-            WritableArray recordArr;
-            if (filterKey != null && !filterKey.equals("")){
-                recordArr = parseRecordset(recordset, fields, filterKey);
-            } else {
-                recordArr = parseRecordset(recordset, fields);
+            while (!recordset.isEmpty() && !recordset.isEOF() && currentIndex < endIndex) {
+                WritableArray recordArr;
+                if (filterKey != null && !filterKey.equals("")){
+                    recordArr = parseRecordset(recordset, fields, filterKey);
+                } else {
+                    recordArr = parseRecordset(recordset, fields);
+                }
+
+                if (recordArr != null) {
+                    recordArray.pushArray(recordArr);
+                    currentIndex++;
+                }
+                recordset.moveNext();
             }
-
-            if (recordArr != null) {
-                recordArray.pushArray(recordArr);
-                currentIndex++;
-            }
-            recordset.moveNext();
         }
+        map.putArray("data", recordArray);
 
-//        recordset.dispose();
-
-        return recordArray;
+        return map;
     }
 
     private static WritableArray parseRecordset(Recordset recordset, Map<String, Map<String, Object>> fields) {
