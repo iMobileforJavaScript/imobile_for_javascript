@@ -24,4 +24,13 @@ typedef enum{
 -(void)BatchBegin;
 -(void)BatchEnd;
 -(void)dispose;
+-(BOOL)Undo:(int)nCount;
+-(BOOL)Redo:(int)nCount;
+-(int)getCount;
+-(int)getCurrentIndex;
+-(BOOL)Remove:(int)nIndex;
+-(BOOL)RemoveRange:(int)nIndex count:(int )nCount;
+-(BOOL)canRedo;
+-(BOOL)canUndo;
+-(BOOL)Clear;
 @end
