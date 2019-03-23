@@ -153,6 +153,7 @@
 	 */
 -(PrjCoordSys*) clone;
 
+-(BOOL)isSame:(PrjCoordSys*)prjCoordSys;
 /**
 	 *@brief  释放该对象所占用的资源。当调用该方法之后，此对象不再可用。
 	 */
