@@ -19,6 +19,7 @@ public class EventConst {
 
     /** 消息服务 **/
     public static final String MESSAGE_SERVICE_RECEIVE = "com.supermap.RN.Mapcontrol.message_service_receive";
+    public static final String MESSAGE_UNZIPEXTERNALDATA = "com.supermap.RN.Mapcontrol.message_unzipexternaldata";
 
     /** 量算 **/
     public static final String MEASURE_LENGTH = "com.supermap.RN.Mapcontrol.length_measured";
@@ -43,5 +44,6 @@ public class EventConst {
     public static final String SSCENE_SYMBOL = "com.supermap.RN.SMSceneControl.Scene_symbol";
     public static final String SSCENE_FAVORITE = "com.supermap.RN.SMSceneControl.Scene_favorite";
     public static final String SSCENE_CIRCLEFLY = "com.supermap.RN.SMSceneControl.Scene_circleFly";
+
 
 }
