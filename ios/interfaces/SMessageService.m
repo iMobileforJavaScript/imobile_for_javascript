@@ -222,6 +222,7 @@ RCT_REMAP_METHOD(startReceiveMessage, uuid:(NSString*)uuid  startReceiveMessageR
         }
         //异步消息发送
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            int n = 0;
             while (1) {
                 
                // NSLog(@"+++ receive +++ %@",[NSThread currentThread]);
@@ -235,9 +236,20 @@ RCT_REMAP_METHOD(startReceiveMessage, uuid:(NSString*)uuid  startReceiveMessageR
                 }else{
                    // NSLog(@"+++ receive  stop +++ %@",[NSThread currentThread]);
                     bStopRecieve = true;
+                    g_AMQPReceiver = nil;
                     break;
                 }
                 [NSThread sleepForTimeInterval:1];
+                
+                //一分钟重新连接一次：
+                if(n++ == 60){
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        [g_AMQPManager suspend];
+                        [g_AMQPManager resume];
+                    });
+                  
+                    n = 0;
+                }
             }
         });
         
