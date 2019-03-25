@@ -271,6 +271,14 @@ typedef enum{
      */
 -(BOOL) open:(NSString*) name;
 
+/**@brief  从指定名称的地图合并图层。
+ <p>   该指定名称为地图所关联的工作空间中的地图集合对象中的一个地图的名称，注意与地图的显示名称相区别。
+ @param  name 地图名称。
+ @param  bUseIfNeeded 需要时是否打开地图动态投影。
+ @return  成功则返回 true，否则返回 false。
+ */
+-(BOOL) addLayersFromMap:(NSString*)name withDynamicProjection:(BOOL)bUseIfNeeded;
+
  ///关闭当前地图。
 -(void) close;
 
