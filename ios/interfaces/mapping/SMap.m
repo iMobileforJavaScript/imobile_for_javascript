@@ -68,6 +68,26 @@ RCT_EXPORT_MODULE();
     sMap.smMapWC.mapControl.geometrySelectedDelegate = self;
 }
 
+#pragma mark getEnvironmentStatus 获取许可文件状态
+RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        LicenseStatus* status = [Environment getLicenseStatus];
+        NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+        
+        [dic setObject:[NSNumber numberWithBool:status.isActivated] forKey:@"isActivated"];
+        [dic setObject:[NSNumber numberWithBool:status.isLicenseValid] forKey:@"isLicenseValid"];
+        [dic setObject:[NSNumber numberWithBool:status.isLicenseExsit] forKey:@"isLicenseExist"];
+        [dic setObject:[NSNumber numberWithBool:status.isTrailLicense] forKey:@"isTrailLicense"];
+        [dic setObject:status.startDate forKey:@"startDate"];
+        [dic setObject:status.expireDate forKey:@"expireDate"];
+        [dic setObject:[NSString stringWithFormat:@"%ld", status.version] forKey:@"version"];
+        
+        resolve(dic);
+    } @catch (NSException *exception) {
+        reject(@"unZipFile", exception.reason, nil);
+    }
+}
+
 #pragma mark 刷新地图
 RCT_REMAP_METHOD(refreshMap, refreshMapWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
