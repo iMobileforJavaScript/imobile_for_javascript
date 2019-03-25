@@ -142,6 +142,8 @@
 -(BOOL)addLayer:(Layer*)layer;
 //插入图层
 -(BOOL)insertLayer:(int)index layer:(Layer*)layer;
+-(Layer*)insertLayer:(int)index withXML:(NSString*)layerXML;
+
 //删除图层
 -(BOOL)remove:(Layer*)layer;
 //删除分组

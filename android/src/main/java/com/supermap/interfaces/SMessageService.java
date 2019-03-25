@@ -1,5 +1,6 @@
 package com.supermap.interfaces;
 
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
@@ -20,6 +21,9 @@ import com.supermap.messagequeue.AMQPReceiver;
 import com.supermap.messagequeue.AMQPReturnMessage;
 import com.supermap.messagequeue.AMQPSender;
 import com.supermap.messagequeue.AMQPExchangeType;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class SMessageService extends ReactContextBaseJavaModule {
@@ -48,6 +52,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
         super(context);
         this.context = context;
         mReactContext = context;
+        com.supermap.messagequeue.Environment.initialization(context);
     }
 
     /**
@@ -77,6 +82,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
                 bRes = g_AMQPManager.declareExchange(sGroupExchange,AMQPExchangeType.DIRECT);
                 //构造AMQP发送端
                 g_AMQPSender = g_AMQPManager.newSender();
+
             }
 
             promise.resolve(bRes);
@@ -267,20 +273,30 @@ public class SMessageService extends ReactContextBaseJavaModule {
                 public void run(){
                     while (true){
                         if(g_AMQPReceiver!=null){
+                            Log.d("recieve thread", "running");
                             AMQPReturnMessage resMessage = g_AMQPReceiver.receiveMessage();
                             String sQueue = resMessage.getQueue();
                             String sMessage = resMessage.getMessage();
-                            if(sQueue!=null && sMessage!=null){
+                            if(!sQueue.isEmpty() && !sMessage.isEmpty()){
+                                Log.d("recieve thread", "Received ");
                                 WritableMap map = Arguments.createMap();
                                 map.putString("clientId",sQueue);
                                 map.putString("message",sMessage);
-                                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                        .emit(EventConst.MAP_DOUBLE_TAP, map);
+                                try {
+                                    JSONObject a = new JSONObject(map.toString());
+//                                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+//                                        .emit(EventConst.MAP_DOUBLE_TAP, map);
+                                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                            .emit(EventConst.MESSAGE_SERVICE_RECEIVE, map);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
                             bStopRecieve = false;
                         }else{
                             // NSLog(@"+++ receive  stop +++ %@",[NSThread currentThread]);
                             bStopRecieve = true;
+                            g_AMQPReceiver = null;
                             break;
                         }
 
@@ -299,18 +315,18 @@ public class SMessageService extends ReactContextBaseJavaModule {
 
 
             // NSLog(@"+++ receive +++ %@",[NSThread currentThread]);
-            if(g_AMQPReceiver!=null){
-                AMQPReturnMessage resMessage = g_AMQPReceiver.receiveMessage();
-                String sQueue = resMessage.getQueue();
-                String sMessage = resMessage.getMessage();
-
-                if (sQueue!=null && sMessage!=null){
-                    WritableMap map = Arguments.createMap();
-                    map.putString("clientId",sQueue);
-                    map.putString("message",sMessage);
-                    promise.resolve(map);
-                }
-            }
+//            if(g_AMQPReceiver!=null){
+//                AMQPReturnMessage resMessage = g_AMQPReceiver.receiveMessage();
+//                String sQueue = resMessage.getQueue();
+//                String sMessage = resMessage.getMessage();
+//
+//                if (sQueue!=null && sMessage!=null){
+//                    WritableMap map = Arguments.createMap();
+//                    map.putString("clientId",sQueue);
+//                    map.putString("message",sMessage);
+//                    promise.resolve(map);
+//                }
+//            }
 
             promise.resolve(bRes);
         } catch (Exception e) {

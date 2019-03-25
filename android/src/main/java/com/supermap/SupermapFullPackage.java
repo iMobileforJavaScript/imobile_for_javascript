@@ -188,7 +188,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new SDatasource(reactContext));
 
         modules.add(new SMFileUtil(reactContext));
-
+        modules.add(new SMessageService(reactContext));
         /*
         * 在线模块功能
         */
