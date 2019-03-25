@@ -9,6 +9,7 @@
 #import "SScene.h"
 #import "TouchUtil3D.h"
 
+#import "PoiSearchHelper.h"
 #import "LableHelper3D.h"
 #import "Constants.h"
 #import "SMSceneWC.h"
@@ -50,10 +51,13 @@ typedef enum{
     
 }SSceneTouchEvent;
 
-@interface SScene()<FlyHelper3DProgressDelegate,Analysis3DDelegate,LableHelper3DDelegate,Tracking3DDelegate>
+@interface SScene()<FlyHelper3DProgressDelegate,Analysis3DDelegate,LableHelper3DDelegate,Tracking3DDelegate,PoiSearchDelegate>
 {
     Camera defaultCamera;
     BOOL bHasCamera;
+    NSArray* poiInfos;
+    OnlinePOIInfo* firstPoint;
+    OnlinePOIInfo* secondPoint;
 }
 @end
 
@@ -328,6 +332,9 @@ RCT_REMAP_METHOD(setListener, setListener:(RCTPromiseResolveBlock)resolve reject
 //        initAnalysisHelper();
         [[AnalysisHelper3D sharedInstance] initializeWithSceneControl:sceneControl];
         [AnalysisHelper3D sharedInstance].delegate = self;
+        
+        [[PoiSearchHelper sharedInstance] initSceneControl:sceneControl];
+        [PoiSearchHelper sharedInstance].delegate = self;
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
@@ -803,6 +810,116 @@ RCT_REMAP_METHOD(setSelectable, name:(NSString*)name  bVisual:(BOOL)bVisual setS
         reject(@"SScene", exception.reason, nil);
     }
 }
+
+///**
+// *搜索关键字显示位置相关信息列表
+// * @param promise
+// */
+//
+//RCT_REMAP_METHOD(pointSearch, key:(NSString*)key  pointSearch:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//
+//        NSLog(@"+++++++");
+//        resolve(@(1));
+//    } @catch (NSException *exception) {
+//        reject(@"SScene", exception.reason, nil);
+//    }
+//}
+
+
+RCT_REMAP_METHOD(pointSearch, keyWords:(NSString*)keyWords pointSearch:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        [[PoiSearchHelper sharedInstance] poiSearch:keyWords];
+        resolve(@(1));
+    } @catch (NSException * exception){
+        reject(@"SScene",exception.reason, nil);
+    }
+}
+
+-(void)locations:(NSArray *)locations{
+    poiInfos=locations;
+    
+    NSMutableArray* arr = [[NSMutableArray alloc]initWithCapacity:1];
+    int count = locations.count;
+    for (int i = 0; i < count; i++) {
+        OnlinePOIInfo * onlinePoiInfo=[locations objectAtIndex:i];
+        NSString* name = onlinePoiInfo.name;
+        NSDictionary* map;
+        map = @{@"pointName":name};
+        [arr addObject:map];
+    }
+    [self sendEventWithName:POINTSEARCH_KEYWORDS body:arr];
+}
+
+/**
+ *初始化位置搜索
+ * @param promise
+ */
+RCT_REMAP_METHOD(initPointSearch, initPointSearch:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        [[PoiSearchHelper sharedInstance] initSceneControl:sceneControl];
+        resolve(@(1));
+    } @catch (NSException * exception){
+        reject(@"SScene",exception.reason, nil);
+    }
+}
+
+/**
+ *根据index获取位置并飞行到该位置
+ * @param promise
+ */
+RCT_REMAP_METHOD(toLocationPoint, index:(int)index toLocationPoint:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        sScene = [SScene singletonInstance];
+        Scene* scene = sScene.smSceneWC.sceneControl.scene;
+        [scene.trackingLayer3D clear];
+        OnlinePOIInfo *onlinePoiInfo=[poiInfos objectAtIndex:index];
+        [[PoiSearchHelper sharedInstance] toLocationPoint:index];
+        [scene refresh];
+        poiInfos=nil;
+        resolve(@(1));
+    } @catch (NSException * exception){
+        reject(@"SScene",exception.reason, nil);
+    }
+}
+
+/**
+ *记录起点与终点
+ * @param promise
+ */
+RCT_REMAP_METHOD(savePoint, index:(int)index pointType:(NSString*)type savePoint:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        if([type isEqualToString:@"firstPoint"]){
+            firstPoint=[poiInfos objectAtIndex:index];
+        }else if([type isEqualToString:@"secondPoint"]){
+            secondPoint=[poiInfos objectAtIndex:index];
+        }
+        resolve(@(1));
+    } @catch (NSException * exception){
+        reject(@"SScene",exception.reason, nil);
+    }
+}
+
+/**
+ *三维在线路径分析
+ * @param promise
+ */
+RCT_REMAP_METHOD(navigationLine,  navigationLine:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl=sScene.smSceneWC.sceneControl;
+        [[PoiSearchHelper sharedInstance] clearPoint:sceneControl];
+        [[PoiSearchHelper sharedInstance] navigationLine:firstPoint poiInfoEnd:secondPoint];
+        [sceneControl.scene refresh];
+        poiInfos=nil;
+        resolve(@(1));
+    } @catch (NSException * exception){
+        reject(@"SScene",exception.reason, nil);
+    }
+}
+
 /**
  * 场景放大缩小
  *
@@ -883,33 +1000,33 @@ RCT_REMAP_METHOD( getcompass,  getcompassResolver:(RCTPromiseResolveBlock)resolv
 }
 
 #pragma mark-查找
-/**
- * 搜索关键字显示位置相关信息列表
- *
- * @param promise
- */
-RCT_REMAP_METHOD(pointSearch, name:(NSString*)name  pointSearch:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-      
-        resolve(@(1));
-    } @catch (NSException *exception) {
-        reject(@"SScene", exception.reason, nil);
-    }
-}
-
-/**
- * 初始化位置搜索
- *
- * @param promise
- */
-RCT_REMAP_METHOD(pointSearch, pointSearch:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        
-        resolve(@(1));
-    } @catch (NSException *exception) {
-        reject(@"SScene", exception.reason, nil);
-    }
-}
+///**
+// * 搜索关键字显示位置相关信息列表
+// *
+// * @param promise
+// */
+//RCT_REMAP_METHOD(pointSearch, name:(NSString*)name  pointSearch:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//
+//        resolve(@(1));
+//    } @catch (NSException *exception) {
+//        reject(@"SScene", exception.reason, nil);
+//    }
+//}
+//
+///**
+// * 初始化位置搜索
+// *
+// * @param promise
+// */
+//RCT_REMAP_METHOD(pointSearch, pointSearch:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//
+//        resolve(@(1));
+//    } @catch (NSException *exception) {
+//        reject(@"SScene", exception.reason, nil);
+//    }
+//}
 
 #pragma mark-飞行
 /**
@@ -1032,6 +1149,8 @@ RCT_REMAP_METHOD(getFlyProgress,  getFlyProgress:(RCTPromiseResolveBlock)resolve
 -(void)flyProgressPercent:(int)percent{
     [self sendEventWithName:SSCENE_FLY body:@(percent)];
 }
+
+
 
 #pragma mark-属性
 /**
@@ -1540,6 +1659,51 @@ RCT_REMAP_METHOD(setAction,  setAction:(NSString*)strAction resolve:(RCTPromiseR
             [sceneControl setAction3D:PANSELECT3D];
         }
         
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(saveCurrentRoutStop, saveCurrentRoutStop:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [[FlyHelper3D sharedInstance] saveCurrentRouteStop];
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(saveRoutStop, saveRoutStop:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [[FlyHelper3D sharedInstance] saveRoutStop];
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(clearRoutStops, clearRoutStops:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [[FlyHelper3D sharedInstance] clearRoutStops];
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(getRoutStops, getRoutStops:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSArray* array=[[FlyHelper3D sharedInstance] getStopList];
+        resolve(array);
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(removeByName, removeByName:(NSString*)name resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [[FlyHelper3D sharedInstance] removeStop:name];
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
