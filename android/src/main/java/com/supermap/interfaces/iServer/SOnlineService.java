@@ -146,8 +146,8 @@ public class SOnlineService extends ReactContextBaseJavaModule{
                 @Override
                 public void accountInfoByTypeSuccess(String nickName, String userId){
                     WritableArray array = Arguments.createArray();
-                    array.pushString(nickName);
                     array.pushString(userId);
+                    array.pushString(nickName);
                     promise.resolve(array);
 
                 }
