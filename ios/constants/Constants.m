@@ -12,6 +12,7 @@
 NSString * const COLLECTION_SENSOR_CHANGE = @"com.supermap.RN.Mapcontrol.collection_sensor_change";
 
 /** 在线服务 **/
+//下载回调
 NSString * const ONLINE_SERVICE_DOWNLOADING = @"com.supermap.RN.Mapcontrol.online_service_downloading";
 NSString * const ONLINE_SERVICE_DOWNLOADED = @"com.supermap.RN.Mapcontrol.online_service_downloaded";
 NSString * const ONLINE_SERVICE_LOGIN = @"com.supermap.RN.Mapcontrol.online_service_login";
