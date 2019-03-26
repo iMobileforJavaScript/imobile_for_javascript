@@ -3,6 +3,8 @@ package com.supermap.smNative;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.ColorParseUtil;
 import com.supermap.data.*;
@@ -1938,5 +1940,65 @@ public class SMThemeCartography {
         parameter.dispose();
 
         return maxValue;
+    }
+
+    public static ThemeGraduatedSymbol getThemeGraduatedSymbol(ReadableMap readableMap) {
+        HashMap<String, Object> data = readableMap.toHashMap();
+
+        String layerName = null;
+        int layerIndex = -1;
+
+        if (data.containsKey("LayerName")){
+            layerName = data.get("LayerName").toString();
+        }
+        if (data.containsKey("LayerIndex")){
+            String index = data.get("LayerIndex").toString();
+            layerIndex = Integer.parseInt(index);
+        }
+
+        Layer layer;
+        if (layerName != null) {
+            layer = getLayerByName(layerName);
+        } else {
+            layer = getLayerByIndex(layerIndex);
+        }
+
+        if (layer != null && layer.getTheme() != null) {
+            if (layer.getTheme().getType() == ThemeType.GRADUATEDSYMBOL) {
+                return (ThemeGraduatedSymbol) layer.getTheme();
+            }
+        }
+
+        return null;
+    }
+
+    public static ThemeDotDensity getThemeDotDensity(ReadableMap readableMap) {
+        HashMap<String, Object> data = readableMap.toHashMap();
+
+        String layerName = null;
+        int layerIndex = -1;
+
+        if (data.containsKey("LayerName")){
+            layerName = data.get("LayerName").toString();
+        }
+        if (data.containsKey("LayerIndex")){
+            String index = data.get("LayerIndex").toString();
+            layerIndex = Integer.parseInt(index);
+        }
+
+        Layer layer;
+        if (layerName != null) {
+            layer = SMThemeCartography.getLayerByName(layerName);
+        } else {
+            layer = SMThemeCartography.getLayerByIndex(layerIndex);
+        }
+
+        if (layer != null && layer.getTheme() != null) {
+            if (layer.getTheme().getType() == ThemeType.DOTDENSITY) {
+                return (ThemeDotDensity) layer.getTheme();
+            }
+        }
+
+        return null;
     }
 }
