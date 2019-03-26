@@ -15,6 +15,18 @@ const nativeEvt = new NativeEventEmitter(SMap)
 
 export default (function () {
   /**
+   * 获取许可文件状态
+   * @returns {*}
+   */
+  function getEnvironmentStatus () {
+    try {
+      return SMap.getEnvironmentStatus()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
    * 刷新地图
    * @returns {*}
    */
@@ -1082,6 +1094,7 @@ export default (function () {
   }
 
   let SMapExp = {
+    getEnvironmentStatus,
     refreshMap,
     openWorkspace,
     openDatasource,

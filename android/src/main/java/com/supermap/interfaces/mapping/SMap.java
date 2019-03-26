@@ -143,6 +143,29 @@ public class SMap extends ReactContextBaseJavaModule {
         return getInstance().smMapWC;
     }
 
+
+    /**
+     * 获取许可文件状态
+     * @param promise
+     */
+    @ReactMethod
+    public void getEnvironmentStatus( Promise promise) {
+        try {
+            LicenseStatus status = Environment.getLicenseStatus();
+            WritableMap statusMap = Arguments.createMap();
+            statusMap.putBoolean("isActivated", status.isActivated());
+            statusMap.putBoolean("isLicenseValid", status.isLicenseValid());
+            statusMap.putBoolean("isLicenseExist", status.isLicenseExsit());
+            statusMap.putBoolean("isTrailLicense", status.isTrailLicense());
+            statusMap.putString("startDate", status.getStartDate().toString());
+            statusMap.putString("expireDate", status.getExpireDate().toString());
+            statusMap.putString("version", status.getVersion() + "");
+            promise.resolve(statusMap);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     /**
      * 刷新地图
      * @param data
