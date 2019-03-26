@@ -551,7 +551,7 @@
 		D854DA4F2187F5FD0075B5F8 /* SMCollector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMCollector.h; sourceTree = "<group>"; };
 		D854DA502187F5FD0075B5F8 /* SMCollector.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMCollector.m; sourceTree = "<group>"; };
 		D854DA532187FD970075B5F8 /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
-		D854DA542187FD970075B5F8 /* Constants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
+		D854DA542187FD970075B5F8 /* Constants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
 		D854DA7E218834510075B5F8 /* SAnalyst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SAnalyst.h; sourceTree = "<group>"; };
 		D854DA7F218834510075B5F8 /* SAnalyst.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SAnalyst.m; sourceTree = "<group>"; };
 		D85975F9214BA46700E39A7E /* JSLayerGroup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSLayerGroup.h; sourceTree = "<group>"; };
