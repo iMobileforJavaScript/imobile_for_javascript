@@ -1539,7 +1539,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             String rangeExpression = null;//分段字段表达式
             RangeMode rangeMode = null;//分段模式
-            double rangeParameter = -1;//分段参数
+            double rangeParameter = -1;//分段参数--当分段方法为标准差时，此参数无效，因为标准差分段方法所得的“段数”由计算结果决定，用户不可控制。
             ColorGradientType colorGradientType = null;
             String layerName = null;
 
@@ -1568,7 +1568,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (data.containsKey("RangeMode")){
                 String mode = data.get("RangeMode").toString();
                 rangeMode  = SMThemeCartography.getRangeMode(mode);
-            } else {
+                } else {
                 if (themeRange != null) {
                     rangeMode = themeRange.getRangeMode();
                 }
@@ -1587,7 +1587,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 String type = data.get("ColorGradientType").toString();
                 colorGradientType = SMThemeCartography.getColorGradientType(type);
             } else {
-                colorGradientType = ColorGradientType.GREENWHITE;
+                 colorGradientType = ColorGradientType.GREENWHITE;
             }
 
             boolean result = false;
@@ -2622,8 +2622,8 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 String valueParam = data.get("Value").toString();
                 value  = Double.parseDouble(valueParam);
             }
-            if (data.containsKey("DotSize")){
-                String size = data.get("DotSize").toString();
+            if (data.containsKey("SymbolSize")){
+                String size = data.get("SymbolSize").toString();
                 dotSize  = Double.parseDouble(size);
             }
             if (data.containsKey("LineColor")){
@@ -2654,7 +2654,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     themeDotDensity.setValue(value);
                 }
                 if (dotSize != -1) {
-                    themeDotDensity.getStyle().setMarkerSize(new Size2D(dotSize / 10, dotSize / 10));
+                    themeDotDensity.getStyle().setMarkerSize(new Size2D(dotSize, dotSize));
                 }
                 if (lineColor != null) {
                     themeDotDensity.getStyle().setLineColor(lineColor);
@@ -2684,32 +2684,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getDotDensityExpression(ReadableMap readableMap, Promise promise) {
         try {
-            HashMap<String, Object> data = readableMap.toHashMap();
-
-            String layerName = null;
-            int layerIndex = -1;
-
-            if (data.containsKey("LayerName")){
-                layerName = data.get("LayerName").toString();
-            }
-            if (data.containsKey("LayerIndex")){
-                String index = data.get("LayerIndex").toString();
-                layerIndex = Integer.parseInt(index);
-            }
-
-            Layer layer;
-            if (layerName != null) {
-                layer = SMThemeCartography.getLayerByName(layerName);
-            } else {
-                layer = SMThemeCartography.getLayerByIndex(layerIndex);
-            }
-
-            if (layer != null && layer.getTheme() != null) {
-                if (layer.getTheme().getType() == ThemeType.DOTDENSITY) {
-                    ThemeDotDensity themeDotDensity = (ThemeDotDensity) layer.getTheme();
-
-                    promise.resolve(themeDotDensity.getDotExpression());
-                }
+            ThemeDotDensity themeDotDensity = SMThemeCartography.getThemeDotDensity(readableMap);
+            if (themeDotDensity != null) {
+                promise.resolve(themeDotDensity.getDotExpression());
             } else {
                 promise.resolve(false);
             }
@@ -2729,32 +2706,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getDotDensityValue(ReadableMap readableMap, Promise promise) {
         try {
-            HashMap<String, Object> data = readableMap.toHashMap();
-
-            String layerName = null;
-            int layerIndex = -1;
-
-            if (data.containsKey("LayerName")){
-                layerName = data.get("LayerName").toString();
-            }
-            if (data.containsKey("LayerIndex")){
-                String index = data.get("LayerIndex").toString();
-                layerIndex = Integer.parseInt(index);
-            }
-
-            Layer layer;
-            if (layerName != null) {
-                layer = SMThemeCartography.getLayerByName(layerName);
-            } else {
-                layer = SMThemeCartography.getLayerByIndex(layerIndex);
-            }
-
-            if (layer != null && layer.getTheme() != null) {
-                if (layer.getTheme().getType() == ThemeType.DOTDENSITY) {
-                    ThemeDotDensity themeDotDensity = (ThemeDotDensity) layer.getTheme();
-
-                    promise.resolve(themeDotDensity.getValue());
-                }
+            ThemeDotDensity themeDotDensity = SMThemeCartography.getThemeDotDensity(readableMap);
+            if (themeDotDensity != null) {
+                promise.resolve(themeDotDensity.getValue());
             } else {
                 promise.resolve(false);
             }
@@ -2766,7 +2720,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 获取点密度专题图的点大小
+     * 获取点密度专题图的点符号大小
      *
      * @param readableMap
      * @param promise
@@ -2774,33 +2728,10 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getDotDensityDotSize(ReadableMap readableMap, Promise promise) {
         try {
-            HashMap<String, Object> data = readableMap.toHashMap();
-
-            String layerName = null;
-            int layerIndex = -1;
-
-            if (data.containsKey("LayerName")){
-                layerName = data.get("LayerName").toString();
-            }
-            if (data.containsKey("LayerIndex")){
-                String index = data.get("LayerIndex").toString();
-                layerIndex = Integer.parseInt(index);
-            }
-
-            Layer layer;
-            if (layerName != null) {
-                layer = SMThemeCartography.getLayerByName(layerName);
-            } else {
-                layer = SMThemeCartography.getLayerByIndex(layerIndex);
-            }
-
-            if (layer != null && layer.getTheme() != null) {
-                if (layer.getTheme().getType() == ThemeType.DOTDENSITY) {
-                    ThemeDotDensity themeDotDensity = (ThemeDotDensity) layer.getTheme();
-
-                    Size2D markerSize = themeDotDensity.getStyle().getMarkerSize();
-                    promise.resolve(markerSize.getHeight() * 10);
-                }
+            ThemeDotDensity themeDotDensity = SMThemeCartography.getThemeDotDensity(readableMap);
+            if (themeDotDensity != null) {
+                Size2D markerSize = themeDotDensity.getStyle().getMarkerSize();
+                promise.resolve(markerSize.getHeight());
             } else {
                 promise.resolve(false);
             }
@@ -2810,7 +2741,6 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
-
 
     /**等级符号专题图*************************************************************************************/
     /**
@@ -2922,10 +2852,10 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             String graSymbolExpression = null;
             GraduatedMode graduatedMode = null;
-            double value = -1;//基准值
+            double baseValue = -1;//基准值
             double symbolSize = -1;
             Color lineColor = null;
-
+            int symbolID = -1;
 
             if (data.containsKey("LayerName")){
                 layerName = data.get("LayerName").toString();
@@ -2942,9 +2872,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 String mode  = data.get("GraduatedMode").toString();
                 graduatedMode = SMThemeCartography.getGraduatedMode(mode);
             }
-            if (data.containsKey("Value")){
-                String valueParam = data.get("Value").toString();
-                value  = Double.parseDouble(valueParam);
+            if (data.containsKey("BaseValue")){
+                String valueParam = data.get("BaseValue").toString();
+                baseValue  = Double.parseDouble(valueParam);
             }
             if (data.containsKey("SymbolSize")){
                 String size = data.get("SymbolSize").toString();
@@ -2953,6 +2883,10 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (data.containsKey("LineColor")){
                 String color = data.get("LineColor").toString();
                 lineColor = ColorParseUtil.getColor(color);
+            }
+            if (data.containsKey("SymbolID")) {
+                String id = data.get("SymbolID").toString();
+                symbolID = (int)Double.parseDouble(id);
             }
 
             Layer layer;
@@ -2973,8 +2907,8 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 if (graduatedMode != null) {
                     themeGraduatedSymbol.setGraduatedMode(graduatedMode);
                 }
-                if (value != -1) {
-                    themeGraduatedSymbol.setBaseValue(value);
+                if (baseValue != -1) {
+                    themeGraduatedSymbol.setBaseValue(baseValue);
                 }
                 if (symbolSize != -1) {
                     themeGraduatedSymbol.getPositiveStyle().setMarkerSize(new Size2D(symbolSize, symbolSize));
@@ -2982,9 +2916,79 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 if (lineColor != null) {
                     themeGraduatedSymbol.getPositiveStyle().setLineColor(lineColor);
                 }
+                if (symbolID != -1) {
+                    themeGraduatedSymbol.getPositiveStyle().setMarkerSymbolID(symbolID);
+                }
 
                 mapControl.getMap().refresh();
                 promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取等级符号专题图的表达式
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getGraduatedSymbolExpress(ReadableMap readableMap, Promise promise) {
+        try {
+            ThemeGraduatedSymbol themeGraduatedSymbol = SMThemeCartography.getThemeGraduatedSymbol(readableMap);
+            if (themeGraduatedSymbol != null) {
+                promise.resolve(themeGraduatedSymbol.getExpression());
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取等级符号专题图的基准值
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getGraduatedSymbolValue(ReadableMap readableMap, Promise promise) {
+        try {
+            ThemeGraduatedSymbol themeGraduatedSymbol = SMThemeCartography.getThemeGraduatedSymbol(readableMap);
+            if (themeGraduatedSymbol != null) {
+                promise.resolve(themeGraduatedSymbol.getBaseValue());
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取等级符号专题图的符号大小
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getGraduatedSymbolSize(ReadableMap readableMap, Promise promise) {
+        try {
+            ThemeGraduatedSymbol themeGraduatedSymbol = SMThemeCartography.getThemeGraduatedSymbol(readableMap);
+            if (themeGraduatedSymbol != null) {
+                Size2D markerSize = themeGraduatedSymbol.getPositiveStyle().getMarkerSize();
+                promise.resolve(markerSize.getHeight());
             } else {
                 promise.resolve(false);
             }

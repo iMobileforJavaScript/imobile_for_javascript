@@ -456,44 +456,21 @@ RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)path resolver:(RCTPromiseReso
     @try {
         path = [path stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         NSString* udbName = [[path lastPathComponent] stringByDeletingPathExtension ];
-        Datasource* datasource;
-        Workspace* workspace;
-        sMap = [SMap singletonInstance];
-        DatasourceConnectionInfo* datasourceConnectionInfo=[[DatasourceConnectionInfo alloc] init];
-        
-        if(!sMap.smMapWC.mapControl){
-            workspace=[[Workspace alloc] init];
-            [datasourceConnectionInfo setEngineType:ET_UDB];
-            [datasourceConnectionInfo setServer:path];
-            [datasourceConnectionInfo setAlias:udbName];
-            datasource=[workspace.datasources open:datasourceConnectionInfo];
-        }else{
-            [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
-            if ([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:udbName] != -1) {
-                datasource=[sMap.smMapWC.mapControl.map.workspace.datasources getAlias:udbName];
-            }else{
-                [datasourceConnectionInfo setEngineType:ET_UDB];
-                [datasourceConnectionInfo setServer:path];
-                [datasourceConnectionInfo setAlias:udbName];
-                datasource=[sMap.smMapWC.mapControl.map.workspace.datasources open:datasourceConnectionInfo];
-            }
-        }
-        Datasets* datasets=datasource.datasets;
-        NSUInteger count=datasets.count;
-        
-        NSMutableArray* array = [[NSMutableArray alloc]init];
+//        if ([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:udbName] != -1) {
+//            [sMap.smMapWC.mapControl.map.workspace.datasources closeAlias:udbName];
+//        }
+        NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[path,@219,udbName] forKeys:@[@"server",@"engineType",@"alias"]];
+        Datasource* dataSource = [sMap.smMapWC openDatasource:params];
+        NSInteger count = [dataSource.datasets count];
+        NSString* name;
+        NSMutableArray* array = [[NSMutableArray alloc]init];	
         for(int i = 0; i < count; i++)
         {
-            Dataset* dataset=[datasets get:i];
-            NSString* name=dataset.name;
+            name = [[dataSource.datasets get:i] name];
             NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
             [info setObject:(name) forKey:(@"title")];
             [array addObject:info];
         }
-        if(workspace){
-            [workspace dispose];
-        }
-        [datasourceConnectionInfo dispose];
         resolve(array);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
@@ -1065,7 +1042,7 @@ RCT_REMAP_METHOD(exportWorkspace, exportWorkspace:(NSArray*)arrMapnames toFile:(
 }
 
 #pragma mark 导出地图为xml
-RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)nModule withAddition:(NSDictionary *)withAddition isNew:(BOOL)isNew bResourcesModified:(BOOL)bResourcesModified resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)nModule withAddition:(NSDictionary *)withAddition isNew:(BOOL)isNew bResourcesModified:(BOOL)bResourcesModified isPrivate:(BOOL)isPrivate resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BOOL mapSaved = NO;
         sMap = [SMap singletonInstance];
@@ -1107,7 +1084,7 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
 //        BOOL bResourcesModified = sMap.smMapWC.workspace.maps.count > 1;
         NSString* mapName = @"";
         if (mapSaved) {
-            mapName = [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:withAddition isNewMap:(isNew || bNew) isResourcesModyfied:bResourcesModified];
+            mapName = [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:withAddition isNewMap:(isNew || bNew) isResourcesModyfied:bResourcesModified isPrivate:isPrivate];
         }
         
         // isNew为true，另存为后保证当前地图是原地图
