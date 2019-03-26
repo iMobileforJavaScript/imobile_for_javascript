@@ -19,7 +19,7 @@ public class EventConst {
 
     /** 消息服务 **/
     public static final String MESSAGE_SERVICE_RECEIVE = "com.supermap.RN.Mapcontrol.message_service_receive";
-    public static final String MESSAGE_UNZIPEXTERNALDATA = "com.supermap.RN.Mapcontrol.message_unzipexternaldata";
+    public static final String MESSAGE_IMPORTEXTERNALDATA = "com.supermap.RN.Mapcontrol.message_importexternaldata";
 
     /** 量算 **/
     public static final String MEASURE_LENGTH = "com.supermap.RN.Mapcontrol.length_measured";
