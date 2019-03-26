@@ -2635,17 +2635,17 @@ public class SMMapWC {
                 // 重命名Resources中symbolGroup
                 // Marker
                 {
-                    SymbolGroup group = [workspace.getResources().getMarkerLibrary().getRootGroup().getChildGroups().get(strSrcName);
+                    SymbolGroup group = workspace.getResources().getMarkerLibrary().getRootGroup().getChildGroups().get(strSrcName);
                     group.setName(strSrcReplace);
                 }
                 // Line
                 {
-                    SymbolGroup group = [workspace.getResources().getLineLibrary().getRootGroup().getChildGroups().get(strSrcName);
+                    SymbolGroup group = workspace.getResources().getLineLibrary().getRootGroup().getChildGroups().get(strSrcName);
                     group.setName(strSrcReplace);
                 }
                 // Fill
                 {
-                    SymbolGroup group = [workspace.getResources().getFillLibrary().getRootGroup().getChildGroups().get(strSrcName);
+                    SymbolGroup group = workspace.getResources().getFillLibrary().getRootGroup().getChildGroups().get(strSrcName);
                     group.setName(strSrcReplace);
                 }
 
