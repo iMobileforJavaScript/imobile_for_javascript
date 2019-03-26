@@ -2507,173 +2507,173 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
      * @param readableMap
      * @param promise
      */
-//    @ReactMethod
-//    public void createDotDensityThemeMap(ReadableMap readableMap, Promise promise) {
-//        try {
-//            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
-//            mapControl.getEditHistory().addMapHistory();
-//
-//            HashMap<String, Object> data = readableMap.toHashMap();
-//
-//            int datasourceIndex = -1;
-//            String datasourceAlias = null;
-//
-//            String datasetName = null;
-//            String dotExpression = null;//字段表达式
-//            Color lineColor = null;
-//            double value = -1;
-//
-//            if (data.containsKey("DatasetName")){
-//                datasetName = data.get("DatasetName").toString();
-//            }
-//            if (data.containsKey("DotExpression")){
-//                dotExpression  = data.get("DotExpression").toString();
-//            }
-//            if (data.containsKey("LineColor")){
-//                String color = data.get("LineColor").toString();
-//                lineColor = ColorParseUtil.getColor(color);
-//            } else {
-//                lineColor = new Color(255,165,0,0);
-//            }
-//            if (data.containsKey("Value")){
-//                String valueParam = data.get("Value").toString();
-//                value  = Double.parseDouble(valueParam);
-//            }
-//
-//            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
-//            if (dataset == null) {
-//                if (data.containsKey("DatasourceIndex")){
-//                    String index = data.get("DatasourceIndex").toString();
-//                    datasourceIndex = Integer.parseInt(index);
-//                }
-//                if (data.containsKey("DatasourceAlias")){
-//                    datasourceAlias = data.get("DatasourceAlias").toString();
-//                }
-//
-//                if (datasourceAlias != null) {
-//                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
-//                }  else {
-//                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
-//                }
-//            }
-//
-//            boolean result = false;
-//            if (dataset != null && dotExpression != null) {
-//                ThemeDotDensity themeDotDensity = new ThemeDotDensity();
-//                if (themeDotDensity != null) {
-//                    themeDotDensity.setDotExpression(dotExpression);
-//                    GeoStyle geoStyle = new GeoStyle();
-//                    geoStyle.setMarkerSize(new Size2D(2,2));
-//                    geoStyle.setLineColor(lineColor);
-//                    themeDotDensity.setStyle(geoStyle);
-//                    if (value != -1) {
-//                        themeDotDensity.setValue(value);
-//                    } else {
-//                        double maxValue = SMThemeCartography.getMaxValue((DatasetVector)dataset, dotExpression);
-//                        themeDotDensity.setValue(maxValue / 1000);
-//                    }
-//
-//                    mapControl.getMap().getLayers().add(dataset, themeDotDensity, true);
-//                    mapControl.getMap().refresh();
-//
-//                    result = true;
-//                }
-//            }
-//            promise.resolve(result);
-//        } catch (Exception e) {
-//            Log.e(REACT_CLASS, e.getMessage());
-//            e.printStackTrace();
-//            promise.reject(e);
-//        }
-//    }
+    @ReactMethod
+    public void createDotDensityThemeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            int datasourceIndex = -1;
+            String datasourceAlias = null;
+
+            String datasetName = null;
+            String dotExpression = null;//字段表达式
+            Color lineColor = null;
+            double value = -1;
+
+            if (data.containsKey("DatasetName")){
+                datasetName = data.get("DatasetName").toString();
+            }
+            if (data.containsKey("DotExpression")){
+                dotExpression  = data.get("DotExpression").toString();
+            }
+            if (data.containsKey("LineColor")){
+                String color = data.get("LineColor").toString();
+                lineColor = ColorParseUtil.getColor(color);
+            } else {
+                lineColor = new Color(255,165,0,0);
+            }
+            if (data.containsKey("Value")){
+                String valueParam = data.get("Value").toString();
+                value  = Double.parseDouble(valueParam);
+            }
+
+            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
+            if (dataset == null) {
+                if (data.containsKey("DatasourceIndex")){
+                    String index = data.get("DatasourceIndex").toString();
+                    datasourceIndex = Integer.parseInt(index);
+                }
+                if (data.containsKey("DatasourceAlias")){
+                    datasourceAlias = data.get("DatasourceAlias").toString();
+                }
+
+                if (datasourceAlias != null) {
+                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
+                }  else {
+                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
+                }
+            }
+
+            boolean result = false;
+            if (dataset != null && dotExpression != null) {
+                ThemeDotDensity themeDotDensity = new ThemeDotDensity();
+                if (themeDotDensity != null) {
+                    themeDotDensity.setDotExpression(dotExpression);
+                    GeoStyle geoStyle = new GeoStyle();
+                    geoStyle.setMarkerSize(new Size2D(2,2));
+                    geoStyle.setLineColor(lineColor);
+                    themeDotDensity.setStyle(geoStyle);
+                    if (value != -1) {
+                        themeDotDensity.setValue(value);
+                    } else {
+                        double maxValue = SMThemeCartography.getMaxValue((DatasetVector)dataset, dotExpression);
+                        themeDotDensity.setValue(maxValue / 1000);
+                    }
+
+                    mapControl.getMap().getLayers().add(dataset, themeDotDensity, true);
+                    mapControl.getMap().refresh();
+
+                    result = true;
+                }
+            }
+            promise.resolve(result);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
 
     /**
      * 修改点密度专题图：设置点密度图的表达式，单点代表的值，点风格（符号，大小和颜色）。
      * @param readableMap
      * @param promise
      */
-//    @ReactMethod
-//    public void modifyDotDensityThemeMap(ReadableMap readableMap, Promise promise) {
-//        try {
-//            HashMap<String, Object> data = readableMap.toHashMap();
-//
-//            String layerName = null;
-//            int layerIndex = -1;
-//
-//            String dotExpression = null;
-//            double value = -1;
-//            double dotSize = -1;
-//            Color lineColor = null;
-//            int symbolID = -1;
-//
-//
-//            if (data.containsKey("LayerName")){
-//                layerName = data.get("LayerName").toString();
-//            }
-//            if (data.containsKey("LayerIndex")){
-//                String index = data.get("LayerIndex").toString();
-//                layerIndex = Integer.parseInt(index);
-//            }
-//
-//            if (data.containsKey("DotExpression")){
-//                dotExpression  = data.get("DotExpression").toString();
-//            }
-//            if (data.containsKey("Value")){
-//                String valueParam = data.get("Value").toString();
-//                value  = Double.parseDouble(valueParam);
-//            }
-//            if (data.containsKey("DotSize")){
-//                String size = data.get("DotSize").toString();
-//                dotSize  = Double.parseDouble(size);
-//            }
-//            if (data.containsKey("LineColor")){
-//                String color = data.get("LineColor").toString();
-//                lineColor = ColorParseUtil.getColor(color);
-//            }
-//            if (data.containsKey("SymbolID")) {
-//                String id = data.get("SymbolID").toString();
-//                symbolID = (int)Double.parseDouble(id);
-//            }
-//
-//            Layer layer;
-//            if (layerName != null) {
-//                layer = SMThemeCartography.getLayerByName(layerName);
-//            } else {
-//                layer = SMThemeCartography.getLayerByIndex(layerIndex);
-//            }
-//
-//            if (layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.DOTDENSITY) {
-//                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
-//                mapControl.getEditHistory().addMapHistory();
-//
-//                ThemeDotDensity themeDotDensity = (ThemeDotDensity) layer.getTheme();
-//                if (dotExpression != null) {
-//                    themeDotDensity.setDotExpression(dotExpression);
-//                }
-//                if (value != -1) {
-//                    themeDotDensity.setValue(value);
-//                }
-//                if (dotSize != -1) {
-//                    themeDotDensity.getStyle().setMarkerSize(new Size2D(dotSize / 10, dotSize / 10));
-//                }
-//                if (lineColor != null) {
-//                    themeDotDensity.getStyle().setLineColor(lineColor);
-//                }
-//                if (symbolID != -1) {
-//                    themeDotDensity.getStyle().setMarkerSymbolID(symbolID);
-//                }
-//
-//                mapControl.getMap().refresh();
-//                promise.resolve(true);
-//            } else {
-//                promise.resolve(false);
-//            }
-//        } catch (Exception e) {
-//            Log.e(REACT_CLASS, e.getMessage());
-//            e.printStackTrace();
-//            promise.reject(e);
-//        }
-//    }
+    @ReactMethod
+    public void modifyDotDensityThemeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            String dotExpression = null;
+            double value = -1;
+            double dotSize = -1;
+            Color lineColor = null;
+            int symbolID = -1;
+
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            if (data.containsKey("DotExpression")){
+                dotExpression  = data.get("DotExpression").toString();
+            }
+            if (data.containsKey("Value")){
+                String valueParam = data.get("Value").toString();
+                value  = Double.parseDouble(valueParam);
+            }
+            if (data.containsKey("DotSize")){
+                String size = data.get("DotSize").toString();
+                dotSize  = Double.parseDouble(size);
+            }
+            if (data.containsKey("LineColor")){
+                String color = data.get("LineColor").toString();
+                lineColor = ColorParseUtil.getColor(color);
+            }
+            if (data.containsKey("SymbolID")) {
+                String id = data.get("SymbolID").toString();
+                symbolID = (int)Double.parseDouble(id);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.DOTDENSITY) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
+                ThemeDotDensity themeDotDensity = (ThemeDotDensity) layer.getTheme();
+                if (dotExpression != null) {
+                    themeDotDensity.setDotExpression(dotExpression);
+                }
+                if (value != -1) {
+                    themeDotDensity.setValue(value);
+                }
+                if (dotSize != -1) {
+                    themeDotDensity.getStyle().setMarkerSize(new Size2D(dotSize / 10, dotSize / 10));
+                }
+                if (lineColor != null) {
+                    themeDotDensity.getStyle().setLineColor(lineColor);
+                }
+                if (symbolID != -1) {
+                    themeDotDensity.getStyle().setMarkerSymbolID(symbolID);
+                }
+
+                mapControl.getMap().refresh();
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
 
     /**
      * 获取点密度专题图的表达式
@@ -2681,44 +2681,44 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
      * @param readableMap
      * @param promise
      */
-//    @ReactMethod
-//    public void getDotDensityExpression(ReadableMap readableMap, Promise promise) {
-//        try {
-//            HashMap<String, Object> data = readableMap.toHashMap();
-//
-//            String layerName = null;
-//            int layerIndex = -1;
-//
-//            if (data.containsKey("LayerName")){
-//                layerName = data.get("LayerName").toString();
-//            }
-//            if (data.containsKey("LayerIndex")){
-//                String index = data.get("LayerIndex").toString();
-//                layerIndex = Integer.parseInt(index);
-//            }
-//
-//            Layer layer;
-//            if (layerName != null) {
-//                layer = SMThemeCartography.getLayerByName(layerName);
-//            } else {
-//                layer = SMThemeCartography.getLayerByIndex(layerIndex);
-//            }
-//
-//            if (layer != null && layer.getTheme() != null) {
-//                if (layer.getTheme().getType() == ThemeType.DOTDENSITY) {
-//                    ThemeDotDensity themeDotDensity = (ThemeDotDensity) layer.getTheme();
-//
-//                    promise.resolve(themeDotDensity.getDotExpression());
-//                }
-//            } else {
-//                promise.resolve(false);
-//            }
-//        } catch (Exception e) {
-//            Log.e(REACT_CLASS, e.getMessage());
-//            e.printStackTrace();
-//            promise.reject(e);
-//        }
-//    }
+    @ReactMethod
+    public void getDotDensityExpression(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.DOTDENSITY) {
+                    ThemeDotDensity themeDotDensity = (ThemeDotDensity) layer.getTheme();
+
+                    promise.resolve(themeDotDensity.getDotExpression());
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
 
     /**
      * 获取点密度专题图的单点代表值
@@ -2726,44 +2726,44 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
      * @param readableMap
      * @param promise
      */
-//    @ReactMethod
-//    public void getDotDensityValue(ReadableMap readableMap, Promise promise) {
-//        try {
-//            HashMap<String, Object> data = readableMap.toHashMap();
-//
-//            String layerName = null;
-//            int layerIndex = -1;
-//
-//            if (data.containsKey("LayerName")){
-//                layerName = data.get("LayerName").toString();
-//            }
-//            if (data.containsKey("LayerIndex")){
-//                String index = data.get("LayerIndex").toString();
-//                layerIndex = Integer.parseInt(index);
-//            }
-//
-//            Layer layer;
-//            if (layerName != null) {
-//                layer = SMThemeCartography.getLayerByName(layerName);
-//            } else {
-//                layer = SMThemeCartography.getLayerByIndex(layerIndex);
-//            }
-//
-//            if (layer != null && layer.getTheme() != null) {
-//                if (layer.getTheme().getType() == ThemeType.DOTDENSITY) {
-//                    ThemeDotDensity themeDotDensity = (ThemeDotDensity) layer.getTheme();
-//
-//                    promise.resolve(themeDotDensity.getValue());
-//                }
-//            } else {
-//                promise.resolve(false);
-//            }
-//        } catch (Exception e) {
-//            Log.e(REACT_CLASS, e.getMessage());
-//            e.printStackTrace();
-//            promise.reject(e);
-//        }
-//    }
+    @ReactMethod
+    public void getDotDensityValue(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.DOTDENSITY) {
+                    ThemeDotDensity themeDotDensity = (ThemeDotDensity) layer.getTheme();
+
+                    promise.resolve(themeDotDensity.getValue());
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
 
     /**
      * 获取点密度专题图的点大小
@@ -2771,45 +2771,45 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
      * @param readableMap
      * @param promise
      */
-//    @ReactMethod
-//    public void getDotDensityDotSize(ReadableMap readableMap, Promise promise) {
-//        try {
-//            HashMap<String, Object> data = readableMap.toHashMap();
-//
-//            String layerName = null;
-//            int layerIndex = -1;
-//
-//            if (data.containsKey("LayerName")){
-//                layerName = data.get("LayerName").toString();
-//            }
-//            if (data.containsKey("LayerIndex")){
-//                String index = data.get("LayerIndex").toString();
-//                layerIndex = Integer.parseInt(index);
-//            }
-//
-//            Layer layer;
-//            if (layerName != null) {
-//                layer = SMThemeCartography.getLayerByName(layerName);
-//            } else {
-//                layer = SMThemeCartography.getLayerByIndex(layerIndex);
-//            }
-//
-//            if (layer != null && layer.getTheme() != null) {
-//                if (layer.getTheme().getType() == ThemeType.DOTDENSITY) {
-//                    ThemeDotDensity themeDotDensity = (ThemeDotDensity) layer.getTheme();
-//
-//                    Size2D markerSize = themeDotDensity.getStyle().getMarkerSize();
-//                    promise.resolve(markerSize.getHeight() * 10);
-//                }
-//            } else {
-//                promise.resolve(false);
-//            }
-//        } catch (Exception e) {
-//            Log.e(REACT_CLASS, e.getMessage());
-//            e.printStackTrace();
-//            promise.reject(e);
-//        }
-//    }
+    @ReactMethod
+    public void getDotDensityDotSize(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.DOTDENSITY) {
+                    ThemeDotDensity themeDotDensity = (ThemeDotDensity) layer.getTheme();
+
+                    Size2D markerSize = themeDotDensity.getStyle().getMarkerSize();
+                    promise.resolve(markerSize.getHeight() * 10);
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
 
 
     /**等级符号专题图*************************************************************************************/
@@ -2819,181 +2819,181 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
      * @param readableMap
      * @param promise
      */
-//    @ReactMethod
-//    public void createGraduatedSymbolThemeMap(ReadableMap readableMap, Promise promise) {
-//        try {
-//            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
-//            mapControl.getEditHistory().addMapHistory();
-//
-//            HashMap<String, Object> data = readableMap.toHashMap();
-//
-//            int datasourceIndex = -1;
-//            String datasourceAlias = null;
-//
-//            GraduatedMode graduatedMode = null;
-//            String datasetName = null;
-//            String graSymbolExpression = null;//字段表达式
-//
-//            Color lineColor = null;
-//            double symbolSize = -1;
-//
-//            if (data.containsKey("GraduatedMode")){
-//                String mode  = data.get("GraduatedMode").toString();
-//                graduatedMode = SMThemeCartography.getGraduatedMode(mode);
-//            }
-//            if (data.containsKey("DatasetName")){
-//                datasetName = data.get("DatasetName").toString();
-//            }
-//            if (data.containsKey("GraSymbolExpression")){
-//                graSymbolExpression  = data.get("GraSymbolExpression").toString();
-//            }
-//
-//            if (data.containsKey("LineColor")){
-//                String color = data.get("LineColor").toString();
-//                lineColor = ColorParseUtil.getColor(color);
-//            } else {
-//                lineColor = new Color(255,165,0,0);
-//            }
-//            if (data.containsKey("SymbolSize")){
-//                String size = data.get("SymbolSize").toString();
-//                symbolSize  = Double.parseDouble(size);
-//            }
-//
-//            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
-//            if (dataset == null) {
-//                if (data.containsKey("DatasourceIndex")){
-//                    String index = data.get("DatasourceIndex").toString();
-//                    datasourceIndex = Integer.parseInt(index);
-//                }
-//                if (data.containsKey("DatasourceAlias")){
-//                    datasourceAlias = data.get("DatasourceAlias").toString();
-//                }
-//
-//                if (datasourceAlias != null) {
-//                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
-//                }  else {
-//                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
-//                }
-//            }
-//
-//            boolean result = false;
-//            if (dataset != null && graSymbolExpression != null) {
-//                ThemeGraduatedSymbol themeGraduatedSymbol = null;
-//                if (graduatedMode != null) {
-//                    themeGraduatedSymbol  = ThemeGraduatedSymbol.makeDefault((DatasetVector)dataset, graSymbolExpression, graduatedMode);
-//                } else {
-//                    themeGraduatedSymbol = ThemeGraduatedSymbol.makeDefault((DatasetVector)dataset, graSymbolExpression, GraduatedMode.CONSTANT);
-//                }
-//                if (themeGraduatedSymbol == null) {
-//                    themeGraduatedSymbol = new ThemeGraduatedSymbol();
-//                }
-//                themeGraduatedSymbol.setFlowEnabled(true);//流动显示
-//                themeGraduatedSymbol.setExpression(graSymbolExpression);
-//                themeGraduatedSymbol.getPositiveStyle().setLineColor(lineColor);
-//                if (symbolSize != -1) {
-//                    themeGraduatedSymbol.getPositiveStyle().setMarkerSize(new Size2D(symbolSize,symbolSize));
-//                }
-//
-//                mapControl.getMap().getLayers().add(dataset, themeGraduatedSymbol, true);
-//                mapControl.getMap().refresh();
-//
-//                result = true;
-//            }
-//            promise.resolve(result);
-//        } catch (Exception e) {
-//            Log.e(REACT_CLASS, e.getMessage());
-//            e.printStackTrace();
-//            promise.reject(e);
-//        }
-//    }
-//
-//    /**
-//     * 修改等级符号专题图：设置表达式，分级方式，基准值，正值基准值风格（大小和颜色）。
-//     * @param readableMap
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void modifyGraduatedSymbolThemeMap(ReadableMap readableMap, Promise promise) {
-//        try {
-//            HashMap<String, Object> data = readableMap.toHashMap();
-//
-//            String layerName = null;
-//            int layerIndex = -1;
-//
-//            String graSymbolExpression = null;
-//            GraduatedMode graduatedMode = null;
-//            double value = -1;//基准值
-//            double symbolSize = -1;
-//            Color lineColor = null;
-//
-//
-//            if (data.containsKey("LayerName")){
-//                layerName = data.get("LayerName").toString();
-//            }
-//            if (data.containsKey("LayerIndex")){
-//                String index = data.get("LayerIndex").toString();
-//                layerIndex = Integer.parseInt(index);
-//            }
-//
-//            if (data.containsKey("GraSymbolExpression")){
-//                graSymbolExpression  = data.get("GraSymbolExpression").toString();
-//            }
-//            if (data.containsKey("GraduatedMode")){
-//                String mode  = data.get("GraduatedMode").toString();
-//                graduatedMode = SMThemeCartography.getGraduatedMode(mode);
-//            }
-//            if (data.containsKey("Value")){
-//                String valueParam = data.get("Value").toString();
-//                value  = Double.parseDouble(valueParam);
-//            }
-//            if (data.containsKey("SymbolSize")){
-//                String size = data.get("SymbolSize").toString();
-//                symbolSize  = Double.parseDouble(size);
-//            }
-//            if (data.containsKey("LineColor")){
-//                String color = data.get("LineColor").toString();
-//                lineColor = ColorParseUtil.getColor(color);
-//            }
-//
-//            Layer layer;
-//            if (layerName != null) {
-//                layer = SMThemeCartography.getLayerByName(layerName);
-//            } else {
-//                layer = SMThemeCartography.getLayerByIndex(layerIndex);
-//            }
-//
-//            if (layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.GRADUATEDSYMBOL) {
-//                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
-//                mapControl.getEditHistory().addMapHistory();
-//
-//                ThemeGraduatedSymbol themeGraduatedSymbol = (ThemeGraduatedSymbol) layer.getTheme();
-//                if (graSymbolExpression != null) {
-//                    themeGraduatedSymbol.setExpression(graSymbolExpression);
-//                }
-//                if (graduatedMode != null) {
-//                    themeGraduatedSymbol.setGraduatedMode(graduatedMode);
-//                }
-//                if (value != -1) {
-//                    themeGraduatedSymbol.setBaseValue(value);
-//                }
-//                if (symbolSize != -1) {
-//                    themeGraduatedSymbol.getPositiveStyle().setMarkerSize(new Size2D(symbolSize, symbolSize));
-//                }
-//                if (lineColor != null) {
-//                    themeGraduatedSymbol.getPositiveStyle().setLineColor(lineColor);
-//                }
-//
-//                mapControl.getMap().refresh();
-//                promise.resolve(true);
-//            } else {
-//                promise.resolve(false);
-//            }
-//        } catch (Exception e) {
-//            Log.e(REACT_CLASS, e.getMessage());
-//            e.printStackTrace();
-//            promise.reject(e);
-//        }
-//    }
+    @ReactMethod
+    public void createGraduatedSymbolThemeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            int datasourceIndex = -1;
+            String datasourceAlias = null;
+
+            GraduatedMode graduatedMode = null;
+            String datasetName = null;
+            String graSymbolExpression = null;//字段表达式
+
+            Color lineColor = null;
+            double symbolSize = -1;
+
+            if (data.containsKey("GraduatedMode")){
+                String mode  = data.get("GraduatedMode").toString();
+                graduatedMode = SMThemeCartography.getGraduatedMode(mode);
+            }
+            if (data.containsKey("DatasetName")){
+                datasetName = data.get("DatasetName").toString();
+            }
+            if (data.containsKey("GraSymbolExpression")){
+                graSymbolExpression  = data.get("GraSymbolExpression").toString();
+            }
+
+            if (data.containsKey("LineColor")){
+                String color = data.get("LineColor").toString();
+                lineColor = ColorParseUtil.getColor(color);
+            } else {
+                lineColor = new Color(255,165,0,0);
+            }
+            if (data.containsKey("SymbolSize")){
+                String size = data.get("SymbolSize").toString();
+                symbolSize  = Double.parseDouble(size);
+            }
+
+            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
+            if (dataset == null) {
+                if (data.containsKey("DatasourceIndex")){
+                    String index = data.get("DatasourceIndex").toString();
+                    datasourceIndex = Integer.parseInt(index);
+                }
+                if (data.containsKey("DatasourceAlias")){
+                    datasourceAlias = data.get("DatasourceAlias").toString();
+                }
+
+                if (datasourceAlias != null) {
+                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
+                }  else {
+                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
+                }
+            }
+
+            boolean result = false;
+            if (dataset != null && graSymbolExpression != null) {
+                ThemeGraduatedSymbol themeGraduatedSymbol = null;
+                if (graduatedMode != null) {
+                    themeGraduatedSymbol  = ThemeGraduatedSymbol.makeDefault((DatasetVector)dataset, graSymbolExpression, graduatedMode);
+                } else {
+                    themeGraduatedSymbol = ThemeGraduatedSymbol.makeDefault((DatasetVector)dataset, graSymbolExpression, GraduatedMode.CONSTANT);
+                }
+                if (themeGraduatedSymbol == null) {
+                    themeGraduatedSymbol = new ThemeGraduatedSymbol();
+                }
+                themeGraduatedSymbol.setFlowEnabled(true);//流动显示
+                themeGraduatedSymbol.setExpression(graSymbolExpression);
+                themeGraduatedSymbol.getPositiveStyle().setLineColor(lineColor);
+                if (symbolSize != -1) {
+                    themeGraduatedSymbol.getPositiveStyle().setMarkerSize(new Size2D(symbolSize,symbolSize));
+                }
+
+                mapControl.getMap().getLayers().add(dataset, themeGraduatedSymbol, true);
+                mapControl.getMap().refresh();
+
+                result = true;
+            }
+            promise.resolve(result);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 修改等级符号专题图：设置表达式，分级方式，基准值，正值基准值风格（大小和颜色）。
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void modifyGraduatedSymbolThemeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            String graSymbolExpression = null;
+            GraduatedMode graduatedMode = null;
+            double value = -1;//基准值
+            double symbolSize = -1;
+            Color lineColor = null;
+
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            if (data.containsKey("GraSymbolExpression")){
+                graSymbolExpression  = data.get("GraSymbolExpression").toString();
+            }
+            if (data.containsKey("GraduatedMode")){
+                String mode  = data.get("GraduatedMode").toString();
+                graduatedMode = SMThemeCartography.getGraduatedMode(mode);
+            }
+            if (data.containsKey("Value")){
+                String valueParam = data.get("Value").toString();
+                value  = Double.parseDouble(valueParam);
+            }
+            if (data.containsKey("SymbolSize")){
+                String size = data.get("SymbolSize").toString();
+                symbolSize  = Double.parseDouble(size);
+            }
+            if (data.containsKey("LineColor")){
+                String color = data.get("LineColor").toString();
+                lineColor = ColorParseUtil.getColor(color);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.GRADUATEDSYMBOL) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
+                ThemeGraduatedSymbol themeGraduatedSymbol = (ThemeGraduatedSymbol) layer.getTheme();
+                if (graSymbolExpression != null) {
+                    themeGraduatedSymbol.setExpression(graSymbolExpression);
+                }
+                if (graduatedMode != null) {
+                    themeGraduatedSymbol.setGraduatedMode(graduatedMode);
+                }
+                if (value != -1) {
+                    themeGraduatedSymbol.setBaseValue(value);
+                }
+                if (symbolSize != -1) {
+                    themeGraduatedSymbol.getPositiveStyle().setMarkerSize(new Size2D(symbolSize, symbolSize));
+                }
+                if (lineColor != null) {
+                    themeGraduatedSymbol.getPositiveStyle().setLineColor(lineColor);
+                }
+
+                mapControl.getMap().refresh();
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
 
 
     /***************************************************************************************/
