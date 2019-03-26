@@ -715,9 +715,9 @@ export default (function () {
    * @param strDirPath
    * @returns {*}
    */
-  function importWorkspaceInfo (infoDic, strDirPath) {
+  function importWorkspaceInfo (infoDic, strDirPath,bPrivate=true) {
     try {
-      return SMap.importWorkspaceInfo(infoDic, strDirPath)
+      return SMap.importWorkspaceInfo(infoDic, strDirPath,bPrivate)
     } catch (e) {
       console.error(e)
     }
