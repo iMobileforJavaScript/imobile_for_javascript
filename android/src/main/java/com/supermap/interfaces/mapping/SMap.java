@@ -32,6 +32,8 @@ import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Resources;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Action;
+import com.supermap.mapping.GeometryAddedListener;
+import com.supermap.mapping.GeometryEvent;
 import com.supermap.mapping.GeometrySelectedEvent;
 import com.supermap.mapping.GeometrySelectedListener;
 import com.supermap.mapping.Layer;
@@ -2553,6 +2555,42 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 设置标注面随机色
+     * @param promise
+     */
+    @ReactMethod
+    public void setTaggingGrid(String name , Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
+            Datasource opendatasource = workspace.getDatasources().get("Label");
+            final DatasetVector dataset = (DatasetVector) opendatasource.getDatasets().get(name);
+            final GeoStyle geoStyle = new GeoStyle();
+            geoStyle.setFillForeColor(this.getFillColor());
+            geoStyle.setFillBackColor(this.getFillColor());
+            geoStyle.setMarkerSize(new Size2D(10, 10));
+            mapControl.addGeometryAddedListener(new GeometryAddedListener() {
+                @Override
+                public void geometryAdded(GeometryEvent event) {
+                    int id[]=new int[1];
+                    id[0] = event.getID();
+                    Recordset recordset = dataset.query(id,CursorType.DYNAMIC);
+                    recordset.edit();
+                    Geometry  geometry = recordset.getGeometry();
+                    geometry.setStyle(geoStyle);
+                    recordset.setGeometry(geometry);
+                    recordset.update();
+                }
+            });
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
 /************************************** 地图编辑历史操作 ****************************************/
 
