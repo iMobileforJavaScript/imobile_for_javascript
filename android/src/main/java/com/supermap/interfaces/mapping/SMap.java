@@ -1832,7 +1832,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void saveMapName(String name, String nModule, ReadableMap addition, boolean isNew,  boolean bResourcesModified, Promise promise) {
+    public void saveMapName(String name, String nModule, ReadableMap addition, boolean isNew,  boolean bResourcesModified,boolean bPrivate,Promise promise) {
         try {
             sMap = SMap.getInstance();
             boolean mapSaved = false;
@@ -1883,7 +1883,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 additionInfo.put(key, addition.getString(key));
             }
             if (mapSaved) {
-                mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, additionInfo, (isNew || bNew), bResourcesModified);
+                mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, additionInfo, (isNew || bNew), bResourcesModified,bPrivate);
             }
 
             // isNew为true，另存为后保证当前地图是原地图
@@ -1909,10 +1909,10 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void importWorkspaceInfo(ReadableMap infoMap, String nModule, Promise promise) {
+    public void importWorkspaceInfo(ReadableMap infoMap, String nModule,boolean bPrivate,Promise promise) {
         try {
             sMap = SMap.getInstance();
-            List<String> list = sMap.smMapWC.importWorkspaceInfo(infoMap.toHashMap(), nModule);
+            List<String> list = sMap.smMapWC.importWorkspaceInfo(infoMap.toHashMap(), nModule,bPrivate);
             WritableArray mapsInfo = Arguments.createArray();
             for (int i = 0; i < list.size(); i++) {
                 mapsInfo.pushString(list.get(i));
@@ -2579,7 +2579,6 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
-<<<<<<< HEAD
     /**
      * 设置标注面随机色
      * @param promise
@@ -2617,10 +2616,6 @@ public class SMap extends ReactContextBaseJavaModule {
 
 
 /************************************** 地图编辑历史操作 ****************************************/
-=======
-    /************************************** 地图编辑历史操作 BEGIN****************************************/
->>>>>>> 7a0baa506ad33544035984d532367900b89b66e7
-
     /**
      * 把对地图操作记录到历史
      * @param promise

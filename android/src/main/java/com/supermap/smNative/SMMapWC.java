@@ -1216,7 +1216,7 @@ public class SMMapWC {
 //          \------->Resource:      旗下包含模块子文件夹，存放符号库文件（.sym/.lsl./bru）
 // 返回结果：NSArray为导入成功的所有地图名
 //    public boolean importWorkspaceInfo(Map infoMap, String strModule) {
-    public List<String> importWorkspaceInfo(Map infoMap, String strModule) {
+    public List<String> importWorkspaceInfo(Map infoMap, String strModule,boolean bPrivate) {
 
         List<String> arrResult = null;
         if (infoMap == null || infoMap.get("server") == null || infoMap.get("type") == null || workspace.getConnectionInfo().getServer().equals(infoMap.get("server"))) {
@@ -1279,7 +1279,7 @@ public class SMMapWC {
         List<String> arrTemp = new ArrayList<>();
         for (int i = 0; i < importWorkspace.getMaps().getCount(); i++) {
             String strMapName = importWorkspace.getMaps().get(i);
-            String strResName = saveMapName(strMapName, importWorkspace, strModule, dicAddition, true, false);
+            String strResName = saveMapName(strMapName, importWorkspace, strModule, dicAddition, true, false,bPrivate);
             if (strResName != null) {
 //                arrTemp.add(strResName);
 
@@ -1933,7 +1933,7 @@ public class SMMapWC {
                 String strModule = mapInfo.get("Module");
                 Boolean isPrivate = false;//默认公共目录
                 if ( mapInfo.containsKey("IsPrivate") ){
-                    isPrivate = (Boolean)Integer.parseInt(mapInfo.get("IsPrivate"));
+                    isPrivate = Boolean.parseBoolean(mapInfo.get("IsPrivate"));
                 }
                 return openMapName(strMapName,desWorkspace,strModule,isPrivate);
 
@@ -2542,7 +2542,12 @@ public class SMMapWC {
         if (jsonMap==null){
             return null;
         }
-        JSONObject jsonObject = new JSONObject(jsonMap);
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(jsonMap);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         String strMapName = jsonObject.optString("MapName");
         if (strMapName==null){
             return null;
@@ -2578,14 +2583,15 @@ public class SMMapWC {
         String strSrcModule = srcInfo.get("Module");
         boolean isSrcPrivate = false;
         if (srcInfo.containsKey("IsPrivate")){
-            isSrcPrivate = (boolean)Integer.parseInt(srcInfo.get("IsPrivate"));
+            isSrcPrivate = Boolean.parseBoolean(srcInfo.get("IsPrivate"));
+//            isSrcPrivate=Boolean.valueOf(srcInfo.get("IsPrivate"));
         }
 
         String strDesName = desInfo.get("MapName");
         String strDesModule = desInfo.get("Module");
         boolean isDesPrivate = false;
         if (desInfo.containsKey("IsPrivate")){
-            isDesPrivate = (boolean)Integer.parseInt(desInfo.get("IsPrivate"));
+            isDesPrivate = Boolean.parseBoolean(desInfo.get("IsPrivate"));
         }
 
         Boolean bSrcRename = false;//同名Map需要srcMap打开后重命名，同一Map不能合并
@@ -2635,18 +2641,18 @@ public class SMMapWC {
                 // 重命名Resources中symbolGroup
                 // Marker
                 {
-                    SymbolGroup group = [workspace.getResources().getMarkerLibrary().getRootGroup().getChildGroups().get(strSrcName);
-                    group.setName(strSrcReplace);
+                    SymbolGroup group = workspace.getResources().getMarkerLibrary().getRootGroup().getChildGroups().get(strSrcName);
+//                    group.setName(strSrcReplace);
                 }
                 // Line
                 {
-                    SymbolGroup group = [workspace.getResources().getLineLibrary().getRootGroup().getChildGroups().get(strSrcName);
-                    group.setName(strSrcReplace);
+                    SymbolGroup group = workspace.getResources().getLineLibrary().getRootGroup().getChildGroups().get(strSrcName);
+//                    group.setName(strSrcReplace);
                 }
                 // Fill
                 {
-                    SymbolGroup group = [workspace.getResources().getFillLibrary().getRootGroup().getChildGroups().get(strSrcName);
-                    group.setName(strSrcReplace);
+                    SymbolGroup group = workspace.getResources().getFillLibrary().getRootGroup().getChildGroups().get(strSrcName);
+//                    group.setName(strSrcReplace);
                 }
 
 
@@ -2691,9 +2697,14 @@ public class SMMapWC {
                 if(  map.open(strDesName) &&
                         map.addLayersFromMap(strSrcName,true) )
                 {
-                    [map save];
-                    [map close];
-                    [map dispose];
+
+                    try {
+                        map.save();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    map.close();
+                    map.dispose();
                     String strDesMap = saveMapName(strDesName,workspace,strDesModule,dicAddition,false,true,isDesPrivate);
 
                     if (strDesMap!=null) {
