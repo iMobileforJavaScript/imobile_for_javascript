@@ -284,9 +284,7 @@ export default (function () {
    */
   function moveToPoint (point = {x: 116.35805, y: 39.70361}) {
     try {
-      console.warn('moveToPoint 1' + JSON.stringify(point))
       if (point.x === undefined || point.y === undefined) return
-      console.warn('moveToPoint 2' + JSON.stringify(point))
       return SMap.moveToPoint(point)
     } catch (e) {
       console.error(e)
@@ -882,6 +880,19 @@ export default (function () {
   // }
   
   /**
+   * 设置Selection样式
+   * @returns {*}
+   */
+  function setSelectionStyle (layerPath = '', style = {}) {
+    try {
+      if (layerPath === '' || Object.keys(style).length === 0) return
+      return SMap.setSelectionStyle(layerPath, JSON.stringify(style))
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
    * 清除Selection
    * @returns {*}
    */
@@ -1156,6 +1167,7 @@ export default (function () {
     exportWorkspaceByMap,
     setDynamicProjection,
     // selectByRectangle,
+    setSelectionStyle,
     clearSelection,
     newTaggingDataset,
     removeTaggingDataset,

@@ -1918,7 +1918,9 @@ public class SMMapWC {
         if (desWorkspace == null || desWorkspace.getMaps().indexOf(strMapName) != -1) {
             return false;
         }
-
+int b = '1';
+        boolean a;
+        a = Boolean.parseBoolean("1");
         String strUserName = null;
         if (bPrivate) {
             strUserName = getUserName();

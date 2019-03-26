@@ -701,6 +701,30 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 设置Selection样式
+     * @param layerPath
+     * @param styleJson
+     * @param promise
+     */
+    @ReactMethod
+    public void setSelectionStyle(String layerPath, String styleJson, Promise promise) {
+        try {
+            sMap = getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+            Selection selection = layer.getSelection();
+            GeoStyle style = new GeoStyle();
+            style.fromJson(styleJson);
+            selection.setStyle(style);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 清除Selection
      * @param promise
      */
