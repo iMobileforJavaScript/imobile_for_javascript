@@ -1,0 +1,51 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\Administrator\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add redux redux-actions redux-persist redux-promise-middleware redux-thunk
+
+PATH: 
+  D:\cmder\bin;D:\cmder\vendor\conemu-maximus5\ConEmu\Scripts;D:\cmder\vendor\conemu-maximus5;D:\cmder\vendor\conemu-maximus5\ConEmu;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Java\jdk1.8.0_131\bin;C:\Program Files\Java\jdk1.8.0_131\jre\bin;C:\Program Files\TortoiseSVN\bin;E:\TOOL\adt\adt-bundle-windows-x86_64-20140702\sdk\platform-tools;G:\apache-maven-3.5.0\bin;G:\android-ndk-r8e;F:\mapnik-win-sdk-v2.2.0\mapnik-v2.2.0\lib\;F:\mapnik-win-sdk-v2.2.0\mapnik-v2.2.0\bin\;F:\python;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;F:\Fiddler;C:\Users\Administrator\AppData\Roaming\npm;D:\Microsoft VS Code\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\share\vim\vim74;D:\cmder\
+
+Yarn version: 
+  1.10.1
+
+Node version: 
+  8.12.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: connect ETIMEDOUT 104.16.18.35:443
+      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1191:14)
+
+npm manifest: 
+  {
+    "name": "imobile_for_reactnative",
+    "version": "1.6.2",
+    "description": "iMobile for ReactNative，是SuperMap iMobile推出的一款基于React-Native框架的移动应用开发工具。基于该开发工具，用户可以使用JavaScript开发语言，开发出在Android和IOS操作系统下运行的原生移动GIS应用，入门门槛低，一次开发，处处运行。",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+      "react-native",
+      "supermap",
+      "imobile_for_reactnative",
+      "map",
+      "GIS"
+    ],
+    "author": "Supermap",
+    "license": "ISC",
+    "peerDependencies": {
+      "react-native": "^0.52.3"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+ssh://git@github.com:iMobileforJavaScript/imobile_for_reactnative.git"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

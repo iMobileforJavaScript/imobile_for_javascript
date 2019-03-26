@@ -942,6 +942,18 @@ export default (function () {
   }
 
   /**
+   * 设置标注面随机色
+   * @returns {*|Promise.<void>}
+   */
+  function setTaggingGrid (name) {
+    try {
+      return SMap.setTaggingGrid(name)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 添加地图图例
    * @returns {*|Promise.<void>}
    */
@@ -1160,6 +1172,7 @@ export default (function () {
     newTaggingDataset,
     removeTaggingDataset,
     openTaggingDataset,
+    setTaggingGrid,
     addLegend,
     
     /** 地图编辑历史操作 **/

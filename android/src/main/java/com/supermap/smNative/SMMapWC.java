@@ -2,8 +2,13 @@ package com.supermap.smNative;
 
 import android.util.Log;
 
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.soloader.NoopSoSource;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
@@ -1507,7 +1512,7 @@ public class SMMapWC {
 //      2.srcWorkspace包含地图
 //      3.模块存在
 //
-    public String saveMapName(String strMapAlians, Workspace srcWorkspace, String strModule, Map<String, String> dicAddition, boolean bNew, boolean bResourcesModified) {
+    public String saveMapName(String strMapAlians, Workspace srcWorkspace, String strModule, Map<String, String> dicAddition, boolean bNew, boolean bResourcesModified,boolean bPrivate) {
 
         if (srcWorkspace == null || srcWorkspace.getMaps().indexOf(strMapAlians) == -1) {
             return null;
@@ -1518,10 +1523,18 @@ public class SMMapWC {
 //        if (strModule == null) {
 //            return null;
 //        }
-        String strUserName = getUserName();
-        if (strUserName == null) {
-            return null;
+
+        String strUserName;
+        if (!bPrivate){
+            strUserName = "Customer";
+        }else{
+            strUserName = getUserName();
+            if (strUserName == null) {
+                return null;
+            }
         }
+
+
         String strRootPath = getRootPath();
         String strCustomer = strRootPath + "/" + strUserName + "/Data";
 
@@ -1657,15 +1670,19 @@ public class SMMapWC {
             String strSrcAlian = srcInfo.getAlias();
             String strSrcServer = srcInfo.getServer();
             EngineType engineType = srcInfo.getEngineType();
-            String strTargetServer = strSrcServer;
-            //---------》》》》》只有一部分new怎么办？
-            if (bNew) {
-                if (engineType == EngineType.UDB || engineType == EngineType.IMAGEPLUGINS) {
 
-                    // 源文件存在？
-                    if (!isDatasourceFileExist(strSrcServer, engineType == EngineType.UDB)) {
-                        continue;
-                    }
+            String strTargetServer = null;
+            if (engineType == EngineType.UDB || engineType == EngineType.IMAGEPLUGINS){
+
+                // 源文件存在？
+                if (!isDatasourceFileExist(strSrcServer, engineType == EngineType.UDB)) {
+                    continue;
+                }
+
+                if (!bNew && strSrcServer.startsWith(desDatasourceDir)){
+                    // 不需要拷贝的UDB
+                    strTargetServer = strSrcServer;
+                }else{
 
                     String[] arrSrcServer = strSrcServer.split("/");
                     String strFileName = arrSrcServer[arrSrcServer.length - 1];
@@ -1714,16 +1731,12 @@ public class SMMapWC {
                             continue;
                         }
                     }//bUDB
-                }
-            }
 
-            if (engineType == EngineType.UDB || engineType == EngineType.IMAGEPLUGINS) {
-                if (!strTargetServer.startsWith(strRootPath + "/" + strUserName) &&
-                        !strTargetServer.startsWith(strRootPath + "/Customer")) {
-                    continue;
                 }
-                //strTargetServer =strTargetServer.substring(desDatasourceDir.length()+1);
                 strTargetServer = strTargetServer.substring(strRootPath.length() + 1);
+
+            }else {
+                strTargetServer = strSrcServer;
             }
 
             Map<String, String> dicDatasource = new HashMap<>();
@@ -1912,6 +1925,23 @@ public class SMMapWC {
         return strMapName;
     }
 
+    public boolean openMap(Map<String,String> mapInfo, Workspace desWorkspace){
+        if (mapInfo!=null){
+
+            String strMapName = mapInfo.get("MapName");
+            if (strMapName!=null){
+                String strModule = mapInfo.get("Module");
+                Boolean isPrivate = false;//默认公共目录
+                if ( mapInfo.containsKey("IsPrivate") ){
+                    isPrivate = (Boolean)Integer.parseInt(mapInfo.get("IsPrivate"));
+                }
+                return openMapName(strMapName,desWorkspace,strModule,isPrivate);
+
+            }
+
+        }
+        return false;
+    }
     //大工作空间打开本地地图
     public boolean openMapName(String strMapName, Workspace desWorkspace, String strModule, boolean bPrivate) {
 
@@ -2506,6 +2536,177 @@ public class SMMapWC {
         workspaceTemp.dispose();
 
         return result;
+    }
+
+    private Map<String,String> getMapInfoFromJson(String jsonMap){
+        if (jsonMap==null){
+            return null;
+        }
+        JSONObject jsonObject = new JSONObject(jsonMap);
+        String strMapName = jsonObject.optString("MapName");
+        if (strMapName==null){
+            return null;
+        }
+
+        Map<String,String> mapInfo = new HashMap<>() ;
+        mapInfo.put("MapName",strMapName);
+        if (jsonObject.has("Module")){
+            mapInfo.put("Module",jsonObject.optString("Module"));
+        }
+        if (jsonObject.has("IsPrivate")){
+            mapInfo.put("IsPrivate",jsonObject.optString("IsPrivate"));
+        }
+        return mapInfo;
+
+    }
+
+    public boolean addlayersFromMap(String jsonSrcMap ,String jsonDesMap){
+
+        if (jsonSrcMap==null||jsonDesMap==null){
+            return false;
+        }
+        // 先把两个map在同一工作空间中打开 [desMap addLayersFrom:srcmap] save到des目录下desMap
+
+        // 源Map打开信息字典
+        Map<String,String> srcInfo = getMapInfoFromJson(jsonSrcMap);
+        Map<String,String> desInfo = getMapInfoFromJson(jsonDesMap);
+        if (srcInfo==null||desInfo==null){
+            return false;
+        }
+
+        String strSrcName = srcInfo.get("MapName");
+        String strSrcModule = srcInfo.get("Module");
+        boolean isSrcPrivate = false;
+        if (srcInfo.containsKey("IsPrivate")){
+            isSrcPrivate = (boolean)Integer.parseInt(srcInfo.get("IsPrivate"));
+        }
+
+        String strDesName = desInfo.get("MapName");
+        String strDesModule = desInfo.get("Module");
+        boolean isDesPrivate = false;
+        if (desInfo.containsKey("IsPrivate")){
+            isDesPrivate = (boolean)Integer.parseInt(desInfo.get("IsPrivate"));
+        }
+
+        Boolean bSrcRename = false;//同名Map需要srcMap打开后重命名，同一Map不能合并
+        if (strSrcName.equals(strDesName)){
+            Boolean bSame = true;
+            if (strSrcModule==null){
+                if(strDesModule!=null){
+                    bSame = false;
+                }
+            }else if(strDesModule==null){
+                bSame = false;
+            }else{
+                if (!strSrcModule.equals(strDesModule)){
+                    bSame = false;
+                }
+            }
+            if (isSrcPrivate!=isDesPrivate){
+                bSame = false;
+            }
+
+            if (bSame){
+                return false;
+            }
+
+            // 同名处理
+            bSrcRename = true;
+
+        }
+
+
+
+        Boolean bResult = false;
+        Workspace workspace = new Workspace();
+        if( openMap(srcInfo,workspace) ){
+            if (bSrcRename) {
+                // 替换的命名
+                String strSrcReplace = strSrcName + "#1";
+                // 重命名Map：1.Map打开toXML 2.maps删除源map名 3.maps从XML添加新map名
+                com.supermap.mapping.Map mapTemp = new com.supermap.mapping.Map(workspace);
+                mapTemp.open(strSrcName);
+                String strXMLTemp = mapTemp.toXML();
+                mapTemp.close();
+                mapTemp.dispose();
+                workspace.getMaps().remove(strSrcName);
+                workspace.getMaps().add(strSrcReplace,strXMLTemp);
+
+                // 重命名Resources中symbolGroup
+                // Marker
+                {
+                    SymbolGroup group = [workspace.getResources().getMarkerLibrary().getRootGroup().getChildGroups().get(strSrcName);
+                    group.setName(strSrcReplace);
+                }
+                // Line
+                {
+                    SymbolGroup group = [workspace.getResources().getLineLibrary().getRootGroup().getChildGroups().get(strSrcName);
+                    group.setName(strSrcReplace);
+                }
+                // Fill
+                {
+                    SymbolGroup group = [workspace.getResources().getFillLibrary().getRootGroup().getChildGroups().get(strSrcName);
+                    group.setName(strSrcReplace);
+                }
+
+
+                strSrcName = strSrcReplace;
+            }
+
+            if( openMap(desInfo,workspace) ){
+                com.supermap.mapping.Map map = new com.supermap.mapping.Map(workspace);
+
+                Map<String,String> dicAddition = null;
+                {
+                    String strUserName;
+                    if (!isDesPrivate) {
+                        strUserName = "Customer";
+                    }else{
+                        strUserName = getUserName();
+                    }
+                    String strRootPath = getRootPath();
+                    String strCustomer = strRootPath+"/"+strUserName+"/Data";
+                    String strPathEXP;
+                    if (strDesModule!=null && !strDesModule.equals("")) {
+                        strPathEXP = strCustomer + "/Map/" + strDesModule + "/" + strDesName + ".exp";
+                    }else{
+                        strPathEXP = strCustomer + "/Map/" + strDesName + ".exp";
+                    }
+
+                    String strMapEXP = stringWithContentsOfFile(strPathEXP, encodingUTF8);
+                    String templateStr = null;
+                    try {
+                        JSONObject jsonObject = new JSONObject(strMapEXP);
+                        templateStr = jsonObject.optString("Template", null);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (templateStr!=null) {
+                        dicAddition = new HashMap<>();
+                        dicAddition.put("Template",templateStr);
+                    }
+                }
+
+                if(  map.open(strDesName) &&
+                        map.addLayersFromMap(strSrcName,true) )
+                {
+                    [map save];
+                    [map close];
+                    [map dispose];
+                    String strDesMap = saveMapName(strDesName,workspace,strDesModule,dicAddition,false,true,isDesPrivate);
+
+                    if (strDesMap!=null) {
+                        bResult = true;
+                    }
+                }
+            }
+        }
+
+        workspace.close();
+        workspace.dispose();
+        return true;
+
     }
 
 }
