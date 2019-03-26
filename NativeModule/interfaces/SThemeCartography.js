@@ -594,6 +594,83 @@ modifyGraduatedSymbolThemeMap = (params) => {
   }
 }
 
+/**
+ * 获取点密度专题图表达式
+ * @param params
+ */
+getDotDensityExpression = (params) => {
+  try {
+    return SThemeCartography.getDotDensityExpression(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取点密度专题图单点代表值
+ * @param params
+ * @returns {*}
+ */
+getDotDensityValue = (params) => {
+  try {
+    return SThemeCartography.getDotDensityValue(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取点密度专题图的点大小
+ * @param params
+ * @returns {Promise<void>}
+ */
+getDotDensityDotSize= (params) => {
+  try {
+    return SThemeCartography.getDotDensityDotSize(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取等级符号专题图的表达式
+ * @param params
+ * @returns {*}
+ */
+getGraduatedSymbolExpress= (params) => {
+  try {
+    return SThemeCartography.getGraduatedSymbolExpress(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取等级符号专题图的基准值
+ * @param params
+ * @returns {*}
+ */
+getGraduatedSymbolValue= (params) => {
+  try {
+    return SThemeCartography.getGraduatedSymbolValue(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取等级符号专题图的符号大小
+ * @param params
+ * @returns {*}
+ */
+getGraduatedSymbolSize= (params) => {
+  try {
+    return SThemeCartography.getGraduatedSymbolSize(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   //单值
   createThemeUniqueMap,
@@ -640,9 +717,15 @@ export default {
   //点密度专题图
   createDotDensityThemeMap,
   modifyDotDensityThemeMap,
+  getDotDensityExpression,
+  getDotDensityValue,
+  getDotDensityDotSize,
   //等级符号专题图
   createGraduatedSymbolThemeMap,
   modifyGraduatedSymbolThemeMap,
+  getGraduatedSymbolExpress,
+  getGraduatedSymbolValue,
+  getGraduatedSymbolSize,
   //其他
   getThemeExpressionByLayerName,
   getThemeExpressionByLayerIndex,

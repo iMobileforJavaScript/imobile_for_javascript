@@ -15,7 +15,6 @@ export default {
 
   /** 消息服务 **/
   MESSAGE_SERVICE_RECEIVE:'com.supermap.RN.Mapcontrol.message_service_receive',
-
   /** 量算 **/
   MEASURE_LENGTH: 'com.supermap.RN.Mapcontrol.length_measured',
   MEASURE_AREA: 'com.supermap.RN.Mapcontrol.area_measured',

@@ -186,6 +186,7 @@ RCT_REMAP_METHOD(receiveMessage, uuid:(NSString*)uuid  reciveMessageResolver:(RC
         if(g_AMQPManager!=nil && uuid!=nil){
             if(g_AMQPReceiver==nil){
                 NSString* sQueue = [@"Message_"  stringByAppendingString:uuid];
+                [g_AMQPManager declareQueue:sQueue];
                 g_AMQPReceiver = [g_AMQPManager newReceiver:sQueue];
             }
         }
@@ -217,6 +218,7 @@ RCT_REMAP_METHOD(startReceiveMessage, uuid:(NSString*)uuid  startReceiveMessageR
         if(g_AMQPManager!=nil && uuid!=nil){
             if(g_AMQPReceiver==nil){
                 NSString* sQueue = [@"Message_"  stringByAppendingString:uuid];
+                [g_AMQPManager declareQueue:sQueue];
                 g_AMQPReceiver = [g_AMQPManager newReceiver:sQueue];
             }
         }
