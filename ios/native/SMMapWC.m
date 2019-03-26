@@ -522,7 +522,7 @@
 //  非替换模式：重复文件名+num
 //  替换模式：重复文件替换，同路径先关闭工作空间再替换
 
--(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic withFileDirectory:(NSString*)strDirPath isDatasourceReplace:(BOOL)bDatasourceRep isSymbolsReplace:(BOOL)bSymbolsRep{
+-(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic withFileDirectory:(NSString*)strDirPath isDatasourceReplace:(BOOL)bDatasourceRep isSymbolsReplace:(BOOL)bSymbolsRep isPrivate:(BOOL)isPrivate{
     
     BOOL bSucc = NO;
     
@@ -1206,7 +1206,7 @@
 //          \------->Resource:      旗下包含模块子文件夹，存放符号库文件（.sym/.lsl./bru）
 // 返回结果：NSArray为导入成功的所有地图名
 
--(NSArray *)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString*)strModule/*(int)nModule*/{
+-(NSArray *)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString*)strModule isPrivate:(BOOL)isPrivate {
     NSArray *arrResult = nil;
     if ( infoDic && [infoDic objectForKey:@"server"] && [infoDic objectForKey:@"type"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
         Workspace *importWorkspace = [[Workspace alloc]init];
@@ -1258,7 +1258,7 @@
             NSMutableArray *arrTemp = [[NSMutableArray alloc]init];
             for (int i=0; i<importWorkspace.maps.count; i++) {
                 NSString *strMapName = [importWorkspace.maps get:i];
-                NSString *strResName = [self saveMapName:strMapName fromWorkspace:importWorkspace ofModule:strModule withAddition:dicAddition isNewMap:YES isResourcesModyfied:false];
+                NSString *strResName = [self saveMapName:strMapName fromWorkspace:importWorkspace ofModule:strModule withAddition:dicAddition isNewMap:YES isResourcesModyfied:false isPrivate:isPrivate];
                 
                 if(strResName!=nil){
                     if(strMapRename!=nil && ![strMapRename isEqualToString:@""]){
@@ -1428,16 +1428,22 @@
 //      2.srcWorkspace包含地图
 //      3.模块存在
 //
--(NSString*)saveMapName:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(NSString*)strModule withAddition:(NSDictionary*)dicAddition isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified{
+-(NSString*)saveMapName:(NSString*)strMapAlians fromWorkspace:(Workspace*)srcWorkspace ofModule:(NSString*)strModule withAddition:(NSDictionary*)dicAddition isNewMap:(BOOL)bNew isResourcesModyfied:(BOOL)bResourcesModified isPrivate:(BOOL)bPrivate{
     
     if(srcWorkspace==nil || [srcWorkspace.maps indexOf:strMapAlians]==-1){
         return nil;
     }
     
-    NSString *strUserName = [self getUserName];
-    if (strUserName==nil) {
-        return false;
+    NSString *strUserName;
+    if (!bPrivate) {
+        strUserName = @"Customer";
+    }else{
+        strUserName = [self getUserName];
+        if (strUserName==nil) {
+            return nil;
+        }
     }
+
     NSString *strRootPath = [self getRootPath];
     NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];  //[self getCustomerDirectory:YES];
     //NSString *strModule = [self getModuleDirectory:nModule];
@@ -1569,16 +1575,20 @@
         NSString *strSrcAlian = srcInfo.alias;
         NSString *strSrcServer = srcInfo.server;
         EngineType engineType = srcInfo.engineType;
-        NSString *strTargetServer = strSrcServer;
-        //---------》》》》》只有一部分new怎么办？
-        if (bNew) {
-            if (engineType == ET_UDB || engineType == ET_IMAGEPLUGINS) {
-                
-                // 源文件存在？
-                if( ![self isDatasourceFileExist:strSrcServer isUDB:(engineType==ET_UDB)] ){
-                    continue;
-                }
-                
+        NSString *strTargetServer = nil;
+        
+        if (engineType == ET_UDB || engineType == ET_IMAGEPLUGINS){
+        
+            // 源文件存在？
+            if( ![self isDatasourceFileExist:strSrcServer isUDB:(engineType==ET_UDB)] ){
+                continue;
+            }
+            
+            if (!bNew && [strSrcServer hasPrefix:desDatasourceDir]) {
+                // 不需要拷贝的UDB
+                strTargetServer = strSrcServer;
+            }else{
+
                 NSArray *arrSrcServer = [strSrcServer componentsSeparatedByString:@"/"];
                 NSString *strFileName = [arrSrcServer lastObject];
                 // 导入工作空间名
@@ -1624,17 +1634,13 @@
                         continue;
                     }
                 }//bUDB
+
             }
-        }
-        
-        if (engineType == ET_UDB || engineType == ET_IMAGEPLUGINS){
-            //strTargetServer = [strTargetServer substringFromIndex:desDatasourceDir.length+1];
-            if (![strTargetServer hasPrefix:[NSString stringWithFormat:@"%@/%@",strRootPath,strUserName]] &&
-                ![strTargetServer hasPrefix:[NSString stringWithFormat:@"%@/%@",strRootPath,@"Customer"]]) {
-                // 不是当前用户
-                continue;
-            }
+            
             strTargetServer = [strTargetServer substringFromIndex:strRootPath.length+1];
+            
+        }else{
+            strTargetServer = strSrcServer;
         }
         
         NSDictionary *dicDatasource = @{ @"Alians":strSrcAlian , @"Server":strTargetServer , @"Type":[NSNumber numberWithInt:engineType] };
@@ -1819,6 +1825,24 @@
     return strMapName;
 }
 
+//-(BOOL)openMapWithJson:(NSString *)jsonMap toWorkspace:(Workspace*)desWorkspace
+-(BOOL)openMapWithDictionary:(NSDictionary*)mapInfo toWorkspace:(Workspace*)desWorkspace{
+    
+    if (mapInfo!=nil) {
+        NSString *strMapName = [mapInfo objectForKey:@"MapName"];
+        if (strMapName!=nil) {
+            NSString *strModule = [mapInfo objectForKey:@"Module"];
+            BOOL isPrivate = NO; //默认公共目录
+            NSNumber *numPrivate = [mapInfo objectForKey:@"IsPrivate"];
+            if (numPrivate!=nil) {
+                isPrivate = [numPrivate boolValue];
+            }
+            BOOL result = [self openMapName:strMapName toWorkspace:desWorkspace ofModule:strModule isPrivate:isPrivate];
+            return result;
+        }
+    }
+    return false;
+}
 
 // 大工作空间打开本地地图
 -(BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(NSString *)strModule isPrivate:(BOOL)bPrivate{
@@ -2032,6 +2056,156 @@
     return true;
 }
 
+
+-(BOOL)addLayersFromMapJson:(NSString*)jsonSrcMap toMap:(NSString*)jsonDesMap{
+    
+    // 先把两个map在同一工作空间中打开 [desMap addLayersFrom:srcmap] save到des目录下desMap
+    
+    // 源Map打开信息字典
+    NSDictionary *dicSrcInfo = [NSJSONSerialization JSONObjectWithData:[jsonSrcMap dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
+    // 目标Map打开信息字典
+    NSDictionary *dicDesInfo = [NSJSONSerialization JSONObjectWithData:[jsonDesMap dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
+    
+    if (dicSrcInfo==nil || dicDesInfo==nil) {
+        return false;
+    }
+    
+    NSString*strSrcName = [dicSrcInfo objectForKey:@"MapName"];
+    NSString*strDesName = [dicDesInfo objectForKey:@"MapName"];
+    if (strSrcName==nil||strDesName==nil) {
+        return false;
+    }
+    NSString *strSrcModule = [dicSrcInfo objectForKey:@"Module"];
+    NSString *strDesModule = [dicDesInfo objectForKey:@"Module"];
+    BOOL isSrcPrivate = false;
+    BOOL isDesPrivate = false;
+    {
+        NSNumber *numSrcPrivate = [dicSrcInfo objectForKey:@"IsPrivate"];
+        if (numSrcPrivate!=nil) {
+            isSrcPrivate = [numSrcPrivate boolValue];
+        }
+        
+        NSNumber *numDesPrivate = [dicDesInfo objectForKey:@"IsPrivate"];
+        if (numDesPrivate!=nil){
+            isDesPrivate = [numDesPrivate boolValue];
+        }
+    }
+    
+    
+    BOOL bSrcRename = false;//同名Map需要srcMap打开后重命名，同一Map不能合并
+    if ([strSrcName isEqualToString:strDesName]) {
+        BOOL bSame = true;
+        if (strSrcModule==nil) {
+            if (strDesModule!=nil) {
+                bSame= false;
+            }
+        }else if(strDesModule==nil){
+            bSame = false;
+        }else{
+            if (![strSrcModule isEqualToString:strDesModule]) {
+                bSame = false;
+            }
+        }
+        
+        if (isDesPrivate!=isSrcPrivate) {
+            bSame = false;
+        }
+
+        if (bSame) {
+            return false;
+        }
+        
+        // 同名处理
+        bSrcRename = true;
+        
+    }
+    
+    BOOL bResult = false;
+    Workspace *workspace = [[Workspace alloc]init];
+    if( [self openMapWithDictionary:dicSrcInfo toWorkspace:workspace] ){
+        if (bSrcRename) {
+            // 替换的命名
+            NSString *strSrcReplace = [NSString stringWithFormat:@"%@#1",strSrcName];
+            // 重命名Map：1.Map打开toXML 2.maps删除源map名 3.maps从XML添加新map名
+            Map *mapTemp = [[Map alloc]initWithWorkspace:workspace];
+            [mapTemp open:strSrcName];
+            NSString *strXMLTemp = [mapTemp toXML];
+            [mapTemp close];
+            [mapTemp dispose];
+            [workspace.maps removeMapName:strSrcName];
+            [workspace.maps add:strSrcReplace withXML:strXMLTemp];
+            
+            // 重命名Resources中symbolGroup
+            // Marker
+            {
+                SymbolGroup *group = [workspace.resources.markerLibrary.rootGroup.childSymbolGroups getGroupWithName:strSrcName];
+                [group setName:strSrcReplace];
+            }
+            // Line
+            {
+                SymbolGroup *group = [workspace.resources.lineLibrary.rootGroup.childSymbolGroups getGroupWithName:strSrcName];
+                [group setName:strSrcReplace];
+            }
+            // Fill
+            {
+                SymbolGroup *group = [workspace.resources.fillLibrary.rootGroup.childSymbolGroups getGroupWithName:strSrcName];
+                [group setName:strSrcReplace];
+            }
+
+            
+            strSrcName = strSrcReplace;
+        }
+        
+        if( [self openMapWithDictionary:dicDesInfo toWorkspace:workspace] ){
+            Map *map = [[Map alloc]initWithWorkspace:workspace];
+            
+            NSDictionary *dicAddition = nil;
+            {
+                NSString *strUserName;
+                if (!isDesPrivate) {
+                    strUserName = @"Customer";
+                }else{
+                    strUserName = [self getUserName];
+                }
+                NSString *strRootPath = [self getRootPath];
+                NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];
+                NSString* strPathEXP;
+                if (strDesModule!=nil && ![strDesModule isEqualToString:@""]) {
+                    strPathEXP = [NSString stringWithFormat:@"%@/Map/%@/%@.exp",strCustomer,strDesModule,strDesName];
+                }else{
+                    strPathEXP = [NSString stringWithFormat:@"%@/Map/%@.exp",strCustomer,strDesName];
+                }
+                NSString* strMapEXP = [NSString stringWithContentsOfFile:strPathEXP encoding:NSUTF8StringEncoding error:nil];
+                NSDictionary *dicExp = [NSJSONSerialization JSONObjectWithData:[strMapEXP dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
+                NSString *strTemplate = [dicExp objectForKey:@"Template"];
+                
+                if (strTemplate!=nil) {
+                    dicAddition = @{@"Template":strTemplate};
+                }
+            }
+
+            if(  [map open:strDesName] &&
+                 [map addLayersFromMap:strSrcName withDynamicProjection:YES] )
+            {
+                [map save];
+                [map close];
+                [map dispose];
+                NSString *strDesMap = [self saveMapName:strDesName fromWorkspace:workspace ofModule:strDesModule withAddition:dicAddition isNewMap:NO isResourcesModyfied:YES isPrivate:isDesPrivate ];
+                if (strDesMap!=nil) {
+                    bResult = YES;
+                }
+            }
+        }
+        
+    
+    }
+    
+    [workspace close];
+    [workspace dispose];
+    
+    return true;
+}
+
 -(NSString*)importUDBFile:(NSString*)strFile ofModule:(NSString*)strModule{
     
     if (![self isDatasourceFileExist:strFile isUDB:YES]) {
@@ -2167,6 +2341,53 @@
     } @catch (NSException *exception) {
         return NO;
     }
+}
+
+-(BOOL)copyDatasetsFrom:(NSString *)strSrcUDB to:(NSString *)strDesUDB{
+    
+    BOOL result = false;
+    
+    Workspace *workspaceTemp = [[Workspace alloc]init];
+    
+    DatasourceConnectionInfo* srcInfo = [[DatasourceConnectionInfo alloc]init];
+    srcInfo.server = strSrcUDB;
+    srcInfo.engineType = ET_UDB;
+    srcInfo.alias = @"src";
+    Datasource * srcDs = [workspaceTemp.datasources open:srcInfo];
+    if (srcDs!=nil) {
+        DatasourceConnectionInfo* desInfo = [[DatasourceConnectionInfo alloc]init];
+        desInfo.server = strDesUDB;
+        desInfo.engineType = ET_UDB;
+        desInfo.alias = @"des";
+        Datasource * desDs = [workspaceTemp.datasources open:desInfo];
+
+        if (desDs!=nil) {
+            for(int i=0;i<srcDs.datasets.count;i++){
+                Dataset *dataset = [srcDs.datasets get:i];
+                NSString *strDesName = dataset.name;
+                int nAddNum = 1;
+                while ([desDs.datasets contain:strDesName]) {
+                    strDesName = [NSString stringWithFormat:@"%@_%d",dataset.name,nAddNum];
+                    nAddNum++;
+                }
+                
+                [desDs copyDataset:dataset desDatasetName:strDesName encodeType:dataset.encodeType];
+            }
+            
+            [desDs saveDatasource];
+            result = true;
+        }
+        [desInfo dispose];
+
+    }
+    
+    [srcInfo dispose];
+    
+    [workspaceTemp close];
+    [workspaceTemp dispose];
+    
+    return result;
+
 }
 
 @end

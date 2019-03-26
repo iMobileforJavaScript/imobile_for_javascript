@@ -93,6 +93,7 @@
     if (layer.dataset != nil) {
         [dictionary setValue:[NSNumber numberWithInteger:layer.dataset.datasetType] forKey:@"type"];
         [dictionary setValue:datasetName forKey:@"datasetName"];
+        [dictionary setValue:layer.dataset.datasource.datasourceConnectionInfo.alias forKey:@"datasourceAlias"];
     } else {
         [dictionary setValue:@"layerGroup" forKey:@"type"];
     }

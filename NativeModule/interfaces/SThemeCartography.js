@@ -10,7 +10,7 @@ let SThemeCartography = NativeModules.SThemeCartography
 
 /**
  * 新建单值专题图层
- * 
+ *
  * @param params (数据源的索引/数据源的别名、 数据集名称、 单值专题图字段表达式、 颜色表样式)
  */
 createThemeUniqueMap = (params) => {
@@ -36,7 +36,7 @@ createUniqueThemeLabelMap = (params) => {
 
 /**
  * 设置单值专题图的默认风格
- * 
+ *
  * @param params 显示风格
  * @param layerName 图层名称
  */
@@ -50,7 +50,7 @@ setThemeUniqueDefaultStyle = (params, layerName) => {
 
 /**
  * 设置单值专题图子项的显示风格
- * 
+ *
  * @param params 显示风格
  * @param layerName 图层名称
  * @param itemIndex 单值专题图子项索引
@@ -185,7 +185,7 @@ modifyThemeRangeMap = (params) => {
 /**
  * 新建统一标签专题图
  *
- * @param params 
+ * @param params
  */
 createUniformThemeLabelMap = (params) => {
   try {
@@ -199,7 +199,7 @@ createUniformThemeLabelMap = (params) => {
 /**
  * 设置统一标签专题图的表达式
  *
- * @param params 
+ * @param params
  */
 setUniformLabelExpression = (params) => {
   try {
@@ -212,7 +212,7 @@ setUniformLabelExpression = (params) => {
 /**
  * 设置统一标签专题图的背景形状
  *
- * @param params 
+ * @param params
  */
 setUniformLabelBackShape = (params) => {
   try {
@@ -225,7 +225,7 @@ setUniformLabelBackShape = (params) => {
 /**
  * 设置统一标签专题图的字体
  *
- * @param params 
+ * @param params
  */
 setUniformLabelFontName = (params) => {
   try {
@@ -238,7 +238,7 @@ setUniformLabelFontName = (params) => {
 /**
  * 设置统一标签专题图的字号
  *
- * @param params 
+ * @param params
  */
 setUniformLabelFontSize = (params) => {
   try {
@@ -251,7 +251,7 @@ setUniformLabelFontSize = (params) => {
 /**
  * 设置统一标签专题图的旋转角度
  *
- * @param params 
+ * @param params
  */
 setUniformLabelRotaion = (params) => {
   try {
@@ -264,7 +264,7 @@ setUniformLabelRotaion = (params) => {
 /**
  * 设置统一标签专题图的颜色
  *
- * @param params 
+ * @param params
  */
 setUniformLabelColor = (params) => {
   try {
@@ -275,7 +275,7 @@ setUniformLabelColor = (params) => {
 }
 
 /**
- * @param params 
+ * @param params
  */
 getUniformLabelExpression = (params) => {
   try {
@@ -286,7 +286,7 @@ getUniformLabelExpression = (params) => {
 }
 
 /**
- * @param params 
+ * @param params
  */
 getUniformLabelBackShape = (params) => {
   try {
@@ -297,7 +297,7 @@ getUniformLabelBackShape = (params) => {
 }
 
 /**
- * @param params 
+ * @param params
  */
 getUniformLabelFontName = (params) => {
   try {
@@ -308,7 +308,7 @@ getUniformLabelFontName = (params) => {
 }
 
 /**
- * @param params 
+ * @param params
  */
 getUniformLabelFontSize = (params) => {
   try {
@@ -319,7 +319,7 @@ getUniformLabelFontSize = (params) => {
 }
 
 /**
- * @param params 
+ * @param params
  */
 getUniformLabelRotaion = (params) => {
   try {
@@ -330,7 +330,7 @@ getUniformLabelRotaion = (params) => {
 }
 
 /**
- * @param params 
+ * @param params
  */
 getUniformLabelColor = (params) => {
   try {
@@ -454,7 +454,7 @@ isAnyOpenedDS = () => {
 /**
  * 数据集->新建统计专题图
  *
- * @param params 
+ * @param params
  */
 createThemeGraphMap = (params) => {
   try {
@@ -467,7 +467,7 @@ createThemeGraphMap = (params) => {
 /**
  * 图层->新建统计专题图
  *
- * @param params 
+ * @param params
  */
 createThemeGraphMapByLayer = (params) => {
     try {
@@ -480,7 +480,7 @@ createThemeGraphMapByLayer = (params) => {
 /**
  * 设置统计专题图的表达式
  *
- * @param params 
+ * @param params
  */
 setThemeGraphExpressions = (params) => {
   try {
@@ -493,7 +493,7 @@ setThemeGraphExpressions = (params) => {
 /**
  * 设置统计专题图的颜色方案
  *
- * @param params 
+ * @param params
  */
 setThemeGraphColorScheme = (params) => {
   try {
@@ -506,7 +506,7 @@ setThemeGraphColorScheme = (params) => {
 /**
  * 设置统计专题图的类型
  *
- * @param params 
+ * @param params
  */
 setThemeGraphType = (params) => {
   try {
@@ -519,7 +519,7 @@ setThemeGraphType = (params) => {
 /**
  * 设置统计专题图的统计值的计算方法
  *
- * @param params 
+ * @param params
  */
 setThemeGraphGraduatedMode = (params) => {
   try {
@@ -531,12 +531,141 @@ setThemeGraphGraduatedMode = (params) => {
 
 /**
  * 获取统计专题图的表达式
- * 
+ *
  * @param params
  */
 getGraphExpressions = (params) => {
   try {
     return SThemeCartography.getGraphExpressions(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 新建点密度专题图
+ *
+ * @param params
+ */
+createDotDensityThemeMap = (params) => {
+  try {
+    return SThemeCartography.createDotDensityThemeMap(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 修改点密度专题图：设置点密度图的表达式，单点代表的值，点风格（大小和颜色）。
+ *
+ * @param params
+ */
+modifyDotDensityThemeMap = (params) => {
+  try {
+    return SThemeCartography.modifyDotDensityThemeMap(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 新建等级符号专题图
+ *
+ * @param params
+ */
+createGraduatedSymbolThemeMap = (params) => {
+  try {
+    return SThemeCartography.createGraduatedSymbolThemeMap(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 修改等级符号专题图：设置表达式，分级方式，基准值，正值基准值风格（大小和颜色）。
+ *
+ * @param params
+ */
+modifyGraduatedSymbolThemeMap = (params) => {
+  try {
+    return SThemeCartography.modifyGraduatedSymbolThemeMap(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取点密度专题图表达式
+ * @param params
+ */
+getDotDensityExpression = (params) => {
+  try {
+    return SThemeCartography.getDotDensityExpression(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取点密度专题图单点代表值
+ * @param params
+ * @returns {*}
+ */
+getDotDensityValue = (params) => {
+  try {
+    return SThemeCartography.getDotDensityValue(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取点密度专题图的点大小
+ * @param params
+ * @returns {Promise<void>}
+ */
+getDotDensityDotSize= (params) => {
+  try {
+    return SThemeCartography.getDotDensityDotSize(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取等级符号专题图的表达式
+ * @param params
+ * @returns {*}
+ */
+getGraduatedSymbolExpress= (params) => {
+  try {
+    return SThemeCartography.getGraduatedSymbolExpress(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取等级符号专题图的基准值
+ * @param params
+ * @returns {*}
+ */
+getGraduatedSymbolValue= (params) => {
+  try {
+    return SThemeCartography.getGraduatedSymbolValue(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取等级符号专题图的符号大小
+ * @param params
+ * @returns {*}
+ */
+getGraduatedSymbolSize= (params) => {
+  try {
+    return SThemeCartography.getGraduatedSymbolSize(params)
   } catch (error) {
     console.error(error)
   }
@@ -585,6 +714,18 @@ export default {
   setThemeGraphType,
   setThemeGraphGraduatedMode,
   getGraphExpressions,
+  //点密度专题图
+  createDotDensityThemeMap,
+  modifyDotDensityThemeMap,
+  getDotDensityExpression,
+  getDotDensityValue,
+  getDotDensityDotSize,
+  //等级符号专题图
+  createGraduatedSymbolThemeMap,
+  modifyGraduatedSymbolThemeMap,
+  getGraduatedSymbolExpress,
+  getGraduatedSymbolValue,
+  getGraduatedSymbolSize,
   //其他
   getThemeExpressionByLayerName,
   getThemeExpressionByLayerIndex,

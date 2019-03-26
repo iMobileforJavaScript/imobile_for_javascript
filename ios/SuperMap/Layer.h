@@ -188,6 +188,8 @@
 -(BOOL)isDiaposed;
 
 -(void)removeCache;
+
+-(NSString *)toXML;
 @end
 
 @protocol LayerStateDelegate <NSObject>

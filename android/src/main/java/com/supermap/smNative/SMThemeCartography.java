@@ -3,6 +3,8 @@ package com.supermap.smNative;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.ColorParseUtil;
 import com.supermap.data.*;
@@ -1887,7 +1889,7 @@ public class SMThemeCartography {
     }
 
     /**
-     * 获取统计专题图分级模式
+     * 获取统计专题图,等级符号专题图分级模式
      * @param type
      * @return
      */
@@ -1895,15 +1897,108 @@ public class SMThemeCartography {
         GraduatedMode graduatedMode = null;
         switch (type) {
             case "CONSTANT":
-                graduatedMode = GraduatedMode.CONSTANT;
+                graduatedMode = GraduatedMode.CONSTANT;//常量分级
                 break;
             case "LOGARITHM":
-                graduatedMode = GraduatedMode.LOGARITHM;
+                graduatedMode = GraduatedMode.LOGARITHM;//对数分级
                 break;
             case "SQUAREROOT":
-                graduatedMode = GraduatedMode.SQUAREROOT;
+                graduatedMode = GraduatedMode.SQUAREROOT;//平方根分级
                 break;
         }
         return graduatedMode;
+    }
+
+    /**
+     * 计算矢量数据集中某个字段的最大值,不支持多字段计算最大值
+     * @param datasetVector
+     * @param dotExpression
+     * @return
+     */
+    public static double getMaxValue(DatasetVector datasetVector, String dotExpression) {
+        double maxValue = 1000;
+        QueryParameter parameter = new QueryParameter();
+        parameter.setAttributeFilter(dotExpression);
+        parameter.setCursorType(CursorType.STATIC);
+        parameter.setHasGeometry(true);
+        parameter.setResultFields(new String[]{dotExpression});
+        Recordset recordset = datasetVector.query(parameter);
+        if (null != recordset && !recordset.isEmpty()) {
+            FieldInfos fieldInfos = recordset.getFieldInfos();
+            if (fieldInfos.get(dotExpression).getType() == FieldType.INT64) {
+                // 屏蔽掉64位整形数据,组件不支持
+                return maxValue;
+            }
+            if (null != fieldInfos.get(dotExpression) && fieldInfos.get(dotExpression).getType() != FieldType.TEXT) {
+                maxValue = recordset.statistic(dotExpression, StatisticMode.MAX);
+            }
+        }
+        if (null != recordset) {
+            recordset.close();
+            recordset.dispose();
+        }
+        parameter.dispose();
+
+        return maxValue;
+    }
+
+    public static ThemeGraduatedSymbol getThemeGraduatedSymbol(ReadableMap readableMap) {
+        HashMap<String, Object> data = readableMap.toHashMap();
+
+        String layerName = null;
+        int layerIndex = -1;
+
+        if (data.containsKey("LayerName")){
+            layerName = data.get("LayerName").toString();
+        }
+        if (data.containsKey("LayerIndex")){
+            String index = data.get("LayerIndex").toString();
+            layerIndex = Integer.parseInt(index);
+        }
+
+        Layer layer;
+        if (layerName != null) {
+            layer = getLayerByName(layerName);
+        } else {
+            layer = getLayerByIndex(layerIndex);
+        }
+
+        if (layer != null && layer.getTheme() != null) {
+            if (layer.getTheme().getType() == ThemeType.GRADUATEDSYMBOL) {
+                return (ThemeGraduatedSymbol) layer.getTheme();
+            }
+        }
+
+        return null;
+    }
+
+    public static ThemeDotDensity getThemeDotDensity(ReadableMap readableMap) {
+        HashMap<String, Object> data = readableMap.toHashMap();
+
+        String layerName = null;
+        int layerIndex = -1;
+
+        if (data.containsKey("LayerName")){
+            layerName = data.get("LayerName").toString();
+        }
+        if (data.containsKey("LayerIndex")){
+            String index = data.get("LayerIndex").toString();
+            layerIndex = Integer.parseInt(index);
+        }
+
+        Layer layer;
+        if (layerName != null) {
+            layer = SMThemeCartography.getLayerByName(layerName);
+        } else {
+            layer = SMThemeCartography.getLayerByIndex(layerIndex);
+        }
+
+        if (layer != null && layer.getTheme() != null) {
+            if (layer.getTheme().getType() == ThemeType.DOTDENSITY) {
+                return (ThemeDotDensity) layer.getTheme();
+            }
+        }
+
+        return null;
     }
 }

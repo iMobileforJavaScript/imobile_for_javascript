@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SingletonObject_SuperMap.h"
 #import "SuperMap/SceneControl.h"
+#import "SuperMap/RouteStop.h"
 
 @protocol FlyHelper3DProgressDelegate <NSObject>
 @optional
@@ -75,6 +76,34 @@
  */
 @property(nonatomic) id<FlyHelper3DProgressDelegate> flyProgressDelegate;
 
+/**
+ *保存当前飞行站点
+ */
+-(void)saveCurrentRouteStop;
 
+/**
+ *保存所有记录的站点并开始飞行
+ */
+-(void)saveRoutStop;
+
+/**
+ *清除所有站点
+ */
+-(void)clearRoutStops;
+
+/**
+ *获取站点列表
+ */
+-(NSArray*)getStopList;
+
+/**
+ *获取站点
+ */
+-(RouteStop*) getStop:(NSString*) name;
+
+/**
+ *移除站点
+ */
+-(BOOL)removeStop:(NSString*) name;
 
 @end

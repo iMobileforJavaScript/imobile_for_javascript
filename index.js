@@ -135,6 +135,7 @@ import Utility from './NativeModule/utility/utility.js';
 
 import SMMapView from './NativeModule/components/SMMapViewUI.js';
 import SMCallOut from './NativeModule/components/SMCallOut.js';
+import SMRLegendView from './NativeModule/Legend/SMRLegendView.js'
 import SMLayerListView from './NativeModule/components/SMLayerListViewUI.js';
 import SMLegendView from './NativeModule/components/SMLegendViewUI.js';
 import SMScaleView from './NativeModule/components/SMScaleViewUI.js';
@@ -196,6 +197,7 @@ export {
   SMPlotView,
   // SMSearchView,
   SMWorkspaceManagerView,
+  SMRLegendView,
   
   Utility,
   

@@ -12,6 +12,7 @@
 #import "Workspace.h"
 #import "PixelToGlobeMode.h"
 #import "MultiViewportMode.h"
+#import "Rectangle2D.h"
 
 @class Layer3D,Layer3Ds,FlyManager,Workspace,TerrainLayers,TrackingLayer3D,GeoPoint3D,GlobalImage, LookAt;
 
@@ -93,6 +94,8 @@
 ///释放该对象所占用的资源。
 - (void)dispose;
 
+//显示一个二维面
+- (void)ensureVisibleWithBounds:(Rectangle2D *)visibleBounds;
 /**@brief 根据合适的图层观察尺度来显示场景。
  @param  layer3D 需要显示的图层。
  */

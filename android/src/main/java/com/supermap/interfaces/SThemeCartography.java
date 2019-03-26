@@ -1539,7 +1539,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             String rangeExpression = null;//分段字段表达式
             RangeMode rangeMode = null;//分段模式
-            double rangeParameter = -1;//分段参数
+            double rangeParameter = -1;//分段参数--当分段方法为标准差时，此参数无效，因为标准差分段方法所得的“段数”由计算结果决定，用户不可控制。
             ColorGradientType colorGradientType = null;
             String layerName = null;
 
@@ -1568,7 +1568,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (data.containsKey("RangeMode")){
                 String mode = data.get("RangeMode").toString();
                 rangeMode  = SMThemeCartography.getRangeMode(mode);
-            } else {
+                } else {
                 if (themeRange != null) {
                     rangeMode = themeRange.getRangeMode();
                 }
@@ -1587,7 +1587,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 String type = data.get("ColorGradientType").toString();
                 colorGradientType = SMThemeCartography.getColorGradientType(type);
             } else {
-                colorGradientType = ColorGradientType.GREENWHITE;
+                 colorGradientType = ColorGradientType.GREENWHITE;
             }
 
             boolean result = false;
@@ -2500,8 +2500,507 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
 
-    /***************************************************************************************/
+    /**点密度专题图*************************************************************************************/
+    /**
+     * 新建点密度专题图
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void createDotDensityThemeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
 
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            int datasourceIndex = -1;
+            String datasourceAlias = null;
+
+            String datasetName = null;
+            String dotExpression = null;//字段表达式
+            Color lineColor = null;
+            double value = -1;
+
+            if (data.containsKey("DatasetName")){
+                datasetName = data.get("DatasetName").toString();
+            }
+            if (data.containsKey("DotExpression")){
+                dotExpression  = data.get("DotExpression").toString();
+            }
+            if (data.containsKey("LineColor")){
+                String color = data.get("LineColor").toString();
+                lineColor = ColorParseUtil.getColor(color);
+            } else {
+                lineColor = new Color(255,165,0,0);
+            }
+            if (data.containsKey("Value")){
+                String valueParam = data.get("Value").toString();
+                value  = Double.parseDouble(valueParam);
+            }
+
+            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
+            if (dataset == null) {
+                if (data.containsKey("DatasourceIndex")){
+                    String index = data.get("DatasourceIndex").toString();
+                    datasourceIndex = Integer.parseInt(index);
+                }
+                if (data.containsKey("DatasourceAlias")){
+                    datasourceAlias = data.get("DatasourceAlias").toString();
+                }
+
+                if (datasourceAlias != null) {
+                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
+                }  else {
+                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
+                }
+            }
+
+            boolean result = false;
+            if (dataset != null && dotExpression != null) {
+                ThemeDotDensity themeDotDensity = new ThemeDotDensity();
+                if (themeDotDensity != null) {
+                    themeDotDensity.setDotExpression(dotExpression);
+                    GeoStyle geoStyle = new GeoStyle();
+                    geoStyle.setMarkerSize(new Size2D(2,2));
+                    geoStyle.setLineColor(lineColor);
+                    themeDotDensity.setStyle(geoStyle);
+                    if (value != -1) {
+                        themeDotDensity.setValue(value);
+                    } else {
+                        double maxValue = SMThemeCartography.getMaxValue((DatasetVector)dataset, dotExpression);
+                        themeDotDensity.setValue(maxValue / 1000);
+                    }
+
+                    mapControl.getMap().getLayers().add(dataset, themeDotDensity, true);
+                    mapControl.getMap().refresh();
+
+                    result = true;
+                }
+            }
+            promise.resolve(result);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 修改点密度专题图：设置点密度图的表达式，单点代表的值，点风格（符号，大小和颜色）。
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void modifyDotDensityThemeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            String dotExpression = null;
+            double value = -1;
+            double dotSize = -1;
+            Color lineColor = null;
+            int symbolID = -1;
+
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            if (data.containsKey("DotExpression")){
+                dotExpression  = data.get("DotExpression").toString();
+            }
+            if (data.containsKey("Value")){
+                String valueParam = data.get("Value").toString();
+                value  = Double.parseDouble(valueParam);
+            }
+            if (data.containsKey("SymbolSize")){
+                String size = data.get("SymbolSize").toString();
+                dotSize  = Double.parseDouble(size);
+            }
+            if (data.containsKey("LineColor")){
+                String color = data.get("LineColor").toString();
+                lineColor = ColorParseUtil.getColor(color);
+            }
+            if (data.containsKey("SymbolID")) {
+                String id = data.get("SymbolID").toString();
+                symbolID = (int)Double.parseDouble(id);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.DOTDENSITY) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
+                ThemeDotDensity themeDotDensity = (ThemeDotDensity) layer.getTheme();
+                if (dotExpression != null) {
+                    themeDotDensity.setDotExpression(dotExpression);
+                }
+                if (value != -1) {
+                    themeDotDensity.setValue(value);
+                }
+                if (dotSize != -1) {
+                    themeDotDensity.getStyle().setMarkerSize(new Size2D(dotSize, dotSize));
+                }
+                if (lineColor != null) {
+                    themeDotDensity.getStyle().setLineColor(lineColor);
+                }
+                if (symbolID != -1) {
+                    themeDotDensity.getStyle().setMarkerSymbolID(symbolID);
+                }
+
+                mapControl.getMap().refresh();
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取点密度专题图的表达式
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getDotDensityExpression(ReadableMap readableMap, Promise promise) {
+        try {
+            ThemeDotDensity themeDotDensity = SMThemeCartography.getThemeDotDensity(readableMap);
+            if (themeDotDensity != null) {
+                promise.resolve(themeDotDensity.getDotExpression());
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取点密度专题图的单点代表值
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getDotDensityValue(ReadableMap readableMap, Promise promise) {
+        try {
+            ThemeDotDensity themeDotDensity = SMThemeCartography.getThemeDotDensity(readableMap);
+            if (themeDotDensity != null) {
+                promise.resolve(themeDotDensity.getValue());
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取点密度专题图的点符号大小
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getDotDensityDotSize(ReadableMap readableMap, Promise promise) {
+        try {
+            ThemeDotDensity themeDotDensity = SMThemeCartography.getThemeDotDensity(readableMap);
+            if (themeDotDensity != null) {
+                Size2D markerSize = themeDotDensity.getStyle().getMarkerSize();
+                promise.resolve(markerSize.getHeight());
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**等级符号专题图*************************************************************************************/
+    /**
+     * 新建等级符号专题图
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void createGraduatedSymbolThemeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            int datasourceIndex = -1;
+            String datasourceAlias = null;
+
+            GraduatedMode graduatedMode = null;
+            String datasetName = null;
+            String graSymbolExpression = null;//字段表达式
+
+            Color lineColor = null;
+            double symbolSize = -1;
+
+            if (data.containsKey("GraduatedMode")){
+                String mode  = data.get("GraduatedMode").toString();
+                graduatedMode = SMThemeCartography.getGraduatedMode(mode);
+            }
+            if (data.containsKey("DatasetName")){
+                datasetName = data.get("DatasetName").toString();
+            }
+            if (data.containsKey("GraSymbolExpression")){
+                graSymbolExpression  = data.get("GraSymbolExpression").toString();
+            }
+
+            if (data.containsKey("LineColor")){
+                String color = data.get("LineColor").toString();
+                lineColor = ColorParseUtil.getColor(color);
+            } else {
+                lineColor = new Color(255,165,0,0);
+            }
+            if (data.containsKey("SymbolSize")){
+                String size = data.get("SymbolSize").toString();
+                symbolSize  = Double.parseDouble(size);
+            }
+
+            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
+            if (dataset == null) {
+                if (data.containsKey("DatasourceIndex")){
+                    String index = data.get("DatasourceIndex").toString();
+                    datasourceIndex = Integer.parseInt(index);
+                }
+                if (data.containsKey("DatasourceAlias")){
+                    datasourceAlias = data.get("DatasourceAlias").toString();
+                }
+
+                if (datasourceAlias != null) {
+                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
+                }  else {
+                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
+                }
+            }
+
+            boolean result = false;
+            if (dataset != null && graSymbolExpression != null) {
+                ThemeGraduatedSymbol themeGraduatedSymbol = null;
+                if (graduatedMode != null) {
+                    themeGraduatedSymbol  = ThemeGraduatedSymbol.makeDefault((DatasetVector)dataset, graSymbolExpression, graduatedMode);
+                } else {
+                    themeGraduatedSymbol = ThemeGraduatedSymbol.makeDefault((DatasetVector)dataset, graSymbolExpression, GraduatedMode.CONSTANT);
+                }
+                if (themeGraduatedSymbol == null) {
+                    themeGraduatedSymbol = new ThemeGraduatedSymbol();
+                }
+                themeGraduatedSymbol.setFlowEnabled(true);//流动显示
+                themeGraduatedSymbol.setExpression(graSymbolExpression);
+                themeGraduatedSymbol.getPositiveStyle().setLineColor(lineColor);
+                if (symbolSize != -1) {
+                    themeGraduatedSymbol.getPositiveStyle().setMarkerSize(new Size2D(symbolSize,symbolSize));
+                }
+
+                mapControl.getMap().getLayers().add(dataset, themeGraduatedSymbol, true);
+                mapControl.getMap().refresh();
+
+                result = true;
+            }
+            promise.resolve(result);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 修改等级符号专题图：设置表达式，分级方式，基准值，正值基准值风格（大小和颜色）。
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void modifyGraduatedSymbolThemeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            String graSymbolExpression = null;
+            GraduatedMode graduatedMode = null;
+            double baseValue = -1;//基准值
+            double symbolSize = -1;
+            Color lineColor = null;
+            int symbolID = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            if (data.containsKey("GraSymbolExpression")){
+                graSymbolExpression  = data.get("GraSymbolExpression").toString();
+            }
+            if (data.containsKey("GraduatedMode")){
+                String mode  = data.get("GraduatedMode").toString();
+                graduatedMode = SMThemeCartography.getGraduatedMode(mode);
+            }
+            if (data.containsKey("BaseValue")){
+                String valueParam = data.get("BaseValue").toString();
+                baseValue  = Double.parseDouble(valueParam);
+            }
+            if (data.containsKey("SymbolSize")){
+                String size = data.get("SymbolSize").toString();
+                symbolSize  = Double.parseDouble(size);
+            }
+            if (data.containsKey("LineColor")){
+                String color = data.get("LineColor").toString();
+                lineColor = ColorParseUtil.getColor(color);
+            }
+            if (data.containsKey("SymbolID")) {
+                String id = data.get("SymbolID").toString();
+                symbolID = (int)Double.parseDouble(id);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.GRADUATEDSYMBOL) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
+                ThemeGraduatedSymbol themeGraduatedSymbol = (ThemeGraduatedSymbol) layer.getTheme();
+                if (graSymbolExpression != null) {
+                    themeGraduatedSymbol.setExpression(graSymbolExpression);
+                }
+                if (graduatedMode != null) {
+                    themeGraduatedSymbol.setGraduatedMode(graduatedMode);
+                }
+                if (baseValue != -1) {
+                    themeGraduatedSymbol.setBaseValue(baseValue);
+                }
+                if (symbolSize != -1) {
+                    themeGraduatedSymbol.getPositiveStyle().setMarkerSize(new Size2D(symbolSize, symbolSize));
+                }
+                if (lineColor != null) {
+                    themeGraduatedSymbol.getPositiveStyle().setLineColor(lineColor);
+                }
+                if (symbolID != -1) {
+                    themeGraduatedSymbol.getPositiveStyle().setMarkerSymbolID(symbolID);
+                }
+
+                mapControl.getMap().refresh();
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取等级符号专题图的表达式
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getGraduatedSymbolExpress(ReadableMap readableMap, Promise promise) {
+        try {
+            ThemeGraduatedSymbol themeGraduatedSymbol = SMThemeCartography.getThemeGraduatedSymbol(readableMap);
+            if (themeGraduatedSymbol != null) {
+                promise.resolve(themeGraduatedSymbol.getExpression());
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取等级符号专题图的基准值
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getGraduatedSymbolValue(ReadableMap readableMap, Promise promise) {
+        try {
+            ThemeGraduatedSymbol themeGraduatedSymbol = SMThemeCartography.getThemeGraduatedSymbol(readableMap);
+            if (themeGraduatedSymbol != null) {
+                promise.resolve(themeGraduatedSymbol.getBaseValue());
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取等级符号专题图的符号大小
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getGraduatedSymbolSize(ReadableMap readableMap, Promise promise) {
+        try {
+            ThemeGraduatedSymbol themeGraduatedSymbol = SMThemeCartography.getThemeGraduatedSymbol(readableMap);
+            if (themeGraduatedSymbol != null) {
+                Size2D markerSize = themeGraduatedSymbol.getPositiveStyle().getMarkerSize();
+                promise.resolve(markerSize.getHeight());
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+
+    /***************************************************************************************/
 
     /**
      * 获取数据集中的字段
@@ -2659,6 +3158,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 Datasource datasource = datasources.get(i);
                 if (datasource.getConnectionInfo().getEngineType() != EngineType.UDB) {
                     //除了UDB数据源都排除
+                    continue;
+                } else if (datasource.getAlias().equals("Label")) {
+                    //排除标注数据源
                     continue;
                 }
 

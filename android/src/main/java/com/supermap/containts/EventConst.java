@@ -14,6 +14,14 @@ public class EventConst {
     public static final String ONLINE_SERVICE_UPLOADED = "com.supermap.RN.Mapcontrol.online_service_uploaded";
     public static final String ONLINE_SERVICE_UPLOADFAILURE = "com.supermap.RN.Mapcontrol.online_service_uploadfailure";
 
+    public static final String ONLINE_SERVICE_LOGIN = "com.supermap.RN.Mapcontrol.online_service_login";
+    public static final String ONLINE_SERVICE_LOGOUT = "com.supermap.RN.Mapcontrol.online_service_logout";
+
+    /** 消息服务 **/
+    public static final String MESSAGE_SERVICE_RECEIVE = "com.supermap.RN.Mapcontrol.message_service_receive";
+    public static final String MESSAGE_IMPORTEXTERNALDATA = "com.supermap.RN.Mapcontrol.message_importexternaldata";
+
+    /** 量算 **/
     public static final String MEASURE_LENGTH = "com.supermap.RN.Mapcontrol.length_measured";
     public static final String MEASURE_AREA = "com.supermap.RN.Mapcontrol.area_measured";
     public static final String MEASURE_ANGLE = "com.supermap.RN.Mapcontrol.angle_measured";
@@ -36,5 +44,6 @@ public class EventConst {
     public static final String SSCENE_SYMBOL = "com.supermap.RN.SMSceneControl.Scene_symbol";
     public static final String SSCENE_FAVORITE = "com.supermap.RN.SMSceneControl.Scene_favorite";
     public static final String SSCENE_CIRCLEFLY = "com.supermap.RN.SMSceneControl.Scene_circleFly";
+
 
 }

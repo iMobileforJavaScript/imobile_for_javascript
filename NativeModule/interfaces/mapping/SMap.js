@@ -15,6 +15,18 @@ const nativeEvt = new NativeEventEmitter(SMap)
 
 export default (function () {
   /**
+   * 获取许可文件状态
+   * @returns {*}
+   */
+  function getEnvironmentStatus () {
+    try {
+      return SMap.getEnvironmentStatus()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
    * 刷新地图
    * @returns {*}
    */
@@ -272,9 +284,7 @@ export default (function () {
    */
   function moveToPoint (point = {x: 116.35805, y: 39.70361}) {
     try {
-      console.warn('moveToPoint 1' + JSON.stringify(point))
       if (point.x === undefined || point.y === undefined) return
-      console.warn('moveToPoint 2' + JSON.stringify(point))
       return SMap.moveToPoint(point)
     } catch (e) {
       console.error(e)
@@ -686,11 +696,12 @@ export default (function () {
    *               若为true，创建新的xml地图文件
    * @param bResourcesModified  若为false，则导出所有的Resources；
    *                            若为true，则导出是用的Resources
+   * @param bPrivate  是否是用户私有(在User/下)
    * @returns {*}
    */
-  function saveMapName (strMapAlians = '', nModule = '', withAddition = {}, isNew = false, bResourcesModified = false) {
+  function saveMapName (strMapAlians = '', nModule = '', withAddition = {}, isNew = false, bResourcesModified = false, bPrivate = true) {
     try {
-      return SMap.saveMapName(strMapAlians, nModule, withAddition, isNew, bResourcesModified)
+      return SMap.saveMapName(strMapAlians, nModule, withAddition, isNew, bResourcesModified, bPrivate)
     } catch (e) {
       console.error(e)
       return e
@@ -701,11 +712,12 @@ export default (function () {
    * 导入文件工作空间到程序目录
    * @param infoDic
    * @param strDirPath
+   * @param bPrivate
    * @returns {*}
    */
-  function importWorkspaceInfo (infoDic, strDirPath) {
+  function importWorkspaceInfo (infoDic, strDirPath, bPrivate = true) {
     try {
-      return SMap.importWorkspaceInfo(infoDic, strDirPath)
+      return SMap.importWorkspaceInfo(infoDic, strDirPath, bPrivate)
     } catch (e) {
       console.error(e)
     }
@@ -715,6 +727,7 @@ export default (function () {
    * 大工作空间打开本地地图
    * @param strMapName
    * @param nModule 模块名（文件夹名）
+   * @param isPrivate 
    * @returns {*}
    */
   function openMapName (strMapName, nModule = '', isPrivate = false) {
@@ -870,6 +883,19 @@ export default (function () {
   // }
   
   /**
+   * 设置Selection样式
+   * @returns {*}
+   */
+  function setSelectionStyle (layerPath = '', style = {}) {
+    try {
+      if (layerPath === '' || Object.keys(style).length === 0) return
+      return SMap.setSelectionStyle(layerPath, JSON.stringify(style))
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
    * 清除Selection
    * @returns {*}
    */
@@ -928,7 +954,19 @@ export default (function () {
       console.error(e)
     }
   }
-
+  
+  /**
+   * 设置标注面随机色
+   * @returns {*|Promise.<void>}
+   */
+  function setTaggingGrid (name) {
+    try {
+      return SMap.setTaggingGrid(name)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
   /**
    * 添加地图图例
    * @returns {*|Promise.<void>}
@@ -944,11 +982,17 @@ export default (function () {
   /************************************** 地图编辑历史操作 ****************************************/
   /**
    * 地图撤销
+   * @param index
    * @returns {*|Promise.<void>|Promise|Promise.<boolean>}
    */
-  function undo () {
+  function undo (index) {
     try {
-      return SMap.undo()
+      if (index === undefined) {
+        return SMap.undo()
+      } else {
+        return SMap.undo(index)
+      }
+      
     } catch (e) {
       console.error(e)
     }
@@ -956,11 +1000,47 @@ export default (function () {
   
   /**
    * 地图恢复
+   * @param index
    * @returns {*|Promise|Promise.<boolean>}
    */
-  function redo () {
+  function redo (index) {
     try {
-      return SMap.redo()
+      if (index === undefined) {
+        return SMap.redo()
+      } else {
+        return SMap.redo(index)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 地图操作记录移除
+   * @param index1 移除指定位置的记录
+   * @param index2 若有，则移除 index1 到 index2 范围的记录
+   * @returns {*}
+   */
+  function removeHistory (index1, index2) {
+    try {
+      if (index1 === undefined && index2 === undefined) return false
+      if (index2 === undefined) {
+        return SMap.remove(index1)
+      } else {
+        return SMap.removeRange(index1, index2)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 清除地图操作记录
+   * @returns {*}
+   */
+  function clearHistory () {
+    try {
+      return SMap.clear()
     } catch (e) {
       console.error(e)
     }
@@ -977,72 +1057,69 @@ export default (function () {
       console.error(e)
     }
   }
-
+  
   /**
    * 添加数据集属性字段
    * @returns {*|Promise.<void>}
    */
-  function addRecordset(dataname,recname,name){
-    try{
-      return SMap.addRecordset(dataname,recname,name)
-    }catch (e) {
+  function addRecordset (dataname, recname, name) {
+    try {
+      return SMap.addRecordset(dataname, recname, name)
+    } catch (e) {
       console.error(e)
     }
   }
-
+  
   /**
    * 设置最小比例尺
    * @returns {*|Promise.<void>}
    */
-  function setMinVisibleScale(value,number){
-    try{
-      return SMap.setMinVisibleScale(value,number)
-    }catch (e) {
+  function setMinVisibleScale (value, number) {
+    try {
+      return SMap.setMinVisibleScale(value, number)
+    } catch (e) {
       console.error(e)
     }
   }
-
+  
   /**
    * 设置最大比例尺
    * @returns {*|Promise.<void>}
    */
-  function setMaxVisibleScale(value,number){
-    try{
-      return SMap.setMaxVisibleScale(value,number)
-    }catch (e) {
+  function setMaxVisibleScale (value, number) {
+    try {
+      return SMap.setMaxVisibleScale(value, number)
+    } catch (e) {
       console.error(e)
     }
   }
-
-
+  
   /**
    * 添加文字标注
    * @returns {*|Promise.<void>}
    */
-  function addTextRecordset(value,name,x,y){
-    try{
-      return SMap.addTextRecordset(value,name,x,y)
-    }catch (e) {
+  function addTextRecordset (value, name, x, y) {
+    try {
+      return SMap.addTextRecordset(value, name, x, y)
+    } catch (e) {
       console.error(e)
     }
   }
-
+  
   /**
    * 获取屏幕坐标点
    * @returns {*|Promise.<void>}
    */
-  function getGestureDetector(){
-    try{
+  function getGestureDetector () {
+    try {
       return SMap.getGestureDetector()
-    }catch (e) {
+    } catch (e) {
       console.error(e)
     }
   }
-
-
-
-
+  
   let SMapExp = {
+    getEnvironmentStatus,
     refreshMap,
     openWorkspace,
     openDatasource,
@@ -1104,15 +1181,19 @@ export default (function () {
     exportWorkspaceByMap,
     setDynamicProjection,
     // selectByRectangle,
+    setSelectionStyle,
     clearSelection,
     newTaggingDataset,
     removeTaggingDataset,
     openTaggingDataset,
+    setTaggingGrid,
     addLegend,
     
     /** 地图编辑历史操作 **/
     undo,
     redo,
+    removeHistory,
+    clearHistory,
     addMapHistory,
     addRecordset,
     setMinVisibleScale,

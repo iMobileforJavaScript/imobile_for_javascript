@@ -68,6 +68,26 @@ RCT_EXPORT_MODULE();
     sMap.smMapWC.mapControl.geometrySelectedDelegate = self;
 }
 
+#pragma mark getEnvironmentStatus 获取许可文件状态
+RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        LicenseStatus* status = [Environment getLicenseStatus];
+        NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+        
+        [dic setObject:[NSNumber numberWithBool:status.isActivated] forKey:@"isActivated"];
+        [dic setObject:[NSNumber numberWithBool:status.isLicenseValid] forKey:@"isLicenseValid"];
+        [dic setObject:[NSNumber numberWithBool:status.isLicenseExsit] forKey:@"isLicenseExist"];
+        [dic setObject:[NSNumber numberWithBool:status.isTrailLicense] forKey:@"isTrailLicense"];
+        [dic setObject:status.startDate forKey:@"startDate"];
+        [dic setObject:status.expireDate forKey:@"expireDate"];
+        [dic setObject:[NSString stringWithFormat:@"%ld", status.version] forKey:@"version"];
+        
+        resolve(dic);
+    } @catch (NSException *exception) {
+        reject(@"unZipFile", exception.reason, nil);
+    }
+}
+
 #pragma mark 刷新地图
 RCT_REMAP_METHOD(refreshMap, refreshMapWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -468,6 +488,18 @@ RCT_REMAP_METHOD(setAction, setActionByActionType:(int)actionType resolver:(RCTP
     }
 }
 
+#pragma mark /************************************** 设置绘制对象时画笔样式 START****************************************/
+#pragma mark 设置MapControl的Action
+RCT_REMAP_METHOD(setStrokeColor, setStrokeColor:(int)strokeColor resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+//        sMap.smMapWC.mapControl.strokeColor = strokeColor;
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 #pragma mark MapControl的undo
 RCT_REMAP_METHOD(undo, undoWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -548,7 +580,7 @@ RCT_REMAP_METHOD(removeMeasureListener, removeMeasureListenerWithResolver:(RCTPr
     }
 }
 
-/******************************************** 地图工具 *****************************************************/
+#pragma mark /******************************************** 地图工具 *****************************************************/
 #pragma mark 将地图放大缩小到指定比例
 RCT_REMAP_METHOD(zoom, zoomByScale:(double)scale resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -1010,7 +1042,7 @@ RCT_REMAP_METHOD(exportWorkspace, exportWorkspace:(NSArray*)arrMapnames toFile:(
 }
 
 #pragma mark 导出地图为xml
-RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)nModule withAddition:(NSDictionary *)withAddition isNew:(BOOL)isNew bResourcesModified:(BOOL)bResourcesModified resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)nModule withAddition:(NSDictionary *)withAddition isNew:(BOOL)isNew bResourcesModified:(BOOL)bResourcesModified isPrivate:(BOOL)isPrivate resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BOOL mapSaved = NO;
         sMap = [SMap singletonInstance];
@@ -1052,7 +1084,7 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
 //        BOOL bResourcesModified = sMap.smMapWC.workspace.maps.count > 1;
         NSString* mapName = @"";
         if (mapSaved) {
-            mapName = [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:withAddition isNewMap:(isNew || bNew) isResourcesModyfied:bResourcesModified];
+            mapName = [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:withAddition isNewMap:(isNew || bNew) isResourcesModyfied:bResourcesModified isPrivate:isPrivate];
         }
         
         // isNew为true，另存为后保证当前地图是原地图
@@ -1072,11 +1104,11 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
 }
 
 #pragma mark 导入文件工作空间到程序目录
-RCT_REMAP_METHOD(importWorkspaceInfo, importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString *)nModule resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(importWorkspaceInfo, importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString *)nModule isPrivate:(BOOL)isPrivate resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         sMap = [SMap singletonInstance];
-        NSArray* mapsInfo = [sMap.smMapWC importWorkspaceInfo:infoDic toModule:nModule];
+        NSArray* mapsInfo = [sMap.smMapWC importWorkspaceInfo:infoDic toModule:nModule isPrivate:isPrivate];
         
         resolve(mapsInfo);
     } @catch (NSException *exception) {
@@ -1267,6 +1299,24 @@ RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resol
         reject(@"MapControl", exception.reason, nil);
     }
 }
+#pragma mark /************************************** 选择集操作 BEGIN****************************************/
+#pragma mark 设置Selection样式
+RCT_REMAP_METHOD(setSelectionStyle, setSelectionStyleWithLayerPath:(NSString *)path style:(NSString *)styleJson resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Layer* layer = [SMLayer findLayerByPath:path];
+        Selection* selection = [layer getSelection];
+        GeoStyle* style = [[GeoStyle alloc] init];
+        [style fromJson:styleJson];
+        [selection setStyle:style];
+        
+        [sMap.smMapWC.mapControl.map refresh];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
 
 #pragma mark 清除Selection
 RCT_REMAP_METHOD(clearSelection, clearSelectionWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -1286,7 +1336,7 @@ RCT_REMAP_METHOD(clearSelection, clearSelectionWithResolve:(RCTPromiseResolveBlo
     }
 }
 
-/************************************** 地图编辑历史操作 ****************************************/
+#pragma mark /************************************** 地图编辑历史操作 BEGIN****************************************/
 #pragma mark 把对地图操作记录到历史
 RCT_REMAP_METHOD(addMapHistory, addMapHistoryWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -1300,7 +1350,99 @@ RCT_REMAP_METHOD(addMapHistory, addMapHistoryWithResolve:(RCTPromiseResolveBlock
     }
 }
 
-/************************************************ 监听事件 ************************************************/
+#pragma mark 获取地图操作记录数量
+RCT_REMAP_METHOD(getMapHistoryCount, getMapHistoryCountWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        int count = [[mapControl getEditHistory] getCount];
+        
+        resolve([NSNumber numberWithInt:count]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取当前地图操作记录index
+RCT_REMAP_METHOD(getMapHistoryCurrentIndex, getMapHistoryCurrentIndexWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        int index = [[mapControl getEditHistory] getCurrentIndex];
+        
+        resolve([NSNumber numberWithInt:index]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 地图操作记录重做到index
+RCT_REMAP_METHOD(redo, redoWithIndex:(int)index resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        BOOL result = [[mapControl getEditHistory] Redo:index];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 地图操作记录撤销到index
+RCT_REMAP_METHOD(undo, undoWithIndex:(int)index resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        BOOL result = [[mapControl getEditHistory] Undo:index];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 地图操作记录移除两个index之间的记录
+RCT_REMAP_METHOD(removeRange, removeRangeWithStartIndex:(int)start endIndex:(int)endIndex resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        BOOL result = [[mapControl getEditHistory] RemoveRange:start count:endIndex];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 地图操作记录移除index位置的记录
+RCT_REMAP_METHOD(remove, removeWithIndex:(int)index resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        BOOL result = [[mapControl getEditHistory] Remove:index];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 清除地图操作记录
+RCT_REMAP_METHOD(clear, clearWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        BOOL result = [[mapControl getEditHistory] Clear];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+#pragma mark /************************************** 地图编辑历史操作 END****************************************/
+
+#pragma mark /************************************************ 监听事件 ************************************************/
 #pragma mark 监听事件
 -(void) boundsChanged:(Point2D*) newMapCenter{
     double x = newMapCenter.x;
