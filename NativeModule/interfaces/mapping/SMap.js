@@ -15,6 +15,18 @@ const nativeEvt = new NativeEventEmitter(SMap)
 
 export default (function () {
   /**
+   * 获取许可文件状态
+   * @returns {*}
+   */
+  function getEnvironmentStatus () {
+    try {
+      return SMap.getEnvironmentStatus()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
    * 刷新地图
    * @returns {*}
    */
@@ -944,11 +956,17 @@ export default (function () {
   /************************************** 地图编辑历史操作 ****************************************/
   /**
    * 地图撤销
+   * @param index
    * @returns {*|Promise.<void>|Promise|Promise.<boolean>}
    */
-  function undo () {
+  function undo (index) {
     try {
-      return SMap.undo()
+      if (index === undefined) {
+        return SMap.undo()
+      } else {
+        return SMap.undo(index)
+      }
+      
     } catch (e) {
       console.error(e)
     }
@@ -956,11 +974,47 @@ export default (function () {
   
   /**
    * 地图恢复
+   * @param index
    * @returns {*|Promise|Promise.<boolean>}
    */
-  function redo () {
+  function redo (index) {
     try {
-      return SMap.redo()
+      if (index === undefined) {
+        return SMap.redo()
+      } else {
+        return SMap.redo(index)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 地图操作记录移除
+   * @param index1 移除指定位置的记录
+   * @param index2 若有，则移除 index1 到 index2 范围的记录
+   * @returns {*}
+   */
+  function removeHistory (index1, index2) {
+    try {
+      if (index1 === undefined && index2 === undefined) return false
+      if (index2 === undefined) {
+        return SMap.remove(index1)
+      } else {
+        return SMap.removeRange(index1, index2)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 清除地图操作记录
+   * @returns {*}
+   */
+  function clearHistory () {
+    try {
+      return SMap.clear()
     } catch (e) {
       console.error(e)
     }
@@ -1039,10 +1093,8 @@ export default (function () {
     }
   }
 
-
-
-
   let SMapExp = {
+    getEnvironmentStatus,
     refreshMap,
     openWorkspace,
     openDatasource,
@@ -1113,6 +1165,8 @@ export default (function () {
     /** 地图编辑历史操作 **/
     undo,
     redo,
+    removeHistory,
+    clearHistory,
     addMapHistory,
     addRecordset,
     setMinVisibleScale,

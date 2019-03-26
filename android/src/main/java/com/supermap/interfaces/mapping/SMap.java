@@ -143,6 +143,29 @@ public class SMap extends ReactContextBaseJavaModule {
         return getInstance().smMapWC;
     }
 
+
+    /**
+     * 获取许可文件状态
+     * @param promise
+     */
+    @ReactMethod
+    public void getEnvironmentStatus( Promise promise) {
+        try {
+            LicenseStatus status = Environment.getLicenseStatus();
+            WritableMap statusMap = Arguments.createMap();
+            statusMap.putBoolean("isActivated", status.isActivated());
+            statusMap.putBoolean("isLicenseValid", status.isLicenseValid());
+            statusMap.putBoolean("isLicenseExist", status.isLicenseExsit());
+            statusMap.putBoolean("isTrailLicense", status.isTrailLicense());
+            statusMap.putString("startDate", status.getStartDate().toString());
+            statusMap.putString("expireDate", status.getExpireDate().toString());
+            statusMap.putString("version", status.getVersion() + "");
+            promise.resolve(statusMap);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     /**
      * 刷新地图
      * @param data
@@ -2034,9 +2057,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 String datasetName = datasetNames.getString(i);
                 Dataset dataset = datasource.getDatasets().get(datasetName);
 
-                if (dataset == null) {
-                    continue;
-                }
+
                 if (dataset.getType() == DatasetType.REGION || dataset.getType() == DatasetType.REGION3D) {
                     datasets_region.add(dataset);
                 } else if (dataset.getType() == DatasetType.LINE || dataset.getType() == DatasetType.NETWORK || dataset.getType() == DatasetType.NETWORK3D
@@ -2546,7 +2567,7 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
-/************************************** 地图编辑历史操作 ****************************************/
+    /************************************** 地图编辑历史操作 BEGIN****************************************/
 
     /**
      * 把对地图操作记录到历史
@@ -2564,4 +2585,128 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 获取地图操作记录数量
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapHistoryCount(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            int count = mapControl.getEditHistory().getCount();
+
+            promise.resolve(count);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取地图操作记录当前index
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapHistoryCurrentIndex(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            int index = mapControl.getEditHistory().getCurrentIndex();
+
+            promise.resolve(index);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 地图操作记录重做到index
+     * @param index
+     * @param promise
+     */
+    @ReactMethod
+    public void redo(int index, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            boolean result = mapControl.getEditHistory().redo(index);
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 地图操作记录撤销到index
+     * @param index
+     * @param promise
+     */
+    @ReactMethod
+    public void undo(int index, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            boolean result = mapControl.getEditHistory().undo(index);
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 地图操作记录移除两个index之间的记录
+     * @param start
+     * @param end
+     * @param promise
+     */
+    @ReactMethod
+    public void removeRange(int start, int end, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            boolean result = mapControl.getEditHistory().removeRange(start, end);
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 地图操作记录移除index位置的记录
+     * @param promise
+     */
+    @ReactMethod
+    public void remove(int index, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            boolean result = mapControl.getEditHistory().remove(index);
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 清除地图操作记录
+     * @param promise
+     */
+    @ReactMethod
+    public void clear(int index, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            boolean result = mapControl.getEditHistory().clear();
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /************************************** 地图编辑历史操作 END ****************************************/
 }
