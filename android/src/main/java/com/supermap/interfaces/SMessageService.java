@@ -22,8 +22,6 @@ import com.supermap.messagequeue.AMQPReturnMessage;
 import com.supermap.messagequeue.AMQPSender;
 import com.supermap.messagequeue.AMQPExchangeType;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 public class SMessageService extends ReactContextBaseJavaModule {
@@ -227,6 +225,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
             if(g_AMQPManager!=null && uuid!=null){
                 if(g_AMQPReceiver==null){
                     String sQueue = "Message_" + uuid;
+                    g_AMQPManager.declareQueue(sQueue);
                     g_AMQPReceiver = g_AMQPManager.newReceiver(sQueue);
                 }
             }
@@ -263,6 +262,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
             if(g_AMQPManager!=null && uuid!=null){
                 if(g_AMQPReceiver==null){
                     String sQueue = "Message_" + uuid;
+                    g_AMQPManager.declareQueue(sQueue);
                     g_AMQPReceiver = g_AMQPManager.newReceiver(sQueue);
                 }
             }
@@ -273,28 +273,18 @@ public class SMessageService extends ReactContextBaseJavaModule {
                 public void run(){
                     while (true){
                         if(g_AMQPReceiver!=null){
-                            Log.d("recieve thread", "running");
                             AMQPReturnMessage resMessage = g_AMQPReceiver.receiveMessage();
                             String sQueue = resMessage.getQueue();
                             String sMessage = resMessage.getMessage();
                             if(!sQueue.isEmpty() && !sMessage.isEmpty()){
-                                Log.d("recieve thread", "Received ");
                                 WritableMap map = Arguments.createMap();
                                 map.putString("clientId",sQueue);
                                 map.putString("message",sMessage);
-                                try {
-                                    JSONObject a = new JSONObject(map.toString());
-//                                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-//                                        .emit(EventConst.MAP_DOUBLE_TAP, map);
-                                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                            .emit(EventConst.MESSAGE_SERVICE_RECEIVE, map);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+                                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                        .emit(EventConst.MESSAGE_SERVICE_RECEIVE, map);
                             }
                             bStopRecieve = false;
                         }else{
-                            // NSLog(@"+++ receive  stop +++ %@",[NSThread currentThread]);
                             bStopRecieve = true;
                             g_AMQPReceiver = null;
                             break;
@@ -311,22 +301,6 @@ public class SMessageService extends ReactContextBaseJavaModule {
                 }
             }
             new MessageReceiveThread().start();
-
-
-
-            // NSLog(@"+++ receive +++ %@",[NSThread currentThread]);
-//            if(g_AMQPReceiver!=null){
-//                AMQPReturnMessage resMessage = g_AMQPReceiver.receiveMessage();
-//                String sQueue = resMessage.getQueue();
-//                String sMessage = resMessage.getMessage();
-//
-//                if (sQueue!=null && sMessage!=null){
-//                    WritableMap map = Arguments.createMap();
-//                    map.putString("clientId",sQueue);
-//                    map.putString("message",sMessage);
-//                    promise.resolve(map);
-//                }
-//            }
 
             promise.resolve(bRes);
         } catch (Exception e) {
