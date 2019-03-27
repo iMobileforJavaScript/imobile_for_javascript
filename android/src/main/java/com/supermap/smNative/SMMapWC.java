@@ -2567,51 +2567,7 @@ int b = '1';
 
     }
 
-    // 从Exp的map里 拷贝所有layer到当前map的一个layerGroup下，layerGroup.name为被拷贝地图名
-    public  boolean addLayersFromMap(String srcMapName,String srcModule,boolean bPrivate,com.supermap.mapping.Map desMap){
-
-        if (srcMapName.equals(desMap.getName())){
-            return false;
-        }
-        boolean bResult = false;
-        String strTempLib = getRootPath() + "/Customer/Resources/__Temp__" + srcMapName;
-
-        String strMarker = strTempLib+".sym";
-        String strLine = strTempLib+".lsl";
-        String strFill = strTempLib+".bru";
-
-        desMap.getWorkspace().getResources().getMarkerLibrary().saveAs(strMarker);
-        desMap.getWorkspace().getResources().getLineLibrary().saveAs(strLine);
-        desMap.getWorkspace().getResources().getFillLibrary().saveAs(strFill);
-
-        if (openMapName(srcMapName,desMap.getWorkspace(),srcModule,bPrivate)){
-
-            desMap.addLayersFromMap(srcMapName,true);
-            desMap.getWorkspace().getMaps().remove(srcMapName);
-            bResult = true;
-
-        }
-
-        desMap.getWorkspace().getResources().getMarkerLibrary().clear();
-        desMap.getWorkspace().getResources().getMarkerLibrary().appendFromFile(strMarker,true);
-        File markerFile = new File(strMarker);
-        markerFile.delete();
-
-        desMap.getWorkspace().getResources().getLineLibrary().clear();
-        desMap.getWorkspace().getResources().getLineLibrary().appendFromFile(strLine,true);
-        File lineFile = new File(strLine);
-        lineFile.delete();
-
-        desMap.getWorkspace().getResources().getFillLibrary().clear();
-        desMap.getWorkspace().getResources().getFillLibrary().appendFromFile(strFill,true);
-        File fillFile = new File(strFill);
-        fillFile.delete();
-
-        return bResult;
-    }
-
-    // 从Exp1的map里 拷贝所有layer到Exp2的map的一个layerGroup下，layerGroup.name为被拷贝地图名
-    public boolean addLayersFromMapJson(String jsonSrcMap ,String jsonDesMap){
+    public boolean addlayersFromMap(String jsonSrcMap ,String jsonDesMap){
 
         if (jsonSrcMap==null||jsonDesMap==null){
             return false;
@@ -2688,19 +2644,22 @@ int b = '1';
                 // Marker
                 {
                     SymbolGroup group = workspace.getResources().getMarkerLibrary().getRootGroup().getChildGroups().get(strSrcName);
-                    group.setName(strSrcReplace);
+
+//                    group.setName(strSrcReplace);
 
                 }
                 // Line
                 {
                     SymbolGroup group = workspace.getResources().getLineLibrary().getRootGroup().getChildGroups().get(strSrcName);
-                    group.setName(strSrcReplace);
+
+//                    group.setName(strSrcReplace);
 
                 }
                 // Fill
                 {
                     SymbolGroup group = workspace.getResources().getFillLibrary().getRootGroup().getChildGroups().get(strSrcName);
-                    group.setName(strSrcReplace);
+
+//                    group.setName(strSrcReplace);
 
                 }
 
