@@ -727,7 +727,7 @@ export default (function () {
    * 大工作空间打开本地地图
    * @param strMapName
    * @param nModule 模块名（文件夹名）
-   * @param isPrivate 
+   * @param isPrivate
    * @returns {*}
    */
   function openMapName (strMapName, nModule = '', isPrivate = false) {

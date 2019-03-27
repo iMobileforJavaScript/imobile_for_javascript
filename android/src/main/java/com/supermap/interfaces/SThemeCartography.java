@@ -2017,14 +2017,10 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 themeGraph.setGraphType(themeGraphType);
                 themeGraph.getAxesTextStyle().setFontHeight(6);
 
-                Point pointStart = new Point(0,0);
-                Point pointEnd = new Point(0, (int)(mapControl.getMapWidth() / 3));
-                Point2D point2DStart = map.pixelToMap(pointStart);
-                Point2D point2DEnd = map.pixelToMap(pointEnd);
-                Point pointMinEnd = new Point(0, (int)(mapControl.getMapWidth() / 18));
-                Point2D point2DMinEnd = map.pixelToMap(pointMinEnd);
-                themeGraph.setMaxGraphSize(Math.sqrt(Math.pow(point2DEnd.getX() - point2DStart.getX(), 2) + Math.pow(point2DEnd.getY() - point2DStart.getY(), 2)));
-                themeGraph.setMinGraphSize(Math.sqrt((Math.pow(point2DMinEnd.getX() - point2DStart.getX(), 2) + Math.pow(point2DMinEnd.getY() - point2DStart.getY(), 2))));
+                //获取统计专题图中统计符号显示的最大值,最小值
+                Double[] sizes = SMThemeCartography.getMaxMinGraphSize();
+                themeGraph.setMaxGraphSize(sizes[0]);
+                themeGraph.setMinGraphSize(sizes[1]);
 
                 int count = themeGraph.getCount();
                 Colors selectedColors = Colors.makeGradient(colors.length, colors);
@@ -2119,14 +2115,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 themeGraph.setGraphType(themeGraphType);
                 themeGraph.getAxesTextStyle().setFontHeight(6);
 
-                Point pointStart = new Point(0,0);
-                Point pointEnd = new Point(0, (int)(mapControl.getMapWidth() / 3));
-                Point2D point2DStart = map.pixelToMap(pointStart);
-                Point2D point2DEnd = map.pixelToMap(pointEnd);
-                Point pointMinEnd = new Point(0, (int)(mapControl.getMapWidth() / 18));
-                Point2D point2DMinEnd = map.pixelToMap(pointMinEnd);
-                themeGraph.setMaxGraphSize(Math.sqrt(Math.pow(point2DEnd.getX() - point2DStart.getX(), 2) + Math.pow(point2DEnd.getY() - point2DStart.getY(), 2)));
-                themeGraph.setMinGraphSize(Math.sqrt((Math.pow(point2DMinEnd.getX() - point2DStart.getX(), 2) + Math.pow(point2DMinEnd.getY() - point2DStart.getY(), 2))));
+                Double[] sizes = SMThemeCartography.getMaxMinGraphSize();
+                themeGraph.setMaxGraphSize(sizes[0]);
+                themeGraph.setMinGraphSize(sizes[1]);
 
                 int count = themeGraph.getCount();
                 Colors selectedColors = Colors.makeGradient(colors.length, colors);
@@ -2147,6 +2138,122 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 result = true;
             }
             promise.resolve(result);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置统计专题图的最大显示值
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void setGraphMaxValue(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            double maxValue = -1;//倍数
+
+            if (data.containsKey("MaxValue")){
+                String value = data.get("MaxValue").toString();
+                maxValue  = Double.parseDouble(value);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && maxValue >= 1 && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.GRAPH) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
+                    ThemeGraph themeGraph = (ThemeGraph) layer.getTheme();
+                    Double[] sizes = SMThemeCartography.getMaxMinGraphSize();
+                    themeGraph.setMaxGraphSize(sizes[0] * maxValue);
+                    themeGraph.setMinGraphSize(sizes[1]);
+
+                    mapControl.getMap().refresh();
+
+                    promise.resolve(true);
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取统计专题图的最大显示值
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getGraphMaxValue(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.GRAPH) {
+                    ThemeGraph themeGraph = (ThemeGraph) layer.getTheme();
+                    Double[] sizes = SMThemeCartography.getMaxMinGraphSize();
+                    double maxGraphSize = themeGraph.getMaxGraphSize();
+
+                    double maxSize = 1;
+                    if (maxGraphSize / sizes[0] < 1) {
+                        maxSize = 1;
+                    } else if ((maxGraphSize / sizes[0]) > 20 ) {
+                        maxSize = 20;
+                    } else {
+                        maxSize = (maxGraphSize / sizes[0]);
+                    }
+
+                    promise.resolve(maxSize);
+                }
+            } else {
+                promise.resolve(false);
+            }
         } catch (Exception e) {
             Log.e(REACT_CLASS, e.getMessage());
             e.printStackTrace();
@@ -2187,7 +2294,6 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             } else {
                 themeGraphLayer = SMThemeCartography.getLayerByIndex(layerIndex);
             }
-
 
             if (themeGraphLayer != null && graphExpressions != null && graphExpressions.size() > 0 && themeGraphLayer.getTheme() != null) {
                 if (themeGraphLayer.getTheme().getType() == ThemeType.GRAPH) {
