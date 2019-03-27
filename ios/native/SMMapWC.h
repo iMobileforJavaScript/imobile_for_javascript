@@ -39,5 +39,9 @@
 - (BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(NSString *)nModule isPrivate:(BOOL)bPrivate;
 - (BOOL)appendFromFile:(Resources *)resources path:(NSString *)path isReplace:(BOOL)isReplace;
 
+-(NSString*)importDatasourceFile:(NSString*)strFile ofModule:(NSString*)strModule;
+
+
 - (BOOL)copyDatasetsFrom:(NSString*)strSrcUDB to:(NSString*)strDesUDB;
+
 @end
