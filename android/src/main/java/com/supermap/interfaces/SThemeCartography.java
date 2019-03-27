@@ -2189,6 +2189,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     ThemeGraph themeGraph = (ThemeGraph) layer.getTheme();
                     Double[] sizes = SMThemeCartography.getMaxMinGraphSize();
                     themeGraph.setMaxGraphSize(sizes[0] * maxValue);
+                    themeGraph.setMinGraphSize(sizes[1]);
 
                     mapControl.getMap().refresh();
 
@@ -2239,7 +2240,16 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     Double[] sizes = SMThemeCartography.getMaxMinGraphSize();
                     double maxGraphSize = themeGraph.getMaxGraphSize();
 
-                    promise.resolve(maxGraphSize / sizes[0]);
+                    double maxSize = 1;
+                    if (maxGraphSize / sizes[0] < 1) {
+                        maxSize = 1;
+                    } else if ((maxGraphSize / sizes[0]) > 20 ) {
+                        maxSize = 20;
+                    } else {
+                        maxSize = (maxGraphSize / sizes[0]);
+                    }
+
+                    promise.resolve(maxSize);
                 }
             } else {
                 promise.resolve(false);
