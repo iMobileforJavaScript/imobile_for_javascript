@@ -284,9 +284,7 @@ export default (function () {
    */
   function moveToPoint (point = {x: 116.35805, y: 39.70361}) {
     try {
-      console.warn('moveToPoint 1' + JSON.stringify(point))
       if (point.x === undefined || point.y === undefined) return
-      console.warn('moveToPoint 2' + JSON.stringify(point))
       return SMap.moveToPoint(point)
     } catch (e) {
       console.error(e)
@@ -698,11 +696,12 @@ export default (function () {
    *               若为true，创建新的xml地图文件
    * @param bResourcesModified  若为false，则导出所有的Resources；
    *                            若为true，则导出是用的Resources
+   * @param bPrivate  是否是用户私有(在User/下)
    * @returns {*}
    */
-  function saveMapName (strMapAlians = '', nModule = '', withAddition = {}, isNew = false, bResourcesModified = false) {
+  function saveMapName (strMapAlians = '', nModule = '', withAddition = {}, isNew = false, bResourcesModified = false, bPrivate = true) {
     try {
-      return SMap.saveMapName(strMapAlians, nModule, withAddition, isNew, bResourcesModified)
+      return SMap.saveMapName(strMapAlians, nModule, withAddition, isNew, bResourcesModified, bPrivate)
     } catch (e) {
       console.error(e)
       return e
@@ -713,11 +712,12 @@ export default (function () {
    * 导入文件工作空间到程序目录
    * @param infoDic
    * @param strDirPath
+   * @param bPrivate
    * @returns {*}
    */
-  function importWorkspaceInfo (infoDic, strDirPath,bPrivate=true) {
+  function importWorkspaceInfo (infoDic, strDirPath, bPrivate = true) {
     try {
-      return SMap.importWorkspaceInfo(infoDic, strDirPath,bPrivate)
+      return SMap.importWorkspaceInfo(infoDic, strDirPath, bPrivate)
     } catch (e) {
       console.error(e)
     }
@@ -727,6 +727,7 @@ export default (function () {
    * 大工作空间打开本地地图
    * @param strMapName
    * @param nModule 模块名（文件夹名）
+   * @param isPrivate
    * @returns {*}
    */
   function openMapName (strMapName, nModule = '', isPrivate = false) {
@@ -882,6 +883,19 @@ export default (function () {
   // }
   
   /**
+   * 设置Selection样式
+   * @returns {*}
+   */
+  function setSelectionStyle (layerPath = '', style = {}) {
+    try {
+      if (layerPath === '' || Object.keys(style).length === 0) return
+      return SMap.setSelectionStyle(layerPath, JSON.stringify(style))
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
    * 清除Selection
    * @returns {*}
    */
@@ -940,7 +954,7 @@ export default (function () {
       console.error(e)
     }
   }
-
+  
   /**
    * 设置标注面随机色
    * @returns {*|Promise.<void>}
@@ -952,7 +966,7 @@ export default (function () {
       console.error(e)
     }
   }
-
+  
   /**
    * 添加地图图例
    * @returns {*|Promise.<void>}
@@ -1043,68 +1057,67 @@ export default (function () {
       console.error(e)
     }
   }
-
+  
   /**
    * 添加数据集属性字段
    * @returns {*|Promise.<void>}
    */
-  function addRecordset(dataname,recname,name){
-    try{
-      return SMap.addRecordset(dataname,recname,name)
-    }catch (e) {
+  function addRecordset (dataname, recname, name) {
+    try {
+      return SMap.addRecordset(dataname, recname, name)
+    } catch (e) {
       console.error(e)
     }
   }
-
+  
   /**
    * 设置最小比例尺
    * @returns {*|Promise.<void>}
    */
-  function setMinVisibleScale(value,number){
-    try{
-      return SMap.setMinVisibleScale(value,number)
-    }catch (e) {
+  function setMinVisibleScale (value, number) {
+    try {
+      return SMap.setMinVisibleScale(value, number)
+    } catch (e) {
       console.error(e)
     }
   }
-
+  
   /**
    * 设置最大比例尺
    * @returns {*|Promise.<void>}
    */
-  function setMaxVisibleScale(value,number){
-    try{
-      return SMap.setMaxVisibleScale(value,number)
-    }catch (e) {
+  function setMaxVisibleScale (value, number) {
+    try {
+      return SMap.setMaxVisibleScale(value, number)
+    } catch (e) {
       console.error(e)
     }
   }
-
-
+  
   /**
    * 添加文字标注
    * @returns {*|Promise.<void>}
    */
-  function addTextRecordset(value,name,x,y){
-    try{
-      return SMap.addTextRecordset(value,name,x,y)
-    }catch (e) {
+  function addTextRecordset (value, name, x, y) {
+    try {
+      return SMap.addTextRecordset(value, name, x, y)
+    } catch (e) {
       console.error(e)
     }
   }
-
+  
   /**
    * 获取屏幕坐标点
    * @returns {*|Promise.<void>}
    */
-  function getGestureDetector(){
-    try{
+  function getGestureDetector () {
+    try {
       return SMap.getGestureDetector()
-    }catch (e) {
+    } catch (e) {
       console.error(e)
     }
   }
-
+  
   let SMapExp = {
     getEnvironmentStatus,
     refreshMap,
@@ -1168,6 +1181,7 @@ export default (function () {
     exportWorkspaceByMap,
     setDynamicProjection,
     // selectByRectangle,
+    setSelectionStyle,
     clearSelection,
     newTaggingDataset,
     removeTaggingDataset,

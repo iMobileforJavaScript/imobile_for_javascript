@@ -522,7 +522,7 @@
 //  非替换模式：重复文件名+num
 //  替换模式：重复文件替换，同路径先关闭工作空间再替换
 
--(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic withFileDirectory:(NSString*)strDirPath isDatasourceReplace:(BOOL)bDatasourceRep isSymbolsReplace:(BOOL)bSymbolsRep{
+-(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic withFileDirectory:(NSString*)strDirPath isDatasourceReplace:(BOOL)bDatasourceRep isSymbolsReplace:(BOOL)bSymbolsRep {
     
     BOOL bSucc = NO;
     
@@ -1206,7 +1206,7 @@
 //          \------->Resource:      旗下包含模块子文件夹，存放符号库文件（.sym/.lsl./bru）
 // 返回结果：NSArray为导入成功的所有地图名
 
--(NSArray *)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString*)strModule/*(int)nModule*/{
+-(NSArray *)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString*)strModule isPrivate:(BOOL)isPrivate {
     NSArray *arrResult = nil;
     if ( infoDic && [infoDic objectForKey:@"server"] && [infoDic objectForKey:@"type"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
         Workspace *importWorkspace = [[Workspace alloc]init];
@@ -1258,7 +1258,7 @@
             NSMutableArray *arrTemp = [[NSMutableArray alloc]init];
             for (int i=0; i<importWorkspace.maps.count; i++) {
                 NSString *strMapName = [importWorkspace.maps get:i];
-                NSString *strResName = [self saveMapName:strMapName fromWorkspace:importWorkspace ofModule:strModule withAddition:dicAddition isNewMap:YES isResourcesModyfied:false isPrivate:YES];
+                NSString *strResName = [self saveMapName:strMapName fromWorkspace:importWorkspace ofModule:strModule withAddition:dicAddition isNewMap:YES isResourcesModyfied:false isPrivate:isPrivate];
                 
                 if(strResName!=nil){
                     if(strMapRename!=nil && ![strMapRename isEqualToString:@""]){

@@ -35,6 +35,7 @@
 #import "SuperMap/Selection.h"
 #import "SuperMap/Rectangle2D.h"
 #import "SuperMap/EditHistory.h"
+#import "SuperMap/GeoStyle.h"
 #import "JSMapControl.h"
 #import "SMMapWC.h"
 #import "SMSymbol.h"
