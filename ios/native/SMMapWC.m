@@ -2293,7 +2293,7 @@
 }
 
 // 从Exp的map里 拷贝所有layer到当前map的一个layerGroup下，layerGroup.name为被拷贝地图名
--(BOOL)addLayersFromMap:(NSString*)srcMapName ofModule:(NSString*)srcModule isPrivate:(NSString*)bSrcPrivate toMap:(Map*)desMap{
+-(BOOL)addLayersFromMap:(NSString*)srcMapName ofModule:(NSString*)srcModule isPrivate:(BOOL)bSrcPrivate toMap:(Map*)desMap{
     
     if ([srcMapName isEqualToString:desMap.name]) {
         //现在的工作空间结构 暂不支持同名情况
