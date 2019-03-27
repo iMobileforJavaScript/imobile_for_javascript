@@ -12,5 +12,4 @@ android/build
 android/gradle
 android/.idea
 android/src/.gradle
-android/build.gradle
 android/libs
