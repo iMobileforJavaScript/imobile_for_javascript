@@ -522,7 +522,7 @@
 //  非替换模式：重复文件名+num
 //  替换模式：重复文件替换，同路径先关闭工作空间再替换
 
--(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic withFileDirectory:(NSString*)strDirPath isDatasourceReplace:(BOOL)bDatasourceRep isSymbolsReplace:(BOOL)bSymbolsRep isPrivate:(BOOL)isPrivate{
+-(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic withFileDirectory:(NSString*)strDirPath isDatasourceReplace:(BOOL)bDatasourceRep isSymbolsReplace:(BOOL)bSymbolsRep {
     
     BOOL bSucc = NO;
     
