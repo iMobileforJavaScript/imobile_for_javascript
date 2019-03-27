@@ -1592,6 +1592,7 @@ public class SScene extends ReactContextBaseJavaModule {
                     sceneControl.setAction(Action3D.PANSELECT3D);
                     break;
             }
+            sceneControl.getScene().refresh();
             promise.resolve(false);
         } catch (Exception e) {
             promise.reject(e);
@@ -1648,6 +1649,19 @@ public class SScene extends ReactContextBaseJavaModule {
     public void saveRoutStop(Promise promise) {
         try {
             FlyHelper.getInstence().saveRoutStop();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 停止站飞行
+     */
+    @ReactMethod
+    public void pasueRoutStop(Promise promise) {
+        try {
+            FlyHelper.getInstence().routStopPasue();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
