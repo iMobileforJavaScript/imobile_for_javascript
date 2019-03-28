@@ -632,6 +632,44 @@ getDotDensityDotSize= (params) => {
   }
 }
 
+/**
+ * 获取等级符号专题图的表达式
+ * @param params
+ * @returns {*}
+ */
+getGraduatedSymbolExpress= (params) => {
+  try {
+    return SThemeCartography.getGraduatedSymbolExpress(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取等级符号专题图的基准值
+ * @param params
+ * @returns {*}
+ */
+getGraduatedSymbolValue= (params) => {
+  try {
+    return SThemeCartography.getGraduatedSymbolValue(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取等级符号专题图的符号大小
+ * @param params
+ * @returns {*}
+ */
+getGraduatedSymbolSize= (params) => {
+  try {
+    return SThemeCartography.getGraduatedSymbolSize(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 export default {
   //单值
@@ -685,6 +723,9 @@ export default {
   //等级符号专题图
   createGraduatedSymbolThemeMap,
   modifyGraduatedSymbolThemeMap,
+  getGraduatedSymbolExpress,
+  getGraduatedSymbolValue,
+  getGraduatedSymbolSize,
   //其他
   getThemeExpressionByLayerName,
   getThemeExpressionByLayerIndex,
