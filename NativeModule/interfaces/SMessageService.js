@@ -63,18 +63,13 @@ function sendFile(filePath, targetID) {
   return MessageServiceeNative.sendFile(filePath,targetID);
 }
 //声明多人会话
-function declareSession(uuid) {
-  return MessageServiceeNative.declareSession(uuid);
-}
-
-//声明多人会话
-function joinSession(uuid) {
-  return MessageServiceeNative.joinSession(uuid);
+function declareSession(memmbers,uuid) {
+  return MessageServiceeNative.declareSession(memmbers,uuid);
 }
 
 //退出多人会话
-function exitSession(uuid) {
-  return MessageServiceeNative.exitSession(uuid);
+function exitSession(memmber,uuid) {
+  return MessageServiceeNative.exitSession(memmber,uuid);
 }
 
 //开启消息接收
@@ -97,7 +92,6 @@ export default {
   stopReceiveMessage,
   startReceiveMessage,
   exitSession,
-  joinSession,
   declareSession,
   sendFile,
   sendMessage,
