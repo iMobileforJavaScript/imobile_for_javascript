@@ -44,7 +44,9 @@ RCT_EXPORT_MODULE();
 
 #pragma mark -- 连接服务
 RCT_REMAP_METHOD(connectService, ip:(NSString*)serverIP port:(int)port hostName:(NSString*)hostName userName:(NSString*)userName passwd:(NSString*)passwd userID:(NSString*)userID resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    
+    if(g_AMQPManager){
+        [g_AMQPManager suspend];
+    }
     g_AMQPReceiver = nil;
     g_AMQPSender = nil;
     g_AMQPManager = nil;
@@ -99,12 +101,16 @@ RCT_REMAP_METHOD(disconnectionService, disconnectionServiceResolver:(RCTPromiseR
 
 
 #pragma mark -- 声明多人会话
-RCT_REMAP_METHOD(declareSession, uuid:(NSString*)uuid declareSessionResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(declareSession, memmbers:(NSArray*)memmbers groupId:(NSString*)groupId declareSessionResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try {
         BOOL bRes = true;
          if(g_AMQPManager!=nil){
-             [g_AMQPManager declareQueue:uuid];
+             for(NSDictionary* memId in memmbers){
+                 NSString* sQueue = [@"Message_"  stringByAppendingString:memId[@"id"]];
+                 [g_AMQPManager declareQueue:sQueue];
+                 [g_AMQPManager bindQueue:sQueue exchange:sGroupExchange routingkey:groupId];// bindQueue(sExchange, sQueue, sRoutingKey);
+             }
          }
         NSNumber* number =[NSNumber numberWithBool:bRes];
         resolve(number);
@@ -112,31 +118,14 @@ RCT_REMAP_METHOD(declareSession, uuid:(NSString*)uuid declareSessionResolver:(RC
         reject(@"SMessageService", exception.reason, nil);
     }
 }
-#pragma mark -- 加入多人会话
-RCT_REMAP_METHOD(joinSession,  uuid:(NSString*)uuid joinSessionResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    
-    @try {
-        BOOL bRes = true;
-        NSString* sQueue = [@"Group_Message_"  stringByAppendingString:uuid];
-        NSString* sRoutingKey = [@"Group_Message_" stringByAppendingString:uuid];
-        if(g_AMQPManager!=nil){
-            [g_AMQPManager bindQueue:sQueue exchange:sGroupExchange routingkey:sRoutingKey];
-        }
-        NSNumber* number =[NSNumber numberWithBool:bRes];
-        resolve(number);
-    } @catch (NSException *exception) {
-        reject(@"SMessageService", exception.reason, nil);
-    }
-}
 #pragma mark -- 退出多人会话
-RCT_REMAP_METHOD(exitSession, uuid:(NSString*)uuid  exitSessionResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(exitSession, memmber:(NSString*)memmberId groupId:(NSString*)groupId  exitSessionResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try {
         BOOL bRes = true;
         if(g_AMQPManager!=nil){
-            NSString* sQueue = [@"Group_Message_"  stringByAppendingString:uuid];
-            NSString* sRoutingKey = [@"Group_Message_" stringByAppendingString:uuid];
-            [g_AMQPManager unbindQueue:sQueue exchange:sGroupExchange routingkey:sRoutingKey];
+            NSString* sQueue = [@"Message_"  stringByAppendingString:memmberId];
+            [g_AMQPManager unbindQueue:sQueue exchange:sGroupExchange routingkey:groupId];
         }
         NSNumber* number =[NSNumber numberWithBool:bRes];
         resolve(number);
@@ -148,17 +137,22 @@ RCT_REMAP_METHOD(exitSession, uuid:(NSString*)uuid  exitSessionResolver:(RCTProm
 RCT_REMAP_METHOD(sendMessage, message:(NSString*)message  targetID:(NSString*)targetID disconnectionServiceResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try {
+        BOOL bGroup = [targetID containsString:@"Group_"];
         BOOL bRes = true;
         //需要声明对方的消息队列并绑定routingkey
         NSString* sQueue = [@"Message_"  stringByAppendingString:targetID];
         NSString* sRoutingKey = [@"Message_" stringByAppendingString:targetID];
-        if(g_AMQPManager!=nil){
+        if(g_AMQPManager!=nil && !bGroup){
             
             [g_AMQPManager declareQueue:sQueue];
             [g_AMQPManager bindQueue:sQueue exchange:sExchange routingkey:sRoutingKey];// bindQueue(sExchange, sQueue, sRoutingKey);
             //发送消息
         }
-        [g_AMQPSender sendMessage:sExchange routingKey:sRoutingKey message:message];
+        if(!bGroup){
+            [g_AMQPSender sendMessage:sExchange routingKey:sRoutingKey message:message];
+        }else{//群组发送到广播交换机
+            [g_AMQPSender sendMessage:sGroupExchange routingKey:targetID message:message];
+        }
         NSNumber* number =[NSNumber numberWithBool:bRes];
         resolve(number);
     } @catch (NSException *exception) {

@@ -1,5 +1,6 @@
 package com.supermap.interfaces;
 
+import android.util.Base64;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -22,6 +23,12 @@ import com.supermap.messagequeue.AMQPReturnMessage;
 import com.supermap.messagequeue.AMQPSender;
 import com.supermap.messagequeue.AMQPExchangeType;
 
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.HashMap;
 
 
 public class SMessageService extends ReactContextBaseJavaModule {
@@ -204,11 +211,89 @@ public class SMessageService extends ReactContextBaseJavaModule {
      * 文件发送
      */
     @ReactMethod
-    public void sendFile(String filePath ,String targetID, Promise promise) {
+    public void sendFile(final String connectInfo, final String message, final String filePath ,final String targetID, final Promise promise) {
         try {
+            Thread Thread_Send_File = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try
+                    {
+                        File file = new File(filePath);
+                        String fileName = file.getName();
 
-            boolean bRes = true;
-            promise.resolve(bRes);
+                        FileInputStream inStream=new FileInputStream(file);
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+                        //文件大小
+                        long fileSize = file.length();
+                        //2M为单位切割文件后的总个数
+                        long total = (long) (Math.ceil((double)fileSize / ((double) 1024 * 1024 * 2)));
+                        byte[] buffer=new byte[1024 * 1024 * 2];
+
+                        //发送的文件的计数
+                        long count = 0;
+                        //BASE64编码的单个文件
+                        String sFileBlock;
+                        //可以直接发送的json字符串
+                        String jsonMessage;
+
+                        //对方的文件队列名和key,最好随机生成
+                        String sQueue = "File_" + targetID + fileName;
+                        String sRoutingKey = "File_" + targetID + fileName;
+
+                        JSONObject jConnectinfo = new JSONObject(connectInfo);
+
+                        //传送文件时新建一个连接
+                        AMQPManager mAMQPManager_File = new AMQPManager();
+
+                        mAMQPManager_File.connection(jConnectinfo.getString("serverIP"),
+                                jConnectinfo.getInt("port"),
+                                jConnectinfo.getString("hostName"),
+                                jConnectinfo.getString("userName"),
+                                jConnectinfo.getString("passwd"),
+                                jConnectinfo.getString("userID"));
+
+                        mAMQPManager_File.declareQueue(sQueue);
+                        //由于错误可能会有未删除的队列
+                        mAMQPManager_File.deleteQueue(sQueue);
+                        mAMQPManager_File.declareQueue(sQueue);
+                        mAMQPManager_File.bindQueue(sExchange, sQueue, sRoutingKey);
+                        AMQPSender fileSender = mAMQPManager_File.newSender();
+
+                        JSONObject jMessage = new JSONObject(message);
+
+                        int length;
+                        while( (length = inStream.read(buffer)) != -1)
+                        {
+                            bos.write(buffer,0,length);
+                            sFileBlock = Base64.encodeToString(bos.toByteArray(),Base64.DEFAULT);
+                            bos.reset();
+
+                            count++;
+
+                            jMessage.put("message", sFileBlock)
+                                    .put("total", total)
+                                    .put("count", count);
+
+                            fileSender.sendMessage(sExchange, jMessage.toString(), sRoutingKey);
+
+                            final String percentage = Float.toString( (float) count / total * 100);
+
+                        }
+                        bos.close();
+                        inStream.close();
+                        mAMQPManager_File.disconnection();
+                        WritableMap map = Arguments.createMap();
+
+                        map.putString("queueName",sQueue);
+                        map.putString("fileName",fileName);
+                        promise.resolve(map);
+                    }catch(Exception e){
+                        promise.reject(e);
+                    }
+                }
+            });
+            Thread_Send_File.start();
         } catch (Exception e) {
             promise.reject(e);
         }
