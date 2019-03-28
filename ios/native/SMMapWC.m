@@ -2076,14 +2076,14 @@
 //
 // 返回值说明：裁减完地图尝试以strResultName保存到map.workspace.maps中，若已存在同名则重命名为strResultName#1，把最终命名结果返回
 //
-
--(NSString*)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSString*)jsonParam saveAs:(NSString*)strResultName{
+//-(NSString*)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSString*)jsonParam saveAs:(NSString*)strResultName
+-(NSString*)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSArray*)arrLayers/*NSString*)jsonParam*/ saveAs:(NSString*)strResultName{
     
     if (_srcMap==nil || [_srcMap.layers getCount]<=0 || clipRegion==nil || clipRegion.getBounds.isEmpty) {
         return false;
     }
     
-    NSArray *arrLayers = [NSJSONSerialization JSONObjectWithData:[jsonParam dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
+    //NSArray *arrLayers = [NSJSONSerialization JSONObjectWithData:[jsonParam dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
     
     NSMutableArray *arrDatasetCliped = [[NSMutableArray alloc]init]; // 已经裁减过的dataset
     NSMutableArray *arrDatasetResult = [[NSMutableArray alloc]init]; // 已经裁减过的结果

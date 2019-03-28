@@ -2593,7 +2593,7 @@ int b = '1';
     //
     // 返回值说明：裁减完地图尝试以strResultName保存到map.workspace.maps中，若已存在同名则重命名为strResultName#1，把最终命名结果返回
     //
-    public String clipMap(com.supermap.mapping.Map _srcMap , GeoRegion clipRegion , String jsonParam ,String strResultName){
+    public String clipMap(com.supermap.mapping.Map _srcMap , GeoRegion clipRegion , /*String jsonParam*/ReadableArray arrLayers ,String strResultName){
 
         if (_srcMap==null || _srcMap.getLayers().getCount()<=0 || clipRegion==null || clipRegion.getBounds().isEmpty()) {
             return false;
@@ -2617,17 +2617,17 @@ int b = '1';
             _clipMap.open(strClipMapName);
         }
 
-        JSONArray arrLayers;
-        try {
-            arrLayers = new JSONArray(jsonParam);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        JSONArray arrLayers;
+//        try {
+//            arrLayers = new JSONArray(jsonParam);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
 
-        for(int i=0;i<arrLayers.length();i++){
-            JSONObject dicLayer = arrLayers.getJSONObject(i);
+        for(int i=0;i<arrLayers.size();i++){
+            ReadableMap dicLayer = arrLayers.getMap(i);
             // 图层名称
-            String strLayerName = dicLayer.optString("LayerName");
+            String strLayerName = dicLayer.getString("LayerName");
             Layer layerTemp = _srcMap.getLayers().find(strLayerName);
             Dataset datasetTemp = layerTemp.getDataset();
 
@@ -2650,7 +2650,7 @@ int b = '1';
                 datasetResult = arrDatasetResult.get(index);
                 datasourceResult = datasetResult.getDatasource();
             }else {
-                String strResultDatasource = dicLayer.optString(@"DatasourceTarget");
+                String strResultDatasource = dicLayer.getString("DatasourceTarget");
                 if (strResultDatasource!=null) {
                     datasourceResult = _srcMap.getWorkspace().getDatasources().get(strResultDatasource);
                     if (datasourceResult==null
@@ -2663,7 +2663,7 @@ int b = '1';
                 }
 
                 // 新dataset的名字
-                String strDatasetResultName = dicLayer.optString(@"DatasetTarget");
+                String strDatasetResultName = dicLayer.getString("DatasetTarget");
                 if (strDatasetResultName==null) {
                     strDatasetResultName = datasetTemp.getName();
                 }
@@ -2678,13 +2678,13 @@ int b = '1';
                 if (DatasetVector.class.isInstance(datasetTemp)){
                     //3.datasetVector 有效参数：IsClipInRegion，IsErase
                     boolean bClipInRegion = true;
-                    if (dicLayer.has("IsClipInRegion")){
-                        bClipInRegion = dicLayer.optBoolean("IsClipInRegion");
+                    if (dicLayer.hasKey("IsClipInRegion")){
+                        bClipInRegion = dicLayer.getBoolean("IsClipInRegion");
                     }
 
                     boolean bErase = false;
-                    if (dicLayer.has("IsErase"){
-                        bErase = dicLayer.optBoolean("IsErase");
+                    if (dicLayer.hasKey("IsErase"){
+                        bErase = dicLayer.getBoolean("IsErase");
                     }
 
                     DatasetVectorInfo datasetResultInfo = new DatasetVectorInfo(strDatasetResultName,(DatasetVector) datasetTemp);
@@ -2746,13 +2746,13 @@ int b = '1';
                 }else if(datasetTemp.getType()==DatasetType.GRID || datasetTemp.getType()==DatasetType.IMAGE){
                     //4.datasetRaster 有效参数：IsClipInRegion，IsExactClip
                     boolean bClipInRegion = true;
-                    if (dicLayer.has("IsClipInRegion")){
-                        bClipInRegion = dicLayer.optBoolean("IsClipInRegion");
+                    if (dicLayer.hasKey("IsClipInRegion")){
+                        bClipInRegion = dicLayer.getBoolean("IsClipInRegion");
                     }
 
                     boolean bExactClip = false;
-                    if (dicLayer.has("IsExactClip"){
-                        bExactClip = dicLayer.optBoolean("IsExactClip");
+                    if (dicLayer.hasKey("IsExactClip"){
+                        bExactClip = dicLayer.getBoolean("IsExactClip");
                     }
 
                     datasetResult = RasterClip.clip(datasetTemp,clipRegion,bClipInRegion,bExactClip);
