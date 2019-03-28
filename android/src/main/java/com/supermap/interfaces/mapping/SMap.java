@@ -2586,6 +2586,11 @@ public class SMap extends ReactContextBaseJavaModule {
 
                 @Override
                 public void onShowPress(MotionEvent e) {
+
+                }
+
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
                     x[0] = e.getX();
                     y[0] = e.getY();
                     WritableMap writeMap = Arguments.createMap();
@@ -2593,11 +2598,8 @@ public class SMap extends ReactContextBaseJavaModule {
                     writeMap.putDouble("y", y[0]);
                     promise.resolve(writeMap);
                     sMap.smMapWC.getMapControl().deleteGestureDetector();
-                }
 
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    return false;
+                    return true;
                 }
 
                 @Override
@@ -2666,6 +2668,9 @@ public class SMap extends ReactContextBaseJavaModule {
             geoStyle.setFillForeColor(this.getFillColor());
             geoStyle.setFillBackColor(this.getFillColor());
             geoStyle.setMarkerSize(new Size2D(10, 10));
+            geoStyle.setLineColor(new Color(0,133,255));
+            //geoStyle.setLineColor(new Color(0,206,209));
+
             mapControl.addGeometryAddedListener(new GeometryAddedListener() {
                 @Override
                 public void geometryAdded(GeometryEvent event) {
@@ -2679,6 +2684,52 @@ public class SMap extends ReactContextBaseJavaModule {
                     recordset.update();
                 }
             });
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标注默认的结点，线，面颜色
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setLabelColor(/*ReadableMap readableMap,*/ Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.setStrokeColor(0x3999FF);
+//            mapControl.setStrokeFillColor();
+            mapControl.setStrokeWidth(1);
+
+            GeoStyle geoStyle_P = new GeoStyle();
+//            geoStyle_P.setMarkerAngle(14.0);
+//            geoStyle_P.setFillForeColor(new Color(0,133,255));
+//            geoStyle_P.setLineColor(new Color(0,133,255));
+//            geoStyle_P.setMarkerSize(new Size2D(10, 10));
+//            geoStyle_P.setPointColor(new Color(0,133,255));
+//            geoStyle_P.setMarkerSymbolID(322);
+//            mapControl.setNodeStyle(geoStyle_P);
+
+            Workspace workspace = mapControl.getMap().getWorkspace();
+            Resources m_resources = workspace.getResources();
+            SymbolMarkerLibrary symbol_M = m_resources.getMarkerLibrary();
+            if (symbol_M.contains(322)) {
+                geoStyle_P.setMarkerSymbolID(322);
+                mapControl.setNodeStyle(geoStyle_P);
+            } else if (symbol_M.contains(313)) {
+                geoStyle_P.setMarkerSymbolID(313);
+                mapControl.setNodeStyle(geoStyle_P);
+            } else if (symbol_M.contains(321)) {
+                geoStyle_P.setMarkerSymbolID(321);
+                mapControl.setNodeStyle(geoStyle_P);
+            } else {
+                mapControl.setNodeColor(0x3999FF);
+                mapControl.setNodeSize(2.0);
+            }
+
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
