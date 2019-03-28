@@ -2,13 +2,8 @@ package com.supermap.smNative;
 
 import android.util.Log;
 
-import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.soloader.NoopSoSource;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;

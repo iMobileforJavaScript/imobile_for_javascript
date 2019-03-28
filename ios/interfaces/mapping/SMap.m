@@ -672,7 +672,7 @@ RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBloc
 #pragma mark 移动到指定位置
 RCT_REMAP_METHOD(moveToPoint, moveToPointWithPoint:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        if (![[point allKeys] containsObject:@"x"] || !![[point allKeys] containsObject:@"y"]){
+        if (![[point allKeys] containsObject:@"x"] || ![[point allKeys] containsObject:@"y"]){
             resolve([NSNumber numberWithBool:NO]);
             return;
         }
@@ -683,7 +683,7 @@ RCT_REMAP_METHOD(moveToPoint, moveToPointWithPoint:(NSDictionary *)point resolve
             NSNumber* x = [point objectForKey:@"x"];
             NSNumber* y = [point objectForKey:@"y"];
             Point2D* pt = [[Point2D alloc] initWithX:x.doubleValue Y:y.doubleValue];
-            if (x <= 180 && x >= -180 && y >= - 90 && y <= 90) {
+            if (x.doubleValue <= 180 && x.doubleValue >= -180 && y.doubleValue >= - 90 && y.doubleValue <= 90) {
                 if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
                     Point2Ds *points = [[Point2Ds alloc]init];
                     [points add:pt];
