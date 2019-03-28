@@ -683,17 +683,41 @@ RCT_REMAP_METHOD(moveToPoint, moveToPointWithPoint:(NSDictionary *)point resolve
             NSNumber* x = [point objectForKey:@"x"];
             NSNumber* y = [point objectForKey:@"y"];
             Point2D* pt = [[Point2D alloc] initWithX:x.doubleValue Y:y.doubleValue];
-            if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
-                Point2Ds *points = [[Point2Ds alloc]init];
-                [points add:pt];
-                PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-                [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-                CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-
-                //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-                [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-                pt = [points getItem:0];
+            if (x <= 180 && x >= -180 && y >= - 90 && y <= 90) {
+                if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+                    Point2Ds *points = [[Point2Ds alloc]init];
+                    [points add:pt];
+                    PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+                    [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+                    CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+                    
+                    //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+                    [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+                    pt = [points getItem:0];
+                }
+            } else {
+                if ([mapControl.map.prjCoordSys type] != PCST_SPHERE_MERCATOR) {//若坐标不是地图坐标则进行转换
+                    Point2Ds *points = [[Point2Ds alloc]init];
+                    [points add:pt];
+                    PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+                    [srcPrjCoorSys setType:PCST_SPHERE_MERCATOR];
+                    CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+                    
+                    [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+                    pt = [points getItem:0];
+                }
             }
+//            if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+//                Point2Ds *points = [[Point2Ds alloc]init];
+//                [points add:pt];
+//                PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+//                [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+//                CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+//
+//                //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+//                [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+//                pt = [points getItem:0];
+//            }
             
             if ([mapControl.map.bounds containsPoint2D:pt]) {
                 mapControl.map.center = pt;

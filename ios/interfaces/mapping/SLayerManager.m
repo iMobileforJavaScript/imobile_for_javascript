@@ -393,6 +393,8 @@ RCT_REMAP_METHOD(selectObj, selectObjWith:(NSString *)layerPath ids:(NSArray *)i
         Selection* selection = [layer getSelection];
         [selection clear];
         
+        NSMutableArray* arr = [[NSMutableArray alloc] init];
+        
         BOOL selectable = layer.selectable;
         
         if (ids.count > 0) {
@@ -405,6 +407,17 @@ RCT_REMAP_METHOD(selectObj, selectObjWith:(NSString *)layerPath ids:(NSArray *)i
             for (int i = 0; i < ids.count; i++) {
                 NSNumber* _ID = ids[i];
                 [selection add:_ID.intValue];
+                
+                Recordset* rs = [selection toRecordset];
+                [rs moveTo:i];
+                Point2D* point2D = [rs.geometry getInnerPoint];
+                
+                NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+                [dic setObject:_ID forKey:@"id"];
+                [dic setObject:[NSNumber numberWithDouble:point2D.x] forKey:@"x"];
+                [dic setObject:[NSNumber numberWithDouble:point2D.y] forKey:@"y"];
+                
+                [arr addObject:dic];
             }
         }
         
@@ -413,7 +426,7 @@ RCT_REMAP_METHOD(selectObj, selectObjWith:(NSString *)layerPath ids:(NSArray *)i
         }
         
         [sMap.smMapWC.mapControl.map refresh];
-        resolve([NSNumber numberWithBool:YES]);
+        resolve(arr);
     } @catch (NSException *exception) {
         reject(@"SMap", exception.reason, nil);
     }

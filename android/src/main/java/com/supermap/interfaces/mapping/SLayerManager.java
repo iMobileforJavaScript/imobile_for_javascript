@@ -20,6 +20,7 @@ import com.supermap.data.Enum;
 import com.supermap.data.FieldInfo;
 import com.supermap.data.FieldInfos;
 import com.supermap.data.FieldType;
+import com.supermap.data.Point2D;
 import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
 import com.supermap.mapping.Layer;
@@ -550,10 +551,12 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         try {
             SMap sMap = SMap.getInstance();
             Layer layer = SMLayer.findLayerByPath(layerPath);
+            DatasetVector dv = (DatasetVector)layer.getDataset();
             Selection selection = layer.getSelection();
             selection.clear();
 
             boolean selectable = layer.isSelectable();
+            WritableArray arr = Arguments.createArray();
 
             if (ids.size() > 0) {
                 if (!layer.isSelectable()) {
@@ -563,6 +566,18 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                 for (int i = 0; i < ids.size(); i++) {
                     int id = ids.getInt(i);
                     selection.add(id);
+
+                    Recordset rs = selection.toRecordset();
+                    rs.moveTo(i);
+                    Point2D point2D = rs.getGeometry().getInnerPoint();
+
+                    WritableMap idInfo = Arguments.createMap();
+
+                    idInfo.putInt("id", id);
+                    idInfo.putDouble("x", point2D.getX());
+                    idInfo.putDouble("y", point2D.getY());
+
+                    arr.pushMap(idInfo);
                 }
             }
 
@@ -571,7 +586,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             }
 
             sMap.getSmMapWC().getMapControl().getMap().refresh();
-            promise.resolve(true);
+            promise.resolve(arr);
         } catch (Exception e) {
             promise.reject(e);
         }

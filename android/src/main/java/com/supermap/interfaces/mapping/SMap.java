@@ -1247,16 +1247,40 @@ public class SMap extends ReactContextBaseJavaModule {
                 if (pt != null) {
                     // Point2D point2D = new Point2D(pt);
 
-                    if (mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
-                        Point2Ds point2Ds = new Point2Ds();
-                        point2Ds.add(pt);
-                        PrjCoordSys prjCoordSys = new PrjCoordSys();
-                        prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-                        CoordSysTransParameter parameter = new CoordSysTransParameter();
+                    if (pt.getX() <= 180 && pt.getX() >= -180 && pt.getY() >= - 90 && pt.getY() <= 90) {
+                        if (mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+                            Point2Ds point2Ds = new Point2Ds();
+                            point2Ds.add(pt);
+                            PrjCoordSys prjCoordSys = new PrjCoordSys();
+                            prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                            CoordSysTransParameter parameter = new CoordSysTransParameter();
 
-                        CoordSysTranslator.convert(point2Ds, prjCoordSys, mapControl.getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
-                        pt = point2Ds.getItem(0);
+                            CoordSysTranslator.convert(point2Ds, prjCoordSys, mapControl.getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                            pt = point2Ds.getItem(0);
+                        }
+                    } else {
+                        if (mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_SPHERE_MERCATOR) {
+                            Point2Ds point2Ds = new Point2Ds();
+                            point2Ds.add(pt);
+                            PrjCoordSys prjCoordSys = new PrjCoordSys();
+                            prjCoordSys.setType(PrjCoordSysType.PCS_SPHERE_MERCATOR);
+                            CoordSysTransParameter parameter = new CoordSysTransParameter();
+
+                            CoordSysTranslator.convert(point2Ds, prjCoordSys, mapControl.getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                            pt = point2Ds.getItem(0);
+                        }
                     }
+
+//                    if (mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+//                        Point2Ds point2Ds = new Point2Ds();
+//                        point2Ds.add(pt);
+//                        PrjCoordSys prjCoordSys = new PrjCoordSys();
+//                        prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+//                        CoordSysTransParameter parameter = new CoordSysTransParameter();
+//
+//                        CoordSysTranslator.convert(point2Ds, prjCoordSys, mapControl.getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+//                        pt = point2Ds.getItem(0);
+//                    }
                 }
                 if (pt != null && mapControl.getMap().getBounds().contains(pt)) {
                     mapControl.getMap().setCenter(pt);
