@@ -2316,6 +2316,21 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+    // 添加指定字段到数据集
+    private void addFieldInfo(DatasetVector dv, String name, FieldType type, boolean required, String value, int maxLength) {
+        FieldInfos infos = dv.getFieldInfos();
+        if(infos.indexOf(name) != -1 ){//exists
+            infos.remove(name);
+        }
+        FieldInfo newInfo = new FieldInfo();
+        newInfo.setName(name);
+        newInfo.setType(type);
+        newInfo.setMaxLength(maxLength);
+        newInfo.setDefaultValue(value);
+        newInfo.setRequired(required);
+        infos.add(newInfo);
+    }
+
     /**
      * 新建标注数据集
      *
@@ -2341,6 +2356,11 @@ public class SMap extends ReactContextBaseJavaModule {
                     datasetVectorInfo.setEncodeType(EncodeType.NONE);
                     datasetVectorInfo.setName(datasetName);
                     DatasetVector datasetVector = datasets.create(datasetVectorInfo);
+                    //创建数据集时创建好字段
+                    addFieldInfo(datasetVector,"name", FieldType.TEXT, false,"", 255);
+                    addFieldInfo(datasetVector,"remark", FieldType.TEXT, false,"", 255);
+                    addFieldInfo(datasetVector,"address", FieldType.TEXT, false,"", 255);
+
                     Dataset ds = datasets.get(datasetName);
                     com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                     Layer layer = map.getLayers().add(ds, true);
@@ -2358,6 +2378,11 @@ public class SMap extends ReactContextBaseJavaModule {
                 datasetVectorInfo.setEncodeType(EncodeType.NONE);
                 datasetVectorInfo.setName(datasetName);
                 DatasetVector datasetVector = datasets.create(datasetVectorInfo);
+                //创建数据集时创建好字段
+                addFieldInfo(datasetVector,"name", FieldType.TEXT, false,"", 255);
+                addFieldInfo(datasetVector,"remark", FieldType.TEXT, false,"", 255);
+                addFieldInfo(datasetVector,"address", FieldType.TEXT, false,"", 255);
+
                 Dataset ds = datasets.get(datasetName);
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                 Layer layer = map.getLayers().add(ds, true);
@@ -2451,7 +2476,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void addRecordset(String dataname, String recname, String name, Promise promise) {
+    public void addRecordset(String datasetName, String filedInfoName, String value, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
@@ -2464,38 +2489,53 @@ public class SMap extends ReactContextBaseJavaModule {
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
-                    DatasetVector dataset = (DatasetVector) datasets.get(dataname);
-                    dataset.setReadOnly(false);
-                    FieldInfos fieldInfos = dataset.getFieldInfos();
-                    fieldInfos.remove(recname);
-                    FieldInfo fieldinfo = new FieldInfo();
-                    fieldinfo.setCaption(name);
-                    fieldinfo.setName(recname);
-                    fieldinfo.setType(FieldType.TEXT);
-                    fieldinfo.setDefaultValue(name);
-                    fieldInfos.add(fieldinfo);
-                    fieldinfo.dispose();
+                    DatasetVector dataset = (DatasetVector) datasets.get(datasetName);
+                    modifyLastAttribute(dataset, filedInfoName, value);
                 }
                 info.dispose();
                 promise.resolve(true);
             } else {
                 Datasets datasets = opendatasource.getDatasets();
-                DatasetVector dataset = (DatasetVector) datasets.get(dataname);
-                dataset.setReadOnly(false);
-                FieldInfos fieldInfos = dataset.getFieldInfos();
-                fieldInfos.remove(recname);
-                FieldInfo fieldinfo = new FieldInfo();
-                fieldinfo.setCaption(name);
-                fieldinfo.setName(recname);
-                fieldinfo.setType(FieldType.TEXT);
-                fieldinfo.setDefaultValue(name);
-                fieldInfos.add(fieldinfo);
-                fieldinfo.dispose();
+                DatasetVector dataset = (DatasetVector) datasets.get(datasetName);
+                modifyLastAttribute(dataset, filedInfoName, value);
                 promise.resolve(true);
             }
         } catch (Exception e) {
             promise.reject(e);
         }
+    }
+
+    // 修改最新的属性值
+    private void modifyLastAttribute(Dataset dataset, String filedInfoName, String value)
+    {
+        if (dataset == null) {
+            return;
+        }
+        if (filedInfoName == null) {
+            return;
+        }
+        if(value == null || value.isEmpty()){
+            return;
+        }
+
+        DatasetVector dtVector = (DatasetVector)dataset;
+        Recordset recordset = dtVector.getRecordset(false, CursorType.DYNAMIC);
+        if (recordset == null) {
+            return;
+        }
+        recordset.moveLast();
+        recordset.edit();
+
+        //the dataset didn't have '' fieldinfo
+        FieldInfos fieldInfos = recordset.getFieldInfos();
+        if( fieldInfos.indexOf(filedInfoName) == -1){
+            return;
+        }
+        recordset.setFieldValue(filedInfoName, value);
+
+        recordset.update();
+        recordset.close();
+        recordset.dispose();
     }
 
     /**
