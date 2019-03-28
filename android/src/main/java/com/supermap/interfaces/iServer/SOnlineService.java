@@ -83,12 +83,20 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.login(userName, password, new OnlineService.LoginCallback() {
                 @Override
                 public void loginSuccess() {
-                    promise.resolve(true);
+                    try {
+                        promise.resolve(true);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
                 public void loginFailed(String error) {
-                    promise.resolve(error);
+                    try {
+                        promise.resolve(error);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }catch (Exception e){
@@ -101,12 +109,20 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.loginByPhoneNumber(phoneNumber, password, new OnlineService.LoginCallback() {
                 @Override
                 public void loginSuccess() {
-                    promise.resolve(true);
+                    try {
+                        promise.resolve(true);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
                 public void loginFailed(String error) {
-                    promise.resolve(error);
+                    try {
+                        promise.resolve(error);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }catch (Exception e){

@@ -2316,6 +2316,21 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+    // 添加指定字段到数据集
+    private void addFieldInfo(DatasetVector dv, String name, FieldType type, boolean required, String value, int maxLength) {
+        FieldInfos infos = dv.getFieldInfos();
+        if(infos.indexOf(name) != -1 ){//exists
+            infos.remove(name);
+        }
+        FieldInfo newInfo = new FieldInfo();
+        newInfo.setName(name);
+        newInfo.setType(type);
+        newInfo.setMaxLength(maxLength);
+        newInfo.setDefaultValue(value);
+        newInfo.setRequired(required);
+        infos.add(newInfo);
+    }
+
     /**
      * 新建标注数据集
      *
@@ -2341,6 +2356,11 @@ public class SMap extends ReactContextBaseJavaModule {
                     datasetVectorInfo.setEncodeType(EncodeType.NONE);
                     datasetVectorInfo.setName(datasetName);
                     DatasetVector datasetVector = datasets.create(datasetVectorInfo);
+                    //创建数据集时创建好字段
+                    addFieldInfo(datasetVector,"name", FieldType.TEXT, false,"", 255);
+                    addFieldInfo(datasetVector,"remark", FieldType.TEXT, false,"", 255);
+                    addFieldInfo(datasetVector,"address", FieldType.TEXT, false,"", 255);
+
                     Dataset ds = datasets.get(datasetName);
                     com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                     Layer layer = map.getLayers().add(ds, true);
@@ -2358,6 +2378,11 @@ public class SMap extends ReactContextBaseJavaModule {
                 datasetVectorInfo.setEncodeType(EncodeType.NONE);
                 datasetVectorInfo.setName(datasetName);
                 DatasetVector datasetVector = datasets.create(datasetVectorInfo);
+                //创建数据集时创建好字段
+                addFieldInfo(datasetVector,"name", FieldType.TEXT, false,"", 255);
+                addFieldInfo(datasetVector,"remark", FieldType.TEXT, false,"", 255);
+                addFieldInfo(datasetVector,"address", FieldType.TEXT, false,"", 255);
+
                 Dataset ds = datasets.get(datasetName);
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                 Layer layer = map.getLayers().add(ds, true);
@@ -2451,7 +2476,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void addRecordset(String dataname, String recname, String name, Promise promise) {
+    public void addRecordset(String datasetName, String filedInfoName, String value, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
@@ -2464,38 +2489,53 @@ public class SMap extends ReactContextBaseJavaModule {
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
-                    DatasetVector dataset = (DatasetVector) datasets.get(dataname);
-                    dataset.setReadOnly(false);
-                    FieldInfos fieldInfos = dataset.getFieldInfos();
-                    fieldInfos.remove(recname);
-                    FieldInfo fieldinfo = new FieldInfo();
-                    fieldinfo.setCaption(name);
-                    fieldinfo.setName(recname);
-                    fieldinfo.setType(FieldType.TEXT);
-                    fieldinfo.setDefaultValue(name);
-                    fieldInfos.add(fieldinfo);
-                    fieldinfo.dispose();
+                    DatasetVector dataset = (DatasetVector) datasets.get(datasetName);
+                    modifyLastAttribute(dataset, filedInfoName, value);
                 }
                 info.dispose();
                 promise.resolve(true);
             } else {
                 Datasets datasets = opendatasource.getDatasets();
-                DatasetVector dataset = (DatasetVector) datasets.get(dataname);
-                dataset.setReadOnly(false);
-                FieldInfos fieldInfos = dataset.getFieldInfos();
-                fieldInfos.remove(recname);
-                FieldInfo fieldinfo = new FieldInfo();
-                fieldinfo.setCaption(name);
-                fieldinfo.setName(recname);
-                fieldinfo.setType(FieldType.TEXT);
-                fieldinfo.setDefaultValue(name);
-                fieldInfos.add(fieldinfo);
-                fieldinfo.dispose();
+                DatasetVector dataset = (DatasetVector) datasets.get(datasetName);
+                modifyLastAttribute(dataset, filedInfoName, value);
                 promise.resolve(true);
             }
         } catch (Exception e) {
             promise.reject(e);
         }
+    }
+
+    // 修改最新的属性值
+    private void modifyLastAttribute(Dataset dataset, String filedInfoName, String value)
+    {
+        if (dataset == null) {
+            return;
+        }
+        if (filedInfoName == null) {
+            return;
+        }
+        if(value == null || value.isEmpty()){
+            return;
+        }
+
+        DatasetVector dtVector = (DatasetVector)dataset;
+        Recordset recordset = dtVector.getRecordset(false, CursorType.DYNAMIC);
+        if (recordset == null) {
+            return;
+        }
+        recordset.moveLast();
+        recordset.edit();
+
+        //the dataset didn't have '' fieldinfo
+        FieldInfos fieldInfos = recordset.getFieldInfos();
+        if( fieldInfos.indexOf(filedInfoName) == -1){
+            return;
+        }
+        recordset.setFieldValue(filedInfoName, value);
+
+        recordset.update();
+        recordset.close();
+        recordset.dispose();
     }
 
     /**
@@ -2586,6 +2626,11 @@ public class SMap extends ReactContextBaseJavaModule {
 
                 @Override
                 public void onShowPress(MotionEvent e) {
+
+                }
+
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
                     x[0] = e.getX();
                     y[0] = e.getY();
                     WritableMap writeMap = Arguments.createMap();
@@ -2593,11 +2638,8 @@ public class SMap extends ReactContextBaseJavaModule {
                     writeMap.putDouble("y", y[0]);
                     promise.resolve(writeMap);
                     sMap.smMapWC.getMapControl().deleteGestureDetector();
-                }
 
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    return false;
+                    return true;
                 }
 
                 @Override
@@ -2666,6 +2708,9 @@ public class SMap extends ReactContextBaseJavaModule {
             geoStyle.setFillForeColor(this.getFillColor());
             geoStyle.setFillBackColor(this.getFillColor());
             geoStyle.setMarkerSize(new Size2D(10, 10));
+            geoStyle.setLineColor(new Color(0,133,255));
+            //geoStyle.setLineColor(new Color(0,206,209));
+
             mapControl.addGeometryAddedListener(new GeometryAddedListener() {
                 @Override
                 public void geometryAdded(GeometryEvent event) {
@@ -2679,6 +2724,52 @@ public class SMap extends ReactContextBaseJavaModule {
                     recordset.update();
                 }
             });
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标注默认的结点，线，面颜色
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setLabelColor(/*ReadableMap readableMap,*/ Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.setStrokeColor(0x3999FF);
+//            mapControl.setStrokeFillColor();
+            mapControl.setStrokeWidth(1);
+
+            GeoStyle geoStyle_P = new GeoStyle();
+//            geoStyle_P.setMarkerAngle(14.0);
+//            geoStyle_P.setFillForeColor(new Color(0,133,255));
+//            geoStyle_P.setLineColor(new Color(0,133,255));
+//            geoStyle_P.setMarkerSize(new Size2D(10, 10));
+//            geoStyle_P.setPointColor(new Color(0,133,255));
+//            geoStyle_P.setMarkerSymbolID(322);
+//            mapControl.setNodeStyle(geoStyle_P);
+
+            Workspace workspace = mapControl.getMap().getWorkspace();
+            Resources m_resources = workspace.getResources();
+            SymbolMarkerLibrary symbol_M = m_resources.getMarkerLibrary();
+            if (symbol_M.contains(322)) {
+                geoStyle_P.setMarkerSymbolID(322);
+                mapControl.setNodeStyle(geoStyle_P);
+            } else if (symbol_M.contains(313)) {
+                geoStyle_P.setMarkerSymbolID(313);
+                mapControl.setNodeStyle(geoStyle_P);
+            } else if (symbol_M.contains(321)) {
+                geoStyle_P.setMarkerSymbolID(321);
+                mapControl.setNodeStyle(geoStyle_P);
+            } else {
+                mapControl.setNodeColor(0x3999FF);
+                mapControl.setNodeSize(2.0);
+            }
+
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

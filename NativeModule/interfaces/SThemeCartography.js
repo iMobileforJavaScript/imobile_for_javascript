@@ -543,32 +543,6 @@ getGraphExpressions = (params) => {
 }
 
 /**
- * 获取统计专题图的最大显示值
- *
- * @param params
- */
-getGraphMaxValue = (params) => {
-  try {
-    return SThemeCartography.getGraphMaxValue(params)
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * 设置统计专题图的最大显示值
- *
- * @param params
- */
-setGraphMaxValue = (params) => {
-  try {
-    return SThemeCartography.setGraphMaxValue(params)
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
  * 新建点密度专题图
  *
  * @param params
@@ -740,8 +714,6 @@ export default {
   setThemeGraphType,
   setThemeGraphGraduatedMode,
   getGraphExpressions,
-  getGraphMaxValue,
-  setGraphMaxValue,
   //点密度专题图
   createDotDensityThemeMap,
   modifyDotDensityThemeMap,
