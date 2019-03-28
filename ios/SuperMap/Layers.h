@@ -153,6 +153,8 @@
 //添加分组
 -(LayerGroup*)addGroup:(NSString*)groupName;
 
+-(Layer*)findLayerWithName:(NSString*)name;
+
 @end
 
 

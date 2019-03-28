@@ -19,6 +19,8 @@
 -(Layer*)getLayer:(int)index;
 // 返回 图层集合中指定名称的图层对象
 -(Layer*)getLayerWithName:(NSString*)name;
+
+-(Layer*)findLayerWithName:(NSString*)name;//嵌套着在子group中找
 //索引指定图层
 -(NSUInteger)indexOfLayer:(Layer*)layer;
 //添加图层
