@@ -59,8 +59,8 @@ function sendMessage(message, targetID) {
   return MessageServiceeNative.sendMessage(message,targetID);
 }
 //文件发送
-function sendFile(filePath, targetID) {
-  return MessageServiceeNative.sendFile(filePath,targetID);
+function sendFile(connectInfo, message, filePath, targetID) {
+  return MessageServiceeNative.sendFile(connectInfo, message, filePath, targetID);
 }
 //声明多人会话
 function declareSession(uuid) {
