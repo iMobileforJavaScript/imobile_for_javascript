@@ -2067,15 +2067,23 @@
 //          IsClipInRegion 裁减区域在面内还是面外
 //          IsErase 是否擦除模式
 //          IsExactClip 是否精确裁减（删格涂层才有该选项）
+//          DatasourceTarget
+//          DatasetTarget
+// Eg:
+//   @"[{\"LayerName\":\"%@\",\"IsClipInRegion\":false,\"IsErase\":false,\"IsExactClip\":true},\
+//      {\"LayerName\":\"%@\",\"DatasourceTarget\":\"%@\",\"IsErase\":false,\"IsExactClip\":true},\
+//      {\"LayerName\":\"%@\",\"IsExactClip\":false,\"DatasourceTarget\":\"%@\",\"DatasetTarget\":\"%@\"}]"
+//
 // 返回值说明：裁减完地图尝试以strResultName保存到map.workspace.maps中，若已存在同名则重命名为strResultName#1，把最终命名结果返回
 //
--(NSString*)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSString*)jsonParam saveAs:(NSString*)strResultName{
+//-(NSString*)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSString*)jsonParam saveAs:(NSString*)strResultName
+-(NSString*)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSArray*)arrLayers/*NSString*)jsonParam*/ saveAs:(NSString*)strResultName{
     
     if (_srcMap==nil || [_srcMap.layers getCount]<=0 || clipRegion==nil || clipRegion.getBounds.isEmpty) {
         return false;
     }
     
-    NSArray *arrLayers = [NSJSONSerialization JSONObjectWithData:[jsonParam dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
+    //NSArray *arrLayers = [NSJSONSerialization JSONObjectWithData:[jsonParam dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
     
     NSMutableArray *arrDatasetCliped = [[NSMutableArray alloc]init]; // 已经裁减过的dataset
     NSMutableArray *arrDatasetResult = [[NSMutableArray alloc]init]; // 已经裁减过的结果
@@ -2115,7 +2123,7 @@
         Dataset * datasetResult = nil;
         Datasource *datasourceResult = nil;
         
-        if (index>0&&index<arrDatasetCliped.count) {
+        if (index>=0&&index<arrDatasetCliped.count) {
             //2.已经处理过的Dataset
             // 说明：形同数据集裁减参数是一致的，否则只支持第一出线layer的裁减参数
             datasetResult = [arrDatasetResult objectAtIndex:index];
@@ -2293,7 +2301,7 @@
 }
 
 // 从Exp的map里 拷贝所有layer到当前map的一个layerGroup下，layerGroup.name为被拷贝地图名
--(BOOL)addLayersFromMap:(NSString*)srcMapName ofModule:(NSString*)srcModule isPrivate:(NSString*)bSrcPrivate toMap:(Map*)desMap{
+-(BOOL)addLayersFromMap:(NSString*)srcMapName ofModule:(NSString*)srcModule isPrivate:(BOOL)bSrcPrivate toMap:(Map*)desMap{
     
     if ([srcMapName isEqualToString:desMap.name]) {
         //现在的工作空间结构 暂不支持同名情况

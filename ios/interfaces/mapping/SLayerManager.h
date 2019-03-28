@@ -14,6 +14,8 @@
 #import <SuperMap/FieldInfo.h>
 #import <SuperMap/QueryParameter.h>
 #import <SuperMap/CursorType.h>
+#import <SuperMap/Geometry.h>
+#import <SuperMap/Recordset.h>
 
 @interface SLayerManager : NSObject<RCTBridgeModule>
 
