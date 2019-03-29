@@ -735,7 +735,7 @@ public class SMap extends ReactContextBaseJavaModule {
             style.fromJson(styleJson);
             selection.setStyle(style);
 
-            promise.resolve(true);
+            promise.resolve(true);setLabelColor
         } catch (Exception e) {
             promise.reject(e);
         }
