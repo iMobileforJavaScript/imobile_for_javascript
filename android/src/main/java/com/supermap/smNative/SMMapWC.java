@@ -2596,7 +2596,7 @@ int b = '1';
     public String clipMap(com.supermap.mapping.Map _srcMap , GeoRegion clipRegion , /*String jsonParam*/ReadableArray arrLayers ,String strResultName){
 
         if (_srcMap==null || _srcMap.getLayers().getCount()<=0 || clipRegion==null || clipRegion.getBounds().isEmpty()) {
-            return false;
+            return null;
         }
 
         ArrayList<Dataset> arrDatasetCliped = new ArrayList<Dataset>();
@@ -2683,7 +2683,7 @@ int b = '1';
                     }
 
                     boolean bErase = false;
-                    if (dicLayer.hasKey("IsErase"){
+                    if (dicLayer.hasKey("IsErase")){
                         bErase = dicLayer.getBoolean("IsErase");
                     }
 
@@ -2751,11 +2751,11 @@ int b = '1';
                     }
 
                     boolean bExactClip = false;
-                    if (dicLayer.hasKey("IsExactClip"){
+                    if (dicLayer.hasKey("IsExactClip")){
                         bExactClip = dicLayer.getBoolean("IsExactClip");
                     }
 
-                    datasetResult = RasterClip.clip(datasetTemp,clipRegion,bClipInRegion,bExactClip);
+                    datasetResult = RasterClip.clip(datasetTemp,clipRegion,bClipInRegion,bExactClip,datasourceResult,strDatasetResultName);
                     if (datasetResult==null){
                         // 裁减失败
                         continue;
@@ -2813,7 +2813,11 @@ int b = '1';
         }
 
         if (_clipMap!=null){
-            _clipMap.save();
+            try {
+                _clipMap.save();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             _clipMap.close();
             _clipMap.dispose();
         }

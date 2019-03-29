@@ -670,6 +670,14 @@ export default (function () {
             console.error(error);
         }
     }
+
+    function pasueRoutStop(){
+        try {
+            return SScene.pasueRoutStop()
+        } catch (error) {
+            console.error(error);
+        }
+    }
     
     function clearRoutStops(){
         try {
@@ -838,6 +846,7 @@ export default (function () {
         getAttributeByName,
         saveCurrentRoutStop,
         saveRoutStop,
+        pasueRoutStop,
         clearRoutStops,
         initPointSearch,
         pointSearch,
