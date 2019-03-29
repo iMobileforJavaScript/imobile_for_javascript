@@ -92,6 +92,14 @@ export default (function () {
         }
     }
 
+    function saveWorkspace(){
+        try {
+            return SScene.saveWorkspace()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     function getFlyRouteNames() {
         try {
             return SScene.getFlyRouteNames()
@@ -780,6 +788,7 @@ export default (function () {
     let SSceneExp = {
         openWorkspace,
         closeWorkspace,
+        saveWorkspace,
         setVisible,
         getLayerList,
         getMapList,
