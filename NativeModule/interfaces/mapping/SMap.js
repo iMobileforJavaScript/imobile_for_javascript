@@ -888,7 +888,6 @@ export default (function () {
    */
   function setSelectionStyle (layerPath = '', style = {}) {
     try {
-      if (layerPath === '' || Object.keys(style).length === 0) return
       return SMap.setSelectionStyle(layerPath, JSON.stringify(style))
     } catch (e) {
       console.error(e)
@@ -1207,6 +1206,7 @@ export default (function () {
     removeHistory,
     clearHistory,
     addMapHistory,
+    
     addRecordset,
     setMinVisibleScale,
     setMaxVisibleScale,
