@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -28,7 +29,6 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.HashMap;
 
 
 public class SMessageService extends ReactContextBaseJavaModule {
@@ -122,13 +122,17 @@ public class SMessageService extends ReactContextBaseJavaModule {
      * 声明多人会话
      */
     @ReactMethod
-    public void declareSession(String uuid, Promise promise) {
+    public void declareSession(ReadableArray members, String groupId, Promise promise) {
         try {
 
             boolean bRes = true;
             if (g_AMQPManager!=null){
-
-                g_AMQPManager.declareQueue(uuid);
+                for(int i = 0; i < members.size(); i++){
+                    ReadableMap member = members.getMap(i);
+                    String sQueue = "Message_" + member.getString("id");
+                    g_AMQPManager.declareQueue(sQueue);
+                    g_AMQPManager.bindQueue(sGroupExchange, sQueue, groupId);
+                }
 
             }
 
@@ -164,15 +168,14 @@ public class SMessageService extends ReactContextBaseJavaModule {
      * 退出多人会话
      */
     @ReactMethod
-    public void exitSession(String uuid, Promise promise) {
+    public void exitSession(String memberId, String groupId, Promise promise) {
         try {
 
             boolean bRes = true;
             if (g_AMQPManager!=null){
-
-                String sQueue = "Group_Message_" + uuid;
-                String sRoutingKey = "Group_Message_" + uuid;
-                g_AMQPManager.unbindQueue(sQueue ,sGroupExchange , sRoutingKey);
+                String sQueue = "Message_" + memberId;
+                String sRoutingKey = groupId;
+                g_AMQPManager.unbindQueue(sGroupExchange, sQueue, sRoutingKey);
 
             }
 
@@ -189,17 +192,23 @@ public class SMessageService extends ReactContextBaseJavaModule {
     public void sendMessage(String message ,String targetID, Promise promise) {
         try {
 
+            boolean bGroup = targetID.contains("Group_");
             boolean bRes = true;
             //需要声明对方的消息队列并绑定routingkey
             String sQueue = "Message_" + targetID;
             String sRoutingKey = "Message_" + targetID;
-            if (g_AMQPManager!=null){
+            if (g_AMQPManager!=null && !bGroup){
 
                 g_AMQPManager.declareQueue(sQueue);
                 g_AMQPManager.bindQueue(sExchange, sQueue, sRoutingKey);
 
             }
-            g_AMQPSender.sendMessage(sExchange, message,sRoutingKey);
+            if(!bGroup){
+                g_AMQPSender.sendMessage(sExchange, message, sRoutingKey);
+            }else{
+                g_AMQPSender.sendMessage(sGroupExchange, message, targetID);
+            }
+
 
             promise.resolve(bRes);
         } catch (Exception e) {
@@ -211,7 +220,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
      * 文件发送
      */
     @ReactMethod
-    public void sendFile(final String connectInfo, final String message, final String filePath ,final String targetID, final Promise promise) {
+    public void sendFile(final String connectInfo, final String message, final String filePath , final Promise promise) {
         try {
             Thread Thread_Send_File = new Thread(new Runnable() {
                 @Override
@@ -237,9 +246,11 @@ public class SMessageService extends ReactContextBaseJavaModule {
                         //可以直接发送的json字符串
                         String jsonMessage;
 
+                        JSONObject jMessage = new JSONObject(message);
+
                         //对方的文件队列名和key,最好随机生成
-                        String sQueue = "File_" + targetID + fileName;
-                        String sRoutingKey = "File_" + targetID + fileName;
+                        String sQueue = "File_" + jMessage.getJSONObject("user").getString("id") +"_"+  jMessage.getString("time");
+                        String sRoutingKey = "File_" + jMessage.getJSONObject("user").getString("id") +"_"+ jMessage.getString("time");
 
                         JSONObject jConnectinfo = new JSONObject(connectInfo);
 
@@ -260,7 +271,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
                         mAMQPManager_File.bindQueue(sExchange, sQueue, sRoutingKey);
                         AMQPSender fileSender = mAMQPManager_File.newSender();
 
-                        JSONObject jMessage = new JSONObject(message);
+
 
                         int length;
                         while( (length = inStream.read(buffer)) != -1)
