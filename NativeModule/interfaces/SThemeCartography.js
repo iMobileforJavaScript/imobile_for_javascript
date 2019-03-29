@@ -470,11 +470,11 @@ createThemeGraphMap = (params) => {
  * @param params
  */
 createThemeGraphMapByLayer = (params) => {
-    try {
-      return SThemeCartography.createThemeGraphMapByLayer(params)
-    } catch (error) {
-      console.error(error)
-    }
+  try {
+    return SThemeCartography.createThemeGraphMapByLayer(params)
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 /**
@@ -537,6 +537,32 @@ setThemeGraphGraduatedMode = (params) => {
 getGraphExpressions = (params) => {
   try {
     return SThemeCartography.getGraphExpressions(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取统计专题图的最大显示值
+ *
+ * @param params
+ */
+getGraphMaxValue = (params) => {
+  try {
+    return SThemeCartography.getGraphMaxValue(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 设置统计专题图的最大显示值
+ *
+ * @param params
+ */
+setGraphMaxValue = (params) => {
+  try {
+    return SThemeCartography.setGraphMaxValue(params)
   } catch (error) {
     console.error(error)
   }
@@ -714,6 +740,8 @@ export default {
   setThemeGraphType,
   setThemeGraphGraduatedMode,
   getGraphExpressions,
+  getGraphMaxValue,
+  setGraphMaxValue,
   //点密度专题图
   createDotDensityThemeMap,
   modifyDotDensityThemeMap,
