@@ -2,9 +2,17 @@ package com.supermap.smNative;
 
 import android.util.Log;
 
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.soloader.NoopSoSource;
 import com.supermap.RNUtils.FileUtil;
+import com.supermap.analyst.spatialanalyst.OverlayAnalyst;
+import com.supermap.analyst.spatialanalyst.OverlayAnalystParameter;
+import com.supermap.analyst.spatialanalyst.RasterClip;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
@@ -15,9 +23,15 @@ import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.Datasources;
 import com.supermap.data.EngineType;
 import com.supermap.data.Enum;
+import com.supermap.data.FieldInfo;
+import com.supermap.data.FieldInfos;
+import com.supermap.data.GeoRegion;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
+import com.supermap.data.Point2D;
+import com.supermap.data.Point2Ds;
 import com.supermap.data.Recordset;
+import com.supermap.data.Rectangle2D;
 import com.supermap.data.Resources;
 import com.supermap.data.Symbol;
 import com.supermap.data.SymbolFill;
@@ -2562,7 +2576,299 @@ int b = '1';
 
     }
 
-    public boolean addlayersFromMap(String jsonSrcMap ,String jsonDesMap){
+    //
+    // 以面对象region裁减地图map 并保存为 strResultName
+    // 通过图层确定裁减数据集，支持矢量和本地删格数据集，layer可以不参加裁减（不参加，意思是在结果数据集中layer.dataset不变）但同一数据集的layer裁减参数一致（以第一个layer参数为准）
+    // jsonParam ：
+    //          LayerName 需裁减Layer名（实际为裁减Layer对应dataset，裁减结果为新数据集保留到dataset所在datasource，新地图中Layer指向新数据集）
+    //          IsClipInRegion 裁减区域在面内还是面外
+    //          IsErase 是否擦除模式
+    //          IsExactClip 是否精确裁减（删格涂层才有该选项）
+    //          DatasourceTarget
+    //          DatasetTarget
+    // Eg:
+    //  @"[{\"LayerName\":\"%@\",\"IsClipInRegion\":false,\"IsErase\":false,\"IsExactClip\":true},\
+    //     {\"LayerName\":\"%@\",\"DatasourceTarget\":\"%@\",\"IsErase\":false,\"IsExactClip\":true},\
+    //     {\"LayerName\":\"%@\",\"IsExactClip\":false,\"DatasourceTarget\":\"%@\",\"DatasetTarget\":\"%@\"}]"
+    //
+    // 返回值说明：裁减完地图尝试以strResultName保存到map.workspace.maps中，若已存在同名则重命名为strResultName#1，把最终命名结果返回
+    //
+    public String clipMap(com.supermap.mapping.Map _srcMap , GeoRegion clipRegion , /*String jsonParam*/ReadableArray arrLayers ,String strResultName){
+
+        if (_srcMap==null || _srcMap.getLayers().getCount()<=0 || clipRegion==null || clipRegion.getBounds().isEmpty()) {
+            return false;
+        }
+
+        ArrayList<Dataset> arrDatasetCliped = new ArrayList<Dataset>();
+        ArrayList<Dataset> arrDatasetResult = new ArrayList<Dataset>();
+
+        String strClipMapName = strResultName;
+        com.supermap.mapping.Map _clipMap = null;
+        if (strClipMapName!=null){
+            int nAddNum = 1;
+            while (_srcMap.getWorkspace().getMaps().indexOf(strClipMapName)!=-1) {
+                strClipMapName =strResultName + nAddNum ;
+                nAddNum++;
+            }
+
+            _srcMap.getWorkspace().getMaps().add(strClipMapName,_srcMap.toXML());
+
+            _clipMap = new com.supermap.mapping.Map(_srcMap.getWorkspace());
+            _clipMap.open(strClipMapName);
+        }
+
+//        JSONArray arrLayers;
+//        try {
+//            arrLayers = new JSONArray(jsonParam);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+        for(int i=0;i<arrLayers.size();i++){
+            ReadableMap dicLayer = arrLayers.getMap(i);
+            // 图层名称
+            String strLayerName = dicLayer.getString("LayerName");
+            Layer layerTemp = _srcMap.getLayers().find(strLayerName);
+            Dataset datasetTemp = layerTemp.getDataset();
+
+            if (datasetTemp==null){
+                //1.datasetTemp==nil
+                // layerGroup或其他没有dataset的情况
+                continue;
+            }
+
+            // 所在数据源
+
+            int index = arrDatasetCliped.indexOf(datasetTemp);
+
+            Dataset  datasetResult = null;
+            Datasource datasourceResult = null;
+
+            if (index>=0 && index<arrDatasetCliped.size()){
+                //2.已经处理过的Dataset
+                // 说明：形同数据集裁减参数是一致的，否则只支持第一出线layer的裁减参数
+                datasetResult = arrDatasetResult.get(index);
+                datasourceResult = datasetResult.getDatasource();
+            }else {
+                String strResultDatasource = dicLayer.getString("DatasourceTarget");
+                if (strResultDatasource!=null) {
+                    datasourceResult = _srcMap.getWorkspace().getDatasources().get(strResultDatasource);
+                    if (datasourceResult==null
+                            || datasourceResult.getConnectionInfo().getEngineType()!=EngineType.UDB) {
+                        //没找到datasource 或 不是udb
+                        continue;
+                    }
+                }else{
+                    datasourceResult = datasetTemp.getDatasource();
+                }
+
+                // 新dataset的名字
+                String strDatasetResultName = dicLayer.getString("DatasetTarget");
+                if (strDatasetResultName==null) {
+                    strDatasetResultName = datasetTemp.getName();
+                }
+
+                String strTempName = strDatasetResultName;
+                int nAddNum = 1;
+                while (datasourceResult.getDatasets().contains(strDatasetResultName)) {
+                    strDatasetResultName = strTempName +"_" + nAddNum;
+                    nAddNum++;
+                }
+
+                if (DatasetVector.class.isInstance(datasetTemp)){
+                    //3.datasetVector 有效参数：IsClipInRegion，IsErase
+                    boolean bClipInRegion = true;
+                    if (dicLayer.hasKey("IsClipInRegion")){
+                        bClipInRegion = dicLayer.getBoolean("IsClipInRegion");
+                    }
+
+                    boolean bErase = false;
+                    if (dicLayer.hasKey("IsErase"){
+                        bErase = dicLayer.getBoolean("IsErase");
+                    }
+
+                    DatasetVectorInfo datasetResultInfo = new DatasetVectorInfo(strDatasetResultName,(DatasetVector) datasetTemp);
+                    datasetResult = datasourceResult.getDatasets().create(datasetResultInfo);
+                    if (datasetResult==null){
+                        // 创建失败
+                        continue;
+                    }
+
+                    // 如果是面内裁减则region与clipRegion相同，否则clipRegion需要加上一个外包的矩形
+                    GeoRegion region = new GeoRegion();
+                    if (!bClipInRegion) {
+                        Rectangle2D datasetBounds = datasetTemp.getBounds();
+                        Point2D[] arrBounds = new Point2D[4];
+                        arrBounds[0].setX(datasetBounds.getLeft());   arrBounds[0].setY(datasetBounds.getTop());
+                        arrBounds[1].setX(datasetBounds.getLeft());   arrBounds[1].setY(datasetBounds.getBottom());
+                        arrBounds[2].setX(datasetBounds.getRight());  arrBounds[2].setY(datasetBounds.getBottom());
+                        arrBounds[3].setX(datasetBounds.getRight());  arrBounds[3].setY(datasetBounds.getTop());
+                        Point2Ds bounds_point2d = new Point2Ds(arrBounds);
+                        region.addPart(bounds_point2d);
+                    }
+
+                    for (int j=0; j<clipRegion.getPartCount(); j++) {
+                        Point2Ds partPoint2Ds = clipRegion.getPart(j);
+                        region.addPart(partPoint2Ds);
+                    }
+
+                    boolean bResult = false;
+
+                    OverlayAnalystParameter parame = new OverlayAnalystParameter();
+
+                    FieldInfos fieldsinfos = ((DatasetVector)datasetTemp).getFieldInfos();
+                    int nCount = fieldsinfos.getCount();
+                    String[]  arrFiels = new String[nCount];
+                    for (int k=0; k<nCount; k++) {
+                        FieldInfo field = fieldsinfos.get(k);
+                        arrFiels[k] = field.getName();
+                    }
+                    parame.setSourceRetainedFields( arrFiels );
+
+                    Geometry[] arrRegionTemp = new Geometry[1];
+                    arrRegionTemp[0] = region;
+
+                    if (bErase){
+
+                        bResult = OverlayAnalyst.erase((DatasetVector)datasetTemp,arrRegionTemp,(DatasetVector)datasetResult,parame);
+
+                    }else {
+
+                        bResult = OverlayAnalyst.clip((DatasetVector)datasetTemp,arrRegionTemp,(DatasetVector)datasetResult,parame);
+
+                    }
+
+                    if (bResult==false){
+                        datasourceResult.getDatasets().delete(strDatasetResultName);
+                        continue;
+                    }
+
+                }else if(datasetTemp.getType()==DatasetType.GRID || datasetTemp.getType()==DatasetType.IMAGE){
+                    //4.datasetRaster 有效参数：IsClipInRegion，IsExactClip
+                    boolean bClipInRegion = true;
+                    if (dicLayer.hasKey("IsClipInRegion")){
+                        bClipInRegion = dicLayer.getBoolean("IsClipInRegion");
+                    }
+
+                    boolean bExactClip = false;
+                    if (dicLayer.hasKey("IsExactClip"){
+                        bExactClip = dicLayer.getBoolean("IsExactClip");
+                    }
+
+                    datasetResult = RasterClip.clip(datasetTemp,clipRegion,bClipInRegion,bExactClip);
+                    if (datasetResult==null){
+                        // 裁减失败
+                        continue;
+                    }
+
+                }else{
+
+                    continue;
+
+                }
+
+                arrDatasetCliped.add(datasetTemp);
+                arrDatasetResult.add(datasetResult);
+
+            }
+
+            if (_clipMap!=null){
+                //5.替换LayerXML
+                Layer layerResult = _clipMap.getLayers().find(strLayerName);
+                String strXML = layerResult.toXML();
+
+                String strDatasourceOld = "<sml:DataSourceAlias>" + datasetTemp.getDatasource().getAlias() + "</sml:DataSourceAlias>";
+                String strDatasourceNew = "<sml:DataSourceAlias>" + datasourceResult.getAlias() + "</sml:DataSourceAlias>";
+
+                strXML = strXML.replace(strDatasourceOld,strDatasourceNew);
+
+                String strDatasetOld = "<sml:DatasetName>" + datasetTemp.getName() + "</sml:DatasetName>";
+                String strDatasetNew = "<sml:DatasetName>" + datasetResult.getName() + "</sml:DatasetName>";
+
+                strXML = strXML.replace(strDatasetOld,strDatasetNew);
+
+                if (layerResult.getParentGroup()==null){
+                    //直接在layers下
+                    int nLayerPos = _clipMap.getLayers().indexOf(strLayerName);
+                    _clipMap.getLayers().remove(nLayerPos);
+                    _clipMap.getLayers().insert(nLayerPos,strXML);
+
+                }else{
+                    //layergroup下 xml删除within字段 先加入layers再移动到layergroup下
+                    String strWithinGroup = "<sml:WithinLayerGroup>" + layerResult.getParentGroup().getName() + "</sml:WithinLayerGroup>";//layerResult.parentGroup.name];
+                    strXML = strXML.replace(strWithinGroup,"");
+
+                    LayerGroup layerGroup = layerResult.getParentGroup();
+                    int nLayerPos = layerGroup.indexOf(layerResult);
+                    layerGroup.remove(layerResult);
+
+                    Layer newLayerResult = _clipMap.getLayers().insert(0,strXML);
+                    layerGroup.insert(nLayerPos,newLayerResult);
+                }
+
+            }
+
+            datasourceResult.saveDatasource();
+
+        }
+
+        if (_clipMap!=null){
+            _clipMap.save();
+            _clipMap.close();
+            _clipMap.dispose();
+        }
+
+        return strClipMapName;
+
+    }
+
+
+
+    // 从Exp的map里 拷贝所有layer到当前map的一个layerGroup下，layerGroup.name为被拷贝地图名
+    public  boolean addLayersFromMap(String srcMapName,String srcModule,boolean bPrivate,com.supermap.mapping.Map desMap){
+
+        if (srcMapName.equals(desMap.getName())){
+            return false;
+        }
+        boolean bResult = false;
+        String strTempLib = getRootPath() + "/Customer/Resources/__Temp__" + srcMapName;
+
+        String strMarker = strTempLib+".sym";
+        String strLine = strTempLib+".lsl";
+        String strFill = strTempLib+".bru";
+
+        desMap.getWorkspace().getResources().getMarkerLibrary().saveAs(strMarker);
+        desMap.getWorkspace().getResources().getLineLibrary().saveAs(strLine);
+        desMap.getWorkspace().getResources().getFillLibrary().saveAs(strFill);
+
+        if (openMapName(srcMapName,desMap.getWorkspace(),srcModule,bPrivate)){
+
+            desMap.addLayersFromMap(srcMapName,true);
+            desMap.getWorkspace().getMaps().remove(srcMapName);
+            bResult = true;
+
+        }
+
+        desMap.getWorkspace().getResources().getMarkerLibrary().clear();
+        desMap.getWorkspace().getResources().getMarkerLibrary().appendFromFile(strMarker,true);
+        File markerFile = new File(strMarker);
+        markerFile.delete();
+
+        desMap.getWorkspace().getResources().getLineLibrary().clear();
+        desMap.getWorkspace().getResources().getLineLibrary().appendFromFile(strLine,true);
+        File lineFile = new File(strLine);
+        lineFile.delete();
+
+        desMap.getWorkspace().getResources().getFillLibrary().clear();
+        desMap.getWorkspace().getResources().getFillLibrary().appendFromFile(strFill,true);
+        File fillFile = new File(strFill);
+        fillFile.delete();
+
+        return bResult;
+    }
+
+    // 从Exp1的map里 拷贝所有layer到Exp2的map的一个layerGroup下，layerGroup.name为被拷贝地图名
+    public boolean addLayersFromMapJson(String jsonSrcMap ,String jsonDesMap){
 
         if (jsonSrcMap==null||jsonDesMap==null){
             return false;
@@ -2639,22 +2945,19 @@ int b = '1';
                 // Marker
                 {
                     SymbolGroup group = workspace.getResources().getMarkerLibrary().getRootGroup().getChildGroups().get(strSrcName);
-
-//                    group.setName(strSrcReplace);
+                    group.setName(strSrcReplace);
 
                 }
                 // Line
                 {
                     SymbolGroup group = workspace.getResources().getLineLibrary().getRootGroup().getChildGroups().get(strSrcName);
-
-//                    group.setName(strSrcReplace);
+                    group.setName(strSrcReplace);
 
                 }
                 // Fill
                 {
                     SymbolGroup group = workspace.getResources().getFillLibrary().getRootGroup().getChildGroups().get(strSrcName);
-
-//                    group.setName(strSrcReplace);
+                    group.setName(strSrcReplace);
 
                 }
 

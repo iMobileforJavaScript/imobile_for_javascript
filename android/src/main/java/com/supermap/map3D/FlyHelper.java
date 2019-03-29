@@ -55,7 +55,7 @@ public class FlyHelper {
     private int routeIndex=-1;
     public boolean isFlying = false;
     private boolean isStop = false;
-
+    private boolean routPasue=false;
     private Timer flyProgressTimer;
     private TimerTask flyProgressTimerTask;
     private Handler flyProgressHandler;
@@ -308,13 +308,28 @@ public class FlyHelper {
     }
 
     public void saveRoutStop(){
-        flyManager=mSceneControl.getScene().getFlyManager();
-        Routes routes=flyManager.getRoutes();
-        int index=routes.add(route);
-        routes.setCurrentRoute(index);
+        if(!routPasue){
+            flyManager=mSceneControl.getScene().getFlyManager();
+            Routes routes=flyManager.getRoutes();
+            int index=routes.add(route);
+            routes.setCurrentRoute(index);
+        }
         flyManager.play();
+        routPasue=false;
         try {
             mSceneControl.getScene().getWorkspace().save();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void routStopPasue(){
+        try {
+            flyManager=mSceneControl.getScene().getFlyManager();
+            if(flyManager!=null){
+                flyManager.pause();
+                routPasue=true;
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
