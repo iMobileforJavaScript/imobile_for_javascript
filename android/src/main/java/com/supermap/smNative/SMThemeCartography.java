@@ -2001,4 +2001,30 @@ public class SMThemeCartography {
 
         return null;
     }
+
+
+    /**
+     * 获取统计专题图中统计符号显示的最大值,最小值
+     * @return
+     */
+    public static Double[] getMaxMinGraphSize() {
+        MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+        com.supermap.mapping.Map map = mapControl.getMap();
+
+        Point pointStart = new Point(0,0);
+        Point pointEnd = new Point(0, (int)(mapControl.getMapWidth() / 3));
+        Point2D point2DStart = map.pixelToMap(pointStart);
+        Point2D point2DEnd = map.pixelToMap(pointEnd);
+        Point pointMinEnd = new Point(0, (int)(mapControl.getMapWidth() / 18));
+        Point2D point2DMinEnd = map.pixelToMap(pointMinEnd);
+
+        double maxSize = Math.sqrt(Math.pow(point2DEnd.getX() - point2DStart.getX(), 2) + Math.pow(point2DEnd.getY() - point2DStart.getY(), 2));
+        double minSize = Math.sqrt((Math.pow(point2DMinEnd.getX() - point2DStart.getX(), 2) + Math.pow(point2DMinEnd.getY() - point2DStart.getY(), 2)));
+
+        Double[] sizes = new Double[2];
+        sizes[0] = maxSize;
+        sizes[1] = minSize;
+
+        return sizes;
+    }
 }
