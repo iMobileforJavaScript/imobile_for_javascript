@@ -2733,6 +2733,7 @@ public class SMap extends ReactContextBaseJavaModule {
             geoStyle.setFillBackColor(this.getFillColor());
             geoStyle.setMarkerSize(new Size2D(10, 10));
             geoStyle.setLineColor(new Color(0,133,255));
+            geoStyle.setFillOpaqueRate(50);//加透明度更美观
             //geoStyle.setLineColor(new Color(0,206,209));
 
             mapControl.addGeometryAddedListener(new GeometryAddedListener() {
