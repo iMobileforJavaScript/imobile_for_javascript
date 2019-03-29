@@ -8,7 +8,7 @@
  * @description 几何风格类。用于定义点状符号、线状符号、填充符号及其相关设置。对于文本对象只能设置文本风格，不能设置几何风格。
  */
 export default class GeoStyle {
-
+// {"MarkerStyle":"0","MarkerSize":"28","MarkerAngle":"0","MarkerWidth":"280","MarkerHeight":"280","LineStyle":"0","LineWidth":"1","LineColor":"RGB(70,128,131039)","FillStyle":"0","FillForeColor":"RGB(189,235,131071)","FillBackColor":"RGB(255,255,131071)","FillBackOpaque":"0","FillOpaqueRate":"100","FillGradientType":"0","FillAngle":"0","FillCenterOffsetX":"0","FillCenterOffsetY":"0"}
   /**
    * 设置线状符号型风格或点状符号的颜色
    * @param r
@@ -61,13 +61,37 @@ export default class GeoStyle {
 
   /**
    * 设置点状符号的大小，单位为毫米，精确到0.1毫米。其值必须大于等于0。如果为0，则表示不显示，如果是小于0，会抛出异常。
-   * @param size2D
+   * @param size
    */
-  setMarkerSize(size2D) {
+  setMarkerSize(size) {
     // Object.assign(this.geoStyle, {
     //   MarkerSize: size2D,
     // })
-    this.MarkerSize = size2D
+    this.MarkerSize = size
+  }
+  
+  /**
+   * 设置点状符号的高度。
+   * @param value
+   */
+  setMarkerHeight(value) {
+    this.MarkerHeight = value
+  }
+  
+  /**
+   * 设置点状符号的宽度。
+   * @param value
+   */
+  setMarkerWidth(value) {
+    this.MarkerWidth = value
+  }
+  
+  /**
+   * 设置点状符号的角度。
+   * @param value
+   */
+  setMarkerAngle(value) {
+    this.MarkerAngle = value
   }
 
   /**
