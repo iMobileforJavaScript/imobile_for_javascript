@@ -351,6 +351,10 @@ function bindPhoneNumber(phoneNumber, verifyCode) {
 function bindEmail(email) {
   return OnlineServiceNative.bindEmail(email);
 }
+function getSuperMapKnown(){
+  return OnlineServiceNative.getSuperMapKnown()
+}
+
 export default {
   init,
   uploadFile,
@@ -396,4 +400,5 @@ export default {
   bindEmail,
   getUserInfo,
   getUserInfoBy,
+  getSuperMapKnown,
 }
