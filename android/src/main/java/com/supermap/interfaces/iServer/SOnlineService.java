@@ -25,6 +25,10 @@ import com.supermap.onlineservices.UpLoadFile;
 import com.supermap.onlineservices.utils.AccountInfoType;
 
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 
 import java.io.FileOutputStream;
@@ -32,6 +36,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static com.supermap.onlineservices.utils.EnumServiceType.RESTMAP;
 
@@ -928,5 +938,46 @@ public class SOnlineService extends ReactContextBaseJavaModule{
         });
     }
 
+    @ReactMethod
+    public void getSuperMapKnown(final Promise promise){
+        try {
+            String url="http://111.202.121.144:8088/officialAccount/zhidao/data.json";
+            OkHttpClient client=new OkHttpClient();
+            final Request request=new Request.Builder()
+                    .url(url)
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    promise.resolve(false);
+                }
 
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if(response.isSuccessful()){
+                        String json=response.body().string();
+                        try {
+                            JSONArray jsonArray=new JSONArray(json);
+                            WritableArray array=Arguments.createArray();
+                            for (int i = 0; i <jsonArray.length() ; i++) {
+                                JSONObject jsonObject=jsonArray.getJSONObject(i);
+                                WritableMap map =Arguments.createMap();
+                                map.putString("id",jsonObject.optString("id"));
+                                map.putString("title",jsonObject.optString("title"));
+                                map.putString("img",jsonObject.optString("cover"));
+                                map.putString("time",jsonObject.optString("time"));
+                                array.pushMap(map);
+                            }
+                            promise.resolve(array);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 }
