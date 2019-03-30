@@ -404,6 +404,25 @@ public class SMessageService extends ReactContextBaseJavaModule {
         }
     }
 
+    //挂起操作，用于APP状态切换后台
+    @ReactMethod
+    public void suspend(Promise promise){
+        if (g_AMQPManager != null){
+            g_AMQPManager.suspend();
+        }
+        promise.resolve(true);
+    }
+
+    //恢复操作，用户APP唤醒
+    @ReactMethod
+    public void resume(Promise promise){
+        boolean b = false;
+        if (g_AMQPManager != null){
+            b = g_AMQPManager.resume();
+        }
+        promise.resolve(b);
+    }
+
     /**
      * 停止消息接收
      */
