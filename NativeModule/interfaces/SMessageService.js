@@ -83,10 +83,21 @@ function startReceiveMessage(uuid,handle) {
   return MessageServiceeNative.startReceiveMessage(uuid);
 }
 
-//关闭消息接收
+//挂起操作，用于APP状态切换后台
+function suspend() {
+  return MessageServiceeNative.suspend();
+}
+
+//开启消息接收
+function resume() {
+  return MessageServiceeNative.resume();
+}
+
+//恢复操作，用户APP唤醒
 function stopReceiveMessage() {
   return MessageServiceeNative.stopReceiveMessage();
 }
+
 export default {
   receiveMessage,
   stopReceiveMessage,
@@ -97,4 +108,6 @@ export default {
   sendMessage,
   disconnectionService,
   connectService,
+  resume,
+  suspend,
 }
