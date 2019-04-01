@@ -1723,6 +1723,19 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 关闭工作空间及地图控件
+     */
+    @ReactMethod
+    public void saveWorkspace(Promise promise) {
+        try {
+            sScene=getInstance();
+            sScene.smSceneWc.getWorkspace().save();
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     class DisposeThread implements Runnable {
 
         private Promise promise;

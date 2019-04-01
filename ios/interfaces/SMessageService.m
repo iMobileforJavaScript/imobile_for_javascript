@@ -256,6 +256,24 @@ RCT_REMAP_METHOD(startReceiveMessage, uuid:(NSString*)uuid  startReceiveMessageR
         reject(@"SMessageService", exception.reason, nil);
     }
 }
+//挂起操作，用于APP状态切换后台
+RCT_REMAP_METHOD(suspend,suspendResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject ){
+    if(g_AMQPManager){
+        [g_AMQPManager suspend];
+    }
+    NSNumber* number =[NSNumber numberWithBool:YES];
+    resolve(number);
+}
+
+//恢复操作，用户APP唤醒
+RCT_REMAP_METHOD(resume,resumeResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject ){
+    BOOL b = false;
+    if(g_AMQPManager){
+        b = [g_AMQPManager resume];
+    }
+    NSNumber* number =[NSNumber numberWithBool:b];
+    resolve(number);
+}
 
 #pragma mark -- 停止消息接收
 RCT_REMAP_METHOD(stopReceiveMessage, stopReceiveMessageResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

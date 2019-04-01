@@ -2240,6 +2240,19 @@
             Layer *layerResult = [_clipMap.layers findLayerWithName:strLayerName];
             NSString* strXML = [layerResult toXML];
             
+            if(layerResult.theme!=nil){
+                // 专题图中某些字段不规范需要处理
+                NSString *strTemp = [[strXML componentsSeparatedByString:@"<sml:FieldExpression>"]lastObject];
+                NSString *strExpressionOld = [[strTemp componentsSeparatedByString:@"</sml:FieldExpression>"]firstObject];
+                NSString *strNameOld = [NSString stringWithFormat:@"%@.",datasetTemp.name];
+                NSString *strNameNew = [NSString stringWithFormat:@"%@.",datasetResult.name];
+                NSString *strExpressionNew = [strExpressionOld stringByReplacingOccurrencesOfString:strNameOld withString:strNameNew];
+                NSString *strFieldOld = [NSString stringWithFormat:@"<sml:FieldExpression>%@</sml:FieldExpression>",strExpressionOld];
+                NSString *strFieldNew = [NSString stringWithFormat:@"<sml:FieldExpression>%@</sml:FieldExpression>",strExpressionNew];
+                strXML = [strXML stringByReplacingOccurrencesOfString:strFieldOld withString:strFieldNew];
+            }
+            
+            
             NSString* strDatasourceOld = [NSString stringWithFormat:@"<sml:DataSourceAlias>%@</sml:DataSourceAlias>",datasetTemp.datasource.alias];
             NSString* strDatasourceNew = [NSString stringWithFormat:@"<sml:DataSourceAlias>%@</sml:DataSourceAlias>",datasourceResult.alias];
             
