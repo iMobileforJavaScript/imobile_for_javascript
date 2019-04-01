@@ -2780,6 +2780,20 @@ public class SMMapWC {
                     Layer layerResult = _clipMap.getLayers().find(strLayerName);
                     String strXML = layerResult.toXML();
 
+                    if(layerResult.getTheme()!=null){
+                        // 专题图中某些字段不规范需要处理
+                        String[] arrStrTemp = strXML.split("<sml:FieldExpression>");
+                        String strTemp = arrStrTemp[arrStrTemp.length-1];
+                        String strExpressionOld = strTemp.split("</sml:FieldExpression>")[0];
+                        String strNameOld = datasetTemp.getName() + ".";
+                        String strNameNew = datasetResult.getName() + ".";
+                        String strExpressionNew = strExpressionOld.replace(strNameOld,strNameNew);
+                        String strFieldOld = "<sml:FieldExpression>" + strExpressionOld + "</sml:FieldExpression>";
+                        String strFieldNew = "<sml:FieldExpression>" + strExpressionNew + "</sml:FieldExpression>";
+                        strXML = strXML.replace(strFieldOld, strFieldNew);
+                    }
+
+
                     String strDatasourceOld = "<sml:DataSourceAlias>" + datasetTemp.getDatasource().getAlias() + "</sml:DataSourceAlias>";
                     String strDatasourceNew = "<sml:DataSourceAlias>" + datasourceResult.getAlias() + "</sml:DataSourceAlias>";
 
