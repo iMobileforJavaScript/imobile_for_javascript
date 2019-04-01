@@ -92,6 +92,14 @@ export default (function () {
         }
     }
 
+    function saveWorkspace(){
+        try {
+            return SScene.saveWorkspace()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     function getFlyRouteNames() {
         try {
             return SScene.getFlyRouteNames()
@@ -670,6 +678,14 @@ export default (function () {
             console.error(error);
         }
     }
+
+    function pasueRoutStop(){
+        try {
+            return SScene.pasueRoutStop()
+        } catch (error) {
+            console.error(error);
+        }
+    }
     
     function clearRoutStops(){
         try {
@@ -772,6 +788,7 @@ export default (function () {
     let SSceneExp = {
         openWorkspace,
         closeWorkspace,
+        saveWorkspace,
         setVisible,
         getLayerList,
         getMapList,
@@ -838,6 +855,7 @@ export default (function () {
         getAttributeByName,
         saveCurrentRoutStop,
         saveRoutStop,
+        pasueRoutStop,
         clearRoutStops,
         initPointSearch,
         pointSearch,

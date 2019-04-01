@@ -488,6 +488,18 @@ RCT_REMAP_METHOD(setAction, setActionByActionType:(int)actionType resolver:(RCTP
     }
 }
 
+#pragma mark /************************************** 设置绘制对象时画笔样式 START****************************************/
+#pragma mark 设置MapControl的Action
+RCT_REMAP_METHOD(setStrokeColor, setStrokeColor:(int)strokeColor resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+//        sMap.smMapWC.mapControl.strokeColor = strokeColor;
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 #pragma mark MapControl的undo
 RCT_REMAP_METHOD(undo, undoWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -568,7 +580,7 @@ RCT_REMAP_METHOD(removeMeasureListener, removeMeasureListenerWithResolver:(RCTPr
     }
 }
 
-/******************************************** 地图工具 *****************************************************/
+#pragma mark /******************************************** 地图工具 *****************************************************/
 #pragma mark 将地图放大缩小到指定比例
 RCT_REMAP_METHOD(zoom, zoomByScale:(double)scale resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -660,7 +672,7 @@ RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBloc
 #pragma mark 移动到指定位置
 RCT_REMAP_METHOD(moveToPoint, moveToPointWithPoint:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        if (![[point allKeys] containsObject:@"x"] || !![[point allKeys] containsObject:@"y"]){
+        if (![[point allKeys] containsObject:@"x"] || ![[point allKeys] containsObject:@"y"]){
             resolve([NSNumber numberWithBool:NO]);
             return;
         }
@@ -671,17 +683,41 @@ RCT_REMAP_METHOD(moveToPoint, moveToPointWithPoint:(NSDictionary *)point resolve
             NSNumber* x = [point objectForKey:@"x"];
             NSNumber* y = [point objectForKey:@"y"];
             Point2D* pt = [[Point2D alloc] initWithX:x.doubleValue Y:y.doubleValue];
-            if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
-                Point2Ds *points = [[Point2Ds alloc]init];
-                [points add:pt];
-                PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-                [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-                CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-
-                //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-                [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-                pt = [points getItem:0];
+            if (x.doubleValue <= 180 && x.doubleValue >= -180 && y.doubleValue >= - 90 && y.doubleValue <= 90) {
+                if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+                    Point2Ds *points = [[Point2Ds alloc]init];
+                    [points add:pt];
+                    PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+                    [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+                    CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+                    
+                    //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+                    [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+                    pt = [points getItem:0];
+                }
+            } else {
+                if ([mapControl.map.prjCoordSys type] != PCST_SPHERE_MERCATOR) {//若坐标不是地图坐标则进行转换
+                    Point2Ds *points = [[Point2Ds alloc]init];
+                    [points add:pt];
+                    PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+                    [srcPrjCoorSys setType:PCST_SPHERE_MERCATOR];
+                    CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+                    
+                    [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+                    pt = [points getItem:0];
+                }
             }
+//            if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+//                Point2Ds *points = [[Point2Ds alloc]init];
+//                [points add:pt];
+//                PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+//                [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+//                CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+//
+//                //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+//                [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+//                pt = [points getItem:0];
+//            }
             
             if ([mapControl.map.bounds containsPoint2D:pt]) {
                 mapControl.map.center = pt;
@@ -1030,7 +1066,7 @@ RCT_REMAP_METHOD(exportWorkspace, exportWorkspace:(NSArray*)arrMapnames toFile:(
 }
 
 #pragma mark 导出地图为xml
-RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)nModule withAddition:(NSDictionary *)withAddition isNew:(BOOL)isNew bResourcesModified:(BOOL)bResourcesModified resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)nModule withAddition:(NSDictionary *)withAddition isNew:(BOOL)isNew bResourcesModified:(BOOL)bResourcesModified isPrivate:(BOOL)isPrivate resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BOOL mapSaved = NO;
         sMap = [SMap singletonInstance];
@@ -1072,7 +1108,7 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
 //        BOOL bResourcesModified = sMap.smMapWC.workspace.maps.count > 1;
         NSString* mapName = @"";
         if (mapSaved) {
-            mapName = [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:withAddition isNewMap:(isNew || bNew) isResourcesModyfied:bResourcesModified];
+            mapName = [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:withAddition isNewMap:(isNew || bNew) isResourcesModyfied:bResourcesModified isPrivate:isPrivate];
         }
         
         // isNew为true，另存为后保证当前地图是原地图
@@ -1092,11 +1128,11 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
 }
 
 #pragma mark 导入文件工作空间到程序目录
-RCT_REMAP_METHOD(importWorkspaceInfo, importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString *)nModule resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(importWorkspaceInfo, importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString *)nModule isPrivate:(BOOL)isPrivate resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         sMap = [SMap singletonInstance];
-        NSArray* mapsInfo = [sMap.smMapWC importWorkspaceInfo:infoDic toModule:nModule];
+        NSArray* mapsInfo = [sMap.smMapWC importWorkspaceInfo:infoDic toModule:nModule isPrivate:isPrivate];
         
         resolve(mapsInfo);
     } @catch (NSException *exception) {
@@ -1287,6 +1323,24 @@ RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resol
         reject(@"MapControl", exception.reason, nil);
     }
 }
+#pragma mark /************************************** 选择集操作 BEGIN****************************************/
+#pragma mark 设置Selection样式
+RCT_REMAP_METHOD(setSelectionStyle, setSelectionStyleWithLayerPath:(NSString *)path style:(NSString *)styleJson resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Layer* layer = [SMLayer findLayerByPath:path];
+        Selection* selection = [layer getSelection];
+        GeoStyle* style = [[GeoStyle alloc] init];
+        [style fromJson:styleJson];
+        [selection setStyle:style];
+        
+        [sMap.smMapWC.mapControl.map refresh];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
 
 #pragma mark 清除Selection
 RCT_REMAP_METHOD(clearSelection, clearSelectionWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -1306,7 +1360,7 @@ RCT_REMAP_METHOD(clearSelection, clearSelectionWithResolve:(RCTPromiseResolveBlo
     }
 }
 
-/************************************** 地图编辑历史操作 BEGIN****************************************/
+#pragma mark /************************************** 地图编辑历史操作 BEGIN****************************************/
 #pragma mark 把对地图操作记录到历史
 RCT_REMAP_METHOD(addMapHistory, addMapHistoryWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -1410,9 +1464,9 @@ RCT_REMAP_METHOD(clear, clearWithResolve:(RCTPromiseResolveBlock)resolve rejecte
         reject(@"MapControl", exception.reason, nil);
     }
 }
-/************************************** 地图编辑历史操作 END****************************************/
+#pragma mark /************************************** 地图编辑历史操作 END****************************************/
 
-/************************************************ 监听事件 ************************************************/
+#pragma mark /************************************************ 监听事件 ************************************************/
 #pragma mark 监听事件
 -(void) boundsChanged:(Point2D*) newMapCenter{
     double x = newMapCenter.x;

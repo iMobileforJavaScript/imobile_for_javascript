@@ -1592,6 +1592,7 @@ public class SScene extends ReactContextBaseJavaModule {
                     sceneControl.setAction(Action3D.PANSELECT3D);
                     break;
             }
+            sceneControl.getScene().refresh();
             promise.resolve(false);
         } catch (Exception e) {
             promise.reject(e);
@@ -1655,6 +1656,19 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 停止站飞行
+     */
+    @ReactMethod
+    public void pasueRoutStop(Promise promise) {
+        try {
+            FlyHelper.getInstence().routStopPasue();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 清除所有站点
      */
     @ReactMethod
@@ -1704,6 +1718,19 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             LabelHelper.getInstence().closePage();
             getCurrentActivity().runOnUiThread(new DisposeThread(promise));
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 关闭工作空间及地图控件
+     */
+    @ReactMethod
+    public void saveWorkspace(Promise promise) {
+        try {
+            sScene=getInstance();
+            sScene.smSceneWc.getWorkspace().save();
         } catch (Exception e) {
             promise.reject(e);
         }

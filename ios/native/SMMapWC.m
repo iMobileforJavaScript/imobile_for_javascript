@@ -20,6 +20,9 @@
 #import "SuperMap/SymbolFill.h"
 #import "SuperMap/Geometry.h"
 #import "SuperMap/GeoStyle.h"
+#import "SuperMap/OverlayAnalyst.h"
+#import "SuperMap/OverlayAnalystParameter.h"
+#import "SuperMap/RasterClip.h"
 #import "SMap.h"
 
 
@@ -522,7 +525,7 @@
 //  非替换模式：重复文件名+num
 //  替换模式：重复文件替换，同路径先关闭工作空间再替换
 
--(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic withFileDirectory:(NSString*)strDirPath isDatasourceReplace:(BOOL)bDatasourceRep isSymbolsReplace:(BOOL)bSymbolsRep{
+-(BOOL)importWorkspaceInfo:(NSDictionary *)infoDic withFileDirectory:(NSString*)strDirPath isDatasourceReplace:(BOOL)bDatasourceRep isSymbolsReplace:(BOOL)bSymbolsRep {
     
     BOOL bSucc = NO;
     
@@ -1206,7 +1209,7 @@
 //          \------->Resource:      旗下包含模块子文件夹，存放符号库文件（.sym/.lsl./bru）
 // 返回结果：NSArray为导入成功的所有地图名
 
--(NSArray *)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString*)strModule/*(int)nModule*/{
+-(NSArray *)importWorkspaceInfo:(NSDictionary *)infoDic toModule:(NSString*)strModule isPrivate:(BOOL)isPrivate {
     NSArray *arrResult = nil;
     if ( infoDic && [infoDic objectForKey:@"server"] && [infoDic objectForKey:@"type"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
         Workspace *importWorkspace = [[Workspace alloc]init];
@@ -1258,7 +1261,7 @@
             NSMutableArray *arrTemp = [[NSMutableArray alloc]init];
             for (int i=0; i<importWorkspace.maps.count; i++) {
                 NSString *strMapName = [importWorkspace.maps get:i];
-                NSString *strResName = [self saveMapName:strMapName fromWorkspace:importWorkspace ofModule:strModule withAddition:dicAddition isNewMap:YES isResourcesModyfied:false isPrivate:YES];
+                NSString *strResName = [self saveMapName:strMapName fromWorkspace:importWorkspace ofModule:strModule withAddition:dicAddition isNewMap:YES isResourcesModyfied:false isPrivate:isPrivate];
                 
                 if(strResName!=nil){
                     if(strMapRename!=nil && ![strMapRename isEqualToString:@""]){
@@ -2056,7 +2059,286 @@
     return true;
 }
 
+//
+// 以面对象region裁减地图map 并保存为 strResultName
+// 通过图层确定裁减数据集，支持矢量和本地删格数据集，layer可以不参加裁减（不参加，意思是在结果数据集中layer.dataset不变）但同一数据集的layer裁减参数一致（以第一个layer参数为准）
+// jsonParam ：
+//          LayerName 需裁减Layer名（实际为裁减Layer对应dataset，裁减结果为新数据集保留到dataset所在datasource，新地图中Layer指向新数据集）
+//          IsClipInRegion 裁减区域在面内还是面外
+//          IsErase 是否擦除模式
+//          IsExactClip 是否精确裁减（删格涂层才有该选项）
+//          DatasourceTarget
+//          DatasetTarget
+// Eg:
+//   @"[{\"LayerName\":\"%@\",\"IsClipInRegion\":false,\"IsErase\":false,\"IsExactClip\":true},\
+//      {\"LayerName\":\"%@\",\"DatasourceTarget\":\"%@\",\"IsErase\":false,\"IsExactClip\":true},\
+//      {\"LayerName\":\"%@\",\"IsExactClip\":false,\"DatasourceTarget\":\"%@\",\"DatasetTarget\":\"%@\"}]"
+//
+// 返回值说明：裁减完地图尝试以strResultName保存到map.workspace.maps中，若已存在同名则重命名为strResultName#1，把最终命名结果返回
+//
+//-(NSString*)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSString*)jsonParam saveAs:(NSString*)strResultName
+-(NSString*)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSArray*)arrLayers/*NSString*)jsonParam*/ saveAs:(NSString*)strResultName{
+    
+    if (_srcMap==nil || [_srcMap.layers getCount]<=0 || clipRegion==nil || clipRegion.getBounds.isEmpty) {
+        return false;
+    }
+    
+    //NSArray *arrLayers = [NSJSONSerialization JSONObjectWithData:[jsonParam dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:nil];
+    
+    NSMutableArray *arrDatasetCliped = [[NSMutableArray alloc]init]; // 已经裁减过的dataset
+    NSMutableArray *arrDatasetResult = [[NSMutableArray alloc]init]; // 已经裁减过的结果
+    
+    NSString *strClipMapName = strResultName;
+    Map *_clipMap = nil;//裁剪后的地图
+    if(strClipMapName!=nil){
+        int nAddNum = 1;
+        while ([_srcMap.workspace.maps indexOf:strClipMapName]!=-1) {
+            strClipMapName =[ NSString stringWithFormat:@"%@_%d",strResultName,nAddNum ];
+            nAddNum++;
+        }
+        
+        [_srcMap.workspace.maps add:strClipMapName withXML:_srcMap.toXML];
+        _clipMap = [[Map alloc]initWithWorkspace:_srcMap.workspace];
+        [_clipMap open:strClipMapName];
+    }
+    
+    for(int i=0;i<arrLayers.count;i++){
+        
+        NSDictionary *dicLayer = [arrLayers objectAtIndex:i];
+        // 图层名称
+        NSString *strLayerName = [dicLayer objectForKey:@"LayerName"];
+        Layer *layerTemp = [_srcMap.layers findLayerWithName:strLayerName];
+        // 要裁剪数据集
+        Dataset *datasetTemp = layerTemp.dataset;
+        
+        if (datasetTemp==nil) {
+            //1.datasetTemp==nil
+            // layerGroup或其他没有dataset的情况
+            continue;
+        }
+        // 所在数据源
+        
+        int index = [arrDatasetCliped indexOfObject:datasetTemp];
+        
+        Dataset * datasetResult = nil;
+        Datasource *datasourceResult = nil;
+        
+        if (index>=0&&index<arrDatasetCliped.count) {
+            //2.已经处理过的Dataset
+            // 说明：形同数据集裁减参数是一致的，否则只支持第一出线layer的裁减参数
+            datasetResult = [arrDatasetResult objectAtIndex:index];
+            datasourceResult = datasetResult.datasource;
+        }else{
+            NSString *strResultDatasource = [dicLayer objectForKey:@"DatasourceTarget"];
+            if (strResultDatasource!=nil) {
+                datasourceResult = [_srcMap.workspace.datasources getAlias:strResultDatasource];
+                if (datasourceResult==nil || datasourceResult.datasourceConnectionInfo.engineType!=ET_UDB) {
+                    //没找到datasource 或 不是udb
+                    continue;
+                }
+            }else{
+                datasourceResult = datasetTemp.datasource;
+            }
+            
+            // 新dataset的名字
+            NSString *strDatasetResultName = [dicLayer objectForKey:@"DatasetTarget"];
+            if (strDatasetResultName==nil) {
+                strDatasetResultName = datasetTemp.name;
+            }
+            
+            NSString *strTempName = strDatasetResultName;
+            int nAddNum = 1;
+            while ([datasourceResult.datasets contain:strDatasetResultName]) {
+                strDatasetResultName = [NSString stringWithFormat:@"%@_%d",strTempName,nAddNum];
+                nAddNum++;
+            }
+            
+            if ([datasetTemp isKindOfClass:DatasetVector.class]) {
+                //3.datasetVector 有效参数：IsClipInRegion，IsErase
+                BOOL bClipInRegion = YES;
+                NSNumber *numInRegion = [dicLayer objectForKey:@"IsClipInRegion"];
+                if (numInRegion!=nil) {
+                    bClipInRegion = [numInRegion boolValue];
+                }
+                
+                BOOL bErase = NO;
+                NSNumber *numErase = [dicLayer objectForKey:@"IsErase"];
+                if (numErase!=nil) {
+                    bErase = [numErase boolValue];
+                }
+                
+                DatasetVectorInfo *datasetResultInfo = [[DatasetVectorInfo alloc]initWithName:strDatasetResultName datasetVector:(DatasetVector*)datasetTemp];
+                datasetResult = [datasourceResult.datasets create:datasetResultInfo];
+                if (datasetResult==nil) {
+                    // 创建失败
+                    continue;
+                }
+                
+                // 如果是面内裁减则region与clipRegion相同，否则clipRegion需要加上一个外包的矩形
+                GeoRegion *region = [[GeoRegion alloc]init];
+                if (!bClipInRegion) {
+                    Rectangle2D* datasetBounds = datasetTemp.bounds;
+                    NSMutableArray *arrbounds = [[NSMutableArray alloc]init];
+                    [arrbounds addObject:[[Point2D alloc] initWithX:datasetBounds.left Y:datasetBounds.top]];
+                    [arrbounds addObject:[[Point2D alloc] initWithX:datasetBounds.left Y:datasetBounds.bottom]];
+                    [arrbounds addObject:[[Point2D alloc] initWithX:datasetBounds.right Y:datasetBounds.bottom]];
+                    [arrbounds addObject:[[Point2D alloc] initWithX:datasetBounds.right Y:datasetBounds.top]];
+                    Point2Ds *bounds_point2ds = [[Point2Ds alloc]initWithPoint2DsArray:arrbounds];
+                    [region addPart:bounds_point2ds];
+                }
+                for (int j=0; j<clipRegion.getPartCount; j++) {
+                    Point2Ds *partPoint2Ds = [clipRegion getPart:j];
+                    [region addPart:partPoint2Ds];
+                }
+                
+                BOOL bResult = NO;
+                NSMutableArray*arrRegionTemp = [[NSMutableArray alloc]init];
+                [arrRegionTemp addObject:region];
+                
+                OverlayAnalystParameter *parameter = [[OverlayAnalystParameter alloc]init];
+                NSMutableArray *arrFields = [[NSMutableArray alloc]init];
+                
+                FieldInfos* fieldsinfos = [(DatasetVector*)datasetTemp fieldInfos];
+                for (int k=0; k<fieldsinfos.count; k++) {
+                    FieldInfo *field = [fieldsinfos get:k];
+                    [arrFields addObject:[field name]];
+                }
+                [parameter setSourceRetainedFields:arrFields];
+                
+                if (bErase) {
+                    // 擦除
+                    bResult = [OverlayAnalyst erase:(DatasetVector *)datasetTemp eraseGeometries:arrRegionTemp
+                                      resultDataset:(DatasetVector *)datasetResult parameter:parameter];
+                }else{
+                    // 裁减
+                    bResult = [OverlayAnalyst clip:(DatasetVector *)datasetTemp clipGeometries:arrRegionTemp
+                                     resultDataset:(DatasetVector *)datasetResult parameter:parameter];
+                }
+                if(bResult==NO){
+                    // 裁减失败
+                    [datasourceResult.datasets deleteName:strDatasetResultName];
+                    continue;
+                }
+                
+                
+            }else if(datasetTemp.datasetType == Grid || datasetTemp.datasetType == IMAGE){
+                //4.datasetRaster 有效参数：IsClipInRegion，IsExactClip
+                BOOL bClipInRegion = YES;
+                NSNumber *numInRegion = [dicLayer objectForKey:@"IsClipInRegion"];
+                if (numInRegion!=nil) {
+                    bClipInRegion = [numInRegion boolValue];
+                }
+                
+                BOOL bExactClip = YES;
+                NSNumber *numExactClip = [dicLayer objectForKey:@"IsExactClip"];
+                if (numExactClip!=nil) {
+                    bExactClip = [numExactClip boolValue];
+                }
+                
+                
+                datasetResult = [RasterClip clipDataset:datasetTemp withRegion:clipRegion isClipInRegion:bClipInRegion isExactClip:bExactClip
+                                       targetDatasource:datasourceResult targetDatasetName:strDatasetResultName];
+                if (datasetResult==nil) {
+                    // 裁减失败
+                    continue;
+                }
+                
+            }else{
+                // 不支持裁减的数据集
+                continue;
+            }
+            
+            [arrDatasetCliped addObject:datasetTemp];
+            [arrDatasetResult addObject:datasetResult];
+        }
+        
+        if (_clipMap!=nil) {
+            //5.替换LayerXML
+            Layer *layerResult = [_clipMap.layers findLayerWithName:strLayerName];
+            NSString* strXML = [layerResult toXML];
+            
+            NSString* strDatasourceOld = [NSString stringWithFormat:@"<sml:DataSourceAlias>%@</sml:DataSourceAlias>",datasetTemp.datasource.alias];
+            NSString* strDatasourceNew = [NSString stringWithFormat:@"<sml:DataSourceAlias>%@</sml:DataSourceAlias>",datasourceResult.alias];
+            
+            strXML = [strXML stringByReplacingOccurrencesOfString:strDatasourceOld withString:strDatasourceNew];
+            
+            NSString* strDatasetOld = [NSString stringWithFormat:@"<sml:DatasetName>%@</sml:DatasetName>",datasetTemp.name];
+            NSString* strDatasetNew = [NSString stringWithFormat:@"<sml:DatasetName>%@</sml:DatasetName>",datasetResult.name];
+            
+            strXML = [strXML stringByReplacingOccurrencesOfString:strDatasetOld withString:strDatasetNew];
+            
+            if (layerResult.parentGroup==nil) {
+                //直接在layers下
+                int nLayerPos = [_clipMap.layers indexOf:strLayerName];
+                [_clipMap.layers removeAt:nLayerPos];
+                [_clipMap.layers insertLayer:nLayerPos withXML:strXML];
+            }else{
+                //layergroup下 xml删除within字段 先加入layers再移动到layergroup下
+                NSString *strWithinGroup = [NSString stringWithFormat:@"<sml:WithinLayerGroup>%@</sml:WithinLayerGroup>",layerResult.parentGroup.name];
+                strXML = [strXML stringByReplacingOccurrencesOfString:strWithinGroup withString:@""];
+                
+                LayerGroup *layerGroup = layerResult.parentGroup;
+                int nLayerPos = [layerGroup indexOfLayer:layerResult];
+                [layerGroup removeLayer:layerResult];
+                
+                Layer *newLayerResult = [_clipMap.layers insertLayer:0 withXML:strXML];
+                [layerGroup insert:nLayerPos Layer:newLayerResult];
+                
+            }
+            
+        }
+        
+        [datasourceResult saveDatasource];
+        
+    }
+    if(_clipMap!=nil){
+        [_clipMap save];
+        [_clipMap close];
+        [_clipMap dispose];
+    }
+    return strClipMapName;
+    
+}
 
+// 从Exp的map里 拷贝所有layer到当前map的一个layerGroup下，layerGroup.name为被拷贝地图名
+-(BOOL)addLayersFromMap:(NSString*)srcMapName ofModule:(NSString*)srcModule isPrivate:(BOOL)bSrcPrivate toMap:(Map*)desMap{
+    
+    if ([srcMapName isEqualToString:desMap.name]) {
+        //现在的工作空间结构 暂不支持同名情况
+        return false;
+    }
+    BOOL bResult = false;
+    NSString*strTempLib =[NSString stringWithFormat:@"%@/Customer/Resources/__Temp__%@",[self getRootPath],srcMapName];
+    NSString*strMarker = [strTempLib stringByAppendingString:@".sym"];
+    [desMap.workspace.resources.markerLibrary saveAs:strMarker];
+    NSString*strLine = [strTempLib stringByAppendingString:@".lsl"];
+    [desMap.workspace.resources.lineLibrary saveAs:strLine];
+    NSString*strFill = [strTempLib stringByAppendingString:@".bru"];
+    [desMap.workspace.resources.fillLibrary saveAs:strFill];
+    
+    if([self openMapName:srcMapName toWorkspace:desMap.workspace ofModule:srcModule isPrivate:bSrcPrivate]){
+        
+        [desMap addLayersFromMap:srcMapName withDynamicProjection:YES];
+        [desMap.workspace.maps removeMapName:srcMapName];
+        bResult = true;
+        
+    }
+    [desMap.workspace.resources.markerLibrary clear];
+    [desMap.workspace.resources.markerLibrary appendFromFile:strMarker isReplace:YES];
+    [[NSFileManager defaultManager] removeItemAtPath:strMarker error:nil];
+    
+    [desMap.workspace.resources.lineLibrary clear];
+    [desMap.workspace.resources.lineLibrary appendFromFile:strLine isReplace:YES];
+    [[NSFileManager defaultManager] removeItemAtPath:strLine error:nil];
+    
+    [desMap.workspace.resources.fillLibrary clear];
+    [desMap.workspace.resources.fillLibrary appendFromFile:strFill isReplace:YES];
+    [[NSFileManager defaultManager] removeItemAtPath:strFill error:nil];
+    
+    return bResult;
+}
+
+// 从Exp1的map里 拷贝所有layer到Exp2的map的一个layerGroup下，layerGroup.name为被拷贝地图名
 -(BOOL)addLayersFromMapJson:(NSString*)jsonSrcMap toMap:(NSString*)jsonDesMap{
     
     // 先把两个map在同一工作空间中打开 [desMap addLayersFrom:srcmap] save到des目录下desMap
@@ -2110,7 +2392,7 @@
         if (isDesPrivate!=isSrcPrivate) {
             bSame = false;
         }
-
+        
         if (bSame) {
             return false;
         }
@@ -2151,7 +2433,7 @@
                 SymbolGroup *group = [workspace.resources.fillLibrary.rootGroup.childSymbolGroups getGroupWithName:strSrcName];
                 [group setName:strSrcReplace];
             }
-
+            
             
             strSrcName = strSrcReplace;
         }
@@ -2183,9 +2465,9 @@
                     dicAddition = @{@"Template":strTemplate};
                 }
             }
-
+            
             if(  [map open:strDesName] &&
-                 [map addLayersFromMap:strSrcName withDynamicProjection:YES] )
+               [map addLayersFromMap:strSrcName withDynamicProjection:YES] )
             {
                 [map save];
                 [map close];
@@ -2197,7 +2479,7 @@
             }
         }
         
-    
+        
     }
     
     [workspace close];
@@ -2205,6 +2487,7 @@
     
     return true;
 }
+
 
 -(NSString*)importUDBFile:(NSString*)strFile ofModule:(NSString*)strModule{
     

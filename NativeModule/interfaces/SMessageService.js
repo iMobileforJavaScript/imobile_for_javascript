@@ -59,22 +59,17 @@ function sendMessage(message, targetID) {
   return MessageServiceeNative.sendMessage(message,targetID);
 }
 //文件发送
-function sendFile(filePath, targetID) {
-  return MessageServiceeNative.sendFile(filePath,targetID);
+function sendFile(connectInfo, message, filePath) {
+  return MessageServiceeNative.sendFile(connectInfo, message, filePath);
 }
 //声明多人会话
-function declareSession(uuid) {
-  return MessageServiceeNative.declareSession(uuid);
-}
-
-//声明多人会话
-function joinSession(uuid) {
-  return MessageServiceeNative.joinSession(uuid);
+function declareSession(memmbers,uuid) {
+  return MessageServiceeNative.declareSession(memmbers,uuid);
 }
 
 //退出多人会话
-function exitSession(uuid) {
-  return MessageServiceeNative.exitSession(uuid);
+function exitSession(memmber,uuid) {
+  return MessageServiceeNative.exitSession(memmber,uuid);
 }
 
 //开启消息接收
@@ -88,19 +83,31 @@ function startReceiveMessage(uuid,handle) {
   return MessageServiceeNative.startReceiveMessage(uuid);
 }
 
-//关闭消息接收
+//挂起操作，用于APP状态切换后台
+function suspend() {
+  return MessageServiceeNative.suspend();
+}
+
+//开启消息接收
+function resume() {
+  return MessageServiceeNative.resume();
+}
+
+//恢复操作，用户APP唤醒
 function stopReceiveMessage() {
   return MessageServiceeNative.stopReceiveMessage();
 }
+
 export default {
   receiveMessage,
   stopReceiveMessage,
   startReceiveMessage,
   exitSession,
-  joinSession,
   declareSession,
   sendFile,
   sendMessage,
   disconnectionService,
   connectService,
+  resume,
+  suspend,
 }
