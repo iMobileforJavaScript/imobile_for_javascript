@@ -266,6 +266,39 @@ export default (function () {
       console.error(e)
     }
   }
+  
+  /**
+   * 以面对象region裁减地图map 并保存为 strResultName
+   通过图层确定裁减数据集，支持矢量和本地删格数据集，layer可以不参加裁减（不参加，意思是在结果数据集中layer.dataset不变）但同一数据集的layer裁减参数一致（以第一个layer参数为准）
+   
+   
+   返回值说明：裁减完地图尝试以strResultName保存到map.workspace.maps中，若已存在同名则重命名为strResultName#1，把最终命名结果返回
+   * @param points
+   *   [{x, y}]
+   * @param layersInfo
+   *   LayerName 需裁减Layer名（实际为裁减Layer对应dataset，裁减结果为新数据集保留到dataset所在datasource，新地图中Layer指向新数据集）
+       IsClipInRegion 裁减区域在面内还是面外
+       IsErase 是否擦除模式
+       IsExactClip 是否精确裁减（删格涂层才有该选项）
+       DatasourceTarget
+       DatasetTarget
+     Eg:
+       @"[{\"LayerName\":\"%@\",\"IsClipInRegion\":false,\"IsErase\":false,\"IsExactClip\":true},\
+       {\"LayerName\":\"%@\",\"DatasourceTarget\":\"%@\",\"IsErase\":false,\"IsExactClip\":true},\
+       {\"LayerName\":\"%@\",\"IsExactClip\":false,\"DatasourceTarget\":\"%@\",\"DatasetTarget\":\"%@\"}]"
+   * @param mapName 另存为新地图
+   * @param ofModule 另存为新地图模块
+   * @param addition 另存为新地图额外信息（例如：exp中模板信息）
+   * @param isPrivate 另存为新地图的是否是用户目录
+   * @returns {*}
+   */
+  function clipMap (points, layersInfo = [], mapName = null, ofModule = '', addition, isPrivate = true) {
+    try {
+      return SMap.clipMap(points, layersInfo, mapName, ofModule, addition, isPrivate)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
    * 移动到当前位置
@@ -1000,7 +1033,7 @@ export default (function () {
       if (index === undefined) {
         return SMap.undo()
       } else {
-        return SMap.undo(index)
+        return SMap.undoWithIndex(index)
       }
 
     } catch (e) {
@@ -1018,7 +1051,7 @@ export default (function () {
       if (index === undefined) {
         return SMap.redo()
       } else {
-        return SMap.redo(index)
+        return SMap.redoWithIndex(index)
       }
     } catch (e) {
       console.error(e)
@@ -1151,6 +1184,7 @@ export default (function () {
     isAntialias,
     setVisibleScalesEnabled,
     isVisibleScalesEnabled,
+    clipMap,
 
     moveToCurrent,
     moveToPoint,

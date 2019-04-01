@@ -1401,7 +1401,7 @@ RCT_REMAP_METHOD(getMapHistoryCurrentIndex, getMapHistoryCurrentIndexWithResolve
 }
 
 #pragma mark 地图操作记录重做到index
-RCT_REMAP_METHOD(redo, redoWithIndex:(int)index resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(redoWithIndex, redoWithIndex:(int)index resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         MapControl* mapControl = sMap.smMapWC.mapControl;
@@ -1414,7 +1414,7 @@ RCT_REMAP_METHOD(redo, redoWithIndex:(int)index resolve:(RCTPromiseResolveBlock)
 }
 
 #pragma mark 地图操作记录撤销到index
-RCT_REMAP_METHOD(undo, undoWithIndex:(int)index resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(undoWithIndex, undoWithIndex:(int)index resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         MapControl* mapControl = sMap.smMapWC.mapControl;
@@ -1462,6 +1462,41 @@ RCT_REMAP_METHOD(clear, clearWithResolve:(RCTPromiseResolveBlock)resolve rejecte
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 地图裁剪
+RCT_REMAP_METHOD(clipMap, clipMapWithPoints:(NSArray *)points layersInfo:(NSArray *)layersInfo saveAs:(NSString *)mapName nModule:(NSString *)nModule addition:(NSDictionary*)addition isPrivate:(BOOL)isPrivate resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        if (points.count == 0) {
+            reject(@"clipMap", @"points can not be empty!", nil);
+        } else {
+            Point2Ds* point2Ds = [[Point2Ds alloc] init];
+            for (NSDictionary* point in points) {
+                NSNumber* x = [point objectForKey:@"x"];
+                NSNumber* y = [point objectForKey:@"y"];
+                
+                CGPoint point = CGPointMake(x.floatValue, y.floatValue);
+                
+                Point2D* point2D = [[SMap singletonInstance].smMapWC.mapControl.map pixelTomap:point];
+                [point2Ds add:point2D];
+            }
+            GeoRegion* region = [[GeoRegion alloc] initWithPoint2Ds: point2Ds];
+            
+            sMap = [SMap singletonInstance];
+            if ([mapName isEqualToString:@""]) {
+                mapName = nil;
+            }
+            NSString* resutlName = [sMap.smMapWC clipMap:sMap.smMapWC.mapControl.map withRegion:region parameters:layersInfo saveAs:mapName];
+            
+            if (resutlName) {
+                resutlName = [sMap.smMapWC saveMapName:resutlName fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:addition isNewMap:YES isResourcesModyfied:YES isPrivate:isPrivate];
+            }
+            
+            resolve(resutlName);
+        }
+    } @catch (NSException *exception) {
+        reject(@"clipMap", exception.reason, nil);
     }
 }
 #pragma mark /************************************** 地图编辑历史操作 END****************************************/

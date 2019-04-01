@@ -7,24 +7,7 @@
 //
 
 #import "SMMapWC.h"
-#import "SuperMap/Maps.h"
-#import "SuperMap/Map.h"
-#import "SuperMap/Layers.h"
-#import "SuperMap/Layer.h"
-#import "SuperMap/Dataset.h"
-#import "SuperMap/Resources.h"
-#import "SuperMap/SymbolMarkerLibrary.h"
-#import "SuperMap/SymbolLineLibrary.h"
-#import "SuperMap/SymbolFillLibrary.h"
-#import "SuperMap/SymbolLine.h"
-#import "SuperMap/SymbolFill.h"
-#import "SuperMap/Geometry.h"
-#import "SuperMap/GeoStyle.h"
-#import "SuperMap/OverlayAnalyst.h"
-#import "SuperMap/OverlayAnalystParameter.h"
-#import "SuperMap/RasterClip.h"
 #import "SMap.h"
-
 
 @implementation SMMapWC
 

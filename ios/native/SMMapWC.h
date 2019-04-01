@@ -20,6 +20,20 @@
 #import "SuperMap/DatasetVectorInfo.h"
 #import "SuperMap/EngineType.h"
 #import "SMFileUtil.h"
+#import "SuperMap/Maps.h"
+#import "SuperMap/Layers.h"
+#import "SuperMap/Layer.h"
+#import "SuperMap/Resources.h"
+#import "SuperMap/SymbolMarkerLibrary.h"
+#import "SuperMap/SymbolLineLibrary.h"
+#import "SuperMap/SymbolFillLibrary.h"
+#import "SuperMap/SymbolLine.h"
+#import "SuperMap/SymbolFill.h"
+#import "SuperMap/Geometry.h"
+#import "SuperMap/GeoStyle.h"
+#import "SuperMap/OverlayAnalyst.h"
+#import "SuperMap/OverlayAnalystParameter.h"
+#import "SuperMap/RasterClip.h"
 
 @interface SMMapWC : NSObject
 
@@ -44,5 +58,6 @@
 
 
 - (BOOL)copyDatasetsFrom:(NSString*)strSrcUDB to:(NSString*)strDesUDB;
+-(NSString*)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSArray*)arrLayers/*NSString*)jsonParam*/ saveAs:(NSString*)strResultName;
 
 @end
