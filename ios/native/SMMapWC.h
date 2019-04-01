@@ -58,5 +58,6 @@
 
 - (BOOL)copyDatasetsFrom:(NSString*)strSrcUDB to:(NSString*)strDesUDB;
 -(NSString*)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSArray*)arrLayers/*NSString*)jsonParam*/ saveAs:(NSString*)strResultName;
-
+-(BOOL)addLayersFromMap:(NSString*)srcMapName ofModule:(NSString*)srcModule isPrivate:(BOOL)bSrcPrivate toMap:(Map*)desMap;
+-(BOOL)addLayersFromMapJson:(NSString*)jsonSrcMap toMap:(NSString*)jsonDesMap;
 @end

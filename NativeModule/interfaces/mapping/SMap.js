@@ -358,6 +358,10 @@ export default (function () {
     return SMap.submit()
   }
 
+  cancel = () => {
+    return SMap.cancel()
+  }
+
   /**
    * 手势监听
    * @memberOf MapControl
@@ -837,6 +841,18 @@ export default (function () {
   }
 
   /**
+   * 把指定地图中的图层添加到当前打开地图中
+   */
+  function addMap (srcMapName = '', srcModule = '', bPrivate = true) {
+    try {
+      if (!srcMapName) return false
+      return SMap.addMap(srcMapName, srcModule, bPrivate)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 批量添加图层
    */
   function addLayers (datasetNames, datasourceName) {
@@ -1191,6 +1207,7 @@ export default (function () {
     closeMap,
     getUDBName,
     submit,
+    cancel,
     setGestureDetector,
     deleteGestureDetector,
     addGeometrySelectedListener,
@@ -1216,6 +1233,8 @@ export default (function () {
     removeMap,
     mapIsModified,
     isAnyMapOpened,
+    
+    addMap,
     addLayers,
     importSymbolLibrary,
     isOverlapDisplayed,

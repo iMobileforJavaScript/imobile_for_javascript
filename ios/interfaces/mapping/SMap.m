@@ -753,6 +753,17 @@ RCT_REMAP_METHOD(submit, submitWithResolver:(RCTPromiseResolveBlock)resolve reje
     }
 }
 
+#pragma mark 取消
+RCT_REMAP_METHOD(cancel, cancelWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [mapControl cancel];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 #pragma mark 保存地图 autoNaming为true的话若有相同名字的地图则自动命名
 RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)autoNaming resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -1216,10 +1227,22 @@ RCT_REMAP_METHOD(isAnyMapOpened, isAnyMapOpened:(RCTPromiseResolveBlock)resolve 
 }
 
 #pragma mark 导入符号库
-RCT_REMAP_METHOD(importSymbolLibrary, importSymbolLibraryWithPath:(NSString *)path isReplace:(BOOL)isReplace :(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(importSymbolLibrary, importSymbolLibraryWithPath:(NSString *)path isReplace:(BOOL)isReplace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         BOOL result = [sMap.smMapWC appendFromFile:sMap.smMapWC.workspace.resources path:path isReplace:isReplace];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 把指定地图中的图层添加到当前打开地图中
+RCT_REMAP_METHOD(addMap, addMap:(NSString *)srcMapName ofModule:(NSString *)srcModule isPrivate:(BOOL)isPrivate resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL result = [sMap.smMapWC addLayersFromMap:srcMapName ofModule:srcModule isPrivate:isPrivate toMap:sMap.smMapWC.mapControl.map];
         
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {

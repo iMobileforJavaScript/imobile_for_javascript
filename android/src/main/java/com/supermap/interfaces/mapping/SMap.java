@@ -1040,6 +1040,18 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void cancel(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().cancel();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     /**
      * 保存地图
      *
@@ -2167,6 +2179,26 @@ public class SMap extends ReactContextBaseJavaModule {
             }
 
             promise.resolve(isAny);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 把指定地图中的图层添加到当前打开地图中
+     * @param srcMapName 要添加的地图
+     * @param srcModule  要添加的地图的模块
+     * @param bPrivate   要添加的地图是否为私有
+     * @param promise
+     */
+    @ReactMethod
+    public void addMap(String srcMapName, String srcModule, boolean bPrivate, Promise promise) {
+        try {
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            boolean result = sMap.smMapWC.addLayersFromMap(srcMapName, srcModule, bPrivate, map);
+
+            promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
         }
