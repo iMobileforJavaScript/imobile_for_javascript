@@ -77,16 +77,32 @@ function receiveMessage(uuid) {
   return MessageServiceeNative.receiveMessage(uuid);
 }
 
+//开启文件接收
+function receiveFile(fileName, queueName) {
+  return MessageServiceeNative.receiveFile(fileName, queueName);
+}
+
 //开启消息接收
 function startReceiveMessage(uuid,handle) {
   register(handle);
   return MessageServiceeNative.startReceiveMessage(uuid);
 }
 
-//关闭消息接收
+//挂起操作，用于APP状态切换后台
+function suspend() {
+  return MessageServiceeNative.suspend();
+}
+
+//开启消息接收
+function resume() {
+  return MessageServiceeNative.resume();
+}
+
+//恢复操作，用户APP唤醒
 function stopReceiveMessage() {
   return MessageServiceeNative.stopReceiveMessage();
 }
+
 export default {
   receiveMessage,
   stopReceiveMessage,
@@ -95,6 +111,9 @@ export default {
   declareSession,
   sendFile,
   sendMessage,
+  receiveFile,
   disconnectionService,
   connectService,
+  resume,
+  suspend,
 }

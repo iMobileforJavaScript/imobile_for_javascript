@@ -264,12 +264,10 @@ public class SDatasource extends ReactContextBaseJavaModule {
 
     /**
      * 获取数据源列表
-     * @param path
-     * @param name
      * @param promise
      */
     @ReactMethod
-    public void getDatasources(String path,String name, Promise promise) {
+    public void getDatasources(Promise promise) {
         try {
             WritableArray dsArr = Arguments.createArray();
             Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();

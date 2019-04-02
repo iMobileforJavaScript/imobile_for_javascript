@@ -974,11 +974,77 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+
+    /**
+     * 地图裁剪
+     * @param points
+     * @param layersInfo
+     * @param mapName
+     * @param nModule
+     * @param addition
+     * @param isPrivate
+     * @param promise
+     */
+    @ReactMethod
+    public void clipMap(ReadableArray points, ReadableArray layersInfo, String mapName, String nModule, ReadableMap addition, boolean isPrivate, Promise promise) {
+        try {
+            if (points.size() == 0) {
+                promise.reject("points can not be empty!");
+            } else {
+                sMap = getInstance();
+
+                Point2Ds point2Ds = new Point2Ds();
+                for (int i = 0; i < points.size(); i++) {
+                    ReadableMap p = points.getMap(i);
+                    Point point = new Point((int)p.getDouble("x"), (int)p.getDouble("y"));
+                    Point2D point2D = sMap.smMapWC.getMapControl().getMap().pixelToMap(point);
+
+                    point2Ds.add(point2D);
+                }
+
+                GeoRegion region = new GeoRegion(point2Ds);
+
+                if (mapName.equals("")) {
+                    mapName = null;
+                }
+                String resultName = sMap.smMapWC.clipMap(sMap.smMapWC.getMapControl().getMap(), region, layersInfo, mapName);
+
+                if (resultName != null && !resultName.equals("")) {
+                    Map<String, String> additionMap = new HashMap<>();
+                    while (addition.keySetIterator().hasNextKey()) {
+                        String key = addition.keySetIterator().nextKey();
+                        additionMap.put(key, addition.getString(key));
+                    }
+                    resultName = sMap.smMapWC.saveMapName(resultName, sMap.smMapWC.getWorkspace(), nModule, additionMap, true, true, isPrivate);
+                }
+
+                promise.resolve(resultName);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /******************************************** 地图工具 END*****************************************************/
+
+
     @ReactMethod
     public void submit(Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().submit();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void cancel(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().cancel();
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -2119,6 +2185,26 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 把指定地图中的图层添加到当前打开地图中
+     * @param srcMapName 要添加的地图
+     * @param srcModule  要添加的地图的模块
+     * @param bPrivate   要添加的地图是否为私有
+     * @param promise
+     */
+    @ReactMethod
+    public void addMap(String srcMapName, String srcModule, boolean bPrivate, Promise promise) {
+        try {
+            sMap = getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            boolean result = sMap.smMapWC.addLayersFromMap(srcMapName, srcModule, bPrivate, map);
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 批量添加图层
      *
      * @param datasetNames
@@ -2864,7 +2950,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void redo(int index, Promise promise) {
+    public void redoWithIndex(int index, Promise promise) {
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
@@ -2883,7 +2969,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void undo(int index, Promise promise) {
+    public void undoWithIndex(int index, Promise promise) {
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
