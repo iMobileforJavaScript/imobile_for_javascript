@@ -1123,6 +1123,7 @@ public class SMMapWC {
             if (bOld){
                 if (bSymReplace){
                     desLib.remove(nId);
+                    desLib.add(sym,desGroup);
                 }else{
                     int nIdNew = desLib.add(sym,desGroup);
                     String strResult = "" + nId + ":" + nIdNew;
@@ -2204,8 +2205,8 @@ public class SMMapWC {
             if (isExist && !isDir) {
                 SymbolLineLibrary lineLibrary = new SymbolLineLibrary();
                 lineLibrary.appendFromFile(strLinePath, true);
-                importSymbolsFrom(lineLibrary.getInlineMarkerLib().getRootGroup(), desInlineMarkerGroup, true, true);
-                ArrayList<String> arrayList = importSymbolsFrom(lineLibrary.getRootGroup(), desLineGroup, true, true);
+                importSymbolsFrom(lineLibrary.getInlineMarkerLib().getRootGroup(), desInlineMarkerGroup, true, bSymbolReplace);
+                ArrayList<String> arrayList = importSymbolsFrom(lineLibrary.getRootGroup(), desLineGroup, true, bSymbolReplace);
                 if (arrayList!=null){
                     for (int i=0;i<arrayList.size();i++){
                         String strReplace = arrayList.get(i);
@@ -2240,8 +2241,8 @@ public class SMMapWC {
             if (isExist && !isDir) {
                 SymbolFillLibrary fillLibrary = new SymbolFillLibrary();
                 fillLibrary.appendFromFile(strFillPath, true);
-                importSymbolsFrom(fillLibrary.getInfillMarkerLib().getRootGroup(), desInfillMarkerGroup, true, true);
-                ArrayList<String> arrayList = importSymbolsFrom(fillLibrary.getRootGroup(), desFillGroup, true, true);
+                importSymbolsFrom(fillLibrary.getInfillMarkerLib().getRootGroup(), desInfillMarkerGroup, true, bSymbolReplace);
+                ArrayList<String> arrayList = importSymbolsFrom(fillLibrary.getRootGroup(), desFillGroup, true, bSymbolReplace);
                 if (arrayList!=null){
                     for (int i=0;i<arrayList.size();i++){
                         String strReplace = arrayList.get(i);
