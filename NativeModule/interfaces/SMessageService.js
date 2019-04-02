@@ -77,6 +77,11 @@ function receiveMessage(uuid) {
   return MessageServiceeNative.receiveMessage(uuid);
 }
 
+//开启文件接收
+function receiveFile(fileName, queueName) {
+  return MessageServiceeNative.receiveFile(fileName, queueName);
+}
+
 //开启消息接收
 function startReceiveMessage(uuid,handle) {
   register(handle);
@@ -106,6 +111,7 @@ export default {
   declareSession,
   sendFile,
   sendMessage,
+  receiveFile,
   disconnectionService,
   connectService,
   resume,
