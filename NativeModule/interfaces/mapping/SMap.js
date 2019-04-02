@@ -683,18 +683,17 @@ export default (function () {
       console.error(e)
     }
   }
-
+  
   /**
    * 导出工作空间
    * @param mapName  地图名字（不含后缀）
-   * @param moduleName  模块名（默认传空）
-   * @param isPrivate  是否是用户数据
    * @param exportWorkspacePath        导出的工作空间绝对路径（含后缀）
+   * @param params { IsPrivate, IsReplaceSymbol, Module }
    * @returns {*}
    */
-  function exportWorkspaceByMap (mapName, moduleName = '', isPrivate = false, exportWorkspacePath) {
+  function exportWorkspaceByMap (mapName, exportWorkspacePath, params = {}) {
     try {
-      return SMap.exportWorkspaceByMap(mapName, moduleName, isPrivate, exportWorkspacePath)
+      return SMap.exportWorkspaceByMap(mapName, exportWorkspacePath, params)
     } catch (e) {
       console.error(e)
     }
@@ -764,12 +763,21 @@ export default (function () {
    * 大工作空间打开本地地图
    * @param strMapName
    * @param nModule 模块名（文件夹名）
-   * @param isPrivate 
+   * @param isPrivate { Module, IsPrivate, IsReplaceSymbol }
    * @returns {*}
    */
-  function openMapName (strMapName, nModule = '', isPrivate = false) {
+  function openMapName (strMapName, params = {}) {
     try {
-      return SMap.openMapName(strMapName, nModule, isPrivate)
+      // if (params.Module === undefined) {
+      //   params.srcModule = ''
+      // }
+      // if (params.IsPrivate === undefined) {
+      //   params.bPrivate = false
+      // }
+      // if (params.IsReplaceSymbol === undefined) {
+      //   params.bPrivate = false
+      // }
+      return SMap.openMapName(strMapName, params)
     } catch (e) {
       console.error(e)
     }
@@ -839,14 +847,26 @@ export default (function () {
       console.error(e)
     }
   }
-
+  
   /**
    * 把指定地图中的图层添加到当前打开地图中
+   * @param srcMapName
+   * @param params { IsReplaceSymbol = true, Module = '', IsPrivate = true }
+   * @returns {*}
    */
-  function addMap (srcMapName = '', srcModule = '', bPrivate = true) {
+  function addMap (srcMapName = '', params = {}) {
     try {
       if (!srcMapName) return false
-      return SMap.addMap(srcMapName, srcModule, bPrivate)
+      // if (params.Module === undefined) {
+      //   params.Module = ''
+      // }
+      // if (params.IsPrivate === undefined) {
+      //   params.IsPrivate = true
+      // }
+      // if (params.IsReplaceSymbol === true) {
+      //   params.IsPrivate = true
+      // }
+      return SMap.addMap(srcMapName, params)
     } catch (e) {
       console.error(e)
     }

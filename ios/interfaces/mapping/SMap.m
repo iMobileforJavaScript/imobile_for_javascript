@@ -1034,12 +1034,12 @@ RCT_REMAP_METHOD(addDatasetToMap, addDatasetToMapWithResolver:(NSDictionary*)dat
 // ofModule 模块名（默认传空）
 // isPrivate 是否是用户数据
 // exportWorkspacePath 导出的工作空间绝对路径（含后缀）
-RCT_REMAP_METHOD(exportWorkspaceByMap, exportWorkspaceByMap:(NSString*)strMapName ofModule:(NSString *)nModule isPrivate:(BOOL)bPrivate exportWorkspacePath:(NSString *)exportWorkspacePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(exportWorkspaceByMap, exportWorkspaceByMap:(NSString*)strMapName exportWorkspacePath:(NSString *)exportWorkspacePath withParams:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         sMap = [SMap singletonInstance];
         // 先把地图导入大工作空间
-        BOOL openResult = [sMap.smMapWC openMapName:strMapName toWorkspace:sMap.smMapWC.workspace ofModule:nModule isPrivate:bPrivate];
+        BOOL openResult = [sMap.smMapWC openMapName:strMapName toWorkspace:sMap.smMapWC.workspace withParam:params];
         BOOL exportResult = NO;
         if (openResult) {
             // 先把地图导出
@@ -1152,11 +1152,11 @@ RCT_REMAP_METHOD(importWorkspaceInfo, importWorkspaceInfo:(NSDictionary *)infoDi
 }
 
 #pragma mark 大工作空间打开本地地图
-RCT_REMAP_METHOD(openMapName, openMapName:(NSString*)strMapName ofModule:(NSString *)nModule isPrivate:(BOOL)bPrivate resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(openMapName, openMapName:(NSString*)strMapName withParams:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         sMap = [SMap singletonInstance];
-        BOOL result = [sMap.smMapWC openMapName:strMapName toWorkspace:sMap.smMapWC.workspace ofModule:nModule isPrivate:bPrivate];
+        BOOL result = [sMap.smMapWC openMapName:strMapName toWorkspace:sMap.smMapWC.workspace withParam:params];
         
         resolve(@(result));
     } @catch (NSException *exception) {
@@ -1239,10 +1239,10 @@ RCT_REMAP_METHOD(importSymbolLibrary, importSymbolLibraryWithPath:(NSString *)pa
 }
 
 #pragma mark 把指定地图中的图层添加到当前打开地图中
-RCT_REMAP_METHOD(addMap, addMap:(NSString *)srcMapName ofModule:(NSString *)srcModule isPrivate:(BOOL)isPrivate resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addMap, addMap:(NSString *)srcMapName withParams:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        BOOL result = [sMap.smMapWC addLayersFromMap:srcMapName ofModule:srcModule isPrivate:isPrivate toMap:sMap.smMapWC.mapControl.map];
+        BOOL result = [sMap.smMapWC addLayersFromMap:srcMapName toMap:sMap.smMapWC.mapControl.map withParam:params];
         
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
@@ -1510,13 +1510,21 @@ RCT_REMAP_METHOD(clipMap, clipMapWithPoints:(NSArray *)points layersInfo:(NSArra
             if ([mapName isEqualToString:@""]) {
                 mapName = nil;
             }
-            NSString* resutlName = [sMap.smMapWC clipMap:sMap.smMapWC.mapControl.map withRegion:region parameters:layersInfo saveAs:mapName];
             
-            if (resutlName) {
-                resutlName = [sMap.smMapWC saveMapName:resutlName fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:addition isNewMap:YES isResourcesModyfied:YES isPrivate:isPrivate];
+            BOOL result = [sMap.smMapWC clipMap:sMap.smMapWC.mapControl.map withRegion:region parameters:layersInfo saveAs:&mapName];
+            
+            if (result) {
+                mapName = [sMap.smMapWC saveMapName:mapName fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:addition isNewMap:YES isResourcesModyfied:YES isPrivate:isPrivate];
+                resolve(@{
+                          @"mapName": mapName,
+                          @"result": [NSNumber numberWithBool:result],
+                          });
+            } else {
+                resolve(@{
+                          @"mapName": @"",
+                          @"result": [NSNumber numberWithBool:result],
+                          });
             }
-            
-            resolve(resutlName);
         }
     } @catch (NSException *exception) {
         reject(@"clipMap", exception.reason, nil);
