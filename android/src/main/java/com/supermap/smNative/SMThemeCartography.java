@@ -1694,11 +1694,30 @@ public class SMThemeCartography {
                     geoStyle.setLineColor(color);
                     break;
                 case "REGION":
+                    //面：需要默认设置好看的线型颜色，根据颜色的深浅值来判断，保持所有的线型值统一
+                    //geoStyle.setLineColor(color); //此效果等同于所有线型都设置为NULL
                     geoStyle.setFillForeColor(color);
                     break;
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * 根据RGB值判断 深色与浅色
+     * @param r
+     * @param g
+     * @param b
+     * @return
+     */
+    public static boolean isDark(int r, int g, int b){
+        if(r * 0.299 + g * 0.578 + b * 0.114 >= 192){
+            //浅色
+            return false;
+        }else{
+            //深色
+            return true;
         }
     }
 
