@@ -1114,7 +1114,7 @@ public class SMMapWC {
         // group的名称 symbol的id 都需要desLib查重名
         SymbolLibrary desLib = desGroup.getLibrary();
         if (srcGroup == null) {
-            return;
+            return arrResult;
         }
         for (int i = 0; i < srcGroup.getCount(); i++) {
             Symbol sym = srcGroup.get(i);
@@ -1140,7 +1140,7 @@ public class SMMapWC {
         SymbolGroup desSubGroup = desGroup;
         SymbolGroups srcChildGroups = srcGroup.getChildGroups();
         if (srcChildGroups == null) {
-            return;
+            return arrResult;
         }
         for (int j = 0; j < srcChildGroups.getCount(); j++) {
             SymbolGroup subGroup = srcChildGroups.get(j);
@@ -1165,7 +1165,7 @@ public class SMMapWC {
 
         }
 
-        return;
+        return arrResult;
     }
 
 //    private String getCustomerDirectory(boolean bPrivate) {
@@ -1954,7 +1954,7 @@ public class SMMapWC {
     public boolean openMap(ReadableMap mapInfo, Workspace desWorkspace) {
         if (mapInfo != null) {
 
-            String strMapName = mapInfo.get("MapName");
+            String strMapName = mapInfo.getString("MapName");
             if (strMapName != null) {
 //                String strModule = mapInfo.get("Module");
 //                Boolean isPrivate = false;//默认公共目录
@@ -1978,9 +1978,6 @@ public class SMMapWC {
         if (desWorkspace == null || desWorkspace.getMaps().indexOf(strMapName) != -1) {
             return false;
         }
-        int b = '1';
-        boolean a;
-        a = Boolean.parseBoolean("1");
 
         boolean bPrivate = true;
         if (dicParam.hasKey("IsPrivate")){
@@ -2617,7 +2614,7 @@ public class SMMapWC {
         return result;
     }
 
-    private Map<String, String> getMapInfoFromJson(String jsonMap) {
+    private ReadableMap getMapInfoFromJson(String jsonMap) {
         if (jsonMap == null) {
             return null;
         }
@@ -2632,13 +2629,13 @@ public class SMMapWC {
             return null;
         }
 
-        Map<String, String> mapInfo = new HashMap<>();
-        mapInfo.put("MapName", strMapName);
+       WritableMap mapInfo = Arguments.createMap();
+        mapInfo.putString("MapName", strMapName);
         if (jsonObject.has("Module")) {
-            mapInfo.put("Module", jsonObject.optString("Module"));
+            mapInfo.putString("Module", jsonObject.optString("Module"));
         }
         if (jsonObject.has("IsPrivate")) {
-            mapInfo.put("IsPrivate", jsonObject.optString("IsPrivate"));
+            mapInfo.putBoolean("IsPrivate", jsonObject.optBoolean("IsPrivate"));
         }
         return mapInfo;
 
@@ -2676,7 +2673,7 @@ public class SMMapWC {
             if (strClipMapName != null) {
                 int nAddNum = 1;
                 while (_srcMap.getWorkspace().getMaps().indexOf(strClipMapName) != -1) {
-                    strClipMapName = strResultName + nAddNum;
+                    strClipMapName = strResultName[0] + nAddNum;
                     nAddNum++;
                 }
 
@@ -2972,25 +2969,35 @@ public class SMMapWC {
         // 先把两个map在同一工作空间中打开 [desMap addLayersFrom:srcmap] save到des目录下desMap
 
         // 源Map打开信息字典
-        Map<String, String> srcInfo = getMapInfoFromJson(jsonSrcMap);
-        Map<String, String> desInfo = getMapInfoFromJson(jsonDesMap);
+        ReadableMap srcInfo = getMapInfoFromJson(jsonSrcMap);
+        ReadableMap desInfo = getMapInfoFromJson(jsonDesMap);
         if (srcInfo == null || desInfo == null) {
             return false;
         }
 
-        String strSrcName = srcInfo.get("MapName");
-        String strSrcModule = srcInfo.get("Module");
+        if ( !srcInfo.hasKey("MapName") || !desInfo.hasKey("MapName")){
+            return false;
+        }
+
+        String strSrcName = srcInfo.getString("MapName");
+        String strSrcModule = null;
+        if (srcInfo.hasKey("Module")){
+            strSrcModule  = srcInfo.getString("Module");
+        }
         boolean isSrcPrivate = false;
-        if (srcInfo.containsKey("IsPrivate")) {
-            isSrcPrivate = Boolean.parseBoolean(srcInfo.get("IsPrivate"));
+        if (srcInfo.hasKey("IsPrivate")) {
+            isSrcPrivate = srcInfo.getBoolean("IsPrivate");
 //            isSrcPrivate=Boolean.valueOf(srcInfo.get("IsPrivate"));
         }
 
-        String strDesName = desInfo.get("MapName");
-        String strDesModule = desInfo.get("Module");
+        String strDesName = desInfo.getString("MapName");
+        String strDesModule = null;
+        if (desInfo.hasKey("Module")){
+            strDesModule = desInfo.getString("Module");
+        }
         boolean isDesPrivate = false;
-        if (desInfo.containsKey("IsPrivate")) {
-            isDesPrivate = Boolean.parseBoolean(desInfo.get("IsPrivate"));
+        if (desInfo.hasKey("IsPrivate")) {
+            isDesPrivate = desInfo.getBoolean("IsPrivate");
         }
 
         Boolean bSrcRename = false;//同名Map需要srcMap打开后重命名，同一Map不能合并

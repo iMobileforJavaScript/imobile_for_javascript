@@ -1007,18 +1007,30 @@ public class SMap extends ReactContextBaseJavaModule {
                 if (mapName.equals("")) {
                     mapName = null;
                 }
-                String resultName = sMap.smMapWC.clipMap(sMap.smMapWC.getMapControl().getMap(), region, layersInfo, mapName);
+                String[] args = new String[1];
+                args[0] = mapName;
+                if( sMap.smMapWC.clipMap(sMap.smMapWC.getMapControl().getMap(), region, layersInfo, args) ){
+                    WritableMap writeMap = Arguments.createMap();
+                    writeMap.putBoolean("result",true);
 
-                if (resultName != null && !resultName.equals("")) {
-                    Map<String, String> additionMap = new HashMap<>();
-                    while (addition.keySetIterator().hasNextKey()) {
-                        String key = addition.keySetIterator().nextKey();
-                        additionMap.put(key, addition.getString(key));
+                    String resultName = args[0];
+                    if (resultName != null && !resultName.equals("")) {
+                        Map<String, String> additionMap = new HashMap<>();
+                        while (addition.keySetIterator().hasNextKey()) {
+                            String key = addition.keySetIterator().nextKey();
+                            additionMap.put(key, addition.getString(key));
+                        }
+                        resultName = sMap.smMapWC.saveMapName(resultName, sMap.smMapWC.getWorkspace(), nModule, additionMap, true, true, isPrivate);
                     }
-                    resultName = sMap.smMapWC.saveMapName(resultName, sMap.smMapWC.getWorkspace(), nModule, additionMap, true, true, isPrivate);
+                    writeMap.putString("mapName",resultName);
+                    promise.resolve(writeMap);
+                }else{
+                    WritableMap writeMap = Arguments.createMap();
+                    writeMap.putBoolean("result",false);
+                    writeMap.putString("mapName",null);
+                    promise.resolve(writeMap);
                 }
 
-                promise.resolve(resultName);
             }
         } catch (Exception e) {
             promise.reject(e);
@@ -1686,10 +1698,13 @@ public class SMap extends ReactContextBaseJavaModule {
     // isPrivate 是否是用户数据
     // exportWorkspacePath 导出的工作空间绝对路径（含后缀）
     @ReactMethod
-    public void exportWorkspaceByMap(String mapName, String moduleName, boolean isPrivate, String exportWorkspacePath, Promise promise) {
+    public void exportWorkspaceByMap(String mapName, ReadableMap mapParam, String exportWorkspacePath, Promise promise) {
         try {
             sMap = getInstance();
-            boolean openResult = sMap.getSmMapWC().openMapName(mapName, sMap.getSmMapWC().getWorkspace(), moduleName, isPrivate);
+            WritableMap param = Arguments.createMap();
+            param.merge(mapParam);
+            param.putBoolean("IsReplaceSymbol",true);
+            boolean openResult = sMap.getSmMapWC().openMapName(mapName, sMap.getSmMapWC().getWorkspace(),param);
             boolean exportResult = false;
             if (openResult) {
                 WritableArray array = Arguments.createArray();
@@ -2075,10 +2090,10 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void openMapName(String strMapName, String nModule, boolean bPrivate, Promise promise) {
+    public void openMapName(String strMapName, ReadableMap mapParam, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            boolean result = sMap.smMapWC.openMapName(strMapName, sMap.smMapWC.getWorkspace(), nModule, bPrivate);
+            boolean result = sMap.smMapWC.openMapName(strMapName, sMap.smMapWC.getWorkspace(), mapParam);
 
             promise.resolve(result);
         } catch (Exception e) {
@@ -2192,11 +2207,11 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void addMap(String srcMapName, String srcModule, boolean bPrivate, Promise promise) {
+    public void addMap(String srcMapName, ReadableMap mapParam, Promise promise) {
         try {
             sMap = getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            boolean result = sMap.smMapWC.addLayersFromMap(srcMapName, srcModule, bPrivate, map);
+            boolean result = sMap.smMapWC.addLayersFromMap(srcMapName, map, mapParam);
 
             promise.resolve(result);
         } catch (Exception e) {
