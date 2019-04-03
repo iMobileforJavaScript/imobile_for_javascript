@@ -2090,7 +2090,6 @@ public class SMap extends ReactContextBaseJavaModule {
      * 大工作空间打开本地地图
      *
      * @param strMapName
-     * @param nModule
      * @param promise
      */
     @ReactMethod

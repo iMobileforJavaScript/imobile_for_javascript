@@ -2652,6 +2652,54 @@
     }
 }
 
+
+-(NSString*)importSymbolLibFile:(NSString *)strFile ofModule:(NSString *)strModule isPrivate:(BOOL)bPrivate{
+    NSString* type = [[strFile pathExtension] lowercaseString];
+    if ([type isEqualToString:@"sym"] || [type isEqualToString:@"lsl"] || [type isEqualToString:@"bru"]) {
+        BOOL isDir = false;
+        BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:strFile isDirectory:&isDir];
+        if ( !isExist || isDir) {
+            return nil;
+        }
+        NSString *strUserName;
+        if (!bPrivate) {
+            strUserName = @"Customer";
+        }else{
+            strUserName = [self getUserName];
+            if (strUserName==nil) {
+                return nil;
+            }
+        }
+        NSString *strRootPath = [self getRootPath];
+        NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];
+        NSString *desResourceDir = [NSString stringWithFormat:@"%@/Symbol",strCustomer];
+        if(strModule!=nil && ![strModule isEqualToString:@""]){
+            desResourceDir = [NSString stringWithFormat:@"%@/%@",desResourceDir,strModule];
+        }
+        
+        isDir = false;
+        isExist = [[NSFileManager defaultManager] fileExistsAtPath:desResourceDir isDirectory:&isDir];
+        if (!isExist || !isDir) {
+            [[NSFileManager defaultManager] createDirectoryAtPath:desResourceDir withIntermediateDirectories:YES attributes:nil error:nil];
+        }
+        NSString *strName = [[strFile componentsSeparatedByString:@"/"] lastObject];
+        NSString *strTargetFile = [NSString stringWithFormat:@"%@/%@",desResourceDir,strName];
+        strTargetFile = [self formateNoneExistFileName:strTargetFile isDir:false];
+        
+        // 拷贝
+        if(![[NSFileManager defaultManager] copyItemAtPath:strFile toPath:strTargetFile error:nil]){
+            return nil;
+        }else{
+            strName = [[strTargetFile componentsSeparatedByString:@"/"] lastObject];
+            return  strName;
+        }
+        
+    }else{
+        return nil;
+    }
+    
+}
+
 - (BOOL)appendFromFile:(Resources *)resources path:(NSString *)path isReplace:(BOOL)isReplace {
     @try {
         BOOL isDir = NO;
@@ -2733,5 +2781,7 @@
     return result;
 
 }
+
+
 
 @end
