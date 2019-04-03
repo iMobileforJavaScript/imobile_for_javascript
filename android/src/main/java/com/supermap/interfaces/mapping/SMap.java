@@ -1549,6 +1549,8 @@ public class SMap extends ReactContextBaseJavaModule {
 //                                layerSelection.putMap("layerInfo", layerInfo);
 //                                layerSelection.putArray("ids", ids);
 
+                                ids.pushInt(id);
+
                                 layerSelection.put("layerInfo", layerInfo);
                                 layerSelection.put("ids", ids);
 

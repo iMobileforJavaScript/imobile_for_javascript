@@ -2580,7 +2580,7 @@ public class SMMapWC {
                 return null;
             }else{
                 strName = strTargetFile.substring( desResourceDir.length() + 1 );
-                return strName
+                return strName;
             }
         } else {
             return null;
