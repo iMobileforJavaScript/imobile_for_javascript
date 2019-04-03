@@ -2087,6 +2087,34 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 导入数据源到程序目录
+     *
+     * @param strFile
+     * @param strModule
+     * @param promise
+     */
+    @ReactMethod
+    public void importDatasourceFile(String strFile, String strModule, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            DatasourceConnectionInfo datasourceConnectionInfo=new DatasourceConnectionInfo();
+            datasourceConnectionInfo.setServer(strFile);
+            datasourceConnectionInfo.setEngineType(EngineType.UDB);
+            Datasource datasource=sMap.smMapWC.getWorkspace().getDatasources().open(datasourceConnectionInfo);
+            if(datasource.getAlias()=="labelDatasource"){
+
+            }else {
+                String result=sMap.smMapWC.importDatasourceFile(strFile,strModule);
+                promise.resolve(result);
+            }
+            datasourceConnectionInfo.dispose();
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
      * 大工作空间打开本地地图
      *
      * @param strMapName
@@ -2205,8 +2233,6 @@ public class SMap extends ReactContextBaseJavaModule {
     /**
      * 把指定地图中的图层添加到当前打开地图中
      * @param srcMapName 要添加的地图
-     * @param srcModule  要添加的地图的模块
-     * @param bPrivate   要添加的地图是否为私有
      * @param promise
      */
     @ReactMethod

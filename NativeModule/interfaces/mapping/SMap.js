@@ -759,6 +759,22 @@ export default (function () {
     }
   }
 
+
+    /**
+   * 导入数据源到程序目录
+   * @param filePath
+   * @param nModule
+   * @returns {*}
+   */
+  function importDatasourceFile (filePath, nModule = '') {
+    try {
+      return SMap.importDatasourceFile(filePath,nModule)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  
   /**
    * 大工作空间打开本地地图
    * @param strMapName
@@ -1249,6 +1265,7 @@ export default (function () {
     addDatasetToMap,
     saveMapName,
     importWorkspaceInfo,
+    importDatasourceFile,
     openMapName,
     removeMap,
     mapIsModified,
