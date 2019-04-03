@@ -39,11 +39,13 @@ function objCallBack(){
 }
 
 function uploadFile(path, dataName, handler) {
+  console.log("uploadFile")
   if (Platform.OS === 'ios' && handler) {
     if (typeof handler.onProgress === 'function') {
-      callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (obj) {
-        handler.onProgress(obj.progress);
-      })
+      // callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (obj) {
+      //   console.log("progress: " + obj.progress);
+      //   handler.onProgress(obj.progress);
+      // })
     }
     if (typeof handler.onResult === 'function') {
       callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADED, function (value) {
@@ -52,16 +54,18 @@ function uploadFile(path, dataName, handler) {
     }
   }else{
     if (typeof handler.onProgress === 'function'&& handler) {
-      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
-        handler.onProgress(progress);
-      })
+      // DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
+      //   handler.onProgress(progress);
+      // })
     }
     if (typeof handler.onResult === 'function'&& handler) {
       DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADED, function (result) {
+        console.log("sucess")
         handler.onResult(result);
       })
     }
   }
+  console.log("upload")
   OnlineServiceNative.upload(path, dataName);
 }
 

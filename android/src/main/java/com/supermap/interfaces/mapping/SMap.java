@@ -2073,11 +2073,15 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             List<String> list = sMap.smMapWC.importWorkspaceInfo(infoMap.toHashMap(), nModule, bPrivate);
-            WritableArray mapsInfo = Arguments.createArray();
-            for (int i = 0; i < list.size(); i++) {
-                mapsInfo.pushString(list.get(i));
+            if(list==null){
+                promise.resolve(false);
             }
-
+            WritableArray mapsInfo = Arguments.createArray();
+            if(list.size()>0){
+                for (int i = 0; i < list.size(); i++) {
+                    mapsInfo.pushString(list.get(i));
+                }
+            }
             promise.resolve(mapsInfo);
         } catch (Exception e) {
             promise.reject(e);
