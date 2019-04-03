@@ -2544,6 +2544,49 @@ public class SMMapWC {
         //        }
     }
 
+    public String importSymbolLibFile(String strFile ,String strModule,boolean bPrivate){
+        String type = strFile.substring(strFile.lastIndexOf(".") + 1).toLowerCase();
+        if (type.equals("bru") || type.equals("lsl") || type.equals("sym")) {
+            File file = new File(strFile);
+            if (!file.exists() || !file.isFile()) {
+                return null;
+            }
+            String strUserName = null;
+            if (bPrivate) {
+                strUserName = getUserName();
+                if (strUserName == null) {
+                    return null;
+                }
+            } else {
+                strUserName = "Customer";
+            }
+            String strRootPath = getRootPath();
+            String strCustomer = strRootPath + "/" + strUserName + "/Data";
+            String desResourceDir = strCustomer+ "/Symbol";
+            if (strModule!=null && strModule.length()>0){
+                desResourceDir = desResourceDir + "/" + strModule;
+            }
+            File fileResourceDir = new File(desResourceDir);
+            if (!fileResourceDir.exists() || !fileResourceDir.isDirectory()) {
+                fileResourceDir.mkdirs();
+            }
+            String[] arrFile = strFile.split("/");
+            String strName = arrFile[arrFile.length - 1];
+            String strTargetFile = desResourceDir + "/" + strName;
+            strTargetFile = formateNoneExistFileName(strTargetFile,false);
+
+            // 拷贝
+            if (!copyFile(strFile, strTargetFile)) {
+                return null;
+            }else{
+                strName = strTargetFile.substring( desResourceDir.length() + 1 );
+                return strName
+            }
+        } else {
+            return null;
+        }
+    }
+
     public boolean appendFromFile(Resources resources, String path, boolean isReplace) {
         try {
             File file = new File(path);
