@@ -2,13 +2,10 @@ package com.supermap.smNative;
 
 import android.util.Log;
 
-import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.soloader.NoopSoSource;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.analyst.spatialanalyst.OverlayAnalyst;
 import com.supermap.analyst.spatialanalyst.OverlayAnalystParameter;
@@ -801,7 +798,7 @@ public class SMMapWC {
     //      5.导出符号库，workspace打开符号库
     //      5.设置workspaceConnectionInfo，保存workspace
 
-    public boolean exportMapNames(ReadableArray arrMapNames, String strFileName, boolean isFileReplace,ReadableMap extraMap) {
+    public boolean exportMapNames(ReadableArray arrMapNames, String strFileName, boolean isFileReplace, ReadableMap extraMap) {
         Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
         if (SMap.getInstance().getSmMapWC().getWorkspace() == null || strFileName == null || strFileName.length() == 0 || arrMapNames == null || arrMapNames.size() == 0 ||
                 workspace.getConnectionInfo().getServer().equalsIgnoreCase(strFileName)) {
@@ -883,7 +880,7 @@ public class SMMapWC {
         ArrayList<Datasource> arrDatasources = new ArrayList<Datasource>();
 
         ReadableMap notExportMap = null;
-        if(extraMap!=null&&extraMap.hasKey("notExport")) {
+        if (extraMap != null && extraMap.hasKey("notExport")) {
             notExportMap = extraMap.getMap("notExport");
         }
         for (int i = 0; i < arrMapNames.size(); i++) {
@@ -895,7 +892,7 @@ public class SMMapWC {
                 Layers exportLayes = mapExport.getLayers();
 
                 //判断是否有不需要导出的图层
-                if(notExportMap!=null&&notExportMap.hasKey(mapName)){
+                if (notExportMap != null && notExportMap.hasKey(mapName)) {
                     ReadableArray indexArray = notExportMap.getArray(mapName);
                     ArrayList<Object> list = indexArray.toArrayList();
                     ArrayList<Integer> list2 = new ArrayList<>();
@@ -913,21 +910,21 @@ public class SMMapWC {
                 }
 
                 // 不重复的datasource保存
-                List<Dataset> datasourceList=new ArrayList<>();
+                List<Dataset> datasourceList = new ArrayList<>();
                 for (int j = 0; j < exportLayes.getCount(); j++) {
-                    Layer layer=exportLayes.get(j);
-                    if(layer.getDataset()==null){
-                        if(layer instanceof LayerGroup){
+                    Layer layer = exportLayes.get(j);
+                    if (layer.getDataset() == null) {
+                        if (layer instanceof LayerGroup) {
                             datasourceList.addAll(allDatasetsOfLayerGroup((LayerGroup) layer));
                         }
-                    }else {
+                    } else {
                         datasourceList.add(layer.getDataset());
                     }
                 }
 
                 for (int j = 0; j < datasourceList.size(); j++) {
-                    Datasource datasource=datasourceList.get(j).getDatasource();
-                    if(!arrDatasources.contains(datasource)){
+                    Datasource datasource = datasourceList.get(j).getDatasource();
+                    if (!arrDatasources.contains(datasource)) {
                         arrDatasources.add(datasource);
                     }
                 }
@@ -1061,7 +1058,7 @@ public class SMMapWC {
         workspace.getResources().getLineLibrary().saveAs(strLinePath);
         workspace.getResources().getFillLibrary().saveAs(strFillPath);
 
-        boolean marker=workspaceDes.getResources().getMarkerLibrary().fromFile(strMarkerPath);
+        boolean marker = workspaceDes.getResources().getMarkerLibrary().fromFile(strMarkerPath);
         workspaceDes.getResources().getLineLibrary().fromFile(strLinePath);
         workspaceDes.getResources().getFillLibrary().fromFile(strFillPath);
 
@@ -1108,29 +1105,43 @@ public class SMMapWC {
 //bSymReplace 相同id的处理：true替换 false新id
 
 
-    private void importSymbolsFrom(SymbolGroup srcGroup, SymbolGroup desGroup, boolean bDirRetain, boolean bSymReplace) {
+    private ArrayList<String> importSymbolsFrom(SymbolGroup srcGroup, SymbolGroup desGroup, boolean bDirRetain, boolean bSymReplace) {
+        ArrayList<String> arrResult = null;
         if (desGroup == null || desGroup.getLibrary() == null) {
             //deGroup必须是必须在Lib中
-            return;
+            return arrResult;
         }
         // group的名称 symbol的id 都需要desLib查重名
         SymbolLibrary desLib = desGroup.getLibrary();
-        if (srcGroup == null){
-            return;
+        if (srcGroup == null) {
+            return arrResult;
         }
         for (int i = 0; i < srcGroup.getCount(); i++) {
             Symbol sym = srcGroup.get(i);
-//            if (bSymReplace && desLib.contains(sym.getID())) {
-            if (bSymReplace && desLib.findSymbol(sym.getID())!=null) {
-                desLib.remove(sym.getID());
+            int nId = sym.getID();
+            boolean bOld = (desLib.findSymbol(sym.getID()) != null);
+            if (bOld){
+                if (bSymReplace){
+                    desLib.remove(nId);
+                    desLib.add(sym,desGroup);
+                }else{
+                    int nIdNew = desLib.add(sym,desGroup);
+                    String strResult = "" + nId + ":" + nIdNew;
+                    if (arrResult==null){
+                        arrResult = new ArrayList<String>();
+                    }
+                    arrResult.add(strResult);
+                }
+
+            }else{
+                desLib.add(sym,desGroup);
             }
-            desLib.add(sym, desGroup);
         }
 
         SymbolGroup desSubGroup = desGroup;
         SymbolGroups srcChildGroups = srcGroup.getChildGroups();
-        if (srcChildGroups == null){
-            return;
+        if (srcChildGroups == null) {
+            return arrResult;
         }
         for (int j = 0; j < srcChildGroups.getCount(); j++) {
             SymbolGroup subGroup = srcChildGroups.get(j);
@@ -1145,10 +1156,17 @@ public class SMMapWC {
                 }
                 desSubGroup = desGroup.getChildGroups().create(subName);
             }
-            importSymbolsFrom(subGroup, desSubGroup, bDirRetain, bSymReplace);
+            ArrayList<String> arrSubRersult = importSymbolsFrom(subGroup, desSubGroup, bDirRetain, bSymReplace);
+            if (arrSubRersult!=null){
+                if (arrResult==null){
+                    arrResult = new ArrayList<String>();
+                }
+                arrResult.addAll(arrSubRersult);
+            }
+
         }
 
-        return;
+        return arrResult;
     }
 
 //    private String getCustomerDirectory(boolean bPrivate) {
@@ -1179,7 +1197,7 @@ public class SMMapWC {
 //            return null;
 //        }
         String strRoot = getRootPath();
-        String strSub = strServer.substring(strRoot.length()+1);
+        String strSub = strServer.substring(strRoot.length() + 1);
         String[] arrServer = strSub.split("/");
         return arrServer[0];
     }
@@ -1225,7 +1243,7 @@ public class SMMapWC {
 //          \------->Resource:      旗下包含模块子文件夹，存放符号库文件（.sym/.lsl./bru）
 // 返回结果：NSArray为导入成功的所有地图名
 //    public boolean importWorkspaceInfo(Map infoMap, String strModule) {
-    public List<String> importWorkspaceInfo(Map infoMap, String strModule,boolean bPrivate) {
+    public List<String> importWorkspaceInfo(Map infoMap, String strModule, boolean bPrivate) {
 
         List<String> arrResult = null;
         if (infoMap == null || infoMap.get("server") == null || infoMap.get("type") == null || workspace.getConnectionInfo().getServer().equals(infoMap.get("server"))) {
@@ -1288,7 +1306,7 @@ public class SMMapWC {
         List<String> arrTemp = new ArrayList<>();
         for (int i = 0; i < importWorkspace.getMaps().getCount(); i++) {
             String strMapName = importWorkspace.getMaps().get(i);
-            String strResName = saveMapName(strMapName, importWorkspace, strModule, dicAddition, true, false,bPrivate);
+            String strResName = saveMapName(strMapName, importWorkspace, strModule, dicAddition, true, false, bPrivate);
             if (strResName != null) {
 //                arrTemp.add(strResName);
 
@@ -1521,7 +1539,7 @@ public class SMMapWC {
 //      2.srcWorkspace包含地图
 //      3.模块存在
 //
-    public String saveMapName(String strMapAlians, Workspace srcWorkspace, String strModule, Map<String, String> dicAddition, boolean bNew, boolean bResourcesModified,boolean bPrivate) {
+    public String saveMapName(String strMapAlians, Workspace srcWorkspace, String strModule, Map<String, String> dicAddition, boolean bNew, boolean bResourcesModified, boolean bPrivate) {
 
         if (srcWorkspace == null || srcWorkspace.getMaps().indexOf(strMapAlians) == -1) {
             return null;
@@ -1534,9 +1552,9 @@ public class SMMapWC {
 //        }
 
         String strUserName;
-        if (!bPrivate){
+        if (!bPrivate) {
             strUserName = "Customer";
-        }else{
+        } else {
             strUserName = getUserName();
             if (strUserName == null) {
                 return null;
@@ -1681,17 +1699,17 @@ public class SMMapWC {
             EngineType engineType = srcInfo.getEngineType();
 
             String strTargetServer = null;
-            if (engineType == EngineType.UDB || engineType == EngineType.IMAGEPLUGINS){
+            if (engineType == EngineType.UDB || engineType == EngineType.IMAGEPLUGINS) {
 
                 // 源文件存在？
                 if (!isDatasourceFileExist(strSrcServer, engineType == EngineType.UDB)) {
                     continue;
                 }
 
-                if (!bNew && strSrcServer.startsWith(desDatasourceDir)){
+                if (!bNew && strSrcServer.startsWith(desDatasourceDir)) {
                     // 不需要拷贝的UDB
                     strTargetServer = strSrcServer;
-                }else{
+                } else {
 
                     String[] arrSrcServer = strSrcServer.split("/");
                     String strFileName = arrSrcServer[arrSrcServer.length - 1];
@@ -1744,7 +1762,7 @@ public class SMMapWC {
                 }
                 strTargetServer = strTargetServer.substring(strRootPath.length() + 1);
 
-            }else {
+            } else {
                 strTargetServer = strSrcServer;
             }
 
@@ -1934,32 +1952,48 @@ public class SMMapWC {
         return strMapName;
     }
 
-    public boolean openMap(Map<String,String> mapInfo, Workspace desWorkspace){
-        if (mapInfo!=null){
+    public boolean openMap(ReadableMap mapInfo, Workspace desWorkspace) {
+        if (mapInfo != null) {
 
-            String strMapName = mapInfo.get("MapName");
-            if (strMapName!=null){
-                String strModule = mapInfo.get("Module");
-                Boolean isPrivate = false;//默认公共目录
-                if ( mapInfo.containsKey("IsPrivate") ){
-                    isPrivate = Boolean.parseBoolean(mapInfo.get("IsPrivate"));
-                }
-                return openMapName(strMapName,desWorkspace,strModule,isPrivate);
-
+            String strMapName = mapInfo.getString("MapName");
+            if (strMapName != null) {
+//                String strModule = mapInfo.get("Module");
+//                Boolean isPrivate = false;//默认公共目录
+//                if (mapInfo.containsKey("IsPrivate")) {
+//                    isPrivate = Boolean.parseBoolean(mapInfo.get("IsPrivate"));
+//                }
+//                return openMapName(strMapName, desWorkspace, strModule, isPrivate);
+                return openMapName(strMapName,desWorkspace,mapInfo);
             }
 
         }
         return false;
     }
+
     //大工作空间打开本地地图
-    public boolean openMapName(String strMapName, Workspace desWorkspace, String strModule, boolean bPrivate) {
+    // strModule 所在模块文件夹名称
+    // bPrivate 是否在私人目录下（否则在Customer目录下）
+    // bSymbolReplace 新地图符号库的导入是否采用覆盖模式（覆盖模式指遇到同名id处理方式是替换掉原来的符号）
+    public boolean openMapName(String strMapName, Workspace desWorkspace,ReadableMap dicParam ) {
 
         if (desWorkspace == null || desWorkspace.getMaps().indexOf(strMapName) != -1) {
             return false;
         }
-int b = '1';
-        boolean a;
-        a = Boolean.parseBoolean("1");
+
+        boolean bPrivate = true;
+        if (dicParam.hasKey("IsPrivate")){
+            bPrivate = dicParam.getBoolean("IsPrivate");
+        }
+        boolean bSymbolReplace = true;
+        if (dicParam.hasKey("IsReplaceSymbol")){
+            bSymbolReplace = dicParam.getBoolean("IsReplaceSymbol");
+        }
+
+        String strModule = null;
+        if (dicParam.hasKey("Module")){
+            strModule = dicParam.getString("Module");
+        }
+
         String strUserName = null;
         if (bPrivate) {
             strUserName = getUserName();
@@ -2109,6 +2143,8 @@ int b = '1';
             }
         }
 
+        String strMapXML = stringWithContentsOfFile(srcPathXML, encodingUTF8);
+        strMapXML = modifyXML(strMapXML, arrAlian, arrReAlian);
 
         String srcResources = strRootPath + "/" + strResources;// = strCustomer + "/Resource/" + strModule + "/" + strMapName;
 //        if(strModule!=null&&!strModule.equals("")){
@@ -2134,7 +2170,17 @@ int b = '1';
             if (isExist && !isDir) {
                 SymbolMarkerLibrary markerLibrary = new SymbolMarkerLibrary();
                 markerLibrary.appendFromFile(strMarkerPath, true);
-                importSymbolsFrom(markerLibrary.getRootGroup(), desMarkerGroup, true, true);
+                ArrayList<String> arrayList = importSymbolsFrom(markerLibrary.getRootGroup(), desMarkerGroup, true, bSymbolReplace);
+                if (arrayList!=null){
+                    for (int i=0;i<arrayList.size();i++){
+                        String strReplace = arrayList.get(i);
+                        String[] arrReplace = strReplace.split(":");
+                        String strOld = "<sml:MarkerStyle>" + arrReplace[0] + "</sml:MarkerStyle>";
+                        String strNew = "<sml:MarkerStyle>" + arrReplace[1] + "</sml:MarkerStyle>";
+                        strMapXML = strMapXML.replace(strOld,strNew);
+                    }
+
+                }
             }
         }
         // Line
@@ -2159,8 +2205,18 @@ int b = '1';
             if (isExist && !isDir) {
                 SymbolLineLibrary lineLibrary = new SymbolLineLibrary();
                 lineLibrary.appendFromFile(strLinePath, true);
-                importSymbolsFrom(lineLibrary.getInlineMarkerLib().getRootGroup(), desInlineMarkerGroup, true, true);
-                importSymbolsFrom(lineLibrary.getRootGroup(), desLineGroup, true, true);
+                importSymbolsFrom(lineLibrary.getInlineMarkerLib().getRootGroup(), desInlineMarkerGroup, true, bSymbolReplace);
+                ArrayList<String> arrayList = importSymbolsFrom(lineLibrary.getRootGroup(), desLineGroup, true, bSymbolReplace);
+                if (arrayList!=null){
+                    for (int i=0;i<arrayList.size();i++){
+                        String strReplace = arrayList.get(i);
+                        String[] arrReplace = strReplace.split(":");
+                        String strOld = "<sml:LineStyle>" + arrReplace[0] + "</sml:LineStyle>";
+                        String strNew = "<sml:LineStyle>" + arrReplace[1] + "</sml:LineStyle>";
+                        strMapXML = strMapXML.replace(strOld,strNew);
+                    }
+
+                }
             }
         }
         // Fill
@@ -2185,14 +2241,24 @@ int b = '1';
             if (isExist && !isDir) {
                 SymbolFillLibrary fillLibrary = new SymbolFillLibrary();
                 fillLibrary.appendFromFile(strFillPath, true);
-                importSymbolsFrom(fillLibrary.getInfillMarkerLib().getRootGroup(), desInfillMarkerGroup, true, true);
-                importSymbolsFrom(fillLibrary.getRootGroup(), desFillGroup, true, true);
+                importSymbolsFrom(fillLibrary.getInfillMarkerLib().getRootGroup(), desInfillMarkerGroup, true, bSymbolReplace);
+                ArrayList<String> arrayList = importSymbolsFrom(fillLibrary.getRootGroup(), desFillGroup, true, bSymbolReplace);
+                if (arrayList!=null){
+                    for (int i=0;i<arrayList.size();i++){
+                        String strReplace = arrayList.get(i);
+                        String[] arrReplace = strReplace.split(":");
+                        String strOld = "<sml:FillStyle>" + arrReplace[0] + "</sml:FillStyle>";
+                        String strNew = "<sml:FillStyle>" + arrReplace[1] + "</sml:FillStyle>";
+                        strMapXML = strMapXML.replace(strOld,strNew);
+                    }
+
+                }
             }
         }
 
 
-        String strMapXML = stringWithContentsOfFile(srcPathXML, encodingUTF8);
-        strMapXML = modifyXML(strMapXML, arrAlian, arrReAlian);
+//        String strMapXML = stringWithContentsOfFile(srcPathXML, encodingUTF8);
+//        strMapXML = modifyXML(strMapXML, arrAlian, arrReAlian);
 
         desWorkspace.getMaps().add(strMapName, strMapXML);
 
@@ -2508,7 +2574,7 @@ int b = '1';
         }
     }
 
-    public boolean copyDataset(String strSrcUDB,String strDesUDB){
+    public boolean copyDataset(String strSrcUDB, String strDesUDB) {
 
         boolean result = false;
 
@@ -2519,22 +2585,22 @@ int b = '1';
         srcinfo.setEngineType(EngineType.UDB);
         srcinfo.setAlias("src");
         Datasource srcDs = workspaceTemp.getDatasources().open(srcinfo);
-        if (srcDs!=null){
+        if (srcDs != null) {
             DatasourceConnectionInfo desinfo = new DatasourceConnectionInfo();
             desinfo.setServer(strDesUDB);
             desinfo.setEngineType(EngineType.UDB);
             desinfo.setAlias("des");
             Datasource desDs = workspaceTemp.getDatasources().open(desinfo);
-            if (desDs!=null){
-                for (int i=0;i<srcDs.getDatasets().getCount();i++){
+            if (desDs != null) {
+                for (int i = 0; i < srcDs.getDatasets().getCount(); i++) {
                     Dataset dataset = srcDs.getDatasets().get(i);
                     String strDesName = dataset.getName();
                     int nAddNum = 1;
-                    while (desDs.getDatasets().contains(strDesName)){
+                    while (desDs.getDatasets().contains(strDesName)) {
                         strDesName = dataset.getName() + "_" + nAddNum;
                         nAddNum++;
                     }
-                    desDs.copyDataset(dataset,strDesName,dataset.getEncodeType());
+                    desDs.copyDataset(dataset, strDesName, dataset.getEncodeType());
                 }
                 desDs.saveDatasource();
                 result = true;
@@ -2549,8 +2615,8 @@ int b = '1';
         return result;
     }
 
-    private Map<String,String> getMapInfoFromJson(String jsonMap){
-        if (jsonMap==null){
+    private ReadableMap getMapInfoFromJson(String jsonMap) {
+        if (jsonMap == null) {
             return null;
         }
         JSONObject jsonObject = null;
@@ -2560,17 +2626,17 @@ int b = '1';
             e.printStackTrace();
         }
         String strMapName = jsonObject.optString("MapName");
-        if (strMapName==null){
+        if (strMapName == null) {
             return null;
         }
 
-        Map<String,String> mapInfo = new HashMap<>() ;
-        mapInfo.put("MapName",strMapName);
-        if (jsonObject.has("Module")){
-            mapInfo.put("Module",jsonObject.optString("Module"));
+       WritableMap mapInfo = Arguments.createMap();
+        mapInfo.putString("MapName", strMapName);
+        if (jsonObject.has("Module")) {
+            mapInfo.putString("Module", jsonObject.optString("Module"));
         }
-        if (jsonObject.has("IsPrivate")){
-            mapInfo.put("IsPrivate",jsonObject.optString("IsPrivate"));
+        if (jsonObject.has("IsPrivate")) {
+            mapInfo.putBoolean("IsPrivate", jsonObject.optBoolean("IsPrivate"));
         }
         return mapInfo;
 
@@ -2593,29 +2659,31 @@ int b = '1';
     //
     // 返回值说明：裁减完地图尝试以strResultName保存到map.workspace.maps中，若已存在同名则重命名为strResultName#1，把最终命名结果返回
     //
-    public String clipMap(com.supermap.mapping.Map _srcMap , GeoRegion clipRegion , /*String jsonParam*/ReadableArray arrLayers ,String strResultName){
+    public boolean clipMap(com.supermap.mapping.Map _srcMap, GeoRegion clipRegion, /*String jsonParam*/ReadableArray arrLayers, String[] strResultName) {
 
-        if (_srcMap==null || _srcMap.getLayers().getCount()<=0 || clipRegion==null || clipRegion.getBounds().isEmpty()) {
-            return null;
-        }
-
-        ArrayList<Dataset> arrDatasetCliped = new ArrayList<Dataset>();
-        ArrayList<Dataset> arrDatasetResult = new ArrayList<Dataset>();
-
-        String strClipMapName = strResultName;
-        com.supermap.mapping.Map _clipMap = null;
-        if (strClipMapName!=null){
-            int nAddNum = 1;
-            while (_srcMap.getWorkspace().getMaps().indexOf(strClipMapName)!=-1) {
-                strClipMapName =strResultName + nAddNum ;
-                nAddNum++;
+        try {
+            if (_srcMap == null || _srcMap.getLayers().getCount() <= 0 || clipRegion == null || clipRegion.getBounds().isEmpty()) {
+                return false;
             }
 
-            _srcMap.getWorkspace().getMaps().add(strClipMapName,_srcMap.toXML());
+            ArrayList<Dataset> arrDatasetCliped = new ArrayList<Dataset>();
+            ArrayList<Dataset> arrDatasetResult = new ArrayList<Dataset>();
 
-            _clipMap = new com.supermap.mapping.Map(_srcMap.getWorkspace());
-            _clipMap.open(strClipMapName);
-        }
+            String strClipMapName = strResultName[0];
+            com.supermap.mapping.Map _clipMap = null;
+            if (strClipMapName != null) {
+                int nAddNum = 1;
+                while (_srcMap.getWorkspace().getMaps().indexOf(strClipMapName) != -1) {
+                    strClipMapName = strResultName[0] + nAddNum;
+                    nAddNum++;
+                }
+
+                _srcMap.getWorkspace().getMaps().add(strClipMapName, _srcMap.toXML());
+
+                _clipMap = new com.supermap.mapping.Map(_srcMap.getWorkspace());
+                _clipMap.open(strClipMapName);
+                strResultName[0] = strClipMapName;
+            }
 
 //        JSONArray arrLayers;
 //        try {
@@ -2624,302 +2692,334 @@ int b = '1';
 //            e.printStackTrace();
 //        }
 
-        for(int i=0;i<arrLayers.size();i++){
-            ReadableMap dicLayer = arrLayers.getMap(i);
-            // 图层名称
-            String strLayerName = dicLayer.getString("LayerName");
-            Layer layerTemp = _srcMap.getLayers().find(strLayerName);
-            Dataset datasetTemp = layerTemp.getDataset();
+            for (int i = 0; i < arrLayers.size(); i++) {
+                ReadableMap dicLayer = arrLayers.getMap(i);
+                // 图层名称
+                String strLayerName = dicLayer.getString("LayerName");
+                Layer layerTemp = _srcMap.getLayers().find(strLayerName);
+                Dataset datasetTemp = layerTemp.getDataset();
 
-            if (datasetTemp==null){
-                //1.datasetTemp==nil
-                // layerGroup或其他没有dataset的情况
-                continue;
-            }
-
-            // 所在数据源
-
-            int index = arrDatasetCliped.indexOf(datasetTemp);
-
-            Dataset  datasetResult = null;
-            Datasource datasourceResult = null;
-
-            if (index>=0 && index<arrDatasetCliped.size()){
-                //2.已经处理过的Dataset
-                // 说明：形同数据集裁减参数是一致的，否则只支持第一出线layer的裁减参数
-                datasetResult = arrDatasetResult.get(index);
-                datasourceResult = datasetResult.getDatasource();
-            }else {
-                String strResultDatasource = dicLayer.getString("DatasourceTarget");
-                if (strResultDatasource!=null) {
-                    datasourceResult = _srcMap.getWorkspace().getDatasources().get(strResultDatasource);
-                    if (datasourceResult==null
-                            || datasourceResult.getConnectionInfo().getEngineType()!=EngineType.UDB) {
-                        //没找到datasource 或 不是udb
-                        continue;
-                    }
-                }else{
-                    datasourceResult = datasetTemp.getDatasource();
-                }
-
-                // 新dataset的名字
-                String strDatasetResultName = dicLayer.getString("DatasetTarget");
-                if (strDatasetResultName==null) {
-                    strDatasetResultName = datasetTemp.getName();
-                }
-
-                String strTempName = strDatasetResultName;
-                int nAddNum = 1;
-                while (datasourceResult.getDatasets().contains(strDatasetResultName)) {
-                    strDatasetResultName = strTempName +"_" + nAddNum;
-                    nAddNum++;
-                }
-
-                if (DatasetVector.class.isInstance(datasetTemp)){
-                    //3.datasetVector 有效参数：IsClipInRegion，IsErase
-                    boolean bClipInRegion = true;
-                    if (dicLayer.hasKey("IsClipInRegion")){
-                        bClipInRegion = dicLayer.getBoolean("IsClipInRegion");
-                    }
-
-                    boolean bErase = false;
-                    if (dicLayer.hasKey("IsErase")){
-                        bErase = dicLayer.getBoolean("IsErase");
-                    }
-
-                    DatasetVectorInfo datasetResultInfo = new DatasetVectorInfo(strDatasetResultName,(DatasetVector) datasetTemp);
-                    datasetResult = datasourceResult.getDatasets().create(datasetResultInfo);
-                    if (datasetResult==null){
-                        // 创建失败
-                        continue;
-                    }
-
-                    // 如果是面内裁减则region与clipRegion相同，否则clipRegion需要加上一个外包的矩形
-                    GeoRegion region = new GeoRegion();
-                    if (!bClipInRegion) {
-                        Rectangle2D datasetBounds = datasetTemp.getBounds();
-                        Point2D[] arrBounds = new Point2D[4];
-                        arrBounds[0].setX(datasetBounds.getLeft());   arrBounds[0].setY(datasetBounds.getTop());
-                        arrBounds[1].setX(datasetBounds.getLeft());   arrBounds[1].setY(datasetBounds.getBottom());
-                        arrBounds[2].setX(datasetBounds.getRight());  arrBounds[2].setY(datasetBounds.getBottom());
-                        arrBounds[3].setX(datasetBounds.getRight());  arrBounds[3].setY(datasetBounds.getTop());
-                        Point2Ds bounds_point2d = new Point2Ds(arrBounds);
-                        region.addPart(bounds_point2d);
-                    }
-
-                    for (int j=0; j<clipRegion.getPartCount(); j++) {
-                        Point2Ds partPoint2Ds = clipRegion.getPart(j);
-                        region.addPart(partPoint2Ds);
-                    }
-
-                    boolean bResult = false;
-
-                    OverlayAnalystParameter parame = new OverlayAnalystParameter();
-
-                    FieldInfos fieldsinfos = ((DatasetVector)datasetTemp).getFieldInfos();
-                    int nCount = fieldsinfos.getCount();
-                    String[]  arrFiels = new String[nCount];
-                    for (int k=0; k<nCount; k++) {
-                        FieldInfo field = fieldsinfos.get(k);
-                        arrFiels[k] = field.getName();
-                    }
-                    parame.setSourceRetainedFields( arrFiels );
-
-                    Geometry[] arrRegionTemp = new Geometry[1];
-                    arrRegionTemp[0] = region;
-
-                    if (bErase){
-
-                        bResult = OverlayAnalyst.erase((DatasetVector)datasetTemp,arrRegionTemp,(DatasetVector)datasetResult,parame);
-
-                    }else {
-
-                        bResult = OverlayAnalyst.clip((DatasetVector)datasetTemp,arrRegionTemp,(DatasetVector)datasetResult,parame);
-
-                    }
-
-                    if (bResult==false){
-                        datasourceResult.getDatasets().delete(strDatasetResultName);
-                        continue;
-                    }
-
-                }else if(datasetTemp.getType()==DatasetType.GRID || datasetTemp.getType()==DatasetType.IMAGE){
-                    //4.datasetRaster 有效参数：IsClipInRegion，IsExactClip
-                    boolean bClipInRegion = true;
-                    if (dicLayer.hasKey("IsClipInRegion")){
-                        bClipInRegion = dicLayer.getBoolean("IsClipInRegion");
-                    }
-
-                    boolean bExactClip = false;
-                    if (dicLayer.hasKey("IsExactClip")){
-                        bExactClip = dicLayer.getBoolean("IsExactClip");
-                    }
-
-                    datasetResult = RasterClip.clip(datasetTemp,clipRegion,bClipInRegion,bExactClip,datasourceResult,strDatasetResultName);
-                    if (datasetResult==null){
-                        // 裁减失败
-                        continue;
-                    }
-
-                }else{
-
+                if (datasetTemp == null) {
+                    //1.datasetTemp==nil
+                    // layerGroup或其他没有dataset的情况
                     continue;
+                }
+
+                // 所在数据源
+
+                int index = arrDatasetCliped.indexOf(datasetTemp);
+
+                Dataset datasetResult = null;
+                Datasource datasourceResult = null;
+
+                if (index >= 0 && index < arrDatasetCliped.size()) {
+                    //2.已经处理过的Dataset
+                    // 说明：形同数据集裁减参数是一致的，否则只支持第一出线layer的裁减参数
+                    datasetResult = arrDatasetResult.get(index);
+                    datasourceResult = datasetResult.getDatasource();
+                } else {
+                    if (dicLayer.hasKey("DatasourceTarget") && dicLayer.getString("DatasourceTarget") != null) {
+                        datasourceResult = _srcMap.getWorkspace().getDatasources().get(dicLayer.getString("DatasourceTarget"));
+                        if (datasourceResult == null
+                                || datasourceResult.getConnectionInfo().getEngineType() != EngineType.UDB) {
+                            //没找到datasource 或 不是udb
+                            continue;
+                        }
+                    } else {
+                        datasourceResult = datasetTemp.getDatasource();
+                    }
+
+                    // 新dataset的名字
+
+                    String strDatasetResultName;
+                    if (dicLayer.hasKey("DatasetTarget") && dicLayer.getString("DatasetTarget") != null) {
+                        strDatasetResultName = dicLayer.getString("DatasetTarget");
+                    } else {
+                        strDatasetResultName = datasetTemp.getName();
+                    }
+
+                    String strTempName = strDatasetResultName;
+                    int nAddNum = 1;
+                    while (datasourceResult.getDatasets().contains(strDatasetResultName)) {
+                        strDatasetResultName = strTempName + "_" + nAddNum;
+                        nAddNum++;
+                    }
+
+                    if (DatasetVector.class.isInstance(datasetTemp)) {
+                        //3.datasetVector 有效参数：IsClipInRegion，IsErase
+                        boolean bClipInRegion = true;
+                        if (dicLayer.hasKey("IsClipInRegion")) {
+                            bClipInRegion = dicLayer.getBoolean("IsClipInRegion");
+                        }
+
+                        boolean bErase = false;
+                        if (dicLayer.hasKey("IsErase")) {
+                            bErase = dicLayer.getBoolean("IsErase");
+                        }
+
+                        DatasetVectorInfo datasetResultInfo = new DatasetVectorInfo(strDatasetResultName, (DatasetVector) datasetTemp);
+                        datasetResult = datasourceResult.getDatasets().create(datasetResultInfo);
+                        if (datasetResult == null) {
+                            // 创建失败
+                            continue;
+                        }
+
+                        // 如果是面内裁减则region与clipRegion相同，否则clipRegion需要加上一个外包的矩形
+                        GeoRegion region = new GeoRegion();
+                        if (!bClipInRegion) {
+                            Rectangle2D datasetBounds = datasetTemp.getBounds();
+                            Point2D[] arrBounds = new Point2D[4];
+                            arrBounds[0] = new Point2D( datasetBounds.getLeft(),datasetBounds.getTop() );
+                            arrBounds[1] = new Point2D( datasetBounds.getLeft(),datasetBounds.getBottom() );
+                            arrBounds[2] = new Point2D( datasetBounds.getRight(),datasetBounds.getBottom() );
+                            arrBounds[3] = new Point2D( datasetBounds.getRight(),datasetBounds.getTop() );
+                            Point2Ds bounds_point2d = new Point2Ds(arrBounds);
+                            region.addPart(bounds_point2d);
+                        }
+
+                        for (int j = 0; j < clipRegion.getPartCount(); j++) {
+                            Point2Ds partPoint2Ds = clipRegion.getPart(j);
+                            region.addPart(partPoint2Ds);
+                        }
+
+                        boolean bResult = false;
+
+                        OverlayAnalystParameter parame = new OverlayAnalystParameter();
+
+                        FieldInfos fieldsinfos = ((DatasetVector) datasetTemp).getFieldInfos();
+                        int nCount = fieldsinfos.getCount();
+                        String[] arrFiels = new String[nCount];
+                        for (int k = 0; k < nCount; k++) {
+                            FieldInfo field = fieldsinfos.get(k);
+                            arrFiels[k] = field.getName();
+                        }
+                        parame.setSourceRetainedFields(arrFiels);
+
+                        Geometry[] arrRegionTemp = new Geometry[1];
+                        arrRegionTemp[0] = region;
+
+                        if (bErase) {
+
+                            bResult = OverlayAnalyst.erase((DatasetVector) datasetTemp, arrRegionTemp, (DatasetVector) datasetResult, parame);
+
+                        } else {
+
+                            bResult = OverlayAnalyst.clip((DatasetVector) datasetTemp, arrRegionTemp, (DatasetVector) datasetResult, parame);
+
+                        }
+
+                        if (bResult == false) {
+                            datasourceResult.getDatasets().delete(strDatasetResultName);
+                            continue;
+                        }
+
+                    } else if (datasetTemp.getType() == DatasetType.GRID || datasetTemp.getType() == DatasetType.IMAGE) {
+                        //4.datasetRaster 有效参数：IsClipInRegion，IsExactClip
+                        boolean bClipInRegion = true;
+                        if (dicLayer.hasKey("IsClipInRegion")) {
+                            bClipInRegion = dicLayer.getBoolean("IsClipInRegion");
+                        }
+
+                        boolean bExactClip = false;
+                        if (dicLayer.hasKey("IsExactClip")) {
+                            bExactClip = dicLayer.getBoolean("IsExactClip");
+                        }
+
+                        datasetResult = RasterClip.clip(datasetTemp, clipRegion, bClipInRegion, bExactClip, datasourceResult, strDatasetResultName);
+                        if (datasetResult == null) {
+                            // 裁减失败
+                            continue;
+                        }
+
+                    } else {
+
+                        continue;
+
+                    }
+
+                    arrDatasetCliped.add(datasetTemp);
+                    arrDatasetResult.add(datasetResult);
 
                 }
 
-                arrDatasetCliped.add(datasetTemp);
-                arrDatasetResult.add(datasetResult);
+                if (_clipMap != null) {
+                    //5.替换LayerXML
+                    Layer layerResult = _clipMap.getLayers().find(strLayerName);
+                    String strXML = layerResult.toXML();
 
-            }
+                    if(layerResult.getTheme()!=null){
+                        // 专题图中某些字段不规范需要处理
+                        String[] arrStrTemp = strXML.split("<sml:FieldExpression>");
+                        String strTemp = arrStrTemp[arrStrTemp.length-1];
+                        String strExpressionOld = strTemp.split("</sml:FieldExpression>")[0];
+                        String strNameOld = datasetTemp.getName() + ".";
+                        String strNameNew = datasetResult.getName() + ".";
+                        String strExpressionNew = strExpressionOld.replace(strNameOld,strNameNew);
+                        String strFieldOld = "<sml:FieldExpression>" + strExpressionOld + "</sml:FieldExpression>";
+                        String strFieldNew = "<sml:FieldExpression>" + strExpressionNew + "</sml:FieldExpression>";
+                        strXML = strXML.replace(strFieldOld, strFieldNew);
+                    }
 
-            if (_clipMap!=null){
-                //5.替换LayerXML
-                Layer layerResult = _clipMap.getLayers().find(strLayerName);
-                String strXML = layerResult.toXML();
 
-                String strDatasourceOld = "<sml:DataSourceAlias>" + datasetTemp.getDatasource().getAlias() + "</sml:DataSourceAlias>";
-                String strDatasourceNew = "<sml:DataSourceAlias>" + datasourceResult.getAlias() + "</sml:DataSourceAlias>";
+                    String strDatasourceOld = "<sml:DataSourceAlias>" + datasetTemp.getDatasource().getAlias() + "</sml:DataSourceAlias>";
+                    String strDatasourceNew = "<sml:DataSourceAlias>" + datasourceResult.getAlias() + "</sml:DataSourceAlias>";
 
-                strXML = strXML.replace(strDatasourceOld,strDatasourceNew);
+                    strXML = strXML.replace(strDatasourceOld, strDatasourceNew);
 
-                String strDatasetOld = "<sml:DatasetName>" + datasetTemp.getName() + "</sml:DatasetName>";
-                String strDatasetNew = "<sml:DatasetName>" + datasetResult.getName() + "</sml:DatasetName>";
+                    String strDatasetOld = "<sml:DatasetName>" + datasetTemp.getName() + "</sml:DatasetName>";
+                    String strDatasetNew = "<sml:DatasetName>" + datasetResult.getName() + "</sml:DatasetName>";
 
-                strXML = strXML.replace(strDatasetOld,strDatasetNew);
+                    strXML = strXML.replace(strDatasetOld, strDatasetNew);
 
-                if (layerResult.getParentGroup()==null){
-                    //直接在layers下
-                    int nLayerPos = _clipMap.getLayers().indexOf(strLayerName);
-                    _clipMap.getLayers().remove(nLayerPos);
-                    _clipMap.getLayers().insert(nLayerPos,strXML);
+                    if (layerResult.getParentGroup() == null) {
+                        //直接在layers下
+                        int nLayerPos = _clipMap.getLayers().indexOf(strLayerName);
+                        _clipMap.getLayers().remove(nLayerPos);
+                        _clipMap.getLayers().insert(nLayerPos, strXML);
 
-                }else{
-                    //layergroup下 xml删除within字段 先加入layers再移动到layergroup下
-                    String strWithinGroup = "<sml:WithinLayerGroup>" + layerResult.getParentGroup().getName() + "</sml:WithinLayerGroup>";//layerResult.parentGroup.name];
-                    strXML = strXML.replace(strWithinGroup,"");
+                    } else {
+                        //layergroup下 xml删除within字段 先加入layers再移动到layergroup下
+                        String strWithinGroup = "<sml:WithinLayerGroup>" + layerResult.getParentGroup().getName() + "</sml:WithinLayerGroup>";//layerResult.parentGroup.name];
+                        strXML = strXML.replace(strWithinGroup, "");
 
-                    LayerGroup layerGroup = layerResult.getParentGroup();
-                    int nLayerPos = layerGroup.indexOf(layerResult);
-                    layerGroup.remove(layerResult);
+                        LayerGroup layerGroup = layerResult.getParentGroup();
+                        int nLayerPos = layerGroup.indexOf(layerResult);
+                        layerGroup.remove(layerResult);
 
-                    Layer newLayerResult = _clipMap.getLayers().insert(0,strXML);
-                    layerGroup.insert(nLayerPos,newLayerResult);
+                        Layer newLayerResult = _clipMap.getLayers().insert(0, strXML);
+                        layerGroup.insert(nLayerPos, newLayerResult);
+                    }
+
                 }
 
+                datasourceResult.saveDatasource();
+
             }
 
-            datasourceResult.saveDatasource();
-
-        }
-
-        if (_clipMap!=null){
-            try {
-                _clipMap.save();
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (_clipMap != null) {
+                try {
+                    _clipMap.save();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                _clipMap.close();
+                _clipMap.dispose();
             }
-            _clipMap.close();
-            _clipMap.dispose();
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        return strClipMapName;
-
+        return true;
     }
 
 
-
     // 从Exp的map里 拷贝所有layer到当前map的一个layerGroup下，layerGroup.name为被拷贝地图名
-    public  boolean addLayersFromMap(String srcMapName,String srcModule,boolean bPrivate,com.supermap.mapping.Map desMap){
+    public boolean addLayersFromMap(String srcMapName, com.supermap.mapping.Map desMap ,ReadableMap dicParam) {
 
-        if (srcMapName.equals(desMap.getName())){
+        if (srcMapName.equals(desMap.getName())) {
             return false;
         }
         boolean bResult = false;
-        String strTempLib = getRootPath() + "/Customer/Resources/__Temp__" + srcMapName;
+//        String strTempLib = getRootPath() + "/Customer/Resources/__Temp__" + srcMapName;
+//
+//        String strMarker = strTempLib + ".sym";
+//        String strLine = strTempLib + ".lsl";
+//        String strFill = strTempLib + ".bru";
+//
+//        desMap.getWorkspace().getResources().getMarkerLibrary().saveAs(strMarker);
+//        desMap.getWorkspace().getResources().getLineLibrary().saveAs(strLine);
+//        desMap.getWorkspace().getResources().getFillLibrary().saveAs(strFill);
 
-        String strMarker = strTempLib+".sym";
-        String strLine = strTempLib+".lsl";
-        String strFill = strTempLib+".bru";
+        WritableMap dic = Arguments.createMap();
+        dic.merge(dicParam);
+        dic.putBoolean("IsReplaceSymbol",false);
 
-        desMap.getWorkspace().getResources().getMarkerLibrary().saveAs(strMarker);
-        desMap.getWorkspace().getResources().getLineLibrary().saveAs(strLine);
-        desMap.getWorkspace().getResources().getFillLibrary().saveAs(strFill);
+        if (openMapName(srcMapName, desMap.getWorkspace(), dic)) {
 
-        if (openMapName(srcMapName,desMap.getWorkspace(),srcModule,bPrivate)){
-
-            desMap.addLayersFromMap(srcMapName,true);
+            desMap.addLayersFromMap(srcMapName, true);
             desMap.getWorkspace().getMaps().remove(srcMapName);
             bResult = true;
 
         }
 
-        desMap.getWorkspace().getResources().getMarkerLibrary().clear();
-        desMap.getWorkspace().getResources().getMarkerLibrary().appendFromFile(strMarker,true);
-        File markerFile = new File(strMarker);
-        markerFile.delete();
-
-        desMap.getWorkspace().getResources().getLineLibrary().clear();
-        desMap.getWorkspace().getResources().getLineLibrary().appendFromFile(strLine,true);
-        File lineFile = new File(strLine);
-        lineFile.delete();
-
-        desMap.getWorkspace().getResources().getFillLibrary().clear();
-        desMap.getWorkspace().getResources().getFillLibrary().appendFromFile(strFill,true);
-        File fillFile = new File(strFill);
-        fillFile.delete();
+//        desMap.getWorkspace().getResources().getMarkerLibrary().clear();
+//        desMap.getWorkspace().getResources().getMarkerLibrary().appendFromFile(strMarker, true);
+//        File markerFile = new File(strMarker);
+//        markerFile.delete();
+//
+//        desMap.getWorkspace().getResources().getLineLibrary().clear();
+//        desMap.getWorkspace().getResources().getLineLibrary().appendFromFile(strLine, true);
+//        File lineFile = new File(strLine);
+//        lineFile.delete();
+//
+//        desMap.getWorkspace().getResources().getFillLibrary().clear();
+//        desMap.getWorkspace().getResources().getFillLibrary().appendFromFile(strFill, true);
+//        File fillFile = new File(strFill);
+//        fillFile.delete();
 
         return bResult;
     }
 
     // 从Exp1的map里 拷贝所有layer到Exp2的map的一个layerGroup下，layerGroup.name为被拷贝地图名
-    public boolean addLayersFromMapJson(String jsonSrcMap ,String jsonDesMap){
+    public boolean addLayersFromMapJson(String jsonSrcMap, String jsonDesMap) {
 
-        if (jsonSrcMap==null||jsonDesMap==null){
+        if (jsonSrcMap == null || jsonDesMap == null) {
             return false;
         }
         // 先把两个map在同一工作空间中打开 [desMap addLayersFrom:srcmap] save到des目录下desMap
 
         // 源Map打开信息字典
-        Map<String,String> srcInfo = getMapInfoFromJson(jsonSrcMap);
-        Map<String,String> desInfo = getMapInfoFromJson(jsonDesMap);
-        if (srcInfo==null||desInfo==null){
+        ReadableMap srcInfo = getMapInfoFromJson(jsonSrcMap);
+        ReadableMap desInfo = getMapInfoFromJson(jsonDesMap);
+        if (srcInfo == null || desInfo == null) {
             return false;
         }
 
-        String strSrcName = srcInfo.get("MapName");
-        String strSrcModule = srcInfo.get("Module");
+        if ( !srcInfo.hasKey("MapName") || !desInfo.hasKey("MapName")){
+            return false;
+        }
+
+        String strSrcName = srcInfo.getString("MapName");
+        String strSrcModule = null;
+        if (srcInfo.hasKey("Module")){
+            strSrcModule  = srcInfo.getString("Module");
+        }
         boolean isSrcPrivate = false;
-        if (srcInfo.containsKey("IsPrivate")){
-            isSrcPrivate = Boolean.parseBoolean(srcInfo.get("IsPrivate"));
+        if (srcInfo.hasKey("IsPrivate")) {
+            isSrcPrivate = srcInfo.getBoolean("IsPrivate");
 //            isSrcPrivate=Boolean.valueOf(srcInfo.get("IsPrivate"));
         }
 
-        String strDesName = desInfo.get("MapName");
-        String strDesModule = desInfo.get("Module");
+        String strDesName = desInfo.getString("MapName");
+        String strDesModule = null;
+        if (desInfo.hasKey("Module")){
+            strDesModule = desInfo.getString("Module");
+        }
         boolean isDesPrivate = false;
-        if (desInfo.containsKey("IsPrivate")){
-            isDesPrivate = Boolean.parseBoolean(desInfo.get("IsPrivate"));
+        if (desInfo.hasKey("IsPrivate")) {
+            isDesPrivate = desInfo.getBoolean("IsPrivate");
         }
 
         Boolean bSrcRename = false;//同名Map需要srcMap打开后重命名，同一Map不能合并
-        if (strSrcName.equals(strDesName)){
+        if (strSrcName.equals(strDesName)) {
             Boolean bSame = true;
-            if (strSrcModule==null){
-                if(strDesModule!=null){
+            if (strSrcModule == null) {
+                if (strDesModule != null) {
                     bSame = false;
                 }
-            }else if(strDesModule==null){
+            } else if (strDesModule == null) {
                 bSame = false;
-            }else{
-                if (!strSrcModule.equals(strDesModule)){
+            } else {
+                if (!strSrcModule.equals(strDesModule)) {
                     bSame = false;
                 }
             }
-            if (isSrcPrivate!=isDesPrivate){
+            if (isSrcPrivate != isDesPrivate) {
                 bSame = false;
             }
 
-            if (bSame){
+            if (bSame) {
                 return false;
             }
 
@@ -2929,10 +3029,9 @@ int b = '1';
         }
 
 
-
         Boolean bResult = false;
         Workspace workspace = new Workspace();
-        if( openMap(srcInfo,workspace) ){
+        if (openMap(srcInfo, workspace)) {
             if (bSrcRename) {
                 // 替换的命名
                 String strSrcReplace = strSrcName + "#1";
@@ -2943,7 +3042,7 @@ int b = '1';
                 mapTemp.close();
                 mapTemp.dispose();
                 workspace.getMaps().remove(strSrcName);
-                workspace.getMaps().add(strSrcReplace,strXMLTemp);
+                workspace.getMaps().add(strSrcReplace, strXMLTemp);
 
                 // 重命名Resources中symbolGroup
                 // Marker
@@ -2969,23 +3068,23 @@ int b = '1';
                 strSrcName = strSrcReplace;
             }
 
-            if( openMap(desInfo,workspace) ){
+            if (openMap(desInfo, workspace)) {
                 com.supermap.mapping.Map map = new com.supermap.mapping.Map(workspace);
 
-                Map<String,String> dicAddition = null;
+                Map<String, String> dicAddition = null;
                 {
                     String strUserName;
                     if (!isDesPrivate) {
                         strUserName = "Customer";
-                    }else{
+                    } else {
                         strUserName = getUserName();
                     }
                     String strRootPath = getRootPath();
-                    String strCustomer = strRootPath+"/"+strUserName+"/Data";
+                    String strCustomer = strRootPath + "/" + strUserName + "/Data";
                     String strPathEXP;
-                    if (strDesModule!=null && !strDesModule.equals("")) {
+                    if (strDesModule != null && !strDesModule.equals("")) {
                         strPathEXP = strCustomer + "/Map/" + strDesModule + "/" + strDesName + ".exp";
-                    }else{
+                    } else {
                         strPathEXP = strCustomer + "/Map/" + strDesName + ".exp";
                     }
 
@@ -2998,15 +3097,14 @@ int b = '1';
                         e.printStackTrace();
                     }
 
-                    if (templateStr!=null) {
+                    if (templateStr != null) {
                         dicAddition = new HashMap<>();
-                        dicAddition.put("Template",templateStr);
+                        dicAddition.put("Template", templateStr);
                     }
                 }
 
-                if(  map.open(strDesName) &&
-                        map.addLayersFromMap(strSrcName,true) )
-                {
+                if (map.open(strDesName) &&
+                        map.addLayersFromMap(strSrcName, true)) {
 
                     try {
                         map.save();
@@ -3015,9 +3113,9 @@ int b = '1';
                     }
                     map.close();
                     map.dispose();
-                    String strDesMap = saveMapName(strDesName,workspace,strDesModule,dicAddition,false,true,isDesPrivate);
+                    String strDesMap = saveMapName(strDesName, workspace, strDesModule, dicAddition, false, true, isDesPrivate);
 
-                    if (strDesMap!=null) {
+                    if (strDesMap != null) {
                         bResult = true;
                     }
                 }

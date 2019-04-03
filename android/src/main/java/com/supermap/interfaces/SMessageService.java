@@ -1,5 +1,6 @@
 package com.supermap.interfaces;
 
+import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -13,7 +14,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 
 public class SMessageService extends ReactContextBaseJavaModule {
@@ -66,6 +67,12 @@ public class SMessageService extends ReactContextBaseJavaModule {
     @ReactMethod
     public void connectService(String serverIP, int port,String hostName, String userName,String passwd ,String userID, Promise promise) {
         try {
+            if(g_AMQPManager != null){
+                g_AMQPManager.suspend();
+            }
+            if(g_AMQPReceiver != null){
+                g_AMQPReceiver.dispose();
+            }
             g_AMQPManager = null;
             g_AMQPSender = null;
             g_AMQPReceiver = null;
@@ -348,6 +355,71 @@ public class SMessageService extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 接收文件,每次接收时运行
+     */
+    @ReactMethod
+    public void receiveFile(final String fileName, final String queueName, final Promise promise) {
+        Thread mf_Thread_File  =  new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                File file = new File("/sdcard" + "/" + fileName + ".re");
+                byte[] bytes;
+                JSONObject jsonReceived;
+                try  {
+                    FileOutputStream fop = new FileOutputStream(file);
+                    if (!file.exists()) {
+                        file.createNewFile();
+                    }
+
+                    g_AMQPManager.declareQueue(queueName);
+                    AMQPReceiver fileReceiver = g_AMQPManager.newReceiver(queueName);
+
+                    while (fileReceiver != null) {
+                        //接收消息
+                        AMQPReturnMessage returnMsg = fileReceiver.receiveMessage();
+                        if (!returnMsg.getMessage().isEmpty()) {
+                            // 获取消息
+                            String msg = returnMsg.getMessage();
+                            jsonReceived = new JSONObject(msg);
+                            bytes = Base64.decode(jsonReceived.getString("message"), Base64.DEFAULT);
+                            fop.write(bytes);
+                            fop.flush();
+                            final String percentage = Float.toString((float) jsonReceived.getLong("count") / jsonReceived.getLong("total") * 100);
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    tReceivePercentage.setText("已接收: " + percentage + "%");
+//                                }
+//                            });
+                            if(jsonReceived.getLong("count") == jsonReceived.getLong("total"))
+                                break;
+                        }
+                    }
+
+                    fop.close();
+//                    Log.d(TAG, "PLS CHECK FILE");
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            Toast.makeText(ChatActivity.this,"文件接收完成,请检查文件夹: " + Dir , Toast.LENGTH_SHORT).show();
+//                            tReceivePercentage.setText("接收完成!");
+//                        }
+//                    });
+                    //接收完后删除队列
+                    g_AMQPManager.deleteQueue(queueName);
+                    promise.resolve(true);
+                } catch (Exception e) {
+                    promise.reject(e);
+                }
+            }
+        });
+
+        mf_Thread_File.start();
+
+    }
+
+    /**
      * 开启消息接收
      */
     @ReactMethod
@@ -402,6 +474,25 @@ public class SMessageService extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             promise.reject(e);
         }
+    }
+
+    //挂起操作，用于APP状态切换后台
+    @ReactMethod
+    public void suspend(Promise promise){
+        if (g_AMQPManager != null){
+            g_AMQPManager.suspend();
+        }
+        promise.resolve(true);
+    }
+
+    //恢复操作，用户APP唤醒
+    @ReactMethod
+    public void resume(Promise promise){
+        boolean b = false;
+        if (g_AMQPManager != null){
+            b = g_AMQPManager.resume();
+        }
+        promise.resolve(b);
     }
 
     /**

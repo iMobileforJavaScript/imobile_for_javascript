@@ -260,7 +260,9 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.uploadFile(onlineDataName,filePath, new UpLoadFile.UpLoadListener() {
                 @Override
                 public void getProgress(int progress) {
-                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING,progress);
+                    if (progress % 10 == 0) {
+                        mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING,progress);
+                    }
                 }
 
                 @Override
