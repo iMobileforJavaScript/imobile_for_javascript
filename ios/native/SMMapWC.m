@@ -1087,6 +1087,11 @@
         //deGroup必须是必须在Lib中
         return arrResult;
     }
+    if (srcGroup.symbolLibrary!=nil && desGroup.symbolLibrary==srcGroup.symbolLibrary) {
+        //不支持
+        return arrResult;
+    }
+    
     // group的名称 symbol的id 都需要desLib查重名
     SymbolLibrary *desLib = desGroup.symbolLibrary;
     
@@ -2697,6 +2702,121 @@
     }else{
         return nil;
     }
+    
+}
+
+-(NSString*)saveSymbol:(NSArray*)arrIds type:(SymbolType)nType from:(Resources*)resources withName:(NSString *)strName ofModule:(NSString *)strModule isPrivate:(BOOL)bPrivate{
+    
+    if (arrIds==nil || arrIds.count==0 || resources==nil || strName==nil || strName.length==0) {
+        return nil;
+    }
+   
+    NSString *strUserName;
+    if (!bPrivate) {
+        strUserName = @"Customer";
+    }else{
+        strUserName = [self getUserName];
+        if (strUserName==nil) {
+            return nil;
+        }
+    }
+    NSString *strRootPath = [self getRootPath];
+    NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];
+    NSString *desResourceDir = [NSString stringWithFormat:@"%@/Symbol",strCustomer];
+    if(strModule!=nil && ![strModule isEqualToString:@""]){
+        desResourceDir = [NSString stringWithFormat:@"%@/%@",desResourceDir,strModule];
+    }
+    
+    
+    SymbolLibrary *srcLib ;
+    SymbolLibrary *desLib ;
+    NSString *strDesFile = [NSString stringWithFormat:@"%@/%@",desResourceDir,strName];
+    switch (nType) {
+        case Symbol_MARKER:
+        {
+            srcLib = resources.markerLibrary;
+            desLib = [[SymbolMarkerLibrary alloc]init];
+            strDesFile = [strDesFile stringByAppendingString:@".sym"];
+        }
+            break;
+        case Symbol_Line:
+        {
+            srcLib = resources.lineLibrary;
+            desLib = [[SymbolLineLibrary alloc]init];
+            strDesFile = [strDesFile stringByAppendingString:@".lsl"];
+            SymbolLibrary *srcInnerLib = [(SymbolLineLibrary*)srcLib getInlineMarkerLib];
+            SymbolLibrary *desInnerLib = [(SymbolLineLibrary*)desLib getInlineMarkerLib];
+            [self importSymbolsFrom:srcInnerLib.rootGroup toGroup:desInnerLib.rootGroup isDirRetain:YES isSymbolReplace:YES];
+        }
+            break;
+        case Symbol_Fill:
+        {
+            srcLib = resources.fillLibrary;
+            desLib = [[SymbolFillLibrary alloc]init];
+            strDesFile = [strDesFile stringByAppendingString:@".bru"];
+            SymbolLibrary *srcInnerLib = [(SymbolFillLibrary*)srcLib getInfillMarkerLib];
+            SymbolLibrary *desInnerLib = [(SymbolFillLibrary*)desLib getInfillMarkerLib];
+            [self importSymbolsFrom:srcInnerLib.rootGroup toGroup:desInnerLib.rootGroup isDirRetain:YES isSymbolReplace:YES];
+        }
+            break;
+            
+        default:
+            return  nil;
+    }
+    
+    strDesFile = [self formateNoneExistFileName:strDesFile isDir:NO];
+    
+    for (int i=0; i<arrIds.count; i++) {
+        int nID = arrIds[i];
+        if ( [srcLib containID:nID] ) {
+            Symbol* symbol = [srcLib findSymbolWithID:nID];
+            [desLib add:symbol];
+        }
+    }
+    
+    if([desLib saveAs:strDesFile]){
+        return strDesFile;
+    }else{
+        return nil;
+    }
+}
+
+-(NSArray*)addSymbolsFromFile:(NSString*)strFile toResources:(Resources*)resources withGroupName:(NSString*)strGroupName isReplace:(BOOL)isReplace{
+    
+    BOOL isDir = NO;
+    BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:strFile isDirectory:&isDir];
+    if (!isExist || isDir) {
+        return nil;
+    }
+    
+    SymbolLibrary* lib = nil;
+    SymbolLibrary* resLib = nil;
+    NSString* type = [[strFile pathExtension] lowercaseString];
+    if ([type isEqualToString:@"bru"]) {
+        lib = [[SymbolFillLibrary alloc] init];
+        resLib = resources.fillLibrary;
+    } else if ([type isEqualToString:@"lsl"]) {
+        lib = [[SymbolLineLibrary alloc] init];
+        resLib = resources.lineLibrary;
+    } else if ([type isEqualToString:@"sym"]) {
+        lib = [[SymbolMarkerLibrary alloc] init];
+        resLib = resources.markerLibrary;
+    }
+    
+    if (lib == nil) return nil;
+    
+    [lib appendFromFile:strFile isReplace:isReplace];
+    
+    SymbolGroup *desGroup = nil;
+    if (strGroupName==nil || strGroupName.length==0 || resLib.rootGroup.name == strGroupName) {
+        desGroup = resLib.rootGroup;
+    }else if( [resLib.rootGroup.childSymbolGroups indexofGroup:strGroupName]!=-1 ){
+        desGroup = [resLib.rootGroup.childSymbolGroups getGroupWithName:strGroupName];
+    }else{
+        desGroup = [resLib.rootGroup.childSymbolGroups createGroupWith:strGroupName];
+    }
+    
+    return  [self importSymbolsFrom:lib.rootGroup toGroup:desGroup isDirRetain:YES isSymbolReplace:isReplace];
     
 }
 
