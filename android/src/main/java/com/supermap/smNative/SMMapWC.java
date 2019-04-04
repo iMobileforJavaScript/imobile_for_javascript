@@ -2592,7 +2592,7 @@ public class SMMapWC {
         }
     }
 
-    public String saveSymbols(ArrayList<int> arrIds , SymbolType nType ,Resources resources,String strTargetName ,String strModule,boolean isprivate){
+    public String saveSymbols(ArrayList<Integer> arrIds , SymbolType nType ,Resources resources,String strTargetName ,String strModule,boolean isprivate){
 
         if (arrIds==null || arrIds.size()==0 || resources==null || strTargetName==null || strTargetName.length()==0 ){
             return null;
@@ -2616,15 +2616,17 @@ public class SMMapWC {
         SymbolLibrary desLib ;
         String strDesFile = desResourceDir + "/" + strTargetName;
 
-        switch (nType){
-            case SymbolType.MARKER:{
+        switch (nType.value()){
+//            case SymbolType.MARKER:{
+            case 0:{
                 srcLib = resources.getMarkerLibrary();
                 desLib = new SymbolMarkerLibrary();
                 strDesFile = strDesFile + ".sym";
             }
             break;
 
-            case SymbolType.LINE:{
+//            case SymbolType.LINE:{
+            case 1:{
                 srcLib = resources.getLineLibrary();
                 desLib = new SymbolLineLibrary();
                 strDesFile = strDesFile + ".lsl";
@@ -2634,7 +2636,8 @@ public class SMMapWC {
             }
             break;
 
-            case SymbolType.FILL:{
+//            case SymbolType.FILL:{
+            case 2:{
                 srcLib = resources.getFillLibrary();
                 desLib = new SymbolFillLibrary();
                 strDesFile = strDesFile + ".bru";
@@ -2652,7 +2655,7 @@ public class SMMapWC {
         strDesFile = formateNoneExistFileName(strDesFile,false);
 
         for (int i=0;i<arrIds.size();i++){
-            int nid = arrIds[i];
+            int nid = arrIds.get(i);
             if (srcLib.contains(nid)){
                 Symbol sym = srcLib.findSymbol(nid);
                 desLib.add(sym);
@@ -2668,13 +2671,13 @@ public class SMMapWC {
 
     public ArrayList<String> addSymbolsFromFile(String strFile,Resources resources,String strGroupName,boolean bRepalceSymbol){
 
-        File file = new File(path);
+        File file = new File(strFile);
         if (!file.exists() || !file.isFile()) {
-            return false;
+            return null;
         }
         SymbolLibrary lib = null;
         SymbolLibrary resLib = null;
-        String type = path.substring(path.lastIndexOf(".") + 1).toLowerCase();
+        String type = strFile.substring(strFile.lastIndexOf(".") + 1).toLowerCase();
         if (type.equals("bru")) {
             lib = new SymbolFillLibrary();
             resLib = resources.getFillLibrary();
@@ -2685,7 +2688,7 @@ public class SMMapWC {
             lib = new SymbolMarkerLibrary();
             resLib = resources.getMarkerLibrary();
         }
-        if (lib == null) return false;
+        if (lib == null) return null;
 
         lib.appendFromFile(strFile, bRepalceSymbol);
 
