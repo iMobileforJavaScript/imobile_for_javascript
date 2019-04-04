@@ -21,6 +21,8 @@ public class EventConst {
     public static final String MESSAGE_SERVICE_RECEIVE = "com.supermap.RN.Mapcontrol.message_service_receive";
     public static final String MESSAGE_IMPORTEXTERNALDATA = "com.supermap.RN.Mapcontrol.message_importexternaldata";
     public static final String MESSAGE_SHARERESULT = "com.supermap.RN.Mapcontrol.message_shareresult";
+    public static final String MESSAGE_SERVICE_SEND_FILE = "com.supermap.RN.MessageService.send_file_progress";
+    public static final String MESSAGE_SERVICE_RECEIVE_FILE = "com.supermap.RN.MessageService.receive_file_progress";
 
     /** 量算 **/
     public static final String MEASURE_LENGTH = "com.supermap.RN.Mapcontrol.length_measured";
