@@ -2,8 +2,10 @@ package com.supermap.smNative;
 
 import android.util.Log;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.analyst.spatialanalyst.OverlayAnalyst;
 import com.supermap.analyst.spatialanalyst.OverlayAnalystParameter;
@@ -37,6 +39,7 @@ import com.supermap.data.SymbolLibrary;
 import com.supermap.data.SymbolLine;
 import com.supermap.data.SymbolLineLibrary;
 import com.supermap.data.SymbolMarkerLibrary;
+import com.supermap.data.SymbolType;
 import com.supermap.data.Workspace;
 import com.supermap.data.WorkspaceConnectionInfo;
 import com.supermap.data.WorkspaceType;
@@ -1103,29 +1106,47 @@ public class SMMapWC {
 //bSymReplace 相同id的处理：true替换 false新id
 
 
-    private void importSymbolsFrom(SymbolGroup srcGroup, SymbolGroup desGroup, boolean bDirRetain, boolean bSymReplace) {
+    private ArrayList<String> importSymbolsFrom(SymbolGroup srcGroup, SymbolGroup desGroup, boolean bDirRetain, boolean bSymReplace) {
+        ArrayList<String> arrResult = null;
         if (desGroup == null || desGroup.getLibrary() == null) {
             //deGroup必须是必须在Lib中
-            return;
+            return arrResult;
+        }
+        if (srcGroup.getLibrary()!=null && srcGroup.getLibrary() == desGroup.getLibrary() ){
+            //不支持
+            return arrResult;
         }
         // group的名称 symbol的id 都需要desLib查重名
         SymbolLibrary desLib = desGroup.getLibrary();
         if (srcGroup == null) {
-            return;
+            return arrResult;
         }
         for (int i = 0; i < srcGroup.getCount(); i++) {
             Symbol sym = srcGroup.get(i);
-//            if (bSymReplace && desLib.contains(sym.getID())) {
-            if (bSymReplace && desLib.findSymbol(sym.getID()) != null) {
-                desLib.remove(sym.getID());
+            int nId = sym.getID();
+            boolean bOld = (desLib.findSymbol(sym.getID()) != null);
+            if (bOld){
+                if (bSymReplace){
+                    desLib.remove(nId);
+                    desLib.add(sym,desGroup);
+                }else{
+                    int nIdNew = desLib.add(sym,desGroup);
+                    String strResult = "" + nId + ":" + nIdNew;
+                    if (arrResult==null){
+                        arrResult = new ArrayList<String>();
+                    }
+                    arrResult.add(strResult);
+                }
+
+            }else{
+                desLib.add(sym,desGroup);
             }
-            desLib.add(sym, desGroup);
         }
 
         SymbolGroup desSubGroup = desGroup;
         SymbolGroups srcChildGroups = srcGroup.getChildGroups();
         if (srcChildGroups == null) {
-            return;
+            return arrResult;
         }
         for (int j = 0; j < srcChildGroups.getCount(); j++) {
             SymbolGroup subGroup = srcChildGroups.get(j);
@@ -1140,10 +1161,17 @@ public class SMMapWC {
                 }
                 desSubGroup = desGroup.getChildGroups().create(subName);
             }
-            importSymbolsFrom(subGroup, desSubGroup, bDirRetain, bSymReplace);
+            ArrayList<String> arrSubRersult = importSymbolsFrom(subGroup, desSubGroup, bDirRetain, bSymReplace);
+            if (arrSubRersult!=null){
+                if (arrResult==null){
+                    arrResult = new ArrayList<String>();
+                }
+                arrResult.addAll(arrSubRersult);
+            }
+
         }
 
-        return;
+        return arrResult;
     }
 
 //    private String getCustomerDirectory(boolean bPrivate) {
@@ -1929,18 +1957,18 @@ public class SMMapWC {
         return strMapName;
     }
 
-    public boolean openMap(Map<String, String> mapInfo, Workspace desWorkspace) {
+    public boolean openMap(ReadableMap mapInfo, Workspace desWorkspace) {
         if (mapInfo != null) {
 
-            String strMapName = mapInfo.get("MapName");
+            String strMapName = mapInfo.getString("MapName");
             if (strMapName != null) {
-                String strModule = mapInfo.get("Module");
-                Boolean isPrivate = false;//默认公共目录
-                if (mapInfo.containsKey("IsPrivate")) {
-                    isPrivate = Boolean.parseBoolean(mapInfo.get("IsPrivate"));
-                }
-                return openMapName(strMapName, desWorkspace, strModule, isPrivate);
-
+//                String strModule = mapInfo.get("Module");
+//                Boolean isPrivate = false;//默认公共目录
+//                if (mapInfo.containsKey("IsPrivate")) {
+//                    isPrivate = Boolean.parseBoolean(mapInfo.get("IsPrivate"));
+//                }
+//                return openMapName(strMapName, desWorkspace, strModule, isPrivate);
+                return openMapName(strMapName,desWorkspace,mapInfo);
             }
 
         }
@@ -1948,14 +1976,29 @@ public class SMMapWC {
     }
 
     //大工作空间打开本地地图
-    public boolean openMapName(String strMapName, Workspace desWorkspace, String strModule, boolean bPrivate) {
+    // strModule 所在模块文件夹名称
+    // bPrivate 是否在私人目录下（否则在Customer目录下）
+    // bSymbolReplace 新地图符号库的导入是否采用覆盖模式（覆盖模式指遇到同名id处理方式是替换掉原来的符号）
+    public boolean openMapName(String strMapName, Workspace desWorkspace,ReadableMap dicParam ) {
 
         if (desWorkspace == null || desWorkspace.getMaps().indexOf(strMapName) != -1) {
             return false;
         }
-        int b = '1';
-        boolean a;
-        a = Boolean.parseBoolean("1");
+
+        boolean bPrivate = true;
+        if (dicParam.hasKey("IsPrivate")){
+            bPrivate = dicParam.getBoolean("IsPrivate");
+        }
+        boolean bSymbolReplace = true;
+        if (dicParam.hasKey("IsReplaceSymbol")){
+            bSymbolReplace = dicParam.getBoolean("IsReplaceSymbol");
+        }
+
+        String strModule = null;
+        if (dicParam.hasKey("Module")){
+            strModule = dicParam.getString("Module");
+        }
+
         String strUserName = null;
         if (bPrivate) {
             strUserName = getUserName();
@@ -2105,6 +2148,8 @@ public class SMMapWC {
             }
         }
 
+        String strMapXML = stringWithContentsOfFile(srcPathXML, encodingUTF8);
+        strMapXML = modifyXML(strMapXML, arrAlian, arrReAlian);
 
         String srcResources = strRootPath + "/" + strResources;// = strCustomer + "/Resource/" + strModule + "/" + strMapName;
 //        if(strModule!=null&&!strModule.equals("")){
@@ -2130,7 +2175,17 @@ public class SMMapWC {
             if (isExist && !isDir) {
                 SymbolMarkerLibrary markerLibrary = new SymbolMarkerLibrary();
                 markerLibrary.appendFromFile(strMarkerPath, true);
-                importSymbolsFrom(markerLibrary.getRootGroup(), desMarkerGroup, true, true);
+                ArrayList<String> arrayList = importSymbolsFrom(markerLibrary.getRootGroup(), desMarkerGroup, true, bSymbolReplace);
+                if (arrayList!=null){
+                    for (int i=0;i<arrayList.size();i++){
+                        String strReplace = arrayList.get(i);
+                        String[] arrReplace = strReplace.split(":");
+                        String strOld = "<sml:MarkerStyle>" + arrReplace[0] + "</sml:MarkerStyle>";
+                        String strNew = "<sml:MarkerStyle>" + arrReplace[1] + "</sml:MarkerStyle>";
+                        strMapXML = strMapXML.replace(strOld,strNew);
+                    }
+
+                }
             }
         }
         // Line
@@ -2155,8 +2210,18 @@ public class SMMapWC {
             if (isExist && !isDir) {
                 SymbolLineLibrary lineLibrary = new SymbolLineLibrary();
                 lineLibrary.appendFromFile(strLinePath, true);
-                importSymbolsFrom(lineLibrary.getInlineMarkerLib().getRootGroup(), desInlineMarkerGroup, true, true);
-                importSymbolsFrom(lineLibrary.getRootGroup(), desLineGroup, true, true);
+                importSymbolsFrom(lineLibrary.getInlineMarkerLib().getRootGroup(), desInlineMarkerGroup, true, bSymbolReplace);
+                ArrayList<String> arrayList = importSymbolsFrom(lineLibrary.getRootGroup(), desLineGroup, true, bSymbolReplace);
+                if (arrayList!=null){
+                    for (int i=0;i<arrayList.size();i++){
+                        String strReplace = arrayList.get(i);
+                        String[] arrReplace = strReplace.split(":");
+                        String strOld = "<sml:LineStyle>" + arrReplace[0] + "</sml:LineStyle>";
+                        String strNew = "<sml:LineStyle>" + arrReplace[1] + "</sml:LineStyle>";
+                        strMapXML = strMapXML.replace(strOld,strNew);
+                    }
+
+                }
             }
         }
         // Fill
@@ -2181,14 +2246,24 @@ public class SMMapWC {
             if (isExist && !isDir) {
                 SymbolFillLibrary fillLibrary = new SymbolFillLibrary();
                 fillLibrary.appendFromFile(strFillPath, true);
-                importSymbolsFrom(fillLibrary.getInfillMarkerLib().getRootGroup(), desInfillMarkerGroup, true, true);
-                importSymbolsFrom(fillLibrary.getRootGroup(), desFillGroup, true, true);
+                importSymbolsFrom(fillLibrary.getInfillMarkerLib().getRootGroup(), desInfillMarkerGroup, true, bSymbolReplace);
+                ArrayList<String> arrayList = importSymbolsFrom(fillLibrary.getRootGroup(), desFillGroup, true, bSymbolReplace);
+                if (arrayList!=null){
+                    for (int i=0;i<arrayList.size();i++){
+                        String strReplace = arrayList.get(i);
+                        String[] arrReplace = strReplace.split(":");
+                        String strOld = "<sml:FillStyle>" + arrReplace[0] + "</sml:FillStyle>";
+                        String strNew = "<sml:FillStyle>" + arrReplace[1] + "</sml:FillStyle>";
+                        strMapXML = strMapXML.replace(strOld,strNew);
+                    }
+
+                }
             }
         }
 
 
-        String strMapXML = stringWithContentsOfFile(srcPathXML, encodingUTF8);
-        strMapXML = modifyXML(strMapXML, arrAlian, arrReAlian);
+//        String strMapXML = stringWithContentsOfFile(srcPathXML, encodingUTF8);
+//        strMapXML = modifyXML(strMapXML, arrAlian, arrReAlian);
 
         desWorkspace.getMaps().add(strMapName, strMapXML);
 
@@ -2474,6 +2549,158 @@ public class SMMapWC {
         //        }
     }
 
+    public String importSymbolLibFile(String strFile ,String strModule,boolean bPrivate){
+        String type = strFile.substring(strFile.lastIndexOf(".") + 1).toLowerCase();
+        if (type.equals("bru") || type.equals("lsl") || type.equals("sym")) {
+            File file = new File(strFile);
+            if (!file.exists() || !file.isFile()) {
+                return null;
+            }
+            String strUserName = null;
+            if (bPrivate) {
+                strUserName = getUserName();
+                if (strUserName == null) {
+                    return null;
+                }
+            } else {
+                strUserName = "Customer";
+            }
+            String strRootPath = getRootPath();
+            String strCustomer = strRootPath + "/" + strUserName + "/Data";
+            String desResourceDir = strCustomer+ "/Symbol";
+            if (strModule!=null && strModule.length()>0){
+                desResourceDir = desResourceDir + "/" + strModule;
+            }
+            File fileResourceDir = new File(desResourceDir);
+            if (!fileResourceDir.exists() || !fileResourceDir.isDirectory()) {
+                fileResourceDir.mkdirs();
+            }
+            String[] arrFile = strFile.split("/");
+            String strName = arrFile[arrFile.length - 1];
+            String strTargetFile = desResourceDir + "/" + strName;
+            strTargetFile = formateNoneExistFileName(strTargetFile,false);
+
+            // 拷贝
+            if (!copyFile(strFile, strTargetFile)) {
+                return null;
+            }else{
+                strName = strTargetFile.substring( desResourceDir.length() + 1 );
+                return strName;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public String saveSymbols(ArrayList<int> arrIds , SymbolType nType ,Resources resources,String strTargetName ,String strModule,boolean isprivate){
+
+        if (arrIds==null || arrIds.size()==0 || resources==null || strTargetName==null || strTargetName.length()==0 ){
+            return null;
+        }
+        String strUserName = null;
+        if (isprivate) {
+            strUserName = getUserName();
+            if (strUserName == null) {
+                return null;
+            }
+        } else {
+            strUserName = "Customer";
+        }
+        String strRootPath = getRootPath();
+        String strCustomer = strRootPath + "/" + strUserName + "/Data";
+        String desResourceDir = strCustomer+ "/Symbol";
+        if (strModule!=null && strModule.length()>0){
+            desResourceDir = desResourceDir + "/" + strModule;
+        }
+        SymbolLibrary srcLib ;
+        SymbolLibrary desLib ;
+        String strDesFile = desResourceDir + "/" + strTargetName;
+
+        switch (nType){
+            case SymbolType.MARKER:{
+                srcLib = resources.getMarkerLibrary();
+                desLib = new SymbolMarkerLibrary();
+                strDesFile = strDesFile + ".sym";
+            }
+            break;
+
+            case SymbolType.LINE:{
+                srcLib = resources.getLineLibrary();
+                desLib = new SymbolLineLibrary();
+                strDesFile = strDesFile + ".lsl";
+                SymbolLibrary srcInnerLib = ((SymbolLineLibrary)srcLib).getInlineMarkerLib();
+                SymbolLibrary desInnerLib = ((SymbolLineLibrary)desLib).getInlineMarkerLib();
+                importSymbolsFrom(srcInnerLib.getRootGroup(),desInnerLib.getRootGroup(),true,true);
+            }
+            break;
+
+            case SymbolType.FILL:{
+                srcLib = resources.getFillLibrary();
+                desLib = new SymbolFillLibrary();
+                strDesFile = strDesFile + ".bru";
+                SymbolLibrary srcInnerLib = ((SymbolFillLibrary)srcLib).getInfillMarkerLib();
+                SymbolLibrary desInnerLib = ((SymbolFillLibrary)desLib).getInfillMarkerLib();
+                importSymbolsFrom(srcInnerLib.getRootGroup(),desInnerLib.getRootGroup(),true,true);
+            }
+            break;
+
+            default:
+                return null;
+
+        }
+
+        strDesFile = formateNoneExistFileName(strDesFile,false);
+
+        for (int i=0;i<arrIds.size();i++){
+            int nid = arrIds[i];
+            if (srcLib.contains(nid)){
+                Symbol sym = srcLib.findSymbol(nid);
+                desLib.add(sym);
+            }
+        }
+
+        if (desLib.saveAs(strDesFile)){
+            return strDesFile;
+        }else {
+            return null;
+        }
+    }
+
+    public ArrayList<String> addSymbolsFromFile(String strFile,Resources resources,String strGroupName,boolean bRepalceSymbol){
+
+        File file = new File(path);
+        if (!file.exists() || !file.isFile()) {
+            return false;
+        }
+        SymbolLibrary lib = null;
+        SymbolLibrary resLib = null;
+        String type = path.substring(path.lastIndexOf(".") + 1).toLowerCase();
+        if (type.equals("bru")) {
+            lib = new SymbolFillLibrary();
+            resLib = resources.getFillLibrary();
+        } else if (type.equals("lsl")) {
+            lib = new SymbolLineLibrary();
+            resLib = resources.getLineLibrary();
+        } else if (type.equals("sym")) {
+            lib = new SymbolMarkerLibrary();
+            resLib = resources.getMarkerLibrary();
+        }
+        if (lib == null) return false;
+
+        lib.appendFromFile(strFile, bRepalceSymbol);
+
+        SymbolGroup desGroup = null;
+        if (strGroupName==null || strGroupName.length()==0 || resLib.getRootGroup().getName()==strGroupName){
+            desGroup = resLib.getRootGroup();
+        }else if (resLib.getRootGroup().getChildGroups().indexOf(strGroupName)!=-1){
+            desGroup = resLib.getRootGroup().getChildGroups().get(strGroupName);
+        }else{
+            desGroup = resLib.getRootGroup().getChildGroups().create(strGroupName);
+        }
+
+        return importSymbolsFrom(lib.getRootGroup(),desGroup,true,bRepalceSymbol);
+    }
+
     public boolean appendFromFile(Resources resources, String path, boolean isReplace) {
         try {
             File file = new File(path);
@@ -2503,6 +2730,8 @@ public class SMMapWC {
             return false;
         }
     }
+
+
 
     public boolean copyDataset(String strSrcUDB, String strDesUDB) {
 
@@ -2545,7 +2774,7 @@ public class SMMapWC {
         return result;
     }
 
-    private Map<String, String> getMapInfoFromJson(String jsonMap) {
+    private ReadableMap getMapInfoFromJson(String jsonMap) {
         if (jsonMap == null) {
             return null;
         }
@@ -2560,13 +2789,13 @@ public class SMMapWC {
             return null;
         }
 
-        Map<String, String> mapInfo = new HashMap<>();
-        mapInfo.put("MapName", strMapName);
+       WritableMap mapInfo = Arguments.createMap();
+        mapInfo.putString("MapName", strMapName);
         if (jsonObject.has("Module")) {
-            mapInfo.put("Module", jsonObject.optString("Module"));
+            mapInfo.putString("Module", jsonObject.optString("Module"));
         }
         if (jsonObject.has("IsPrivate")) {
-            mapInfo.put("IsPrivate", jsonObject.optString("IsPrivate"));
+            mapInfo.putBoolean("IsPrivate", jsonObject.optBoolean("IsPrivate"));
         }
         return mapInfo;
 
@@ -2589,22 +2818,22 @@ public class SMMapWC {
     //
     // 返回值说明：裁减完地图尝试以strResultName保存到map.workspace.maps中，若已存在同名则重命名为strResultName#1，把最终命名结果返回
     //
-    public String clipMap(com.supermap.mapping.Map _srcMap, GeoRegion clipRegion, /*String jsonParam*/ReadableArray arrLayers, String strResultName) {
+    public boolean clipMap(com.supermap.mapping.Map _srcMap, GeoRegion clipRegion, /*String jsonParam*/ReadableArray arrLayers, String[] strResultName) {
 
         try {
             if (_srcMap == null || _srcMap.getLayers().getCount() <= 0 || clipRegion == null || clipRegion.getBounds().isEmpty()) {
-                return null;
+                return false;
             }
 
             ArrayList<Dataset> arrDatasetCliped = new ArrayList<Dataset>();
             ArrayList<Dataset> arrDatasetResult = new ArrayList<Dataset>();
 
-            String strClipMapName = strResultName;
+            String strClipMapName = strResultName[0];
             com.supermap.mapping.Map _clipMap = null;
             if (strClipMapName != null) {
                 int nAddNum = 1;
                 while (_srcMap.getWorkspace().getMaps().indexOf(strClipMapName) != -1) {
-                    strClipMapName = strResultName + nAddNum;
+                    strClipMapName = strResultName[0] + nAddNum;
                     nAddNum++;
                 }
 
@@ -2612,6 +2841,7 @@ public class SMMapWC {
 
                 _clipMap = new com.supermap.mapping.Map(_srcMap.getWorkspace());
                 _clipMap.open(strClipMapName);
+                strResultName[0] = strClipMapName;
             }
 
 //        JSONArray arrLayers;
@@ -2698,14 +2928,10 @@ public class SMMapWC {
                         if (!bClipInRegion) {
                             Rectangle2D datasetBounds = datasetTemp.getBounds();
                             Point2D[] arrBounds = new Point2D[4];
-                            arrBounds[0].setX(datasetBounds.getLeft());
-                            arrBounds[0].setY(datasetBounds.getTop());
-                            arrBounds[1].setX(datasetBounds.getLeft());
-                            arrBounds[1].setY(datasetBounds.getBottom());
-                            arrBounds[2].setX(datasetBounds.getRight());
-                            arrBounds[2].setY(datasetBounds.getBottom());
-                            arrBounds[3].setX(datasetBounds.getRight());
-                            arrBounds[3].setY(datasetBounds.getTop());
+                            arrBounds[0] = new Point2D( datasetBounds.getLeft(),datasetBounds.getTop() );
+                            arrBounds[1] = new Point2D( datasetBounds.getLeft(),datasetBounds.getBottom() );
+                            arrBounds[2] = new Point2D( datasetBounds.getRight(),datasetBounds.getBottom() );
+                            arrBounds[3] = new Point2D( datasetBounds.getRight(),datasetBounds.getTop() );
                             Point2Ds bounds_point2d = new Point2Ds(arrBounds);
                             region.addPart(bounds_point2d);
                         }
@@ -2839,32 +3065,36 @@ public class SMMapWC {
                 _clipMap.dispose();
             }
 
-            return strClipMapName;
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return true;
     }
 
 
     // 从Exp的map里 拷贝所有layer到当前map的一个layerGroup下，layerGroup.name为被拷贝地图名
-    public boolean addLayersFromMap(String srcMapName, String srcModule, boolean bPrivate, com.supermap.mapping.Map desMap) {
+    public boolean addLayersFromMap(String srcMapName, com.supermap.mapping.Map desMap ,ReadableMap dicParam) {
 
         if (srcMapName.equals(desMap.getName())) {
             return false;
         }
         boolean bResult = false;
-        String strTempLib = getRootPath() + "/Customer/Resources/__Temp__" + srcMapName;
+//        String strTempLib = getRootPath() + "/Customer/Resources/__Temp__" + srcMapName;
+//
+//        String strMarker = strTempLib + ".sym";
+//        String strLine = strTempLib + ".lsl";
+//        String strFill = strTempLib + ".bru";
+//
+//        desMap.getWorkspace().getResources().getMarkerLibrary().saveAs(strMarker);
+//        desMap.getWorkspace().getResources().getLineLibrary().saveAs(strLine);
+//        desMap.getWorkspace().getResources().getFillLibrary().saveAs(strFill);
 
-        String strMarker = strTempLib + ".sym";
-        String strLine = strTempLib + ".lsl";
-        String strFill = strTempLib + ".bru";
+        WritableMap dic = Arguments.createMap();
+        dic.merge(dicParam);
+        dic.putBoolean("IsReplaceSymbol",false);
 
-        desMap.getWorkspace().getResources().getMarkerLibrary().saveAs(strMarker);
-        desMap.getWorkspace().getResources().getLineLibrary().saveAs(strLine);
-        desMap.getWorkspace().getResources().getFillLibrary().saveAs(strFill);
-
-        if (openMapName(srcMapName, desMap.getWorkspace(), srcModule, bPrivate)) {
+        if (openMapName(srcMapName, desMap.getWorkspace(), dic)) {
 
             desMap.addLayersFromMap(srcMapName, true);
             desMap.getWorkspace().getMaps().remove(srcMapName);
@@ -2872,20 +3102,20 @@ public class SMMapWC {
 
         }
 
-        desMap.getWorkspace().getResources().getMarkerLibrary().clear();
-        desMap.getWorkspace().getResources().getMarkerLibrary().appendFromFile(strMarker, true);
-        File markerFile = new File(strMarker);
-        markerFile.delete();
-
-        desMap.getWorkspace().getResources().getLineLibrary().clear();
-        desMap.getWorkspace().getResources().getLineLibrary().appendFromFile(strLine, true);
-        File lineFile = new File(strLine);
-        lineFile.delete();
-
-        desMap.getWorkspace().getResources().getFillLibrary().clear();
-        desMap.getWorkspace().getResources().getFillLibrary().appendFromFile(strFill, true);
-        File fillFile = new File(strFill);
-        fillFile.delete();
+//        desMap.getWorkspace().getResources().getMarkerLibrary().clear();
+//        desMap.getWorkspace().getResources().getMarkerLibrary().appendFromFile(strMarker, true);
+//        File markerFile = new File(strMarker);
+//        markerFile.delete();
+//
+//        desMap.getWorkspace().getResources().getLineLibrary().clear();
+//        desMap.getWorkspace().getResources().getLineLibrary().appendFromFile(strLine, true);
+//        File lineFile = new File(strLine);
+//        lineFile.delete();
+//
+//        desMap.getWorkspace().getResources().getFillLibrary().clear();
+//        desMap.getWorkspace().getResources().getFillLibrary().appendFromFile(strFill, true);
+//        File fillFile = new File(strFill);
+//        fillFile.delete();
 
         return bResult;
     }
@@ -2899,25 +3129,35 @@ public class SMMapWC {
         // 先把两个map在同一工作空间中打开 [desMap addLayersFrom:srcmap] save到des目录下desMap
 
         // 源Map打开信息字典
-        Map<String, String> srcInfo = getMapInfoFromJson(jsonSrcMap);
-        Map<String, String> desInfo = getMapInfoFromJson(jsonDesMap);
+        ReadableMap srcInfo = getMapInfoFromJson(jsonSrcMap);
+        ReadableMap desInfo = getMapInfoFromJson(jsonDesMap);
         if (srcInfo == null || desInfo == null) {
             return false;
         }
 
-        String strSrcName = srcInfo.get("MapName");
-        String strSrcModule = srcInfo.get("Module");
+        if ( !srcInfo.hasKey("MapName") || !desInfo.hasKey("MapName")){
+            return false;
+        }
+
+        String strSrcName = srcInfo.getString("MapName");
+        String strSrcModule = null;
+        if (srcInfo.hasKey("Module")){
+            strSrcModule  = srcInfo.getString("Module");
+        }
         boolean isSrcPrivate = false;
-        if (srcInfo.containsKey("IsPrivate")) {
-            isSrcPrivate = Boolean.parseBoolean(srcInfo.get("IsPrivate"));
+        if (srcInfo.hasKey("IsPrivate")) {
+            isSrcPrivate = srcInfo.getBoolean("IsPrivate");
 //            isSrcPrivate=Boolean.valueOf(srcInfo.get("IsPrivate"));
         }
 
-        String strDesName = desInfo.get("MapName");
-        String strDesModule = desInfo.get("Module");
+        String strDesName = desInfo.getString("MapName");
+        String strDesModule = null;
+        if (desInfo.hasKey("Module")){
+            strDesModule = desInfo.getString("Module");
+        }
         boolean isDesPrivate = false;
-        if (desInfo.containsKey("IsPrivate")) {
-            isDesPrivate = Boolean.parseBoolean(desInfo.get("IsPrivate"));
+        if (desInfo.hasKey("IsPrivate")) {
+            isDesPrivate = desInfo.getBoolean("IsPrivate");
         }
 
         Boolean bSrcRename = false;//同名Map需要srcMap打开后重命名，同一Map不能合并

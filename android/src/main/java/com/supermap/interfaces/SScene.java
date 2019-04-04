@@ -395,11 +395,11 @@ public class SScene extends ReactContextBaseJavaModule {
     public void getMapList(Promise promise) {
         try {
             sScene = getInstance();
-            int count = sScene.smSceneWc.getWorkspace().getScenes().getCount();
+            int count = sScene.smSceneWc.getSceneControl().getScene().getWorkspace().getScenes().getCount();
             WritableArray arr = Arguments.createArray();
             if (count > 0) {
                 for (int i = 0; i < count; i++) {
-                    String name = sScene.smSceneWc.getWorkspace().getScenes().get(i);
+                    String name = sScene.smSceneWc.getSceneControl().getScene().getWorkspace().getScenes().get(i);
                     WritableMap map = Arguments.createMap();
                     map.putString("name", name);
                     arr.pushMap(map);
