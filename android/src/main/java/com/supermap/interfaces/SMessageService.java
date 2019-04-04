@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
 import com.supermap.messagequeue.AMQPManager;
@@ -227,7 +228,8 @@ public class SMessageService extends ReactContextBaseJavaModule {
      * 文件发送
      */
     @ReactMethod
-    public void sendFile(final String connectInfo, final String message, final String filePath , final Promise promise) {
+    public void sendFile(final String connectInfo, final String message, final String filePath,
+                         final String talkId, final int msgId ,final Promise promise) {
         try {
             Thread Thread_Send_File = new Thread(new Runnable() {
                 @Override
@@ -295,8 +297,13 @@ public class SMessageService extends ReactContextBaseJavaModule {
 
                             fileSender.sendMessage(sExchange, jMessage.toString(), sRoutingKey);
 
-                            final String percentage = Float.toString( (float) count / total * 100);
-
+                            int percentage = (int)((float) count / total * 100);
+                            WritableMap infoMap = Arguments.createMap();
+                            infoMap.putString("talkId", talkId);
+                            infoMap.putInt("msgId", msgId);
+                            infoMap.putInt("percentage", percentage );
+                            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                    .emit(EventConst.MESSAGE_SERVICE_SEND_FILE, infoMap);
                         }
                         bos.close();
                         inStream.close();
@@ -305,6 +312,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
 
                         map.putString("queueName",sQueue);
                         map.putString("fileName",fileName);
+                        map.putDouble("fileSize",fileSize);
                         promise.resolve(map);
                     }catch(Exception e){
                         promise.reject(e);
@@ -358,7 +366,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
      * 接收文件,每次接收时运行
      */
     @ReactMethod
-    public void receiveFile(final String fileName, final String queueName, final Promise promise) {
+    public void receiveFile(final String fileName, final String queueName, final String talkId, final int msgId ,final Promise promise) {
         Thread mf_Thread_File  =  new Thread(new Runnable() {
             @Override
             public void run() {
@@ -385,27 +393,18 @@ public class SMessageService extends ReactContextBaseJavaModule {
                             bytes = Base64.decode(jsonReceived.getString("message"), Base64.DEFAULT);
                             fop.write(bytes);
                             fop.flush();
-                            final String percentage = Float.toString((float) jsonReceived.getLong("count") / jsonReceived.getLong("total") * 100);
-//                            runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    tReceivePercentage.setText("已接收: " + percentage + "%");
-//                                }
-//                            });
+                            int percentage = (int)((float) jsonReceived.getLong("count") / jsonReceived.getLong("total") * 100);
+                            WritableMap infoMap = Arguments.createMap();
+                            infoMap.putString("talkId", talkId);
+                            infoMap.putInt("msgId", msgId);
+                            infoMap.putInt("percentage", percentage );
+                            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                    .emit(EventConst.MESSAGE_SERVICE_RECEIVE_FILE, infoMap);
                             if(jsonReceived.getLong("count") == jsonReceived.getLong("total"))
                                 break;
                         }
                     }
-
                     fop.close();
-//                    Log.d(TAG, "PLS CHECK FILE");
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            Toast.makeText(ChatActivity.this,"文件接收完成,请检查文件夹: " + Dir , Toast.LENGTH_SHORT).show();
-//                            tReceivePercentage.setText("接收完成!");
-//                        }
-//                    });
                     //接收完后删除队列
                     g_AMQPManager.deleteQueue(queueName);
                     promise.resolve(true);
