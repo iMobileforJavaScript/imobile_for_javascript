@@ -3826,26 +3826,26 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     public void isAnyOpenedDS(Promise promise) {
         try {
             Workspace workspace = SMap.getSMWorkspace().getWorkspace();
-            int count = workspace.getDatasources().getCount();
-
             Datasources datasources = workspace.getDatasources();
-            int datasourcesCount = datasources.getCount();
-            ArrayList<Datasource> list = new ArrayList<>();
-            for (int i = 0; i < datasourcesCount; i++) {
+            int size = 0;
+            for (int i = 0; i < datasources.getCount(); i++) {
                 Datasource datasource = datasources.get(i);
+                //除了UDB数据源都排除
                 if (datasource.getConnectionInfo().getEngineType() == EngineType.UDB) {
-                    //除了UDB数据源都排除
-                    list.add(datasource);
+                    if (datasource.getAlias().equals("Label")) {
+                        continue;
+                    } else {
+                        //排除标注数据源
+                        size++;
+                    }
                 }
             }
 
-            boolean isAnyOpenedDS = true;
-            if (count <= 0) {
-                isAnyOpenedDS = false;
-            } else if (list.size() == 0) {
-                isAnyOpenedDS = false;
+            if (size == 0) {
+                promise.resolve(false);
+            } else {
+                promise.resolve(true);
             }
-            promise.resolve(isAnyOpenedDS);
         } catch (Exception e) {
             promise.reject(e);
         }
