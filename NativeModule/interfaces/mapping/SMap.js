@@ -693,7 +693,7 @@ export default (function () {
    */
   function exportWorkspaceByMap (mapName, exportWorkspacePath, params = {}) {
     try {
-      return SMap.exportWorkspaceByMap(mapName, params,exportWorkspacePath)
+      return SMap.exportWorkspaceByMap(mapName,exportWorkspacePath,params)
     } catch (e) {
       console.error(e)
     }

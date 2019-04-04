@@ -1700,7 +1700,7 @@ public class SMap extends ReactContextBaseJavaModule {
     // isPrivate 是否是用户数据
     // exportWorkspacePath 导出的工作空间绝对路径（含后缀）
     @ReactMethod
-    public void exportWorkspaceByMap(String mapName, ReadableMap mapParam, String exportWorkspacePath, Promise promise) {
+    public void exportWorkspaceByMap(String mapName,  String exportWorkspacePath,ReadableMap mapParam, Promise promise) {
         try {
             sMap = getInstance();
             WritableMap param = Arguments.createMap();
