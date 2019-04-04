@@ -2668,13 +2668,13 @@ public class SMMapWC {
 
     public ArrayList<String> addSymbolsFromFile(String strFile,Resources resources,String strGroupName,boolean bRepalceSymbol){
 
-        File file = new File(path);
+        File file = new File(strFile);
         if (!file.exists() || !file.isFile()) {
-            return false;
+            return null;
         }
         SymbolLibrary lib = null;
         SymbolLibrary resLib = null;
-        String type = path.substring(path.lastIndexOf(".") + 1).toLowerCase();
+        String type = strFile.substring(strFile.lastIndexOf(".") + 1).toLowerCase();
         if (type.equals("bru")) {
             lib = new SymbolFillLibrary();
             resLib = resources.getFillLibrary();
@@ -2685,7 +2685,7 @@ public class SMMapWC {
             lib = new SymbolMarkerLibrary();
             resLib = resources.getMarkerLibrary();
         }
-        if (lib == null) return false;
+        if (lib == null) return null;
 
         lib.appendFromFile(strFile, bRepalceSymbol);
 
