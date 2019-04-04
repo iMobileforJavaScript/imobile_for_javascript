@@ -59,7 +59,10 @@ public class SDatasource extends ReactContextBaseJavaModule {
             FileUtil.createDirectory(serverParentPath);
 
             datasource = workspace.getDatasources().create(info);
-
+            if (params.toHashMap().containsKey("description")){
+                String description = params.toHashMap().get("description").toString();
+                datasource.setDescription(description);
+            }
             promise.resolve(datasource != null);
         } catch (Exception e) {
             promise.reject(e);
