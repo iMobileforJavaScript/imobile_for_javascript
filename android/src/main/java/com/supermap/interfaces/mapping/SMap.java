@@ -977,6 +977,7 @@ public class SMap extends ReactContextBaseJavaModule {
 
     /**
      * 地图裁剪
+     *
      * @param points
      * @param layersInfo
      * @param mapName
@@ -996,7 +997,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 Point2Ds point2Ds = new Point2Ds();
                 for (int i = 0; i < points.size(); i++) {
                     ReadableMap p = points.getMap(i);
-                    Point point = new Point((int)p.getDouble("x"), (int)p.getDouble("y"));
+                    Point point = new Point((int) p.getDouble("x"), (int) p.getDouble("y"));
                     Point2D point2D = sMap.smMapWC.getMapControl().getMap().pixelToMap(point);
 
                     point2Ds.add(point2D);
@@ -1009,9 +1010,9 @@ public class SMap extends ReactContextBaseJavaModule {
                 }
                 String[] args = new String[1];
                 args[0] = mapName;
-                if( sMap.smMapWC.clipMap(sMap.smMapWC.getMapControl().getMap(), region, layersInfo, args) ){
+                if (sMap.smMapWC.clipMap(sMap.smMapWC.getMapControl().getMap(), region, layersInfo, args)) {
                     WritableMap writeMap = Arguments.createMap();
-                    writeMap.putBoolean("result",true);
+                    writeMap.putBoolean("result", true);
 
                     String resultName = args[0];
                     if (resultName != null && !resultName.equals("")) {
@@ -1022,12 +1023,12 @@ public class SMap extends ReactContextBaseJavaModule {
                         }
                         resultName = sMap.smMapWC.saveMapName(resultName, sMap.smMapWC.getWorkspace(), nModule, additionMap, true, true, isPrivate);
                     }
-                    writeMap.putString("mapName",resultName);
+                    writeMap.putString("mapName", resultName);
                     promise.resolve(writeMap);
-                }else{
+                } else {
                     WritableMap writeMap = Arguments.createMap();
-                    writeMap.putBoolean("result",false);
-                    writeMap.putString("mapName",null);
+                    writeMap.putBoolean("result", false);
+                    writeMap.putString("mapName", null);
                     promise.resolve(writeMap);
                 }
 
@@ -1325,7 +1326,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 if (pt != null) {
                     // Point2D point2D = new Point2D(pt);
 
-                    if (pt.getX() <= 180 && pt.getX() >= -180 && pt.getY() >= - 90 && pt.getY() <= 90) {
+                    if (pt.getX() <= 180 && pt.getX() >= -180 && pt.getY() >= -90 && pt.getY() <= 90) {
                         if (mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
                             Point2Ds point2Ds = new Point2Ds();
                             point2Ds.add(pt);
@@ -1700,13 +1701,13 @@ public class SMap extends ReactContextBaseJavaModule {
     // isPrivate 是否是用户数据
     // exportWorkspacePath 导出的工作空间绝对路径（含后缀）
     @ReactMethod
-    public void exportWorkspaceByMap(String mapName,  String exportWorkspacePath,ReadableMap mapParam, Promise promise) {
+    public void exportWorkspaceByMap(String mapName, String exportWorkspacePath, ReadableMap mapParam, Promise promise) {
         try {
             sMap = getInstance();
             WritableMap param = Arguments.createMap();
             param.merge(mapParam);
-            param.putBoolean("IsReplaceSymbol",true);
-            boolean openResult = sMap.getSmMapWC().openMapName(mapName, sMap.getSmMapWC().getWorkspace(),param);
+            param.putBoolean("IsReplaceSymbol", true);
+            boolean openResult = sMap.getSmMapWC().openMapName(mapName, sMap.getSmMapWC().getWorkspace(), param);
             boolean exportResult = false;
             if (openResult) {
                 WritableArray array = Arguments.createArray();
@@ -2073,11 +2074,11 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             List<String> list = sMap.smMapWC.importWorkspaceInfo(infoMap.toHashMap(), nModule, bPrivate);
-            if(list==null){
+            if (list == null) {
                 promise.resolve(false);
             }
             WritableArray mapsInfo = Arguments.createArray();
-            if(list.size()>0){
+            if (list.size() > 0) {
                 for (int i = 0; i < list.size(); i++) {
                     mapsInfo.pushString(list.get(i));
                 }
@@ -2099,14 +2100,14 @@ public class SMap extends ReactContextBaseJavaModule {
     public void importDatasourceFile(String strFile, String strModule, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            DatasourceConnectionInfo datasourceConnectionInfo=new DatasourceConnectionInfo();
+            DatasourceConnectionInfo datasourceConnectionInfo = new DatasourceConnectionInfo();
             datasourceConnectionInfo.setServer(strFile);
             datasourceConnectionInfo.setEngineType(EngineType.UDB);
-            Datasource datasource=sMap.smMapWC.getWorkspace().getDatasources().open(datasourceConnectionInfo);
-            if(datasource.getAlias()=="labelDatasource"){
+            Datasource datasource = sMap.smMapWC.getWorkspace().getDatasources().open(datasourceConnectionInfo);
+            if (datasource.getAlias() == "labelDatasource") {
 
-            }else {
-                String result=sMap.smMapWC.importDatasourceFile(strFile,strModule);
+            } else {
+                String result = sMap.smMapWC.importDatasourceFile(strFile, strModule);
                 promise.resolve(result);
             }
             datasourceConnectionInfo.dispose();
@@ -2234,6 +2235,7 @@ public class SMap extends ReactContextBaseJavaModule {
 
     /**
      * 把指定地图中的图层添加到当前打开地图中
+     *
      * @param srcMapName 要添加的地图
      * @param promise
      */
@@ -2475,7 +2477,7 @@ public class SMap extends ReactContextBaseJavaModule {
     // 添加指定字段到数据集
     private void addFieldInfo(DatasetVector dv, String name, FieldType type, boolean required, String value, int maxLength) {
         FieldInfos infos = dv.getFieldInfos();
-        if(infos.indexOf(name) != -1 ){//exists
+        if (infos.indexOf(name) != -1) {//exists
             infos.remove(name);
         }
         FieldInfo newInfo = new FieldInfo();
@@ -2513,9 +2515,9 @@ public class SMap extends ReactContextBaseJavaModule {
                     datasetVectorInfo.setName(datasetName);
                     DatasetVector datasetVector = datasets.create(datasetVectorInfo);
                     //创建数据集时创建好字段
-                    addFieldInfo(datasetVector,"name", FieldType.TEXT, false,"", 255);
-                    addFieldInfo(datasetVector,"remark", FieldType.TEXT, false,"", 255);
-                    addFieldInfo(datasetVector,"address", FieldType.TEXT, false,"", 255);
+                    addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
+                    addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);
+                    addFieldInfo(datasetVector, "address", FieldType.TEXT, false, "", 255);
 
                     Dataset ds = datasets.get(datasetName);
                     com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
@@ -2535,9 +2537,9 @@ public class SMap extends ReactContextBaseJavaModule {
                 datasetVectorInfo.setName(datasetName);
                 DatasetVector datasetVector = datasets.create(datasetVectorInfo);
                 //创建数据集时创建好字段
-                addFieldInfo(datasetVector,"name", FieldType.TEXT, false,"", 255);
-                addFieldInfo(datasetVector,"remark", FieldType.TEXT, false,"", 255);
-                addFieldInfo(datasetVector,"address", FieldType.TEXT, false,"", 255);
+                addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
+                addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);
+                addFieldInfo(datasetVector, "address", FieldType.TEXT, false, "", 255);
 
                 Dataset ds = datasets.get(datasetName);
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
@@ -2662,19 +2664,18 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     // 修改最新的属性值
-    private void modifyLastAttribute(Dataset dataset, String filedInfoName, String value)
-    {
+    private void modifyLastAttribute(Dataset dataset, String filedInfoName, String value) {
         if (dataset == null) {
             return;
         }
         if (filedInfoName == null) {
             return;
         }
-        if(value == null || value.isEmpty()){
+        if (value == null || value.isEmpty()) {
             return;
         }
 
-        DatasetVector dtVector = (DatasetVector)dataset;
+        DatasetVector dtVector = (DatasetVector) dataset;
         Recordset recordset = dtVector.getRecordset(false, CursorType.DYNAMIC);
         if (recordset == null) {
             return;
@@ -2684,7 +2685,7 @@ public class SMap extends ReactContextBaseJavaModule {
 
         //the dataset didn't have '' fieldinfo
         FieldInfos fieldInfos = recordset.getFieldInfos();
-        if( fieldInfos.indexOf(filedInfoName) == -1){
+        if (fieldInfos.indexOf(filedInfoName) == -1) {
             return;
         }
         recordset.setFieldValue(filedInfoName, value);
@@ -2864,7 +2865,7 @@ public class SMap extends ReactContextBaseJavaModule {
             geoStyle.setFillForeColor(this.getFillColor());
             geoStyle.setFillBackColor(this.getFillColor());
             geoStyle.setMarkerSize(new Size2D(10, 10));
-            geoStyle.setLineColor(new Color(0,133,255));
+            geoStyle.setLineColor(new Color(0, 133, 255));
             geoStyle.setFillOpaqueRate(50);//加透明度更美观
             //geoStyle.setLineColor(new Color(0,206,209));
 
