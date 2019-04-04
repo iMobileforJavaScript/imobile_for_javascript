@@ -39,6 +39,7 @@ import com.supermap.data.SymbolLibrary;
 import com.supermap.data.SymbolLine;
 import com.supermap.data.SymbolLineLibrary;
 import com.supermap.data.SymbolMarkerLibrary;
+import com.supermap.data.SymbolType;
 import com.supermap.data.Workspace;
 import com.supermap.data.WorkspaceConnectionInfo;
 import com.supermap.data.WorkspaceType;
@@ -1109,6 +1110,10 @@ public class SMMapWC {
         ArrayList<String> arrResult = null;
         if (desGroup == null || desGroup.getLibrary() == null) {
             //deGroup必须是必须在Lib中
+            return arrResult;
+        }
+        if (srcGroup.getLibrary()!=null && srcGroup.getLibrary() == desGroup.getLibrary() ){
+            //不支持
             return arrResult;
         }
         // group的名称 symbol的id 都需要desLib查重名
@@ -2587,6 +2592,115 @@ public class SMMapWC {
         }
     }
 
+    public String saveSymbols(ArrayList<int> arrIds , SymbolType nType ,Resources resources,String strTargetName ,String strModule,boolean isprivate){
+
+        if (arrIds==null || arrIds.size()==0 || resources==null || strTargetName==null || strTargetName.length()==0 ){
+            return null;
+        }
+        String strUserName = null;
+        if (isprivate) {
+            strUserName = getUserName();
+            if (strUserName == null) {
+                return null;
+            }
+        } else {
+            strUserName = "Customer";
+        }
+        String strRootPath = getRootPath();
+        String strCustomer = strRootPath + "/" + strUserName + "/Data";
+        String desResourceDir = strCustomer+ "/Symbol";
+        if (strModule!=null && strModule.length()>0){
+            desResourceDir = desResourceDir + "/" + strModule;
+        }
+        SymbolLibrary srcLib ;
+        SymbolLibrary desLib ;
+        String strDesFile = desResourceDir + "/" + strTargetName;
+
+        switch (nType){
+            case SymbolType.MARKER:{
+                srcLib = resources.getMarkerLibrary();
+                desLib = new SymbolMarkerLibrary();
+                strDesFile = strDesFile + ".sym";
+            }
+            break;
+
+            case SymbolType.LINE:{
+                srcLib = resources.getLineLibrary();
+                desLib = new SymbolLineLibrary();
+                strDesFile = strDesFile + ".lsl";
+                SymbolLibrary srcInnerLib = ((SymbolLineLibrary)srcLib).getInlineMarkerLib();
+                SymbolLibrary desInnerLib = ((SymbolLineLibrary)desLib).getInlineMarkerLib();
+                importSymbolsFrom(srcInnerLib.getRootGroup(),desInnerLib.getRootGroup(),true,true);
+            }
+            break;
+
+            case SymbolType.FILL:{
+                srcLib = resources.getFillLibrary();
+                desLib = new SymbolFillLibrary();
+                strDesFile = strDesFile + ".bru";
+                SymbolLibrary srcInnerLib = ((SymbolFillLibrary)srcLib).getInfillMarkerLib();
+                SymbolLibrary desInnerLib = ((SymbolFillLibrary)desLib).getInfillMarkerLib();
+                importSymbolsFrom(srcInnerLib.getRootGroup(),desInnerLib.getRootGroup(),true,true);
+            }
+            break;
+
+            default:
+                return null;
+
+        }
+
+        strDesFile = formateNoneExistFileName(strDesFile,false);
+
+        for (int i=0;i<arrIds.size();i++){
+            int nid = arrIds[i];
+            if (srcLib.contains(nid)){
+                Symbol sym = srcLib.findSymbol(nid);
+                desLib.add(sym);
+            }
+        }
+
+        if (desLib.saveAs(strDesFile)){
+            return strDesFile;
+        }else {
+            return null;
+        }
+    }
+
+    public ArrayList<String> addSymbolsFromFile(String strFile,Resources resources,String strGroupName,boolean bRepalceSymbol){
+
+        File file = new File(path);
+        if (!file.exists() || !file.isFile()) {
+            return false;
+        }
+        SymbolLibrary lib = null;
+        SymbolLibrary resLib = null;
+        String type = path.substring(path.lastIndexOf(".") + 1).toLowerCase();
+        if (type.equals("bru")) {
+            lib = new SymbolFillLibrary();
+            resLib = resources.getFillLibrary();
+        } else if (type.equals("lsl")) {
+            lib = new SymbolLineLibrary();
+            resLib = resources.getLineLibrary();
+        } else if (type.equals("sym")) {
+            lib = new SymbolMarkerLibrary();
+            resLib = resources.getMarkerLibrary();
+        }
+        if (lib == null) return false;
+
+        lib.appendFromFile(strFile, bRepalceSymbol);
+
+        SymbolGroup desGroup = null;
+        if (strGroupName==null || strGroupName.length()==0 || resLib.getRootGroup().getName()==strGroupName){
+            desGroup = resLib.getRootGroup();
+        }else if (resLib.getRootGroup().getChildGroups().indexOf(strGroupName)!=-1){
+            desGroup = resLib.getRootGroup().getChildGroups().get(strGroupName);
+        }else{
+            desGroup = resLib.getRootGroup().getChildGroups().create(strGroupName);
+        }
+
+        return importSymbolsFrom(lib.getRootGroup(),desGroup,true,bRepalceSymbol);
+    }
+
     public boolean appendFromFile(Resources resources, String path, boolean isReplace) {
         try {
             File file = new File(path);
@@ -2616,6 +2730,8 @@ public class SMMapWC {
             return false;
         }
     }
+
+
 
     public boolean copyDataset(String strSrcUDB, String strDesUDB) {
 
