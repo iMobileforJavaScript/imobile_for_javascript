@@ -8,6 +8,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.JsonUtil;
@@ -335,37 +336,75 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                 for (int i = 0; i < fieldInfos.size(); i++) {
                     ReadableMap info = fieldInfos.getMap(i);
                     String name = info.getString("name");
-                    String value = info.getString("value");
+                    ReadableType valueType = info.getType("value");
+
                     FieldInfo fieldInfo = recordset.getFieldInfos().get(name);
                     FieldType type = fieldInfo.getType();
 
-                    if (type == FieldType.BOOLEAN) {
-                        boolean boolValue = false;
-                        if (value.equals("true") || value.equals("YES")) {
-                            boolValue = true;
+                    switch (valueType) {
+                        case Number:{
+                            if (type == FieldType.INT16) {
+                                String value = info.getString("value");
+                                recordset.setInt16(name, Short.parseShort(value));
+                            } else if (type == FieldType.INT32) {
+                                int value = info.getInt("value");
+                                recordset.setInt32(name, value);
+                            } else if (type == FieldType.INT64) {
+                                int value = info.getInt("value");
+                                recordset.setInt64(name, value);
+                            } else if (type == FieldType.SINGLE) {
+                                int value = info.getInt("value");
+                                recordset.setSingle(name, value);
+                            } else if (type == FieldType.DOUBLE) {
+                                Double value = info.getDouble("value");
+                                recordset.setDouble(name, value);
+                            }
+                            break;
                         }
-                        recordset.setBoolean(name, boolValue);
-                    } else if (type == FieldType.INT16) {
-                        value = value.equals("") ? "0" : value;
-                        recordset.setInt16(name, Short.parseShort(value));
-                    } else if (type == FieldType.INT32) {
-                        value = value.equals("") ? "0" : value;
-                        recordset.setInt32(name, Integer.parseInt(value));
-                    } else if (type == FieldType.INT64) {
-                        value = value.equals("") ? "0" : value;
-                        recordset.setInt64(name, Integer.parseInt(value));
-                    } else if (type == FieldType.SINGLE) {
-                        value = value.equals("") ? "0" : value;
-                        recordset.setSingle(name, Integer.parseInt(value));
-                    } else if (type == FieldType.DOUBLE) {
-                        value = value.equals("") ? "0" : value;
-                        recordset.setDouble(name, Double.parseDouble(value));
-                    } else if (type == FieldType.DATETIME) {
-
-                    } else if (type == FieldType.TEXT || type == FieldType.WTEXT
-                            || type == FieldType.LONGBINARY || type == FieldType.BYTE) {
-                        recordset.setFieldValue(name, value);
+                        case String: {
+                            if (type == FieldType.TEXT || type == FieldType.WTEXT
+                                    || type == FieldType.LONGBINARY || type == FieldType.BYTE) {
+                                String value = info.getString("value");
+                                recordset.setFieldValue(name, value);
+                            }
+                            break;
+                        }
+                        case Boolean: {
+                            if (type == FieldType.BOOLEAN) {
+                                boolean boolValue = info.getBoolean("value");
+                                recordset.setBoolean(name, boolValue);
+                            }
+                        }
                     }
+//                    String value = info.getString("value");
+
+//                    if (type == FieldType.BOOLEAN) {
+//                        boolean boolValue = false;
+//                        if (value.equals("true") || value.equals("YES")) {
+//                            boolValue = true;
+//                        }
+//                        recordset.setBoolean(name, boolValue);
+//                    } else if (type == FieldType.INT16) {
+//                        value = value.equals("") ? "0" : value;
+//                        recordset.setInt16(name, Short.parseShort(value));
+//                    } else if (type == FieldType.INT32) {
+//                        value = value.equals("") ? "0" : value;
+//                        recordset.setInt32(name, Integer.parseInt(value));
+//                    } else if (type == FieldType.INT64) {
+//                        value = value.equals("") ? "0" : value;
+//                        recordset.setInt64(name, Integer.parseInt(value));
+//                    } else if (type == FieldType.SINGLE) {
+//                        value = value.equals("") ? "0" : value;
+//                        recordset.setSingle(name, Integer.parseInt(value));
+//                    } else if (type == FieldType.DOUBLE) {
+//                        value = value.equals("") ? "0" : value;
+//                        recordset.setDouble(name, Double.parseDouble(value));
+//                    } else if (type == FieldType.DATETIME) {
+//
+//                    } else if (type == FieldType.TEXT || type == FieldType.WTEXT
+//                            || type == FieldType.LONGBINARY || type == FieldType.BYTE) {
+//                        recordset.setFieldValue(name, value);
+//                    }
                 }
 
                 recordset.update();

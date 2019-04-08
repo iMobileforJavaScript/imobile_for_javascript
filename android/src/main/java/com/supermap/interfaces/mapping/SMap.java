@@ -218,7 +218,7 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 以数据源形式打开工作空间
+     * 以数据源形式打开工作空间setLayerFieldInfo
      *
      * @param data
      * @param defaultIndex 默认显示Map 图层索引
