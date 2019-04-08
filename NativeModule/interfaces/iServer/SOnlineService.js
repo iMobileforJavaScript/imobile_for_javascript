@@ -333,6 +333,21 @@ function getSuperMapKnown(){
   return OnlineServiceNative.getSuperMapKnown()
 }
 
+function reverseGeocoding(longitude,latitude,handler){
+
+  if (typeof handler.onResult === 'function'&& handler) {
+    if(Platform.OS === 'ios'){
+      callBackIOS.addListener(EventConst.ONLINE_SERVICE_REVERSEGEOCODING, function (result) {
+        handler.onResult(result);
+      })
+    }else{
+      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_REVERSEGEOCODING, function (result) {
+        handler.onResult(result);
+      })
+    }
+  }
+  return OnlineServiceNative.reverseGeocoding(longitude,latitude)
+}
 export default {
   init,
   uploadFile,
@@ -379,4 +394,5 @@ export default {
   getUserInfo,
   getUserInfoBy,
   getSuperMapKnown,
+  reverseGeocoding,
 }

@@ -12,7 +12,8 @@ export default {
   ONLINE_SERVICE_UPLOADING: 'com.supermap.RN.Mapcontrol.online_service_uploading',
   ONLINE_SERVICE_UPLOADED:'com.supermap.RN.Mapcontrol.online_service_uploaded',
   ONLINE_SERVICE_UPLOADFAILURE:'com.supermap.RN.Mapcontrol.online_service_uploadfailure',
-  
+  ONLINE_SERVICE_REVERSEGEOCODING : 'com.supermap.RN.Mapcontrol.online_service_reversegeocoding',
+
   /** 消息服务 **/
   MESSAGE_SERVICE_RECEIVE:'com.supermap.RN.Mapcontrol.message_service_receive',
   /** 量算 **/
