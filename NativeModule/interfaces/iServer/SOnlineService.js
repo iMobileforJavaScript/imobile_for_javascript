@@ -38,28 +38,21 @@ function objCallBack(){
   return new NativeEventEmitter(OnlineServiceNative);
 }
 
+let uploadFileListener
 function uploadFile(path, dataName, handler) {
   console.log("uploadFile")
+  uploadFileListener && uploadFileListener.remove()
   if (Platform.OS === 'ios' && handler) {
-    if (typeof handler.onProgress === 'function') {
-      // callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (obj) {
-      //   console.log("progress: " + obj.progress);
-      //   handler.onProgress(obj.progress);
-      // })
-    }
+  
     if (typeof handler.onResult === 'function') {
-      callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADED, function (value) {
+        uploadFileListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADED, function (value) {
         handler.onResult(value);
       })
     }
   }else{
-    if (typeof handler.onProgress === 'function'&& handler) {
-      // DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
-      //   handler.onProgress(progress);
-      // })
-    }
+   
     if (typeof handler.onResult === 'function'&& handler) {
-      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADED, function (result) {
+        uploadFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADED, function (result) {
         console.log("sucess")
         handler.onResult(result);
       })
@@ -70,37 +63,38 @@ function uploadFile(path, dataName, handler) {
 }
 
 
+let downloadFileListener 
 function downloadFileWithCallBack(path, dataName, handler) {
-
+   downloadFileListener && downloadFileListener.remove()
   if (Platform.OS === 'ios' && handler) {
     if (typeof handler.onProgress === 'function') {
-      callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (obj) {
+        downloadFileListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (obj) {
         handler.onProgress(obj.progress);
       })
     }
     if (typeof handler.onResult === 'function') {
-      callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (value) {
+        downloadFileListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (value) {
         handler.onResult(value);
       })
     }
     if (typeof handler.onResult === 'function') {
-      callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (value) {
+        downloadFileListener =  callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (value) {
         handler.onResult(value);
       })
     }
   }else{
     if (typeof handler.onProgress === 'function'&& handler) {
-      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (progress) {
+      downloadFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (progress) {
         handler.onProgress(progress);
       })
     }
     if (typeof handler.onResult === 'function'&& handler) {
-      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (result) {
+      downloadFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (result) {
         handler.onResult(result);
       })
     }
     if (typeof handler.onResult === 'function'&& handler) {
-      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (result) {
+      downloadFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (result) {
         handler.onResult(result);
       })
     }
@@ -333,15 +327,18 @@ function getSuperMapKnown(){
   return OnlineServiceNative.getSuperMapKnown()
 }
 
+let reverseGeocodingListener
 function reverseGeocoding(longitude,latitude,handler){
 
+  reverseGeocodingListener && reverseGeocodingListener.remove()
   if (typeof handler.onResult === 'function'&& handler) {
     if(Platform.OS === 'ios'){
-      callBackIOS.addListener(EventConst.ONLINE_SERVICE_REVERSEGEOCODING, function (result) {
+      
+      reverseGeocodingListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_REVERSEGEOCODING, function (result) {
         handler.onResult(result);
       })
     }else{
-      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_REVERSEGEOCODING, function (result) {
+      reverseGeocodingListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_REVERSEGEOCODING, function (result) {
         handler.onResult(result);
       })
     }
