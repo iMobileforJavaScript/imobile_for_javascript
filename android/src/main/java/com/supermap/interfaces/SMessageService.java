@@ -291,9 +291,10 @@ public class SMessageService extends ReactContextBaseJavaModule {
 
                             count++;
 
-                            jMessage.put("message", sFileBlock)
-                                    .put("total", total)
-                                    .put("count", count);
+                            jMessage.getJSONObject("message").getJSONObject("message")
+                                    .put("data", sFileBlock)
+                                    .put("length", total)
+                                    .put("index", count);
 
                             fileSender.sendMessage(sExchange, jMessage.toString(), sRoutingKey);
 
@@ -390,17 +391,19 @@ public class SMessageService extends ReactContextBaseJavaModule {
                             // 获取消息
                             String msg = returnMsg.getMessage();
                             jsonReceived = new JSONObject(msg);
-                            bytes = Base64.decode(jsonReceived.getString("message"), Base64.DEFAULT);
+                            bytes = Base64.decode(jsonReceived.getJSONObject("message").getJSONObject("message").getString("data"), Base64.DEFAULT);
                             fop.write(bytes);
                             fop.flush();
-                            int percentage = (int)((float) jsonReceived.getLong("count") / jsonReceived.getLong("total") * 100);
+                            long index = jsonReceived.getJSONObject("message").getJSONObject("message").getLong("index");
+                            long length = jsonReceived.getJSONObject("message").getJSONObject("message").getLong("length");
+                            int percentage = (int)((float) index / length * 100);
                             WritableMap infoMap = Arguments.createMap();
                             infoMap.putString("talkId", talkId);
                             infoMap.putInt("msgId", msgId);
                             infoMap.putInt("percentage", percentage );
                             context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                                     .emit(EventConst.MESSAGE_SERVICE_RECEIVE_FILE, infoMap);
-                            if(jsonReceived.getLong("count") == jsonReceived.getLong("total"))
+                            if(index == length)
                                 break;
                         }
                     }
