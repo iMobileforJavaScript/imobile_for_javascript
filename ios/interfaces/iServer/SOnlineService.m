@@ -37,16 +37,16 @@ RCT_EXPORT_MODULE();
 #pragma mark ---------------------------- init
 RCT_REMAP_METHOD(init, initWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     m_onlineService = [OnlineService sharedService];
-    if(m_geocoding == nil){
-        m_geocoding = [[Geocoding alloc]init];
-        m_geocoding.delegate = self;
-        [m_geocoding setKey:@"tY5A7zRBvPY0fTHDmKkDjjlr"];
-    }
 }
 
 #pragma mark ---------------------------- geoCoding
 RCT_REMAP_METHOD(reverseGeocoding, longitude:(double)longitude latitude:(double)latitude resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+        if(m_geocoding == nil){
+            m_geocoding = [[Geocoding alloc]init];
+            m_geocoding.delegate = self;
+            [m_geocoding setKey:@"tY5A7zRBvPY0fTHDmKkDjjlr"];
+        }
         if(m_geocoding){
             [m_geocoding reverseGeocoding:[[Point2D alloc] initWithX:longitude Y:latitude] ];
             resolve(@(1));

@@ -334,10 +334,17 @@ function getSuperMapKnown(){
 }
 
 function reverseGeocoding(longitude,latitude,handler){
+
   if (typeof handler.onResult === 'function'&& handler) {
-    DeviceEventEmitter.addListener("com.supermap.RN.Mapcontrol.online_service_reversegeocoding", function (result) {
-      handler.onResult(result);
-    })
+    if(Platform.OS === 'ios'){
+      callBackIOS.addListener(EventConst.ONLINE_SERVICE_REVERSEGEOCODING, function (result) {
+        handler.onResult(result);
+      })
+    }else{
+      DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_REVERSEGEOCODING, function (result) {
+        handler.onResult(result);
+      })
+    }
   }
   return OnlineServiceNative.reverseGeocoding(longitude,latitude)
 }

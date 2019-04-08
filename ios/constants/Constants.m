@@ -13,12 +13,14 @@ NSString * const COLLECTION_SENSOR_CHANGE = @"com.supermap.RN.Mapcontrol.collect
 
 /** 在线服务 **/
 
+//NSString * const ONLINE_SERVICE_REVERSEGEOCODING = @"com.supermap.RN.Mapcontrol.online_service_reversegeocoding";
+NSString * const ONLINE_SERVICE_REVERSEGEOCODING = @"com.supermap.RN.Mapcontrol.online_service_reversegeocoding";
 NSString * const ONLINE_SERVICE_LOGIN = @"com.supermap.RN.Mapcontrol.online_service_login";
 NSString * const ONLINE_SERVICE_LOGOUT = @"com.supermap.RN.Mapcontrol.online_service_logout";
 NSString * const ONLINE_SERVICE_UPLOADING = @"com.supermap.RN.Mapcontrol.online_service_uploading";
 NSString * const ONLINE_SERVICE_UPLOADED = @"com.supermap.RN.Mapcontrol.online_service_uploaded";
 NSString * const ONLINE_SERVICE_UPLOADFAILURE = @"com.supermap.RN.Mapcontrol.online_service_uploadfailure";
-NSString * const ONLINE_SERVICE_REVERSEGEOCODING = @"com.supermap.RN.Mapcontrol.online_service_reversegeocoding";
+
 
 //下载回调
 NSString * const ONLINE_SERVICE_DOWNLOADING = @"com.supermap.RN.Mapcontrol.online_service_downloading";
