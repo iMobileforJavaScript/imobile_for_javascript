@@ -333,6 +333,14 @@ function getSuperMapKnown(){
   return OnlineServiceNative.getSuperMapKnown()
 }
 
+function reverseGeocoding(longitude,latitude,handler){
+  if (typeof handler.onResult === 'function'&& handler) {
+    DeviceEventEmitter.addListener("com.supermap.RN.Mapcontrol.online_service_reversegeocoding", function (result) {
+      handler.onResult(result);
+    })
+  }
+  return OnlineServiceNative.reverseGeocoding(longitude,latitude)
+}
 export default {
   init,
   uploadFile,
@@ -379,4 +387,5 @@ export default {
   getUserInfo,
   getUserInfoBy,
   getSuperMapKnown,
+  reverseGeocoding,
 }

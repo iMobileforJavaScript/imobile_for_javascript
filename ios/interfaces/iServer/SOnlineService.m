@@ -8,8 +8,11 @@
 
 #import "SOnlineService.h"
 #import "Constants.h"
+#import "SuperMap/Point2D.h"
+
 @interface SOnlineService(){
     OnlineService* m_onlineService;
+    Geocoding* m_geocoding;
 }
 @end
 @implementation SOnlineService
@@ -25,13 +28,38 @@ RCT_EXPORT_MODULE();
              ONLINE_SERVICE_UPLOADED,
              ONLINE_SERVICE_UPLOADFAILURE,
              ONLINE_SERVICE_DOWNLOADING,
-             ONLINE_SERVICE_UPLOADING];
+             ONLINE_SERVICE_UPLOADING,
+             ONLINE_SERVICE_REVERSEGEOCODING,
+             ];
 }
 
 #pragma mark -- 定义宏的方法，让该类的方法暴露给RN层
 #pragma mark ---------------------------- init
 RCT_REMAP_METHOD(init, initWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     m_onlineService = [OnlineService sharedService];
+    if(m_geocoding == nil){
+        m_geocoding = [[Geocoding alloc]init];
+        m_geocoding.delegate = self;
+        [m_geocoding setKey:@"tY5A7zRBvPY0fTHDmKkDjjlr"];
+    }
+}
+
+#pragma mark ---------------------------- geoCoding
+RCT_REMAP_METHOD(reverseGeocoding, longitude:(double)longitude latitude:(double)latitude resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        if(m_geocoding){
+            [m_geocoding reverseGeocoding:[[Point2D alloc] initWithX:longitude Y:latitude] ];
+            resolve(@(1));
+        }
+    } @catch (NSException *exception) {
+        reject(kTAG, @"reverseGeocoding failed", nil);
+    }
+}
+//-(void)geocodingFailed:(NSString*)strErrorInfo{}
+//-(void)geocodingSuccess:(NSArray*)geocodingDataList{}
+-(void)reversegeocodingSuccess:(GeocodingData*)geocodingData{
+    [self sendEventWithName:ONLINE_SERVICE_REVERSEGEOCODING
+                       body:geocodingData.formatedAddress];
 }
 #pragma mark ---------------------------- login
 RCT_REMAP_METHOD(login, loginByUserName:(NSString *)userName password:(NSString *)password resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -695,19 +723,19 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
 
 # pragma mark ---------------------------- 上传协议
 -(void)didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend{
-    @try {
-        float progress = 1.0 * totalBytesSent / totalBytesExpectedToSend * 100;
-        //        float progress = totalBytesWritten / totalBytesExpectedToWrite;
-        NSLog(@"uploading: %f", progress);
-        [self sendEventWithName:ONLINE_SERVICE_UPLOADING
-                           body:@{
-                                  @"progress": [NSNumber numberWithFloat:progress],
-                                  @"id":uploadId
-                                  }];
-    } @catch (NSException *exception) {
-        [self sendEventWithName:ONLINE_SERVICE_UPLOADFAILURE
-                           body:exception.reason];
-    }
+//    @try {
+//        float progress = 1.0 * totalBytesSent / totalBytesExpectedToSend * 100;
+//        //        float progress = totalBytesWritten / totalBytesExpectedToWrite;
+//        NSLog(@"uploading: %f", progress);
+//        [self sendEventWithName:ONLINE_SERVICE_UPLOADING
+//                           body:@{
+//                                  @"progress": [NSNumber numberWithFloat:progress],
+//                                  @"id":uploadId
+//                                  }];
+//    } @catch (NSException *exception) {
+//        [self sendEventWithName:ONLINE_SERVICE_UPLOADFAILURE
+//                           body:exception.reason];
+//    }
 }
 
 
