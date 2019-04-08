@@ -30,7 +30,7 @@ public class JSDatasetType extends ReactContextBaseJavaModule {
         constants.put("REGION", 5);
         constants.put("TEXT", 7);
         constants.put("IMAGE", 81);
-        constants.put("Grid", 83);
+        constants.put("GRID", 83);
         constants.put("DEM", 84);
         constants.put("WMS", 86);
         constants.put("WCS", 87);

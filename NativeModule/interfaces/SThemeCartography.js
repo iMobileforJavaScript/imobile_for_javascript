@@ -4,8 +4,9 @@
  Description: 专题制图类
  **********************************************************************************/
 import {
-  NativeModules
-} from 'react-native'
+  NativeModules,
+  Platform,
+} from "react-native"
 let SThemeCartography = NativeModules.SThemeCartography
 
 /**
@@ -458,7 +459,9 @@ isAnyOpenedDS = () => {
  */
 createThemeGraphMap = (params) => {
   try {
-    return SThemeCartography.createThemeGraphMap(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.createThemeGraphMap(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -471,7 +474,9 @@ createThemeGraphMap = (params) => {
  */
 createThemeGraphMapByLayer = (params) => {
   try {
-    return SThemeCartography.createThemeGraphMapByLayer(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.createThemeGraphMapByLayer(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -484,7 +489,9 @@ createThemeGraphMapByLayer = (params) => {
  */
 setThemeGraphExpressions = (params) => {
   try {
-    return SThemeCartography.setThemeGraphExpressions(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.setThemeGraphExpressions(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -497,7 +504,9 @@ setThemeGraphExpressions = (params) => {
  */
 setThemeGraphColorScheme = (params) => {
   try {
-    return SThemeCartography.setThemeGraphColorScheme(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.setThemeGraphColorScheme(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -510,7 +519,9 @@ setThemeGraphColorScheme = (params) => {
  */
 setThemeGraphType = (params) => {
   try {
-    return SThemeCartography.setThemeGraphType(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.setThemeGraphType(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -523,7 +534,9 @@ setThemeGraphType = (params) => {
  */
 setThemeGraphGraduatedMode = (params) => {
   try {
-    return SThemeCartography.setThemeGraphGraduatedMode(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.setThemeGraphGraduatedMode(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -536,7 +549,9 @@ setThemeGraphGraduatedMode = (params) => {
  */
 getGraphExpressions = (params) => {
   try {
-    return SThemeCartography.getGraphExpressions(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.getGraphExpressions(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -549,7 +564,9 @@ getGraphExpressions = (params) => {
  */
 getGraphMaxValue = (params) => {
   try {
-    return SThemeCartography.getGraphMaxValue(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.getGraphMaxValue(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -562,7 +579,9 @@ getGraphMaxValue = (params) => {
  */
 setGraphMaxValue = (params) => {
   try {
-    return SThemeCartography.setGraphMaxValue(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.setGraphMaxValue(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -575,7 +594,9 @@ setGraphMaxValue = (params) => {
  */
 createDotDensityThemeMap = (params) => {
   try {
-    return SThemeCartography.createDotDensityThemeMap(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.createDotDensityThemeMap(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -588,7 +609,9 @@ createDotDensityThemeMap = (params) => {
  */
 modifyDotDensityThemeMap = (params) => {
   try {
-    return SThemeCartography.modifyDotDensityThemeMap(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.modifyDotDensityThemeMap(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -601,7 +624,9 @@ modifyDotDensityThemeMap = (params) => {
  */
 createGraduatedSymbolThemeMap = (params) => {
   try {
-    return SThemeCartography.createGraduatedSymbolThemeMap(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.createGraduatedSymbolThemeMap(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -614,7 +639,9 @@ createGraduatedSymbolThemeMap = (params) => {
  */
 modifyGraduatedSymbolThemeMap = (params) => {
   try {
-    return SThemeCartography.modifyGraduatedSymbolThemeMap(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.modifyGraduatedSymbolThemeMap(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -626,7 +653,9 @@ modifyGraduatedSymbolThemeMap = (params) => {
  */
 getDotDensityExpression = (params) => {
   try {
-    return SThemeCartography.getDotDensityExpression(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.getDotDensityExpression(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -639,7 +668,9 @@ getDotDensityExpression = (params) => {
  */
 getDotDensityValue = (params) => {
   try {
-    return SThemeCartography.getDotDensityValue(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.getDotDensityValue(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -652,7 +683,9 @@ getDotDensityValue = (params) => {
  */
 getDotDensityDotSize= (params) => {
   try {
-    return SThemeCartography.getDotDensityDotSize(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.getDotDensityDotSize(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -665,7 +698,9 @@ getDotDensityDotSize= (params) => {
  */
 getGraduatedSymbolExpress= (params) => {
   try {
-    return SThemeCartography.getGraduatedSymbolExpress(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.getGraduatedSymbolExpress(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -678,7 +713,9 @@ getGraduatedSymbolExpress= (params) => {
  */
 getGraduatedSymbolValue= (params) => {
   try {
-    return SThemeCartography.getGraduatedSymbolValue(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.getGraduatedSymbolValue(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -691,7 +728,114 @@ getGraduatedSymbolValue= (params) => {
  */
 getGraduatedSymbolSize= (params) => {
   try {
-    return SThemeCartography.getGraduatedSymbolSize(params)
+    if (Platform.OS === 'android') {
+      return SThemeCartography.getGraduatedSymbolSize(params)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 数据集->创建栅格分段专题图
+ *
+ * @param params
+ */
+createThemeGridRangeMap = (params) => {
+  try {
+    if (Platform.OS === 'android') {
+      return SThemeCartography.createThemeGridRangeMap(params)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 图层->创建栅格分段专题图
+ *
+ * @param params
+ */
+createThemeGridRangeMapByLayer = (params) => {
+  try {
+    if (Platform.OS === 'android') {
+      return SThemeCartography.createThemeGridRangeMapByLayer(params)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 修改栅格分段专题图(分段方法，分段参数，颜色方案)
+ *
+ * @param params
+ */
+modifyThemeGridRangeMap = (params) => {
+  try {
+    if (Platform.OS === 'android') {
+      return SThemeCartography.modifyThemeGridRangeMap(params)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 数据集->创建栅格单值专题图
+ *
+ * @param params
+ */
+createThemeGridUniqueMap = (params) => {
+  try {
+    if (Platform.OS === 'android') {
+      return SThemeCartography.createThemeGridUniqueMap(params)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 图层->创建栅格单值专题图
+ *
+ * @param params
+ */
+createThemeGridUniqueMapByLayer = (params) => {
+  try {
+    if (Platform.OS === 'android') {
+      return SThemeCartography.createThemeGridUniqueMapByLayer(params)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 修改栅格单值专题图
+ *
+ * @param params
+ */
+modifyThemeGridUniqueMap = (params) => {
+  try {
+    if (Platform.OS === 'android') {
+      return SThemeCartography.modifyThemeGridUniqueMap(params)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 获取分段栅格专题图分段个数
+ *
+ * @param params
+ */
+getGridRangeCount = (params) => {
+  try {
+    if (Platform.OS === 'android') {
+      return SThemeCartography.getGridRangeCount(params)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -754,6 +898,14 @@ export default {
   getGraduatedSymbolExpress,
   getGraduatedSymbolValue,
   getGraduatedSymbolSize,
+  //栅格专题图
+  createThemeGridRangeMap,
+  createThemeGridRangeMapByLayer,
+  modifyThemeGridRangeMap,
+  createThemeGridUniqueMap,
+  createThemeGridUniqueMapByLayer,
+  modifyThemeGridUniqueMap,
+  getGridRangeCount,
   //其他
   getThemeExpressionByLayerName,
   getThemeExpressionByLayerIndex,
