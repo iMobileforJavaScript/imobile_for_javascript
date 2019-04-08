@@ -78,8 +78,8 @@ function receiveMessage(uuid) {
 }
 
 //开启文件接收
-function receiveFile(fileName, queueName, talkId, msgId) {
-  return MessageServiceeNative.receiveFile(fileName, queueName, talkId, msgId);
+function receiveFile(fileName, queueName, receivePath, talkId, msgId) {
+  return MessageServiceeNative.receiveFile(fileName, queueName, receivePath, talkId, msgId);
 }
 
 //开启消息接收
