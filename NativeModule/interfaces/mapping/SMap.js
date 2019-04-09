@@ -4,12 +4,13 @@
  E-mail: yangshanglong@supermap.com
  Description: 工作空间操作类
  **********************************************************************************/
-import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform } from 'react-native'
+import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform, PixelRatio } from 'react-native'
 import * as MapTool from './SMapTool'
 import * as LayerManager from './SLayerManager'
 import * as Datasource from './SDatasource'
 import { EventConst } from '../../constains/index'
 let SMap = NativeModules.SMap
+const dpi = PixelRatio.get()
 
 const nativeEvt = new NativeEventEmitter(SMap)
 
@@ -292,9 +293,20 @@ export default (function () {
    * @param isPrivate 另存为新地图的是否是用户目录
    * @returns {*}
    */
-  function clipMap (points, layersInfo = [], mapName = null, ofModule = '', addition, isPrivate = true) {
+  function clipMap (points = [], layersInfo = [], mapName = null, ofModule = '', addition, isPrivate = true) {
     try {
-      return SMap.clipMap(points, layersInfo, mapName, ofModule, addition, isPrivate)
+      let _points = []
+      if (Platform.OS === 'android') {
+        points.forEach(point => {
+          _points.push({
+            x: point.x * dpi,
+            y: point.y * dpi,
+          })
+        })
+      } else {
+        _points = points
+      }
+      return SMap.clipMap(_points, layersInfo, mapName, ofModule, addition, isPrivate)
     } catch (e) {
       console.error(e)
     }
