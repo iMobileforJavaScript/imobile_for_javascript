@@ -367,20 +367,23 @@ public class SMessageService extends ReactContextBaseJavaModule {
      * 接收文件,每次接收时运行
      */
     @ReactMethod
-    public void receiveFile(final String fileName, final String queueName, final String talkId, final int msgId ,final Promise promise) {
+    public void receiveFile(final String fileName, final String queueName, final String receivePath, final String talkId, final int msgId ,final Promise promise) {
         Thread mf_Thread_File  =  new Thread(new Runnable() {
             @Override
             public void run() {
                 Looper.prepare();
-                File file = new File("/sdcard" + "/" + fileName + ".re");
+                File path = new File(receivePath);
+                File file = new File(receivePath + "/" + fileName);
                 byte[] bytes;
                 JSONObject jsonReceived;
                 try  {
-                    FileOutputStream fop = new FileOutputStream(file);
+                    if(!path.exists()){
+                        path.mkdirs();
+                    }
                     if (!file.exists()) {
                         file.createNewFile();
                     }
-
+                    FileOutputStream fop = new FileOutputStream(file);
                     g_AMQPManager.declareQueue(queueName);
                     AMQPReceiver fileReceiver = g_AMQPManager.newReceiver(queueName);
 
