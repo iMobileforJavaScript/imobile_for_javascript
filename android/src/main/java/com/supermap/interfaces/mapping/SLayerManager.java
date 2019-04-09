@@ -364,8 +364,8 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                         case String: {
                             if (type == FieldType.TEXT || type == FieldType.WTEXT
                                     || type == FieldType.LONGBINARY || type == FieldType.BYTE) {
-                                String value = info.getString("value");
-                                recordset.setFieldValue(name, value);
+                                String value1 = info.getString("value");
+                                recordset.setFieldValue(name, value1);
                             }
                             break;
                         }
