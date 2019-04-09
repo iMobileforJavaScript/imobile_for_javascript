@@ -580,21 +580,21 @@ export default (function () {
           }
       }
 
-    function import3DWorkspace(infoDic){
+    function import3DWorkspace(infoDic,bPrivate=true){
         try {
           const type = infoDic.server.split('.').pop()
           Object.assign(infoDic, {
               type: getWorkspaceType(type)
           })
-            return SScene.import3DWorkspace(infoDic)
+            return SScene.import3DWorkspace(infoDic,bPrivate)
         } catch (error) {
           console.error(error);
         }
     }
 
-    function openScence(name){
+    function openScence(name,bPrivate=true){
         try {
-            return SScene.openScence(name)
+            return SScene.openScence(name,bPrivate)
         } catch (error) {
           console.error(error); 
         }
@@ -623,9 +623,9 @@ export default (function () {
         }
     }
     
-    function export3DScenceName(strScenceName,strDesFolder){
+    function export3DScenceName(strScenceName,strDesFolder,bPrivate=true){
         try {
-            return SScene.export3DScenceName(strScenceName,strDesFolder)
+            return SScene.export3DScenceName(strScenceName,strDesFolder,bPrivate)
         } catch (error) {
             console.error(error);
         }
