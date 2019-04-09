@@ -617,6 +617,28 @@ export default (function () {
     }
   }
 
+    /**
+   * 获取地图对应的数据源别名
+   */
+  function showMarker (longitude,latitude) {
+    try {
+      return SMap.showMarker(longitude,latitude)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+    /**
+   * 获取地图对应的数据源别名
+   */
+  function deleteMarker () {
+    try {
+      return SMap.deleteMarker()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  
   /**
    * 获取地图对应的数据源别名
    */
@@ -1289,7 +1311,8 @@ export default (function () {
     setTaggingGrid,
     addLegend,
     setLabelColor,
-
+    showMarker,
+    deleteMarker,
     /** 地图编辑历史操作 **/
     undo,
     redo,
