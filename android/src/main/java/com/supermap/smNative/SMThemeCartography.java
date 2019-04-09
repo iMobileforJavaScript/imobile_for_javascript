@@ -23,6 +23,9 @@ public class SMThemeCartography {
     private static ArrayList<HashMap<String, Object>> listRangeColors = new ArrayList<>();//分段专题图颜色方案
     private static ArrayList<HashMap<String, Object>> listGraphColors = new ArrayList<>();//统计专题图颜色方案
 
+    private static Color[] lastGridUniqueColors = null;//记录上次设置的颜色方案
+    private static Color[] lastGridRangeColors = null;
+
     private static HashMap<String, Object> createColorScheme(Color[] colors, String name) {
         HashMap<String, Object> colorsHashMap = new HashMap<>();
         colorsHashMap.put("Colors", colors);
@@ -1266,7 +1269,7 @@ public class SMThemeCartography {
      * 返回标签专题图中的标签背景的形状类型。
      *
      * @param shape
-     * @return RangeMode
+     * @return
      */
     public static LabelBackShape getLabelBackShape(String shape) {
         switch (shape) {
@@ -1301,7 +1304,7 @@ public class SMThemeCartography {
      * 返回标签专题图中的标签背景的形状类型字符串
      *
      * @param shape
-     * @return RangeMode
+     * @return
      */
     public static String getLabelBackShapeString(LabelBackShape shape) {
         if (shape == LabelBackShape.DIAMOND) {
@@ -1559,6 +1562,60 @@ public class SMThemeCartography {
                         if (rgb_start == rgb01) {
                             return colors;
                         }
+                    }
+                }
+            } else if (theme.getType() == ThemeType.GRIDUNIQUE) {
+                ThemeGridUnique themeGridUnique = (ThemeGridUnique) theme;
+                int count = themeGridUnique.getCount();
+
+                switch (layer.getDataset().getType().toString()) {
+                    case "GRID":
+                        color_start = themeGridUnique.getItem(0).getColor();
+                        color_end = themeGridUnique.getItem(count - 1).getColor();
+                        break;
+                }
+
+                if (color_start == null || color_end == null){
+                    return null;
+                }
+
+                int rgb_start = color_start.getRGB();
+                int rgb_end = color_end.getRGB();
+
+                for (int i = 0; i < listUniqueColors.size(); i++) {
+                    HashMap<String, Object> hashMap = listUniqueColors.get(i);
+                    Color[] colors = (Color[]) hashMap.get("Colors");
+                    int rgb01 = colors[0].getRGB();
+                    int rgb02 = colors[colors.length - 1].getRGB();
+                    if (rgb_start == rgb01 && rgb_end == rgb02) {
+                        return colors;
+                    }
+                }
+            } else if (theme.getType() == ThemeType.GRIDRANGE) {
+                ThemeGridRange themeGridRange = (ThemeGridRange) theme;
+                int count = themeGridRange.getCount();
+
+                switch (layer.getDataset().getType().toString()) {
+                    case "GRID":
+                        color_start = themeGridRange.getItem(0).getColor();
+                        color_end = themeGridRange.getItem(count - 1).getColor();
+                        break;
+                }
+
+                if (color_start == null || color_end == null){
+                    return null;
+                }
+
+                int rgb_start = color_start.getRGB();
+                int rgb_end = color_end.getRGB();
+
+                for (int i = 0; i < listRangeColors.size(); i++) {
+                    HashMap<String, Object> hashMap = listRangeColors.get(i);
+                    Color[] colors = (Color[]) hashMap.get("Colors");
+                    int rgb01 = colors[0].getRGB();
+                    int rgb02 = colors[colors.length - 1].getRGB();
+                    if (rgb_start == rgb01 && rgb_end == rgb02) {
+                        return colors;
                     }
                 }
             }
@@ -2046,4 +2103,270 @@ public class SMThemeCartography {
 
         return sizes;
     }
+
+    /**
+     * 创建统计专题图
+     * @param dataset
+     * @param graphExpressions
+     * @param themeGraphType
+     * @param colors
+     * @return
+     */
+    public static boolean createThemeGraphMap(Dataset dataset, ArrayList<String> graphExpressions, ThemeGraphType themeGraphType, Color[] colors) {
+        try {
+            if (dataset != null && graphExpressions != null && graphExpressions.size() > 0 && themeGraphType != null && colors != null) {
+                ThemeGraph themeGraph = new ThemeGraph();
+
+                ThemeGraphItem themeGraphItem = new ThemeGraphItem();
+                themeGraphItem.setGraphExpression(graphExpressions.get(0));
+                themeGraphItem.setCaption(graphExpressions.get(0));
+                themeGraph.insert(0, themeGraphItem);
+                themeGraph.setGraphType(themeGraphType);
+                themeGraph.getAxesTextStyle().setFontHeight(6);
+
+                Double[] sizes = getMaxMinGraphSize();
+                themeGraph.setMaxGraphSize(sizes[0]);
+                themeGraph.setMinGraphSize(sizes[1]);
+
+                int count = themeGraph.getCount();
+                Colors selectedColors = Colors.makeGradient(colors.length, colors);
+                if (count > 0) {
+                    for (int i = 0; i < count; i++) {
+                        themeGraph.getItem(i).getUniformStyle().setFillForeColor(selectedColors.get(i));
+                    }
+                }
+
+                //若有多个表达式，则从第二个开始添加
+                for (int i = 1; i < graphExpressions.size(); i++) {
+                    addGraphItem(themeGraph, graphExpressions.get(i), selectedColors);
+                }
+
+                com.supermap.mapping.Map map = SMap.getSMWorkspace().getMapControl().getMap();
+                map.getLayers().add(dataset, themeGraph, true);
+                map.refresh();
+
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 创建栅格单值专题图
+     * @param dataset
+     * @param colors
+     * @return
+     */
+    public static WritableMap createThemeGridUniqueMap(Dataset dataset, Color[] colors) {
+        MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+        DatasetGrid datasetGrid = null;
+        WritableMap writableMap = Arguments.createMap();
+
+        if (dataset != null && dataset.getType() == DatasetType.GRID) {
+            datasetGrid = (DatasetGrid) dataset;
+        } else if (dataset != null && dataset.getType() != DatasetType.GRID) {
+            writableMap.putString("Error", "数据集类型不匹配：栅格专题图只能由栅格数据集制作");
+            writableMap.putBoolean("Result", false);
+            return writableMap;
+        }
+
+        if (datasetGrid != null && colors != null) {
+            ThemeGridUnique themeGridUnique = ThemeGridUnique.makeDefault(datasetGrid, ColorGradientType.GREENORANGEVIOLET);
+
+            if (themeGridUnique.getCount() > 3000) {
+                writableMap.putString("Error", "所选栅格数据集的单值项超过了系统的最大限制数目3000条，专题图制作失败");
+                writableMap.putBoolean("Result", false);
+                return writableMap;
+            }
+
+            if (null != themeGridUnique) {
+                int rangeCount = themeGridUnique.getCount();
+                Colors selectedColors = Colors.makeGradient(rangeCount, colors);
+                if (rangeCount > 0) {
+                    for (int i = 0; i < rangeCount; i++) {
+                        themeGridUnique.getItem(i).setColor(selectedColors.get(i));
+                    }
+                }
+
+                mapControl.getMap().getLayers().add(datasetGrid, themeGridUnique, true);
+                mapControl.getMap().refresh();
+
+                writableMap.putBoolean("Result", true);
+                return writableMap;
+            }
+        }
+
+        writableMap.putString("Error", "专题图创建失败");
+        writableMap.putBoolean("Result", false);
+        return writableMap;
+    }
+
+    /**
+     * 创建栅格分段专题图
+     * @param dataset
+     * @param colors
+     * @return
+     */
+    public static WritableMap createThemeGridRangeMap(Dataset dataset, Color[] colors) {
+        MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+        DatasetGrid datasetGrid = null;
+        WritableMap writableMap = Arguments.createMap();
+
+        if (dataset != null && dataset.getType() == DatasetType.GRID) {
+            datasetGrid = (DatasetGrid) dataset;
+        } else if (dataset != null && dataset.getType() != DatasetType.GRID) {
+            writableMap.putString("Error", "数据集类型不匹配：栅格专题图只能由栅格数据集制作");
+            writableMap.putBoolean("Result", false);
+            return writableMap;
+        }
+
+        if (datasetGrid != null && colors != null) {
+            ThemeGridRange themeGridRange = ThemeGridRange.makeDefault(datasetGrid, RangeMode.EQUALINTERVAL, 5, ColorGradientType.GREENORANGEVIOLET);
+
+            if (null != themeGridRange) {
+                int rangeCount = themeGridRange.getCount();
+                Colors selectedColors = Colors.makeGradient(rangeCount, colors);
+                if (rangeCount > 0) {
+                    for (int i = 0; i < rangeCount; i++) {
+                        themeGridRange.getItem(i).setColor(selectedColors.get(i));
+                    }
+                }
+
+                mapControl.getMap().getLayers().add(datasetGrid, themeGridRange, true);
+                mapControl.getMap().refresh();
+
+                writableMap.putBoolean("Result", true);
+                return writableMap;
+            }
+        }
+
+        writableMap.putString("Error", "专题图创建失败");
+        writableMap.putBoolean("Result", false);
+        return writableMap;
+    }
+
+    /**
+     * 修改栅格单值专题图
+     * @param layer
+     * @param newColors
+     * @param specialValue
+     * @param defaultColor
+     * @param specialValueColor
+     * @param isParams
+     * @param isTransparent
+     * @return
+     */
+    public static boolean modifyThemeGridUniqueMap(Layer layer, Color[] newColors, int specialValue, Color defaultColor, Color specialValueColor, boolean isParams, boolean isTransparent) {
+        try {
+            if (layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.GRIDUNIQUE) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
+                ThemeGridUnique themeGridUnique = (ThemeGridUnique) layer.getTheme();
+                if (specialValue != -1) {
+                    themeGridUnique.setSpecialValue(specialValue);
+                }
+                if (defaultColor != null) {
+                    themeGridUnique.setDefaultColor(defaultColor);
+                }
+                if (isParams) {
+                    themeGridUnique.setSpecialValueTransparent(isTransparent);
+                }
+                if (specialValueColor != null) {
+                    //themeGridUnique.setSpecialValueColor(specialValueColor); //接口还未实现
+                }
+                if (newColors != null) {
+                    int rangeCount = themeGridUnique.getCount();
+                    Colors selectedColors = Colors.makeGradient(rangeCount, newColors);
+                    if (rangeCount > 0) {
+                        for (int i = 0; i < rangeCount; i++) {
+                            themeGridUnique.getItem(i).setColor(selectedColors.get(i));
+                        }
+                    }
+                }
+                mapControl.getMap().refresh();
+
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 修改栅格分段专题图
+     * @param layer
+     * @param rangeMode
+     * @param rangeParameter
+     * @param newColors
+     * @return
+     */
+    public static boolean modifyThemeGridRangeMap(Layer layer, RangeMode rangeMode, double rangeParameter, Color[] newColors) {
+        try {
+            if (layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.GRIDRANGE) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
+                ThemeGridRange themeGridRange = (ThemeGridRange) layer.getTheme();
+                if (rangeMode == null) {
+                    rangeMode =  themeGridRange.getRangeMode();
+                }
+                if (rangeParameter == -1) {
+                    rangeParameter = themeGridRange.getCount();
+                }
+
+                ThemeGridRange themeTemp = ThemeGridRange.makeDefault((DatasetGrid) layer.getDataset(), rangeMode, rangeParameter, ColorGradientType.GREENORANGEVIOLET);
+                if (themeTemp != null) {
+                    if (newColors != null) {
+                        //设置新的颜色方案
+                        int rangeCount = themeTemp.getCount();
+                        Colors selectedColors = Colors.makeGradient(rangeCount, newColors);
+                        if (rangeCount > 0) {
+                            for (int i = 0; i < rangeCount; i++) {
+                                themeTemp.getItem(i).setColor(selectedColors.get(i));
+                            }
+                        }
+                    } else {
+                        //获取上次的颜色方案(先从专题图中获取，再从内存中获取)
+                        Color[] colors = SMThemeCartography.getLastThemeColors(layer);
+                        if (colors != null) {
+                            lastGridRangeColors = colors;
+                            int rangeCount = themeTemp.getCount();
+                            Colors selectedColors = Colors.makeGradient(rangeCount, colors);
+                            if (rangeCount > 0) {
+                                for (int i = 0; i < rangeCount; i++) {
+                                    themeTemp.getItem(i).setColor(selectedColors.get(i));
+                                }
+                            }
+                        } else {
+                            if (lastGridRangeColors != null) {
+                                int rangeCount = themeTemp.getCount();
+                                Colors selectedColors = Colors.makeGradient(rangeCount, lastGridRangeColors);
+                                if (rangeCount > 0) {
+                                    for (int i = 0; i < rangeCount; i++) {
+                                        themeTemp.getItem(i).setColor(selectedColors.get(i));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                themeGridRange.fromXML(themeTemp.toXML());
+                mapControl.getMap().refresh();
+
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

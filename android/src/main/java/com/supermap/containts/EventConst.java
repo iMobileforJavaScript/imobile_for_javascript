@@ -7,6 +7,8 @@ public class EventConst {
     /*
      * 在线模块
      */
+    public static final String ONLINE_SERVICE_REVERSEGEOCODING = "com.supermap.RN.Mapcontrol.online_service_reversegeocoding";
+
     public static final String ONLINE_SERVICE_DOWNLOADING = "com.supermap.RN.Mapcontrol.online_service_downloading";
     public static final String ONLINE_SERVICE_DOWNLOADED = "com.supermap.RN.Mapcontrol.online_service_downloaded";
     public static final String ONLINE_SERVICE_DOWNLOADFAILURE = "com.supermap.RN.Mapcontrol.online_service_downloadfailure";
