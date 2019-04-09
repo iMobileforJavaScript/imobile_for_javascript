@@ -17,7 +17,7 @@ public class RNLegendView extends LegendView{
     private Handler mHandler = new Handler();
 
     @Override
-    protected void create(){
+    public void create(){
         mHandler.post(new Runnable() {
 
             @Override
