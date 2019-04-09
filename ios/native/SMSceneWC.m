@@ -247,12 +247,15 @@
 }
 
 static NSString *g_strCustomerDirectory = nil;
--(NSString *)getCustomerDirectory{
-    if (g_strCustomerDirectory==nil) {
-        g_strCustomerDirectory = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer"];
+-(NSString *)getCustomerDirectory:(BOOL)bPrivate{
+    if (bPrivate) {
+        if (g_strCustomerDirectory==nil) {
+            g_strCustomerDirectory = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer"];
+        }
+        return g_strCustomerDirectory;
+    }else{
+        return [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User/Customer"];
     }
-    return g_strCustomerDirectory;
-    //return @"/Customer";
 }
 -(void)setCustomerDirectory:(NSString *)strValue{
     g_strCustomerDirectory = strValue;
@@ -290,9 +293,9 @@ static NSString *g_strCustomerDirectory = nil;
     }
 }
 
--(BOOL)export3DScenceName:(NSString*)strScenceName toFolder:(NSString*)strDesFolder{
+-(BOOL)export3DScenceName:(NSString*)strScenceName toFolder:(NSString*)strDesFolder isPrivate:(BOOL)bPrivate{
     
-    NSString * strDir = [NSString stringWithFormat:@"%@/Data/Scene",[self getCustomerDirectory]];
+    NSString * strDir = [NSString stringWithFormat:@"%@/Data/Scene",[self getCustomerDirectory:bPrivate]];
     NSString* srcPathPXP = [NSString stringWithFormat:@"%@/%@.pxp",strDir,strScenceName];
     BOOL isDir = true;
     BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathPXP isDirectory:&isDir];
@@ -349,7 +352,7 @@ static NSString *g_strCustomerDirectory = nil;
     
 }
 
--(BOOL)import3DWorkspaceInfo:(NSDictionary *)infoDic{
+-(BOOL)import3DWorkspaceInfo:(NSDictionary *)infoDic isPrivate:(BOOL)bPrivate{
     
     BOOL result = false;
     if ( infoDic && [infoDic objectForKey:@"server"] && [infoDic objectForKey:@"type"] && ![_workspace.connectionInfo.server isEqualToString:[infoDic objectForKey:@"server"]]) {
@@ -363,7 +366,7 @@ static NSString *g_strCustomerDirectory = nil;
             NSString * strSrcFolder = [strSrcServer substringToIndex:strSrcServer.length-strServerName.length-1];
             NSString * strFolderName = [[strSrcFolder  componentsSeparatedByString:@"/"] lastObject];
             
-            NSString * strDesDir = [NSString stringWithFormat:@"%@/Data/Scene",[self getCustomerDirectory]];
+            NSString * strDesDir = [NSString stringWithFormat:@"%@/Data/Scene",[self getCustomerDirectory:bPrivate]];
 
             NSString * strDesFolder = [NSString stringWithFormat:@"%@/%@",strDesDir,strFolderName];
             //1.拷贝所有数据
@@ -403,12 +406,12 @@ static NSString *g_strCustomerDirectory = nil;
     
 }
 
--(BOOL)openScenceName:(NSString *)strScenceName toScenceControl:(SceneControl*)scenceControl{
+-(BOOL)openScenceName:(NSString *)strScenceName toScenceControl:(SceneControl*)scenceControl isPrivate:(BOOL)bPrivate{
     if(scenceControl.scene.workspace==nil){
         [scenceControl.scene setWorkspace:_workspace];
         //return false;
     }
-    NSString * strDir = [NSString stringWithFormat:@"%@/Data/Scene",[self getCustomerDirectory]];
+    NSString * strDir = [NSString stringWithFormat:@"%@/Data/Scene",[self getCustomerDirectory:bPrivate]];
     NSString* srcPathPXP = [NSString stringWithFormat:@"%@/%@.pxp",strDir,strScenceName];
     BOOL isDir = true;
     BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:srcPathPXP isDirectory:&isDir];

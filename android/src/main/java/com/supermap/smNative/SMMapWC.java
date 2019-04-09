@@ -1263,9 +1263,14 @@ public class SMMapWC {
             return null;
         }
 
-        String strUserName = getUserName();
-        if (strUserName == null) {
-            return arrResult;
+        String strUserName;
+        if (!bPrivate) {
+            strUserName = "Customer";
+        } else {
+            strUserName = getUserName();
+            if (strUserName == null) {
+                return arrResult;
+            }
         }
         String strRootPath = getRootPath();
         String strCustomer = strRootPath + "/" + strUserName + "/Data";
