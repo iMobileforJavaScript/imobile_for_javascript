@@ -128,6 +128,7 @@ RCT_REMAP_METHOD(showMarker,  longitude:(double)longitude latitude:(double)latit
     }
 }
 
+#pragma mark 移除marker
 RCT_REMAP_METHOD(deleteMarker, deleteMarkerResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         [sMap.smMapWC.mapControl removeAllCallouts];
