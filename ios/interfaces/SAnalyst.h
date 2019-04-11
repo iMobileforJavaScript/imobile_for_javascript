@@ -37,6 +37,6 @@
 
 @interface SAnalyst : RCTEventEmitter<RCTBridgeModule>
 + (GeoStyle *)getGeoStyleByDictionary:(NSDictionary *)geoStyleDic;
-+ (BufferAnalystParameter *)getBufferAnalystParameterByDictionary:(NSDictionary *)parameter;'
++ (BufferAnalystParameter *)getBufferAnalystParameterByDictionary:(NSDictionary *)parameter;
 + (Dataset *)getDatasetByDictionary:(NSDictionary *)dic;
 @end
