@@ -27,4 +27,5 @@
 
 /** 设置关联的图例控件*/
 -(void) connectLegendView:(LegendView *)legendView;
+-(void) disConnectLegendView;
 @end
