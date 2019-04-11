@@ -88,11 +88,50 @@ RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTProm
     }
 }
 
-#pragma mark 刷新地图
-RCT_REMAP_METHOD(refreshMap, refreshMapWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+#pragma mark 添加marker
+RCT_REMAP_METHOD(showMarker,  longitude:(double)longitude latitude:(double)latitude  showMarkerResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        sMap = [SMap singletonInstance];
-        [sMap.smMapWC.mapControl.map refresh];
+        Point2D* pt = [[Point2D alloc] initWithX:longitude Y:latitude];
+        Point2Ds *points = [[Point2Ds alloc]init];
+        if ([sMap.smMapWC.mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+            Point2Ds *points = [[Point2Ds alloc]init];
+            [points add:pt];
+            PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+            [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+            CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+            
+            //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+            [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+            pt = [points getItem:0];
+        }
+        
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            Callout* callout = [[Callout alloc]initWithMapControl:sMap.smMapWC.mapControl];
+            callout.width = 25;
+            callout.height = 25;
+            UIImageView* image = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"SuperMap.bundle/Contents/Resources/Resource/node.png"]];
+            image.frame = CGRectMake(0, 0, 25, 25);
+            // UIImage* img = ;
+            [callout addSubview:image];
+            [callout showAt:pt];
+            //[sMap.smMapWC.mapControl panTo:pt time:200];
+             sMap.smMapWC.mapControl.map.center = pt;
+            sMap.smMapWC.mapControl.map.scale = 0.000011947150294723098;
+            [sMap.smMapWC.mapControl.map refresh];
+        });
+       
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"SMap", exception.reason, nil);
+    }
+}
+
+#pragma mark 移除marker
+RCT_REMAP_METHOD(deleteMarker, deleteMarkerResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [sMap.smMapWC.mapControl removeAllCallouts];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"SMap", exception.reason, nil);

@@ -3,11 +3,19 @@
  */
 package com.supermap.interfaces.mapping;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -32,6 +40,8 @@ import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Resources;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Action;
+import com.supermap.mapping.CallOut;
+import com.supermap.mapping.CalloutAlignment;
 import com.supermap.mapping.GeometryAddedListener;
 import com.supermap.mapping.GeometryEvent;
 import com.supermap.mapping.GeometrySelectedEvent;
@@ -54,6 +64,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -172,6 +184,69 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 添加marker
+     *
+     * @param data
+     * @param promise
+     */
+    @ReactMethod
+    public void showMarker(double longitude, double latitude, Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            Point2D pt = new Point2D(longitude,latitude);
+            if (sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+                Point2Ds point2Ds = new Point2Ds();
+                point2Ds.add(pt);
+                PrjCoordSys prjCoordSys = new PrjCoordSys();
+                prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                CoordSysTransParameter parameter = new CoordSysTransParameter();
+
+                CoordSysTranslator.convert(point2Ds, prjCoordSys, sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                pt = point2Ds.getItem(0);
+            }
+            final  Point2D mapPt = pt;//new Point2D(11584575.605042318,3573118.555091877);
+            getCurrentActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+//                    final  Point2D mapPt = new Point2D(11584575.605042318,3573118.555091877);
+                    GeoPoint point = new GeoPoint(mapPt.getX(),mapPt.getY());
+                    GeoStyle style = new GeoStyle();
+                    style.setMarkerSymbolID(1);
+                    style.setMarkerSize(new Size2D(25,25));
+                    style.setLineColor(new Color(255,0,0,255));
+                    point.setStyle(style);
+                    sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(point,"marker_###");
+
+                    sMap.smMapWC.getMapControl().getMap().setCenter(mapPt);
+                    sMap.smMapWC.getMapControl().getMap().setScale(0.000011947150294723098);
+                    sMap.smMapWC.getMapControl().getMap().refresh();
+                }
+            });
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 移除marker
+     *
+     * @param data
+     * @param promise
+     */
+    @ReactMethod
+    public void deleteMarker(Promise promise) {
+        try {
+            sMap.smMapWC.getMapControl().getMap().getTrackingLayer().removeLabel("marker_###");
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
     /**
      * 刷新地图
