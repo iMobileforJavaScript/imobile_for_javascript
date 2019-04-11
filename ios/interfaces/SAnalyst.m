@@ -84,7 +84,7 @@ RCT_REMAP_METHOD(createBuffer, createBufferWithSourceData:(NSDictionary *)source
                 GeoStyle* geoStyle = [SAnalyst getGeoStyleByDictionary:geoStyleDic];
                 TrackingLayer* trackingLayer = map.trackingLayer;
                 
-                Recordset* recordset = resultDataset toRecor
+//                Recordset* recordset = resultDataset toRecor
             }
         }
         
