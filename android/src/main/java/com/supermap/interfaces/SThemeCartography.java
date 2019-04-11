@@ -1945,6 +1945,396 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
      /*栅格分段专题图
     * ********************************************************************************************/
+    /**
+     * 数据集->创建栅格分段专题图
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void createThemeGridRangeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            int datasourceIndex = -1;
+            String datasourceAlias = null;
+
+            String datasetName = null;//数据集名称
+            Color[] colors = null;//颜色方案
+
+            if (data.containsKey("DatasetName")){
+                datasetName = data.get("DatasetName").toString();
+            }
+            if (data.containsKey("GridRangeColorScheme")){
+                String type = data.get("GridRangeColorScheme").toString();
+                colors = SMThemeCartography.getRangeColors(type);
+            } else {
+                colors = SMThemeCartography.getRangeColors("FF_Blues");//默认
+            }
+
+            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
+            if (dataset == null) {
+                if (data.containsKey("DatasourceIndex")){
+                    String index = data.get("DatasourceIndex").toString();
+                    datasourceIndex = Integer.parseInt(index);
+                }
+                if (data.containsKey("DatasourceAlias")){
+                    datasourceAlias = data.get("DatasourceAlias").toString();
+                }
+
+                if (datasourceAlias != null) {
+                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
+                }  else {
+                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
+                }
+            }
+
+            WritableMap writableMap = SMThemeCartography.createThemeGridRangeMap(dataset, colors);
+            promise.resolve(writableMap);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 图层->创建栅格分段专题图
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void createThemeGridRangeMapByLayer(ReadableMap readableMap, Promise promise) {
+        try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;//图层名称
+            int layerIndex = -1;
+            Color[] colors = null;//颜色方案
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            } else if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("GridRangeColorScheme")){
+                String type = data.get("GridRangeColorScheme").toString();
+                colors = SMThemeCartography.getRangeColors(type);
+            } else {
+                colors = SMThemeCartography.getRangeColors("FF_Blues");//默认
+            }
+
+            Layer layer = null;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+            Dataset dataset = null;
+            if (layer != null) {
+                dataset = layer.getDataset();
+            }
+
+            WritableMap writableMap = SMThemeCartography.createThemeGridRangeMap(dataset, colors);
+            promise.resolve(writableMap);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 修改栅格分段专题图(分段方法，分段参数，颜色方案)
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void modifyThemeGridRangeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            RangeMode rangeMode = null;//分段方法：等距，平方根，对数
+            double rangeParameter = -1;
+            Color[] colors = null;//颜色方案
+
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            } else if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("RangeMode")){
+                String mode = data.get("RangeMode").toString();
+                rangeMode = SMThemeCartography.getRangeMode(mode);
+            }
+            if (data.containsKey("RangeParameter")){
+                String param = data.get("RangeParameter").toString();
+                rangeParameter = Double.parseDouble(param);
+            }
+            if (data.containsKey("GridRangeColorScheme")){
+                String type = data.get("GridRangeColorScheme").toString();
+                colors = SMThemeCartography.getRangeColors(type);
+            }
+
+            Layer layer = null;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            boolean result = SMThemeCartography.modifyThemeGridRangeMap(layer, rangeMode, rangeParameter, colors);
+            promise.resolve(result);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取栅格分段专题图的分段数
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getGridRangeCount(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.GRIDRANGE) {
+                    ThemeGridRange themeGridRange = (ThemeGridRange) layer.getTheme();
+
+                    promise.resolve(themeGridRange.getCount());
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+
+    /*栅格单值专题图
+     * ********************************************************************************************/
+    /**
+     * 数据集->创建栅格单值专题图
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void createThemeGridUniqueMap(ReadableMap readableMap, Promise promise) {
+        try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            int datasourceIndex = -1;
+            String datasourceAlias = null;
+
+            String datasetName = null;//数据集名称
+            Color[] colors = null;//颜色方案
+
+            if (data.containsKey("DatasetName")){
+                datasetName = data.get("DatasetName").toString();
+            }
+            if (data.containsKey("GridUniqueColorScheme")){
+                String type = data.get("GridUniqueColorScheme").toString();
+                colors = SMThemeCartography.getUniqueColors(type);
+            } else {
+                colors = SMThemeCartography.getUniqueColors("EE_Lake");//默认
+            }
+
+            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
+            if (dataset == null) {
+                if (data.containsKey("DatasourceIndex")){
+                    String index = data.get("DatasourceIndex").toString();
+                    datasourceIndex = Integer.parseInt(index);
+                }
+                if (data.containsKey("DatasourceAlias")){
+                    datasourceAlias = data.get("DatasourceAlias").toString();
+                }
+
+                if (datasourceAlias != null) {
+                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
+                }  else {
+                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
+                }
+            }
+
+            WritableMap writableMap = SMThemeCartography.createThemeGridUniqueMap(dataset, colors);
+            promise.resolve(writableMap);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 图层->创建栅格单值专题图
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void createThemeGridUniqueMapByLayer(ReadableMap readableMap, Promise promise) {
+        try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;//图层名称
+            int layerIndex = -1;
+            Color[] colors = null;//颜色方案
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            } else if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("GridUniqueColorScheme")){
+                String type = data.get("GridUniqueColorScheme").toString();
+                colors = SMThemeCartography.getUniqueColors(type);
+            } else {
+                colors = SMThemeCartography.getUniqueColors("EE_Lake");//默认
+            }
+
+            Layer layer = null;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+            Dataset dataset = null;
+            if (layer != null) {
+                dataset = layer.getDataset();
+            }
+
+            WritableMap writableMap = SMThemeCartography.createThemeGridUniqueMap(dataset, colors);
+            promise.resolve(writableMap);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置栅格单值专题图层的特殊值。
+     * 设置栅格单值专题图的默认颜色，对于那些未在栅格单值专题图子项之列的对象使用该颜色显示。
+     * 设置栅格单值专题图层特殊值的颜色。
+     * 设置栅格单值专题图层的特殊值所处区域是否透明。
+     * 设置颜色方案。
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void modifyThemeGridUniqueMap(ReadableMap readableMap, Promise promise) {
+        try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+            int specialValue = -1;
+            Color defaultColor = null;
+            Color specialValueColor = null;
+
+            boolean isParams = false;
+            boolean isTransparent = false;//特殊值透明显示：默认false
+
+            Color[] colors = null;//颜色方案
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            } else if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("SpecialValue")){
+                String value = data.get("SpecialValue").toString();
+                specialValue = Integer.parseInt(value);
+            }
+            if (data.containsKey("DefaultColor")){
+                String color = data.get("DefaultColor").toString();
+                defaultColor = ColorParseUtil.getColor(color);
+            }
+            if (data.containsKey("SpecialValueColor")){
+                String color = data.get("SpecialValueColor").toString();
+                specialValueColor = ColorParseUtil.getColor(color);
+            }
+            if (data.containsKey("SpecialValueTransparent")){
+                isParams = true;
+                String specialValueTransparent = data.get("SpecialValueTransparent").toString();
+                isTransparent = Boolean.parseBoolean(specialValueTransparent);
+            }
+            if (data.containsKey("GridUniqueColorScheme")){
+                String type = data.get("GridUniqueColorScheme").toString();
+                colors = SMThemeCartography.getUniqueColors(type);
+            }
+
+            Layer layer = null;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            boolean result = SMThemeCartography.modifyThemeGridUniqueMap(layer, colors, specialValue, defaultColor, specialValueColor ,isParams, isTransparent);
+            promise.resolve(result);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
 
     /*统计专题图
      * ********************************************************************************************/
@@ -2004,42 +2394,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 }
             }
 
-            boolean result = false;
-            if (dataset != null && graphExpressions != null && graphExpressions.size() > 0 && themeGraphType != null && colors != null) {
-                Map map = mapControl.getMap();
-
-                ThemeGraph themeGraph = new ThemeGraph();
-
-                ThemeGraphItem themeGraphItem = new ThemeGraphItem();
-                themeGraphItem.setGraphExpression(graphExpressions.get(0));
-                themeGraphItem.setCaption(graphExpressions.get(0));
-                themeGraph.insert(0, themeGraphItem);
-                themeGraph.setGraphType(themeGraphType);
-                themeGraph.getAxesTextStyle().setFontHeight(6);
-
-                //获取统计专题图中统计符号显示的最大值,最小值
-                Double[] sizes = SMThemeCartography.getMaxMinGraphSize();
-                themeGraph.setMaxGraphSize(sizes[0]);
-                themeGraph.setMinGraphSize(sizes[1]);
-
-                int count = themeGraph.getCount();
-                Colors selectedColors = Colors.makeGradient(colors.length, colors);
-                if (count > 0) {
-                    for (int i = 0; i < count; i++) {
-                        themeGraph.getItem(i).getUniformStyle().setFillForeColor(selectedColors.get(i));
-                    }
-                }
-
-                //若有多个表达式，则从第二个开始添加
-                for (int i = 1; i < graphExpressions.size(); i++) {
-                    SMThemeCartography.addGraphItem(themeGraph, graphExpressions.get(i), selectedColors);
-                }
-
-                mapControl.getMap().getLayers().add(dataset, themeGraph, true);
-                mapControl.getMap().refresh();
-
-                result = true;
-            }
+            boolean result = SMThemeCartography.createThemeGraphMap(dataset, graphExpressions, themeGraphType, colors);
             promise.resolve(result);
         } catch (Exception e) {
             Log.e(REACT_CLASS, e.getMessage());
@@ -2075,14 +2430,6 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 String index = data.get("LayerIndex").toString();
                 layerIndex = Integer.parseInt(index);
             }
-
-            Layer layer = null;
-            if (layerName != null) {
-                layer = SMThemeCartography.getLayerByName(layerName);
-            } else {
-                layer = SMThemeCartography.getLayerByIndex(layerIndex);
-            }
-
             if (data.containsKey("GraphExpressions")){
                 graphExpressions  = (ArrayList<String>) data.get("GraphExpressions");
             }
@@ -2097,46 +2444,18 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 colors = SMThemeCartography.getGraphColors("HA_Calm");//默认
             }
 
+            Layer layer = null;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
             Dataset dataset = null;
             if (layer != null) {
                 dataset = layer.getDataset();
             }
 
-            boolean result = false;
-            if (dataset != null && graphExpressions != null && graphExpressions.size() > 0 && themeGraphType != null && colors != null) {
-                Map map = mapControl.getMap();
-
-                ThemeGraph themeGraph = new ThemeGraph();
-
-                ThemeGraphItem themeGraphItem = new ThemeGraphItem();
-                themeGraphItem.setGraphExpression(graphExpressions.get(0));
-                themeGraphItem.setCaption(graphExpressions.get(0));
-                themeGraph.insert(0, themeGraphItem);
-                themeGraph.setGraphType(themeGraphType);
-                themeGraph.getAxesTextStyle().setFontHeight(6);
-
-                Double[] sizes = SMThemeCartography.getMaxMinGraphSize();
-                themeGraph.setMaxGraphSize(sizes[0]);
-                themeGraph.setMinGraphSize(sizes[1]);
-
-                int count = themeGraph.getCount();
-                Colors selectedColors = Colors.makeGradient(colors.length, colors);
-                if (count > 0) {
-                    for (int i = 0; i < count; i++) {
-                        themeGraph.getItem(i).getUniformStyle().setFillForeColor(selectedColors.get(i));
-                    }
-                }
-
-                //若有多个表达式，则从第二个开始添加
-                for (int i = 1; i < graphExpressions.size(); i++) {
-                    SMThemeCartography.addGraphItem(themeGraph, graphExpressions.get(i), selectedColors);
-                }
-
-                mapControl.getMap().getLayers().add(dataset, themeGraph, true);
-                mapControl.getMap().refresh();
-
-                result = true;
-            }
+            boolean result = SMThemeCartography.createThemeGraphMap(dataset, graphExpressions, themeGraphType, colors);
             promise.resolve(result);
         } catch (Exception e) {
             Log.e(REACT_CLASS, e.getMessage());
@@ -3507,26 +3826,26 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     public void isAnyOpenedDS(Promise promise) {
         try {
             Workspace workspace = SMap.getSMWorkspace().getWorkspace();
-            int count = workspace.getDatasources().getCount();
-
             Datasources datasources = workspace.getDatasources();
-            int datasourcesCount = datasources.getCount();
-            ArrayList<Datasource> list = new ArrayList<>();
-            for (int i = 0; i < datasourcesCount; i++) {
+            int size = 0;
+            for (int i = 0; i < datasources.getCount(); i++) {
                 Datasource datasource = datasources.get(i);
+                //除了UDB数据源都排除
                 if (datasource.getConnectionInfo().getEngineType() == EngineType.UDB) {
-                    //除了UDB数据源都排除
-                    list.add(datasource);
+                    if (datasource.getAlias().equals("Label")) {
+                        continue;
+                    } else {
+                        //排除标注数据源
+                        size++;
+                    }
                 }
             }
 
-            boolean isAnyOpenedDS = true;
-            if (count <= 0) {
-                isAnyOpenedDS = false;
-            } else if (list.size() == 0) {
-                isAnyOpenedDS = false;
+            if (size == 0) {
+                promise.resolve(false);
+            } else {
+                promise.resolve(true);
             }
-            promise.resolve(isAnyOpenedDS);
         } catch (Exception e) {
             promise.reject(e);
         }

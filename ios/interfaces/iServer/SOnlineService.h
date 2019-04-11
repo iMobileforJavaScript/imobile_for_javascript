@@ -10,6 +10,8 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 #import "SuperMap/OnlineService.h"
-@interface SOnlineService :  RCTEventEmitter<RCTBridgeModule, OnlineServiceUploadDelegate, OnlineServiceDownloadDelegate>
+#import "SuperMap/GeoCoding.h"
+
+@interface SOnlineService :  RCTEventEmitter<RCTBridgeModule, OnlineServiceUploadDelegate, OnlineServiceDownloadDelegate,GeocodingCallback>
 
 @end

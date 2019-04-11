@@ -395,11 +395,11 @@ public class SScene extends ReactContextBaseJavaModule {
     public void getMapList(Promise promise) {
         try {
             sScene = getInstance();
-            int count = sScene.smSceneWc.getWorkspace().getScenes().getCount();
+            int count = sScene.smSceneWc.getSceneControl().getScene().getWorkspace().getScenes().getCount();
             WritableArray arr = Arguments.createArray();
             if (count > 0) {
                 for (int i = 0; i < count; i++) {
-                    String name = sScene.smSceneWc.getWorkspace().getScenes().get(i);
+                    String name = sScene.smSceneWc.getSceneControl().getScene().getWorkspace().getScenes().get(i);
                     WritableMap map = Arguments.createMap();
                     map.putString("name", name);
                     arr.pushMap(map);
@@ -1392,7 +1392,7 @@ public class SScene extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void import3DWorkspace(ReadableMap data, Promise promise) {
+    public void import3DWorkspace(ReadableMap data,Boolean bPrivate, Promise promise) {
         try {
             sScene = getInstance();
             Map params = data.toHashMap();
@@ -1400,7 +1400,7 @@ public class SScene extends ReactContextBaseJavaModule {
             if(sScene.smSceneWc==null){
                 sScene.smSceneWc = new SMSceneWC();
             }
-            boolean result = sScene.smSceneWc.import3DWorkspaceInfo(params);
+            boolean result = sScene.smSceneWc.import3DWorkspaceInfo(params,bPrivate);
             promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
@@ -1414,11 +1414,11 @@ public class SScene extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void openScence(String name, Promise promise) {
+    public void openScence(String name,Boolean bPrivate, Promise promise) {
         try {
             sScene = getInstance();
             SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
-            boolean result=sScene.smSceneWc.openScenceName(name,sceneControl);
+            boolean result=sScene.smSceneWc.openScenceName(name,sceneControl,bPrivate);
             if(result){
                 defaultCamera=sceneControl.getScene().getCamera();
             }
@@ -1474,10 +1474,10 @@ public class SScene extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void export3DScenceName(String strScenceName, String strDesFolder, Promise promise) {
+    public void export3DScenceName(String strScenceName, String strDesFolder,Boolean bPrivate, Promise promise) {
         try {
             sScene = getInstance();
-            sScene.smSceneWc.export3DScenceName(strScenceName,strDesFolder);
+            sScene.smSceneWc.export3DScenceName(strScenceName,strDesFolder,bPrivate);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

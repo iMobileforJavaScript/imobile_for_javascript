@@ -4,12 +4,13 @@
  E-mail: yangshanglong@supermap.com
  Description: 工作空间操作类
  **********************************************************************************/
-import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform } from 'react-native'
+import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform, PixelRatio } from 'react-native'
 import * as MapTool from './SMapTool'
 import * as LayerManager from './SLayerManager'
 import * as Datasource from './SDatasource'
 import { EventConst } from '../../constains/index'
 let SMap = NativeModules.SMap
+const dpi = PixelRatio.get()
 
 const nativeEvt = new NativeEventEmitter(SMap)
 
@@ -266,6 +267,50 @@ export default (function () {
       console.error(e)
     }
   }
+  
+  /**
+   * 以面对象region裁减地图map 并保存为 strResultName
+   通过图层确定裁减数据集，支持矢量和本地删格数据集，layer可以不参加裁减（不参加，意思是在结果数据集中layer.dataset不变）但同一数据集的layer裁减参数一致（以第一个layer参数为准）
+   
+   
+   返回值说明：裁减完地图尝试以strResultName保存到map.workspace.maps中，若已存在同名则重命名为strResultName#1，把最终命名结果返回
+   * @param points
+   *   [{x, y}]
+   * @param layersInfo
+   *   LayerName 需裁减Layer名（实际为裁减Layer对应dataset，裁减结果为新数据集保留到dataset所在datasource，新地图中Layer指向新数据集）
+       IsClipInRegion 裁减区域在面内还是面外
+       IsErase 是否擦除模式
+       IsExactClip 是否精确裁减（删格涂层才有该选项）
+       DatasourceTarget
+       DatasetTarget
+     Eg:
+       @"[{\"LayerName\":\"%@\",\"IsClipInRegion\":false,\"IsErase\":false,\"IsExactClip\":true},\
+       {\"LayerName\":\"%@\",\"DatasourceTarget\":\"%@\",\"IsErase\":false,\"IsExactClip\":true},\
+       {\"LayerName\":\"%@\",\"IsExactClip\":false,\"DatasourceTarget\":\"%@\",\"DatasetTarget\":\"%@\"}]"
+   * @param mapName 另存为新地图
+   * @param ofModule 另存为新地图模块
+   * @param addition 另存为新地图额外信息（例如：exp中模板信息）
+   * @param isPrivate 另存为新地图的是否是用户目录
+   * @returns {*}
+   */
+  function clipMap (points = [], layersInfo = [], mapName = null, ofModule = '', addition, isPrivate = true) {
+    try {
+      let _points = []
+      if (Platform.OS === 'android') {
+        points.forEach(point => {
+          _points.push({
+            x: point.x * dpi,
+            y: point.y * dpi,
+          })
+        })
+      } else {
+        _points = points
+      }
+      return SMap.clipMap(_points, layersInfo, mapName, ofModule, addition, isPrivate)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
    * 移动到当前位置
@@ -323,6 +368,10 @@ export default (function () {
 
   submit = () => {
     return SMap.submit()
+  }
+
+  cancel = () => {
+    return SMap.cancel()
   }
 
   /**
@@ -580,6 +629,28 @@ export default (function () {
     }
   }
 
+    /**
+   * 获取地图对应的数据源别名
+   */
+  function showMarker (longitude,latitude) {
+    try {
+      return SMap.showMarker(longitude,latitude)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+    /**
+   * 获取地图对应的数据源别名
+   */
+  function deleteMarker () {
+    try {
+      return SMap.deleteMarker()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  
   /**
    * 获取地图对应的数据源别名
    */
@@ -646,18 +717,17 @@ export default (function () {
       console.error(e)
     }
   }
-
+  
   /**
    * 导出工作空间
    * @param mapName  地图名字（不含后缀）
-   * @param moduleName  模块名（默认传空）
-   * @param isPrivate  是否是用户数据
    * @param exportWorkspacePath        导出的工作空间绝对路径（含后缀）
+   * @param params { IsPrivate, IsReplaceSymbol, Module }
    * @returns {*}
    */
-  function exportWorkspaceByMap (mapName, moduleName = '', isPrivate = false, exportWorkspacePath) {
+  function exportWorkspaceByMap (mapName, exportWorkspacePath, params = {}) {
     try {
-      return SMap.exportWorkspaceByMap(mapName, moduleName, isPrivate, exportWorkspacePath)
+      return SMap.exportWorkspaceByMap(mapName,exportWorkspacePath,params)
     } catch (e) {
       console.error(e)
     }
@@ -723,16 +793,41 @@ export default (function () {
     }
   }
 
+
+    /**
+   * 导入数据源到程序目录
+   * @param filePath
+   * @param nModule
+   * @returns {*}
+   */
+  function importDatasourceFile (filePath, nModule = '') {
+    try {
+      return SMap.importDatasourceFile(filePath,nModule)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  
   /**
    * 大工作空间打开本地地图
    * @param strMapName
    * @param nModule 模块名（文件夹名）
-   * @param isPrivate 
+   * @param isPrivate { Module, IsPrivate, IsReplaceSymbol }
    * @returns {*}
    */
-  function openMapName (strMapName, nModule = '', isPrivate = false) {
+  function openMapName (strMapName, params = {}) {
     try {
-      return SMap.openMapName(strMapName, nModule, isPrivate)
+      // if (params.Module === undefined) {
+      //   params.srcModule = ''
+      // }
+      // if (params.IsPrivate === undefined) {
+      //   params.bPrivate = false
+      // }
+      // if (params.IsReplaceSymbol === undefined) {
+      //   params.bPrivate = false
+      // }
+      return SMap.openMapName(strMapName, params)
     } catch (e) {
       console.error(e)
     }
@@ -798,6 +893,30 @@ export default (function () {
   function isAnyMapOpened () {
     try {
       return SMap.isAnyMapOpened()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 把指定地图中的图层添加到当前打开地图中
+   * @param srcMapName
+   * @param params { IsReplaceSymbol = true, Module = '', IsPrivate = true }
+   * @returns {*}
+   */
+  function addMap (srcMapName = '', params = {}) {
+    try {
+      if (!srcMapName) return false
+      // if (params.Module === undefined) {
+      //   params.Module = ''
+      // }
+      // if (params.IsPrivate === undefined) {
+      //   params.IsPrivate = true
+      // }
+      // if (params.IsReplaceSymbol === true) {
+      //   params.IsPrivate = true
+      // }
+      return SMap.addMap(srcMapName, params)
     } catch (e) {
       console.error(e)
     }
@@ -1000,7 +1119,7 @@ export default (function () {
       if (index === undefined) {
         return SMap.undo()
       } else {
-        return SMap.undo(index)
+        return SMap.undoWithIndex(index)
       }
 
     } catch (e) {
@@ -1018,7 +1137,7 @@ export default (function () {
       if (index === undefined) {
         return SMap.redo()
       } else {
-        return SMap.redo(index)
+        return SMap.redoWithIndex(index)
       }
     } catch (e) {
       console.error(e)
@@ -1151,12 +1270,14 @@ export default (function () {
     isAntialias,
     setVisibleScalesEnabled,
     isVisibleScalesEnabled,
+    clipMap,
 
     moveToCurrent,
     moveToPoint,
     closeMap,
     getUDBName,
     submit,
+    cancel,
     setGestureDetector,
     deleteGestureDetector,
     addGeometrySelectedListener,
@@ -1178,10 +1299,13 @@ export default (function () {
     addDatasetToMap,
     saveMapName,
     importWorkspaceInfo,
+    importDatasourceFile,
     openMapName,
     removeMap,
     mapIsModified,
     isAnyMapOpened,
+    
+    addMap,
     addLayers,
     importSymbolLibrary,
     isOverlapDisplayed,
@@ -1200,6 +1324,8 @@ export default (function () {
     setLabelColor,
     updateLegend,
 
+    showMarker,
+    deleteMarker,
     /** 地图编辑历史操作 **/
     undo,
     redo,

@@ -7,6 +7,8 @@ public class EventConst {
     /*
      * 在线模块
      */
+    public static final String ONLINE_SERVICE_REVERSEGEOCODING = "com.supermap.RN.Mapcontrol.online_service_reversegeocoding";
+
     public static final String ONLINE_SERVICE_DOWNLOADING = "com.supermap.RN.Mapcontrol.online_service_downloading";
     public static final String ONLINE_SERVICE_DOWNLOADED = "com.supermap.RN.Mapcontrol.online_service_downloaded";
     public static final String ONLINE_SERVICE_DOWNLOADFAILURE = "com.supermap.RN.Mapcontrol.online_service_downloadfailure";
@@ -21,6 +23,8 @@ public class EventConst {
     public static final String MESSAGE_SERVICE_RECEIVE = "com.supermap.RN.Mapcontrol.message_service_receive";
     public static final String MESSAGE_IMPORTEXTERNALDATA = "com.supermap.RN.Mapcontrol.message_importexternaldata";
     public static final String MESSAGE_SHARERESULT = "com.supermap.RN.Mapcontrol.message_shareresult";
+    public static final String MESSAGE_SERVICE_SEND_FILE = "com.supermap.RN.MessageService.send_file_progress";
+    public static final String MESSAGE_SERVICE_RECEIVE_FILE = "com.supermap.RN.MessageService.receive_file_progress";
 
     /** 量算 **/
     public static final String MEASURE_LENGTH = "com.supermap.RN.Mapcontrol.length_measured";
@@ -30,6 +34,7 @@ public class EventConst {
     /** 地图 **/
     public static final String MAP_LONG_PRESS = "com.supermap.RN.Mapcontrol.long_press_event";
     public static final String MAP_SINGLE_TAP = "com.supermap.RN.Mapcontrol.single_tap_event";
+    public static final String MAP_SINGLE_TAP_CONFIR = "com.supermap.RN.Mapcontrol.single_tap_confir_event";
     public static final String MAP_DOUBLE_TAP = "com.supermap.RN.Mapcontrol.double_tap_event";
     public static final String MAP_TOUCH_BEGAN = "com.supermap.RN.Mapcontrol.touch_began_event";
     public static final String MAP_SCROLL = "com.supermap.RN.Mapcontrol.scroll_event";

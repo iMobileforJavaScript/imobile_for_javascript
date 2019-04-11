@@ -1,5 +1,6 @@
 package com.supermap.interfaces;
 
+import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -13,9 +14,9 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
 import com.supermap.messagequeue.AMQPManager;
@@ -29,6 +30,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 
 public class SMessageService extends ReactContextBaseJavaModule {
@@ -66,6 +68,12 @@ public class SMessageService extends ReactContextBaseJavaModule {
     @ReactMethod
     public void connectService(String serverIP, int port,String hostName, String userName,String passwd ,String userID, Promise promise) {
         try {
+            if(g_AMQPManager != null){
+                g_AMQPManager.suspend();
+            }
+            if(g_AMQPReceiver != null){
+                g_AMQPReceiver.dispose();
+            }
             g_AMQPManager = null;
             g_AMQPSender = null;
             g_AMQPReceiver = null;
@@ -220,7 +228,8 @@ public class SMessageService extends ReactContextBaseJavaModule {
      * 文件发送
      */
     @ReactMethod
-    public void sendFile(final String connectInfo, final String message, final String filePath , final Promise promise) {
+    public void sendFile(final String connectInfo, final String message, final String filePath,
+                         final String talkId, final int msgId ,final Promise promise) {
         try {
             Thread Thread_Send_File = new Thread(new Runnable() {
                 @Override
@@ -282,14 +291,20 @@ public class SMessageService extends ReactContextBaseJavaModule {
 
                             count++;
 
-                            jMessage.put("message", sFileBlock)
-                                    .put("total", total)
-                                    .put("count", count);
+                            jMessage.getJSONObject("message").getJSONObject("message")
+                                    .put("data", sFileBlock)
+                                    .put("length", total)
+                                    .put("index", count);
 
                             fileSender.sendMessage(sExchange, jMessage.toString(), sRoutingKey);
 
-                            final String percentage = Float.toString( (float) count / total * 100);
-
+                            int percentage = (int)((float) count / total * 100);
+                            WritableMap infoMap = Arguments.createMap();
+                            infoMap.putString("talkId", talkId);
+                            infoMap.putInt("msgId", msgId);
+                            infoMap.putInt("percentage", percentage );
+                            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                    .emit(EventConst.MESSAGE_SERVICE_SEND_FILE, infoMap);
                         }
                         bos.close();
                         inStream.close();
@@ -298,6 +313,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
 
                         map.putString("queueName",sQueue);
                         map.putString("fileName",fileName);
+                        map.putDouble("fileSize",fileSize);
                         promise.resolve(map);
                     }catch(Exception e){
                         promise.reject(e);
@@ -345,6 +361,67 @@ public class SMessageService extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             promise.reject(e);
         }
+    }
+
+    /**
+     * 接收文件,每次接收时运行
+     */
+    @ReactMethod
+    public void receiveFile(final String fileName, final String queueName, final String receivePath, final String talkId, final int msgId ,final Promise promise) {
+        Thread mf_Thread_File  =  new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                File path = new File(receivePath);
+                File file = new File(receivePath + "/" + fileName);
+                byte[] bytes;
+                JSONObject jsonReceived;
+                try  {
+                    if(!path.exists()){
+                        path.mkdirs();
+                    }
+                    if (!file.exists()) {
+                        file.createNewFile();
+                    }
+                    FileOutputStream fop = new FileOutputStream(file);
+                    g_AMQPManager.declareQueue(queueName);
+                    AMQPReceiver fileReceiver = g_AMQPManager.newReceiver(queueName);
+
+                    while (fileReceiver != null) {
+                        //接收消息
+                        AMQPReturnMessage returnMsg = fileReceiver.receiveMessage();
+                        if (!returnMsg.getMessage().isEmpty()) {
+                            // 获取消息
+                            String msg = returnMsg.getMessage();
+                            jsonReceived = new JSONObject(msg);
+                            bytes = Base64.decode(jsonReceived.getJSONObject("message").getJSONObject("message").getString("data"), Base64.DEFAULT);
+                            fop.write(bytes);
+                            fop.flush();
+                            long index = jsonReceived.getJSONObject("message").getJSONObject("message").getLong("index");
+                            long length = jsonReceived.getJSONObject("message").getJSONObject("message").getLong("length");
+                            int percentage = (int)((float) index / length * 100);
+                            WritableMap infoMap = Arguments.createMap();
+                            infoMap.putString("talkId", talkId);
+                            infoMap.putInt("msgId", msgId);
+                            infoMap.putInt("percentage", percentage );
+                            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                    .emit(EventConst.MESSAGE_SERVICE_RECEIVE_FILE, infoMap);
+                            if(index == length)
+                                break;
+                        }
+                    }
+                    fop.close();
+                    //接收完后删除队列
+                    g_AMQPManager.deleteQueue(queueName);
+                    promise.resolve(true);
+                } catch (Exception e) {
+                    promise.reject(e);
+                }
+            }
+        });
+
+        mf_Thread_File.start();
+
     }
 
     /**

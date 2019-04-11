@@ -18,7 +18,10 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
+import com.supermap.data.Point2D;
 import com.supermap.onlineservices.DownLoadFile;
+import com.supermap.onlineservices.Geocoding;
+import com.supermap.onlineservices.GeocodingData;
 import com.supermap.onlineservices.OnlineCallBack;
 import com.supermap.onlineservices.OnlineService;
 import com.supermap.onlineservices.UpLoadFile;
@@ -34,6 +37,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -52,6 +56,7 @@ import static com.supermap.onlineservices.utils.EnumServiceType.RESTMAP;
 
 public class SOnlineService extends ReactContextBaseJavaModule{
     private OnlineService mOnlineService = null;
+    private Geocoding m_geocoding = null;
     private static  final String TAG = "SOnlineService"; //
     private static  final String downloadId = "fileName"; //
     private static  final String uploadId = "uploadId"; //
@@ -83,10 +88,40 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     }
     @ReactMethod
     public void init(){
-        if(mOnlineService == null){
+        if(mOnlineService == null) {
             mOnlineService = new OnlineService(mContext.getApplicationContext());
         }
     }
+
+    @ReactMethod
+    public void reverseGeocoding(double longitude ,double latitude, final Promise promise){
+        try{
+            if(m_geocoding == null){
+                m_geocoding = new Geocoding();
+                m_geocoding.setKey("tY5A7zRBvPY0fTHDmKkDjjlr");
+                m_geocoding.setGeocodingCallback(new Geocoding.GeocodingCallback() {
+                    @Override
+                    public void geocodeSuccess(List<GeocodingData> list) {
+
+                    }
+
+                    @Override
+                    public void reverseGeocodeSuccess(GeocodingData geocodingData) {
+                        mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_REVERSEGEOCODING,geocodingData.getFormatedAddress());
+                    }
+
+                    @Override
+                    public void geocodeFailed(String s) {
+
+                    }
+                });
+            }
+            m_geocoding.reverseGeocoding(new Point2D(longitude,latitude));
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
     @ReactMethod
     public void login(String userName, String password, final Promise promise){
         try{
@@ -260,7 +295,9 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             OnlineService.uploadFile(onlineDataName,filePath, new UpLoadFile.UpLoadListener() {
                 @Override
                 public void getProgress(int progress) {
-                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING,progress);
+                    if (progress % 10 == 0) {
+                        mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING,progress);
+                    }
                 }
 
                 @Override

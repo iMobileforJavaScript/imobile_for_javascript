@@ -85,6 +85,12 @@ RCT_EXPORT_MODULE();
     
     dispatch_once(&once, ^{
         sScene = [[self alloc] init];
+        //解决IOS切后台后三维刷新崩溃
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+        // app从后台进入前台都会调用这个方法
+        //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationBecomeActive) name:UIApplicationWillEnterForegroundNotification object:nil];
+        // 添加检测app进入后台的观察者
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationEnterBackground) name: UIApplicationDidEnterBackgroundNotification object:nil];
     });
     
     return sScene;
@@ -98,24 +104,17 @@ RCT_EXPORT_MODULE();
     if (sScene.smSceneWC.workspace == nil) {
         sScene.smSceneWC.workspace = [[Workspace alloc] init];
     }
+
+    
    
-    
-//    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(singleTap:)];
-//    //使用一根手指双击时，才触发点按手势识别器
-//    recognizer.numberOfTapsRequired = 1;
-//    recognizer.numberOfTouchesRequired = 1;
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        [sceneControl.superview addGestureRecognizer:recognizer];
-//    });
-//
-//    UILongPressGestureRecognizer *longRecognizer = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(longTap:)];
-//    longRecognizer.minimumPressDuration = 0.5;
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        [sceneControl.superview addGestureRecognizer:longRecognizer];
-//    });
-    
 }
 
++(void)applicationBecomeActive{
+    sScene.smSceneWC.sceneControl.isRender = YES;
+}
++(void)applicationEnterBackground{
+    sScene.smSceneWC.sceneControl.isRender = false;
+}
 #pragma mark-手势处理
 
 //常驻操作 int的每位代表一个操作
@@ -703,7 +702,7 @@ RCT_REMAP_METHOD(addLayer3D,  Url:(NSString*) Url Layer3DType:(NSString*) layer3
             layer3d = [scene.layers addLayerWithURL:Url type:nlayer3DType dataLayerName:layerName toHead:addToHead];
            // scene.getLayers().add(Url, layer3DType, layerName, addToHead);
         } else {
-            layer3d = [scene.layers  addLayerWithTiandituURL:Url type:nlayer3DType dataLayerName:layerName imageFormatType:imageFormatType1 dpi:dpi toHead:dpi token:token];
+            layer3d = [scene.layers  addLayerWithTiandituURL:Url type:nlayer3DType dataLayerName:layerName imageFormatType:imageFormatType1 dpi:dpi toHead:dpi];
            // scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
         }
         

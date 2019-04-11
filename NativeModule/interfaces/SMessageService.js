@@ -59,8 +59,8 @@ function sendMessage(message, targetID) {
   return MessageServiceeNative.sendMessage(message,targetID);
 }
 //文件发送
-function sendFile(connectInfo, message, filePath) {
-  return MessageServiceeNative.sendFile(connectInfo, message, filePath);
+function sendFile(connectInfo, message, filePath, talkId, msgId) {
+  return MessageServiceeNative.sendFile(connectInfo, message, filePath, talkId, msgId);
 }
 //声明多人会话
 function declareSession(memmbers,uuid) {
@@ -75,6 +75,11 @@ function exitSession(memmber,uuid) {
 //开启消息接收
 function receiveMessage(uuid) {
   return MessageServiceeNative.receiveMessage(uuid);
+}
+
+//开启文件接收
+function receiveFile(fileName, queueName, receivePath, talkId, msgId) {
+  return MessageServiceeNative.receiveFile(fileName, queueName, receivePath, talkId, msgId);
 }
 
 //开启消息接收
@@ -106,6 +111,7 @@ export default {
   declareSession,
   sendFile,
   sendMessage,
+  receiveFile,
   disconnectionService,
   connectService,
   resume,

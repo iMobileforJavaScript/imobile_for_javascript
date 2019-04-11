@@ -7,24 +7,7 @@
 //
 
 #import "SMMapWC.h"
-#import "SuperMap/Maps.h"
-#import "SuperMap/Map.h"
-#import "SuperMap/Layers.h"
-#import "SuperMap/Layer.h"
-#import "SuperMap/Dataset.h"
-#import "SuperMap/Resources.h"
-#import "SuperMap/SymbolMarkerLibrary.h"
-#import "SuperMap/SymbolLineLibrary.h"
-#import "SuperMap/SymbolFillLibrary.h"
-#import "SuperMap/SymbolLine.h"
-#import "SuperMap/SymbolFill.h"
-#import "SuperMap/Geometry.h"
-#import "SuperMap/GeoStyle.h"
-#import "SuperMap/OverlayAnalyst.h"
-#import "SuperMap/OverlayAnalystParameter.h"
-#import "SuperMap/RasterClip.h"
 #import "SMap.h"
-
 
 @implementation SMMapWC
 
@@ -1097,21 +1080,41 @@
 //从srcGroup导入Symbol到desGroup
 //bDirRetain 保留srcGroup的目录结构，否则所有的Symbol都放在desGroup而不是其子group中
 //bSymReplace 相同id的处理：true替换 false新id
-
--(void)importSymbolsFrom:(SymbolGroup*)srcGroup toGroup:(SymbolGroup*)desGroup isDirRetain:(BOOL)bDirRetain isSymbolReplace:(BOOL)bSymReplace{
+//返回值：NSString数组 每个字符串形如"nOldId:nNewId" 表重命名了的symbolId
+-(NSArray *)importSymbolsFrom:(SymbolGroup*)srcGroup toGroup:(SymbolGroup*)desGroup isDirRetain:(BOOL)bDirRetain isSymbolReplace:(BOOL)bSymReplace {
+    NSMutableArray *arrResult = nil;
     if (desGroup.symbolLibrary==nil) {
         //deGroup必须是必须在Lib中
-        return;
+        return arrResult;
     }
+    if (srcGroup.symbolLibrary!=nil && desGroup.symbolLibrary==srcGroup.symbolLibrary) {
+        //不支持
+        return arrResult;
+    }
+    
     // group的名称 symbol的id 都需要desLib查重名
     SymbolLibrary *desLib = desGroup.symbolLibrary;
     
     for (int i=0; i<srcGroup.count; i++) {
         Symbol * sym = [srcGroup getSymbolWithIndex:i];
-        if(bSymReplace && [desLib containID:sym.getID]){
-            [desLib removeWithID:sym.getID];
+        int nId = sym.getID;
+        BOOL bOld = [desLib containID:sym.getID];
+        if (bOld) {
+            if (bSymReplace) {
+                [desLib removeWithID:nId];
+                [desLib add:sym toGroup:desGroup];
+            }else{
+                int nIDNew = [desLib add:sym toGroup:desGroup];
+                NSString *strResult = [NSString stringWithFormat:@"%d:%d",nId,nIDNew];
+                if (arrResult==nil) {
+                    arrResult = [[NSMutableArray alloc]init];
+                }
+                [arrResult addObject:strResult];
+            }
+        }else{
+            [desLib add:sym toGroup:desGroup];
         }
-        [desLib add:sym toGroup:desGroup];
+        
     }
     
     SymbolGroup* desSubGroup = desGroup;
@@ -1129,10 +1132,16 @@
             desSubGroup = [desGroup.childSymbolGroups createGroupWith:subName];
         }
         
-        [self importSymbolsFrom:subGroup toGroup:desSubGroup isDirRetain:bDirRetain isSymbolReplace:bSymReplace];
+        NSArray *arrSubResult = [self importSymbolsFrom:subGroup toGroup:desSubGroup isDirRetain:bDirRetain isSymbolReplace:bSymReplace];
+        if (arrSubResult!=nil) {
+            if (arrResult==nil) {
+                arrResult = [[NSMutableArray alloc]init];
+            }
+            [arrResult addObjectsFromArray:arrSubResult];
+        }
     }
     
-    return;
+    return arrResult;
 }
 -(NSString *)getUserName{
     NSString *strServer = SMap.singletonInstance.smMapWC.workspace.connectionInfo.server;
@@ -1216,9 +1225,14 @@
         WorkspaceConnectionInfo* info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
         
         if([importWorkspace open:info]){
-            NSString *strUserName = [self getUserName];
-            if (strUserName==nil) {
-                return arrResult;
+            NSString *strUserName = nil;
+            if (!isPrivate) {
+                strUserName = @"Customer";
+            }else{
+                strUserName = [self getUserName];
+                if (strUserName==nil) {
+                    return nil;
+                }
             }
             NSString *strRootPath = [self getRootPath];
             NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];
@@ -1834,13 +1848,15 @@
     if (mapInfo!=nil) {
         NSString *strMapName = [mapInfo objectForKey:@"MapName"];
         if (strMapName!=nil) {
-            NSString *strModule = [mapInfo objectForKey:@"Module"];
-            BOOL isPrivate = NO; //默认公共目录
-            NSNumber *numPrivate = [mapInfo objectForKey:@"IsPrivate"];
-            if (numPrivate!=nil) {
-                isPrivate = [numPrivate boolValue];
-            }
-            BOOL result = [self openMapName:strMapName toWorkspace:desWorkspace ofModule:strModule isPrivate:isPrivate];
+//            NSString *strModule = [mapInfo objectForKey:@"Module"];
+//            BOOL isPrivate = NO; //默认公共目录
+//            NSNumber *numPrivate = [mapInfo objectForKey:@"IsPrivate"];
+//            if (numPrivate!=nil) {
+//                isPrivate = [numPrivate boolValue];
+//            }
+//            BOOL result = [self openMapName:strMapName toWorkspace:desWorkspace ofModule:strModule isPrivate:isPrivate];
+//            return result;
+            BOOL result = [self openMapName:strMapName toWorkspace:desWorkspace withParam:mapInfo];
             return result;
         }
     }
@@ -1848,11 +1864,23 @@
 }
 
 // 大工作空间打开本地地图
--(BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace ofModule:(NSString *)strModule isPrivate:(BOOL)bPrivate{
+// strModule 所在模块文件夹名称
+// bPrivate 是否在私人目录下（否则在Customer目录下）
+// bSymbolReplace 新地图符号库的导入是否采用覆盖模式（覆盖模式指遇到同名id处理方式是替换掉原来的符号）
+-(BOOL)openMapName:(NSString*)strMapName toWorkspace:(Workspace*)desWorkspace withParam:(NSDictionary*)dicParam/*ofModule:(NSString *)strModule isPrivate:(BOOL)bPrivate isReplaceSymbol:(BOOL)bSymbolReplace*/{
     
     if(desWorkspace==nil || [desWorkspace.maps indexOf:strMapName]!=-1){
         return false;
     }
+    BOOL bPrivate = true;
+    if([dicParam objectForKey:@"IsPrivate"]!=nil){
+        bPrivate = [[dicParam objectForKey:@"IsPrivate"] boolValue];
+    }
+    BOOL bSymbolReplace = true;
+    if([dicParam objectForKey:@"IsReplaceSymbol"]!=nil){
+        bPrivate = [[dicParam objectForKey:@"IsReplaceSymbol"] boolValue];
+    }
+    NSString *strModule = [dicParam objectForKey:@"Module"];
     
     NSString *strUserName;
     if (!bPrivate) {
@@ -1975,6 +2003,8 @@
         }
     }
     
+    NSString* strMapXML = [NSString stringWithContentsOfFile:srcPathXML encoding:NSUTF8StringEncoding error:nil];
+    strMapXML = [self modifyXML:strMapXML replace:arrAlian with:arrReAlian];
     
     NSString* srcResources = [NSString stringWithFormat:@"%@/%@",strRootPath,[dicExp objectForKey:@"Resources"]];// = [NSString stringWithFormat:@"%@/Resource/%@/%@",strCustomer,strModule,strMapName];
 //    if (strModule!=nil) {
@@ -1998,7 +2028,16 @@
         if ( isExist && !isDir) {
             SymbolMarkerLibrary *markerLibrary = [[SymbolMarkerLibrary alloc]init];
             [markerLibrary appendFromFile:strMarkerPath isReplace:YES];
-            [self importSymbolsFrom:markerLibrary.rootGroup toGroup:desMarkerGroup isDirRetain:YES isSymbolReplace:YES];
+            NSArray *arrReplace = [self importSymbolsFrom:markerLibrary.rootGroup toGroup:desMarkerGroup isDirRetain:YES isSymbolReplace:bSymbolReplace];
+            if(arrReplace!=nil){
+                for(int i=0 ;i<arrReplace.count;i++){
+                    NSString *strReplace = [arrReplace objectAtIndex:i];
+                    NSArray *arrReplace = [strReplace componentsSeparatedByString:@":"];
+                    NSString* strOld = [NSString stringWithFormat:@"<sml:MarkerStyle>%@</sml:MarkerStyle>",arrReplace[0] ];
+                    NSString* strNew = [NSString stringWithFormat:@"<sml:MarkerStyle>%@</sml:MarkerStyle>",arrReplace[1] ];
+                    strMapXML = [strMapXML stringByReplacingOccurrencesOfString:strOld withString:strNew];
+                }
+            }
         }
     }
     // Line
@@ -2021,8 +2060,18 @@
         if ( isExist && !isDir) {
             SymbolLineLibrary *lineLibrary = [[SymbolLineLibrary alloc]init];
             [lineLibrary appendFromFile:strLinePath isReplace:YES];
-            [self importSymbolsFrom:lineLibrary.getInlineMarkerLib.rootGroup toGroup:desInlineMarkerGroup isDirRetain:YES isSymbolReplace:YES];
-            [self importSymbolsFrom:lineLibrary.rootGroup toGroup:desLineGroup isDirRetain:YES isSymbolReplace:YES];
+            [self importSymbolsFrom:lineLibrary.getInlineMarkerLib.rootGroup toGroup:desInlineMarkerGroup isDirRetain:YES isSymbolReplace:bSymbolReplace];//需要考虑内点替换
+            NSArray *arrReplace = [self importSymbolsFrom:lineLibrary.rootGroup toGroup:desLineGroup isDirRetain:YES isSymbolReplace:bSymbolReplace];
+            if(arrReplace!=nil){
+                for(int i=0 ;i<arrReplace.count;i++){
+                    NSString *strReplace = [arrReplace objectAtIndex:i];
+                    NSArray *arrReplace = [strReplace componentsSeparatedByString:@":"];
+                    NSString* strOld = [NSString stringWithFormat:@"<sml:LineStyle>%@</sml:LineStyle>",arrReplace[0] ];
+                    NSString* strNew = [NSString stringWithFormat:@"<sml:LineStyle>%@</sml:LineStyle>",arrReplace[1] ];
+                    strMapXML = [strMapXML stringByReplacingOccurrencesOfString:strOld withString:strNew];
+                }
+            }
+
         }
     }
     // Fill
@@ -2045,14 +2094,20 @@
         if ( isExist && !isDir) {
             SymbolFillLibrary *fillLibrary = [[SymbolFillLibrary alloc]init];
             [fillLibrary appendFromFile:strFillPath isReplace:YES];
-            [self importSymbolsFrom:fillLibrary.getInfillMarkerLib.rootGroup toGroup:desInfillMarkerGroup isDirRetain:YES isSymbolReplace:YES];
-            [self importSymbolsFrom:fillLibrary.rootGroup toGroup:desFillGroup isDirRetain:YES isSymbolReplace:YES];
+            [self importSymbolsFrom:fillLibrary.getInfillMarkerLib.rootGroup toGroup:desInfillMarkerGroup isDirRetain:YES isSymbolReplace:bSymbolReplace];//需要考虑内点替换
+            NSArray *arrReplace = [self importSymbolsFrom:fillLibrary.rootGroup toGroup:desFillGroup isDirRetain:YES isSymbolReplace:YES];
+            if(arrReplace!=nil){
+                for(int i=0 ;i<arrReplace.count;i++){
+                    NSString *strReplace = [arrReplace objectAtIndex:i];
+                    NSArray *arrReplace = [strReplace componentsSeparatedByString:@":"];
+                    NSString* strOld = [NSString stringWithFormat:@"<sml:FillStyle>%@</sml:FillStyle>",arrReplace[0] ];
+                    NSString* strNew = [NSString stringWithFormat:@"<sml:FillStyle>%@</sml:FillStyle>",arrReplace[1] ];
+                    strMapXML = [strMapXML stringByReplacingOccurrencesOfString:strOld withString:strNew];
+                }
+            }
+
         }
     }
-    
-    
-    NSString* strMapXML = [NSString stringWithContentsOfFile:srcPathXML encoding:NSUTF8StringEncoding error:nil];
-    strMapXML = [self modifyXML:strMapXML replace:arrAlian with:arrReAlian];
     
     [desWorkspace.maps add:strMapName withXML:strMapXML];
     
@@ -2077,7 +2132,7 @@
 // 返回值说明：裁减完地图尝试以strResultName保存到map.workspace.maps中，若已存在同名则重命名为strResultName#1，把最终命名结果返回
 //
 //-(NSString*)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSString*)jsonParam saveAs:(NSString*)strResultName
--(NSString*)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSArray*)arrLayers/*NSString*)jsonParam*/ saveAs:(NSString*)strResultName{
+-(BOOL)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSArray*)arrLayers/*NSString*)jsonParam*/ saveAs:(NSString**)strResultName{
     
     if (_srcMap==nil || [_srcMap.layers getCount]<=0 || clipRegion==nil || clipRegion.getBounds.isEmpty) {
         return false;
@@ -2088,7 +2143,7 @@
     NSMutableArray *arrDatasetCliped = [[NSMutableArray alloc]init]; // 已经裁减过的dataset
     NSMutableArray *arrDatasetResult = [[NSMutableArray alloc]init]; // 已经裁减过的结果
     
-    NSString *strClipMapName = strResultName;
+    NSString *strClipMapName = *strResultName;
     Map *_clipMap = nil;//裁剪后的地图
     if(strClipMapName!=nil){
         int nAddNum = 1;
@@ -2100,6 +2155,7 @@
         [_srcMap.workspace.maps add:strClipMapName withXML:_srcMap.toXML];
         _clipMap = [[Map alloc]initWithWorkspace:_srcMap.workspace];
         [_clipMap open:strClipMapName];
+        *strResultName = strClipMapName;
     }
     
     for(int i=0;i<arrLayers.count;i++){
@@ -2257,6 +2313,19 @@
             Layer *layerResult = [_clipMap.layers findLayerWithName:strLayerName];
             NSString* strXML = [layerResult toXML];
             
+            if(layerResult.theme!=nil){
+                // 专题图中某些字段不规范需要处理
+                NSString *strTemp = [[strXML componentsSeparatedByString:@"<sml:FieldExpression>"]lastObject];
+                NSString *strExpressionOld = [[strTemp componentsSeparatedByString:@"</sml:FieldExpression>"]firstObject];
+                NSString *strNameOld = [NSString stringWithFormat:@"%@.",datasetTemp.name];
+                NSString *strNameNew = [NSString stringWithFormat:@"%@.",datasetResult.name];
+                NSString *strExpressionNew = [strExpressionOld stringByReplacingOccurrencesOfString:strNameOld withString:strNameNew];
+                NSString *strFieldOld = [NSString stringWithFormat:@"<sml:FieldExpression>%@</sml:FieldExpression>",strExpressionOld];
+                NSString *strFieldNew = [NSString stringWithFormat:@"<sml:FieldExpression>%@</sml:FieldExpression>",strExpressionNew];
+                strXML = [strXML stringByReplacingOccurrencesOfString:strFieldOld withString:strFieldNew];
+            }
+            
+            
             NSString* strDatasourceOld = [NSString stringWithFormat:@"<sml:DataSourceAlias>%@</sml:DataSourceAlias>",datasetTemp.datasource.alias];
             NSString* strDatasourceNew = [NSString stringWithFormat:@"<sml:DataSourceAlias>%@</sml:DataSourceAlias>",datasourceResult.alias];
             
@@ -2296,44 +2365,46 @@
         [_clipMap close];
         [_clipMap dispose];
     }
-    return strClipMapName;
+    return true;
     
 }
 
 // 从Exp的map里 拷贝所有layer到当前map的一个layerGroup下，layerGroup.name为被拷贝地图名
--(BOOL)addLayersFromMap:(NSString*)srcMapName ofModule:(NSString*)srcModule isPrivate:(BOOL)bSrcPrivate toMap:(Map*)desMap{
+//-(BOOL)addLayersFromMap:(NSString*)srcMapName ofModule:(NSString*)srcModule isPrivate:(BOOL)bSrcPrivate toMap:(Map*)desMap{
+-(BOOL)addLayersFromMap:(NSString*)srcMapName toMap:(Map*)desMap withParam:(NSDictionary*)dicParam{
     
     if ([srcMapName isEqualToString:desMap.name]) {
         //现在的工作空间结构 暂不支持同名情况
         return false;
     }
     BOOL bResult = false;
-    NSString*strTempLib =[NSString stringWithFormat:@"%@/Customer/Resources/__Temp__%@",[self getRootPath],srcMapName];
-    NSString*strMarker = [strTempLib stringByAppendingString:@".sym"];
-    [desMap.workspace.resources.markerLibrary saveAs:strMarker];
-    NSString*strLine = [strTempLib stringByAppendingString:@".lsl"];
-    [desMap.workspace.resources.lineLibrary saveAs:strLine];
-    NSString*strFill = [strTempLib stringByAppendingString:@".bru"];
-    [desMap.workspace.resources.fillLibrary saveAs:strFill];
+//    NSString*strTempLib =[NSString stringWithFormat:@"%@/Customer/Resources/__Temp__%@",[self getRootPath],srcMapName];
+//    NSString*strMarker = [strTempLib stringByAppendingString:@".sym"];
+//    [desMap.workspace.resources.markerLibrary saveAs:strMarker];
+//    NSString*strLine = [strTempLib stringByAppendingString:@".lsl"];
+//    [desMap.workspace.resources.lineLibrary saveAs:strLine];
+//    NSString*strFill = [strTempLib stringByAppendingString:@".bru"];
+//    [desMap.workspace.resources.fillLibrary saveAs:strFill];
     
-    if([self openMapName:srcMapName toWorkspace:desMap.workspace ofModule:srcModule isPrivate:bSrcPrivate]){
-        
+    NSMutableDictionary *dic = [[NSMutableDictionary alloc]initWithDictionary:dicParam];
+    [dic setObject:[NSNumber numberWithBool:NO] forKey:@"IsReplaceSymbol"];
+    //if([self openMapName:srcMapName toWorkspace:desMap.workspace ofModule:srcModule isPrivate:bSrcPrivate]){
+    if([self openMapName:srcMapName toWorkspace:desMap.workspace withParam:dic]){
         [desMap addLayersFromMap:srcMapName withDynamicProjection:YES];
         [desMap.workspace.maps removeMapName:srcMapName];
         bResult = true;
-        
     }
-    [desMap.workspace.resources.markerLibrary clear];
-    [desMap.workspace.resources.markerLibrary appendFromFile:strMarker isReplace:YES];
-    [[NSFileManager defaultManager] removeItemAtPath:strMarker error:nil];
-    
-    [desMap.workspace.resources.lineLibrary clear];
-    [desMap.workspace.resources.lineLibrary appendFromFile:strLine isReplace:YES];
-    [[NSFileManager defaultManager] removeItemAtPath:strLine error:nil];
-    
-    [desMap.workspace.resources.fillLibrary clear];
-    [desMap.workspace.resources.fillLibrary appendFromFile:strFill isReplace:YES];
-    [[NSFileManager defaultManager] removeItemAtPath:strFill error:nil];
+//    [desMap.workspace.resources.markerLibrary clear];
+//    [desMap.workspace.resources.markerLibrary appendFromFile:strMarker isReplace:YES];
+//    [[NSFileManager defaultManager] removeItemAtPath:strMarker error:nil];
+//    
+//    [desMap.workspace.resources.lineLibrary clear];
+//    [desMap.workspace.resources.lineLibrary appendFromFile:strLine isReplace:YES];
+//    [[NSFileManager defaultManager] removeItemAtPath:strLine error:nil];
+//    
+//    [desMap.workspace.resources.fillLibrary clear];
+//    [desMap.workspace.resources.fillLibrary appendFromFile:strFill isReplace:YES];
+//    [[NSFileManager defaultManager] removeItemAtPath:strFill error:nil];
     
     return bResult;
 }
@@ -2591,6 +2662,169 @@
     }
 }
 
+
+-(NSString*)importSymbolLibFile:(NSString *)strFile ofModule:(NSString *)strModule isPrivate:(BOOL)bPrivate{
+    NSString* type = [[strFile pathExtension] lowercaseString];
+    if ([type isEqualToString:@"sym"] || [type isEqualToString:@"lsl"] || [type isEqualToString:@"bru"]) {
+        BOOL isDir = false;
+        BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:strFile isDirectory:&isDir];
+        if ( !isExist || isDir) {
+            return nil;
+        }
+        NSString *strUserName;
+        if (!bPrivate) {
+            strUserName = @"Customer";
+        }else{
+            strUserName = [self getUserName];
+            if (strUserName==nil) {
+                return nil;
+            }
+        }
+        NSString *strRootPath = [self getRootPath];
+        NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];
+        NSString *desResourceDir = [NSString stringWithFormat:@"%@/Symbol",strCustomer];
+        if(strModule!=nil && ![strModule isEqualToString:@""]){
+            desResourceDir = [NSString stringWithFormat:@"%@/%@",desResourceDir,strModule];
+        }
+        
+        isDir = false;
+        isExist = [[NSFileManager defaultManager] fileExistsAtPath:desResourceDir isDirectory:&isDir];
+        if (!isExist || !isDir) {
+            [[NSFileManager defaultManager] createDirectoryAtPath:desResourceDir withIntermediateDirectories:YES attributes:nil error:nil];
+        }
+        NSString *strName = [[strFile componentsSeparatedByString:@"/"] lastObject];
+        NSString *strTargetFile = [NSString stringWithFormat:@"%@/%@",desResourceDir,strName];
+        strTargetFile = [self formateNoneExistFileName:strTargetFile isDir:false];
+        
+        // 拷贝
+        if(![[NSFileManager defaultManager] copyItemAtPath:strFile toPath:strTargetFile error:nil]){
+            return nil;
+        }else{
+            strName = [[strTargetFile componentsSeparatedByString:@"/"] lastObject];
+            return  strName;
+        }
+        
+    }else{
+        return nil;
+    }
+    
+}
+
+-(NSString*)saveSymbol:(NSArray*)arrIds type:(SymbolType)nType from:(Resources*)resources withName:(NSString *)strName ofModule:(NSString *)strModule isPrivate:(BOOL)bPrivate{
+    
+    if (arrIds==nil || arrIds.count==0 || resources==nil || strName==nil || strName.length==0) {
+        return nil;
+    }
+   
+    NSString *strUserName;
+    if (!bPrivate) {
+        strUserName = @"Customer";
+    }else{
+        strUserName = [self getUserName];
+        if (strUserName==nil) {
+            return nil;
+        }
+    }
+    NSString *strRootPath = [self getRootPath];
+    NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];
+    NSString *desResourceDir = [NSString stringWithFormat:@"%@/Symbol",strCustomer];
+    if(strModule!=nil && ![strModule isEqualToString:@""]){
+        desResourceDir = [NSString stringWithFormat:@"%@/%@",desResourceDir,strModule];
+    }
+    
+    
+    SymbolLibrary *srcLib ;
+    SymbolLibrary *desLib ;
+    NSString *strDesFile = [NSString stringWithFormat:@"%@/%@",desResourceDir,strName];
+    switch (nType) {
+        case Symbol_MARKER:
+        {
+            srcLib = resources.markerLibrary;
+            desLib = [[SymbolMarkerLibrary alloc]init];
+            strDesFile = [strDesFile stringByAppendingString:@".sym"];
+        }
+            break;
+        case Symbol_Line:
+        {
+            srcLib = resources.lineLibrary;
+            desLib = [[SymbolLineLibrary alloc]init];
+            strDesFile = [strDesFile stringByAppendingString:@".lsl"];
+            SymbolLibrary *srcInnerLib = [(SymbolLineLibrary*)srcLib getInlineMarkerLib];
+            SymbolLibrary *desInnerLib = [(SymbolLineLibrary*)desLib getInlineMarkerLib];
+            [self importSymbolsFrom:srcInnerLib.rootGroup toGroup:desInnerLib.rootGroup isDirRetain:YES isSymbolReplace:YES];
+        }
+            break;
+        case Symbol_Fill:
+        {
+            srcLib = resources.fillLibrary;
+            desLib = [[SymbolFillLibrary alloc]init];
+            strDesFile = [strDesFile stringByAppendingString:@".bru"];
+            SymbolLibrary *srcInnerLib = [(SymbolFillLibrary*)srcLib getInfillMarkerLib];
+            SymbolLibrary *desInnerLib = [(SymbolFillLibrary*)desLib getInfillMarkerLib];
+            [self importSymbolsFrom:srcInnerLib.rootGroup toGroup:desInnerLib.rootGroup isDirRetain:YES isSymbolReplace:YES];
+        }
+            break;
+            
+        default:
+            return  nil;
+    }
+    
+    strDesFile = [self formateNoneExistFileName:strDesFile isDir:NO];
+    
+    for (int i=0; i<arrIds.count; i++) {
+        int nID = arrIds[i];
+        if ( [srcLib containID:nID] ) {
+            Symbol* symbol = [srcLib findSymbolWithID:nID];
+            [desLib add:symbol];
+        }
+    }
+    
+    if([desLib saveAs:strDesFile]){
+        return strDesFile;
+    }else{
+        return nil;
+    }
+}
+
+-(NSArray*)addSymbolsFromFile:(NSString*)strFile toResources:(Resources*)resources withGroupName:(NSString*)strGroupName isReplace:(BOOL)isReplace{
+    
+    BOOL isDir = NO;
+    BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:strFile isDirectory:&isDir];
+    if (!isExist || isDir) {
+        return nil;
+    }
+    
+    SymbolLibrary* lib = nil;
+    SymbolLibrary* resLib = nil;
+    NSString* type = [[strFile pathExtension] lowercaseString];
+    if ([type isEqualToString:@"bru"]) {
+        lib = [[SymbolFillLibrary alloc] init];
+        resLib = resources.fillLibrary;
+    } else if ([type isEqualToString:@"lsl"]) {
+        lib = [[SymbolLineLibrary alloc] init];
+        resLib = resources.lineLibrary;
+    } else if ([type isEqualToString:@"sym"]) {
+        lib = [[SymbolMarkerLibrary alloc] init];
+        resLib = resources.markerLibrary;
+    }
+    
+    if (lib == nil) return nil;
+    
+    [lib appendFromFile:strFile isReplace:isReplace];
+    
+    SymbolGroup *desGroup = nil;
+    if (strGroupName==nil || strGroupName.length==0 || resLib.rootGroup.name == strGroupName) {
+        desGroup = resLib.rootGroup;
+    }else if( [resLib.rootGroup.childSymbolGroups indexofGroup:strGroupName]!=-1 ){
+        desGroup = [resLib.rootGroup.childSymbolGroups getGroupWithName:strGroupName];
+    }else{
+        desGroup = [resLib.rootGroup.childSymbolGroups createGroupWith:strGroupName];
+    }
+    
+    return  [self importSymbolsFrom:lib.rootGroup toGroup:desGroup isDirRetain:YES isSymbolReplace:isReplace];
+    
+}
+
 - (BOOL)appendFromFile:(Resources *)resources path:(NSString *)path isReplace:(BOOL)isReplace {
     @try {
         BOOL isDir = NO;
@@ -2672,5 +2906,7 @@
     return result;
 
 }
+
+
 
 @end

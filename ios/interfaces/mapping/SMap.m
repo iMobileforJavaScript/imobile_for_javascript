@@ -88,11 +88,50 @@ RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTProm
     }
 }
 
-#pragma mark 刷新地图
-RCT_REMAP_METHOD(refreshMap, refreshMapWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+#pragma mark 添加marker
+RCT_REMAP_METHOD(showMarker,  longitude:(double)longitude latitude:(double)latitude  showMarkerResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        sMap = [SMap singletonInstance];
-        [sMap.smMapWC.mapControl.map refresh];
+        Point2D* pt = [[Point2D alloc] initWithX:longitude Y:latitude];
+        Point2Ds *points = [[Point2Ds alloc]init];
+        if ([sMap.smMapWC.mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+            Point2Ds *points = [[Point2Ds alloc]init];
+            [points add:pt];
+            PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+            [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+            CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+            
+            //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+            [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+            pt = [points getItem:0];
+        }
+        
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            Callout* callout = [[Callout alloc]initWithMapControl:sMap.smMapWC.mapControl];
+            callout.width = 25;
+            callout.height = 25;
+            UIImageView* image = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"SuperMap.bundle/Contents/Resources/Resource/node.png"]];
+            image.frame = CGRectMake(0, 0, 25, 25);
+            // UIImage* img = ;
+            [callout addSubview:image];
+            [callout showAt:pt];
+            //[sMap.smMapWC.mapControl panTo:pt time:200];
+             sMap.smMapWC.mapControl.map.center = pt;
+            sMap.smMapWC.mapControl.map.scale = 0.000011947150294723098;
+            [sMap.smMapWC.mapControl.map refresh];
+        });
+       
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"SMap", exception.reason, nil);
+    }
+}
+
+#pragma mark 移除marker
+RCT_REMAP_METHOD(deleteMarker, deleteMarkerResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [sMap.smMapWC.mapControl removeAllCallouts];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"SMap", exception.reason, nil);
@@ -660,7 +699,8 @@ RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBloc
                 }
                   //  [mapControl panTo:defaultMapCenter time:200];
             }
-            
+            [mapControl.map setAngle:0];
+            [mapControl.map setSlantAngle:0];
             [mapControl.map refresh];
             resolve([NSNumber numberWithBool:isMove]);
         });
@@ -748,6 +788,17 @@ RCT_REMAP_METHOD(submit, submitWithResolver:(RCTPromiseResolveBlock)resolve reje
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
         bool result = [mapControl submit];
         resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 取消
+RCT_REMAP_METHOD(cancel, cancelWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [mapControl cancel];
+        resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
@@ -1023,12 +1074,12 @@ RCT_REMAP_METHOD(addDatasetToMap, addDatasetToMapWithResolver:(NSDictionary*)dat
 // ofModule 模块名（默认传空）
 // isPrivate 是否是用户数据
 // exportWorkspacePath 导出的工作空间绝对路径（含后缀）
-RCT_REMAP_METHOD(exportWorkspaceByMap, exportWorkspaceByMap:(NSString*)strMapName ofModule:(NSString *)nModule isPrivate:(BOOL)bPrivate exportWorkspacePath:(NSString *)exportWorkspacePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(exportWorkspaceByMap, exportWorkspaceByMap:(NSString*)strMapName exportWorkspacePath:(NSString *)exportWorkspacePath withParams:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         sMap = [SMap singletonInstance];
         // 先把地图导入大工作空间
-        BOOL openResult = [sMap.smMapWC openMapName:strMapName toWorkspace:sMap.smMapWC.workspace ofModule:nModule isPrivate:bPrivate];
+        BOOL openResult = [sMap.smMapWC openMapName:strMapName toWorkspace:sMap.smMapWC.workspace withParam:params];
         BOOL exportResult = NO;
         if (openResult) {
             // 先把地图导出
@@ -1141,11 +1192,11 @@ RCT_REMAP_METHOD(importWorkspaceInfo, importWorkspaceInfo:(NSDictionary *)infoDi
 }
 
 #pragma mark 大工作空间打开本地地图
-RCT_REMAP_METHOD(openMapName, openMapName:(NSString*)strMapName ofModule:(NSString *)nModule isPrivate:(BOOL)bPrivate resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(openMapName, openMapName:(NSString*)strMapName withParams:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         sMap = [SMap singletonInstance];
-        BOOL result = [sMap.smMapWC openMapName:strMapName toWorkspace:sMap.smMapWC.workspace ofModule:nModule isPrivate:bPrivate];
+        BOOL result = [sMap.smMapWC openMapName:strMapName toWorkspace:sMap.smMapWC.workspace withParam:params];
         
         resolve(@(result));
     } @catch (NSException *exception) {
@@ -1216,10 +1267,22 @@ RCT_REMAP_METHOD(isAnyMapOpened, isAnyMapOpened:(RCTPromiseResolveBlock)resolve 
 }
 
 #pragma mark 导入符号库
-RCT_REMAP_METHOD(importSymbolLibrary, importSymbolLibraryWithPath:(NSString *)path isReplace:(BOOL)isReplace :(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(importSymbolLibrary, importSymbolLibraryWithPath:(NSString *)path isReplace:(BOOL)isReplace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         BOOL result = [sMap.smMapWC appendFromFile:sMap.smMapWC.workspace.resources path:path isReplace:isReplace];
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 把指定地图中的图层添加到当前打开地图中
+RCT_REMAP_METHOD(addMap, addMap:(NSString *)srcMapName withParams:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL result = [sMap.smMapWC addLayersFromMap:srcMapName toMap:sMap.smMapWC.mapControl.map withParam:params];
         
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
@@ -1401,7 +1464,7 @@ RCT_REMAP_METHOD(getMapHistoryCurrentIndex, getMapHistoryCurrentIndexWithResolve
 }
 
 #pragma mark 地图操作记录重做到index
-RCT_REMAP_METHOD(redo, redoWithIndex:(int)index resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(redoWithIndex, redoWithIndex:(int)index resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         MapControl* mapControl = sMap.smMapWC.mapControl;
@@ -1414,7 +1477,7 @@ RCT_REMAP_METHOD(redo, redoWithIndex:(int)index resolve:(RCTPromiseResolveBlock)
 }
 
 #pragma mark 地图操作记录撤销到index
-RCT_REMAP_METHOD(undo, undoWithIndex:(int)index resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(undoWithIndex, undoWithIndex:(int)index resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         MapControl* mapControl = sMap.smMapWC.mapControl;
@@ -1462,6 +1525,49 @@ RCT_REMAP_METHOD(clear, clearWithResolve:(RCTPromiseResolveBlock)resolve rejecte
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 地图裁剪
+RCT_REMAP_METHOD(clipMap, clipMapWithPoints:(NSArray *)points layersInfo:(NSArray *)layersInfo saveAs:(NSString *)mapName nModule:(NSString *)nModule addition:(NSDictionary*)addition isPrivate:(BOOL)isPrivate resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        if (points.count == 0) {
+            reject(@"clipMap", @"points can not be empty!", nil);
+        } else {
+            Point2Ds* point2Ds = [[Point2Ds alloc] init];
+            for (NSDictionary* point in points) {
+                NSNumber* x = [point objectForKey:@"x"];
+                NSNumber* y = [point objectForKey:@"y"];
+                
+                CGPoint point = CGPointMake(x.floatValue, y.floatValue);
+                
+                Point2D* point2D = [[SMap singletonInstance].smMapWC.mapControl.map pixelTomap:point];
+                [point2Ds add:point2D];
+            }
+            GeoRegion* region = [[GeoRegion alloc] initWithPoint2Ds: point2Ds];
+            
+            sMap = [SMap singletonInstance];
+            if ([mapName isEqualToString:@""]) {
+                mapName = nil;
+            }
+            
+            BOOL result = [sMap.smMapWC clipMap:sMap.smMapWC.mapControl.map withRegion:region parameters:layersInfo saveAs:&mapName];
+            
+            if (result) {
+                mapName = [sMap.smMapWC saveMapName:mapName fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:addition isNewMap:YES isResourcesModyfied:YES isPrivate:isPrivate];
+                resolve(@{
+                          @"mapName": mapName,
+                          @"result": [NSNumber numberWithBool:result],
+                          });
+            } else {
+                resolve(@{
+                          @"mapName": @"",
+                          @"result": [NSNumber numberWithBool:result],
+                          });
+            }
+        }
+    } @catch (NSException *exception) {
+        reject(@"clipMap", exception.reason, nil);
     }
 }
 #pragma mark /************************************** 地图编辑历史操作 END****************************************/
