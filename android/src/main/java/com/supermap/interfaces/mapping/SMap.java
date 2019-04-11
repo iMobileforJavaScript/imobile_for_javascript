@@ -1282,6 +1282,8 @@ public class SMap extends ReactContextBaseJavaModule {
                 Point2D point2D = new Point2D(point.getDouble("x"), point.getDouble("y"));
                 MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(point2D, promise);
                 moveToCurrentThread.run();
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().setAngle(0);
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().SetSlantAngle(0);
 
 //                promise.resolve(true);
             } else {

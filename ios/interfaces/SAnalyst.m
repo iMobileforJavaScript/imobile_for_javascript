@@ -7,28 +7,6 @@
 //
 
 #import "SAnalyst.h"
-#import "SMap.h"
-#import "JSBufferAnalyst.h"
-#import "SuperMap/BufferAnalyst.h"
-#import "SuperMap/Map.h"
-#import "SuperMap/Selection.h"
-#import "SuperMap/TrackingLayer.h"
-#import "SuperMap/Recordset.h"
-#import "SuperMap/PrjCoordSys.h"
-#import "SuperMap/DatasetVector.h"
-#import "SuperMap/BufferAnalystParameter.h"
-#import "SuperMap/BufferAnalystGeometry.h"
-#import "SuperMap/GeoStyle.h"
-#import "SuperMap/Color.h"
-#import "SuperMap/Size2D.h"
-#import "SuperMap/GeoRegion.h"
-#import "SuperMap/Layer.h"
-#import "SuperMap/Layers.h"
-
-#import "Constants.h"
-#import "SScene.h"
-#import "SMSceneWC.h"
-#import "AnalysisHelper3D.h"
 
 @interface SAnalyst()<Analysis3DDelegate>
 
@@ -45,10 +23,10 @@ RCT_EXPORT_MODULE();
              ];
 }
 
-RCT_REMAP_METHOD(analystBuffer, analystBufferByLayerName:(NSString*)layerName params:(NSDictionary*)params  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(analystBuffer, analystBufferByLayerPath:(NSString*)layerPath params:(NSDictionary*)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
-        Layer* layer = [map.layers getLayerWithName:layerName];
+        Layer* layer = [SMLayer findLayerByPath:layerPath];
         Selection* selection = [layer getSelection];
         Recordset* recordset = [selection toRecordset];
         TrackingLayer* trackingLayer = map.trackingLayer;
@@ -61,76 +39,12 @@ RCT_REMAP_METHOD(analystBuffer, analystBufferByLayerName:(NSString*)layerName pa
             
             PrjCoordSys* prj = queryDataset.prjCoordSys;
             
-            GeoStyle* geoStyle = [[GeoStyle alloc] init];
-            BufferAnalystParameter* bufferAnalystParameter = [[BufferAnalystParameter alloc] init];
             NSDictionary* parameter = [params objectForKey:@"parameter"];
-            if (parameter) {
-                if ([parameter objectForKey:@"endType"]) {
-                    bufferAnalystParameter.bufferEndType = (int)[parameter objectForKey:@"endType"];
-                }
-                if ([parameter objectForKey:@"leftDistance"]) {
-                    NSNumber* leftDistance = [parameter objectForKey:@"leftDistance"];
-                    bufferAnalystParameter.leftDistance = [leftDistance stringValue];
-                }
-                if ([parameter objectForKey:@"rightDistance"]) {
-                    NSNumber* rightDistance = [parameter objectForKey:@"rightDistance"];
-                    bufferAnalystParameter.rightDistance = [rightDistance stringValue];
-                }
-            }
+            BufferAnalystParameter* bufferAnalystParameter = [SAnalyst getBufferAnalystParameterByDictionary:parameter];
+            
             NSDictionary* geoStyleDic = [params objectForKey:@"geoStyle"];
-            if (geoStyleDic) {
-                if ([geoStyleDic objectForKey:@"lineWidth"]) {
-                    NSNumber* lineWidthObj = [geoStyleDic objectForKey:@"lineWidth"];
-                    [geoStyle setLineWidth: lineWidthObj.doubleValue];
-                }
-                if ([geoStyleDic objectForKey:@"fillForeColor"]) {
-                    NSDictionary* fillForeColor = [geoStyleDic objectForKey:@"fillForeColor"];
-                    NSNumber* r = [fillForeColor objectForKey:@"r"];
-                    NSNumber* g = [fillForeColor objectForKey:@"g"];
-                    NSNumber* b = [fillForeColor objectForKey:@"b"];
-                    NSNumber* a = [fillForeColor objectForKey:@"a"];
-                    
-                    if (!a) {
-                        [geoStyle setFillForeColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue]];
-                    } else {
-                        [geoStyle setFillForeColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue A:a.intValue]];
-                    }
-                    
-                }
-                if ([geoStyleDic objectForKey:@"lineColor"]) {
-                    NSDictionary* lineColor = [geoStyleDic objectForKey:@"lineColor"];
-                    NSNumber* r = [lineColor objectForKey:@"r"];
-                    NSNumber* g = [lineColor objectForKey:@"g"];
-                    NSNumber* b = [lineColor objectForKey:@"b"];
-                    NSNumber* a = [lineColor objectForKey:@"a"];
-                    
-                    if (!a) {
-                        [geoStyle setLineColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue]];
-                    } else {
-                        [geoStyle setLineColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue A:a.intValue]];
-                    }
-                }
-                if ([geoStyleDic objectForKey:@"lineSymbolID"]) {
-                    NSNumber* lineSymbolID = [geoStyleDic objectForKey:@"lineSymbolID"];
-                    [geoStyle setLineSymbolID:lineSymbolID.intValue];
-                }
-                if ([geoStyleDic objectForKey:@"markerSymbolID"]) {
-                    NSNumber* markerSymbolID = [geoStyleDic objectForKey:@"markerSymbolID"];
-                    [geoStyle setLineSymbolID:markerSymbolID.intValue];
-                }
-                if ([geoStyleDic objectForKey:@"markerSize"]) {
-                    NSDictionary* markerSize = [geoStyleDic objectForKey:@"markerSize"];
-                    NSNumber* w = [markerSize objectForKey:@"w"];
-                    NSNumber* h = [markerSize objectForKey:@"h"];
-                    
-                    Size2D* size2D = [[Size2D alloc] initWithWidth:w.doubleValue Height:h.doubleValue];
-                    [geoStyle setMarkerSize:size2D];
-                }
-                if ([geoStyleDic objectForKey:@"fillOpaqueRate"]) {
-                    NSNumber* fillOpaqueRate = [geoStyleDic objectForKey:@"fillOpaqueRate"];
-                    [geoStyle setFillOpaqueRate:fillOpaqueRate.intValue];
-                }
-            }
+            GeoStyle* geoStyle = [SAnalyst getGeoStyleByDictionary:geoStyleDic];
+            
             GeoRegion* geoRegion = [BufferAnalystGeometry CreateBufferSourceGeometry:geoForBuffer BufferParam:bufferAnalystParameter prjCoordSys:prj];
             [geoRegion setStyle:geoStyle];
             
@@ -147,6 +61,39 @@ RCT_REMAP_METHOD(analystBuffer, analystBufferByLayerName:(NSString*)layerName pa
     }
 }
 
+RCT_REMAP_METHOD(createBuffer, createBufferWithSourceData:(NSDictionary *)sourceData resultData:(NSDictionary *)resultData bufferParameter:(NSDictionary *)bufferParameter isUnion:(BOOL)isUnion isAttributeRetained:(BOOL)isAttributeRetained optionParameter:(NSDictionary *)optionParameter withResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
+        Dataset* sourceDataset = [SAnalyst getDatasetByDictionary:sourceData];
+        Dataset* resultDataset = [SAnalyst getDatasetByDictionary:resultData];
+        
+        BOOL result = NO;
+        
+        if (sourceData && resultDataset) {
+            BufferAnalystParameter* parameter = [SAnalyst getBufferAnalystParameterByDictionary:bufferParameter];
+            if (parameter) {
+                result = [BufferAnalyst createBufferSourceVector:(DatasetVector *)sourceDataset ResultVector:(DatasetVector *)resultDataset BufferParam:parameter IsUnion:isUnion IsAttributeRetained:isAttributeRetained];
+            }
+        }
+        
+        if (result) {
+            BOOL showResult = [optionParameter objectForKey:@"showResult"];
+            
+            if (showResult) {
+                NSDictionary* geoStyleDic = [optionParameter objectForKey:@"geoStyle"];
+                GeoStyle* geoStyle = [SAnalyst getGeoStyleByDictionary:geoStyleDic];
+                TrackingLayer* trackingLayer = map.trackingLayer;
+                
+                Recordset* recordset = resultDataset toRecor
+            }
+        }
+        
+        
+        resolve(@(result));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
 
 
 /**
@@ -207,4 +154,100 @@ RCT_REMAP_METHOD( closeAnalysis,  closeAnalysisResolver:(RCTPromiseResolveBlock)
 }
 
 
+
+
+
+
+/**************************************************************************原生方法分割线**********************************************************************************************/
++ (Dataset *)getDatasetByDictionary:(NSDictionary *)dic {
+    Dataset* dataset = nil;
+    Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+    Datasource* datacourse = nil;
+    if (dic) {
+        if ([dic objectForKey:@"datasouce"]) {
+            NSString* alias = [dic objectForKey:@"datasouce"];
+            datacourse = [datasources getAlias:alias];
+            if (datacourse && [dic objectForKey:@"dateset"]) {
+                dataset = [datacourse.datasets getWithName:[dic objectForKey:@"dateset"]];
+            }
+        }
+    }
+    return dataset;
+}
+
++ (GeoStyle *)getGeoStyleByDictionary:(NSDictionary *)geoStyleDic {
+    GeoStyle* geoStyle = [[GeoStyle alloc] init];
+    if (geoStyleDic) {
+        if ([geoStyleDic objectForKey:@"lineWidth"]) {
+            NSNumber* lineWidthObj = [geoStyleDic objectForKey:@"lineWidth"];
+            [geoStyle setLineWidth: lineWidthObj.doubleValue];
+        }
+        if ([geoStyleDic objectForKey:@"fillForeColor"]) {
+            NSDictionary* fillForeColor = [geoStyleDic objectForKey:@"fillForeColor"];
+            NSNumber* r = [fillForeColor objectForKey:@"r"];
+            NSNumber* g = [fillForeColor objectForKey:@"g"];
+            NSNumber* b = [fillForeColor objectForKey:@"b"];
+            NSNumber* a = [fillForeColor objectForKey:@"a"];
+            
+            if (!a) {
+                [geoStyle setFillForeColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue]];
+            } else {
+                [geoStyle setFillForeColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue A:a.intValue]];
+            }
+            
+        }
+        if ([geoStyleDic objectForKey:@"lineColor"]) {
+            NSDictionary* lineColor = [geoStyleDic objectForKey:@"lineColor"];
+            NSNumber* r = [lineColor objectForKey:@"r"];
+            NSNumber* g = [lineColor objectForKey:@"g"];
+            NSNumber* b = [lineColor objectForKey:@"b"];
+            NSNumber* a = [lineColor objectForKey:@"a"];
+            
+            if (!a) {
+                [geoStyle setLineColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue]];
+            } else {
+                [geoStyle setLineColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue A:a.intValue]];
+            }
+        }
+        if ([geoStyleDic objectForKey:@"lineSymbolID"]) {
+            NSNumber* lineSymbolID = [geoStyleDic objectForKey:@"lineSymbolID"];
+            [geoStyle setLineSymbolID:lineSymbolID.intValue];
+        }
+        if ([geoStyleDic objectForKey:@"markerSymbolID"]) {
+            NSNumber* markerSymbolID = [geoStyleDic objectForKey:@"markerSymbolID"];
+            [geoStyle setLineSymbolID:markerSymbolID.intValue];
+        }
+        if ([geoStyleDic objectForKey:@"markerSize"]) {
+            NSDictionary* markerSize = [geoStyleDic objectForKey:@"markerSize"];
+            NSNumber* w = [markerSize objectForKey:@"w"];
+            NSNumber* h = [markerSize objectForKey:@"h"];
+            
+            Size2D* size2D = [[Size2D alloc] initWithWidth:w.doubleValue Height:h.doubleValue];
+            [geoStyle setMarkerSize:size2D];
+        }
+        if ([geoStyleDic objectForKey:@"fillOpaqueRate"]) {
+            NSNumber* fillOpaqueRate = [geoStyleDic objectForKey:@"fillOpaqueRate"];
+            [geoStyle setFillOpaqueRate:fillOpaqueRate.intValue];
+        }
+    }
+    return geoStyle;
+}
+
++ (BufferAnalystParameter *)getBufferAnalystParameterByDictionary:(NSDictionary *)parameter {
+    BufferAnalystParameter* bufferAnalystParameter = [[BufferAnalystParameter alloc] init];
+    if (parameter) {
+        if ([parameter objectForKey:@"endType"]) {
+            bufferAnalystParameter.bufferEndType = (int)[parameter objectForKey:@"endType"];
+        }
+        if ([parameter objectForKey:@"leftDistance"]) {
+            NSNumber* leftDistance = [parameter objectForKey:@"leftDistance"];
+            bufferAnalystParameter.leftDistance = [leftDistance stringValue];
+        }
+        if ([parameter objectForKey:@"rightDistance"]) {
+            NSNumber* rightDistance = [parameter objectForKey:@"rightDistance"];
+            bufferAnalystParameter.rightDistance = [rightDistance stringValue];
+        }
+    }
+    return bufferAnalystParameter;
+}
 @end

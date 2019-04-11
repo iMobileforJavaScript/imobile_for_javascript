@@ -660,7 +660,8 @@ RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBloc
                 }
                   //  [mapControl panTo:defaultMapCenter time:200];
             }
-            
+            [mapControl.map setAngle:0];
+            [mapControl.map setSlantAngle:0];
             [mapControl.map refresh];
             resolve([NSNumber numberWithBool:isMove]);
         });
