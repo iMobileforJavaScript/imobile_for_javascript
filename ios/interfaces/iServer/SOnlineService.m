@@ -766,19 +766,22 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
 
 # pragma mark ---------------------------- 上传协议
 -(void)didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend{
-//    @try {
-//        float progress = 1.0 * totalBytesSent / totalBytesExpectedToSend * 100;
-//        //        float progress = totalBytesWritten / totalBytesExpectedToWrite;
-//        NSLog(@"uploading: %f", progress);
-//        [self sendEventWithName:ONLINE_SERVICE_UPLOADING
-//                           body:@{
-//                                  @"progress": [NSNumber numberWithFloat:progress],
-//                                  @"id":uploadId
-//                                  }];
-//    } @catch (NSException *exception) {
-//        [self sendEventWithName:ONLINE_SERVICE_UPLOADFAILURE
-//                           body:exception.reason];
-//    }
+    @try {
+        int progress = 1.0 * totalBytesSent / totalBytesExpectedToSend * 100;
+        //        float progress = totalBytesWritten / totalBytesExpectedToWrite;
+        //NSLog(@"uploading: %f", progress);
+        if(progress % 10 == 0){
+            [self sendEventWithName:ONLINE_SERVICE_UPLOADING
+                               body:@{
+                                      @"progress": [NSNumber numberWithInt:progress],
+                                      @"id":uploadId
+                                      }];
+        }
+        
+    } @catch (NSException *exception) {
+        [self sendEventWithName:ONLINE_SERVICE_UPLOADFAILURE
+                           body:exception.reason];
+    }
 }
 
 
