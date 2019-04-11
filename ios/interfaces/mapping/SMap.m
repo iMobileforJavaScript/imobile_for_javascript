@@ -1131,7 +1131,7 @@ RCT_REMAP_METHOD(setGestureDetector, setGestureDetectorByResolver:(RCTPromiseRes
 }
 
 #pragma mark 去除手势监听
-RCT_REMAP_METHOD(deleteGestureDetector,deleteGestureDetectorById:(NSString*)mapControlId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(deleteGestureDetector,deleteGestureDetectorwithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
         mapControl.delegate = nil;
@@ -1943,8 +1943,6 @@ RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithName:(NSString *)Name
     [recordset setFieldValueWithString:fieldInfoName Obj:value];
     
     b = [recordset update];
-    NSLog(@"%@",[recordset getFieldValueWithIndex:(recordset.fieldCount - 1)]);
-    NSLog(@"%@",[recordset getFieldValueWithString:@"name"]);
    // [recordset close];
     [recordset dispose];
 }
@@ -2058,21 +2056,7 @@ RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)data
         reject(@"addTextRecordset",exception.reason,nil);
     }
 }
-/*
- * TODO必须补全，不然添加文字标注
- */
-//#pragma mark 必须补全 不然添加文字标注报错
-//#pragma mark 获取点击坐标
-//RCT_REMAP_METHOD(getGestureDetector, getGestureDetectorWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
-//    @try {
-//        sMap = [SMap singletonInstance];
-//        // 缺少接口
-//        sMap.smMapWC.mapControl.delegate = self;
-//        resolve(@(YES));
-//    } @catch (NSException *exception) {
-//        reject(@"getGestureDetector",exception.reason,nil);
-//    }
-//}
+
 
 #pragma mark 添加地图图例
 RCT_REMAP_METHOD(addLegend, addLegendWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
