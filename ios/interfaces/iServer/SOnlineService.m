@@ -684,6 +684,49 @@ RCT_REMAP_METHOD(bindEmail,email:(NSString*)email resolver:(RCTPromiseResolveBlo
         reject(kTAG,@"bindEmail failed",nil);
     }
 }
+
+#pragma mark ----------------------------- getSuperMapKnown
+
+RCT_REMAP_METHOD(getSuperMapKnown, getSuperMapKnownWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSURL *url =[NSURL URLWithString:@"http://111.202.121.144:8088/officialAccount/zhidao/data.json"];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+        NSURLSession *session = [NSURLSession sharedSession];
+        NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data,NSURLResponse * _Nullable response, NSError * _Nullable error){
+            if(error == nil){
+                NSString *receiveStr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"id" withString:@"\"id\""];
+                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"title" withString:@"\"title\""];
+                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"cover" withString:@"\"cover\""];
+                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"time" withString:@"\"time\""];
+                NSData * data = [receiveStr dataUsingEncoding:NSUTF8StringEncoding];
+                NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
+              
+                NSMutableArray *array = [[NSMutableArray alloc]init];
+                
+                for(NSString *item in dic){
+                    NSMutableDictionary *mDic = [[NSMutableDictionary alloc]init];
+                    
+                    [mDic setValue:[item valueForKey:@"id"] forKey:@"id"];
+                    [mDic setValue:[item valueForKey:@"title"] forKey:@"title"];
+                    [mDic setValue:[item valueForKey:@"cover"] forKey:@"img"];
+                    [mDic setValue:[item valueForKey:@"time"] forKey:@"time"];
+                    [array addObject:mDic];
+                }
+                NSLog(@"finish");
+                resolve(array);
+            }else{
+                reject(@"getSuperMapKnown",@"Get SuperMapKown Error",nil);
+            }
+        }];
+        
+        [dataTask resume];
+        
+    } @catch (NSException *exception) {
+        reject(@"getSuperMapKnown",exception.reason,nil);
+    }
+}
+
 # pragma mark ---------------------------- 下载协议
 - (void)bytesWritten:(int64_t) bytesWritten totalBytesWritten:(int64_t) totalBytesWritten
 totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
@@ -743,10 +786,10 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
     @try {
         if (error == nil) {
             [self sendEventWithName:ONLINE_SERVICE_UPLOADED
-                               body:error];
+                               body:[NSNumber numberWithBool:YES]];
         } else {
             [self sendEventWithName:ONLINE_SERVICE_UPLOADFAILURE
-                               body:[NSNumber numberWithBool:YES]];
+                               body:error];
         }
         
     } @catch (NSException *exception) {
