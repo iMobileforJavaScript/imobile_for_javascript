@@ -4,12 +4,13 @@
  E-mail: yangshanglong@supermap.com
  Description: 工作空间操作类
  **********************************************************************************/
-import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform } from 'react-native'
+import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform, PixelRatio } from 'react-native'
 import * as MapTool from './SMapTool'
 import * as LayerManager from './SLayerManager'
 import * as Datasource from './SDatasource'
 import { EventConst } from '../../constains/index'
 let SMap = NativeModules.SMap
+const dpi = PixelRatio.get()
 
 const nativeEvt = new NativeEventEmitter(SMap)
 
@@ -292,9 +293,20 @@ export default (function () {
    * @param isPrivate 另存为新地图的是否是用户目录
    * @returns {*}
    */
-  function clipMap (points, layersInfo = [], mapName = null, ofModule = '', addition, isPrivate = true) {
+  function clipMap (points = [], layersInfo = [], mapName = null, ofModule = '', addition, isPrivate = true) {
     try {
-      return SMap.clipMap(points, layersInfo, mapName, ofModule, addition, isPrivate)
+      let _points = []
+      if (Platform.OS === 'android') {
+        points.forEach(point => {
+          _points.push({
+            x: point.x * dpi,
+            y: point.y * dpi,
+          })
+        })
+      } else {
+        _points = points
+      }
+      return SMap.clipMap(_points, layersInfo, mapName, ofModule, addition, isPrivate)
     } catch (e) {
       console.error(e)
     }
@@ -617,6 +629,28 @@ export default (function () {
     }
   }
 
+    /**
+   * 获取地图对应的数据源别名
+   */
+  function showMarker (longitude,latitude) {
+    try {
+      return SMap.showMarker(longitude,latitude)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+    /**
+   * 获取地图对应的数据源别名
+   */
+  function deleteMarker () {
+    try {
+      return SMap.deleteMarker()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  
   /**
    * 获取地图对应的数据源别名
    */
@@ -1051,17 +1085,6 @@ export default (function () {
     }
   }
 
-  /**
-   * 添加地图图例
-   * @returns {*|Promise.<void>}
-   */
-  function addLegend () {
-    try {
-      return SMap.addLegend()
-    } catch (e) {
-      console.error(e)
-    }
-  }
 
   /**
    * 设置标注默认的结点，线，面颜色
@@ -1069,6 +1092,17 @@ export default (function () {
   function setLabelColor() {
     try {
       return SMap.setLabelColor()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 更新图例
+   */
+  function updateLegend() {
+    try {
+      return SMap.updateLegend()
     } catch (e) {
       console.error(e)
     }
@@ -1287,9 +1321,11 @@ export default (function () {
     removeTaggingDataset,
     openTaggingDataset,
     setTaggingGrid,
-    addLegend,
     setLabelColor,
+    updateLegend,
 
+    showMarker,
+    deleteMarker,
     /** 地图编辑历史操作 **/
     undo,
     redo,

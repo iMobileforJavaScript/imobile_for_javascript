@@ -1225,9 +1225,14 @@
         WorkspaceConnectionInfo* info = [self setWorkspaceConnectionInfo:infoDic workspace:nil];
         
         if([importWorkspace open:info]){
-            NSString *strUserName = [self getUserName];
-            if (strUserName==nil) {
-                return arrResult;
+            NSString *strUserName = nil;
+            if (!isPrivate) {
+                strUserName = @"Customer";
+            }else{
+                strUserName = [self getUserName];
+                if (strUserName==nil) {
+                    return nil;
+                }
             }
             NSString *strRootPath = [self getRootPath];
             NSString *strCustomer = [NSString stringWithFormat:@"%@/%@/Data",strRootPath,strUserName];

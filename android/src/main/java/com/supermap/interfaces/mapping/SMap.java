@@ -3,11 +3,19 @@
  */
 package com.supermap.interfaces.mapping;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -32,6 +40,9 @@ import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Resources;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Action;
+import com.supermap.mapping.ColorLegendItem;
+import com.supermap.mapping.CallOut;
+import com.supermap.mapping.CalloutAlignment;
 import com.supermap.mapping.GeometryAddedListener;
 import com.supermap.mapping.GeometryEvent;
 import com.supermap.mapping.GeometrySelectedEvent;
@@ -45,6 +56,10 @@ import com.supermap.mapping.LegendView;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.Selection;
+import com.supermap.mapping.ThemeGridRange;
+import com.supermap.mapping.ThemeRange;
+import com.supermap.mapping.ThemeType;
+import com.supermap.mapping.ThemeUnique;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
@@ -54,6 +69,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -172,6 +189,69 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 添加marker
+     *
+     * @param data
+     * @param promise
+     */
+    @ReactMethod
+    public void showMarker(double longitude, double latitude, Promise promise) {
+        try {
+            sMap = getInstance();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            Point2D pt = new Point2D(longitude,latitude);
+            if (sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+                Point2Ds point2Ds = new Point2Ds();
+                point2Ds.add(pt);
+                PrjCoordSys prjCoordSys = new PrjCoordSys();
+                prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                CoordSysTransParameter parameter = new CoordSysTransParameter();
+
+                CoordSysTranslator.convert(point2Ds, prjCoordSys, sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                pt = point2Ds.getItem(0);
+            }
+            final  Point2D mapPt = pt;//new Point2D(11584575.605042318,3573118.555091877);
+            getCurrentActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+//                    final  Point2D mapPt = new Point2D(11584575.605042318,3573118.555091877);
+                    GeoPoint point = new GeoPoint(mapPt.getX(),mapPt.getY());
+                    GeoStyle style = new GeoStyle();
+                    style.setMarkerSymbolID(1);
+                    style.setMarkerSize(new Size2D(25,25));
+                    style.setLineColor(new Color(255,0,0,255));
+                    point.setStyle(style);
+                    sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(point,"marker_###");
+
+                    sMap.smMapWC.getMapControl().getMap().setCenter(mapPt);
+                    sMap.smMapWC.getMapControl().getMap().setScale(0.000011947150294723098);
+                    sMap.smMapWC.getMapControl().getMap().refresh();
+                }
+            });
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 移除marker
+     *
+     * @param data
+     * @param promise
+     */
+    @ReactMethod
+    public void deleteMarker(Promise promise) {
+        try {
+            sMap.smMapWC.getMapControl().getMap().getTrackingLayer().removeLabel("marker_###");
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
     /**
      * 刷新地图
@@ -1282,6 +1362,8 @@ public class SMap extends ReactContextBaseJavaModule {
                 Point2D point2D = new Point2D(point.getDouble("x"), point.getDouble("y"));
                 MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(point2D, promise);
                 moveToCurrentThread.run();
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().setAngle(0);
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().SetSlantAngle(0);
 
 //                promise.resolve(true);
             } else {
@@ -1446,7 +1528,7 @@ public class SMap extends ReactContextBaseJavaModule {
                     map.putInt("y", (int) e.getY());
 
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(EventConst.MAP_SINGLE_TAP, map);
+                            .emit(EventConst.MAP_SINGLE_TAP_CONFIR, map);
                     return false;
                 }
 
@@ -1468,6 +1550,7 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
 
     @ReactMethod
     public void deleteGestureDetector(Promise promise) {
@@ -2612,7 +2695,6 @@ public class SMap extends ReactContextBaseJavaModule {
                     Layer layer = map.getLayers().add(ds, true);
                     layer.setEditable(true);
                 }
-                info.dispose();
                 promise.resolve(true);
             } else {
                 Datasets datasets = opendatasource.getDatasets();
@@ -2820,35 +2902,6 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 添加地图图例
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void addLegend(Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            Legend lengend = map.getLegend();
-            LegendItem legendItem = new LegendItem();
-            FileInputStream in = null;
-            try {
-                in = new FileInputStream(rootPath + "/Pictures/Screenshots/aa.png");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            Bitmap bitmap = BitmapFactory.decodeStream(in);
-            legendItem.setBitmap(bitmap);
-            legendItem.setCaption("测试");
-            lengend.addUserDefinedLegendItem(legendItem);
-            sMap.smMapWC.getMapControl().getMap().refresh();
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    /**
      * 设置标注面随机色
      *
      * @param promise
@@ -2933,6 +2986,80 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+
+    /**
+     * 更新图例
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void updateLegend(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            Layers layers = mapControl.getMap().getLayers();
+            Map<String, String> map = new HashMap<String, String>();
+            for(int i=0 ;i<layers.getCount();i++){
+                Layer layer = layers.get(i);
+                if(layer.getTheme()!=null){
+                    if(layer.getTheme().getType()== ThemeType.RANGE || layer.getTheme().getType()== ThemeType.UNIQUE || layer.getTheme().getType()== ThemeType.GRIDRANGE){
+                        if(layer.getTheme().getType()== ThemeType.RANGE){
+                            ThemeRange themeRange = (ThemeRange) layer.getTheme();
+                            for(int a=0;a<themeRange.getCount();a++){
+                                GeoStyle GeoStyle = themeRange.getItem(a).getStyle();
+                                map.put(themeRange.getItem(a).getCaption(), GeoStyle.getFillForeColor().toColorString());
+                            }
+                        }
+                        if(layer.getTheme().getType()== ThemeType.UNIQUE){
+                            ThemeUnique themeUnique = (ThemeUnique) layer.getTheme();
+                            for(int a=0;a<themeUnique.getCount();a++){
+                                GeoStyle GeoStyle = themeUnique.getItem(a).getStyle();
+                                map.put(themeUnique.getItem(a).getCaption(), GeoStyle.getFillForeColor().toColorString());
+                            }
+                        }
+                        if(layer.getTheme().getType()== ThemeType.GRIDRANGE){
+                            ThemeGridRange themeGridRange = (ThemeGridRange) layer.getTheme();
+                            for(int a=0;a<themeGridRange.getCount();a++){
+                                map.put(themeGridRange.getItem(a).getCaption(), themeGridRange.getItem(a).getColor().toColorString());
+                            }
+                        }
+                    }
+                }
+            }
+
+            Legend lengend = mapControl.getMap().getLegend();
+
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                int color = android.graphics.Color.parseColor(entry.getValue());
+                ColorLegendItem colorLegendItem = new ColorLegendItem();
+                colorLegendItem.setColor(color);
+                colorLegendItem.setCaption(entry.getKey());
+                lengend.addColorLegendItem(2,colorLegendItem);
+            }
+
+
+            mapControl.getMap().refresh();
+
+            promise.resolve(true);
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 标绘动画
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void plotAnimation(Promise promise) {
+
+    }
+
 
 
 /************************************** 地图编辑历史操作 BEGIN****************************************/

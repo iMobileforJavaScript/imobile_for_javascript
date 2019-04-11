@@ -136,4 +136,56 @@ RCT_REMAP_METHOD(getDatasources, getDatasourcesWithResolver:(RCTPromiseResolveBl
         reject(@"Datasource", exception.reason, nil);
     }
 }
+
+/**
+ * 获取指定数据源中的数据集
+ *
+ * @param dataDic DatasourceConnectionInfo
+ * @param promise
+ */
+RCT_REMAP_METHOD(getDatasetsByDatasource, getDatasetsByDatasourceWithResolver:(NSDictionary*)dataDic autoOpen:(BOOL)autoOpen resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        NSString* alias = @"";
+        Workspace* workspace = [SMap singletonInstance].smMapWC.workspace;
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"Alias"]) {
+            alias = [dataDic objectForKey:@"Alias"];
+        } else if ([array containsObject:@"alias"]) {
+            alias = [dataDic objectForKey:@"alias"];
+        }
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        Datasource* datasource = nil;
+        datasource = [datasources getAlias:alias];
+        if (datasource == nil && autoOpen) {
+            DatasourceConnectionInfo* info = [SMDatasource convertDicToInfo:dataDic];
+            datasource = [workspace.datasources open:info];
+        } else if (datasource == nil && !autoOpen || datasource.datasourceConnectionInfo.engineType!=ET_UDB) {
+            resolve([NSNumber numberWithBool:false]);
+            return;
+        }
+        Datasets* datasets = datasource.datasets;
+        NSInteger datasetsCount = datasets.count;
+        NSMutableArray* arr = [[NSMutableArray alloc] init];
+        for (int i = 0; i < datasetsCount; i++) {
+            NSMutableDictionary* mulDic = [[NSMutableDictionary alloc] init];
+            [mulDic setValue:[datasets get:i].name forKey:@"datasetName"];
+            [mulDic setValue:[NSNumber numberWithInt:[datasets get:i].datasetType] forKey:@"datasetType"];
+            [mulDic setValue:datasource.alias forKey:@"datasourceName"];
+            [arr addObject:mulDic];
+        }
+        
+        NSMutableDictionary* mulDic2 = [[NSMutableDictionary alloc] init];
+        NSString* datasourceAlias = datasource.alias;
+        [mulDic2 setValue:datasourceAlias forKey:@"alias"];
+        
+        NSMutableDictionary* mulDic3 = [[NSMutableDictionary alloc] init];
+        [mulDic3 setValue:arr forKey:@"list"];
+        [mulDic3 setValue:mulDic2 forKey:@"datasource"];
+        
+        resolve(mulDic3);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
 @end

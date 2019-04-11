@@ -97,10 +97,10 @@ public class SAnalyst extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void analystBuffer(String mapId, String layerId, ReadableMap params, Promise promise) {
+    public void analystBuffer(String layerPath, ReadableMap params, Promise promise) {
         try {
-            com.supermap.mapping.Map map = JSMap.getObjFromList(mapId);
-            Layer layer = JSLayer.getLayer(layerId);
+            com.supermap.mapping.Map map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
+            Layer layer = SMLayer.findLayerByPath(layerPath);
             Selection selection = layer.getSelection();
             Recordset recordset = selection.toRecordset();
 

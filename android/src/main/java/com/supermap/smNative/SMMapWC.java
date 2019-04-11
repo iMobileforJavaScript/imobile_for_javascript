@@ -1192,7 +1192,7 @@ public class SMMapWC {
         return rootPath + "/iTablet/User";
     }
 
-    private String getUserName() {
+    public String getUserName() {
         String strServer = SMap.getInstance().getSmMapWC().getWorkspace().getConnectionInfo().getServer();
 //        String[] arrServer = strServer.split("/");
 //        int nCount = arrServer.length;
@@ -1263,9 +1263,14 @@ public class SMMapWC {
             return null;
         }
 
-        String strUserName = getUserName();
-        if (strUserName == null) {
-            return arrResult;
+        String strUserName;
+        if (!bPrivate) {
+            strUserName = "Customer";
+        } else {
+            strUserName = getUserName();
+            if (strUserName == null) {
+                return arrResult;
+            }
         }
         String strRootPath = getRootPath();
         String strCustomer = strRootPath + "/" + strUserName + "/Data";
@@ -2298,7 +2303,7 @@ public class SMMapWC {
         String strTargetFile = desDatasourceDir + "/" + strFileName;
 
         String strSrcDatasourcePath = strFile.substring(0, strFile.length() - 4);
-        String strTargetDatasourcePath = strFile.substring(0, strTargetFile.length() - 4);
+        String strTargetDatasourcePath = strTargetFile.substring(0, strTargetFile.length() - 4);
 
         String strResult = null;
         // 检查重复性
@@ -2329,7 +2334,7 @@ public class SMMapWC {
 
     public String importDatasourceFile(String strFile, String strModule) {
 
-        String[] arrFile = strFile.split(".");
+        String[] arrFile = strFile.split("\\.");
         String strSuffix = arrFile[arrFile.length - 1];
         if (strSuffix.toLowerCase().equals("udb")) {
             return importUDBFile(strFile, strModule);
