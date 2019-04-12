@@ -175,6 +175,35 @@ RCT_REMAP_METHOD( closeAnalysis,  closeAnalysisResolver:(RCTPromiseResolveBlock)
     return dataset;
 }
 
++ (Dataset *)createDatasetByDictionary:(NSDictionary *)dic {
+    Dataset* dataset = nil;
+    Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+    Datasource* datacourse = nil;
+    if (dic) {
+        if ([dic objectForKey:@"datasouce"]) {
+            NSString* alias = [dic objectForKey:@"datasouce"];
+            datacourse = [datasources getAlias:alias];
+            if (datacourse && [dic objectForKey:@"datesetName"]) {
+                NSString* datasetType = REGION;
+                if ([dic objectForKey:@"datesetType"]) {
+                    datasetType = [dic objectForKey:@"datesetType"];
+                }
+                EncodeType* encodeType = NONE;
+                if ([dic objectForKey:@"encodeType"]) {
+                    encodeType = [dic objectForKey:@"encodeType"];
+                }
+                
+                DatasetVectorInfo* dsInfo = [[DatasetVectorInfo alloc] init];
+                [dsInfo setDatasetType:datasetType];
+                [dsInfo setName:[dic objectForKey:@"datesetName"]];
+                [dsInfo setEncodeType:encodeType];
+                dataset = [datacourse.datasets create:dsInfo];
+            }
+        }
+    }
+    return dataset;
+}
+
 + (GeoStyle *)getGeoStyleByDictionary:(NSDictionary *)geoStyleDic {
     GeoStyle* geoStyle = [[GeoStyle alloc] init];
     if (geoStyleDic) {

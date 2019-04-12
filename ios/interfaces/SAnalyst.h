@@ -28,6 +28,8 @@
 #import "SuperMap/Datasources.h"
 #import "SuperMap/Datasource.h"
 #import "SuperMap/Dataset.h"
+#import "SuperMap/DatasetType.h"
+#import "SuperMap/encodeType.h"
 
 #import "Constants.h"
 #import "SScene.h"
@@ -39,4 +41,5 @@
 + (GeoStyle *)getGeoStyleByDictionary:(NSDictionary *)geoStyleDic;
 + (BufferAnalystParameter *)getBufferAnalystParameterByDictionary:(NSDictionary *)parameter;
 + (Dataset *)getDatasetByDictionary:(NSDictionary *)dic;
++ (Dataset *)createDatasetByDictionary:(NSDictionary *)dic;
 @end
