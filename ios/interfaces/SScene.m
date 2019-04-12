@@ -498,11 +498,11 @@ RCT_REMAP_METHOD(is3DWorkspace, is3DWorkspaceByInfo:(NSDictionary*)infoDic  reso
 /*
  从pxp文件打开scence
  */
-RCT_REMAP_METHOD(openScence, openScenceByName:(NSString*)name  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(openScence, openScenceByName:(NSString*)name  isPrivate:(BOOL)bPrivate resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sScene = [SScene singletonInstance];
         sScene.smSceneWC.sceneControl.isRender = NO;
-        BOOL result = [sScene.smSceneWC openScenceName:name toScenceControl:sScene.smSceneWC.sceneControl];
+        BOOL result = [sScene.smSceneWC openScenceName:name toScenceControl:sScene.smSceneWC.sceneControl isPrivate:bPrivate];
         sScene.smSceneWC.sceneControl.isRender = YES;
         [sScene.smSceneWC.sceneControl.scene refresh];
         
@@ -536,13 +536,13 @@ RCT_REMAP_METHOD(resetCamera, resolver:(RCTPromiseResolveBlock)resolve rejecter:
 /*
  导入3维工作空间成pxp
  */
-RCT_REMAP_METHOD(import3DWorkspace, import3DWorkspaceByInfo:(NSDictionary*)infoDic  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(import3DWorkspace, import3DWorkspaceByInfo:(NSDictionary*)infoDic  isPrivate:(BOOL)bPrivate teresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sScene = [SScene singletonInstance];
         if(sScene.smSceneWC==nil){
             sScene.smSceneWC = [[SMSceneWC alloc] init];
         }
-        BOOL result = [sScene.smSceneWC import3DWorkspaceInfo:infoDic];
+        BOOL result = [sScene.smSceneWC import3DWorkspaceInfo:infoDic isPrivate:bPrivate];
         resolve(@(result));
     }@catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);

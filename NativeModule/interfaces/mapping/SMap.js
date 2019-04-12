@@ -1085,17 +1085,6 @@ export default (function () {
     }
   }
 
-  /**
-   * 添加地图图例
-   * @returns {*|Promise.<void>}
-   */
-  function addLegend () {
-    try {
-      return SMap.addLegend()
-    } catch (e) {
-      console.error(e)
-    }
-  }
 
   /**
    * 设置标注默认的结点，线，面颜色
@@ -1103,6 +1092,17 @@ export default (function () {
   function setLabelColor() {
     try {
       return SMap.setLabelColor()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 更新图例
+   */
+  function updateLegend() {
+    try {
+      return SMap.updateLegend()
     } catch (e) {
       console.error(e)
     }
@@ -1321,8 +1321,9 @@ export default (function () {
     removeTaggingDataset,
     openTaggingDataset,
     setTaggingGrid,
-    addLegend,
     setLabelColor,
+    updateLegend,
+
     showMarker,
     deleteMarker,
     /** 地图编辑历史操作 **/
