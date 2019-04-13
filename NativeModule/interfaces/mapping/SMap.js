@@ -62,13 +62,18 @@ export default (function () {
    */
   function openDatasource (params, value, toHead = true, isVisible = true) {
     try {
+      let b = false
       if (typeof value === 'number') {
         value = value >= 0 ? value : -1
-        return SMap.openDatasourceWithIndex(params, value, toHead, isVisible)
+        b = SMap.openDatasourceWithIndex(params, value, toHead, isVisible)
       } else {
         value = value || ''
-        return SMap.openDatasourceWithName(params, value, toHead, isVisible)
+        b = SMap.openDatasourceWithName(params, value, toHead, isVisible)
       }
+
+      SMap.enableRotateTouch(bEnableRotateTouch)
+      SMap.enableSlantTouch(bEnableSlantTouch)
+      return b
     } catch (e) {
       console.error(e)
     }
@@ -126,11 +131,15 @@ export default (function () {
    */
   function openMap (value, viewEntire = false, center = null) {
     try {
+      let b = false
       if (typeof value === 'number') {
-        return SMap.openMapByIndex(value, viewEntire, center)
+        b = SMap.openMapByIndex(value, viewEntire, center)
       } else {
-        return SMap.openMapByName(value, viewEntire, center)
+        b = SMap.openMapByName(value, viewEntire, center)
       }
+      SMap.enableRotateTouch(bEnableRotateTouch)
+      SMap.enableSlantTouch(bEnableSlantTouch)
+      return b
     } catch (e) {
       console.error(e)
     }
@@ -244,13 +253,38 @@ export default (function () {
     }
   }
 
+  var bEnableRotateTouch = false
+  /**
+   * 地图手势旋转是否可用
+   */
+  function isEnableRotateTouch () {
+    try {
+      return bEnableRotateTouch
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   /**
    * 设置地图手势旋转是否可用
    */
   function enableRotateTouch (enable) {
     try {
       if (enable === undefined) return false
+      bEnableRotateTouch = enable
       return SMap.enableRotateTouch(enable)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  var bEnableSlantTouch = false
+  /**
+   * 地图手势旋转是否可用
+   */
+  function isEnableSlantTouch () {
+    try {
+      return bEnableSlantTouch
     } catch (e) {
       console.error(e)
     }
@@ -262,6 +296,7 @@ export default (function () {
   function enableSlantTouch (enable) {
     try {
       if (enable === undefined) return false
+      bEnableSlantTouch = enable
       return SMap.enableSlantTouch(enable)
     } catch (e) {
       console.error(e)
@@ -1265,6 +1300,8 @@ export default (function () {
     zoom,
     setScale,
     enableRotateTouch,
+    isEnableRotateTouch,
+    isEnableSlantTouch,
     enableSlantTouch,
     setAntialias,
     isAntialias,
