@@ -258,6 +258,7 @@ RCT_REMAP_METHOD(openDatasourceWithName, openDatasourceByParams:(NSDictionary*)p
             
             if (defaultName != nil && defaultName.length > 0) {
                 Dataset* ds = [dataSource.datasets getWithName:defaultName];
+                [sMap.smMapWC.mapControl.map setDynamicProjection:YES];
                 Layer* layer = [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:toHead];
                 layer.visible = visible;
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;

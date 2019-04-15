@@ -315,6 +315,7 @@ public class SMap extends ReactContextBaseJavaModule {
             if (datasource != null && defaultIndex >= 0 && datasource.getDatasets().getCount() > 0) {
                 Dataset ds = datasource.getDatasets().get(defaultIndex);
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                map.setDynamicProjection(true);
                 Layer layer = map.getLayers().add(ds, toHead);
                 layer.setVisible(visable);
                 if (ds.getType() == DatasetType.REGION) {
@@ -364,6 +365,7 @@ public class SMap extends ReactContextBaseJavaModule {
 
             if (datasource != null && !defaultName.equals("")) {
                 Dataset ds = datasource.getDatasets().get(defaultName);
+                sMap.smMapWC.getMapControl().getMap().setDynamicProjection(true);
                 Layer layer = sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, toHead);
                 layer.setVisible(visable);
             }
@@ -1344,6 +1346,8 @@ public class SMap extends ReactContextBaseJavaModule {
             MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(promise);
             moveToCurrentThread.run();
 
+            sMap.smMapWC.getMapControl().getMap().setAngle(0);
+            sMap.smMapWC.getMapControl().getMap().SetSlantAngle(0);
 //            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
