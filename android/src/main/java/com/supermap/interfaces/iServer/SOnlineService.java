@@ -60,6 +60,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     private static  final String TAG = "SOnlineService"; //
     private static  final String downloadId = "fileName"; //
     private static  final String uploadId = "uploadId"; //
+    private static Integer downprogress=0 ;
     private ReactApplicationContext mContext = null;
     String rootPath = android.os.Environment.getExternalStorageDirectory().getPath().toString();
     public SOnlineService(ReactApplicationContext reactContext) {
@@ -267,22 +268,31 @@ public class SOnlineService extends ReactContextBaseJavaModule{
         }
     }
     @ReactMethod
-    public void downloadWithDataId(String filePath,String onlineDataNameId,final Promise promise){
+    public void downloadWithDataId(String filePath, final String onlineDataNameId, final Promise promise){
         try {
            OnlineService.downloadFileById(mContext, onlineDataNameId, filePath, new DownLoadFile.DownLoadListener() {
                @Override
                public void getProgress(int progress) {
-                   mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADING,progress);
+                   if (progress%2==0&&progress>downprogress) {
+                       WritableMap map =Arguments.createMap();
+                       map.putString("id",onlineDataNameId);
+                       map.putInt("progress",progress);
+                       mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADINGOFID, map);
+                       downprogress=progress;
+                   }
                }
 
                @Override
                public void onComplete() {
-                   mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADED,true);
+                   WritableMap map =Arguments.createMap();
+                   map.putString("id",onlineDataNameId);
+                   map.putBoolean("downed",true);
+                   mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADEDOFID,map);
                }
 
                @Override
                public void onFailure() {
-                   mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, false);
+                   mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADFAILUREOFID, false);
                }
            });
         }catch (Exception e){

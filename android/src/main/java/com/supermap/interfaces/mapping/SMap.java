@@ -2149,16 +2149,17 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             List<String> list = sMap.smMapWC.importWorkspaceInfo(infoMap.toHashMap(), nModule, bPrivate);
-            if (list == null) {
-                promise.resolve(false);
-            }
             WritableArray mapsInfo = Arguments.createArray();
-            if (list.size() > 0) {
-                for (int i = 0; i < list.size(); i++) {
-                    mapsInfo.pushString(list.get(i));
+            if (list == null) {
+                 promise.resolve(mapsInfo);
+            }else {
+                if (list.size() > 0) {
+                    for (int i = 0; i < list.size(); i++) {
+                        mapsInfo.pushString(list.get(i));
+                    }
                 }
+                promise.resolve(mapsInfo);
             }
-            promise.resolve(mapsInfo);
         } catch (Exception e) {
             promise.reject(e);
         }
