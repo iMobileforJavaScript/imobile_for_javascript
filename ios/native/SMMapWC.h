@@ -62,4 +62,5 @@
 //-(BOOL)addLayersFromMap:(NSString*)srcMapName ofModule:(NSString*)srcModule isPrivate:(BOOL)bSrcPrivate toMap:(Map*)desMap;
 -(BOOL)addLayersFromMap:(NSString*)srcMapName toMap:(Map*)desMap withParam:(NSDictionary*)dicParam;
 -(BOOL)addLayersFromMapJson:(NSString*)jsonSrcMap toMap:(NSString*)jsonDesMap;
+-(NSString *)getUserName;
 @end

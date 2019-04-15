@@ -125,6 +125,19 @@ function getDatasources(){
   }
 }
 
+/**
+ * 获取指定数据源中的数据集
+ * @param info      DatasourceConnectionInfo
+ * @param autoOpen  如果指定数据源没有打开，可设置是否打开
+ */
+function getDatasetsByDatasource(info, autoOpen = false){
+  try {
+    return SDatasource.getDatasetsByDatasource(info, autoOpen)
+  } catch (error) {
+    console.error(e)
+  }
+}
+
 export {
   createDatasource,
   // openDatasource,
@@ -134,4 +147,5 @@ export {
   removeDatasetByName,
   copyDataset,
   getDatasources,
+  getDatasetsByDatasource,
 }

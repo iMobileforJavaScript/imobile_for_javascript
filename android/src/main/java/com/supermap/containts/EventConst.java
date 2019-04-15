@@ -38,6 +38,7 @@ public class EventConst {
     /** 地图 **/
     public static final String MAP_LONG_PRESS = "com.supermap.RN.Mapcontrol.long_press_event";
     public static final String MAP_SINGLE_TAP = "com.supermap.RN.Mapcontrol.single_tap_event";
+    public static final String MAP_SINGLE_TAP_CONFIR = "com.supermap.RN.Mapcontrol.single_tap_confir_event";
     public static final String MAP_DOUBLE_TAP = "com.supermap.RN.Mapcontrol.double_tap_event";
     public static final String MAP_TOUCH_BEGAN = "com.supermap.RN.Mapcontrol.touch_began_event";
     public static final String MAP_SCROLL = "com.supermap.RN.Mapcontrol.scroll_event";

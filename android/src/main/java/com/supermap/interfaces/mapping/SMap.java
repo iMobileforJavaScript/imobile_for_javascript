@@ -40,6 +40,7 @@ import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Resources;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Action;
+import com.supermap.mapping.ColorLegendItem;
 import com.supermap.mapping.CallOut;
 import com.supermap.mapping.CalloutAlignment;
 import com.supermap.mapping.GeometryAddedListener;
@@ -55,6 +56,10 @@ import com.supermap.mapping.LegendView;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.Selection;
+import com.supermap.mapping.ThemeGridRange;
+import com.supermap.mapping.ThemeRange;
+import com.supermap.mapping.ThemeType;
+import com.supermap.mapping.ThemeUnique;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
@@ -310,6 +315,7 @@ public class SMap extends ReactContextBaseJavaModule {
             if (datasource != null && defaultIndex >= 0 && datasource.getDatasets().getCount() > 0) {
                 Dataset ds = datasource.getDatasets().get(defaultIndex);
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                map.setDynamicProjection(true);
                 Layer layer = map.getLayers().add(ds, toHead);
                 layer.setVisible(visable);
                 if (ds.getType() == DatasetType.REGION) {
@@ -359,6 +365,7 @@ public class SMap extends ReactContextBaseJavaModule {
 
             if (datasource != null && !defaultName.equals("")) {
                 Dataset ds = datasource.getDatasets().get(defaultName);
+                sMap.smMapWC.getMapControl().getMap().setDynamicProjection(true);
                 Layer layer = sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, toHead);
                 layer.setVisible(visable);
             }
@@ -1339,6 +1346,8 @@ public class SMap extends ReactContextBaseJavaModule {
             MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(promise);
             moveToCurrentThread.run();
 
+            sMap.smMapWC.getMapControl().getMap().setAngle(0);
+            sMap.smMapWC.getMapControl().getMap().SetSlantAngle(0);
 //            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -1357,6 +1366,8 @@ public class SMap extends ReactContextBaseJavaModule {
                 Point2D point2D = new Point2D(point.getDouble("x"), point.getDouble("y"));
                 MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(point2D, promise);
                 moveToCurrentThread.run();
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().setAngle(0);
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().SetSlantAngle(0);
 
 //                promise.resolve(true);
             } else {
@@ -1521,7 +1532,7 @@ public class SMap extends ReactContextBaseJavaModule {
                     map.putInt("y", (int) e.getY());
 
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(EventConst.MAP_SINGLE_TAP, map);
+                            .emit(EventConst.MAP_SINGLE_TAP_CONFIR, map);
                     return false;
                 }
 
@@ -1543,6 +1554,7 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
 
     @ReactMethod
     public void deleteGestureDetector(Promise promise) {
@@ -2688,7 +2700,6 @@ public class SMap extends ReactContextBaseJavaModule {
                     Layer layer = map.getLayers().add(ds, true);
                     layer.setEditable(true);
                 }
-                info.dispose();
                 promise.resolve(true);
             } else {
                 Datasets datasets = opendatasource.getDatasets();
@@ -2896,35 +2907,6 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 添加地图图例
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void addLegend(Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            Legend lengend = map.getLegend();
-            LegendItem legendItem = new LegendItem();
-            FileInputStream in = null;
-            try {
-                in = new FileInputStream(rootPath + "/Pictures/Screenshots/aa.png");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            Bitmap bitmap = BitmapFactory.decodeStream(in);
-            legendItem.setBitmap(bitmap);
-            legendItem.setCaption("测试");
-            lengend.addUserDefinedLegendItem(legendItem);
-            sMap.smMapWC.getMapControl().getMap().refresh();
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    /**
      * 设置标注面随机色
      *
      * @param promise
@@ -3009,6 +2991,80 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+
+    /**
+     * 更新图例
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void updateLegend(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            Layers layers = mapControl.getMap().getLayers();
+            Map<String, String> map = new HashMap<String, String>();
+            for(int i=0 ;i<layers.getCount();i++){
+                Layer layer = layers.get(i);
+                if(layer.getTheme()!=null){
+                    if(layer.getTheme().getType()== ThemeType.RANGE || layer.getTheme().getType()== ThemeType.UNIQUE || layer.getTheme().getType()== ThemeType.GRIDRANGE){
+                        if(layer.getTheme().getType()== ThemeType.RANGE){
+                            ThemeRange themeRange = (ThemeRange) layer.getTheme();
+                            for(int a=0;a<themeRange.getCount();a++){
+                                GeoStyle GeoStyle = themeRange.getItem(a).getStyle();
+                                map.put(themeRange.getItem(a).getCaption(), GeoStyle.getFillForeColor().toColorString());
+                            }
+                        }
+                        if(layer.getTheme().getType()== ThemeType.UNIQUE){
+                            ThemeUnique themeUnique = (ThemeUnique) layer.getTheme();
+                            for(int a=0;a<themeUnique.getCount();a++){
+                                GeoStyle GeoStyle = themeUnique.getItem(a).getStyle();
+                                map.put(themeUnique.getItem(a).getCaption(), GeoStyle.getFillForeColor().toColorString());
+                            }
+                        }
+                        if(layer.getTheme().getType()== ThemeType.GRIDRANGE){
+                            ThemeGridRange themeGridRange = (ThemeGridRange) layer.getTheme();
+                            for(int a=0;a<themeGridRange.getCount();a++){
+                                map.put(themeGridRange.getItem(a).getCaption(), themeGridRange.getItem(a).getColor().toColorString());
+                            }
+                        }
+                    }
+                }
+            }
+
+            Legend lengend = mapControl.getMap().getLegend();
+
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                int color = android.graphics.Color.parseColor(entry.getValue());
+                ColorLegendItem colorLegendItem = new ColorLegendItem();
+                colorLegendItem.setColor(color);
+                colorLegendItem.setCaption(entry.getKey());
+                lengend.addColorLegendItem(2,colorLegendItem);
+            }
+
+
+            mapControl.getMap().refresh();
+
+            promise.resolve(true);
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 标绘动画
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void plotAnimation(Promise promise) {
+
+    }
+
 
 
 /************************************** 地图编辑历史操作 BEGIN****************************************/

@@ -19,10 +19,14 @@
 @class DynamicView,SnapSetting;
 @class DatasourceConnectionInfo;
 @class EditHistory;
+@class GeoStyle;
 @protocol TouchableViewDelegate;
 @protocol MapEditDelegate;
 @protocol MapMeasureDelegate;
 @protocol GeometrySelectedDelegate;
+@protocol AfterGeometryAddedDelegate;
+@protocol AfterGeometryModifiedDelegate;
+@protocol AfterGeometryDeletedDelegate;
 
 
 /** 地图控件类。
@@ -101,6 +105,18 @@
  */
 @property(nonatomic)double nodeSize;
 
+/**
+ * @brief 绘制对象节点节点颜色。
+ * @return 绘制对象节点颜色。
+ */
+@property(nonatomic,retain)Color* nodeColor;
+
+/**
+ * @brief 绘制对象节点几何风格。
+ * @return 绘制对象节点几何风格。
+ */
+@property(nonatomic,retain)GeoStyle* nodeStyle;
+
 ///获取当前MapControl中存储的Callout对象集合。
 @property(nonatomic,retain)NSMutableArray *callouts;
 
@@ -120,6 +136,13 @@
  * @brief 几何对象选中时通知委托。
  */
 @property(nonatomic) id<GeometrySelectedDelegate> geometrySelectedDelegate;
+
+/**
+ * @brief 几何对象添加时通知委托。
+ */
+@property(nonatomic) id<AfterGeometryAddedDelegate> geometryAddedDelegate;
+@property(nonatomic) id<AfterGeometryModifiedDelegate> geometryModifiedDelegate;
+@property(nonatomic) id<AfterGeometryDeletedDelegate> geometryDeletedDelegate;
 
 /**@brief 获取或设置一个布尔值指定当前地图是否启用放大镜功能，默认不启动。。
  */
@@ -293,7 +316,7 @@
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)longpress:(CGPoint)pressedPos;
 - (void)onDoubleTap:(CGPoint)onDoubleTapPos;
-- (void)onSingleTap:(CGPoint)onDoubleTapPos;
+- (void)onSingleTap:(CGPoint)onSingleTapPos;
 @end
 
 ///地图编辑用户回调。
@@ -333,6 +356,28 @@
 -(void)geometrySelected:(int)geometryID Layer:(Layer*)layer;
 //框选回调 数据类 [layer,[id1,id2]]; 组成的列表
 -(void)geometryMultiSelected:(NSArray*)layersAndIds;
+@end
+
+@interface GeometryArgs:NSObject
+@property(nonatomic,strong) MapControl* control;
+@property(nonatomic,assign) int id;
+@property(nonatomic,assign) BOOL cancel;
+@property(nonatomic,strong) Layer* layer;
+@end
+
+@protocol AfterGeometryAddedDelegate <NSObject>
+@required
+-(void)aftergeometryAddedCallBack:(GeometryArgs*)geometryArgs;
+@end
+
+@protocol AfterGeometryModifiedDelegate <NSObject>
+@required
+-(void)afterGeometryModifiedCallBack:(GeometryArgs*)geometryArgs;
+@end
+
+@protocol AfterGeometryDeletedDelegate <NSObject>
+@required
+-(void)afterGeometryDeletedCallBack:(GeometryArgs*)geometryArgs;
 @end
 
 

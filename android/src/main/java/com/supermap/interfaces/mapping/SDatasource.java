@@ -26,6 +26,7 @@ import com.supermap.smNative.SMDatasource;
 import com.supermap.smNative.SMLayer;
 
 import java.io.File;
+import java.util.HashMap;
 
 public class SDatasource extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SDatasource";
@@ -293,6 +294,64 @@ public class SDatasource extends ReactContextBaseJavaModule {
             }
 
             promise.resolve(dsArr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取指定数据源中的数据集
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void getDatasetsByDatasource(ReadableMap infoMap, boolean autoOpen, Promise promise) {
+        try {
+            HashMap<String, Object> data = infoMap.toHashMap();
+
+            String alias = null;
+
+            if (data.containsKey("Alias")) {
+                alias = data.get("Alias").toString();
+            } else if (data.containsKey("alias")) {
+                alias = data.get("alias").toString();
+            }
+
+            Datasources datasources = SMap.getSMWorkspace().getWorkspace().getDatasources();
+
+            Datasource datasource = datasources.get(alias);
+            if (datasource == null && autoOpen) {
+                Workspace workspace = SMap.getSMWorkspace().getWorkspace();
+                DatasourceConnectionInfo info = SMDatasource.convertDicToInfo(data);
+
+                datasource = workspace.getDatasources().open(info);
+            } else if (datasource == null || datasource.getConnectionInfo().getEngineType() != EngineType.UDB) {
+                //除了UDB数据源都排除
+                promise.resolve(false);
+                return;
+            }
+
+            Datasets datasets = datasource.getDatasets();
+            int datasetsCount = datasets.getCount();
+
+            WritableArray arr = Arguments.createArray();
+            for (int j = 0; j < datasetsCount; j++) {
+                WritableMap writeMap = Arguments.createMap();
+                writeMap.putString("datasetName", datasets.get(j).getName());
+                writeMap.putInt("datasetType", datasets.get(j).getType().value());
+                writeMap.putString("datasourceName", datasource.getAlias());
+                arr.pushMap(writeMap);
+            }
+
+            WritableMap map = Arguments.createMap();
+            String datasourceAlias = datasource.getAlias();
+            map.putString("alias", datasourceAlias);
+
+            WritableMap writableMap = Arguments.createMap();
+            writableMap.putArray("list", arr);
+            writableMap.putMap("datasource", map);
+
+            promise.resolve(writableMap);
         } catch (Exception e) {
             promise.reject(e);
         }

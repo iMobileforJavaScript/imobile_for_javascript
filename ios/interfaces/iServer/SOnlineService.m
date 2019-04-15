@@ -684,26 +684,69 @@ RCT_REMAP_METHOD(bindEmail,email:(NSString*)email resolver:(RCTPromiseResolveBlo
         reject(kTAG,@"bindEmail failed",nil);
     }
 }
+
+#pragma mark ----------------------------- getSuperMapKnown
+
+RCT_REMAP_METHOD(getSuperMapKnown, getSuperMapKnownWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSURL *url =[NSURL URLWithString:@"http://111.202.121.144:8088/officialAccount/zhidao/data.json"];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+        NSURLSession *session = [NSURLSession sharedSession];
+        NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data,NSURLResponse * _Nullable response, NSError * _Nullable error){
+            if(error == nil){
+                NSString *receiveStr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"id" withString:@"\"id\""];
+                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"title" withString:@"\"title\""];
+                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"cover" withString:@"\"cover\""];
+                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"time" withString:@"\"time\""];
+                NSData * data = [receiveStr dataUsingEncoding:NSUTF8StringEncoding];
+                NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
+              
+                NSMutableArray *array = [[NSMutableArray alloc]init];
+                
+                for(NSString *item in dic){
+                    NSMutableDictionary *mDic = [[NSMutableDictionary alloc]init];
+                    
+                    [mDic setValue:[item valueForKey:@"id"] forKey:@"id"];
+                    [mDic setValue:[item valueForKey:@"title"] forKey:@"title"];
+                    [mDic setValue:[item valueForKey:@"cover"] forKey:@"img"];
+                    [mDic setValue:[item valueForKey:@"time"] forKey:@"time"];
+                    [array addObject:mDic];
+                }
+                NSLog(@"finish");
+                resolve(array);
+            }else{
+                reject(@"getSuperMapKnown",@"Get SuperMapKown Error",nil);
+            }
+        }];
+        
+        [dataTask resume];
+        
+    } @catch (NSException *exception) {
+        reject(@"getSuperMapKnown",exception.reason,nil);
+    }
+}
+
 # pragma mark ---------------------------- 下载协议
 - (void)bytesWritten:(int64_t) bytesWritten totalBytesWritten:(int64_t) totalBytesWritten
 totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
-//    @try {
-//        NSNumber* written = [NSNumber numberWithLongLong:totalBytesWritten];
-//        NSNumber* total = [NSNumber numberWithLongLong:totalBytesExpectedToWrite];
-//        float progress = [written floatValue] / [total floatValue] * 100;
-//        //        float progress = totalBytesWritten / totalBytesExpectedToWrite;
-//        NSLog(@"downloading: %f", progress);
-//        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADING
-//                           body:@{
-//                                  @"progress": [NSNumber numberWithFloat:progress],
-//                                  @"downloaded": [NSNumber numberWithLongLong:totalBytesWritten],
-//                                  @"total": [NSNumber numberWithLongLong:totalBytesExpectedToWrite],
-//                                  @"id":downloadId
-//                                  }];
-//    } @catch (NSException *exception) {
-//        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADFAILURE
-//                           body:exception.reason];
-//    }
+    @try {
+        NSNumber* written = [NSNumber numberWithLongLong:totalBytesWritten];
+        NSNumber* total = [NSNumber numberWithLongLong:totalBytesExpectedToWrite];
+        float progress = [written floatValue] / [total floatValue] * 100;
+        //        float progress = totalBytesWritten / totalBytesExpectedToWrite;
+        NSLog(@"downloading: %f", progress);
+        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADING
+                           body:@{
+                                  @"progress": [NSNumber numberWithFloat:progress],
+                                  @"downloaded": [NSNumber numberWithLongLong:totalBytesWritten],
+                                  @"total": [NSNumber numberWithLongLong:totalBytesExpectedToWrite],
+                                  @"id":downloadId
+                                  }];
+    } @catch (NSException *exception) {
+        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADFAILURE
+                           body:exception.reason];
+    }
 }
 
 - (void)downloadResult:(NSString*)error {
@@ -723,19 +766,22 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
 
 # pragma mark ---------------------------- 上传协议
 -(void)didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend{
-//    @try {
-//        float progress = 1.0 * totalBytesSent / totalBytesExpectedToSend * 100;
-//        //        float progress = totalBytesWritten / totalBytesExpectedToWrite;
-//        NSLog(@"uploading: %f", progress);
-//        [self sendEventWithName:ONLINE_SERVICE_UPLOADING
-//                           body:@{
-//                                  @"progress": [NSNumber numberWithFloat:progress],
-//                                  @"id":uploadId
-//                                  }];
-//    } @catch (NSException *exception) {
-//        [self sendEventWithName:ONLINE_SERVICE_UPLOADFAILURE
-//                           body:exception.reason];
-//    }
+    @try {
+        int progress = 1.0 * totalBytesSent / totalBytesExpectedToSend * 100;
+        //        float progress = totalBytesWritten / totalBytesExpectedToWrite;
+        //NSLog(@"uploading: %f", progress);
+        if(progress % 10 == 0){
+            [self sendEventWithName:ONLINE_SERVICE_UPLOADING
+                               body:@{
+                                      @"progress": [NSNumber numberWithInt:progress],
+                                      @"id":uploadId
+                                      }];
+        }
+        
+    } @catch (NSException *exception) {
+        [self sendEventWithName:ONLINE_SERVICE_UPLOADFAILURE
+                           body:exception.reason];
+    }
 }
 
 
@@ -743,10 +789,10 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
     @try {
         if (error == nil) {
             [self sendEventWithName:ONLINE_SERVICE_UPLOADED
-                               body:error];
+                               body:[NSNumber numberWithBool:YES]];
         } else {
             [self sendEventWithName:ONLINE_SERVICE_UPLOADFAILURE
-                               body:[NSNumber numberWithBool:YES]];
+                               body:error];
         }
         
     } @catch (NSException *exception) {
