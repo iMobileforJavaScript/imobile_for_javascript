@@ -256,6 +256,7 @@ export default (function () {
   var bEnableRotateTouch = false
   /**
    * 地图手势旋转是否可用
+   * 
    */
   function isEnableRotateTouch () {
     try {
