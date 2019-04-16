@@ -194,6 +194,7 @@ public class SupermapFullPackage implements ReactPackage {
         * 在线模块功能
         */
         modules.add(new SOnlineService(reactContext));
+        modules.add(new SAnalyst(reactContext));
         return modules;
     }
 }

@@ -30,6 +30,10 @@
 #import "SuperMap/Dataset.h"
 #import "SuperMap/DatasetType.h"
 #import "SuperMap/encodeType.h"
+#import "SuperMap/Datasets.h"
+#import "SuperMap/DatasetVectorInfo.h"
+#import "SuperMap/BufferRadiusUnit.h"
+#import "SuperMap/LayerSettingVector.h"
 
 #import "Constants.h"
 #import "SScene.h"
@@ -38,8 +42,10 @@
 #import "SMLayer.h"
 
 @interface SAnalyst : RCTEventEmitter<RCTBridgeModule>
++ (Datasource *)getDatasourceByDictionary:(NSDictionary *)dic;
 + (GeoStyle *)getGeoStyleByDictionary:(NSDictionary *)geoStyleDic;
 + (BufferAnalystParameter *)getBufferAnalystParameterByDictionary:(NSDictionary *)parameter;
 + (Dataset *)getDatasetByDictionary:(NSDictionary *)dic;
 + (Dataset *)createDatasetByDictionary:(NSDictionary *)dic;
++ (BufferRadiusUnit)getBufferRadiusUnit:(NSString *)unitStr;
 @end

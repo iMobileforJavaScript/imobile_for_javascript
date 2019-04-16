@@ -69,6 +69,9 @@ RCT_EXPORT_MODULE();
         sMap.smMapWC = [[SMMapWC alloc] init];
     }
     sMap.smMapWC.mapControl = mapControl;
+    if (sMap.smMapWC.workspace && sMap.smMapWC.mapControl.map.workspace == nil) {
+        [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
+    }
 }
 
 - (void)setDelegate {
@@ -152,7 +155,7 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
     @try {
         sMap = [SMap singletonInstance];
         BOOL result = [sMap.smMapWC openWorkspace:infoDic];
-        if (result) {
+        if (result && sMap.smMapWC.mapControl) {
             [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
         }
         sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
@@ -678,13 +681,17 @@ RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)path resolver:(RCTPromiseReso
         NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[path,@219,udbName] forKeys:@[@"server",@"engineType",@"alias"]];
         Datasource* dataSource = [sMap.smMapWC openDatasource:params];
         NSInteger count = [dataSource.datasets count];
-        NSString* name;
         NSMutableArray* array = [[NSMutableArray alloc]init];
         for(int i = 0; i < count; i++)
         {
-            name = [[dataSource.datasets get:i] name];
+            Dataset* dataSet = [dataSource.datasets get:i];
             NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
-            [info setObject:(name) forKey:(@"title")];
+            [info setObject:dataSet.name forKey:@"title"];
+            NSString* description = dataset.description;
+            if ([description isEqualToString:@"NULL"]) {
+                description = @"";
+            }
+            [info setObject:description forKey:@"description"];
             [array addObject:info];
         }
         resolve(array);
@@ -1510,17 +1517,31 @@ RCT_REMAP_METHOD(addLayers, addLayers:(NSArray*)datasetNames dataSourceName:(NSS
         [datasets addObjectsFromArray:dataset_Text];
         [datasets addObjectsFromArray:dataset_Else];
         
+        NSMutableArray* resultArr = [[NSMutableArray alloc] init];
         if (datasets.count > 0) {
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [[mapControl getEditHistory] addMapHistory];
             
             for (int i = 0; i < datasets.count; i++) {
-                [layers addDataset:[datasets objectAtIndex:i] ToHead:true];
+                Layer* layer = [layers addDataset:[datasets objectAtIndex:i] ToHead:true];
+                if (layer) {
+                    NSMutableDictionary* layerInfo = [[NSMutableDictionary alloc] init];
+                    [layerInfo setObject:layer.name forKey:@"layerName"];
+                    [layerInfo setObject:layer.dataset.name forKey:@"datasetName"];
+                    [layerInfo setObject:[NSNumber numberWithInt:layer.dataset.datasetType] forKey:@"datasetType"];
+                    NSString* description = layer.dataset.description;
+                    if ([description isEqualToString:@"NULL"]) {
+                        description = @"";
+                    }
+                    [layerInfo setValue:description forKey:@"description"];
+                    
+                    [resultArr addObject:layerInfo];
+                }
             }
             [mapControl.map refresh];
         }
         
-        resolve([NSNumber numberWithBool:true]);
+        resolve(resultArr);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }

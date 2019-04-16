@@ -331,6 +331,21 @@ function selectObjs(data = []) {
   }
 }
 
+/**
+ * 设置图层样式
+ * @param layerName
+ * @param styleJson
+ * @returns {*}
+ */
+function setLayerStyle(layerName = '', styleJson = '') {
+  try {
+    if (!layerName || !styleJson) return
+    return LayerManager.setLayerStyle(layerName, styleJson)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 
 export {
   getLayersByType,
@@ -354,4 +369,5 @@ export {
   moveToBottom,
   selectObj,
   selectObjs,
+  setLayerStyle,
 }
