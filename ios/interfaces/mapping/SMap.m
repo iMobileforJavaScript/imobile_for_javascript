@@ -2043,10 +2043,15 @@ RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)data
         [dataset setReadOnly:NO];
         Recordset *recordset = [dataset recordset:NO cursorType:DYNAMIC];
         TextPart *textpart = [[TextPart alloc]init];
+        TextStyle *textStyle = [[TextStyle alloc]init];
+        [textStyle setFontWidth:5];
+        [textStyle setFontHeight:6];
+        [textStyle setForeColor:[[Color alloc]initWithR:0 G:0 B:0]];
         [textpart setAnchorPoint:p];
         [textpart setText:name];
         GeoText *geoText = [[GeoText alloc]init];
         [geoText addPart:textpart];
+        [geoText setTextStyle:textStyle];
         [recordset addNew:geoText];
         [recordset update];
         [recordset close];

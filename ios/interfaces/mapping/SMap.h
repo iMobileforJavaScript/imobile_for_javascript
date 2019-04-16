@@ -38,6 +38,7 @@
 #import "SuperMap/GeoStyle.h"
 #import "SuperMap/GeoRegion.h"
 #import "SuperMap/TextPart.h"
+#import "SuperMap/TextStyle.h"
 #import "SuperMap/GeoText.h"
 #import "SuperMap/Legend.h"
 #import "SuperMap/LegendItem.h"
