@@ -2148,7 +2148,7 @@
     if(strClipMapName!=nil){
         int nAddNum = 1;
         while ([_srcMap.workspace.maps indexOf:strClipMapName]!=-1) {
-            strClipMapName =[ NSString stringWithFormat:@"%@_%d",strResultName,nAddNum ];
+            strClipMapName =[ NSString stringWithFormat:@"%@_%d",*strResultName,nAddNum ];
             nAddNum++;
         }
         
@@ -2209,7 +2209,7 @@
                 nAddNum++;
             }
             
-            if ([datasetTemp isKindOfClass:DatasetVector.class]) {
+            if ([datasetTemp datasetType] == POINT || [datasetTemp datasetType] == LINE || [datasetTemp datasetType] == REGION) {
                 //3.datasetVector 有效参数：IsClipInRegion，IsErase
                 BOOL bClipInRegion = YES;
                 NSNumber *numInRegion = [dicLayer objectForKey:@"IsClipInRegion"];
@@ -2260,6 +2260,7 @@
                     [arrFields addObject:[field name]];
                 }
                 [parameter setSourceRetainedFields:arrFields];
+                
                 
                 if (bErase) {
                     // 擦除
