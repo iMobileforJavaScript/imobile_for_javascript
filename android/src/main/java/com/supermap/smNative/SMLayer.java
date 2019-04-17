@@ -35,8 +35,12 @@ public class SMLayer {
                 Dataset dataset = layer.getDataset();
 
                 if (dataset == null || type == -1 || dataset.getType() == Enum.parse(DatasetType.class, type)) {
-                    WritableMap info = getLayerInfo(layer, path);
-                    arr.pushMap(info);
+                    String str = layer.getName();
+                    if(str.indexOf("@Label") == -1)
+                    {
+                        WritableMap info = getLayerInfo(layer, path);
+                        arr.pushMap(info);
+                    }
                 }
             }
         } else {
@@ -45,8 +49,12 @@ public class SMLayer {
                 LayerGroup layerGroup = (LayerGroup) layer;
                 for (int i = 0; i < layerGroup.getCount(); i++) {
                     Layer mLayer = layerGroup.get(i);
-                    WritableMap info = getLayerInfo(mLayer, path);
-                    arr.pushMap(info);
+                    String str = mLayer.getName();
+                    if(str.indexOf("@Label") == -1)
+                    {
+                        WritableMap info = getLayerInfo(mLayer, path);
+                        arr.pushMap(info);
+                    }
                 }
             }
         }
