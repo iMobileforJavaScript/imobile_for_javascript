@@ -1754,10 +1754,7 @@ RCT_REMAP_METHOD(clipMap, clipMapWithPoints:(NSArray *)points layersInfo:(NSArra
                           @"result": [NSNumber numberWithBool:result],
                           });
             } else {
-                resolve(@{
-                          @"mapName": @"",
-                          @"result": [NSNumber numberWithBool:result],
-                          });
+                reject(@"clipMap", @"Clip map failed!", nil);
             }
         }
     } @catch (NSException *exception) {
