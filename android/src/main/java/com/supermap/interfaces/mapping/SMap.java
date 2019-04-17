@@ -2589,7 +2589,7 @@ public class SMap extends ReactContextBaseJavaModule {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
             Datasource opendatasource = workspace.getDatasources().get("Label");
-            sMap.smMapWC.getWorkspace().getConnectionInfo().getServer();
+//            sMap.smMapWC.getWorkspace().getConnectionInfo().getServer();
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
                 info.setAlias("Label");
@@ -2926,6 +2926,7 @@ public class SMap extends ReactContextBaseJavaModule {
     public void addTextRecordset(String dataname, String name, int x, int y, Promise promise) {
         try {
             sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getEditHistory().addMapHistory();
             Point2D p = sMap.smMapWC.getMapControl().getMap().pixelToMap(new Point(x, y));
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
             Datasource opendatasource = workspace.getDatasources().get("Label");
