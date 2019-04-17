@@ -91,6 +91,7 @@ public class SMap extends ReactContextBaseJavaModule {
     public static Random random;// 用于保存产生随机的线风格颜色的Random对象
     String rootPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 
+
     public Selection getSelection() {
         return selection;
     }
@@ -193,7 +194,6 @@ public class SMap extends ReactContextBaseJavaModule {
     /**
      * 添加marker
      *
-     * @param data
      * @param promise
      */
     @ReactMethod
@@ -239,7 +239,7 @@ public class SMap extends ReactContextBaseJavaModule {
     /**
      * 移除marker
      *
-     * @param data
+
      * @param promise
      */
     @ReactMethod
@@ -2192,9 +2192,13 @@ public class SMap extends ReactContextBaseJavaModule {
             datasourceConnectionInfo.setServer(strFile);
             datasourceConnectionInfo.setEngineType(EngineType.UDB);
             Datasource datasource = sMap.smMapWC.getWorkspace().getDatasources().open(datasourceConnectionInfo);
-            if (datasource.getAlias() == "labelDatasource") {
-
-            } else {
+            if(datasource.getDescription().equals("Label")){
+                String todatasource=rootPath+"/iTablet/User/"+sMap.smMapWC.getUserName()+"/Data/Label/Label.udb";
+                File udb=new File(todatasource);
+                if(udb.exists()){
+                    sMap.getSmMapWC().copyDataset(strFile,todatasource);
+                }
+            }else {
                 String result = sMap.smMapWC.importDatasourceFile(strFile, strModule);
                 promise.resolve(result);
             }

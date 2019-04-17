@@ -2285,7 +2285,7 @@ public class SMMapWC {
 
         String rootPath = getRootPath();
         String userName = getUserName();
-        String desDatasourceDir = rootPath + "/" + userName + "/Datasource";
+        String desDatasourceDir = rootPath + "/" + userName + "/Data/Datasource";
         //String desDatasourceDir =getCustomerDirectory()+"/Datasource";
         if (strModule != null) {
             desDatasourceDir = desDatasourceDir + "/" + strModule;
@@ -2344,7 +2344,7 @@ public class SMMapWC {
             }
             String rootPath = getRootPath();
             String userName = getUserName();
-            String desDatasourceDir = rootPath + "/" + userName + "/Datasource";
+            String desDatasourceDir = rootPath + "/" + userName + "/Data/Datasource";
             //String desDatasourceDir =getCustomerDirectory()+"/Datasource";
             if (strModule != null) {
                 desDatasourceDir = desDatasourceDir + "/" + strModule;
