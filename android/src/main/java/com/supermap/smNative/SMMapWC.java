@@ -2305,7 +2305,7 @@ public class SMMapWC {
         String strSrcDatasourcePath = strFile.substring(0, strFile.length() - 4);
         String strTargetDatasourcePath = strTargetFile.substring(0, strTargetFile.length() - 4);
 
-        String strResult = null;
+        String strResult = strTargetFile;
         // 检查重复性
         isDir = true;
         File fileTargetFile = new File(strTargetFile);
@@ -2316,7 +2316,7 @@ public class SMMapWC {
             //重名文件
             strTargetFile = formateNoneExistFileName(strTargetFile, false);
             String[] arrTargetFile = strTargetFile.split("/");
-            strResult = arrTargetFile[arrTargetFile.length - 1];
+            strResult = strTargetFile;//arrTargetFile[arrTargetFile.length - 1];
             strTargetDatasourcePath = strTargetFile.substring(0, strTargetFile.length() - 4);
         }//exist
 
