@@ -1875,8 +1875,14 @@ RCT_REMAP_METHOD(removeTaggingDataset, removeTaggingDatasetWithName:(NSString *)
             resolve(@(YES));
         }else{
             Datasets *datasets = opendatasource.datasets;
-            [datasets deleteName:Name];
-            resolve(@(YES));
+            NSInteger index =[datasets indexOf:Name];
+            BOOL isSuccess = [sMap.smMapWC.mapControl.map.layers removeAt:index];
+            if(isSuccess){
+                [datasets delete:index];
+                resolve(@(YES));
+            }else{
+                reject(@"removeTaggingDataset",@"Layer remove failed!",nil);
+            }
         }
     } @catch (NSException *exception) {
         reject(@"removeTaggingDataset",exception.reason,nil);

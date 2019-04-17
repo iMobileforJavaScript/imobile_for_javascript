@@ -2184,18 +2184,21 @@ public class SMap extends ReactContextBaseJavaModule {
     @ReactMethod
     public void importDatasourceFile(String strFile, String strModule, Promise promise) {
         try {
-            sMap = SMap.getInstance();
-            DatasourceConnectionInfo datasourceConnectionInfo = new DatasourceConnectionInfo();
-            datasourceConnectionInfo.setServer(strFile);
-            datasourceConnectionInfo.setEngineType(EngineType.UDB);
-            Datasource datasource = sMap.smMapWC.getWorkspace().getDatasources().open(datasourceConnectionInfo);
-            if (datasource.getAlias() == "labelDatasource") {
 
-            } else {
-                String result = sMap.smMapWC.importDatasourceFile(strFile, strModule);
-                promise.resolve(result);
-            }
-            datasourceConnectionInfo.dispose();
+            String result = sMap.smMapWC.importDatasourceFile(strFile, strModule);
+            promise.resolve(result);
+//            sMap = SMap.getInstance();
+//            DatasourceConnectionInfo datasourceConnectionInfo = new DatasourceConnectionInfo();
+//            datasourceConnectionInfo.setServer(strFile);
+//            datasourceConnectionInfo.setEngineType(EngineType.UDB);
+//            Datasource datasource = sMap.smMapWC.getWorkspace().getDatasources().open(datasourceConnectionInfo);
+//            if (datasource.getAlias() == "labelDatasource") {
+//
+//            } else {
+//                String result = sMap.smMapWC.importDatasourceFile(strFile, strModule);
+//                promise.resolve(result);
+//            }
+//            datasourceConnectionInfo.dispose();
         } catch (Exception e) {
             promise.reject(e);
         }
