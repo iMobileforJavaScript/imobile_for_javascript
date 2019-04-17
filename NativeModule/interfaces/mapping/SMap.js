@@ -1074,9 +1074,9 @@ export default (function () {
    * 新建标注数据集
    * @returns {*|Promise.<void>}
    */
-  function newTaggingDataset (name) {
+  function newTaggingDataset (name,userpath) {
     try {
-      return SMap.newTaggingDataset(name)
+      return SMap.newTaggingDataset(name,userpath)
     } catch (e) {
       console.error(e)
     }
@@ -1086,9 +1086,9 @@ export default (function () {
    * 移除标注数据集
    * @returns {*|Promise.<void>}
    */
-  function removeTaggingDataset (name) {
+  function removeTaggingDataset (name,userpath) {
     try {
-      return SMap.removeTaggingDataset(name)
+      return SMap.removeTaggingDataset(name,userpath)
     } catch (e) {
       console.error(e)
     }
@@ -1098,9 +1098,45 @@ export default (function () {
    * 导入标注数据集
    * @returns {*|Promise.<void>}
    */
-  function openTaggingDataset (name) {
+  function openTaggingDataset (userpath) {
     try {
-      return SMap.openTaggingDataset(name)
+      return SMap.openTaggingDataset(userpath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取默认标注
+   * @returns {*|Promise.<void>}
+   */
+  function getDefaultTaggingDataset (userpath) {
+    try {
+      return SMap.getDefaultTaggingDataset(userpath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取当前标注
+   * @returns {*|Promise.<void>}
+   */
+  function getCurrentTaggingDataset (name) {
+    try {
+      return SMap.getCurrentTaggingDataset(name)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取标注图层
+   * @returns {*|Promise.<void>}
+   */
+  function getTaggingLayers (userpath) {
+    try {
+      return SMap.getTaggingLayers(userpath)
     } catch (e) {
       console.error(e)
     }
@@ -1224,9 +1260,9 @@ export default (function () {
    * 添加数据集属性字段
    * @returns {*|Promise.<void>}
    */
-  function addRecordset (dataname, recname, name) {
+  function addRecordset (dataname, recname, name, userpath) {
     try {
-      return SMap.addRecordset(dataname, recname, name)
+      return SMap.addRecordset(dataname, recname, name, userpath)
     } catch (e) {
       console.error(e)
     }
@@ -1355,6 +1391,9 @@ export default (function () {
     newTaggingDataset,
     removeTaggingDataset,
     openTaggingDataset,
+    getDefaultTaggingDataset,
+    getCurrentTaggingDataset,
+    getTaggingLayers,
     setTaggingGrid,
     setLabelColor,
     updateLegend,
