@@ -316,7 +316,7 @@
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)longpress:(CGPoint)pressedPos;
 - (void)onDoubleTap:(CGPoint)onDoubleTapPos;
-- (void)onSingleTap:(CGPoint)onDoubleTapPos;
+- (void)onSingleTap:(CGPoint)onSingleTapPos;
 @end
 
 ///地图编辑用户回调。

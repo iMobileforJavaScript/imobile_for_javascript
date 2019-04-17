@@ -37,13 +37,19 @@
 #import "SuperMap/EditHistory.h"
 #import "SuperMap/GeoStyle.h"
 #import "SuperMap/GeoRegion.h"
+#import "SuperMap/TextPart.h"
+#import "SuperMap/TextStyle.h"
+#import "SuperMap/GeoText.h"
+#import "SuperMap/Legend.h"
+#import "SuperMap/LegendItem.h"
+#import "SuperMap/Size2D.h"
 #import "SuperMap/Callout.h"
 #import "JSMapControl.h"
 #import "SMMapWC.h"
 #import "SMSymbol.h"
 #import "SMLayer.h"
 
-@interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate>
+@interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate,AfterGeometryAddedDelegate>
 @property (strong, nonatomic) SMMapWC* smMapWC;
 @property (strong, nonatomic) Selection* selection;
 

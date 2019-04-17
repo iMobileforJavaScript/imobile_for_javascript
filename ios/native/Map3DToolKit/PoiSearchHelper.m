@@ -116,7 +116,7 @@ SUPERMAP_SIGLETON_IMP(PoiSearchHelper);
     GeoLine* geoLine=data.route;
     Rectangle2D* rectangle2D=[geoLine getBounds];
     [m_sceneControl.scene.trackingLayer3D AddGeometry:geoLine Tag:@"navigation"];
-    [m_sceneControl.scene ensureVisible:rectangle2D];             //ios没有三维显示平面的方法
+    //[m_sceneControl.scene ensureVisible:rectangle2D];             //ios没有三维显示平面的方法
     [m_sceneControl.scene ensureVisibleWithBounds:rectangle2D];
     OnlinePathInfo* onlinePathInfoStart=data.pathInfos.firstObject;
     OnlinePathInfo* onlinePathInfoEnd=data.pathInfos.lastObject;
