@@ -193,7 +193,8 @@ public class SMap extends ReactContextBaseJavaModule {
 
     /**
      * 添加marker
-     *
+     * @param longitude
+     * @param latitude
      * @param promise
      */
     @ReactMethod
@@ -1099,8 +1100,9 @@ public class SMap extends ReactContextBaseJavaModule {
                     String resultName = args[0];
                     if (resultName != null && !resultName.equals("")) {
                         Map<String, String> additionMap = new HashMap<>();
-                        while (addition.keySetIterator().hasNextKey()) {
-                            String key = addition.keySetIterator().nextKey();
+                        ReadableMapKeySetIterator keySetIterator = addition.keySetIterator();
+                        while (keySetIterator.hasNextKey()) {
+                            String key = keySetIterator.nextKey();
                             additionMap.put(key, addition.getString(key));
                         }
                         resultName = sMap.smMapWC.saveMapName(resultName, sMap.smMapWC.getWorkspace(), nModule, additionMap, true, true, isPrivate);
@@ -1108,10 +1110,7 @@ public class SMap extends ReactContextBaseJavaModule {
                     writeMap.putString("mapName", resultName);
                     promise.resolve(writeMap);
                 } else {
-                    WritableMap writeMap = Arguments.createMap();
-                    writeMap.putBoolean("result", false);
-                    writeMap.putString("mapName", null);
-                    promise.resolve(writeMap);
+                    promise.reject(null, "Clip map failed!");
                 }
 
             }
@@ -2187,22 +2186,24 @@ public class SMap extends ReactContextBaseJavaModule {
     @ReactMethod
     public void importDatasourceFile(String strFile, String strModule, Promise promise) {
         try {
-            sMap = SMap.getInstance();
-            DatasourceConnectionInfo datasourceConnectionInfo = new DatasourceConnectionInfo();
-            datasourceConnectionInfo.setServer(strFile);
-            datasourceConnectionInfo.setEngineType(EngineType.UDB);
-            Datasource datasource = sMap.smMapWC.getWorkspace().getDatasources().open(datasourceConnectionInfo);
-            if(datasource.getDescription().equals("Label")){
-                String todatasource=rootPath+"/iTablet/User/"+sMap.smMapWC.getUserName()+"/Data/Label/Label.udb";
-                File udb=new File(todatasource);
-                if(udb.exists()){
-                    sMap.getSmMapWC().copyDataset(strFile,todatasource);
-                }
-            }else {
-                String result = sMap.smMapWC.importDatasourceFile(strFile, strModule);
-                promise.resolve(result);
-            }
-            datasourceConnectionInfo.dispose();
+//            sMap = SMap.getInstance();
+//            DatasourceConnectionInfo datasourceConnectionInfo = new DatasourceConnectionInfo();
+//            datasourceConnectionInfo.setServer(strFile);
+//            datasourceConnectionInfo.setEngineType(EngineType.UDB);
+//            Datasource datasource = sMap.smMapWC.getWorkspace().getDatasources().open(datasourceConnectionInfo);
+//            if(datasource.getDescription().equals("Label")){
+//                String todatasource=rootPath+"/iTablet/User/"+sMap.smMapWC.getUserName()+"/Data/Label/Label.udb";
+//                File udb=new File(todatasource);
+//                if(udb.exists()){
+//                    sMap.getSmMapWC().copyDataset(strFile,todatasource);
+//                }
+//            }else {
+//                String result = sMap.smMapWC.importDatasourceFile(strFile, strModule);
+//                promise.resolve(result);
+//            }
+//            datasourceConnectionInfo.dispose();
+            String result = sMap.smMapWC.importDatasourceFile(strFile, strModule);
+            promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
         }

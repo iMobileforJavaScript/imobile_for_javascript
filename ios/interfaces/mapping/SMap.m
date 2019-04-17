@@ -1754,10 +1754,7 @@ RCT_REMAP_METHOD(clipMap, clipMapWithPoints:(NSArray *)points layersInfo:(NSArra
                           @"result": [NSNumber numberWithBool:result],
                           });
             } else {
-                resolve(@{
-                          @"mapName": @"",
-                          @"result": [NSNumber numberWithBool:result],
-                          });
+                reject(@"clipMap", @"Clip map failed!", nil);
             }
         }
     } @catch (NSException *exception) {
@@ -1878,8 +1875,14 @@ RCT_REMAP_METHOD(removeTaggingDataset, removeTaggingDatasetWithName:(NSString *)
             resolve(@(YES));
         }else{
             Datasets *datasets = opendatasource.datasets;
-            [datasets deleteName:Name];
-            resolve(@(YES));
+            NSInteger index =[datasets indexOf:Name];
+            BOOL isSuccess = [sMap.smMapWC.mapControl.map.layers removeAt:index];
+            if(isSuccess){
+                [datasets delete:index];
+                resolve(@(YES));
+            }else{
+                reject(@"removeTaggingDataset",@"Layer remove failed!",nil);
+            }
         }
     } @catch (NSException *exception) {
         reject(@"removeTaggingDataset",exception.reason,nil);
@@ -2043,10 +2046,15 @@ RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)data
         [dataset setReadOnly:NO];
         Recordset *recordset = [dataset recordset:NO cursorType:DYNAMIC];
         TextPart *textpart = [[TextPart alloc]init];
+        TextStyle *textStyle = [[TextStyle alloc]init];
+        [textStyle setFontWidth:5];
+        [textStyle setFontHeight:6];
+        [textStyle setForeColor:[[Color alloc]initWithR:0 G:0 B:0]];
         [textpart setAnchorPoint:p];
         [textpart setText:name];
         GeoText *geoText = [[GeoText alloc]init];
         [geoText addPart:textpart];
+        [geoText setTextStyle:textStyle];
         [recordset addNew:geoText];
         [recordset update];
         [recordset close];

@@ -330,22 +330,18 @@ export default (function () {
    * @returns {*}
    */
   function clipMap (points = [], layersInfo = [], mapName = null, ofModule = '', addition, isPrivate = true) {
-    try {
-      let _points = []
-      if (Platform.OS === 'android') {
-        points.forEach(point => {
-          _points.push({
-            x: point.x * dpi,
-            y: point.y * dpi,
-          })
+    let _points = []
+    if (Platform.OS === 'android') {
+      points.forEach(point => {
+        _points.push({
+          x: point.x * dpi,
+          y: point.y * dpi,
         })
-      } else {
-        _points = points
-      }
-      return SMap.clipMap(_points, layersInfo, mapName, ofModule, addition, isPrivate)
-    } catch (e) {
-      console.error(e)
+      })
+    } else {
+      _points = points
     }
+    return SMap.clipMap(_points, layersInfo, mapName, ofModule, addition, isPrivate)
   }
 
   /**
