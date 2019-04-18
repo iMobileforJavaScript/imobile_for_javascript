@@ -1145,9 +1145,9 @@ export default (function () {
    * 设置标注面随机色
    * @returns {*|Promise.<void>}
    */
-  function setTaggingGrid (name) {
+  function setTaggingGrid (name,userpath) {
     try {
-      return SMap.setTaggingGrid(name)
+      return SMap.setTaggingGrid(name,userpath)
     } catch (e) {
       console.error(e)
     }
@@ -1295,9 +1295,9 @@ export default (function () {
    * 添加文字标注
    * @returns {*|Promise.<void>}
    */
-  function addTextRecordset (value, name, x, y) {
+  function addTextRecordset (value, name,userpath, x, y) {
     try {
-      return SMap.addTextRecordset(value, name, x, y)
+      return SMap.addTextRecordset(value, name,userpath, x, y)
     } catch (e) {
       console.error(e)
     }
