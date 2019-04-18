@@ -124,7 +124,11 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
             }
             
             if (layer == nil) {
+                // 若该采集图层没有被添加到地图上，则把以前的采集对象清除
                 ds = [sMap.smMapWC addDatasetByName:name type:type.intValue datasourceName:datasourceName datasourcePath:datasourcePath];
+                Recordset* recordset = [((DatasetVector*) ds) recordset:NO cursorType:DYNAMIC];
+                [recordset deleteAll];
+                [recordset dispose];
                 layer = [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:true];
                 resetPrj = YES;
             } else {
