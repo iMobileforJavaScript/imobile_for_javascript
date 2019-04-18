@@ -1212,7 +1212,17 @@ RCT_REMAP_METHOD(importWorkspace, importWorkspaceInfo:(NSDictionary*)wInfo toFil
         reject(@"MapControl", exception.reason, nil);
     }
 }
-
+RCT_REMAP_METHOD(importDatasourceFile, strFile:(NSString*)strFile module:(NSString*)nModule  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        BOOL result = [sMap.smMapWC importDatasourceFile:strFile ofModule:nModule];
+        
+        resolve(@(result));
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
 /**
  * 获取统一标签专题图的字段表达式
  *
