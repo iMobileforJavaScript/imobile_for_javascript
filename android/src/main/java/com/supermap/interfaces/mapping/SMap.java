@@ -259,11 +259,10 @@ public class SMap extends ReactContextBaseJavaModule {
     /**
      * 刷新地图
      *
-     * @param data
      * @param promise
      */
     @ReactMethod
-    public void refreshMap(ReadableMap data, Promise promise) {
+    public void refreshMap(Promise promise) {
         try {
             sMap = getInstance();
             sMap.smMapWC.getMapControl().getMap().refresh();
@@ -2594,13 +2593,13 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label");
+            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
 //            sMap.smMapWC.getWorkspace().getConnectionInfo().getServer();
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Label");
+                info.setAlias("Label_"+userpath+"#");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Label/Label.udb");
+                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Datasource/Label_"+userpath+"#.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
@@ -2661,12 +2660,12 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label");
+            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Label");
+                info.setAlias("Label_"+userpath+"#");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Label/Label.udb");
+                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Datasource/Label_"+userpath+"#.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
@@ -2693,12 +2692,12 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label");
+            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-//                info.setAlias("Label");
+                info.setAlias("Label_"+userpath+"#");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Label/Label.udb");
+                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Datasource/Label_"+userpath+"#.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
@@ -2726,7 +2725,7 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label");
+            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
             if (opendatasource != null) {
                 String datasetname = "";
                     Datasets datasets = opendatasource.getDatasets();
@@ -2773,12 +2772,12 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label");
+            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Label");
+                info.setAlias("Label_"+userpath+"#");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Label/Label.udb");
+                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Datasource/Label_"+userpath+"#.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
@@ -2831,12 +2830,12 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label");
+            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Label");
+                info.setAlias("Label_"+userpath+"#");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Label/Label.udb");
+                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Datasource/Label_"+userpath+"#.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
@@ -2929,13 +2928,13 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void addTextRecordset(String dataname, String name, int x, int y, Promise promise) {
+    public void addTextRecordset(String dataname, String name,String userpath, int x, int y, Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getEditHistory().addMapHistory();
             Point2D p = sMap.smMapWC.getMapControl().getMap().pixelToMap(new Point(x, y));
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label");
+            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
             Datasets datasets = opendatasource.getDatasets();
             DatasetVector dataset = (DatasetVector) datasets.get(dataname);
             dataset.setReadOnly(false);
@@ -3018,12 +3017,12 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setTaggingGrid(String name, Promise promise) {
+    public void setTaggingGrid(String name,String userpath, Promise promise) {
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label");
+            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
             final DatasetVector dataset = (DatasetVector) opendatasource.getDatasets().get(name);
             final GeoStyle geoStyle = new GeoStyle();
             geoStyle.setFillForeColor(this.getFillColor());
