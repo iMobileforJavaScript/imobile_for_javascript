@@ -632,6 +632,7 @@ public class LabelHelper {
         geoTextStrList.clear();
         isEdit = false;
         favoriteCancel();
+        mSceneControl.getScene().refresh();
     }
 
 
