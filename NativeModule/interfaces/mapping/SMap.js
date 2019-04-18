@@ -819,6 +819,7 @@ export default (function () {
    */
   function importWorkspaceInfo (infoDic, strDirPath, bPrivate = true) {
     try {
+      console.log(infoDic,strDirPath,bPrivate)
       return SMap.importWorkspaceInfo(infoDic, strDirPath, bPrivate)
     } catch (e) {
       console.error(e)

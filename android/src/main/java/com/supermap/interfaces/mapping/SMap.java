@@ -93,6 +93,7 @@ public class SMap extends ReactContextBaseJavaModule {
     public static Random random;// 用于保存产生随机的线风格颜色的Random对象
     String rootPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 
+
     public Selection getSelection() {
         return selection;
     }
@@ -241,7 +242,7 @@ public class SMap extends ReactContextBaseJavaModule {
     /**
      * 移除marker
      *
-     * @param data
+
      * @param promise
      */
     @ReactMethod
@@ -2160,16 +2161,17 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             List<String> list = sMap.smMapWC.importWorkspaceInfo(infoMap.toHashMap(), nModule, bPrivate);
-            if (list == null) {
-                promise.resolve(false);
-            }
             WritableArray mapsInfo = Arguments.createArray();
-            if (list.size() > 0) {
-                for (int i = 0; i < list.size(); i++) {
-                    mapsInfo.pushString(list.get(i));
+            if (list == null) {
+                 promise.resolve(mapsInfo);
+            }else {
+                if (list.size() > 0) {
+                    for (int i = 0; i < list.size(); i++) {
+                        mapsInfo.pushString(list.get(i));
+                    }
                 }
+                promise.resolve(mapsInfo);
             }
-            promise.resolve(mapsInfo);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -2185,21 +2187,24 @@ public class SMap extends ReactContextBaseJavaModule {
     @ReactMethod
     public void importDatasourceFile(String strFile, String strModule, Promise promise) {
         try {
-
-            String result = sMap.smMapWC.importDatasourceFile(strFile, strModule);
-            promise.resolve(result);
 //            sMap = SMap.getInstance();
 //            DatasourceConnectionInfo datasourceConnectionInfo = new DatasourceConnectionInfo();
 //            datasourceConnectionInfo.setServer(strFile);
 //            datasourceConnectionInfo.setEngineType(EngineType.UDB);
 //            Datasource datasource = sMap.smMapWC.getWorkspace().getDatasources().open(datasourceConnectionInfo);
-//            if (datasource.getAlias() == "labelDatasource") {
-//
-//            } else {
+//            if(datasource.getDescription().equals("Label")){
+//                String todatasource=rootPath+"/iTablet/User/"+sMap.smMapWC.getUserName()+"/Data/Label/Label.udb";
+//                File udb=new File(todatasource);
+//                if(udb.exists()){
+//                    sMap.getSmMapWC().copyDataset(strFile,todatasource);
+//                }
+//            }else {
 //                String result = sMap.smMapWC.importDatasourceFile(strFile, strModule);
 //                promise.resolve(result);
 //            }
 //            datasourceConnectionInfo.dispose();
+            String result = sMap.smMapWC.importDatasourceFile(strFile, strModule);
+            promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
         }
