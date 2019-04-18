@@ -232,27 +232,26 @@ public class SDatasource extends ReactContextBaseJavaModule {
             SMap sMap = SMap.getInstance();
             DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
 
-//            if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
-//                sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().close(udbName);
-//            }
-            if(sMap.getSmMapWC().getMapControl()==null){
+            if(sMap.getSmMapWC().getWorkspace()==null){
                 workspace=new Workspace();
                 datasourceconnection.setEngineType(EngineType.UDB);
                 datasourceconnection.setServer(path);
                 datasourceconnection.setAlias(udbName);
                 datasource=workspace.getDatasources().open(datasourceconnection);
-                datasource.getDatasets().delete(name);
+                int index=datasource.getDatasets().indexOf(name);
+                datasource.getDatasets().delete(index);
             }else {
-                sMap.getSmMapWC().getMapControl().getMap().setWorkspace(sMap.getSmMapWC().getWorkspace());
-                if (sMap.getSmMapWC().getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
-                    datasource = sMap.getSmMapWC().getMapControl().getMap().getWorkspace().getDatasources().get(udbName);
-                    datasource.getDatasets().delete(name);
+                if (sMap.getSmMapWC().getWorkspace().getDatasources().indexOf(udbName) != -1) {
+                    datasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(udbName);
+                    int index=datasource.getDatasets().indexOf(name);
+                    datasource.getDatasets().delete(index);
                 } else {
                     datasourceconnection.setEngineType(EngineType.UDB);
                     datasourceconnection.setServer(path);
                     datasourceconnection.setAlias(udbName);
-                    datasource = sMap.getSmMapWC().getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
-                    datasource.getDatasets().delete(name);
+                    datasource = sMap.getSmMapWC().getWorkspace().getDatasources().open(datasourceconnection);
+                    int index=datasource.getDatasets().indexOf(name);
+                    datasource.getDatasets().delete(index);
                 }
             }
             if(workspace!=null){

@@ -2696,7 +2696,7 @@ public class SMap extends ReactContextBaseJavaModule {
             Datasource opendatasource = workspace.getDatasources().get("Label");
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Label");
+//                info.setAlias("Label");
                 info.setEngineType(EngineType.UDB);
                 info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Label/Label.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
