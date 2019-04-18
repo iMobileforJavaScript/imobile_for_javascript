@@ -125,11 +125,11 @@ RCT_REMAP_METHOD(showMarker,  longitude:(double)longitude latitude:(double)latit
             [callout addSubview:image];
             [callout showAt:pt];
             //[sMap.smMapWC.mapControl panTo:pt time:200];
-             sMap.smMapWC.mapControl.map.center = pt;
+            sMap.smMapWC.mapControl.map.center = pt;
             sMap.smMapWC.mapControl.map.scale = 0.000011947150294723098;
             [sMap.smMapWC.mapControl.map refresh];
         });
-       
+        
         
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
@@ -1212,7 +1212,17 @@ RCT_REMAP_METHOD(importWorkspace, importWorkspaceInfo:(NSDictionary*)wInfo toFil
         reject(@"MapControl", exception.reason, nil);
     }
 }
-
+RCT_REMAP_METHOD(importDatasourceFile, strFile:(NSString*)strFile module:(NSString*)nModule  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        BOOL result = [sMap.smMapWC importDatasourceFile:strFile ofModule:nModule];
+        
+        resolve(@(result));
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
 /**
  * 获取统一标签专题图的字段表达式
  *
@@ -1783,19 +1793,19 @@ RCT_REMAP_METHOD(clipMap, clipMapWithPoints:(NSArray *)points layersInfo:(NSArra
 }
 
 #pragma mark 新建标注数据集
-RCT_REMAP_METHOD(newTaggingDataset, newTaggingDatasetWithName:(NSString *)Name resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(newTaggingDataset, newTaggingDatasetWithName:(NSString *)Name Path:(NSString *)userpath resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
     @try {
         
         sMap = [SMap singletonInstance];
         Workspace *workspace =sMap.smMapWC.mapControl.map.workspace;
         Datasource *opendatasource = [workspace.datasources getAlias:@"Label"];
-        
         if(opendatasource == nil){
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
-            [info setAlias:@"Label"];
-            [info setEngineType:ET_UDB];
-            NSString *path = [NSString stringWithFormat: @"%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/Customer/Data/Label/Label.udb"];
-            [info setServer:path];
+            info.alias = @"Label";
+            info.engineType = ET_UDB;
+            NSString *path = [NSString stringWithFormat: @"%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Label/Label.udb"];
+            info.server = path;
             Datasource *datasource = [workspace.datasources open:info];
             
             if(datasource != nil){
@@ -1854,35 +1864,31 @@ RCT_REMAP_METHOD(newTaggingDataset, newTaggingDatasetWithName:(NSString *)Name r
 }
 
 #pragma mark 删除标注数据集
-RCT_REMAP_METHOD(removeTaggingDataset, removeTaggingDatasetWithName:(NSString *)Name resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+
+RCT_REMAP_METHOD(removeTaggingDataset, removeTaggingDatasetWithName:(NSString *)Name Path:(NSString *)userpath resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace =sMap.smMapWC.mapControl.map.workspace;
         Datasource *opendatasource =[workspace.datasources getAlias:@"Label"];
         if(opendatasource == nil){
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
-            [info setAlias:@"Label"];
-            [info setEngineType:ET_UDB];
-            NSString *path = [NSString stringWithFormat: @"%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/Customer/Data/Label/Label.udb"];
-            [info setServer:path];
+            
+            info.alias = @"Label";
+            info.engineType = ET_UDB;
+            NSString *path = [NSString stringWithFormat: @"%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Label/Label.udb"];
+            info.server = path;
             
             Datasource *datasource = [workspace.datasources open:info];
             if(datasource != nil){
                 Datasets *datasets = datasource.datasets;
                 [datasets deleteName:Name];
             }
-            [info dispose];
             resolve(@(YES));
         }else{
             Datasets *datasets = opendatasource.datasets;
-            NSInteger index =[datasets indexOf:Name];
-            BOOL isSuccess = [sMap.smMapWC.mapControl.map.layers removeAt:index];
-            if(isSuccess){
-                [datasets delete:index];
-                resolve(@(YES));
-            }else{
-                reject(@"removeTaggingDataset",@"Layer remove failed!",nil);
-            }
+            [datasets deleteName:Name];
+            resolve(@(YES));
         }
     } @catch (NSException *exception) {
         reject(@"removeTaggingDataset",exception.reason,nil);
@@ -1891,39 +1897,128 @@ RCT_REMAP_METHOD(removeTaggingDataset, removeTaggingDatasetWithName:(NSString *)
 }
 
 #pragma mark 导入标注数据集
-RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithName:(NSString *)Name resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+
+RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithPath:(NSString *)userpath resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
         Datasource *opendatasource =[workspace.datasources getAlias:@"Label"];
         if(opendatasource == nil){
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
-            [info setAlias:@"Label"];
-            [info setEngineType:ET_UDB];
-            NSString *path = [NSString stringWithFormat: @"%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/Customer/Data/Label/Label.udb"];
-            [info setServer:path];
+            info.alias = @"Label";
+            info.engineType = ET_UDB;
+            NSString *path = [NSString stringWithFormat: @"%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Label/Label.udb"];
+            info.server = path;
             Datasource *datasource = [workspace.datasources open:info];
             if(datasource != nil){
                 Datasets *datasets = datasource.datasets;
-                Dataset *ds = [datasets getWithName:Name];
                 Map *map = sMap.smMapWC.mapControl.map;
-                Layer *layer = [map.layers addDataset:ds ToHead:YES];
-                [layer setEditable:YES];
+                for(int i = 0, count = datasets.count; i < count; i++){
+                    Dataset *ds = [datasets get:i];
+                    Layer *layer = [map.layers addDataset:ds ToHead:YES];
+                    layer.editable = NO;
+                    layer.visible = NO;
+                }
             }
-            [info dispose];
-            resolve(@(YES));
-        }else{
-            Datasets *datasets = opendatasource.datasets;
-            Dataset *ds = [datasets getWithName:Name];
-            Map *map = sMap.smMapWC.mapControl.map;
-            Layer *layer = [map.layers addDataset:ds ToHead:YES];
-            [layer setEditable:YES];
             resolve(@(YES));
         }
     } @catch (NSException *exception) {
         reject(@"openTaggingDataset",exception.reason,nil);
     }
 }
+#pragma mark 获取默认标注
+RCT_REMAP_METHOD(getDefaultTaggingDataset, getDefaultTaggingDatasetWithUserpath:(NSString *)userpath resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
+        Datasource *opendatasource = [workspace.datasources getAlias:@"Label"];
+        if(opendatasource == nil){
+            NSString *datasetName = @"";
+            Datasets *datasets = opendatasource.datasets;
+            for(int i = 0, count = datasets.count; i < count; i++){
+                Dataset *dataset = [datasets get:i];
+                datasetName = dataset.name;
+            }
+            resolve(datasetName);
+        }
+    }@catch(NSException *exception){
+        reject(@"getDefaultTaggingDataset",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取当前标注
+RCT_REMAP_METHOD(getCurrentTaggingDataset, getCurrentTaggingDatasetWithName:(NSString *)name resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Map *map = sMap.smMapWC.mapControl.map;
+        NSString *datasetName = @"";
+        Layer *layer = [map.layers getLayerWithName:name];
+        layer.visible = YES;
+        layer.editable = YES;
+        [map refresh];
+        datasetName = layer.dataset.name;
+        resolve(datasetName);
+    } @catch (NSException *exception) {
+        reject(@"getCurrentTaggingDataset",exception.reason,nil);
+    }
+    
+}
+
+#pragma mark 获取标注图层
+RCT_REMAP_METHOD(getTaggingLayers, getTaggingLayersWithUserpath:(NSString *)userpath resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
+        Datasource *opendatasource = [workspace.datasources getAlias:@"Label"];
+        if(opendatasource == nil){
+            DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
+            info.alias = @"Label";
+            info.engineType = ET_UDB;
+            NSString *path = [NSString stringWithFormat: @"%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Label/Label.udb"];
+            info.server = path;
+            Datasource *datasource = [workspace.datasources open:info];
+            if(datasource != nil){
+                Datasets *datasets = datasource.datasets;
+                Map *map = sMap.smMapWC.mapControl.map;
+                NSMutableArray *arr = [[NSMutableArray alloc]init];
+                Layers *layers = map.layers;
+                
+                for(int i = 0, count = datasets.count; i < count; i++){
+                    Dataset *ds = [datasets get:i];
+                    for(int j = 0, len = [layers getCount]; j < len; j++){
+                        Layer *layer = [layers getLayerAtIndex:j];
+                        if(layer.dataset == ds){
+                            NSMutableDictionary *dic = [SMLayer getLayerInfo:layer path:@""];
+                            [arr addObject:dic];
+                        }
+                    }
+                }
+                resolve(arr);
+            }
+        }else{
+            Datasets *datasets = opendatasource.datasets;
+            Map *map = sMap.smMapWC.mapControl.map;
+            NSMutableArray *arr = [[NSMutableArray alloc] init];
+            Layers *layers = map.layers;
+            
+            for(int i = 0, count = datasets.count; i < count; i++){
+                Dataset *ds = [datasets get:i];
+                for(int j = 0, len = [layers getCount]; j < len; j++){
+                    Layer *layer = [layers getLayerAtIndex:j];
+                    if(layer.dataset == ds){
+                        NSMutableDictionary *dic = [SMLayer getLayerInfo:layer path:@""];
+                        [arr addObject:dic];
+                    }
+                }
+            }
+            resolve(arr);
+        }
+    } @catch (NSException *exception) {
+        reject(@"getTaggingLayers",exception.reason,nil);
+    }
+}
+
 /**
  * 修改最新的属性值
  *
@@ -1948,11 +2043,13 @@ RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithName:(NSString *)Name
     [recordset setFieldValueWithString:fieldInfoName Obj:value];
     
     b = [recordset update];
-   // [recordset close];
+    
+    // [recordset close];
     [recordset dispose];
 }
 #pragma mark 添加数据集属性字段
-RCT_REMAP_METHOD(addRecordset, addRecordsetWithDatasetName:(NSString *)datasetName FieldInfoName:(NSString *)fieldInfoName Value:(NSString *)value Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addRecordset, addRecordsetWithDatasetName:(NSString *)datasetName FieldInfoName:(NSString *)fieldInfoName Value:(NSString *)value Path:(NSString *)userpath Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
@@ -1960,10 +2057,12 @@ RCT_REMAP_METHOD(addRecordset, addRecordsetWithDatasetName:(NSString *)datasetNa
         
         if(opendatasource == nil){
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
-            [info setAlias:@"Label"];
-            [info setEngineType:ET_UDB];
-            NSString *path = [NSString stringWithFormat: @"%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/Customer/Data/Label/Label.udb"];
-            [info setServer:path];
+            info.alias = @"Label";
+            info.engineType = ET_UDB;
+            NSString *path = [NSString stringWithFormat: @"%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Label/Label.udb"];
+            info.server = path;
+            info.alias = @"Label";
+            info.engineType = ET_UDB;
             Datasource *datasource = [workspace.datasources open:info];
             
             if(datasource != nil){
