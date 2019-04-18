@@ -2209,7 +2209,8 @@
                 nAddNum++;
             }
             
-            if ([datasetTemp datasetType] == POINT || [datasetTemp datasetType] == LINE || [datasetTemp datasetType] == REGION) {
+            //if ([datasetTemp datasetType] == POINT || [datasetTemp datasetType] == LINE || [datasetTemp datasetType] == REGION) {
+            if([datasetTemp isKindOfClass:DatasetVector.class]){
                 //3.datasetVector 有效参数：IsClipInRegion，IsErase
                 BOOL bClipInRegion = YES;
                 NSNumber *numInRegion = [dicLayer objectForKey:@"IsClipInRegion"];
@@ -2271,12 +2272,13 @@
                     bResult = [OverlayAnalyst clip:(DatasetVector *)datasetTemp clipGeometries:arrRegionTemp
                                      resultDataset:(DatasetVector *)datasetResult parameter:parameter];
                 }
-                if(bResult==NO){
-                    // 裁减失败
-                    [datasourceResult.datasets deleteName:strDatasetResultName];
-                    continue;
-                }
-                
+                // 裁减失败留下一个空数据集
+//                if(bResult==NO){
+//                    // 裁减失败
+//                    [datasourceResult.datasets deleteName:strDatasetResultName];
+//                    continue;
+//                }
+               
                 
             }else if(datasetTemp.datasetType == Grid || datasetTemp.datasetType == IMAGE){
                 //4.datasetRaster 有效参数：IsClipInRegion，IsExactClip
