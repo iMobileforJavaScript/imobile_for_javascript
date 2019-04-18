@@ -6,7 +6,9 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
+import com.supermap.data.DatasetVector;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
@@ -132,7 +134,11 @@ public class SCollector extends ReactContextBaseJavaModule {
 //                    layer = smMapWC.getMapControl().getMap().getLayers().get(name + "@" + datasourceName);
                 }
                 if (layer == null) {
+                    // 若该采集图层没有被添加到地图上，则把以前的采集对象清除
                     ds = smMapWC.addDatasetByName(name, type, datasourceName, datasourcePath);
+                    Recordset recordset = ((DatasetVector)ds).getRecordset(false, CursorType.DYNAMIC);
+                    recordset.deleteAll();
+                    recordset.dispose();
                     layer = smMapWC.getMapControl().getMap().getLayers().add(ds, true);
                     resetPrj = true;
                 } else {
