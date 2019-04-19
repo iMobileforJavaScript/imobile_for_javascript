@@ -2912,6 +2912,7 @@ public class SMMapWC {
                         nAddNum++;
                     }
 
+                    //if (datasetTemp.getType() == DatasetType.POINT || datasetTemp.getType() == DatasetType.LINE || datasetTemp.getType() == DatasetType.REGION){
                     if (DatasetVector.class.isInstance(datasetTemp)) {
                         //3.datasetVector 有效参数：IsClipInRegion，IsErase
                         boolean bClipInRegion = true;
@@ -2975,10 +2976,11 @@ public class SMMapWC {
 
                         }
 
-                        if (bResult == false) {
-                            datasourceResult.getDatasets().delete(strDatasetResultName);
-                            continue;
-                        }
+                        // 裁减失败留下一个空数据集
+//                        if (bResult == false) {
+//                            datasourceResult.getDatasets().delete(strDatasetResultName);
+//                            continue;
+//                        }
 
                     } else if (datasetTemp.getType() == DatasetType.GRID || datasetTemp.getType() == DatasetType.IMAGE) {
                         //4.datasetRaster 有效参数：IsClipInRegion，IsExactClip
