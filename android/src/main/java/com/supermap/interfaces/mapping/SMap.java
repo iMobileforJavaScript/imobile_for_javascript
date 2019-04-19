@@ -2704,6 +2704,36 @@ public class SMap extends ReactContextBaseJavaModule {
                     com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                     for(int i =0;i<datasets.getCount();i++) {
                         Dataset ds = datasets.get(i);
+                        String addname = ds.getName()+"@Label_"+userpath+"#";
+                        boolean add = true;
+                        Layers maplayers = map.getLayers();
+                        for(int j=0 ; j<maplayers.getCount();j++){
+                            if(maplayers.get(j).getCaption().equals(addname)){
+                                add = false;
+                            }
+                        }
+                        if(add) {
+                            Layer layer = map.getLayers().add(ds, true);
+                            layer.setEditable(false);
+                            layer.setVisible(false);
+                        }
+                    }
+                }
+                promise.resolve(true);
+            } else {
+                Datasets datasets = opendatasource.getDatasets();
+                com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                for(int i =0;i<datasets.getCount();i++) {
+                    Dataset ds = datasets.get(i);
+                    String addname = ds.getName()+"@Label_"+userpath+"#";
+                    boolean add = true;
+                    Layers maplayers = map.getLayers();
+                    for(int j=0 ; j<maplayers.getCount();j++){
+                        if(maplayers.get(j).getCaption().equals(addname)){
+                            add = false;
+                        }
+                    }
+                    if(add) {
                         Layer layer = map.getLayers().add(ds, true);
                         layer.setEditable(false);
                         layer.setVisible(false);
@@ -2760,6 +2790,7 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
 
 
     /**
