@@ -21,10 +21,12 @@ import com.supermap.data.Enum;
 import com.supermap.data.FieldInfo;
 import com.supermap.data.FieldInfos;
 import com.supermap.data.FieldType;
+import com.supermap.data.GeoStyle;
 import com.supermap.data.Point2D;
 import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
 import com.supermap.mapping.Layer;
+import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.Map;
 import com.supermap.mapping.Selection;
@@ -694,5 +696,22 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void setLayerStyle(String layerName, String styleJson, Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().find(layerName);
 
+            if (layer != null && !styleJson.equals("")) {
+                GeoStyle geoStyle = new GeoStyle();
+                geoStyle.fromJson(styleJson);
+                ((LayerSettingVector)layer.getAdditionalSetting()).setStyle(geoStyle);
+            }
+
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 }

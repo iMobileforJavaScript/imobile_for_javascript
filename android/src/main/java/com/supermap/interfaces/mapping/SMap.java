@@ -149,6 +149,9 @@ public class SMap extends ReactContextBaseJavaModule {
         sMap = getInstance();
         sMap.smMapWC.setMapControl(mapControl);
         setWorkspace(null);
+        if (sMap.smMapWC.getMapControl().getMap() != null && sMap.smMapWC.getMapControl().getMap().getWorkspace() == null) {
+            sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
+        }
     }
 
     public static void setWorkspace(Workspace workspace) {
@@ -192,8 +195,8 @@ public class SMap extends ReactContextBaseJavaModule {
 
     /**
      * 添加marker
-     *
-     * @param data
+     * @param longitude
+     * @param latitude
      * @param promise
      */
     @ReactMethod
@@ -236,10 +239,9 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
     /**
      * 移除marker
-     *
-     * @param data
      * @param promise
      */
     @ReactMethod
@@ -592,6 +594,11 @@ public class SMap extends ReactContextBaseJavaModule {
                 String name = dataset.getName();
                 WritableMap writeMap = Arguments.createMap();
                 writeMap.putString("title", name);
+                String description = dataset.getDescription();
+                if (description.equals("NULL")) {
+                    description = "";
+                }
+                writeMap.putString("description", description);
                 arr.pushMap(writeMap);
             }
             if (workspace != null) {
@@ -2385,6 +2392,8 @@ public class SMap extends ReactContextBaseJavaModule {
             datasets.addAll(datasets_point);
             datasets.addAll(datasets_text);
 
+            WritableArray resultArr = Arguments.createArray();
+
             if (datasets.size() > 0) {
                 MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                 mapControl.getEditHistory().addMapHistory();
@@ -2412,12 +2421,22 @@ public class SMap extends ReactContextBaseJavaModule {
                         LayerSettingVector setting = (LayerSettingVector) layer.getAdditionalSetting();
                         setting.getStyle().setLineColor(getLineColor());
                     }
+
+                    if (layer != null) {
+                        WritableMap layerInfo = Arguments.createMap();
+                        layerInfo.putString("layerName", layer.getName());
+                        layerInfo.putString("datasetName", layer.getDataset().getName());
+                        layerInfo.putInt("datasetType", layer.getDataset().getType().value());
+                        layerInfo.putString("description", layer.getDataset().getDescription());
+
+                        resultArr.pushMap(layerInfo);
+                    }
                 }
                 map.setVisibleScalesEnabled(false);
                 map.refresh();
             }
 
-            promise.resolve(true);
+            promise.resolve(resultArr);
         } catch (Exception e) {
             Log.e(REACT_CLASS, e.getMessage());
             e.printStackTrace();

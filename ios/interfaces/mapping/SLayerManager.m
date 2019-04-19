@@ -486,4 +486,25 @@ RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromise
         reject(@"SMap", exception.reason, nil);
     }
 }
+
+#pragma mark 选中多个图层中的对象
+RCT_REMAP_METHOD(setLayerStyle, setLayerStyleWithLayerName:(NSString *)layerName style:(NSString *)styleJson resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        Layer* layer = [sMap.smMapWC.mapControl.map.layers findLayerWithName:layerName];
+        
+        if (layer && styleJson) {
+            GeoStyle* style = [[GeoStyle alloc] init];
+            [style fromJson:styleJson];
+            [style setMarkerSize:[[Size2D alloc]initWithWidth:8 Height:8 ]];
+            ((LayerSettingVector *)layer.layerSetting).geoStyle = style;
+        }
+        
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SMap", exception.reason, nil);
+    }
+}
+
 @end

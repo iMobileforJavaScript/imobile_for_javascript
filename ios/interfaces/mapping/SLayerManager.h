@@ -16,6 +16,7 @@
 #import <SuperMap/CursorType.h>
 #import <SuperMap/Geometry.h>
 #import <SuperMap/Recordset.h>
+#import <SuperMap/LayerSettingVector.h>
 
 @interface SLayerManager : NSObject<RCTBridgeModule>
 

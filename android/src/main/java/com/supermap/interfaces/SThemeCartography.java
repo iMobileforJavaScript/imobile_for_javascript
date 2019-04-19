@@ -3777,13 +3777,13 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             SMMapWC smMapWC = sMap.getSmMapWC();
             smMapWC.getMapControl().getMap().setWorkspace(smMapWC.getWorkspace());
             DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
-            if (smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
-                datasource = smMapWC.getMapControl().getMap().getWorkspace().getDatasources().get(udbName);
+            if (smMapWC.getWorkspace().getDatasources().indexOf(udbName) != -1) {
+                datasource = smMapWC.getWorkspace().getDatasources().get(udbName);
             } else {
                 datasourceconnection.setEngineType(EngineType.UDB);
                 datasourceconnection.setServer(path);
                 datasourceconnection.setAlias(udbName);
-                datasource = smMapWC.getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
+                datasource = smMapWC.getWorkspace().getDatasources().open(datasourceconnection);
             }
 
             Datasets datasets = datasource.getDatasets();
@@ -3796,6 +3796,12 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 writeMap.putString("datasetName", dataset.getName());
                 writeMap.putString("datasetType", dataset.getType().toString());
                 writeMap.putString("datasourceName", datasource.getAlias());
+                String description = dataset.getDescription();
+                if (description.equals("NULL")) {
+                    description = "";
+                }
+                writeMap.putString("description", description);
+
                 PrjCoordSys prjCoordSys = dataset.getPrjCoordSys();
                 if (prjCoordSys != null) {
                     GeoCoordSys geoCoordSys = prjCoordSys.getGeoCoordSys();//地理坐标系

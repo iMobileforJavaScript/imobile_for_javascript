@@ -2130,14 +2130,14 @@ RCT_REMAP_METHOD(saveMap, saveMapWithResolver:(RCTPromiseResolveBlock) resolve r
 }
 
 #pragma mark 获取UDB数据源的数据集列表
-RCT_REMAP_METHOD(getUDBName, getUDBNameWithResolver:(NSString*)path:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getUDBName, getUDBNameWithPath:(NSString*)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         path = [path stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         NSString* udbName = [[path lastPathComponent] stringByDeletingPathExtension ];
         Datasource* datasource = nil;
         SMap* sMap = [SMap singletonInstance];
-        if ([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:udbName] != -1) {
-            datasource = [sMap.smMapWC.mapControl.map.workspace.datasources getAlias:udbName];
+        if ([sMap.smMapWC.workspace.datasources indexOf:udbName] != -1) {
+            datasource = [sMap.smMapWC.workspace.datasources getAlias:udbName];
         }
         else{
             NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[path,@219,udbName] forKeys:@[@"server",@"engineType",@"alias"]];
@@ -2154,6 +2154,12 @@ RCT_REMAP_METHOD(getUDBName, getUDBNameWithResolver:(NSString*)path:(RCTPromiseR
             NSString* datasetType = [SMThemeCartography datasetTypeToString:dataset.datasetType];
             [info setValue:datasetType forKey:@"datasetType"];
             [info setValue:datasource.alias forKey:@"datasourceName"];
+            
+            NSString* description = dataset.description;
+            if ([description isEqualToString:@"NULL"]) {
+                description = @"";
+            }
+            [info setValue:description forKey:@"description"];
             PrjCoordSys* prjCoordSys = nil;
             prjCoordSys = dataset.prjCoordSys;
             if (prjCoordSys != nil) {
