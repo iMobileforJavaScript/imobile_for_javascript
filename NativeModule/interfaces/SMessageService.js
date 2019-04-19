@@ -8,18 +8,19 @@ import {
 import {NativeModules, Platform, NativeEventEmitter,DeviceEventEmitter} from 'react-native';
 let MessageServiceeNative = NativeModules.SMessageService;
 const callBackIOS = new NativeEventEmitter(MessageServiceeNative);
+let listener = undefined
 
 function register(handlers) {
   try {
 
     if (handlers && typeof handlers.callback === "function") {
       if (Platform.OS === 'ios' && handlers){
-        callBackIOS.addListener(EventConst.MESSAGE_SERVICE_RECEIVE, function (e) {
+        listener = callBackIOS.addListener(EventConst.MESSAGE_SERVICE_RECEIVE, function (e) {
           handlers.callback(e)
         })
       } else if (Platform.OS === 'android' ) {
 
-        DeviceEventEmitter.addListener(EventConst.MESSAGE_SERVICE_RECEIVE, function (e) {
+        listener = DeviceEventEmitter.addListener(EventConst.MESSAGE_SERVICE_RECEIVE, function (e) {
           handlers.callback(e);
         });
       }
@@ -29,29 +30,20 @@ function register(handlers) {
   }
 }
 
-// function unRegister() {
-//   try {
-//
-//     if (handlers && typeof handlers.callback === "function") {
-//       if (Platform.OS === 'ios' && handlers){
-//         NativeEventEmitter.removeListener(EventConst.MESSAGE_SERVICE_RECEIVE);
-//       } else if (Platform.OS === 'android' ) {
-//
-//         DeviceEventEmitter.addListener(EventConst.MESSAGE_SERVICE_RECEIVE, function (e) {
-//           handlers.callback(e);
-//         });
-//       }
-//     }
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
+function unRegister() {
+  try {
+    listener.remove()
+  } catch (error) {
+    console.log(error)
+  }
+}
 // 连接服务
 function connectService(ip, port,hostName,userName,passwd,userID) {
   return MessageServiceeNative.connectService(ip, port,hostName,userName,passwd,userID);
 }
 //断开服务链接
 function disconnectionService() {
+  unRegister()
   return MessageServiceeNative.disconnectionService();
 }
 //消息发送

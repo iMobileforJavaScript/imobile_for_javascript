@@ -2,9 +2,6 @@ package com.supermap.interfaces;
 
 import android.os.Looper;
 import android.util.Base64;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -16,7 +13,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
 import com.supermap.messagequeue.AMQPManager;
@@ -43,6 +39,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
     static AMQPReceiver g_AMQPReceiver = null;
 
     static boolean bStopRecieve = true;
+    static boolean isRecieving = true;
     //分发消息的交换机
     static String sExchange = "message";
     //分发群消息的交换机
@@ -68,6 +65,11 @@ public class SMessageService extends ReactContextBaseJavaModule {
     @ReactMethod
     public void connectService(String serverIP, int port,String hostName, String userName,String passwd ,String userID, Promise promise) {
         try {
+            //假如有接收线程未停止，在这等待
+            while (!bStopRecieve) {
+                Thread.sleep(500);
+            }
+
             if(g_AMQPManager != null){
                 g_AMQPManager.suspend();
             }
@@ -78,10 +80,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
             g_AMQPSender = null;
             g_AMQPReceiver = null;
 
-            //假如有接收线程未停止，在这等待
-            while (!bStopRecieve) {
-                Thread.sleep(500);
-            }
+
 
             boolean bRes = false;
             if (g_AMQPManager==null){
@@ -440,12 +439,13 @@ public class SMessageService extends ReactContextBaseJavaModule {
                 }
             }
 
+            isRecieving = true;
             //异步消息发送
              class MessageReceiveThread extends Thread{
                 @Override
                 public void run(){
                     while (true){
-                        if(g_AMQPReceiver!=null){
+                        if(isRecieving){
                             AMQPReturnMessage resMessage = g_AMQPReceiver.receiveMessage();
                             String sQueue = resMessage.getQueue();
                             String sMessage = resMessage.getMessage();
@@ -458,8 +458,9 @@ public class SMessageService extends ReactContextBaseJavaModule {
                             }
                             bStopRecieve = false;
                         }else{
-                            bStopRecieve = true;
+                            g_AMQPReceiver.dispose();
                             g_AMQPReceiver = null;
+                            bStopRecieve = true;
                             break;
                         }
 
@@ -507,7 +508,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
     public void stopReceiveMessage( Promise promise) {
         try {
             boolean bRes = false;
-            g_AMQPReceiver = null;
+            isRecieving = false;
             promise.resolve(bRes);
         } catch (Exception e) {
             promise.reject(e);

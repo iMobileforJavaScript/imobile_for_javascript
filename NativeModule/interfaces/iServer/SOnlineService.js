@@ -63,38 +63,42 @@ function uploadFile(path, dataName, handler) {
 }
 
 
-let downloadFileListener 
+let downloadingListener
+let downloadedListener
+let downloadfailureListener
 function downloadFileWithCallBack(path, dataName, handler) {
-   downloadFileListener && downloadFileListener.remove()
+  downloadingListener && downloadingListener.remove()
+  downloadedListener && downloadedListener.remove()
+  downloadfailureListener && downloadfailureListener.remove()
   if (Platform.OS === 'ios' && handler) {
     if (typeof handler.onProgress === 'function') {
-        downloadFileListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (obj) {
+      downloadingListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (obj) {
         handler.onProgress(obj.progress);
       })
     }
     if (typeof handler.onResult === 'function') {
-        downloadFileListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (value) {
+      downloadedListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (value) {
         handler.onResult(value);
       })
     }
     if (typeof handler.onResult === 'function') {
-        downloadFileListener =  callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (value) {
+      downloadfailureListener =  callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (value) {
         handler.onResult(value);
       })
     }
   }else{
     if (typeof handler.onProgress === 'function'&& handler) {
-      downloadFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (progress) {
+      downloadingListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (progress) {
         handler.onProgress(progress);
       })
     }
     if (typeof handler.onResult === 'function'&& handler) {
-      downloadFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (result) {
+      downloadedListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADED, function (result) {
         handler.onResult(result);
       })
     }
     if (typeof handler.onResult === 'function'&& handler) {
-      downloadFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (result) {
+      downloadfailureListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADFAILURE, function (result) {
         handler.onResult(result);
       })
     }
