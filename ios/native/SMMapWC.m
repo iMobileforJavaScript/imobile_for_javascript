@@ -903,9 +903,12 @@
                 NSMutableArray *indexArray=[notExportMap objectForKey:mapName];
                 indexArray = (NSMutableArray *)[[indexArray reverseObjectEnumerator] allObjects];
                 
+                int layerLength = [mapExport.layers getCount];
                 for (int index=0; index<indexArray.count; index++) {
                     NSNumber *indexLayer=[indexArray objectAtIndex:index];
-                    [mapExport.layers removeAt:[indexLayer intValue]];
+                    if(layerLength > [indexLayer intValue]){
+                        [mapExport.layers removeAt:[indexLayer intValue]];
+                    }
 //                    [[mapExport.layers getLayerAtIndex:indexLayer.integerValue] setVisible:NO];
                 }
             }
