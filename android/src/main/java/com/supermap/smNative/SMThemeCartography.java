@@ -1788,47 +1788,90 @@ public class SMThemeCartography {
 
 
     //获取字段类型
-    public static String getFieldType(FieldInfo fieldInfo) {
+    public static String getFieldType(String language,FieldInfo fieldInfo) {
         String type = "未知";
         try {
-            switch (fieldInfo.getType().toString()) {
-                case "BOOLEAN":
-                    type = "布尔型字段";
-                    break;
-                case "BYTE":
-                    type = "字节型字段";
-                    break;
-                case "CHAR":
-                    type = "定长的文本类型字段";
-                    break;
-                case "DATETIME":
-                    type = "日期型字段";
-                    break;
-                case "DOUBLE":
-                    type = "64位精度浮点型字段";
-                    break;
-                case "INT16":
-                    type = "16位整型字段";
-                    break;
-                case "INT32":
-                    type = "32位整型字段";
-                    break;
-                case "INT64":
-                    type = "64位整型字段";
-                    break;
-                case "LONGBINARY":
-                    type = "二进制型字段";
-                    break;
-                case "SINGLE":
-                    type = "32位精度浮点型字段";
-                    break;
-                case "TEXT":
-                    type = "变长的文本型字段";
-                    break;
-                case "WTEXT":
-                    type = "宽字符类型字段";
-                    break;
+            if (language.equals("CN")){
+                switch (fieldInfo.getType().toString()) {
+                    case "BOOLEAN":
+                        type = "布尔型字段";
+                        break;
+                    case "BYTE":
+                        type = "字节型字段";
+                        break;
+                    case "CHAR":
+                        type = "定长的文本类型字段";
+                        break;
+                    case "DATETIME":
+                        type = "日期型字段";
+                        break;
+                    case "DOUBLE":
+                        type = "64位精度浮点型字段";
+                        break;
+                    case "INT16":
+                        type = "16位整型字段";
+                        break;
+                    case "INT32":
+                        type = "32位整型字段";
+                        break;
+                    case "INT64":
+                        type = "64位整型字段";
+                        break;
+                    case "LONGBINARY":
+                        type = "二进制型字段";
+                        break;
+                    case "SINGLE":
+                        type = "32位精度浮点型字段";
+                        break;
+                    case "TEXT":
+                        type = "变长的文本型字段";
+                        break;
+                    case "WTEXT":
+                        type = "宽字符类型字段";
+                        break;
+                }
+            }else if (language.equals("EN")){
+                type = "Unknown Type";
+                switch (fieldInfo.getType().toString()) {
+                    case "BOOLEAN":
+                        type = "Boolean";
+                        break;
+                    case "BYTE":
+                        type = "Byte";
+                        break;
+                    case "CHAR":
+                        type = "Char";
+                        break;
+                    case "DATETIME":
+                        type = "Date";
+                        break;
+                    case "DOUBLE":
+                        type = "Double";
+                        break;
+                    case "INT16":
+                        type = "Short";
+                        break;
+                    case "INT32":
+                        type = "Int";
+                        break;
+                    case "INT64":
+                        type = "Long";
+                        break;
+                    case "LONGBINARY":
+                        type = "Long Binary";
+                        break;
+                    case "SINGLE":
+                        type = "Single";
+                        break;
+                    case "TEXT":
+                        type = "Text";
+                        break;
+                    case "WTEXT":
+                        type = "Wide Char";
+                        break;
+                }
             }
+
             return type;
         } catch (Exception e) {
             e.printStackTrace();
