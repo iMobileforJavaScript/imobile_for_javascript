@@ -1698,6 +1698,7 @@ public class SMap extends ReactContextBaseJavaModule {
             MapControl mapControl = sMap.smMapWC.getMapControl();
             Layer layer = mapControl.getMap().getLayers().get(layerName);
             boolean result = mapControl.appointEditGeometry(geoID, layer);
+            layer.setEditable(true);
             promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
