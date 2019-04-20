@@ -331,7 +331,8 @@ typedef enum{
  <p> 地图动态投影显示是指如果当前地图窗口中地图的投影信息与数据源的投影信息不同，利用地图动态投影显示可以将当前地图的投影信息转换为数据源的投影信息。
  @param  value 一个布尔值，用于指定是否允许地图动态投影显示。
  */
--(void)setDynamicProjection:(BOOL)value;
+@property(nonatomic,assign) BOOL dynamicProjection;
+//-(void)setDynamicProjection:(BOOL)value;
 
 
 /**
