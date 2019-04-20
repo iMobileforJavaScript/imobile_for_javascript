@@ -1169,7 +1169,10 @@ RCT_REMAP_METHOD(appointEditGeometry, appointEditGeometryByGeoId:(int)geoId laye
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
         Layer* layer = [mapControl.map.layers getLayerWithName:layerName];
-        bool result = [mapControl appointEditGeometryWithID:geoId Layer:layer];
+        bool result = YES;
+        if (!layer.editable) {
+            result = [mapControl appointEditGeometryWithID:geoId Layer:layer];
+        }
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);

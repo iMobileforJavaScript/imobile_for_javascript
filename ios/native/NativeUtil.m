@@ -105,6 +105,7 @@
         }
     }
     [dic setObject:recordArray forKey:@"data"];
+    [dic setObject:@(page * size) forKey:@"startIndex"];
     
     return dic;
 }
