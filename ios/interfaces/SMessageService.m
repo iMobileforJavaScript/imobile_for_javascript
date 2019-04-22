@@ -29,6 +29,7 @@ static AMQPManager* g_AMQPManager;
 static AMQPSender* g_AMQPSender;
 static AMQPReceiver* g_AMQPReceiver;
 static BOOL bStopRecieve = true;
+static BOOL isRecieving = true;
 //
 //分发消息的交换机
 static NSString* sExchange = @"message";
@@ -46,6 +47,12 @@ RCT_EXPORT_MODULE();
 
 #pragma mark -- 连接服务
 RCT_REMAP_METHOD(connectService, ip:(NSString*)serverIP port:(int)port hostName:(NSString*)hostName userName:(NSString*)userName passwd:(NSString*)passwd userID:(NSString*)userID resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    //假如有接收线程未停止，在这等待
+    while (!bStopRecieve) {
+        [NSThread sleepForTimeInterval:0.5];
+    }
+    
     if(g_AMQPManager){
         [g_AMQPManager suspend];
     }
@@ -53,10 +60,6 @@ RCT_REMAP_METHOD(connectService, ip:(NSString*)serverIP port:(int)port hostName:
     g_AMQPSender = nil;
     g_AMQPManager = nil;
     
-    //假如有接收线程未停止，在这等待
-    while (!bStopRecieve) {
-        [NSThread sleepForTimeInterval:0.5];
-    }
     @try {
         NSLog(@"______ %@",userID);
         BOOL bRes = false;
@@ -247,7 +250,7 @@ RCT_REMAP_METHOD(sendFile, connectInfo:(NSString*)connectInfo message:(NSString*
 //                [infoDic setObject:@"msgId" forKey:[NSString stringWithFormat:@"%d",msgId]];
 //                [infoDic setObject:@"percentage" forKey:[NSString stringWithFormat:@"%d",percentage]];
                 
-                [infoDic setValue:talkId forKey:@"taldId"];
+                [infoDic setObject:talkId forKey:@"talkId"];
                 [infoDic setValue:@(msgId) forKey:@"msgId"];
                 [infoDic setValue:@(percentage) forKey:@"percentage"];
                 
@@ -329,7 +332,8 @@ RCT_REMAP_METHOD(receiveFile, fileName:(NSString*)fileName queueName:(NSString*)
                 [fileReceiver receiveMessage:&clientId message:&msg];
                 
                 //转成JSON
-                jsonReceived = [NSJSONSerialization dataWithJSONObject:msg options:NSJSONWritingPrettyPrinted error:nil];
+//                jsonReceived = [NSJSONSerialization dataWithJSONObject:msg options:NSJSONWritingPrettyPrinted error:nil];
+                jsonReceived=[msg dataUsingEncoding:NSUTF8StringEncoding];
                 [fh writeData:jsonReceived];
                 
                 NSMutableDictionary *receivedDic = [NSJSONSerialization JSONObjectWithData:jsonReceived options:NSJSONReadingMutableContainers error:nil];
@@ -369,13 +373,15 @@ RCT_REMAP_METHOD(startReceiveMessage, uuid:(NSString*)uuid  startReceiveMessageR
                 g_AMQPReceiver = [g_AMQPManager newReceiver:sQueue];
             }
         }
+        
+        isRecieving=true;
         //异步消息发送
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             int n = 0;
             while (1) {
                 
                // NSLog(@"+++ receive +++ %@",[NSThread currentThread]);
-                if(g_AMQPReceiver!=nil){
+                if(isRecieving){
                     NSString* str1 = nil,* str2 = nil;
                     [g_AMQPReceiver receiveMessage:&str1 message:&str2];
                     if (str1!=nil && str2!=nil) {
@@ -384,8 +390,9 @@ RCT_REMAP_METHOD(startReceiveMessage, uuid:(NSString*)uuid  startReceiveMessageR
                     bStopRecieve = false;
                 }else{
                    // NSLog(@"+++ receive  stop +++ %@",[NSThread currentThread]);
-                    bStopRecieve = true;
+                    [g_AMQPReceiver dispose];
                     g_AMQPReceiver = nil;
+                    bStopRecieve=true;
                     break;
                 }
                 [NSThread sleepForTimeInterval:1];
@@ -433,7 +440,7 @@ RCT_REMAP_METHOD(stopReceiveMessage, stopReceiveMessageResolver:(RCTPromiseResol
     
     @try {
         BOOL bRes = false;
-        g_AMQPReceiver = nil;
+        isRecieving=false;
         NSNumber* number =[NSNumber numberWithBool:bRes];
         resolve(number);
     } @catch (NSException *exception) {
