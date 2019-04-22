@@ -115,9 +115,9 @@ getUniqueExpression = (params) => {
  * 获取数据集中的字段
  * @param layerName 图层名称
  */
-getThemeExpressionByLayerName = (layerName) => {
+getThemeExpressionByLayerName = (language,layerName) => {
   try {
-    return SThemeCartography.getThemeExpressionByLayerName(layerName)
+    return SThemeCartography.getThemeExpressionByLayerName(language,layerName)
   } catch (error) {
     console.error(error)
   }
@@ -350,9 +350,9 @@ getAllDatasetNames = () => {
   }
 }
 
-getThemeExpressionByDatasetName = (datasourceName, datasetName) => {
+getThemeExpressionByDatasetName = (language,datasourceName, datasetName) => {
   try {
-    return SThemeCartography.getThemeExpressionByDatasetName(datasourceName, datasetName)
+    return SThemeCartography.getThemeExpressionByDatasetName(language,datasourceName, datasetName)
   } catch (error) {
     console.error(error)
   }

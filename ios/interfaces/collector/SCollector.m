@@ -148,7 +148,7 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
             [layer setEditable:true];
             
             if (resetPrj) {
-                ds.prjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+                ds.prjCoordSys = map.prjCoordSys;//[[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
             }
             [collector setDataset:ds];
             
@@ -212,8 +212,44 @@ RCT_REMAP_METHOD(addGPSPoint, addGPSPointWithResolver:(RCTPromiseResolveBlock)re
             }
 //        });
         BOOL result = [collector addGPSPoint:pt];
-        [mapControl.map refresh];
-        resolve([NSNumber numberWithBool:result]);
+        if (result) {
+            NSMutableDictionary* point = [[NSMutableDictionary alloc] init];
+            [point setObject:[NSNumber numberWithDouble:pt.x] forKey:@"x"];
+            [point setObject:[NSNumber numberWithDouble:pt.y] forKey:@"y"];
+            [mapControl.map refresh];
+            resolve(point);
+        } else {
+            resolve(nil);
+        }
+        
+    } @catch (NSException *exception) {
+        reject(@"SCollector", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取GPS点
+RCT_REMAP_METHOD(getGPSPoint, getGPSPointWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Collector* collector = [self getCollector];
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        Point2D* pt = [[Point2D alloc]initWithPoint2D:[collector getGPSPoint]];
+        if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+            Point2Ds *points = [[Point2Ds alloc]init];
+            [points add:pt];
+            PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+            [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+            CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+            
+            //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+            [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+            pt = [points getItem:0];
+        }
+        
+        NSMutableDictionary* point = [[NSMutableDictionary alloc] init];
+        [point setObject:[NSNumber numberWithDouble:pt.x] forKey:@"x"];
+        [point setObject:[NSNumber numberWithDouble:pt.y] forKey:@"y"];
+        resolve(point);
+        
     } @catch (NSException *exception) {
         reject(@"SCollector", exception.reason, nil);
     }

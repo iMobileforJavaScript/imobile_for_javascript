@@ -3434,7 +3434,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void getThemeExpressionByLayerName(String layerName, Promise promise) {
+    public void getThemeExpressionByLayerName(String language,String layerName, Promise promise) {
         try {
             MapControl mapControl = SMap.getSMWorkspace().getMapControl();
             Layers layers = mapControl.getMap().getLayers();
@@ -3447,7 +3447,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             for (int i=0;i<count;i++){
                 FieldInfo fieldInfo = fieldInfos.get(i);
                 String name = fieldInfo.getName();
-                String fieldType = SMThemeCartography.getFieldType(fieldInfo);//字段类型
+                String fieldType = SMThemeCartography.getFieldType(language,fieldInfo);//字段类型
                 WritableMap writeMap = Arguments.createMap();
                 writeMap.putString("expression", name);
                 writeMap.putBoolean("isSelected", false);
@@ -3525,7 +3525,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void getThemeExpressionByDatasetName(String datasourceAlias, String datasetName,Promise promise) {
+    public void getThemeExpressionByDatasetName(String language,String datasourceAlias, String datasetName,Promise promise) {
         try {
             Datasources datasources = SMap.getSMWorkspace().getWorkspace().getDatasources();
             Datasource datasource = datasources.get(datasourceAlias);
@@ -3540,7 +3540,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             for (int i=0;i<count;i++){
                 FieldInfo fieldInfo = fieldInfos.get(i);
                 String name = fieldInfo.getName();
-                String fieldType = SMThemeCartography.getFieldType(fieldInfo);//字段类型
+                String fieldType = SMThemeCartography.getFieldType(language,fieldInfo);//字段类型
                 WritableMap writeMap = Arguments.createMap();
                 writeMap.putString("expression", name);
                 writeMap.putString("fieldType", fieldType);

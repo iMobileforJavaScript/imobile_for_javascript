@@ -79,3 +79,31 @@ exports.readFile = async function (filePath) {
 exports.doZipFiles = async function (filesList,toPath) {
   return await util.doZipFiles(filesList,toPath);
 }
+
+const EARTH_RADIUS = 6371.0 //km 地球半径 平均值，千米
+exports.convertDistanceByPoints = async function (point1, point2) {
+  let ConvertDegreesToRadians = function (v) {
+    let r = Math.sin(v);
+    return r * r;
+  }
+  let lat1 = ConvertDegreesToRadians(point1.x);
+  let lon1 = ConvertDegreesToRadians(point1.y);
+  let lat2 = ConvertDegreesToRadians(point2.x);
+  let lon2 = ConvertDegreesToRadians(point2.y);
+  
+  let HaverSin = function (theta) {
+    let v = Math.sin(theta / 2);
+    return v * v;
+  }
+  
+  let vLon = Math.abs(lon1 - lon2);
+  let vLat = Math.abs(lat1 - lat2);
+  let h = HaverSin(vLat) + Math.cos(lat1) * Math.cos(lat2) * HaverSin(vLon);
+  
+  let distance = 2 * EARTH_RADIUS * Math.asin(Math.sqrt(h));
+  return distance;
+}
+
+exports.ConvertDegreesToRadians = function (degrees) {
+  return degrees * Math.PI / 180;
+}
