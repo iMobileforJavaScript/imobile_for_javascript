@@ -35,4 +35,5 @@
 //+ (NSArray *)searchLayerAttribute:(NSString *)path key:(NSString *)key filter:(NSString *)filter page:(int *)page size:(int *)size;
 + (NSMutableDictionary *)searchLayerAttribute:(NSString *)path params:(NSDictionary *)params page:(int *)page size:(int *)size;
 + (NSMutableDictionary *)searchSelectionAttribute:(NSString *)path searchKey:(NSString *)searchKey page:(int)page size:(int)size;
++ (NSMutableDictionary *)getLayerInfo:(Layer *)layer path:(NSString *)path;
 @end

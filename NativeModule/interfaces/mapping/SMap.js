@@ -329,22 +329,18 @@ export default (function () {
    * @returns {*}
    */
   function clipMap (points = [], layersInfo = [], mapName = null, ofModule = '', addition, isPrivate = true) {
-    try {
-      let _points = []
-      if (Platform.OS === 'android') {
-        points.forEach(point => {
-          _points.push({
-            x: point.x * dpi,
-            y: point.y * dpi,
-          })
+    let _points = []
+    if (Platform.OS === 'android') {
+      points.forEach(point => {
+        _points.push({
+          x: point.x * dpi,
+          y: point.y * dpi,
         })
-      } else {
-        _points = points
-      }
-      return SMap.clipMap(_points, layersInfo, mapName, ofModule, addition, isPrivate)
-    } catch (e) {
-      console.error(e)
+      })
+    } else {
+      _points = points
     }
+    return SMap.clipMap(_points, layersInfo, mapName, ofModule, addition, isPrivate)
   }
 
   /**
@@ -822,6 +818,7 @@ export default (function () {
    */
   function importWorkspaceInfo (infoDic, strDirPath, bPrivate = true) {
     try {
+      console.log(infoDic,strDirPath,bPrivate)
       return SMap.importWorkspaceInfo(infoDic, strDirPath, bPrivate)
     } catch (e) {
       console.error(e)
@@ -1076,9 +1073,9 @@ export default (function () {
    * 新建标注数据集
    * @returns {*|Promise.<void>}
    */
-  function newTaggingDataset (name) {
+  function newTaggingDataset (name,userpath) {
     try {
-      return SMap.newTaggingDataset(name)
+      return SMap.newTaggingDataset(name,userpath)
     } catch (e) {
       console.error(e)
     }
@@ -1088,9 +1085,9 @@ export default (function () {
    * 移除标注数据集
    * @returns {*|Promise.<void>}
    */
-  function removeTaggingDataset (name) {
+  function removeTaggingDataset (name,userpath) {
     try {
-      return SMap.removeTaggingDataset(name)
+      return SMap.removeTaggingDataset(name,userpath)
     } catch (e) {
       console.error(e)
     }
@@ -1100,9 +1097,45 @@ export default (function () {
    * 导入标注数据集
    * @returns {*|Promise.<void>}
    */
-  function openTaggingDataset (name) {
+  function openTaggingDataset (userpath) {
     try {
-      return SMap.openTaggingDataset(name)
+      return SMap.openTaggingDataset(userpath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取默认标注
+   * @returns {*|Promise.<void>}
+   */
+  function getDefaultTaggingDataset (userpath) {
+    try {
+      return SMap.getDefaultTaggingDataset(userpath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取当前标注
+   * @returns {*|Promise.<void>}
+   */
+  function getCurrentTaggingDataset (name) {
+    try {
+      return SMap.getCurrentTaggingDataset(name)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取标注图层
+   * @returns {*|Promise.<void>}
+   */
+  function getTaggingLayers (userpath) {
+    try {
+      return SMap.getTaggingLayers(userpath)
     } catch (e) {
       console.error(e)
     }
@@ -1112,9 +1145,9 @@ export default (function () {
    * 设置标注面随机色
    * @returns {*|Promise.<void>}
    */
-  function setTaggingGrid (name) {
+  function setTaggingGrid (name,userpath) {
     try {
-      return SMap.setTaggingGrid(name)
+      return SMap.setTaggingGrid(name,userpath)
     } catch (e) {
       console.error(e)
     }
@@ -1226,9 +1259,9 @@ export default (function () {
    * 添加数据集属性字段
    * @returns {*|Promise.<void>}
    */
-  function addRecordset (dataname, recname, name) {
+  function addRecordset (dataname, recname, name, userpath) {
     try {
-      return SMap.addRecordset(dataname, recname, name)
+      return SMap.addRecordset(dataname, recname, name, userpath)
     } catch (e) {
       console.error(e)
     }
@@ -1262,9 +1295,9 @@ export default (function () {
    * 添加文字标注
    * @returns {*|Promise.<void>}
    */
-  function addTextRecordset (value, name, x, y) {
+  function addTextRecordset (value, name,userpath, x, y) {
     try {
-      return SMap.addTextRecordset(value, name, x, y)
+      return SMap.addTextRecordset(value, name,userpath, x, y)
     } catch (e) {
       console.error(e)
     }
@@ -1357,6 +1390,9 @@ export default (function () {
     newTaggingDataset,
     removeTaggingDataset,
     openTaggingDataset,
+    getDefaultTaggingDataset,
+    getCurrentTaggingDataset,
+    getTaggingLayers,
     setTaggingGrid,
     setLabelColor,
     updateLegend,

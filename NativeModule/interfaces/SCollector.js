@@ -1,6 +1,7 @@
 import { NativeModules } from 'react-native'
 import Utility from '../utility/utility'
 let Collector = NativeModules.SCollector
+let CollectorType = NativeModules.SCollectorType
 let DatasetType = NativeModules.JSDatasetType
 
 let currentType = -1;
@@ -50,10 +51,75 @@ async function setDataset(info = {}) {
   }
 }
 
+let gpsTimer = null
+async function initCollect(type = -1) {
+  if (gpsTimer) {
+    clearInterval(gpsTimer)
+    gpsTimer = null
+  }
+  currentType = type
+  return await Collector.startCollect(type)
+}
+
+async function startAddGPSPoint () {
+  if (!gpsTimer) {
+    await addGPSPoint()
+    gpsTimer = setInterval(async () => {
+      await addGPSPoint()
+      // let point = await Collector.getGPSPoint()
+      // if (point) {
+      //   if (lastPoint) {
+      //     let distance = Utility.convertDistanceByPoints(point, lastPoint)
+      //     if (distance >= 0.005) {
+      //       lastPoint = await addGPSPoint()
+      //     }
+      //   } else {
+      //     lastPoint = await addGPSPoint()
+      //   }
+      // }
+    }, 1000)
+  }
+}
+
 async function startCollect(type = -1) {
   try {
+    if (gpsTimer) {
+      clearInterval(gpsTimer)
+      gpsTimer = null
+    }
     currentType = type
-    return Collector.startCollect(type)
+    // let result = await Collector.startCollect(type)
+    // if (result) {
+    //   switch (type) {
+    //     case CollectorType.LINE_GPS_PATH:
+    //     case CollectorType.REGION_GPS_PATH:
+    //       await startAddGPSPoint()
+    //   }
+    // }
+    switch (type) {
+      case CollectorType.LINE_GPS_PATH:
+      case CollectorType.REGION_GPS_PATH:
+        await startAddGPSPoint()
+    }
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+async function getGPSPoint() {
+  try {
+    return Collector.getGPSPoint()
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+async function pauseCollect() {
+  try {
+    currentType = -1
+    if (gpsTimer !== null) {
+      clearInterval(gpsTimer)
+    }
   } catch (e) {
     console.error(e)
   }
@@ -62,6 +128,9 @@ async function startCollect(type = -1) {
 async function stopCollect() {
   try {
     currentType = -1
+    if (gpsTimer !== null) {
+      clearInterval(gpsTimer)
+    }
     return Collector.stopCollect()
   } catch (e) {
     console.error(e)
@@ -136,8 +205,11 @@ async function removeByIds(ids = [], layerPath) {
 export default {
   setStyle,
   getStyle,
+  initCollect,
   startCollect,
+  pauseCollect,
   stopCollect,
+  getGPSPoint,
   setDataset,
   undo,
   redo,

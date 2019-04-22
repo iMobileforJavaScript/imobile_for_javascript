@@ -139,6 +139,7 @@ public class JsonUtil {
             }
         }
         map.putArray("data", recordArray);
+        map.putInt("startIndex", (page * size));
 
         return map;
     }

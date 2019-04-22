@@ -179,34 +179,26 @@ public class SDatasource extends ReactContextBaseJavaModule {
     @ReactMethod
     public void copyDataset(String dataSourcePath, String toDataSourcePath, ReadableArray datasets, Promise promise) {
         try {
-            File tempFile = new File(dataSourcePath.trim());
-            File tempFile2 = new File(toDataSourcePath.trim());
-            String[] strings = tempFile.getName().split("\\.");
-            String[] strings2 = tempFile2.getName().split("\\.");
-            String udbName = strings[0];
-            String udbName2 = strings2[0];
             Datasource datasource;
             Datasource toDataSource;
             Workspace workspace = null;
-            SMap sMap = SMap.getInstance();
             DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
             DatasourceConnectionInfo datasourceconnection2 = new DatasourceConnectionInfo();
             datasourceconnection.setEngineType(EngineType.UDB);
             datasourceconnection.setServer(dataSourcePath);
-            datasourceconnection.setAlias(udbName);
+            datasourceconnection.setAlias("dataSource");
             datasourceconnection2.setEngineType(EngineType.UDB);
             datasourceconnection2.setServer(toDataSourcePath);
-            datasourceconnection2.setAlias(udbName2);
-            if(sMap.getSmMapWC().getMapControl()==null){
-                workspace=new Workspace();
-                datasource=workspace.getDatasources().open(datasourceconnection);
-                toDataSource=workspace.getDatasources().open(datasourceconnection2);
-                for (int i = 0; i < datasets.size(); i++) {
-                    DatasetVector datasetVector= (DatasetVector) datasource.getDatasets().get(datasets.getString(i));
-                    String datasetName=toDataSource.getDatasets().getAvailableDatasetName(datasetVector.getName());
-                    toDataSource.copyDataset(datasetVector,datasetName,EncodeType.INT32);
-                }
+            datasourceconnection2.setAlias("toDataSource");
+            workspace=new Workspace();
+            datasource=workspace.getDatasources().open(datasourceconnection);
+            toDataSource=workspace.getDatasources().open(datasourceconnection2);
+            for (int i = 0; i < datasets.size(); i++) {
+                DatasetVector datasetVector= (DatasetVector) datasource.getDatasets().get(datasets.getString(i));
+                String datasetName=toDataSource.getDatasets().getAvailableDatasetName(datasetVector.getName());
+                toDataSource.copyDataset(datasetVector,datasetName,EncodeType.INT32);
             }
+            workspace.getDatasources().closeAll();
             workspace.dispose();
             datasourceconnection.dispose();
             datasourceconnection2.dispose();
@@ -232,27 +224,26 @@ public class SDatasource extends ReactContextBaseJavaModule {
             SMap sMap = SMap.getInstance();
             DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
 
-//            if (sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
-//                sMap.smMapWC.getMapControl().getMap().getWorkspace().getDatasources().close(udbName);
-//            }
-            if(sMap.getSmMapWC().getMapControl()==null){
+            if(sMap.getSmMapWC().getWorkspace()==null){
                 workspace=new Workspace();
                 datasourceconnection.setEngineType(EngineType.UDB);
                 datasourceconnection.setServer(path);
                 datasourceconnection.setAlias(udbName);
                 datasource=workspace.getDatasources().open(datasourceconnection);
-                datasource.getDatasets().delete(name);
+                int index=datasource.getDatasets().indexOf(name);
+                datasource.getDatasets().delete(index);
             }else {
-                sMap.getSmMapWC().getMapControl().getMap().setWorkspace(sMap.getSmMapWC().getWorkspace());
-                if (sMap.getSmMapWC().getMapControl().getMap().getWorkspace().getDatasources().indexOf(udbName) != -1) {
-                    datasource = sMap.getSmMapWC().getMapControl().getMap().getWorkspace().getDatasources().get(udbName);
-                    datasource.getDatasets().delete(name);
+                if (sMap.getSmMapWC().getWorkspace().getDatasources().indexOf(udbName) != -1) {
+                    datasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(udbName);
+                    int index=datasource.getDatasets().indexOf(name);
+                    datasource.getDatasets().delete(index);
                 } else {
                     datasourceconnection.setEngineType(EngineType.UDB);
                     datasourceconnection.setServer(path);
                     datasourceconnection.setAlias(udbName);
-                    datasource = sMap.getSmMapWC().getMapControl().getMap().getWorkspace().getDatasources().open(datasourceconnection);
-                    datasource.getDatasets().delete(name);
+                    datasource = sMap.getSmMapWC().getWorkspace().getDatasources().open(datasourceconnection);
+                    int index=datasource.getDatasets().indexOf(name);
+                    datasource.getDatasets().delete(index);
                 }
             }
             if(workspace!=null){

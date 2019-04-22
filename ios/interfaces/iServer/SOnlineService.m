@@ -730,23 +730,23 @@ RCT_REMAP_METHOD(getSuperMapKnown, getSuperMapKnownWithResolver:(RCTPromiseResol
 # pragma mark ---------------------------- 下载协议
 - (void)bytesWritten:(int64_t) bytesWritten totalBytesWritten:(int64_t) totalBytesWritten
 totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
-//    @try {
-//        NSNumber* written = [NSNumber numberWithLongLong:totalBytesWritten];
-//        NSNumber* total = [NSNumber numberWithLongLong:totalBytesExpectedToWrite];
-//        float progress = [written floatValue] / [total floatValue] * 100;
-//        //        float progress = totalBytesWritten / totalBytesExpectedToWrite;
-//        NSLog(@"downloading: %f", progress);
-//        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADING
-//                           body:@{
-//                                  @"progress": [NSNumber numberWithFloat:progress],
-//                                  @"downloaded": [NSNumber numberWithLongLong:totalBytesWritten],
-//                                  @"total": [NSNumber numberWithLongLong:totalBytesExpectedToWrite],
-//                                  @"id":downloadId
-//                                  }];
-//    } @catch (NSException *exception) {
-//        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADFAILURE
-//                           body:exception.reason];
-//    }
+    @try {
+        NSNumber* written = [NSNumber numberWithLongLong:totalBytesWritten];
+        NSNumber* total = [NSNumber numberWithLongLong:totalBytesExpectedToWrite];
+        float progress = [written floatValue] / [total floatValue] * 100;
+        //        float progress = totalBytesWritten / totalBytesExpectedToWrite;
+        NSLog(@"downloading: %f", progress);
+        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADING
+                           body:@{
+                                  @"progress": [NSNumber numberWithFloat:progress],
+                                  @"downloaded": [NSNumber numberWithLongLong:totalBytesWritten],
+                                  @"total": [NSNumber numberWithLongLong:totalBytesExpectedToWrite],
+                                  @"id":downloadId
+                                  }];
+    } @catch (NSException *exception) {
+        [self sendEventWithName:ONLINE_SERVICE_DOWNLOADFAILURE
+                           body:exception.reason];
+    }
 }
 
 - (void)downloadResult:(NSString*)error {

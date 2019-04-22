@@ -7,7 +7,11 @@
 		<key>Supermap.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+<<<<<<< HEAD
 			<integer>44</integer>
+=======
+			<integer>4</integer>
+>>>>>>> dev-1.6.3
 		</dict>
 	</dict>
 </dict>

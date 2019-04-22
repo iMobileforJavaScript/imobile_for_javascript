@@ -903,9 +903,12 @@
                 NSMutableArray *indexArray=[notExportMap objectForKey:mapName];
                 indexArray = (NSMutableArray *)[[indexArray reverseObjectEnumerator] allObjects];
                 
+                int layerLength = [mapExport.layers getCount];
                 for (int index=0; index<indexArray.count; index++) {
                     NSNumber *indexLayer=[indexArray objectAtIndex:index];
-                    [mapExport.layers removeAt:[indexLayer intValue]];
+                    if(layerLength > [indexLayer intValue]){
+                        [mapExport.layers removeAt:[indexLayer intValue]];
+                    }
 //                    [[mapExport.layers getLayerAtIndex:indexLayer.integerValue] setVisible:NO];
                 }
             }
@@ -2132,9 +2135,9 @@
 // 返回值说明：裁减完地图尝试以strResultName保存到map.workspace.maps中，若已存在同名则重命名为strResultName#1，把最终命名结果返回
 //
 //-(NSString*)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSString*)jsonParam saveAs:(NSString*)strResultName
--(BOOL)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)clipRegion parameters:(NSArray*)arrLayers/*NSString*)jsonParam*/ saveAs:(NSString**)strResultName{
+-(BOOL)clipMap:(Map*)_srcMap withRegion:(GeoRegion*)geoRegion parameters:(NSArray*)arrLayers/*NSString*)jsonParam*/ saveAs:(NSString**)strResultName{
     
-    if (_srcMap==nil || [_srcMap.layers getCount]<=0 || clipRegion==nil || clipRegion.getBounds.isEmpty) {
+    if (_srcMap==nil || [_srcMap.layers getCount]<=0 || geoRegion==nil || geoRegion.getBounds.isEmpty) {
         return false;
     }
     
@@ -2148,7 +2151,7 @@
     if(strClipMapName!=nil){
         int nAddNum = 1;
         while ([_srcMap.workspace.maps indexOf:strClipMapName]!=-1) {
-            strClipMapName =[ NSString stringWithFormat:@"%@_%d",strResultName,nAddNum ];
+            strClipMapName =[ NSString stringWithFormat:@"%@_%d",*strResultName,nAddNum ];
             nAddNum++;
         }
         
@@ -2157,6 +2160,9 @@
         [_clipMap open:strClipMapName];
         *strResultName = strClipMapName;
     }
+    
+    BOOL bDynamicProjection = [_srcMap dynamicProjection];
+    PrjCoordSys *srcPrjCoordSys = [_srcMap prjCoordSys];
     
     for(int i=0;i<arrLayers.count;i++){
         
@@ -2209,7 +2215,23 @@
                 nAddNum++;
             }
             
-            if ([datasetTemp isKindOfClass:DatasetVector.class]) {
+            //动态投影处理下
+            GeoRegion *clipRegion = [[GeoRegion alloc]init];
+            PrjCoordSys *desPrjCoordSys = datasetTemp.prjCoordSys;
+            for (int k=0;k<geoRegion.getPartCount;k++){
+                Point2Ds *regionPart = [geoRegion getPart:k];
+                if (bDynamicProjection && ![desPrjCoordSys isSame:srcPrjCoordSys]){
+                    CoordSysTransParameter *parameter = [_srcMap dynamicPrjTransParameter];
+                    CoordSysTransMethod coordSysTransMethod = [_srcMap dynamicPrjTransMethond];
+//                    CoordSysTranslator.convert(regionPart, srcPrjCoordSys,desPrjCoordSys, parameter, coordSysTransMethod);
+                    [CoordSysTranslator convert:regionPart PrjCoordSys:srcPrjCoordSys PrjCoordSys:desPrjCoordSys CoordSysTransParameter:parameter CoordSysTransMethod:coordSysTransMethod];
+                }
+                [clipRegion addPart:regionPart];
+            }
+            
+            
+            //if ([datasetTemp datasetType] == POINT || [datasetTemp datasetType] == LINE || [datasetTemp datasetType] == REGION) {
+            if([datasetTemp isKindOfClass:DatasetVector.class]){
                 //3.datasetVector 有效参数：IsClipInRegion，IsErase
                 BOOL bClipInRegion = YES;
                 NSNumber *numInRegion = [dicLayer objectForKey:@"IsClipInRegion"];
@@ -2229,6 +2251,7 @@
                     // 创建失败
                     continue;
                 }
+                [datasetResult setPrjCoordSys:datasetTemp.prjCoordSys];
                 
                 // 如果是面内裁减则region与clipRegion相同，否则clipRegion需要加上一个外包的矩形
                 GeoRegion *region = [[GeoRegion alloc]init];
@@ -2261,6 +2284,7 @@
                 }
                 [parameter setSourceRetainedFields:arrFields];
                 
+                
                 if (bErase) {
                     // 擦除
                     bResult = [OverlayAnalyst erase:(DatasetVector *)datasetTemp eraseGeometries:arrRegionTemp
@@ -2270,12 +2294,13 @@
                     bResult = [OverlayAnalyst clip:(DatasetVector *)datasetTemp clipGeometries:arrRegionTemp
                                      resultDataset:(DatasetVector *)datasetResult parameter:parameter];
                 }
-                if(bResult==NO){
-                    // 裁减失败
-                    [datasourceResult.datasets deleteName:strDatasetResultName];
-                    continue;
-                }
-                
+                // 裁减失败留下一个空数据集
+//                if(bResult==NO){
+//                    // 裁减失败
+//                    [datasourceResult.datasets deleteName:strDatasetResultName];
+//                    continue;
+//                }
+               
                 
             }else if(datasetTemp.datasetType == Grid || datasetTemp.datasetType == IMAGE){
                 //4.datasetRaster 有效参数：IsClipInRegion，IsExactClip

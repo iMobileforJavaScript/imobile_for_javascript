@@ -22,8 +22,12 @@ RCT_REMAP_METHOD(createDatasource, createDatasource:(NSDictionary *)params resol
         NSString* server = [params objectForKey:@"server"];
         NSString* serverParentPath = [server stringByDeletingLastPathComponent];
         [SMFileUtil createFileDirectories:serverParentPath];
-
+        
         datasource = [workspace.datasources create:info];
+        if([params.allKeys containsObject:@"description"]){
+            NSString *description = [params objectForKey:@"description"];
+            datasource.description = description;
+        }
         resolve([NSNumber numberWithBool:datasource != nil]);
     } @catch (NSException *exception) {
         reject(@"Datasource", exception.reason, nil);
@@ -109,6 +113,47 @@ RCT_REMAP_METHOD(deleteDatasource, deleteDatasource:(NSString *)path resolver:(R
     }
 }
 
+#pragma mark 从不同数据源中复制数据集
+RCT_REMAP_METHOD(codyDataset, copyDatasetWithPath:(NSString *)dataSourcePath destinationPath:(NSString *)destinationPath datasets:(NSArray *)datasets resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        dataSourcePath = [dataSourcePath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *udbName = [[dataSourcePath lastPathComponent] stringByDeletingPathExtension];
+        destinationPath = [destinationPath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *udbName2 = [[destinationPath lastPathComponent] stringByDeletingPathExtension];
+        Datasource *datasource;
+        Datasource *toDatasource;
+        Workspace *workspace = nil;
+        SMap *sMap = [SMap singletonInstance];
+        
+        DatasourceConnectionInfo *datasourceconnection = [[DatasourceConnectionInfo alloc] init];
+        datasourceconnection.engineType = ET_UDB;
+        datasourceconnection.server = dataSourcePath;
+        datasourceconnection.alias = udbName;
+        
+        DatasourceConnectionInfo *datasourceconnection2 = [[DatasourceConnectionInfo alloc] init];
+        datasourceconnection2.engineType = ET_UDB;
+        datasourceconnection2.server = destinationPath;
+        datasourceconnection2.alias = udbName;
+        
+        if(sMap.smMapWC.mapControl == nil){
+            workspace = [[Workspace alloc]init];
+            datasource = [workspace.datasources open:datasourceconnection];
+            toDatasource = [workspace.datasources open:datasourceconnection2];
+            for(int i = 0, count = datasets.count; i < count; i++){
+                DatasetVector *datasetVector = (DatasetVector *)[datasource.datasets getWithName: [datasets objectAtIndex:i]];
+                NSString *datasetName = [toDatasource.datasets availableDatasetName:datasetVector.name];
+                [toDatasource copyDataset:datasetVector desDatasetName:datasetName encodeType:INT32];
+            }
+        }
+        [workspace dispose];
+        [datasourceconnection dispose];
+        [datasourceconnection2 dispose];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"codyDataset",exception.reason,nil);
+    }
+}
+
 #pragma mark 获取数据源列表
 RCT_REMAP_METHOD(getDatasources, getDatasourcesWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -130,7 +175,7 @@ RCT_REMAP_METHOD(getDatasources, getDatasourcesWithResolver:(RCTPromiseResolveBl
             
             [dsList addObject:dicInfo];
         }
-            
+        
         resolve(dsList);
     } @catch (NSException *exception) {
         reject(@"Datasource", exception.reason, nil);
@@ -188,4 +233,44 @@ RCT_REMAP_METHOD(getDatasetsByDatasource, getDatasetsByDatasourceWithResolver:(N
         reject(@"workspace", exception.reason, nil);
     }
 }
+
+#pragma mark 根据名称移除UDB中数据集
+RCT_REMAP_METHOD(removeDatasetByName, removeDatasetByNameWithPath:(NSString *)path Name:(NSString *)name resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        path = [path stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        NSString *udbName = [[path lastPathComponent] stringByDeletingPathExtension];
+        Datasource *datasource = nil;
+        Workspace *workspace = nil;
+        SMap *sMap = [SMap singletonInstance];
+        DatasourceConnectionInfo *datasourceconnection = [[DatasourceConnectionInfo alloc]init];
+        if(sMap.smMapWC.mapControl == nil){
+            workspace = [[Workspace alloc]init];
+            datasourceconnection.engineType =ET_UDB;
+            datasourceconnection.server = path;
+            datasourceconnection.alias = udbName;
+            datasource = [workspace.datasources open:datasourceconnection];
+            [datasource.datasets deleteName:name];
+        }else{
+            sMap.smMapWC.mapControl.map.workspace = sMap.smMapWC.workspace;
+            if([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:udbName] != -1){
+                datasource = [sMap.smMapWC.mapControl.map.workspace.datasources getAlias:udbName];
+                [datasource.datasets deleteName:name];
+            }else{
+                datasourceconnection.engineType = ET_UDB;
+                datasourceconnection.server = path;
+                datasourceconnection.alias = udbName;
+                datasource = [sMap.smMapWC.mapControl.map.workspace.datasources open:datasourceconnection];
+                [datasource.datasets deleteName:name];
+            }
+        }
+        if(workspace != nil){
+            [workspace dispose];
+        }
+        [datasourceconnection dispose];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"removeDatasetByName",exception.reason,nil);
+    }
+}
+
 @end

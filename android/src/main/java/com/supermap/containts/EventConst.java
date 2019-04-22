@@ -16,6 +16,10 @@ public class EventConst {
     public static final String ONLINE_SERVICE_UPLOADED = "com.supermap.RN.Mapcontrol.online_service_uploaded";
     public static final String ONLINE_SERVICE_UPLOADFAILURE = "com.supermap.RN.Mapcontrol.online_service_uploadfailure";
 
+    public static final String ONLINE_SERVICE_DOWNLOADINGOFID = "com.supermap.RN.Mapcontrol.online_service_downloadingofid";
+    public static final String ONLINE_SERVICE_DOWNLOADEDOFID = "com.supermap.RN.Mapcontrol.online_service_downloadedofid";
+    public static final String ONLINE_SERVICE_DOWNLOADFAILUREOFID = "com.supermap.RN.Mapcontrol.online_service_downloadfailureofid";
+
     public static final String ONLINE_SERVICE_LOGIN = "com.supermap.RN.Mapcontrol.online_service_login";
     public static final String ONLINE_SERVICE_LOGOUT = "com.supermap.RN.Mapcontrol.online_service_logout";
 

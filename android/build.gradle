@@ -24,6 +24,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+//    externalNativeBuild {
+//        ndkBuild {
+//            path '/Users/imobile-xzy/Documents/sourceCode/UGC/Builds/32_arm_android_U/Android.mk'
+//            //    path '/Users/imobile-xzy/Documents/sourceCode/UGC/Builds/64_arm_android_U/Android.mk'
+//        }
+//    }
     sourceSets{
         main{
             jniLibs.srcDirs = ['libs']
@@ -37,6 +43,7 @@ dependencies {
     api 'com.android.support:appcompat-v7:27.1.1'
     api 'com.android.support:recyclerview-v7:27.1.1'
     api 'com.facebook.react:react-native:+'
+<<<<<<< HEAD
 //    api files('libs/TencentMapLBSApi_v3.0.jar')
 //    implementation files('libs/apache-ant-zip.jar')
 //    implementation files('libs/chartengine.jar')
@@ -50,4 +57,20 @@ dependencies {
 //    implementation files('libs/com.supermap.realspace_v912.jar')
 //    implementation files('libs/com.supermap.services_v912.jar')
 //    implementation files('libs/com.supermap.track_v912.jar')
+=======
+    api files('libs/TencentMapLBSApi_v3.0.jar')
+    implementation files('libs/apache-ant-zip.jar')
+    implementation files('libs/chartengine.jar')
+    implementation files('libs/com.supermap.analyst_v912.jar')
+    implementation files('libs/com.supermap.data_v912.jar')
+    implementation files('libs/com.supermap.mapping_v912.jar')
+    implementation files('libs/com.supermap.mdatacollector_v912.jar')
+    implementation files('libs/com.supermap.messagequeue_v912.jar')
+    implementation files('libs/com.supermap.navigation_v912.jar')
+    implementation files('libs/com.supermap.plot_v912.jar')
+    implementation files('libs/com.supermap.realspace_v912.jar')
+    implementation files('libs/com.supermap.services_v912.jar')
+    implementation files('libs/com.supermap.track_v912.jar')
+    implementation 'com.amap.api:location:latest.integration'
+>>>>>>> dev-1.6.3
 }

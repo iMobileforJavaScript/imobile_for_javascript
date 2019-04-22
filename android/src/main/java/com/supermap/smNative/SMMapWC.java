@@ -1,5 +1,6 @@
 package com.supermap.smNative;
 
+import android.graphics.Region;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -10,6 +11,9 @@ import com.supermap.RNUtils.FileUtil;
 import com.supermap.analyst.spatialanalyst.OverlayAnalyst;
 import com.supermap.analyst.spatialanalyst.OverlayAnalystParameter;
 import com.supermap.analyst.spatialanalyst.RasterClip;
+import com.supermap.data.CoordSysTransMethod;
+import com.supermap.data.CoordSysTransParameter;
+import com.supermap.data.CoordSysTranslator;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
@@ -27,6 +31,7 @@ import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
 import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
+import com.supermap.data.PrjCoordSys;
 import com.supermap.data.Recordset;
 import com.supermap.data.Rectangle2D;
 import com.supermap.data.Resources;
@@ -50,6 +55,7 @@ import com.supermap.mapping.LayerGroup;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 import com.supermap.data.DatasetType;
+import com.supermap.mapping.PrjCoordSysTranslatorListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -2285,7 +2291,7 @@ public class SMMapWC {
 
         String rootPath = getRootPath();
         String userName = getUserName();
-        String desDatasourceDir = rootPath + "/" + userName + "/Datasource";
+        String desDatasourceDir = rootPath + "/" + userName + "/Data/Datasource";
         //String desDatasourceDir =getCustomerDirectory()+"/Datasource";
         if (strModule != null) {
             desDatasourceDir = desDatasourceDir + "/" + strModule;
@@ -2305,7 +2311,7 @@ public class SMMapWC {
         String strSrcDatasourcePath = strFile.substring(0, strFile.length() - 4);
         String strTargetDatasourcePath = strTargetFile.substring(0, strTargetFile.length() - 4);
 
-        String strResult = null;
+        String strResult = strTargetFile;
         // 检查重复性
         isDir = true;
         File fileTargetFile = new File(strTargetFile);
@@ -2316,7 +2322,7 @@ public class SMMapWC {
             //重名文件
             strTargetFile = formateNoneExistFileName(strTargetFile, false);
             String[] arrTargetFile = strTargetFile.split("/");
-            strResult = arrTargetFile[arrTargetFile.length - 1];
+            strResult = strTargetFile;//arrTargetFile[arrTargetFile.length - 1];
             strTargetDatasourcePath = strTargetFile.substring(0, strTargetFile.length() - 4);
         }//exist
 
@@ -2344,7 +2350,7 @@ public class SMMapWC {
             }
             String rootPath = getRootPath();
             String userName = getUserName();
-            String desDatasourceDir = rootPath + "/" + userName + "/Datasource";
+            String desDatasourceDir = rootPath + "/" + userName + "/Data/Datasource";
             //String desDatasourceDir =getCustomerDirectory()+"/Datasource";
             if (strModule != null) {
                 desDatasourceDir = desDatasourceDir + "/" + strModule;
@@ -2826,10 +2832,10 @@ public class SMMapWC {
     //
     // 返回值说明：裁减完地图尝试以strResultName保存到map.workspace.maps中，若已存在同名则重命名为strResultName#1，把最终命名结果返回
     //
-    public boolean clipMap(com.supermap.mapping.Map _srcMap, GeoRegion clipRegion, /*String jsonParam*/ReadableArray arrLayers, String[] strResultName) {
+    public boolean clipMap(com.supermap.mapping.Map _srcMap, GeoRegion geoRegion, /*String jsonParam*/ReadableArray arrLayers, String[] strResultName) {
 
         try {
-            if (_srcMap == null || _srcMap.getLayers().getCount() <= 0 || clipRegion == null || clipRegion.getBounds().isEmpty()) {
+            if (_srcMap == null || _srcMap.getLayers().getCount() <= 0 || geoRegion == null || geoRegion.getBounds().isEmpty()) {
                 return false;
             }
 
@@ -2858,6 +2864,8 @@ public class SMMapWC {
 //        } catch (JSONException e) {
 //            e.printStackTrace();
 //        }
+            boolean bDynamicProjection = _srcMap.isDynamicProjection();
+            PrjCoordSys srcPrjCoordSys = _srcMap.getPrjCoordSys();
 
             for (int i = 0; i < arrLayers.size(); i++) {
                 ReadableMap dicLayer = arrLayers.getMap(i);
@@ -2912,7 +2920,24 @@ public class SMMapWC {
                         nAddNum++;
                     }
 
+                    //动态投影处理下
+                    GeoRegion clipRegion = new GeoRegion();
+                    PrjCoordSys desPrjCoordSys = datasetTemp.getPrjCoordSys();
+                    for (int k=0;k<geoRegion.getPartCount();k++){
+                        Point2Ds regionPart = geoRegion.getPart(k);
+                        if (bDynamicProjection && !desPrjCoordSys.isSame(srcPrjCoordSys)){
+                            CoordSysTransParameter parameter = _srcMap.getDynamicPrjTransParameter();
+                            CoordSysTransMethod coordSysTransMethod = _srcMap.getDynamicPrjTransMethond();
+                            CoordSysTranslator.convert(regionPart, srcPrjCoordSys,desPrjCoordSys, parameter, coordSysTransMethod);
+                        }
+                        clipRegion.addPart(regionPart);
+                    }
+
+
+
+                    //if (datasetTemp.getType() == DatasetType.POINT || datasetTemp.getType() == DatasetType.LINE || datasetTemp.getType() == DatasetType.REGION){
                     if (DatasetVector.class.isInstance(datasetTemp)) {
+                        Rectangle2D datasetB = datasetTemp.getBounds();
                         //3.datasetVector 有效参数：IsClipInRegion，IsErase
                         boolean bClipInRegion = true;
                         if (dicLayer.hasKey("IsClipInRegion")) {
@@ -2930,6 +2955,8 @@ public class SMMapWC {
                             // 创建失败
                             continue;
                         }
+                        datasetResult.setPrjCoordSys(datasetTemp.getPrjCoordSys());
+
 
                         // 如果是面内裁减则region与clipRegion相同，否则clipRegion需要加上一个外包的矩形
                         GeoRegion region = new GeoRegion();
@@ -2975,10 +3002,11 @@ public class SMMapWC {
 
                         }
 
-                        if (bResult == false) {
-                            datasourceResult.getDatasets().delete(strDatasetResultName);
-                            continue;
-                        }
+                        // 裁减失败留下一个空数据集
+//                        if (bResult == false) {
+//                            datasourceResult.getDatasets().delete(strDatasetResultName);
+//                            continue;
+//                        }
 
                     } else if (datasetTemp.getType() == DatasetType.GRID || datasetTemp.getType() == DatasetType.IMAGE) {
                         //4.datasetRaster 有效参数：IsClipInRegion，IsExactClip
