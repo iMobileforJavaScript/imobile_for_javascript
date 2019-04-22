@@ -19,6 +19,9 @@ extern NSString* const ONLINE_SERVICE_UPLOADED;
 extern NSString* const ONLINE_SERVICE_UPLOADFAILURE;
 extern NSString* const ONLINE_SERVICE_REVERSEGEOCODING;
 extern NSString* const MESSAGE_SERVICE_RECEIVE;
+extern NSString* const MESSAGE_SERVICE_SEND_FILE;
+extern NSString* const MESSAGE_SERVICE_RECEIVE_FILE;
+
 
 extern NSString* const MEASURE_LENGTH;
 extern NSString* const MEASURE_AREA;

@@ -39,7 +39,9 @@ static NSString* sGroupExchange = @"message.group";
 #pragma mark -- 定义宏，让该类暴露给RN层
 RCT_EXPORT_MODULE();
 - (NSArray<NSString *> *)supportedEvents{
-    return @[MESSAGE_SERVICE_RECEIVE];
+    return @[MESSAGE_SERVICE_RECEIVE,
+             MESSAGE_SERVICE_SEND_FILE,
+             MESSAGE_SERVICE_RECEIVE_FILE];
 }
 
 #pragma mark -- 连接服务
@@ -161,16 +163,116 @@ RCT_REMAP_METHOD(sendMessage, message:(NSString*)message  targetID:(NSString*)ta
 }
 
 #pragma mark -- 文件发送
-RCT_REMAP_METHOD(sendFile, file:(NSString*)filePath  targetID:(NSString*)targetID disconnectionServiceResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    
+RCT_REMAP_METHOD(sendFile, connectInfo:(NSString*)connectInfo message:(NSString*)message file:(NSString*)filePath  talkId:(NSString*)talkId msgId:(int)msgId disconnectionServiceResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        BOOL bRes = true;
-        NSNumber* number =[NSNumber numberWithBool:bRes];
-        resolve(number);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            NSString* fileName=[filePath lastPathComponent];
+            
+            NSOutputStream* outputStream = [NSOutputStream outputStreamToFileAtPath:filePath append:YES];
+            [outputStream open];
+            
+            NSDictionary *fileDic = [fileManager attributesOfItemAtPath:filePath error:nil];//获取文件的属性
+            //文件大小
+            unsigned long long fileSize = [[fileDic objectForKey:NSFileSize] longLongValue];
+            //单个文件大小
+            unsigned int singleFileSize=1024 * 1024 * 2;
+            //2M为单位切割文件后的总个数
+            long total = (long)ceil((double)fileSize / ((double) singleFileSize));
+            
+            //BASE64编码的单个文件
+            NSString* sFileBlock;
+            //可以直接发送的json字符串
+            NSString* jsonMessage;
+            
+            //转成JSON
+//            NSData *jMessage = [NSJSONSerialization dataWithJSONObject:message options:NSJSONWritingPrettyPrinted error:nil];
+            NSData* jMessage=[message dataUsingEncoding:NSUTF8StringEncoding];
+            
+            NSMutableDictionary *messageDic = [NSJSONSerialization JSONObjectWithData:jMessage options:NSJSONReadingMutableContainers error:nil];
+            
+            //对方的文件队列名和key,最好随机生成
+            
+            NSString* sQueue =[NSString stringWithFormat:@"File_%@_%@", [[messageDic valueForKey:@"user"] valueForKey:@"id"], [messageDic valueForKey:@"time"]];
+            NSString* sRoutingKey=[NSString stringWithFormat:@"File_%@_%@", [[messageDic valueForKey:@"user"] valueForKey:@"id"], [messageDic valueForKey:@"time"]];
+            
+//            NSData* jConnectinfo = [NSJSONSerialization dataWithJSONObject:connectInfo options:NSJSONWritingPrettyPrinted error:nil];
+            NSData* jConnectinfo = [connectInfo dataUsingEncoding:NSUTF8StringEncoding];
+            NSMutableDictionary *connectinfoDic = [NSJSONSerialization JSONObjectWithData:jConnectinfo options:NSJSONReadingMutableContainers error:nil];
+            //传送文件时新建一个连接
+            AMQPManager* mAMQPManager_File = [[AMQPManager alloc]init];
+            [mAMQPManager_File connection:[connectinfoDic valueForKey:@"serverIP"]
+                                     port:[[connectinfoDic valueForKey:@"port"] intValue]
+                                 hostname:[connectinfoDic valueForKey:@"hostName"]
+                                  usrname:[connectinfoDic valueForKey:@"userName"]
+                                 password:[connectinfoDic valueForKey:@"passwd"]
+                                 clientId:[connectinfoDic valueForKey:@"userID"]];
+            
+            [mAMQPManager_File declareQueue:sQueue];
+            
+            //由于错误可能会有未删除的队列
+            [mAMQPManager_File deleteQueue:sQueue];
+            [mAMQPManager_File declareQueue:sQueue];
+            [mAMQPManager_File bindQueue:sExchange exchange:sQueue routingkey:sRoutingKey];
+            AMQPSender* fileSender=[mAMQPManager_File newSender];
+            
+            NSFileHandle* fh = [NSFileHandle fileHandleForReadingAtPath:filePath];
+            
+            for(int index=1;index<=total;index++){
+                NSData* data;
+                if(index==total){
+                    data=[fh readDataToEndOfFile];
+                }else{
+                    data=[fh readDataOfLength:total];
+                }
+                sFileBlock = [data base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed]; // base64格式的字符串
+                
+                NSMutableDictionary *sub_messageDic=[[messageDic objectForKey:@"message"] objectForKey:@"message"];
+//                [sub_messageDic setObject:@"data" forKey:sFileBlock];
+//                [sub_messageDic setValue:@"length" forKey:total];
+//                [sub_messageDic setObject:@"index" forKey:(long)index];
+                
+                [sub_messageDic setObject:sFileBlock forKey:@"data"];
+                [sub_messageDic setValue:@(total) forKey:@"length"];
+                [sub_messageDic setValue:@(index) forKey:@"index"];
+                
+                NSData *message_data=[NSJSONSerialization dataWithJSONObject:sub_messageDic options:NSJSONWritingPrettyPrinted error:nil];
+                NSString *message_str=[[NSString alloc]initWithData:message_data encoding:NSUTF8StringEncoding];
+                
+                [fileSender sendMessage:sExchange routingKey:message_str message:sRoutingKey];
+                
+                int percentage=(index*100)/total;
+                NSMutableDictionary* infoDic = [[NSMutableDictionary alloc] init];
+//                [infoDic setObject:@"taldId" forKey:talkId];
+//                [infoDic setObject:@"msgId" forKey:[NSString stringWithFormat:@"%d",msgId]];
+//                [infoDic setObject:@"percentage" forKey:[NSString stringWithFormat:@"%d",percentage]];
+                
+                [infoDic setValue:talkId forKey:@"taldId"];
+                [infoDic setValue:@(msgId) forKey:@"msgId"];
+                [infoDic setValue:@(percentage) forKey:@"percentage"];
+                
+                [self sendEventWithName:MESSAGE_SERVICE_SEND_FILE body:infoDic];
+            }
+            [fh closeFile];
+            [mAMQPManager_File disconnection];
+            
+            NSMutableDictionary* dic=[[NSMutableDictionary alloc] init];
+//            [dic setObject:@"queueName" forKey:sQueue];
+//            [dic setObject:@"fileName" forKey:fileName];
+//            [dic setObject:@"fileSize" forKey:[NSString stringWithFormat:@"%lld",fileSize]];
+            
+            [dic setObject:sQueue forKey:@"queueName"];
+            [dic setObject:fileName forKey:@"fileName"];
+            [dic setValue:@(fileSize) forKey:@"fileSize"];
+            
+            resolve(dic);
+        });
     } @catch (NSException *exception) {
         reject(@"SMessageService", exception.reason, nil);
     }
 }
+
+
 
 #pragma mark -- 消息接收
 RCT_REMAP_METHOD(receiveMessage, uuid:(NSString*)uuid  reciveMessageResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -198,6 +300,57 @@ RCT_REMAP_METHOD(receiveMessage, uuid:(NSString*)uuid  reciveMessageResolver:(RC
         
         NSNumber* number =[NSNumber numberWithBool:bRes];
         resolve(number);
+    } @catch (NSException *exception) {
+        reject(@"SMessageService", exception.reason, nil);
+    }
+}
+
+#pragma mark --接收文件，每次接收时运行
+RCT_REMAP_METHOD(receiveFile, fileName:(NSString*)fileName queueName:(NSString*)queueName receivePath:(NSString*)receivePath talkId:(NSString*)talkId  msgId:(int)msgId receiveFileResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            BOOL isDir = NO;
+            BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:receivePath isDirectory:&isDir];
+            if (!isExist || !isDir) {
+                [[NSFileManager defaultManager] createDirectoryAtPath:receivePath withIntermediateDirectories:YES attributes:nil error:nil];
+            }
+            NSString* filePath=[NSString stringWithFormat:@"%@+%@",receivePath,queueName];
+            [[NSFileManager defaultManager] createFileAtPath:filePath contents:nil attributes:nil];
+            
+            NSFileHandle* fh = [NSFileHandle fileHandleForWritingAtPath:filePath];
+            
+            NSData* jsonReceived;
+            
+            [g_AMQPManager declareQueue:queueName];
+            AMQPReceiver* fileReceiver=[g_AMQPManager newReceiver:queueName];
+            while (fileReceiver) {
+                //接收消息
+                NSString* clientId = nil,* msg = nil;
+                [fileReceiver receiveMessage:&clientId message:&msg];
+                
+                //转成JSON
+                jsonReceived = [NSJSONSerialization dataWithJSONObject:msg options:NSJSONWritingPrettyPrinted error:nil];
+                [fh writeData:jsonReceived];
+                
+                NSMutableDictionary *receivedDic = [NSJSONSerialization JSONObjectWithData:jsonReceived options:NSJSONReadingMutableContainers error:nil];
+                int index =[[[[receivedDic objectForKey:@"message"] objectForKey:@"message"] objectForKey:@"index"] intValue];
+                long length =[[[[receivedDic objectForKey:@"message"] objectForKey:@"message"] objectForKey:@"length"] intValue];
+                int percentage = (int)((float) index / length * 100);
+                NSMutableDictionary* infoMap = [[NSMutableDictionary alloc] init];
+                [infoMap setObject:talkId forKey:@"talkId"];
+                [infoMap setObject:[NSString stringWithFormat:@"%d",msgId] forKey:@"msgId"];
+                [infoMap setObject:[NSString stringWithFormat:@"%d",percentage] forKey:@"percentage"];
+                
+                [self sendEventWithName:MESSAGE_SERVICE_SEND_FILE body:infoMap];
+                
+                if(index == length)
+                    break;
+            }
+            [fh closeFile];
+            //接收完后删除队列
+            [g_AMQPManager deleteQueue:queueName];
+            resolve([NSNumber numberWithBool:TRUE]);
+        });
     } @catch (NSException *exception) {
         reject(@"SMessageService", exception.reason, nil);
     }

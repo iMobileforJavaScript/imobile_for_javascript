@@ -30,6 +30,8 @@ NSString * const ONLINE_SERVICE_DOWNLOADFAILURE = @"com.supermap.RN.Mapcontrol.o
 
 /** 消息服务 **/
 NSString * const MESSAGE_SERVICE_RECEIVE = @"com.supermap.RN.Mapcontrol.message_service_receive";
+NSString * const MESSAGE_SERVICE_SEND_FILE = @"com.supermap.RN.MessageService.send_file_progress";
+NSString * const MESSAGE_SERVICE_RECEIVE_FILE = @"com.supermap.RN.MessageService.receive_file_progress";
 
 /** 量算 **/
 NSString * const MEASURE_LENGTH = @"com.supermap.RN.Mapcontrol.length_measured";
