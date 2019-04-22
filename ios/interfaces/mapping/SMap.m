@@ -1170,6 +1170,7 @@ RCT_REMAP_METHOD(appointEditGeometry, appointEditGeometryByGeoId:(int)geoId laye
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
         Layer* layer = [mapControl.map.layers getLayerWithName:layerName];
         bool result = [mapControl appointEditGeometryWithID:geoId Layer:layer];
+        [layer setEditable:YES];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
@@ -1916,9 +1917,39 @@ RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithPath:(NSString *)user
                 Map *map = sMap.smMapWC.mapControl.map;
                 for(int i = 0, count = datasets.count; i < count; i++){
                     Dataset *ds = [datasets get:i];
-                    Layer *layer = [map.layers addDataset:ds ToHead:YES];
-                    layer.editable = NO;
-                    layer.visible = NO;
+                    NSString* addname = [ds.name stringByAppendingFormat:@"@Label_%@#",userpath]; //getName()+"@Label_"+userpath+"#";
+                    BOOL add = true;
+                    Layers* maplayers = map.layers;
+                    for(int j=0 ; j<[maplayers getCount];j++){
+                        if([[maplayers getLayerAtIndex:j].caption isEqualToString:addname]){
+                            add = false;
+                        }
+                    }
+                    if(add) {
+                        Layer* layer = [map.layers addDataset:ds ToHead:YES];// .add(ds, true);
+                        layer.editable = false;// setEditable(false);
+                        layer.visible = false;//(false);
+                    }
+                }
+            }
+            resolve(@(YES));
+        }else {
+            Datasets *datasets = opendatasource.datasets;
+            Map *map = sMap.smMapWC.mapControl.map;
+            for(int i = 0, count = datasets.count; i < count; i++){
+                Dataset *ds = [datasets get:i];
+                NSString* addname = [ds.name stringByAppendingFormat:@"@Label_%@#",userpath]; //getName()+"@Label_"+userpath+"#";
+                BOOL add = true;
+                Layers* maplayers = map.layers;
+                for(int j=0 ; j<[maplayers getCount];j++){
+                    if([[maplayers getLayerAtIndex:j].caption isEqualToString:addname]){
+                        add = false;
+                    }
+                }
+                if(add) {
+                    Layer* layer = [map.layers addDataset:ds ToHead:YES];// .add(ds, true);
+                    layer.editable = false;// setEditable(false);
+                    layer.visible = false;//(false);
                 }
             }
             resolve(@(YES));
