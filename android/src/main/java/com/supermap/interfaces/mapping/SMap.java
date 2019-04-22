@@ -63,6 +63,8 @@ import com.supermap.mapping.ThemeRange;
 import com.supermap.mapping.ThemeType;
 import com.supermap.mapping.ThemeUnique;
 import com.supermap.mapping.collector.Collector;
+import com.supermap.plugin.LocationManagePlugin;
+import com.supermap.smNative.SMCollector;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
@@ -119,6 +121,7 @@ public class SMap extends ReactContextBaseJavaModule {
     public SMap(ReactApplicationContext context) {
         super(context);
         this.context = context;
+        SMCollector.openGPS(context);
     }
 
     @Override
@@ -1402,8 +1405,9 @@ public class SMap extends ReactContextBaseJavaModule {
 
                 Point2D pt;
                 if (this.point2D == null) {
-                    collector.openGPS();
-                    pt = collector.getGPSPoint();
+                    LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+                    pt =  new Point2D(gpsDat.dLongitude,gpsDat.dLatitude);
+//                    pt = collector.getGPSPoint();
                 } else {
                     pt = this.point2D;
                 }

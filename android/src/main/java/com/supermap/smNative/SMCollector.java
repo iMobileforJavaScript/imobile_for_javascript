@@ -1,5 +1,6 @@
 package com.supermap.smNative;
 
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.supermap.RNUtils.LocationTencent;
 import com.supermap.interfaces.collector.SCollectorType;
@@ -8,9 +9,16 @@ import com.supermap.mapping.MapControl;
 import com.supermap.mapping.SnapSetting;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.mapping.collector.CollectorElement;
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
+import com.supermap.plugin.LocationManagePlugin;
 
 public class SMCollector {
-    static LocationTencent locationTencent = null;
+//    static LocationTencent locationTencent = null;
+    private static AMapLocationClient locationClient;
+    private static LocationManagePlugin.GPSData m_gpsData = new LocationManagePlugin.GPSData();
     static SnapSetting snapSeting = null;
     public static boolean setCollector(Collector collector, MapControl mapControl, int type) {
         boolean result = false;
@@ -86,23 +94,56 @@ public class SMCollector {
         return result;
     }
 
-    public static void openGPS(Collector collector, ReactContext context) {
-        boolean result = collector.openGPS();
+    public static void openGPS(ReactApplicationContext context) {
+//        boolean result = collector.openGPS();
 
-        locationTencent = LocationTencent.getInstance(context);
-        locationTencent.openLocation(context);
-    }
+        if (locationClient == null) {
+            AMapLocationClient.setApiKey("078057f0e29931c173ad8ec02284a897");
+            locationClient = new AMapLocationClient(context);
+            locationClient.setLocationListener(new AMapLocationListener() {
+                @Override
+                public void onLocationChanged(AMapLocation aMapLocation) {
+                    if (aMapLocation != null) {
+                        if (aMapLocation.getErrorCode() == 0) {
+                            m_gpsData.dLatitude = aMapLocation.getLatitude();
+                            m_gpsData.dLongitude = aMapLocation.getLongitude();
+                            m_gpsData.dAccuracy = aMapLocation.getAccuracy();
+                            m_gpsData.dAltitude = aMapLocation.getAltitude();
+                            m_gpsData.dSpeed = aMapLocation.getSpeed();
+                            m_gpsData.dBearing = aMapLocation.getBearing();
+                            // eventEmitter.emit("AMapGeolocation", toReadableMap(location));
+                        }
+                        // TODO: 返回定位错误信息
+                    }
+                }
+            });
 
-    public static void closeGPS(Collector collector) {
-        collector.closeGPS();
-        locationTencent.closeLocation();
-    }
-
-    public static boolean addGPSPoint(Collector collector) {
-        boolean result = collector.addGPSPoint(locationTencent.getGPSPoint());
-        if (!result) {
-            result = collector.addGPSPoint();
+            AMapLocationClientOption option = new AMapLocationClientOption();
+            option.setInterval(8000);
+            locationClient.setLocationOption(option);
         }
-        return result;
+
+        locationClient.startLocation();
+//
+//        locationTencent = LocationTencent.getInstance(context);
+//        locationTencent.openLocation(context);
     }
+
+    public  static LocationManagePlugin.GPSData getGPSPoint(){
+        return m_gpsData;
+    }
+    public static void closeGPS() {
+        locationClient.stopLocation();
+//        collector.closeGPS();
+        locationClient.onDestroy();
+       // locationTencent.closeLocation();
+    }
+
+//    public static boolean addGPSPoint(Collector collector) {
+//        boolean result = collector.addGPSPoint(locationTencent.getGPSPoint());
+//        if (!result) {
+//            result = collector.addGPSPoint();
+//        }
+//        return result;
+//    }
 }

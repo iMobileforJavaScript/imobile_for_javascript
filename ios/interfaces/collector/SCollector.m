@@ -148,7 +148,7 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
             [layer setEditable:true];
             
             if (resetPrj) {
-                ds.prjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+                ds.prjCoordSys = map.prjCoordSys;//[[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
             }
             [collector setDataset:ds];
             
