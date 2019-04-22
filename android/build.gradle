@@ -56,5 +56,5 @@ dependencies {
     implementation files('libs/com.supermap.realspace_v912.jar')
     implementation files('libs/com.supermap.services_v912.jar')
     implementation files('libs/com.supermap.track_v912.jar')
-    compile 'com.amap.api:location:latest.integration'
+    implementation 'com.amap.api:location:latest.integration'
 }

@@ -1,11 +1,13 @@
 package com.supermap.interfaces.collector;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.supermap.data.CoordSysTransMethod;
 import com.supermap.data.CoordSysTransParameter;
 import com.supermap.data.CoordSysTranslator;
@@ -244,7 +246,48 @@ public class SCollector extends ReactContextBaseJavaModule {
                 pt = point2Ds.getItem(0);
             }
             boolean result = collector.addGPSPoint(pt);//SMCollector.addGPSPoint(collector);
-            promise.resolve(true);
+
+            if (result) {
+                WritableMap point = Arguments.createMap();
+                point.putDouble("x", pt.getX());
+                point.putDouble("y", pt.getY());
+                promise.resolve(point);
+            } else {
+                promise.resolve(null);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取GPS点
+     * @param promise
+     */
+    @ReactMethod
+    public void getGPSPoint(Promise promise) {
+        try {
+            collector = getCollector();
+            SMap sMap = SMap.getInstance();
+            sMap.getSMWorkspace().getMapControl().getMap().refresh();
+
+            LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+            Point2D pt =  new Point2D(gpsDat.dLongitude,gpsDat.dLatitude);
+            if (sMap.getSMWorkspace().getMapControl().getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+                Point2Ds point2Ds = new Point2Ds();
+                point2Ds.add(pt);
+                PrjCoordSys prjCoordSys = new PrjCoordSys();
+                prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                CoordSysTransParameter parameter = new CoordSysTransParameter();
+
+                CoordSysTranslator.convert(point2Ds, prjCoordSys, sMap.getSMWorkspace().getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                pt = point2Ds.getItem(0);
+            }
+
+            WritableMap point = Arguments.createMap();
+            point.putDouble("x", pt.getX());
+            point.putDouble("y", pt.getY());
+            promise.resolve(point);
         } catch (Exception e) {
             promise.reject(e);
         }
