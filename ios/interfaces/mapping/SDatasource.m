@@ -114,37 +114,30 @@ RCT_REMAP_METHOD(deleteDatasource, deleteDatasource:(NSString *)path resolver:(R
 }
 
 #pragma mark 从不同数据源中复制数据集
-RCT_REMAP_METHOD(codyDataset, copyDatasetWithPath:(NSString *)dataSourcePath destinationPath:(NSString *)destinationPath datasets:(NSArray *)datasets resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(copyDataset, copyDatasetWithPath:(NSString *)dataSourcePath destinationPath:(NSString *)destinationPath datasets:(NSArray *)datasets resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        dataSourcePath = [dataSourcePath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        NSString *udbName = [[dataSourcePath lastPathComponent] stringByDeletingPathExtension];
-        destinationPath = [destinationPath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        NSString *udbName2 = [[destinationPath lastPathComponent] stringByDeletingPathExtension];
         Datasource *datasource;
         Datasource *toDatasource;
-        Workspace *workspace = nil;
-        SMap *sMap = [SMap singletonInstance];
+        Workspace *workspace = [[Workspace alloc]init];
         
         DatasourceConnectionInfo *datasourceconnection = [[DatasourceConnectionInfo alloc] init];
         datasourceconnection.engineType = ET_UDB;
         datasourceconnection.server = dataSourcePath;
-        datasourceconnection.alias = udbName;
+        datasourceconnection.alias = @"dataSource";
         
         DatasourceConnectionInfo *datasourceconnection2 = [[DatasourceConnectionInfo alloc] init];
         datasourceconnection2.engineType = ET_UDB;
         datasourceconnection2.server = destinationPath;
-        datasourceconnection2.alias = udbName;
+        datasourceconnection2.alias = @"toDataSource";
         
-        if(sMap.smMapWC.mapControl == nil){
-            workspace = [[Workspace alloc]init];
-            datasource = [workspace.datasources open:datasourceconnection];
-            toDatasource = [workspace.datasources open:datasourceconnection2];
-            for(int i = 0, count = datasets.count; i < count; i++){
-                DatasetVector *datasetVector = (DatasetVector *)[datasource.datasets getWithName: [datasets objectAtIndex:i]];
-                NSString *datasetName = [toDatasource.datasets availableDatasetName:datasetVector.name];
-                [toDatasource copyDataset:datasetVector desDatasetName:datasetName encodeType:INT32];
-            }
+        datasource = [workspace.datasources open:datasourceconnection];
+        toDatasource = [workspace.datasources open:datasourceconnection2];
+        for(int i = 0, count = datasets.count; i < count; i++){
+            DatasetVector *datasetVector = (DatasetVector *)[datasource.datasets getWithName: [datasets objectAtIndex:i]];
+            NSString *datasetName = [toDatasource.datasets availableDatasetName:datasetVector.name];
+            [toDatasource copyDataset:datasetVector desDatasetName:datasetName encodeType:INT32];
         }
+        [workspace.datasources closeAll];
         [workspace dispose];
         [datasourceconnection dispose];
         [datasourceconnection2 dispose];
