@@ -373,9 +373,8 @@ public class SScene extends ReactContextBaseJavaModule {
     public void openMap(String name, Promise promise) {
         try {
             sScene = getInstance();
-            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-
             if (sScene.smSceneWc.getWorkspace().getScenes().getCount() > 0) {
+                Scene scene=sScene.smSceneWc.getSceneControl().getScene();
                 String mapName = name;
                 scene.open(mapName);
                 scene.refresh();

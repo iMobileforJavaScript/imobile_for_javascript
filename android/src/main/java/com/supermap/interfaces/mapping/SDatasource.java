@@ -274,6 +274,7 @@ public class SDatasource extends ReactContextBaseJavaModule {
                 }
             }
             if(workspace!=null){
+                workspace.close();
                 workspace.dispose();
             }
             datasourceconnection.dispose();
