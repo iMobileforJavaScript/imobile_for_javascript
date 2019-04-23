@@ -9,6 +9,17 @@ import {
 
 let SCartography = NativeModules.SCartography
 
+
+//获取layer风格
+function getLayerStyle(layerName){
+    return SCartography.getLayerStyle(layerName)
+}
+
+//设置layer风格
+function setLayerStyle(layerName,style){
+    return SCartography.setLayerStyle(layerName,style)
+}
+
 /**
  * 设置点符号的ID
  * 
@@ -503,6 +514,8 @@ setTextStyle = (style, whether, geometryID, layerName) => {
 }
 
 export default {
+    setLayerStyle,
+    getLayerStyle,
     //点风格
     setMakerSymbolID,
     setMarkerSize,

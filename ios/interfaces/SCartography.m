@@ -16,6 +16,44 @@
 @implementation SCartography
 RCT_EXPORT_MODULE();
 
+//获取layer风格
+RCT_REMAP_METHOD(getLayerStyle, layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
+        if (layerSettingVector != nil) {
+            NSString* strJson = [layerSettingVector.geoStyle toJson];
+            resolve(strJson);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+//设置layer风格
+RCT_REMAP_METHOD(setLayerStyle, layerName:(NSString *)layername style:(NSString*)strStyle resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
+        if (layerSettingVector != nil) {
+            GeoStyle* style = [[GeoStyle alloc]init];
+            [style fromJson:strStyle];
+            layerSettingVector.geoStyle = style;
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [mapControl.map refresh];
+            resolve([NSNumber numberWithBool:YES]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
 /*点风格
  * ********************************************************************************************/
 
