@@ -31,6 +31,44 @@ public class SCartography extends ReactContextBaseJavaModule {
         return REACT_CLASS;
     }
 
+    @ReactMethod
+    public void getLayerStyle(String layerName, Promise promise) {
+        try {
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
+            if (layerSettingVector != null) {
+
+
+                GeoStyle style = layerSettingVector.getStyle();
+                promise.resolve(style.toJson());
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+
+    @ReactMethod
+    public void setLayerStyle(String layerName,String strStyle, Promise promise) {
+        try {
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
+            if (layerSettingVector != null) {
+                GeoStyle style = new GeoStyle();
+                style.fromJson(strStyle);
+                layerSettingVector.setStyle(style);
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getMap().refresh();
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
 
      /*点风格
     * ********************************************************************************************/

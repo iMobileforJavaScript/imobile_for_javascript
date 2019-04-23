@@ -43,6 +43,7 @@ import com.supermap.mapping.Action;
 import com.supermap.mapping.ColorLegendItem;
 import com.supermap.mapping.CallOut;
 import com.supermap.mapping.CalloutAlignment;
+import com.supermap.mapping.EditHistoryType;
 import com.supermap.mapping.GeometryAddedListener;
 import com.supermap.mapping.GeometryEvent;
 import com.supermap.mapping.GeometrySelectedEvent;
@@ -303,6 +304,27 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 仅用于判断在线数据是否可请求到数据
+     * @param data
+     */
+    @ReactMethod
+    public void isDatasourceOpen(ReadableMap data, Promise promise){
+        try {
+            sMap = getInstance();
+            Map params = data.toHashMap();
+            Datasource datasource = sMap.smMapWC.openDatasource(params);
+            if(datasource != null) {
+                promise.resolve(true);
+            }else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
     /**
      * 以数据源形式打开工作空间setLayerFieldInfo
@@ -2816,7 +2838,6 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
 
-
     /**
      * 获取标注图层
      *
@@ -2986,7 +3007,6 @@ public class SMap extends ReactContextBaseJavaModule {
     public void addTextRecordset(String dataname, String name,String userpath, int x, int y, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            sMap.smMapWC.getMapControl().getEditHistory().addMapHistory();
             Point2D p = sMap.smMapWC.getMapControl().getMap().pixelToMap(new Point(x, y));
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
             Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
@@ -3001,9 +3021,17 @@ public class SMap extends ReactContextBaseJavaModule {
             geoText.addPart(textPart);
             recordset.addNew(geoText);
             recordset.update();
+            int id[] = new int[1];
+            id[0] = recordset.getID();
             recordset.close();
             geoText.dispose();
             recordset.dispose();
+            Recordset recordset1 = dataset.query(id,CursorType.DYNAMIC);
+            sMap.smMapWC.getMapControl().getEditHistory().batchBegin();
+            sMap.smMapWC.getMapControl().getEditHistory().addHistoryType(EditHistoryType.ADDNEW,recordset1,true);
+            sMap.smMapWC.getMapControl().getEditHistory().batchEnd();
+            recordset1.close();
+            recordset1.dispose();
             sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
@@ -3083,7 +3111,7 @@ public class SMap extends ReactContextBaseJavaModule {
             geoStyle.setFillForeColor(this.getFillColor());
             geoStyle.setFillBackColor(this.getFillColor());
             geoStyle.setMarkerSize(new Size2D(10, 10));
-            geoStyle.setLineColor(new Color(0, 133, 255));
+            geoStyle.setLineColor(new Color(80, 80, 80));
             geoStyle.setFillOpaqueRate(50);//加透明度更美观
             //geoStyle.setLineColor(new Color(0,206,209));
             mapControl.addGeometryAddedListener(new GeometryAddedListener() {
@@ -3117,6 +3145,7 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
+//            mapControl.setStrokeColor(0x3999FF);
             mapControl.setStrokeColor(0x3999FF);
 //            mapControl.setStrokeFillColor();
             mapControl.setStrokeWidth(1);

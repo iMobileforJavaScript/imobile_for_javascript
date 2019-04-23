@@ -347,6 +347,21 @@ RCT_REMAP_METHOD(isModified, isModifiedWithResolver:(RCTPromiseResolveBlock)reso
         reject(@"isModified",exception.reason,nil);
     }
 }
+#pragma mark 仅用于判断在线数据是否可请求到数据
+RCT_REMAP_METHOD(isDatasourceOpen, isDatasourceOpenWithData:(NSDictionary *)data resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+    @try{
+        sMap = [SMap singletonInstance];
+        Datasource *datasource = [sMap.smMapWC openDatasource:data];
+        if(datasource != nil){
+            resolve(@(YES));
+        }else{
+            resolve(@(NO));
+        }
+    }@catch(NSException *exception){
+        reject(@"isDatasourceOpen",exception.reason,nil);
+    }
+}
 
 #pragma mark 获取地图名称
 RCT_REMAP_METHOD(getMapName, getMapNameWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -2221,9 +2236,19 @@ RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)data
         [geoText setTextStyle:textStyle];
         [recordset addNew:geoText];
         [recordset update];
+        NSMutableArray *ids = [[NSMutableArray alloc]init];
+        [ids addObject:[NSNumber numberWithInteger:recordset.ID]];
         [recordset close];
         [geoText dispose];
         [recordset dispose];
+        
+        Recordset *recordset1 = [dataset queryWithID:ids Type:DYNAMIC];
+        [[sMap.smMapWC.mapControl getEditHistory] BatchBegin];
+        [[sMap.smMapWC.mapControl getEditHistory] addHistoryType:EHT_AddNew recordset:recordset1 isCurrentOnly:YES];
+        [[sMap.smMapWC.mapControl getEditHistory] BatchEnd];
+        [recordset1 close];
+        [recordset1 dispose];
+        
         [sMap.smMapWC.mapControl.map refresh];
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -2295,7 +2320,7 @@ RCT_REMAP_METHOD(setTaggingGrid, setTaggingGridWithName:(NSString *)name UserPat
         [geoStyle setFillForeColor:[SMap getFillColor]];
         [geoStyle setFillBackColor:[SMap getFillColor]];
         [geoStyle setMarkerSize: [[Size2D alloc] initWithWidth:10 Height:10]];
-        [geoStyle setLineColor: [[Color alloc] initWithR:0 G:133 B:255]];
+        [geoStyle setLineColor: [[Color alloc] initWithR:80 G:80 B:255]];
         [geoStyle setFillOpaqueRate:50]; //透明度
         mapControl.geometryAddedDelegate = self;
         resolve(@(YES));

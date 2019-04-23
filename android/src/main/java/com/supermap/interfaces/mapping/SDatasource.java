@@ -70,6 +70,33 @@ public class SDatasource extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void createDatasourceOfLabel(ReadableMap params, Promise promise) {
+        try {
+            Workspace workspace = new Workspace();
+            Datasource datasource = null;
+            DatasourceConnectionInfo info = SMDatasource.convertDicToInfo(params.toHashMap());
+
+            String server = params.getString("server");
+            String serverParentPath = server.substring(0, server.lastIndexOf("/"));
+            FileUtil.createDirectory(serverParentPath);
+
+            datasource = workspace.getDatasources().create(info);
+            if (params.toHashMap().containsKey("description")){
+                String description = params.toHashMap().get("description").toString();
+                datasource.setDescription(description);
+            }
+            if(workspace!=null){
+                workspace.close();
+                workspace.dispose();
+            }
+            promise.resolve(datasource != null);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
     /**
      * 打开数据源
      * @param params
