@@ -2139,12 +2139,17 @@ public class SMap extends ReactContextBaseJavaModule {
                 mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, additionInfo, (isNew || bNew), bResourcesModified, bPrivate);
             }
 
-            // isNew为true，另存为后保证当前地图是原地图
+            Maps maps = sMap.getSmMapWC().getWorkspace().getMaps();
+            // isNew为true，另存为后自动打开另存的地图
             boolean isOpen = false;
             if (oldName != null && !oldName.equals("") && !oldName.equals(mapName) && isNew) {
-                isOpen = map.open(oldName);
-                if (isOpen && sMap.getSmMapWC().getWorkspace().getMaps().indexOf(mapName) >= 0) {
-                    sMap.getSmMapWC().getWorkspace().getMaps().remove(mapName);
+                if (maps.indexOf(mapName) >= 0) {
+                    isOpen = map.open(mapName);
+                } else {
+                    map.saveAs(mapName);
+                }
+                if (isOpen && maps.indexOf(oldName) >= 0) {
+                    maps.remove(oldName);
                 }
                 map.refresh();
             }
