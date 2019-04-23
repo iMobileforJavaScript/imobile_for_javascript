@@ -26,6 +26,14 @@ function createDatasource(info = {}) {
   }
 }
 
+function createDatasourceOfLabel(info={}){
+  try {
+    return SDatasource.createDatasourceOfLabel(info)
+  } catch (error) {
+    console.error(e)
+  }
+}
+
 /**
  * 打开数据源
  * @param info
@@ -140,6 +148,7 @@ function getDatasetsByDatasource(info, autoOpen = false){
 
 export {
   createDatasource,
+  createDatasourceOfLabel,
   // openDatasource,
   renameDatasource,
   closeDatasource,
