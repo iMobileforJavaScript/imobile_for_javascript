@@ -532,10 +532,32 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     @ReactMethod
     public void moveDownLayer(String layerName, Promise promise) {
         try {
+            String[] netLayer = new String[]{"roadmap@GoogleMaps",
+                    "satellite@GoogleMaps",
+                    "terrain@GoogleMaps",
+                    "hybrid@GoogleMaps",
+                    "vec@TD",
+                    "cva@TDWZ",
+                    "img@TDYXM",
+                    "TrafficMap@BaiduMap",
+                    "Standard@OpenStreetMaps",
+                    "CycleMap@OpenStreetMaps",
+                    "TransportMap@OpenStreetMaps",
+                    "quanguo@SuperMapCloud"};
             SMap sMap = SMap.getInstance();
             int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
-            sMap.getSmMapWC().getMapControl().getMap().getLayers().moveDown(index);
-            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            int next = index+1;
+            Layer nextLayer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(next);
+            boolean move = true;
+            for (int i =0 ;i< netLayer.length;i++){
+                if (nextLayer.getName().equals(netLayer[i])){
+                    move = false;
+                }
+            }
+            if (move){
+                sMap.getSmMapWC().getMapControl().getMap().getLayers().moveDown(index);
+                sMap.getSmMapWC().getMapControl().getMap().refresh();
+            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
