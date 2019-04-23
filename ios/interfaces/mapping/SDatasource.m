@@ -34,6 +34,30 @@ RCT_REMAP_METHOD(createDatasource, createDatasource:(NSDictionary *)params resol
     }
 }
 
+#pragma mark 创建数据源
+RCT_REMAP_METHOD(createDatasourceOfLabel, createDatasourceOfLabel:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Workspace *workspace = [[Workspace alloc]init];
+        Datasource *datasource = nil;
+        DatasourceConnectionInfo *info = [SMDatasource convertDicToInfo:params];
+        NSString *server = [params objectForKey:@"server"];
+        NSString *serverPath = [server stringByDeletingLastPathComponent];
+        [SMFileUtil createFileDirectories:serverPath];
+        datasource = [workspace.datasources create:info];
+        if([params objectForKey:@"description"]){
+            NSString *description = [params objectForKey:@"description"];
+            [datasource setDescription:description];
+        }
+        if(workspace != nil){
+            [workspace close];
+            [workspace dispose];
+        }
+        resolve(@(datasource != nil));
+    }@catch(NSException *exception){
+        reject(@"createDatasourceOfLabel",exception.reason,nil);
+    }
+}
+
 #pragma mark 打开数据源
 RCT_REMAP_METHOD(openDatasource, openDatasource:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {

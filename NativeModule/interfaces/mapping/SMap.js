@@ -80,6 +80,18 @@ export default (function () {
   }
 
   /**
+   * 仅用于判断在线数据是否可请求到数据
+   * @returns {*|Promise.<Maps>}
+   */
+  function isDatasourceOpen (params) {
+    try {
+      return SMap.isDatasourceOpen(params)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 获取工作空间地图列表
    * @returns {*|Promise.<Maps>}
    */
@@ -1329,6 +1341,7 @@ export default (function () {
     openMap,
     saveMap,
     saveAsMap,
+    isDatasourceOpen,
 
     /** 地图工具 **/
     zoom,

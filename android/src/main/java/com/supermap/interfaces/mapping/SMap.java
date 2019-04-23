@@ -304,6 +304,27 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 仅用于判断在线数据是否可请求到数据
+     * @param data
+     */
+    @ReactMethod
+    public void isDatasourceOpen(ReadableMap data, Promise promise){
+        try {
+            sMap = getInstance();
+            Map params = data.toHashMap();
+            Datasource datasource = sMap.smMapWC.openDatasource(params);
+            if(datasource != null) {
+                promise.resolve(true);
+            }else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
      * 以数据源形式打开工作空间setLayerFieldInfo
      *
      * @param data
