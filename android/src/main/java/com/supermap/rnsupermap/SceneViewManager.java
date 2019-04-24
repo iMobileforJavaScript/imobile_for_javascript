@@ -21,6 +21,7 @@ public class SceneViewManager extends SimpleViewManager<SceneControl> {
     ThemedReactContext m_ThemedReactContext;
     private static SceneControl mSceneControl;
     final N_R_EventSender n_r_eventSender = new N_R_EventSender();
+    private static boolean result=false;
 
     @Override
     public String getName(){
@@ -40,6 +41,7 @@ public class SceneViewManager extends SimpleViewManager<SceneControl> {
 //
 //        final String scenControlId=JSSceneControl.registerId(mSceneControl);
 //        n_r_eventSender.putString("scenControlId",scenControlId);
+        result=true;
         return mSceneControl;
     }
 
@@ -56,5 +58,9 @@ public class SceneViewManager extends SimpleViewManager<SceneControl> {
                 );
             }
         });
+    }
+
+    public static boolean getResultOfInitScene(){
+        return result;
     }
 }

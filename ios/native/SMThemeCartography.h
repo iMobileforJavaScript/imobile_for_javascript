@@ -22,7 +22,7 @@
 +(ColorGradientType) getColorGradientType:(NSString*) type;
 +(RangeMode)getRangeMode:(NSString*) strMode;
 +(NSString*)rangeModeToStr:(RangeMode) mode;
-+(NSString*)getFieldType:(FieldInfo*) info;
++(NSString*)getFieldType:(NSString*)language info:(FieldInfo*) info;
 +(NSString*)getGeoCoordSysType:(GeoCoordSysType) type;
 +(NSString*)getPrjCoordSysType:(PrjCoordSysType) type;
 +(LabelBackShape)getLabelBackShape:(NSString*) shape;

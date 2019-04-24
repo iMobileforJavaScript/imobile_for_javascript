@@ -3585,7 +3585,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 if (datasource.getConnectionInfo().getEngineType() != EngineType.UDB) {
                     //除了UDB数据源都排除
                     continue;
-                } else if (datasource.getAlias().equals("Label")) {
+                } else if (datasource.getAlias().startsWith("Label")) {
                     //排除标注数据源
                     continue;
                 }
@@ -3832,7 +3832,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 Datasource datasource = datasources.get(i);
                 //除了UDB数据源都排除
                 if (datasource.getConnectionInfo().getEngineType() == EngineType.UDB) {
-                    if (datasource.getAlias().equals("Label")) {
+                    if (datasource.getAlias().startsWith("Label")) {
                         continue;
                     } else {
                         //排除标注数据源
