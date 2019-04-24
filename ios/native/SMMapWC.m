@@ -2613,7 +2613,7 @@
     NSString* strTargetFile = [NSString stringWithFormat:@"%@/%@",desDatasourceDir,strFileName];
     
     NSString * strSrcDatasourcePath = [strFile substringToIndex:strFile.length-4];
-    NSString * strTargetDatasourcePath = [strFile substringToIndex:strTargetFile.length-4];
+    NSString * strTargetDatasourcePath = [strTargetFile substringToIndex:strTargetFile.length-4];
     
     NSString *strResult = nil;
     // 检查重复性
