@@ -7,6 +7,7 @@
 //
 
 #import "SMap.h"
+
 static SMap *sMap = nil;
 static NSInteger *fillNum;
 NSMutableArray *fillColors;
@@ -1260,9 +1261,30 @@ RCT_REMAP_METHOD(addDatasetToMap, addDatasetToMapWithResolver:(NSDictionary*)dat
         if(![datastourceName isEqualToString:@""] && ![datasetName isEqualToString:@""]){
             Datasource* datasource = [workspace.datasources getAlias:datastourceName];
             Dataset* dataset = [datasource.datasets getWithName:datasetName];
-            Layer* newLayer = [sMap.smMapWC.mapControl.map.layers addDataset:dataset ToHead:true];
+            Layer* layer = [sMap.smMapWC.mapControl.map.layers addDataset:dataset ToHead:true];
+            
+            if ([dataset datasetType] == REGION) {
+                LayerSettingVector *setting = (LayerSettingVector*) layer.layerSetting;
+                [[setting geoStyle] setLineSymbolID:5];
+            }
+            if ([dataset datasetType] == REGION || [dataset datasetType] == RegionZ) {
+                LayerSettingVector *setting = (LayerSettingVector*) layer.layerSetting;
+                [[setting geoStyle] setFillForeColor:[[Color alloc] initWithR:255 G:192 B:103]];
+                [[setting geoStyle] setLineColor:[[Color alloc] initWithR:255 G:192 B:103]];
+            } else if ([dataset datasetType] == LINE || [dataset datasetType] == Network || [dataset datasetType] == NETWORK3D || [dataset datasetType] == LineZ) {
+                LayerSettingVector *setting = (LayerSettingVector*) layer.layerSetting;
+                [[setting geoStyle] setLineColor:[[Color alloc] initWithR:255 G:192 B:103]];
+                if ([dataset datasetType] == Network || [dataset datasetType] == NETWORK3D) {
+                    [sMap.smMapWC.mapControl.map.layers addDataset:[(DatasetVector*)dataset childDataset] ToHead:true];
+                }
+            } else if ([dataset datasetType] == POINT || [dataset datasetType] == PointZ) {
+                LayerSettingVector *setting = (LayerSettingVector*) layer.layerSetting;
+                [[setting geoStyle] setLineColor:[[Color alloc] initWithR:255 G:192 B:103]];
+            }
+            
+            [sMap.smMapWC.mapControl.map setIsVisibleScalesEnabled:false];
             [sMap.smMapWC.mapControl.map refresh];
-            resolve([NSNumber numberWithBool:newLayer != nil]);
+            resolve([NSNumber numberWithBool:layer != nil]);
         }
         else{
             resolve([NSNumber numberWithBool:NO]);
