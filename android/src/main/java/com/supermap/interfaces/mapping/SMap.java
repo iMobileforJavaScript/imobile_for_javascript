@@ -624,6 +624,8 @@ public class SMap extends ReactContextBaseJavaModule {
                 arr.pushMap(writeMap);
             }
             if (workspace != null) {
+                workspace.getDatasources().closeAll();
+                workspace.close();
                 workspace.dispose();
             }
             datasourceconnection.dispose();
