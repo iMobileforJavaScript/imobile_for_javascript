@@ -577,50 +577,99 @@
     return strMode;
 }
 
-+(NSString*)getFieldType:(FieldInfo*) info{
++(NSString*)getFieldType:(NSString*)language info:(FieldInfo*) info{
     NSString* type =@"未知";
-    switch (info.fieldType) {
-        case FT_BOOLEAN:
-            type = @"布尔型字段";
-            break;
-        case FT_BYTE:
-            type = @"字节型字段";
-            break;
-        case FT_INT16:
-            type = @"16位整型字段";
-            break;
-        case FT_INT32:
-            type = @"32位整型字段";
-            break;
-        case FT_INT64:
-            type = @"64位整型字段";
-            break;
-        case FT_SINGLE:
-            type = @"32位精度浮点型字段";
-            break;
-        case FT_DOUBLE:
-            type = @"64位精度浮点型字段";
-            break;
-        case FT_DATE:
-            type = @"时间型字段";
-            break;
-        case FT_DATETIME:
-            type = @"日期型字段";
-            break;
-        case FT_LONGBINARY:
-            type = @"二进制型字段";
-            break;
-        case FT_TEXT:
-            type = @"变长的文本型字段";
-            break;
-        case FT_CHAR:
-            type = @"定长的文本类型字段";
-            break;
-        case FT_WTEXT:
-            type = @"宽字符类型字段";
-            break;
-        default:
-            break;
+   
+    if ([language isEqualToString:@"CN"]){
+        switch (info.fieldType) {
+            case FT_BOOLEAN:
+                type = @"布尔型字段";
+                break;
+            case FT_BYTE:
+                type = @"字节型字段";
+                break;
+            case FT_INT16:
+                type = @"16位整型字段";
+                break;
+            case FT_INT32:
+                type = @"32位整型字段";
+                break;
+            case FT_INT64:
+                type = @"64位整型字段";
+                break;
+            case FT_SINGLE:
+                type = @"32位精度浮点型字段";
+                break;
+            case FT_DOUBLE:
+                type = @"64位精度浮点型字段";
+                break;
+            case FT_DATE:
+                type = @"时间型字段";
+                break;
+            case FT_DATETIME:
+                type = @"日期型字段";
+                break;
+            case FT_LONGBINARY:
+                type = @"二进制型字段";
+                break;
+            case FT_TEXT:
+                type = @"变长的文本型字段";
+                break;
+            case FT_CHAR:
+                type = @"定长的文本类型字段";
+                break;
+            case FT_WTEXT:
+                type = @"宽字符类型字段";
+                break;
+            default:
+                break;
+        }
+    }else if([language isEqualToString:@"EN"]){
+        type = @"Unknown Type";
+        switch (info.fieldType) {
+            case FT_BOOLEAN:
+                type = @"Boolean";
+                break;
+            case FT_BYTE:
+                type = @"Byte";
+                break;
+            case FT_INT16:
+                type = @"Short";
+                break;
+            case FT_INT32:
+                type = @"Int";
+                break;
+            case FT_INT64:
+                type = @"Long";
+                break;
+            case FT_SINGLE:
+                type = @"Single";
+                break;
+            case FT_DOUBLE:
+                type = @"Double";
+                break;
+            case FT_DATE:
+                type = @"Time";
+                break;
+            case FT_DATETIME:
+                type = @"Date";
+                break;
+            case FT_LONGBINARY:
+                type = @"Long Binary";
+                break;
+            case FT_TEXT:
+                type = @"Text";
+                break;
+            case FT_CHAR:
+                type = @"Char";
+                break;
+            case FT_WTEXT:
+                type = @"Wide Char";
+                break;
+            default:
+                break;
+                
+        }
     }
     return type;
 }

@@ -1773,7 +1773,7 @@ RCT_REMAP_METHOD(getThemeExpressByUdb, getThemeExpressByUdbWithResolver:(NSStrin
  * 获取数据集中的字段
  * @param layerName 图层名称
  */
-RCT_REMAP_METHOD(getThemeExpressionByLayerName, getThemeExpressionByLayerNameWithResolver:(NSString*)layerName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+RCT_REMAP_METHOD(getThemeExpressionByLayerName, getThemeExpressionByLayerNameWithResolver:(NSString*)language layerName:(NSString*)layerName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         Layers *layers = [SMap singletonInstance].smMapWC.mapControl.map.layers;
         Dataset* dataset = [layers getLayerWithName:layerName].dataset;
@@ -1784,7 +1784,7 @@ RCT_REMAP_METHOD(getThemeExpressionByLayerName, getThemeExpressionByLayerNameWit
         for(int i = 0; i < count; i++)
         {
             FieldInfo* fieldinfo = [fieldInfos get:i];
-            NSString* fieldType = [SMThemeCartography getFieldType:fieldinfo];
+            NSString* fieldType = [SMThemeCartography getFieldType:language info:fieldinfo];
             NSString* strName = fieldinfo.name;
             NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
             [info setValue:(strName) forKey:(@"expression")];
@@ -1865,7 +1865,7 @@ RCT_REMAP_METHOD(getThemeExpressionByLayerIndex, getThemeExpressionByLayerIndexW
  * @param promise
  */
 
-RCT_REMAP_METHOD(getThemeExpressionByDatasetName, getThemeExpressionByDatasetNameWithResolver:(NSString*)datasourceAlias datasetName:(NSString*)datasetName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+RCT_REMAP_METHOD(getThemeExpressionByDatasetName, getThemeExpressionByDatasetNameWithResolver:(NSString*)language alisa:(NSString*)datasourceAlias datasetName:(NSString*)datasetName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
         Datasource* datasource = [datasources getAlias:datasourceAlias];
@@ -1878,7 +1878,7 @@ RCT_REMAP_METHOD(getThemeExpressionByDatasetName, getThemeExpressionByDatasetNam
         for(int i = 0; i < count; i++)
         {
             FieldInfo* fieldinfo = [fieldInfos get:i];
-            NSString* fieldType = [SMThemeCartography getFieldType:fieldinfo];
+            NSString* fieldType = [SMThemeCartography getFieldType:language info:fieldinfo];
             NSString* strName = fieldinfo.name;
             NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
             [info setObject:(strName) forKey:(@"expression")];
@@ -1929,8 +1929,17 @@ RCT_REMAP_METHOD(getThemeExpressByDatasetName, getThemeExpressByDatasetNameWithR
         {
             FieldInfo* fieldinfo = [fieldInfos get:i];
             NSString* strName = fieldinfo.name;
+            NSString* fieldType=[SMThemeCartography getFieldType:@"CN" info:fieldinfo];
             NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
-            [info setObject:(strName) forKey:(@"title")];
+            [info setObject:(strName) forKey:(@"expression")];
+            [info setObject:(fieldType) forKey:(@"fieldType")];
+            if ([strName isEqualToString:@"SmGeoPosition"]){
+                [info setObject:[NSNumber numberWithBool:true] forKey:(@"isSystemField")];
+            }
+            else{
+                NSNumber* num_IsSys = [NSNumber numberWithBool:fieldinfo.isSystemField];
+                [info setObject:num_IsSys forKey:(@"isSystemField")];
+            }
             [array addObject:info];
         }
         NSMutableDictionary* mulDic2 = [[NSMutableDictionary alloc] init];
