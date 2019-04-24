@@ -64,6 +64,7 @@ import com.supermap.mapping.TrackingLayer;
 import com.supermap.rnsupermap.JSLayer;
 import com.supermap.rnsupermap.JSMap;
 import com.supermap.smNative.Network_tool;
+import com.supermap.smNative.SMAnalyst;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMParameter;
 
@@ -99,6 +100,7 @@ public class SAnalyst extends ReactContextBaseJavaModule {
         return REACT_CLASS;
     }
 
+    /******************************************************************************缓冲区分析*****************************************************************************************/
 
     @ReactMethod
     public void analystBuffer(String layerPath, ReadableMap params, Promise promise) {
@@ -136,7 +138,7 @@ public class SAnalyst extends ReactContextBaseJavaModule {
 
                 GeoRegion geoRegion = BufferAnalystGeometry.createBuffer(geoForBuffer, bufferAnalystParameter, prjCoordSys);
 
-                GeoStyle geoStyle = getGeoStyleByDictionary(params.getMap("geoStyle"));
+                GeoStyle geoStyle = SMAnalyst.getGeoStyleByDictionary(params.getMap("geoStyle"));
                 if (geoStyle != null) {
                     geoRegion.setStyle(geoStyle);
                 }
@@ -157,55 +159,6 @@ public class SAnalyst extends ReactContextBaseJavaModule {
 
 
     /**
-     * 叠加分析
-     */
-    @ReactMethod
-    public void overlayAnalyst(String datasetPath, String clipDatasetPath, String analystType, ReadableMap overlayParameter, Promise promise) {
-        try {
-            DatasetVector datasetCliped = (DatasetVector) SMLayer.findLayerByPath(datasetPath).getDataset();
-            DatasetVector datasetClip = (DatasetVector) SMLayer.findLayerByPath(clipDatasetPath).getDataset();
-            String resultDatasetClipName = datasetClip.getDatasource().getDatasets().getAvailableDatasetName("resultDatasetClip");
-            DatasetVectorInfo datasetVectorInfoClip = new DatasetVectorInfo();
-            DatasetType datasetType = datasetCliped.getType();
-            datasetVectorInfoClip.setType(datasetType);
-            datasetVectorInfoClip.setName(resultDatasetClipName);
-            datasetVectorInfoClip.setEncodeType(EncodeType.NONE);
-            DatasetVector resultDatasetClip = datasetClip.getDatasource().getDatasets().create(datasetVectorInfoClip);
-            datasetVectorInfoClip.dispose();
-            Map params = overlayParameter.toHashMap();
-            OverlayAnalystParameter overlayAnalystParameter = SMParameter.setOverlayParameter(params);
-            Boolean result = false;
-            switch (analystType) {
-                case "clip":
-                    result = OverlayAnalyst.clip(datasetCliped, datasetClip, resultDatasetClip, overlayAnalystParameter);
-                    break;
-                case "erase":
-                    result = OverlayAnalyst.erase(datasetCliped, datasetClip, resultDatasetClip, overlayAnalystParameter);
-                    break;
-                case "identity":
-                    result = OverlayAnalyst.identity(datasetCliped, datasetClip, resultDatasetClip, overlayAnalystParameter);
-                    break;
-                case "intersect":
-                    result = OverlayAnalyst.intersect(datasetCliped, datasetClip, resultDatasetClip, overlayAnalystParameter);
-                    break;
-                case "union":
-                    result = OverlayAnalyst.union(datasetCliped, datasetClip, resultDatasetClip, overlayAnalystParameter);
-                    break;
-                case "updata":
-                    result = OverlayAnalyst.update(datasetCliped, datasetClip, resultDatasetClip, overlayAnalystParameter);
-                    break;
-                case "xOR":
-                    result = OverlayAnalyst.xOR(datasetCliped, datasetClip, resultDatasetClip, overlayAnalystParameter);
-                    break;
-            }
-            promise.resolve(result);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-
-    /**
      * 创建矢量数据集缓冲区
      */
     @ReactMethod
@@ -216,18 +169,18 @@ public class SAnalyst extends ReactContextBaseJavaModule {
                 map.setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
             }
 
-            Dataset sourceDataset = getDatasetByDictionary(sourceData);
+            Dataset sourceDataset = SMAnalyst.getDatasetByDictionary(sourceData);
             Dataset resultDataset = null;
 
             if (resultData.hasKey("dataset")) {
-                resultDataset = createDatasetByDictionary(resultData);
+                resultDataset = SMAnalyst.createDatasetByDictionary(resultData);
             }
 
             boolean result = false;
             String errorMsg = "";
 
             if (sourceDataset != null && resultDataset != null) {
-                BufferAnalystParameter parameter = getBufferAnalystParameterByDictionary(bufferParameter);
+                BufferAnalystParameter parameter = SMAnalyst.getBufferAnalystParameterByDictionary(bufferParameter);
 
                 if (parameter != null) {
                     result = BufferAnalyst.createBuffer((DatasetVector)sourceDataset, (DatasetVector)resultDataset, parameter, isUnion, isAttributeRetained);
@@ -247,9 +200,9 @@ public class SAnalyst extends ReactContextBaseJavaModule {
             GeoStyle geoStyle = null;
             ReadableMap geoStyleMap;
             if (optionParameter.hasKey("geoStyle")) {
-                geoStyle = getGeoStyleByDictionary(optionParameter.getMap("geoStyle"));
+                geoStyle = SMAnalyst.getGeoStyleByDictionary(optionParameter.getMap("geoStyle"));
             } else {
-                geoStyle = getGeoStyleByDictionary(null);
+                geoStyle = SMAnalyst.getGeoStyleByDictionary(null);
             }
             if (geoStyle != null) {
                 String description = "{\"geoStyle\":" + geoStyle.toJson() + "}";
@@ -274,20 +227,12 @@ public class SAnalyst extends ReactContextBaseJavaModule {
             if (result) {
                 promise.resolve(resultMap);
             } else {
-                Datasource ds = getDatasourceByDictionary(resultData);
-                int dsIndex = ds.getDatasets().indexOf(resultData.getString("dataset"));
-                if (dsIndex >= 0) {
-                    ds.getDatasets().delete(dsIndex);
-                }
+                SMAnalyst.deleteDataset(resultData);
                 resultMap.putString("errorMsg", errorMsg);
                 promise.resolve(resultMap);
             }
         } catch (Exception e) {
-            Datasource ds = getDatasourceByDictionary(resultData);
-            int dsIndex = ds.getDatasets().indexOf(resultData.getString("dataset"));
-            if (dsIndex >= 0) {
-                ds.getDatasets().delete(dsIndex);
-            }
+            SMAnalyst.deleteDataset(resultData);
             promise.reject(e);
         }
     }
@@ -313,18 +258,18 @@ public class SAnalyst extends ReactContextBaseJavaModule {
                 map.setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
             }
 
-            Dataset sourceDataset = getDatasetByDictionary(sourceData);
+            Dataset sourceDataset = SMAnalyst.getDatasetByDictionary(sourceData);
             Dataset resultDataset = null;
 
             if (resultData.hasKey("dataset")) {
-                resultDataset = createDatasetByDictionary(resultData);
+                resultDataset = SMAnalyst.createDatasetByDictionary(resultData);
             }
 
             boolean result = false;
             String errorMsg = "";
 
             if (sourceDataset != null && resultDataset != null) {
-                BufferRadiusUnit unit = getBufferRadiusUnit(bufferRadiusUnit);
+                BufferRadiusUnit unit = SMAnalyst.getBufferRadiusUnit(bufferRadiusUnit);
 
                 double[] radiusArr = new double[bufferRadiuses.size()];
                 for (int i = 0; i < bufferRadiuses.size(); i++) {
@@ -344,9 +289,9 @@ public class SAnalyst extends ReactContextBaseJavaModule {
             GeoStyle geoStyle = null;
             ReadableMap geoStyleMap;
             if (optionParameter.hasKey("geoStyle")) {
-                geoStyle = getGeoStyleByDictionary(optionParameter.getMap("geoStyle"));
+                geoStyle = SMAnalyst.getGeoStyleByDictionary(optionParameter.getMap("geoStyle"));
             } else {
-                geoStyle = getGeoStyleByDictionary(null);
+                geoStyle = SMAnalyst.getGeoStyleByDictionary(null);
             }
             if (geoStyle != null) {
                 String description = "{\"geoStyle\":" + geoStyle.toJson() + "}";
@@ -371,19 +316,147 @@ public class SAnalyst extends ReactContextBaseJavaModule {
                 resultMap.putBoolean("result", result);
                 promise.resolve(result);
             } else {
-                Datasource ds = getDatasourceByDictionary(resultData);
-                int dsIndex = ds.getDatasets().indexOf(resultData.getString("dataset"));
-                if (dsIndex >= 0) {
-                    ds.getDatasets().delete(dsIndex);
-                }
+                SMAnalyst.deleteDataset(resultData);
                 promise.reject(null, errorMsg);
             }
         } catch (Exception e) {
-            Datasource ds = getDatasourceByDictionary(resultData);
-            int dsIndex = ds.getDatasets().indexOf(resultData.getString("dataset"));
-            if (dsIndex >= 0) {
-                ds.getDatasets().delete(dsIndex);
-            }
+            SMAnalyst.deleteDataset(resultData);
+            promise.reject(e);
+        }
+    }
+
+
+    /********************************************************************************叠加分析**************************************************************************************/
+
+    /**
+     * 叠加分析-裁剪
+     * @param sourceData
+     * @param targetData
+     * @param resultData
+     * @param optionParameter
+     * @param promise
+     */
+    @ReactMethod
+    public void clip(ReadableMap sourceData, ReadableMap targetData, ReadableMap resultData, ReadableMap optionParameter, Promise promise) {
+        try {
+            boolean result = SMAnalyst.overlayerAnalystWithType("clip", sourceData, targetData, resultData, optionParameter);
+            promise.resolve(result);
+        } catch (Exception e) {
+            SMAnalyst.deleteDataset(resultData);
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 叠加分析-擦除
+     * @param sourceData
+     * @param targetData
+     * @param resultData
+     * @param optionParameter
+     * @param promise
+     */
+    @ReactMethod
+    public void erase(ReadableMap sourceData, ReadableMap targetData, ReadableMap resultData, ReadableMap optionParameter, Promise promise) {
+        try {
+            boolean result = SMAnalyst.overlayerAnalystWithType("erase", sourceData, targetData, resultData, optionParameter);
+            promise.resolve(result);
+        } catch (Exception e) {
+            SMAnalyst.deleteDataset(resultData);
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 叠加分析-同一
+     * @param sourceData
+     * @param targetData
+     * @param resultData
+     * @param optionParameter
+     * @param promise
+     */
+    @ReactMethod
+    public void identity(ReadableMap sourceData, ReadableMap targetData, ReadableMap resultData, ReadableMap optionParameter, Promise promise) {
+        try {
+            boolean result = SMAnalyst.overlayerAnalystWithType("identity", sourceData, targetData, resultData, optionParameter);
+            promise.resolve(result);
+        } catch (Exception e) {
+            SMAnalyst.deleteDataset(resultData);
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 叠加分析-相交
+     * @param sourceData
+     * @param targetData
+     * @param resultData
+     * @param optionParameter
+     * @param promise
+     */
+    @ReactMethod
+    public void intersect(ReadableMap sourceData, ReadableMap targetData, ReadableMap resultData, ReadableMap optionParameter, Promise promise) {
+        try {
+            boolean result = SMAnalyst.overlayerAnalystWithType("intersect", sourceData, targetData, resultData, optionParameter);
+            promise.resolve(result);
+        } catch (Exception e) {
+            SMAnalyst.deleteDataset(resultData);
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 叠加分析-合并
+     * @param sourceData
+     * @param targetData
+     * @param resultData
+     * @param optionParameter
+     * @param promise
+     */
+    @ReactMethod
+    public void union(ReadableMap sourceData, ReadableMap targetData, ReadableMap resultData, ReadableMap optionParameter, Promise promise) {
+        try {
+            boolean result = SMAnalyst.overlayerAnalystWithType("union", sourceData, targetData, resultData, optionParameter);
+            promise.resolve(result);
+        } catch (Exception e) {
+            SMAnalyst.deleteDataset(resultData);
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 叠加分析-更新
+     * @param sourceData
+     * @param targetData
+     * @param resultData
+     * @param optionParameter
+     * @param promise
+     */
+    @ReactMethod
+    public void update(ReadableMap sourceData, ReadableMap targetData, ReadableMap resultData, ReadableMap optionParameter, Promise promise) {
+        try {
+            boolean result = SMAnalyst.overlayerAnalystWithType("update", sourceData, targetData, resultData, optionParameter);
+            promise.resolve(result);
+        } catch (Exception e) {
+            SMAnalyst.deleteDataset(resultData);
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 叠加分析-对称差
+     * @param sourceData
+     * @param targetData
+     * @param resultData
+     * @param optionParameter
+     * @param promise
+     */
+    @ReactMethod
+    public void xOR(ReadableMap sourceData, ReadableMap targetData, ReadableMap resultData, ReadableMap optionParameter, Promise promise) {
+        try {
+            boolean result = SMAnalyst.overlayerAnalystWithType("xOR", sourceData, targetData, resultData, optionParameter);
+            promise.resolve(result);
+        } catch (Exception e) {
+            SMAnalyst.deleteDataset(resultData);
             promise.reject(e);
         }
     }
@@ -515,199 +588,6 @@ public class SAnalyst extends ReactContextBaseJavaModule {
 //        }
 //
 //    }
-
-    /**************************************************************************原生方法分割线**********************************************************************************************/
-
-//    public void displayResult(Selection selection, MapControl mapControl) {
-//        Recordset recordset = selection.toRecordset();
-//        recordset.moveFirst();
-//        while (!recordset.isEOF()) {
-//            Geometry geometry = recordset.getGeometry();
-//            GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(255, 105, 0));
-//            geometry.setStyle(style);
-//            mapControl.getMap().getTrackingLayer().add(geometry, "");
-//            recordset.moveNext();
-//        }
-//        mapControl.getMap().refresh();
-//    }
-
-    public Datasource getDatasourceByDictionary(ReadableMap dic) {
-        Datasources datasources = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources();
-        Datasource datasource = null;
-
-        if (dic != null) {
-            if (dic.hasKey("datasource")) {
-                String alias = dic.getString("datasource");
-                datasource = datasources.get(alias);
-            }
-        }
-        return datasource;
-    }
-
-    public Dataset getDatasetByDictionary(ReadableMap dic) {
-        Dataset dataset = null;
-        Datasources datasources = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources();
-        Datasource datasource = null;
-
-        if (dic != null) {
-            if (dic.hasKey("datasource")) {
-                String alias = dic.getString("datasource");
-                datasource = datasources.get(alias);
-                if (datasource != null && dic.hasKey("dataset")) {
-                    dataset = datasource.getDatasets().get(dic.getString("dataset"));
-                }
-            }
-        }
-        return dataset;
-    }
-
-    public Dataset createDatasetByDictionary(ReadableMap dic) {
-        Dataset dataset = null;
-        Datasources datasources = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources();
-        Datasource datasource = null;
-
-        if (dic != null) {
-            if (dic.hasKey("datasource")) {
-                String alias = dic.getString("datasource");
-                datasource = datasources.get(alias);
-                if (datasource != null && dic.hasKey("dataset")) {
-                    DatasetType datasetType = DatasetType.REGION;
-
-                    if (dic.hasKey("datasetType")) {
-                        int type = dic.getInt("datasetType");
-                        if (type == DatasetType.POINT.value()) {
-                            datasetType = DatasetType.POINT;
-                        } else if (type == DatasetType.LINE.value()) {
-                            datasetType = DatasetType.LINE;
-                        } else if (type == DatasetType.GRID.value()) {
-                            datasetType = DatasetType.GRID;
-                        } else if (type == DatasetType.TEXT.value()) {
-                            datasetType = DatasetType.TEXT;
-                        } else if (type == DatasetType.IMAGE.value()) {
-                            datasetType = DatasetType.IMAGE;
-//                        } else if (type == DatasetType.REGION.value()) {
-                        } else {
-                            datasetType = DatasetType.REGION;
-                        }
-                    }
-
-                    EncodeType encodeType = EncodeType.NONE;
-                    if (dic.hasKey("encodeType")) {
-                        int type = dic.getInt("encodeType");
-                        if (type == EncodeType.LZW.value()) {
-                            encodeType = EncodeType.LZW;
-                        } else if (type == EncodeType.BYTE.value()) {
-                            encodeType = EncodeType.BYTE;
-                        } else if (type == EncodeType.INT16.value()) {
-                            encodeType = EncodeType.INT16;
-                        } else if (type == EncodeType.INT24.value()) {
-                            encodeType = EncodeType.INT24;
-                        } else if (type == EncodeType.INT32.value()) {
-                            encodeType = EncodeType.INT32;
-                        } else if (type == EncodeType.DCT.value()) {
-                            encodeType = EncodeType.DCT;
-                        } else if (type == EncodeType.SGL.value()) {
-                            encodeType = EncodeType.SGL;
-                        } else {
-                            encodeType = EncodeType.NONE;
-                        }
-                    }
-
-                    DatasetVectorInfo info = new DatasetVectorInfo();
-                    info.setType(datasetType);
-                    info.setEncodeType(encodeType);
-                    info.setName(dic.getString("dataset"));
-
-                    dataset = datasource.getDatasets().create(info);
-                }
-            }
-        }
-        return dataset;
-    }
-
-    public GeoStyle getGeoStyleByDictionary(ReadableMap geoStyleDic) {
-        GeoStyle geoStyle = new GeoStyle();
-        if (geoStyleDic != null) {
-            if (geoStyleDic.hasKey("lineWidth")) {
-                geoStyle.setLineWidth(geoStyleDic.getInt("lineWidth"));
-            }
-            if (geoStyleDic.hasKey("fillForeColor")) {
-                ReadableMap fillForeColor = geoStyleDic.getMap("fillForeColor");
-                geoStyle.setFillForeColor(new Color(fillForeColor.getInt("r"), fillForeColor.getInt("g"), fillForeColor.getInt("b")));
-            }
-            if (geoStyleDic.hasKey("lineColor")) {
-                ReadableMap lineColor = geoStyleDic.getMap("lineColor");
-                geoStyle.setLineColor(new Color(lineColor.getInt("r"), lineColor.getInt("g"), lineColor.getInt("b")));
-            }
-            if (geoStyleDic.hasKey("lineSymbolID")) {
-                geoStyle.setLineSymbolID(geoStyleDic.getInt("lineSymbolID"));
-            }
-            if (geoStyleDic.hasKey("markerSymbolID")) {
-                geoStyle.setMarkerSymbolID(geoStyleDic.getInt("markerSymbolID"));
-            }
-            if (geoStyleDic.hasKey("markerSize")) {
-                ReadableMap markerSize = geoStyleDic.getMap("markerSize");
-                geoStyle.setMarkerSize(new Size2D(markerSize.getInt("w"), markerSize.getInt("h")));
-            }
-            if (geoStyleDic.hasKey("fillOpaqueRate")) {
-                geoStyle.setMarkerSymbolID(geoStyleDic.getInt("fillOpaqueRate"));
-            }
-        } else {
-            geoStyle.setLineColor(new Color(0, 100, 255));
-            geoStyle.setFillForeColor(new Color(0, 100, 255));
-            geoStyle.setMarkerSize(new Size2D(5, 5));
-        }
-
-        return geoStyle;
-    }
-
-    public BufferAnalystParameter getBufferAnalystParameterByDictionary(ReadableMap parameter) {
-        BufferAnalystParameter bufferAnalystParameter = null;
-        if (parameter != null) {
-            bufferAnalystParameter = new BufferAnalystParameter();
-            if (parameter.hasKey("endType")) {
-                int endType = parameter.getInt("endType");
-                if (endType == BufferEndType.FLAT.value()) {
-                    bufferAnalystParameter.setEndType(BufferEndType.FLAT);
-                } else {
-                    bufferAnalystParameter.setEndType(BufferEndType.ROUND);
-                }
-            }
-            if (parameter.hasKey("leftDistance")) {
-                bufferAnalystParameter.setLeftDistance(parameter.getDouble("leftDistance"));
-            }
-            if (parameter.hasKey("rightDistance")) {
-                bufferAnalystParameter.setLeftDistance(parameter.getDouble("rightDistance"));
-            }
-            if (parameter.hasKey("semicircleSegments")) {
-                bufferAnalystParameter.setLeftDistance(parameter.getInt("semicircleSegments"));
-            }
-        }
-
-        return bufferAnalystParameter;
-    }
-
-    public BufferRadiusUnit getBufferRadiusUnit(String unitStr) {
-        if (unitStr.equals("MiliMeter")) {
-            return BufferRadiusUnit.MiliMeter;
-        } else if (unitStr.equals("CentiMeter")) {
-            return BufferRadiusUnit.CentiMeter;
-        } else if (unitStr.equals("DeciMeter")) {
-            return BufferRadiusUnit.DeciMeter;
-        } else if (unitStr.equals("KiloMeter")) {
-            return BufferRadiusUnit.KiloMeter;
-        } else if (unitStr.equals("Yard")) {
-            return BufferRadiusUnit.Yard;
-        } else if (unitStr.equals("Inch")) {
-            return BufferRadiusUnit.Inch;
-        } else if (unitStr.equals("Foot")) {
-            return BufferRadiusUnit.Foot;
-        } else if (unitStr.equals("Mile")) {
-            return BufferRadiusUnit.Mile;
-        } else {
-            return BufferRadiusUnit.Meter;
-        }
-    }
 
 //    /**
 //     * 加载交通网络分析环境设置对象

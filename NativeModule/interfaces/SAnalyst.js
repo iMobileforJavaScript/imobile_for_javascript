@@ -4,30 +4,28 @@ import {
 
 let Analyst = NativeModules.SAnalyst
 // const nativeEvt = new NativeEventEmitter(Analyst);
-async function bufferAnalyst (layerName, params) {
-  try {
-    return await Analyst.analystBuffer(layerName, params)
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-async function clear (map) {
-  try {
-    await M.clearTrackingLayer(map._SMMapId)
-    await map.refresh()
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-async function overlayAnalyst (datasetPath, clipDatasetPath, analystType) {
-  try {
-    await Analyst.overlayAnalyst(datasetPath, clipDatasetPath, analystType)
-  } catch (error) {
-    console.error(error)
-  }
-}
+// async function bufferAnalyst (layerName, params) {
+//   try {
+//     return await Analyst.analystBuffer(layerName, params)
+//   } catch (e) {
+//     console.error(e)
+//   }
+// }
+//
+// /**
+//  * @DEPRECATED 将被下面的方法代替
+//  * @param datasetPath
+//  * @param clipDatasetPath
+//  * @param analystType
+//  * @returns {Promise.<void>}
+//  */
+// async function overlayAnalyst (datasetPath, clipDatasetPath, analystType) {
+//   try {
+//     await Analyst.overlayAnalyst(datasetPath, clipDatasetPath, analystType)
+//   } catch (error) {
+//     console.error(error)
+//   }
+// }
 
 /**
  * 缓冲区分析
@@ -40,11 +38,7 @@ async function overlayAnalyst (datasetPath, clipDatasetPath, analystType) {
  * @returns {Promise.<void>}
  */
 async function createBuffer (sourceData = {}, resultData = {}, bufferParameter, isUnion, isAttributeRetained, optionParameter) {
-  try {
-    return Analyst.createBuffer(sourceData, resultData, bufferParameter, isUnion, isAttributeRetained, optionParameter)
-  } catch (error) {
-    console.error(error)
-  }
+  return Analyst.createBuffer(sourceData, resultData, bufferParameter, isUnion, isAttributeRetained, optionParameter)
 }
 
 /**
@@ -61,26 +55,86 @@ async function createBuffer (sourceData = {}, resultData = {}, bufferParameter, 
  * @returns {Promise.<void>}
  */
 async function createMultiBuffer (sourceData = {}, resultData = {}, bufferRadiuses, bufferRadiusUnit, semicircleSegment, isUnion, isAttributeRetained, isRing, optionParameter) {
-  try {
-    return Analyst.createMultiBuffer(sourceData, resultData, bufferRadiuses, bufferRadiusUnit, semicircleSegment, isUnion, isAttributeRetained, isRing, optionParameter)
-  } catch (error) {
-    console.error(error)
-  }
+  return Analyst.createMultiBuffer(sourceData, resultData, bufferRadiuses, bufferRadiusUnit, semicircleSegment, isUnion, isAttributeRetained, isRing, optionParameter)
 }
 
-async function createLineOneSideMultiBuffer (datasetPath, arrBufferRadius, bufferRadiusUnit, semicircleSegment, isLeft, isUnion, isAttributeRetained, isRing) {
-  try {
-    await Analyst.createLineOneSideMultiBuffer(datasetPath, arrBufferRadius, bufferRadiusUnit, semicircleSegment, isLeft, isUnion, isAttributeRetained, isRing)
-  } catch (error) {
-    console.error(error)
+/** 叠加分析-裁剪 **/
+async function clip (sourceData = {}, targetData = {}, resultData = {}, optionParameter = {}) {
+  if (optionParameter.showResult === undefined) {
+    // 默认展示结果
+    optionParameter.showResult = true
   }
+  return Analyst.clip(sourceData, targetData, resultData, optionParameter)
+}
+
+/** 叠加分析-擦除 **/
+async function erase (sourceData = {}, targetData = {}, resultData = {}, optionParameter = {}) {
+  if (optionParameter.showResult === undefined) {
+    // 默认展示结果
+    optionParameter.showResult = true
+  }
+  return Analyst.erase(sourceData, targetData, resultData, optionParameter)
+}
+
+/** 叠加分析-同一 **/
+async function identity (sourceData = {}, targetData = {}, resultData = {}, optionParameter = {}) {
+  if (optionParameter.showResult === undefined) {
+    // 默认展示结果
+    optionParameter.showResult = true
+  }
+  return Analyst.identity(sourceData, targetData, resultData, optionParameter)
+}
+
+/** 叠加分析-相交 **/
+async function intersect (sourceData = {}, targetData = {}, resultData = {}, optionParameter = {}) {
+  if (optionParameter.showResult === undefined) {
+    // 默认展示结果
+    optionParameter.showResult = true
+  }
+  return Analyst.intersect(sourceData, targetData, resultData, optionParameter)
+}
+
+/** 叠加分析-合并 **/
+async function union (sourceData = {}, targetData = {}, resultData = {}, optionParameter = {}) {
+  if (optionParameter.showResult === undefined) {
+    // 默认展示结果
+    optionParameter.showResult = true
+  }
+  return Analyst.union(sourceData, targetData, resultData, optionParameter)
+}
+
+/** 叠加分析-更新 **/
+async function update (sourceData = {}, targetData = {}, resultData = {}, optionParameter = {}) {
+  if (optionParameter.showResult === undefined) {
+    // 默认展示结果
+    optionParameter.showResult = true
+  }
+  return Analyst.update(sourceData, targetData, resultData, optionParameter)
+}
+
+/** 叠加分析-对称差 **/
+async function xOR (sourceData = {}, targetData = {}, resultData = {}, optionParameter = {}) {
+  if (optionParameter.showResult === undefined) {
+    // 默认展示结果
+    optionParameter.showResult = true
+  }
+  return Analyst.xOR(sourceData, targetData, resultData, optionParameter)
 }
 
 export default {
-  bufferAnalyst,
-  clear,
-  overlayAnalyst,
+  // bufferAnalyst,
+  // overlayAnalyst,
+  
+  // 缓冲分析
   createBuffer,
   createMultiBuffer,
-  createLineOneSideMultiBuffer,
+  
+  // 叠加分析
+  clip,
+  erase,
+  identity,
+  intersect,
+  union,
+  update,
+  xOR,
 }

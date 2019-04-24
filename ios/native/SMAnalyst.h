@@ -1,11 +1,12 @@
 //
-//  SAnalyst.h
+//  SMAnalyst.h
 //  Supermap
 //
-//  Created by Yang Shang Long on 2018/10/30.
-//  Copyright © 2018年 Facebook. All rights reserved.
+//  Created by Shanglong Yang on 2019/4/24.
+//  Copyright © 2019 Facebook. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 #import "SMap.h"
@@ -34,6 +35,7 @@
 #import "SuperMap/DatasetVectorInfo.h"
 #import "SuperMap/BufferRadiusUnit.h"
 #import "SuperMap/LayerSettingVector.h"
+#import "SuperMap/OverlayAnalyst.h"
 
 #import "Constants.h"
 #import "SScene.h"
@@ -41,11 +43,14 @@
 #import "AnalysisHelper3D.h"
 #import "SMLayer.h"
 
-@interface SAnalyst : RCTEventEmitter<RCTBridgeModule>
+@interface SMAnalyst : NSObject
 + (Datasource *)getDatasourceByDictionary:(NSDictionary *)dic;
 + (GeoStyle *)getGeoStyleByDictionary:(NSDictionary *)geoStyleDic;
 + (BufferAnalystParameter *)getBufferAnalystParameterByDictionary:(NSDictionary *)parameter;
 + (Dataset *)getDatasetByDictionary:(NSDictionary *)dic;
 + (Dataset *)createDatasetByDictionary:(NSDictionary *)dic;
 + (BufferRadiusUnit)getBufferRadiusUnit:(NSString *)unitStr;
++ (Layer *)displayResult:(Dataset *)ds style:(GeoStyle *)style;
++ (BOOL)overlayerAnalystWithType:(NSString *)type sourceData:(NSDictionary *)sourceData targetData:(NSDictionary *)targetData resultData:(NSDictionary *)resultData optionParameter:(NSDictionary *)optionParameter;
++ (void)deleteDataset:(NSDictionary *)dsInfo;
 @end
