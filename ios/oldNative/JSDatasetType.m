@@ -18,7 +18,7 @@
              @"REGION":@(REGION),
              @"TEXT":@(TEXT),
              @"IMAGE":@(IMAGE),
-             @"Grid":@(Grid),
+             @"GRID":@(Grid),
              @"DEM":@(DEM),
              @"WMS":@(WMS),
              @"WCS":@(WCS),
