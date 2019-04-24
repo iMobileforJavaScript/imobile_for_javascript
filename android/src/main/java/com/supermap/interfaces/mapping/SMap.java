@@ -3089,7 +3089,7 @@ public class SMap extends ReactContextBaseJavaModule {
     public void setTaggingGrid(String name,String userpath, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            MapControl mapControl = sMap.smMapWC.getMapControl();
+            final MapControl mapControl = sMap.smMapWC.getMapControl();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
             Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
             final DatasetVector dataset = (DatasetVector) opendatasource.getDatasets().get(name);
@@ -3100,21 +3100,28 @@ public class SMap extends ReactContextBaseJavaModule {
             geoStyle.setLineColor(new Color(80, 80, 80));
             geoStyle.setFillOpaqueRate(50);//加透明度更美观
             //geoStyle.setLineColor(new Color(0,206,209));
-            mapControl.addGeometryAddedListener(new GeometryAddedListener() {
-                @Override
-                public void geometryAdded(GeometryEvent event) {
-                    int id[] = new int[1];
-                    id[0] = event.getID();
-                    Recordset recordset = dataset.query(id, CursorType.DYNAMIC);
-                    recordset.edit();
-                    Geometry geometry = recordset.getGeometry();
-                    if(geometry!=null) {
-                        geometry.setStyle(geoStyle);
-                        recordset.setGeometry(geometry);
-                        recordset.update();
+            if(dataset!=null){
+                mapControl.addGeometryAddedListener(new GeometryAddedListener() {
+                    @Override
+                    public void geometryAdded(GeometryEvent event) {
+                        int id[] = new int[1];
+                        id[0] = event.getID();
+                        Recordset recordset = dataset.query(id, CursorType.DYNAMIC);
+                        if(recordset!=null){
+                            recordset.moveFirst();
+                            recordset.edit();
+                            Geometry geometry = recordset.getGeometry();
+                            if(geometry!=null) {
+                                geometry.setStyle(geoStyle);
+                                recordset.setGeometry(geometry);
+                                recordset.update();
+                                recordset.dispose();
+                            }
+                        }
+                        mapControl.removeGeometryAddedListener(this);
                     }
-                }
-            });
+                });
+            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
