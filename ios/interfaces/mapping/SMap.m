@@ -16,7 +16,7 @@ NSMutableArray *fillColors;
  */
 DatasetVector *dataset;
 GeoStyle *geoStyle;
-
+MapControl *mapControl;
 @interface SMap()
 {
     Point2D* defaultMapCenter;
@@ -2295,7 +2295,7 @@ RCT_REMAP_METHOD(addLegend, addLegendWithResolver:(RCTPromiseResolveBlock)resolv
 RCT_REMAP_METHOD(setTaggingGrid, setTaggingGridWithName:(NSString *)name UserPath:(NSString *)userpath Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        MapControl *mapControl = sMap.smMapWC.mapControl;
+        mapControl = sMap.smMapWC.mapControl;
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
         NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
@@ -2304,9 +2304,11 @@ RCT_REMAP_METHOD(setTaggingGrid, setTaggingGridWithName:(NSString *)name UserPat
         [geoStyle setFillForeColor:[SMap getFillColor]];
         [geoStyle setFillBackColor:[SMap getFillColor]];
         [geoStyle setMarkerSize: [[Size2D alloc] initWithWidth:10 Height:10]];
-        [geoStyle setLineColor: [[Color alloc] initWithR:80 G:80 B:255]];
+        [geoStyle setLineColor: [[Color alloc] initWithR:80 G:80 B:80]];
         [geoStyle setFillOpaqueRate:50]; //透明度
-        mapControl.geometryAddedDelegate = self;
+        if(dataset != nil){
+            mapControl.geometryAddedDelegate = self;
+        }
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setTaggingGrid",exception.reason,nil);
@@ -2355,13 +2357,18 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
     
     NSArray *ids =[[NSArray alloc]initWithObjects:[NSNumber numberWithInt:geometryArgs.id], nil];
     Recordset *recordset = [dataset queryWithID:ids Type:DYNAMIC];
-    [recordset edit];
-    Geometry *geometry = [recordset geometry];
-    [geometry setStyle:geoStyle];
-    [recordset setGeometry:geometry];
-    [recordset update];
-    geoStyle = nil;
-    dataset = nil;
+    if(recordset != nil){
+        [recordset moveFirst];
+        [recordset edit];
+        Geometry *geometry = recordset.geometry;
+        if(geometry != nil){
+            [geometry setStyle:geoStyle];
+            [recordset setGeometry:geometry];
+            [recordset update];
+            [recordset dispose];
+        }
+    }
+    mapControl.geometryAddedDelegate = nil;
 }
 
 -(void) boundsChanged:(Point2D*) newMapCenter{
