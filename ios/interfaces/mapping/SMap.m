@@ -1370,8 +1370,13 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
         BOOL isOpen = NO;
         if (oldName && ![oldName isEqualToString:@""] && ![oldName isEqualToString:mapName] && isNew) {
             isOpen = [map open:oldName];
-            if (isOpen && [sMap.smMapWC.workspace.maps indexOf:mapName] >= 0) {
-                [sMap.smMapWC.workspace.maps removeMapName:mapName];
+            if ([sMap.smMapWC.workspace.maps indexOf:mapName] >= 0) {
+                isOpen = [map open:mapName];
+            } else {
+                [map saveAs:mapName];
+            }
+            if (isOpen && [sMap.smMapWC.workspace.maps indexOf:oldName] >= 0) {
+                [sMap.smMapWC.workspace.maps removeMapName:oldName];
             }
             [map refresh];
         }
