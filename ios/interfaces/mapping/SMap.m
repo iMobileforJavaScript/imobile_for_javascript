@@ -9,8 +9,8 @@
 #import "SMap.h"
 
 static SMap *sMap = nil;
-static NSInteger *fillNum;
-NSMutableArray *fillColors;
+//static NSInteger *fillNum;
+static NSMutableArray *fillColors;
 
 /*
  * 用于对象添加监听回调，完成后销毁
@@ -2360,10 +2360,11 @@ RCT_REMAP_METHOD(addLegend, addLegendWithResolver:(RCTPromiseResolveBlock)resolv
 
 +(Color *)getFillColor{
     Color *result = [[Color alloc] initWithR:255 G:192 B:203];
-    if(fillNum >= [[SMap getFillColors] count]){
-        fillNum = 0;
+    int n = arc4random()%([SMap getFillColors].count);
+    if(n >= [[SMap getFillColors] count]){
+        n = 0;
     }
-    result = [[SMap getFillColors] objectAtIndex:fillNum];
+    result = [[SMap getFillColors] objectAtIndex:n];
     return result;
 }
 

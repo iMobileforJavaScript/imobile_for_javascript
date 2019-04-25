@@ -1676,7 +1676,7 @@ public class SMMapWC {
             if (bResourcesModified && dataset.getType() == DatasetType.CAD) {
                 Recordset recordset = ((DatasetVector) dataset).getRecordset(false, CursorType.STATIC);
                 recordset.moveFirst();
-                while (recordset.isEOF()) {
+                while (!recordset.isEOF()) {
                     Geometry geoTemp = recordset.getGeometry();
                     recordset.moveNext();
                     GeoStyle styleTemp = geoTemp.getStyle();

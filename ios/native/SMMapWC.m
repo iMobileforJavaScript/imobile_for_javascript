@@ -1553,7 +1553,7 @@
         if(bResourcesModified && dataset.datasetType == CAD){
             Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:STATIC];
             [recordset moveFirst];
-            while ([recordset isEOF]) {
+            while (![recordset isEOF]) {
                 Geometry *geoTemp = [recordset geometry];
                 [recordset moveNext];
                 GeoStyle *styleTemp = [geoTemp getStyle];
