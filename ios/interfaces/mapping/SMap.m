@@ -686,28 +686,82 @@ RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve 
 }
 
 #pragma mark 获取UDB数据源的数据集列表
-RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getUDBNameOfLabel, getUDBNameOfLabelWithPath:(NSString *)path resolve:(RCTPromiseResolveBlock)resolve rejector:(RCTPromiseRejectBlock)reject){
     @try {
-        path = [path stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        NSString* udbName = [[path lastPathComponent] stringByDeletingPathExtension ];
-        //        if ([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:udbName] != -1) {
-        //            [sMap.smMapWC.mapControl.map.workspace.datasources closeAlias:udbName];
-        //        }
-        NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[path,@219,udbName] forKeys:@[@"server",@"engineType",@"alias"]];
-        Datasource* dataSource = [sMap.smMapWC openDatasource:params];
-        NSInteger count = [dataSource.datasets count];
-        NSString* name;
-        NSMutableArray* array = [[NSMutableArray alloc]init];
-        for(int i = 0; i < count; i++)
-        {
-            name = [[dataSource.datasets get:i] name];
-            NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
-            [info setObject:(name) forKey:(@"title")];
-            [array addObject:info];
+        
+        NSString *udbName = [[path lastPathComponent] stringByDeletingPathExtension];
+        Datasource *datasource;
+        SMap *sMap = [SMap singletonInstance];
+        DatasourceConnectionInfo *dsci = [[DatasourceConnectionInfo alloc] init];
+        Workspace *workspace = [[Workspace alloc]init];
+        dsci.engineType = ET_UDB;
+        dsci.server = path;
+        dsci.alias = udbName;
+        datasource = [workspace.datasources open:dsci];
+        Datasets *datasets = datasource.datasets;
+        int count = datasets.count;
+        NSMutableArray *arr = [[NSMutableArray alloc] init];
+        for(int i = 0; i < count; i++){
+            Dataset *dataset = [datasets get:i];
+            NSString *name = dataset.name;
+            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+            [dic setObject:name forKey:@"title"];
+            [arr addObject:dic];
         }
-        resolve(array);
+        if(workspace != nil){
+            [workspace.datasources closeAll];
+            [workspace close];
+            [workspace dispose];
+        }
+        [dsci dispose];
+        resolve(arr);
     } @catch (NSException *exception) {
-        reject(@"MapControl", exception.reason, nil);
+        reject(@"getUDBNameOfLabel",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(getUDBName, getUDBNameWithPath:(NSString *)path resolve:(RCTPromiseResolveBlock)resolve rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSString *udbName = [[path lastPathComponent] stringByDeletingPathExtension];
+        Datasource *datasource;
+        Workspace *workspace = nil;
+        SMap *sMap = [SMap singletonInstance];
+        DatasourceConnectionInfo *dsci = [[DatasourceConnectionInfo alloc] init];
+        if(sMap.smMapWC.mapControl == nil){
+            workspace = [[Workspace alloc]init];
+            dsci.engineType = ET_UDB;
+            dsci.server = path;
+            dsci.alias = udbName;
+            datasource = [workspace.datasources open:dsci];
+        }else{
+            sMap.smMapWC.mapControl.map.workspace = sMap.smMapWC.workspace;
+            if([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:udbName] != -1){
+                datasource = [sMap.smMapWC.mapControl.map.workspace.datasources getAlias:udbName];
+            }else{
+                dsci.engineType = ET_UDB;
+                dsci.server = path;
+                dsci.alias = udbName;
+                datasource = [sMap.smMapWC.mapControl.map.workspace.datasources open:dsci];
+            }
+        }
+        Datasets *datasets = datasource.datasets;
+        NSMutableArray *arr = [[NSMutableArray alloc]init];
+        for(int i = 0, count = [datasets count]; i < count; i++){
+            Dataset *dataset = [datasets get:i];
+            NSString *name = dataset.name;
+            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+            [dic setObject:name forKey:@"title"];
+            [arr addObject:dic];
+        }
+        if(workspace != nil){
+            [workspace.datasources closeAll];
+            [workspace close];
+            [workspace dispose];
+        }
+        [dsci dispose];
+        resolve(arr);
+    } @catch (NSException *exception) {
+        reject(@"getUDBName",exception.reason,nil);
     }
 }
 
