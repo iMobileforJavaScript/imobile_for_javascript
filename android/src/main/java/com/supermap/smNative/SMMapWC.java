@@ -1676,7 +1676,7 @@ public class SMMapWC {
             if (bResourcesModified && dataset.getType() == DatasetType.CAD) {
                 Recordset recordset = ((DatasetVector) dataset).getRecordset(false, CursorType.STATIC);
                 recordset.moveFirst();
-                while (recordset.isEOF()) {
+                while (!recordset.isEOF()) {
                     Geometry geoTemp = recordset.getGeometry();
                     recordset.moveNext();
                     GeoStyle styleTemp = geoTemp.getStyle();
@@ -2992,14 +2992,20 @@ public class SMMapWC {
                         Geometry[] arrRegionTemp = new Geometry[1];
                         arrRegionTemp[0] = region;
 
-                        if (bErase) {
+                        try{
 
-                            bResult = OverlayAnalyst.erase((DatasetVector) datasetTemp, arrRegionTemp, (DatasetVector) datasetResult, parame);
+                            if (bErase) {
 
-                        } else {
+                                bResult = OverlayAnalyst.erase((DatasetVector) datasetTemp, arrRegionTemp, (DatasetVector) datasetResult, parame);
 
-                            bResult = OverlayAnalyst.clip((DatasetVector) datasetTemp, arrRegionTemp, (DatasetVector) datasetResult, parame);
+                            } else {
 
+                                bResult = OverlayAnalyst.clip((DatasetVector) datasetTemp, arrRegionTemp, (DatasetVector) datasetResult, parame);
+
+                            }
+
+                        }catch (Exception e){
+                            bResult = false;
                         }
 
                         // 裁减失败留下一个空数据集

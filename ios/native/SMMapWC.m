@@ -1553,7 +1553,7 @@
         if(bResourcesModified && dataset.datasetType == CAD){
             Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:STATIC];
             [recordset moveFirst];
-            while ([recordset isEOF]) {
+            while (![recordset isEOF]) {
                 Geometry *geoTemp = [recordset geometry];
                 [recordset moveNext];
                 GeoStyle *styleTemp = [geoTemp getStyle];
@@ -2284,16 +2284,23 @@
                 }
                 [parameter setSourceRetainedFields:arrFields];
                 
-                
-                if (bErase) {
-                    // 擦除
-                    bResult = [OverlayAnalyst erase:(DatasetVector *)datasetTemp eraseGeometries:arrRegionTemp
-                                      resultDataset:(DatasetVector *)datasetResult parameter:parameter];
-                }else{
-                    // 裁减
-                    bResult = [OverlayAnalyst clip:(DatasetVector *)datasetTemp clipGeometries:arrRegionTemp
-                                     resultDataset:(DatasetVector *)datasetResult parameter:parameter];
+                @try{
+                    
+                    if (bErase) {
+                        // 擦除
+                        bResult = [OverlayAnalyst erase:(DatasetVector *)datasetTemp eraseGeometries:arrRegionTemp
+                                          resultDataset:(DatasetVector *)datasetResult parameter:parameter];
+                    }else{
+                        // 裁减
+                        bResult = [OverlayAnalyst clip:(DatasetVector *)datasetTemp clipGeometries:arrRegionTemp
+                                         resultDataset:(DatasetVector *)datasetResult parameter:parameter];
+                    }
+                    
                 }
+                @catch(NSException *exception){
+                    bResult=NO;
+                }
+
                 // 裁减失败留下一个空数据集
 //                if(bResult==NO){
 //                    // 裁减失败

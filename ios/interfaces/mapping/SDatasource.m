@@ -254,33 +254,22 @@ RCT_REMAP_METHOD(getDatasetsByDatasource, getDatasetsByDatasourceWithResolver:(N
 #pragma mark 根据名称移除UDB中数据集
 RCT_REMAP_METHOD(removeDatasetByName, removeDatasetByNameWithPath:(NSString *)path Name:(NSString *)name resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try {
-        path = [path stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+//        path = [path stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         NSString *udbName = [[path lastPathComponent] stringByDeletingPathExtension];
         Datasource *datasource = nil;
         Workspace *workspace = nil;
         SMap *sMap = [SMap singletonInstance];
         DatasourceConnectionInfo *datasourceconnection = [[DatasourceConnectionInfo alloc]init];
-        if(sMap.smMapWC.mapControl == nil){
-            workspace = [[Workspace alloc]init];
-            datasourceconnection.engineType =ET_UDB;
-            datasourceconnection.server = path;
-            datasourceconnection.alias = udbName;
-            datasource = [workspace.datasources open:datasourceconnection];
-            [datasource.datasets deleteName:name];
-        }else{
-            sMap.smMapWC.mapControl.map.workspace = sMap.smMapWC.workspace;
-            if([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:udbName] != -1){
-                datasource = [sMap.smMapWC.mapControl.map.workspace.datasources getAlias:udbName];
-                [datasource.datasets deleteName:name];
-            }else{
-                datasourceconnection.engineType = ET_UDB;
-                datasourceconnection.server = path;
-                datasourceconnection.alias = udbName;
-                datasource = [sMap.smMapWC.mapControl.map.workspace.datasources open:datasourceconnection];
-                [datasource.datasets deleteName:name];
-            }
-        }
+        workspace = [[Workspace alloc]init];
+        datasourceconnection.engineType =ET_UDB;
+        datasourceconnection.server = path;
+        datasourceconnection.alias = udbName;
+        datasource = [workspace.datasources open:datasourceconnection];
+        int index = [datasource.datasets indexOf:name];
+        [datasource.datasets delete:index];
         if(workspace != nil){
+            [workspace.datasources closeAll];
+            [workspace close];
             [workspace dispose];
         }
         [datasourceconnection dispose];
