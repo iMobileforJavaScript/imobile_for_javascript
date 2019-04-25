@@ -56,7 +56,11 @@
         if ([dic objectForKey:@"datasource"]) {
             NSString* alias = [dic objectForKey:@"datasource"];
             datasource = [datasources getAlias:alias];
-            if (datasource && [dic objectForKey:@"dataset"]) {
+            NSString* datasetName =  [dic objectForKey:@"dataset"];
+            if (datasource && datasetName) {
+                if ([datasource.datasets getWithName:datasetName]) {
+                    @throw [[NSException alloc] initWithName:@"Create Dataset Error" reason:@"dataset is exist" userInfo:nil];
+                }
                 int datasetType = REGION;
                 if ([dic objectForKey:@"datasetType"]) {
                     datasetType = ((NSNumber *)[dic objectForKey:@"datasetType"]).intValue;
@@ -68,7 +72,7 @@
                 
                 DatasetVectorInfo* dsInfo = [[DatasetVectorInfo alloc] init];
                 [dsInfo setDatasetType:datasetType];
-                [dsInfo setName:[dic objectForKey:@"dataset"]];
+                [dsInfo setName:datasetName];
                 [dsInfo setEncodeType:encodeType];
                 dataset = [datasource.datasets create:dsInfo];
             }
@@ -199,7 +203,11 @@
     Dataset* resultDataset = nil;
     
     if ([resultData objectForKey:@"dataset"] != nil) {
-        resultDataset = [SMAnalyst createDatasetByDictionary:resultData];
+        @try {
+            resultDataset = [SMAnalyst createDatasetByDictionary:resultData];
+        } @catch (NSException *exception) {
+            @throw exception;
+        }
     }
     
     BOOL result = NO;

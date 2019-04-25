@@ -83,6 +83,11 @@ public class SMAnalyst {
                 String alias = dic.getString("datasource");
                 datasource = datasources.get(alias);
                 if (datasource != null && dic.hasKey("dataset")) {
+                    String datasetName = dic.getString("dataset");
+                    if (datasource.getDatasets().contains(datasetName)) {
+                        throw new RuntimeException("dataset is exist");
+                    }
+
                     DatasetType datasetType = DatasetType.REGION;
 
                     if (dic.hasKey("datasetType")) {
@@ -232,7 +237,11 @@ public class SMAnalyst {
         Dataset resultDataset = null;
 
         if (resultData.hasKey("dataset")) {
-            resultDataset = SMAnalyst.createDatasetByDictionary(resultData);
+           try {
+               resultDataset = SMAnalyst.createDatasetByDictionary(resultData);
+           } catch (Exception e) {
+               throw e;
+           }
         }
 
         boolean result = false;
