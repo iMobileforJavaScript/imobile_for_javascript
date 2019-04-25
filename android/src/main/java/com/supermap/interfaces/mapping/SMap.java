@@ -637,6 +637,48 @@ public class SMap extends ReactContextBaseJavaModule {
 
 
     /**
+     * 获取UDB中数据集名称
+     *
+     * @param path    UDB在内存中路径
+     * @param promise
+     */
+    @ReactMethod
+    public void getUDBNameOfLabel(String path, Promise promise) {
+        try {
+            File tempFile = new File(path.trim());
+            String[] strings = tempFile.getName().split("\\.");
+            String udbName = strings[0];
+            Datasource datasource;
+            sMap = getInstance();
+            DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
+            Workspace workspace = new Workspace();
+            datasourceconnection.setEngineType(EngineType.UDB);
+            datasourceconnection.setServer(path);
+            datasourceconnection.setAlias(udbName);
+            datasource = workspace.getDatasources().open(datasourceconnection);
+            Datasets datasets = datasource.getDatasets();
+            int count = datasets.getCount();
+            WritableArray arr = Arguments.createArray();
+            for (int i = 0; i < count; i++) {
+                Dataset dataset = datasets.get(i);
+                String name = dataset.getName();
+                WritableMap writeMap = Arguments.createMap();
+                writeMap.putString("title", name);
+                arr.pushMap(writeMap);
+            }
+            if (workspace != null) {
+                workspace.getDatasources().closeAll();
+                workspace.close();
+                workspace.dispose();
+            }
+            datasourceconnection.dispose();
+            promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 根据名字显示图层
      *
      * @param name
