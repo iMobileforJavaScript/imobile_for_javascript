@@ -7,6 +7,7 @@
 //
 
 #import "SMap.h"
+
 static SMap *sMap = nil;
 static NSInteger *fillNum;
 NSMutableArray *fillColors;
@@ -16,7 +17,7 @@ NSMutableArray *fillColors;
  */
 DatasetVector *dataset;
 GeoStyle *geoStyle;
-
+MapControl *mapControl;
 @interface SMap()
 {
     Point2D* defaultMapCenter;
@@ -685,28 +686,82 @@ RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve 
 }
 
 #pragma mark 获取UDB数据源的数据集列表
-RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getUDBNameOfLabel, getUDBNameOfLabelWithPath:(NSString *)path resolve:(RCTPromiseResolveBlock)resolve rejector:(RCTPromiseRejectBlock)reject){
     @try {
-        path = [path stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        NSString* udbName = [[path lastPathComponent] stringByDeletingPathExtension ];
-        //        if ([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:udbName] != -1) {
-        //            [sMap.smMapWC.mapControl.map.workspace.datasources closeAlias:udbName];
-        //        }
-        NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[path,@219,udbName] forKeys:@[@"server",@"engineType",@"alias"]];
-        Datasource* dataSource = [sMap.smMapWC openDatasource:params];
-        NSInteger count = [dataSource.datasets count];
-        NSString* name;
-        NSMutableArray* array = [[NSMutableArray alloc]init];
-        for(int i = 0; i < count; i++)
-        {
-            name = [[dataSource.datasets get:i] name];
-            NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
-            [info setObject:(name) forKey:(@"title")];
-            [array addObject:info];
+        
+        NSString *udbName = [[path lastPathComponent] stringByDeletingPathExtension];
+        Datasource *datasource;
+        SMap *sMap = [SMap singletonInstance];
+        DatasourceConnectionInfo *dsci = [[DatasourceConnectionInfo alloc] init];
+        Workspace *workspace = [[Workspace alloc]init];
+        dsci.engineType = ET_UDB;
+        dsci.server = path;
+        dsci.alias = udbName;
+        datasource = [workspace.datasources open:dsci];
+        Datasets *datasets = datasource.datasets;
+        int count = datasets.count;
+        NSMutableArray *arr = [[NSMutableArray alloc] init];
+        for(int i = 0; i < count; i++){
+            Dataset *dataset = [datasets get:i];
+            NSString *name = dataset.name;
+            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+            [dic setObject:name forKey:@"title"];
+            [arr addObject:dic];
         }
-        resolve(array);
+        if(workspace != nil){
+            [workspace.datasources closeAll];
+            [workspace close];
+            [workspace dispose];
+        }
+        [dsci dispose];
+        resolve(arr);
     } @catch (NSException *exception) {
-        reject(@"MapControl", exception.reason, nil);
+        reject(@"getUDBNameOfLabel",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(getUDBName, getUDBNameWithPath:(NSString *)path resolve:(RCTPromiseResolveBlock)resolve rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSString *udbName = [[path lastPathComponent] stringByDeletingPathExtension];
+        Datasource *datasource;
+        Workspace *workspace = nil;
+        SMap *sMap = [SMap singletonInstance];
+        DatasourceConnectionInfo *dsci = [[DatasourceConnectionInfo alloc] init];
+        if(sMap.smMapWC.mapControl == nil){
+            workspace = [[Workspace alloc]init];
+            dsci.engineType = ET_UDB;
+            dsci.server = path;
+            dsci.alias = udbName;
+            datasource = [workspace.datasources open:dsci];
+        }else{
+            sMap.smMapWC.mapControl.map.workspace = sMap.smMapWC.workspace;
+            if([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:udbName] != -1){
+                datasource = [sMap.smMapWC.mapControl.map.workspace.datasources getAlias:udbName];
+            }else{
+                dsci.engineType = ET_UDB;
+                dsci.server = path;
+                dsci.alias = udbName;
+                datasource = [sMap.smMapWC.mapControl.map.workspace.datasources open:dsci];
+            }
+        }
+        Datasets *datasets = datasource.datasets;
+        NSMutableArray *arr = [[NSMutableArray alloc]init];
+        for(int i = 0, count = [datasets count]; i < count; i++){
+            Dataset *dataset = [datasets get:i];
+            NSString *name = dataset.name;
+            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+            [dic setObject:name forKey:@"title"];
+            [arr addObject:dic];
+        }
+        if(workspace != nil){
+            [workspace.datasources closeAll];
+            [workspace close];
+            [workspace dispose];
+        }
+        [dsci dispose];
+        resolve(arr);
+    } @catch (NSException *exception) {
+        reject(@"getUDBName",exception.reason,nil);
     }
 }
 
@@ -1260,9 +1315,30 @@ RCT_REMAP_METHOD(addDatasetToMap, addDatasetToMapWithResolver:(NSDictionary*)dat
         if(![datastourceName isEqualToString:@""] && ![datasetName isEqualToString:@""]){
             Datasource* datasource = [workspace.datasources getAlias:datastourceName];
             Dataset* dataset = [datasource.datasets getWithName:datasetName];
-            Layer* newLayer = [sMap.smMapWC.mapControl.map.layers addDataset:dataset ToHead:true];
+            Layer* layer = [sMap.smMapWC.mapControl.map.layers addDataset:dataset ToHead:true];
+            
+            if ([dataset datasetType] == REGION) {
+                LayerSettingVector *setting = (LayerSettingVector*) layer.layerSetting;
+                [[setting geoStyle] setLineSymbolID:5];
+            }
+            if ([dataset datasetType] == REGION || [dataset datasetType] == RegionZ) {
+                LayerSettingVector *setting = (LayerSettingVector*) layer.layerSetting;
+                [[setting geoStyle] setFillForeColor:[[Color alloc] initWithR:255 G:192 B:103]];
+                [[setting geoStyle] setLineColor:[[Color alloc] initWithR:255 G:192 B:103]];
+            } else if ([dataset datasetType] == LINE || [dataset datasetType] == Network || [dataset datasetType] == NETWORK3D || [dataset datasetType] == LineZ) {
+                LayerSettingVector *setting = (LayerSettingVector*) layer.layerSetting;
+                [[setting geoStyle] setLineColor:[[Color alloc] initWithR:255 G:192 B:103]];
+                if ([dataset datasetType] == Network || [dataset datasetType] == NETWORK3D) {
+                    [sMap.smMapWC.mapControl.map.layers addDataset:[(DatasetVector*)dataset childDataset] ToHead:true];
+                }
+            } else if ([dataset datasetType] == POINT || [dataset datasetType] == PointZ) {
+                LayerSettingVector *setting = (LayerSettingVector*) layer.layerSetting;
+                [[setting geoStyle] setLineColor:[[Color alloc] initWithR:255 G:192 B:103]];
+            }
+            
+            [sMap.smMapWC.mapControl.map setIsVisibleScalesEnabled:false];
             [sMap.smMapWC.mapControl.map refresh];
-            resolve([NSNumber numberWithBool:newLayer != nil]);
+            resolve([NSNumber numberWithBool:layer != nil]);
         }
         else{
             resolve([NSNumber numberWithBool:NO]);
@@ -2295,7 +2371,7 @@ RCT_REMAP_METHOD(addLegend, addLegendWithResolver:(RCTPromiseResolveBlock)resolv
 RCT_REMAP_METHOD(setTaggingGrid, setTaggingGridWithName:(NSString *)name UserPath:(NSString *)userpath Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        MapControl *mapControl = sMap.smMapWC.mapControl;
+        mapControl = sMap.smMapWC.mapControl;
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
         NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
@@ -2304,9 +2380,11 @@ RCT_REMAP_METHOD(setTaggingGrid, setTaggingGridWithName:(NSString *)name UserPat
         [geoStyle setFillForeColor:[SMap getFillColor]];
         [geoStyle setFillBackColor:[SMap getFillColor]];
         [geoStyle setMarkerSize: [[Size2D alloc] initWithWidth:10 Height:10]];
-        [geoStyle setLineColor: [[Color alloc] initWithR:80 G:80 B:255]];
+        [geoStyle setLineColor: [[Color alloc] initWithR:80 G:80 B:80]];
         [geoStyle setFillOpaqueRate:50]; //透明度
-        mapControl.geometryAddedDelegate = self;
+        if(dataset != nil){
+            mapControl.geometryAddedDelegate = self;
+        }
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setTaggingGrid",exception.reason,nil);
@@ -2355,13 +2433,18 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
     
     NSArray *ids =[[NSArray alloc]initWithObjects:[NSNumber numberWithInt:geometryArgs.id], nil];
     Recordset *recordset = [dataset queryWithID:ids Type:DYNAMIC];
-    [recordset edit];
-    Geometry *geometry = [recordset geometry];
-    [geometry setStyle:geoStyle];
-    [recordset setGeometry:geometry];
-    [recordset update];
-    geoStyle = nil;
-    dataset = nil;
+    if(recordset != nil){
+        [recordset moveFirst];
+        [recordset edit];
+        Geometry *geometry = recordset.geometry;
+        if(geometry != nil){
+            [geometry setStyle:geoStyle];
+            [recordset setGeometry:geometry];
+            [recordset update];
+            [recordset dispose];
+        }
+    }
+    mapControl.geometryAddedDelegate = nil;
 }
 
 -(void) boundsChanged:(Point2D*) newMapCenter{

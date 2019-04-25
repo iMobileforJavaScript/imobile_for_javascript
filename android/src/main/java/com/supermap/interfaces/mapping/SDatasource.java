@@ -247,33 +247,17 @@ public class SDatasource extends ReactContextBaseJavaModule {
             String[] strings = tempFile.getName().split("\\.");
             String udbName = strings[0];
             Datasource datasource;
-            Workspace workspace = null;
-            SMap sMap = SMap.getInstance();
             DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
-
-            if(sMap.getSmMapWC().getWorkspace()==null){
-                workspace=new Workspace();
-                datasourceconnection.setEngineType(EngineType.UDB);
-                datasourceconnection.setServer(path);
-                datasourceconnection.setAlias(udbName);
-                datasource=workspace.getDatasources().open(datasourceconnection);
-                int index=datasource.getDatasets().indexOf(name);
-                datasource.getDatasets().delete(index);
-            }else {
-                if (sMap.getSmMapWC().getWorkspace().getDatasources().indexOf(udbName) != -1) {
-                    datasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(udbName);
-                    int index=datasource.getDatasets().indexOf(name);
-                    datasource.getDatasets().delete(index);
-                } else {
-                    datasourceconnection.setEngineType(EngineType.UDB);
-                    datasourceconnection.setServer(path);
-                    datasourceconnection.setAlias(udbName);
-                    datasource = sMap.getSmMapWC().getWorkspace().getDatasources().open(datasourceconnection);
-                    int index=datasource.getDatasets().indexOf(name);
-                    datasource.getDatasets().delete(index);
-                }
-            }
+            Workspace   workspace=new Workspace();
+            datasourceconnection.setEngineType(EngineType.UDB);
+            datasourceconnection.setServer(path);
+            datasourceconnection.setAlias(udbName);
+            datasource=workspace.getDatasources().open(datasourceconnection);
+            int index=datasource.getDatasets().indexOf(name);
+            datasource.getDatasets().delete(index);
             if(workspace!=null){
+                workspace.getDatasources().closeAll();
+                workspace.close();
                 workspace.dispose();
             }
             datasourceconnection.dispose();

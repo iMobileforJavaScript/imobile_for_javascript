@@ -624,6 +624,8 @@ public class SMap extends ReactContextBaseJavaModule {
                 arr.pushMap(writeMap);
             }
             if (workspace != null) {
+                workspace.getDatasources().closeAll();
+                workspace.close();
                 workspace.dispose();
             }
             datasourceconnection.dispose();
@@ -633,6 +635,48 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+
+    /**
+     * 获取UDB中数据集名称
+     *
+     * @param path    UDB在内存中路径
+     * @param promise
+     */
+    @ReactMethod
+    public void getUDBNameOfLabel(String path, Promise promise) {
+        try {
+            File tempFile = new File(path.trim());
+            String[] strings = tempFile.getName().split("\\.");
+            String udbName = strings[0];
+            Datasource datasource;
+            sMap = getInstance();
+            DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
+            Workspace workspace = new Workspace();
+            datasourceconnection.setEngineType(EngineType.UDB);
+            datasourceconnection.setServer(path);
+            datasourceconnection.setAlias(udbName);
+            datasource = workspace.getDatasources().open(datasourceconnection);
+            Datasets datasets = datasource.getDatasets();
+            int count = datasets.getCount();
+            WritableArray arr = Arguments.createArray();
+            for (int i = 0; i < count; i++) {
+                Dataset dataset = datasets.get(i);
+                String name = dataset.getName();
+                WritableMap writeMap = Arguments.createMap();
+                writeMap.putString("title", name);
+                arr.pushMap(writeMap);
+            }
+            if (workspace != null) {
+                workspace.getDatasources().closeAll();
+                workspace.close();
+                workspace.dispose();
+            }
+            datasourceconnection.dispose();
+            promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 
     /**
      * 根据名字显示图层
@@ -3089,7 +3133,7 @@ public class SMap extends ReactContextBaseJavaModule {
     public void setTaggingGrid(String name,String userpath, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            MapControl mapControl = sMap.smMapWC.getMapControl();
+            final MapControl mapControl = sMap.smMapWC.getMapControl();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
             Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
             final DatasetVector dataset = (DatasetVector) opendatasource.getDatasets().get(name);
@@ -3100,21 +3144,28 @@ public class SMap extends ReactContextBaseJavaModule {
             geoStyle.setLineColor(new Color(80, 80, 80));
             geoStyle.setFillOpaqueRate(50);//加透明度更美观
             //geoStyle.setLineColor(new Color(0,206,209));
-            mapControl.addGeometryAddedListener(new GeometryAddedListener() {
-                @Override
-                public void geometryAdded(GeometryEvent event) {
-                    int id[] = new int[1];
-                    id[0] = event.getID();
-                    Recordset recordset = dataset.query(id, CursorType.DYNAMIC);
-                    recordset.edit();
-                    Geometry geometry = recordset.getGeometry();
-                    if(geometry!=null) {
-                        geometry.setStyle(geoStyle);
-                        recordset.setGeometry(geometry);
-                        recordset.update();
+            if(dataset!=null){
+                mapControl.addGeometryAddedListener(new GeometryAddedListener() {
+                    @Override
+                    public void geometryAdded(GeometryEvent event) {
+                        int id[] = new int[1];
+                        id[0] = event.getID();
+                        Recordset recordset = dataset.query(id, CursorType.DYNAMIC);
+                        if(recordset!=null){
+                            recordset.moveFirst();
+                            recordset.edit();
+                            Geometry geometry = recordset.getGeometry();
+                            if(geometry!=null) {
+                                geometry.setStyle(geoStyle);
+                                recordset.setGeometry(geometry);
+                                recordset.update();
+                                recordset.dispose();
+                            }
+                        }
+                        mapControl.removeGeometryAddedListener(this);
                     }
-                }
-            });
+                });
+            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
