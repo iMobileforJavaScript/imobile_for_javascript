@@ -686,6 +686,39 @@ RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve 
 }
 
 #pragma mark 获取UDB数据源的数据集列表
+RCT_REMAP_METHOD(getUDBNameOfLabel, getUDBNameOfLabelWithPath:(NSString *)path resolve:(RCTPromiseResolveBlock)resolve rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        NSString *udbName = [[path lastPathComponent] stringByDeletingPathExtension];
+        Datasource *datasource;
+        SMap *sMap = [SMap singletonInstance];
+        DatasourceConnectionInfo *dsci = [[DatasourceConnectionInfo alloc] init];
+        Workspace *workspace = [[Workspace alloc]init];
+        dsci.engineType = ET_UDB;
+        dsci.server = path;
+        dsci.alias = udbName;
+        datasource = [workspace.datasources open:dsci];
+        Datasets *datasets = datasource.datasets;
+        int count = datasets.count;
+        NSMutableArray *arr = [[NSMutableArray alloc] init];
+        for(int i = 0; i < count; i++){
+            Dataset *dataset = [datasets get:i];
+            NSString *name = dataset.name;
+            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+            [dic setObject:name forKey:@"title"];
+            [arr addObject:dic];
+        }
+        if(workspace != nil){
+            [workspace.datasources closeAll];
+            [workspace close];
+            [workspace dispose];
+        }
+        [dsci dispose];
+        resolve(arr);
+    } @catch (NSException *exception) {
+        reject(@"getUDBNameOfLabel",exception.reason,nil);
+    }
+}
 
 RCT_REMAP_METHOD(getUDBName, getUDBNameWithPath:(NSString *)path resolve:(RCTPromiseResolveBlock)resolve rejector:(RCTPromiseRejectBlock)reject){
     @try {
