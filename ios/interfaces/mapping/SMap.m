@@ -2260,6 +2260,22 @@ RCT_REMAP_METHOD(getLayersNames, getLayersNamesWithResolver:(RCTPromiseResolveBl
         reject(@"getLayersNames",exception.reason,nil);
     }
 }
+RCT_REMAP_METHOD(getTaggingLayerCount, getTaggingLayerCountWithPath:(NSString *)userpath Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
+        NSString *alias = [[NSString alloc] initWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        Datasource *datasource = [workspace.datasources getAlias:alias];
+        if(datasource != nil){
+            Datasets *datasets = datasource.datasets;
+            NSNumber *count = [NSNumber numberWithInteger:datasets.count];
+            resolve(count);
+        }
+    } @catch (NSException *exception) {
+        reject(@"getTaggingLayerCount",exception.reason,nil);
+    }
+}
+
 #pragma mark 设置最小比例尺范围
 RCT_REMAP_METHOD(setMinVisibleScale, setMinVisibleScaleWithName:(NSString *)name Number:(double)number Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try{

@@ -334,10 +334,14 @@ RCT_REMAP_METHOD(moveUpLayer, moveUpLayerWithIndexByParams:(NSString*)layerName 
     @try {
         SMap* sMap = [SMap singletonInstance];
         int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
-        bool result =  false;
-        result = [sMap.smMapWC.mapControl.map.layers moveUp:index];
-        [sMap.smMapWC.mapControl.map refresh];
-        resolve([NSNumber numberWithBool:result]);
+        if(index != 0){
+            Layer *layer = [sMap.smMapWC.mapControl.map.layers getLayerAtIndex:index-1];
+            if(![layer.name containsString:@"Label"]){
+                [sMap.smMapWC.mapControl.map.layers moveUp:index];
+                [sMap.smMapWC.mapControl.map refresh];
+            }
+        }
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"workspace", exception.reason, nil);
     }
@@ -346,12 +350,33 @@ RCT_REMAP_METHOD(moveUpLayer, moveUpLayerWithIndexByParams:(NSString*)layerName 
 #pragma mark 向下移动图层
 RCT_REMAP_METHOD(moveDownLayer, moveDownLayerWithResolver:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+        NSArray *netLayers = @[@"roadmap@GoogleMaps",
+                               @"satellite@GoogleMaps",
+                               @"terrain@GoogleMaps",
+                               @"hybrid@GoogleMaps",
+                               @"vec@TD",
+                               @"cva@TDWZ",
+                               @"img@TDYXM",
+                               @"TrafficMap@BaiduMap",
+                               @"Standard@OpenStreetMaps",
+                               @"CycleMap@OpenStreetMaps",
+                               @"TransportMap@OpenStreetMaps",
+                               @"quanguo@SuperMapCloud"];
         SMap* sMap = [SMap singletonInstance];
         int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
-        bool result =  false;
-        result = [sMap.smMapWC.mapControl.map.layers moveDown:index];
-        [sMap.smMapWC.mapControl.map refresh];
-        resolve([NSNumber numberWithBool:result]);
+        int next = index + 1;
+        Layer *nextLayer = [sMap.smMapWC.mapControl.map.layers getLayerAtIndex:next];
+        BOOL move = YES;
+        for(int i = 0; i < netLayers.count; i++){
+            if([nextLayer.name isEqualToString:netLayers[i]]){
+                move = false;
+            }
+        }
+        if(move){
+            [sMap.smMapWC.mapControl.map.layers moveDown:index];
+            [sMap.smMapWC.mapControl.map refresh];
+        }
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"workspace", exception.reason, nil);
     }
