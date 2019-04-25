@@ -134,6 +134,22 @@ export default (function () {
     }
   }
 
+    /**
+   * 获取UDB中数据集名称
+   * @param params
+   * @param value    UDB在内存中路径
+   * @returns {*}
+   */
+  function getUDBNameOfLabel (value) {
+    try {
+      return SMap.getUDBNameOfLabel(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  
+
   /**
    *
    * @param value       序号或名称
@@ -1360,6 +1376,7 @@ export default (function () {
     moveToPoint,
     closeMap,
     getUDBName,
+    getUDBNameOfLabel,
     submit,
     cancel,
     setGestureDetector,
