@@ -506,6 +506,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         }
     }
 
+
     /**
      * 向上移动图层
      *
@@ -516,8 +517,14 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         try {
             SMap sMap = SMap.getInstance();
             int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
-            sMap.getSmMapWC().getMapControl().getMap().getLayers().moveUp(index);
-            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            if(index!=0){
+                int before = index-1;
+                Layer beforeLayer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(before);
+                if(beforeLayer.getName().indexOf("@Label_") == -1){
+                    sMap.getSmMapWC().getMapControl().getMap().getLayers().moveUp(index);
+                    sMap.getSmMapWC().getMapControl().getMap().refresh();
+                }
+            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

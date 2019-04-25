@@ -2803,6 +2803,27 @@ public class SMap extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取标注图层个数
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getTaggingLayerCount(String userpath,Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
+            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
+            if (opendatasource != null) {
+                Datasets datasets = opendatasource.getDatasets();
+                int count = datasets.getCount();
+                promise.resolve(count);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 获取当前标注
      * @param promise
      */

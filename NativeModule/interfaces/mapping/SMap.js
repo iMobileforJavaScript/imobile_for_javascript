@@ -1155,6 +1155,19 @@ export default (function () {
   }
 
   /**
+   * 获取标注图层个数
+   * @returns {*|Promise.<void>}
+   */
+  function getTaggingLayerCount (userpath) {
+    try {
+      return SMap.getTaggingLayerCount(userpath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+
+  /**
    * 设置标注面随机色
    * @returns {*|Promise.<void>}
    */
@@ -1407,6 +1420,7 @@ export default (function () {
     getDefaultTaggingDataset,
     getCurrentTaggingDataset,
     getTaggingLayers,
+    getTaggingLayerCount,
     setTaggingGrid,
     setLabelColor,
     updateLegend,
