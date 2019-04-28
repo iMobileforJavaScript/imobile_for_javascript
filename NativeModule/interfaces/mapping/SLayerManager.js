@@ -331,6 +331,43 @@ function selectObjs(data = []) {
   }
 }
 
+/**
+ * 把多个图层中的对象放到追踪层
+ * @param data [{layerPath = '', ids = [], style: GeoStyle JSON}, ...]
+ * @param isClear
+ * @returns {*}
+ */
+function setTrackingLayer(data = [], isClear = true) {
+  try {
+    return LayerManager.setTrackingLayer(data, isClear)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 清除追踪层对象
+ * @returns {*}
+ */
+function clearTrackingLayer() {
+  try {
+    return LayerManager.clearTrackingLayer()
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 设置图层是否可编辑
+ * @param layerPath
+ * @param editable
+ * @returns {*}
+ */
+function setEditable(layerPath, editable = true) {
+  if (!layerPath) return false
+  return LayerManager.setEditable(layerPath, editable)
+}
+
 
 export {
   getLayersByType,
@@ -354,4 +391,7 @@ export {
   moveToBottom,
   selectObj,
   selectObjs,
+  setTrackingLayer,
+  clearTrackingLayer,
+  setEditable,
 }

@@ -334,10 +334,14 @@ RCT_REMAP_METHOD(moveUpLayer, moveUpLayerWithIndexByParams:(NSString*)layerName 
     @try {
         SMap* sMap = [SMap singletonInstance];
         int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
-        bool result =  false;
-        result = [sMap.smMapWC.mapControl.map.layers moveUp:index];
-        [sMap.smMapWC.mapControl.map refresh];
-        resolve([NSNumber numberWithBool:result]);
+        if(index != 0){
+            Layer *layer = [sMap.smMapWC.mapControl.map.layers getLayerAtIndex:index-1];
+            if(![layer.name containsString:@"Label"]){
+                [sMap.smMapWC.mapControl.map.layers moveUp:index];
+                [sMap.smMapWC.mapControl.map refresh];
+            }
+        }
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"workspace", exception.reason, nil);
     }
@@ -346,12 +350,33 @@ RCT_REMAP_METHOD(moveUpLayer, moveUpLayerWithIndexByParams:(NSString*)layerName 
 #pragma mark 向下移动图层
 RCT_REMAP_METHOD(moveDownLayer, moveDownLayerWithResolver:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+        NSArray *netLayers = @[@"roadmap@GoogleMaps",
+                               @"satellite@GoogleMaps",
+                               @"terrain@GoogleMaps",
+                               @"hybrid@GoogleMaps",
+                               @"vec@TD",
+                               @"cva@TDWZ",
+                               @"img@TDYXM",
+                               @"TrafficMap@BaiduMap",
+                               @"Standard@OpenStreetMaps",
+                               @"CycleMap@OpenStreetMaps",
+                               @"TransportMap@OpenStreetMaps",
+                               @"quanguo@SuperMapCloud"];
         SMap* sMap = [SMap singletonInstance];
         int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
-        bool result =  false;
-        result = [sMap.smMapWC.mapControl.map.layers moveDown:index];
-        [sMap.smMapWC.mapControl.map refresh];
-        resolve([NSNumber numberWithBool:result]);
+        int next = index + 1;
+        Layer *nextLayer = [sMap.smMapWC.mapControl.map.layers getLayerAtIndex:next];
+        BOOL move = YES;
+        for(int i = 0; i < netLayers.count; i++){
+            if([nextLayer.name isEqualToString:netLayers[i]]){
+                move = false;
+            }
+        }
+        if(move){
+            [sMap.smMapWC.mapControl.map.layers moveDown:index];
+            [sMap.smMapWC.mapControl.map refresh];
+        }
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"workspace", exception.reason, nil);
     }
@@ -484,6 +509,94 @@ RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromise
         resolve(arr);
     } @catch (NSException *exception) {
         reject(@"SMap", exception.reason, nil);
+    }
+}
+
+#pragma mark 把多个图层中的对象放到追踪层
+RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:(BOOL)isClear resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        Map* map = sMap.smMapWC.mapControl.map;
+        TrackingLayer* trackingLayer = map.trackingLayer;
+        
+        if (isClear) {
+            [trackingLayer clear];
+        }
+        
+        NSMutableArray* arr = [[NSMutableArray alloc] init];
+        
+        for (int i = 0; i < data.count; i++) {
+            NSDictionary* item = data[i];
+            NSString* layerPath = [item objectForKey:@"layerPath"];
+            NSArray* ids = [item objectForKey:@"ids"];
+            Layer* layer = [SMLayer findLayerByPath:layerPath];
+            
+            Recordset* recordset = [((DatasetVector *)layer.dataset) queryWithID:ids Type:STATIC];
+            
+            [recordset moveFirst];
+            
+            while (![recordset isEOF]) {
+                NSString* geoStyleJSON = [item objectForKey:@"style"];
+                GeoStyle* geoStyle = nil;
+                if (geoStyleJSON) {
+                    geoStyle = [[GeoStyle alloc] init];
+                    [geoStyle fromJson:geoStyleJSON];
+                }
+                
+                Geometry* geometry = recordset.geometry;
+                if (geoStyle) {
+                    [geometry setStyle:geoStyle];
+                }
+                
+                if (ids.count > 0) {
+                    for (int j = 0; j < ids.count; j++) {
+                        NSNumber* _ID = ids[j];
+                        Point2D* point2D = [geometry getInnerPoint];
+                        
+                        NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+                        [dic setObject:_ID forKey:@"id"];
+                        [dic setObject:[NSNumber numberWithDouble:point2D.x] forKey:@"x"];
+                        [dic setObject:[NSNumber numberWithDouble:point2D.y] forKey:@"y"];
+                        [arr addObject:dic];
+                    }
+                }
+                
+                [trackingLayer addGeometry:geometry WithTag:@""];
+                
+                [recordset moveNext];
+            }
+        }
+        
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve(arr);
+    } @catch (NSException *exception) {
+        reject(@"SMap", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(clearTrackingLayer, clearTrackingLayerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMap* sMap = [SMap singletonInstance];
+        Map* map = sMap.smMapWC.mapControl.map;
+        TrackingLayer* trackingLayer = map.trackingLayer;
+        
+        [trackingLayer clear];
+        [sMap.smMapWC.mapControl.map refresh];
+        NSNumber* num = [NSNumber numberWithBool:true];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"Layer",@"setEditable() failed.",nil);
+    }
+}
+
+RCT_REMAP_METHOD(setEditable, setEditableByLayerPath:(NSString*)layerPath editable:(BOOL)editable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [SMLayer findLayerByPath:layerPath];;
+        layer.editable = editable;
+        NSNumber* num = [NSNumber numberWithBool:true];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"Layer",@"setEditable() failed.",nil);
     }
 }
 @end

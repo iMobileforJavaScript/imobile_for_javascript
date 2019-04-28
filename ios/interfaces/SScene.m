@@ -1427,10 +1427,11 @@ RCT_REMAP_METHOD(clearcurrentLabel,  clearcurrentLabel:(RCTPromiseResolveBlock)r
 /**
  * 开始绘制兴趣点
  */
-RCT_REMAP_METHOD(startDrawFavorite,  startDrawFavorite:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(startDrawFavorite,  startDrawFavoriteWithText:(NSString *)text resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sSceneEvent = SS_Label_Event;
         
+        [[LableHelper3D sharedInstance] setFavoriteText:text];
         [[LableHelper3D sharedInstance] startDrawFavorite];
 //        sScene = [SScene singletonInstance];
 //        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;

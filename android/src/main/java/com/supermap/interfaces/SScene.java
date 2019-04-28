@@ -1236,7 +1236,7 @@ public class SScene extends ReactContextBaseJavaModule {
      * 标注兴趣点
      */
     @ReactMethod
-    public void startDrawFavorite( Promise promise) {
+    public void startDrawFavorite(final String text,Promise promise) {
         try {
             LabelHelper.getInstence().startDrawFavorite();//SSCENE_FAVORITE
             LabelHelper.getInstence().setDrawFavoriteListener(new LabelHelper.DrawFavoriteListener() {
@@ -1246,7 +1246,7 @@ public class SScene extends ReactContextBaseJavaModule {
                     map.putInt("pointX", pnt.x);
                     map.putInt("pointY", pnt.y);
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_FAVORITE, map);
-                  LabelHelper.getInstence().setFavoriteText("兴趣点");
+                    LabelHelper.getInstence().setFavoriteText(text);
                 }
             });
             promise.resolve(true);

@@ -377,7 +377,7 @@ export default (function () {
         }
     }
 
-    function startDrawFavorite(handlers) {
+    function startDrawFavorite(text,handlers) {
         try {
             if (Platform.OS === 'ios' && handlers) {
                 if (typeof handlers.callback === 'function') {
@@ -392,7 +392,7 @@ export default (function () {
                     });
                 }
             }
-            return SScene.startDrawFavorite()
+            return SScene.startDrawFavorite(text)
         } catch (error) {
             console.log(error)
         }
