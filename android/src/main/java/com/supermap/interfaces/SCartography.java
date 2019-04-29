@@ -36,10 +36,8 @@ public class SCartography extends ReactContextBaseJavaModule {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
-
-
                 GeoStyle style = layerSettingVector.getStyle();
-                promise.resolve(style.toJson());
+                promise.resolve(style.toXML());
             } else {
                 promise.resolve(false);
             }
@@ -56,7 +54,7 @@ public class SCartography extends ReactContextBaseJavaModule {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
             if (layerSettingVector != null) {
                 GeoStyle style = new GeoStyle();
-                style.fromJson(strStyle);
+                style.fromXML(strStyle);
                 layerSettingVector.setStyle(style);
                 MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                 mapControl.getMap().refresh();
