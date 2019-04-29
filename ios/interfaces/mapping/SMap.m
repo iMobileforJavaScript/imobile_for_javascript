@@ -2079,15 +2079,60 @@ RCT_REMAP_METHOD(getDefaultTaggingDataset, getDefaultTaggingDatasetWithUserpath:
         if(opendatasource == nil){
             NSString *datasetName = @"";
             Datasets *datasets = opendatasource.datasets;
-            for(int i = 0, count = datasets.count; i < count; i++){
-                Dataset *dataset = [datasets get:i];
-                datasetName = dataset.name;
+            Layers *layers =sMap.smMapWC.mapControl.map.layers;
+            BOOL isEditable = false;
+            for(int i = 0, count = [layers getCount]; i < count; i++){
+                if(!isEditable){
+                    Layer *layer = [layers getLayerAtIndex:i];
+                    for(int j = 0,dCount = datasets.count; j < dCount; j++){
+                        Dataset *dataset = [datasets get:j];
+                        if(layer.dataset == dataset){
+                            if(layer.editable){
+                                isEditable = YES;
+                                datasetName = dataset.name;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
             resolve(datasetName);
         }
     }@catch(NSException *exception){
         reject(@"getDefaultTaggingDataset",exception.reason,nil);
     }
+}
+
+#pragma mark 判断是否有标注图层
+RCT_REMAP_METHOD(isTaggingLayer, isTaggingLayerWithPath:(NSString *)userpath resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
+        NSString *udbName = [NSString stringWithFormat: @"%@%@%@",@"Label_",userpath,@"#"];
+        Datasource *opendatasource = [workspace.datasources getAlias:udbName];
+        if(opendatasource != nil){
+            Datasets *datasets = opendatasource.datasets;
+            Layers *layers = sMap.smMapWC.mapControl.map.layers;
+            BOOL isEditable = NO;
+            for(int i = 0, count = [layers getCount]; i < count; i++){
+                if(!isEditable){
+                    Layer *layer = [layers getLayerAtIndex:i];
+                    for(int j = 0,dCount = datasets.count; j < dCount; j++){
+                        Dataset *dataset = [datasets get:j];
+                        if(layer.dataset == dataset){
+                            if(layer.editable){
+                                isEditable = YES;
+                            }
+                        }
+                    }
+                }
+            }
+            resolve(@(isEditable));
+        }
+    } @catch (NSException *exception) {
+        reject(@"Tagging",@"isTaggingLayer() Failed.",nil);
+    }
+    
 }
 
 #pragma mark 获取当前标注
