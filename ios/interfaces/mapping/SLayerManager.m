@@ -591,12 +591,45 @@ RCT_REMAP_METHOD(clearTrackingLayer, clearTrackingLayerWithResolver:(RCTPromiseR
 
 RCT_REMAP_METHOD(setEditable, setEditableByLayerPath:(NSString*)layerPath editable:(BOOL)editable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        Layer* layer = [SMLayer findLayerByPath:layerPath];;
+        Layer* layer = [SMLayer findLayerByPath:layerPath];
         layer.editable = editable;
         NSNumber* num = [NSNumber numberWithBool:true];
         resolve(num);
     } @catch (NSException *exception) {
         reject(@"Layer",@"setEditable() failed.",nil);
+    }
+}
+
+RCT_REMAP_METHOD(setVisible, setVisibleByLayerPath:(NSString*)layerPath visible:(BOOL)visible resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [SMLayer findLayerByPath:layerPath];
+        layer.visible = visible;
+        NSNumber* num = [NSNumber numberWithBool:true];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"Layer",@"setVisible() failed.",nil);
+    }
+}
+
+RCT_REMAP_METHOD(setSelectable, setSelectableByLayerPath:(NSString*)layerPath selectable:(BOOL)selectable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [SMLayer findLayerByPath:layerPath];
+        layer.selectable = selectable;
+        NSNumber* num = [NSNumber numberWithBool:true];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"Layer",@"setSelectable() failed.",nil);
+    }
+}
+
+RCT_REMAP_METHOD(setSnapable, setSnapableByLayerPath:(NSString*)layerPath snapable:(BOOL)snapable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [SMLayer findLayerByPath:layerPath];
+        layer.isSnapable = snapable;
+        NSNumber* num = [NSNumber numberWithBool:true];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"Layer",@"setSnapable() failed.",nil);
     }
 }
 @end

@@ -368,6 +368,38 @@ function setEditable(layerPath, editable = true) {
   return LayerManager.setEditable(layerPath, editable)
 }
 
+/**
+ * 设置图层是否可见
+ * @param layerPath
+ * @param visible
+ * @returns {*}
+ */
+function setVisible(layerPath, visible = true) {
+  if (!layerPath) return false
+  return LayerManager.setVisible(layerPath, visible)
+}
+
+/**
+ * 设置图层是否可选
+ * @param layerPath
+ * @param selectable
+ * @returns {*}
+ */
+function setSelectable(layerPath, selectable = true) {
+  if (!layerPath) return false
+  return LayerManager.setSelectable(layerPath, selectable)
+}
+
+/**
+ * 设置图层是否可捕获
+ * @param layerPath
+ * @param snapable
+ * @returns {*}
+ */
+function setSnapable(layerPath, snapable = true) {
+  if (!layerPath) return false
+  return LayerManager.setSnapable(layerPath, snapable)
+}
 
 export {
   getLayersByType,
@@ -394,4 +426,7 @@ export {
   setTrackingLayer,
   clearTrackingLayer,
   setEditable,
+  setVisible,
+  setSelectable,
+  setSnapable
 }
