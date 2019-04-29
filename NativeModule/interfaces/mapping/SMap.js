@@ -1147,6 +1147,18 @@ export default (function () {
   }
 
   /**
+   * 判断是否有标注图层
+   * @returns {*|Promise.<void>}
+   */
+  function isTaggingLayer (userpath) {
+    try {
+      return SMap.isTaggingLayer(userpath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 获取当前标注
    * @returns {*|Promise.<void>}
    */
@@ -1436,6 +1448,7 @@ export default (function () {
     openTaggingDataset,
     getDefaultTaggingDataset,
     getCurrentTaggingDataset,
+    isTaggingLayer,
     getTaggingLayers,
     getTaggingLayerCount,
     setTaggingGrid,

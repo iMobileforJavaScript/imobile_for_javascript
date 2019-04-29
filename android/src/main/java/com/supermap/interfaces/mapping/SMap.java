@@ -2834,12 +2834,60 @@ public class SMap extends ReactContextBaseJavaModule {
             Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
             if (opendatasource != null) {
                 String datasetname = "";
-                    Datasets datasets = opendatasource.getDatasets();
-                    for(int i =0;i<datasets.getCount();i++){
-                        Dataset dataset = datasets.get(i);
-                        datasetname = dataset.getName();
+                Datasets datasets = opendatasource.getDatasets();
+                Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
+                boolean isEditable = false;
+                for(int i = 0; i<layers.getCount(); i++){
+                    if(!isEditable) {
+                        Layer layer = layers.get(i);
+                        for (int j = 0; j < datasets.getCount(); j++) {
+                                Dataset dataset = datasets.get(j);
+                                if (layer.getDataset() == dataset) {
+                                    if (layer.isEditable()) {
+                                        isEditable = true;
+                                        datasetname = dataset.getName();
+                                        break;
+                                    }
+                                }
+                        }
+                    }
                 }
                 promise.resolve(datasetname);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 判断是否有标注图层
+     * @param promise
+     */
+    @ReactMethod
+    public void isTaggingLayer(String userpath, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
+            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
+            if (opendatasource != null) {
+                Datasets datasets = opendatasource.getDatasets();
+                Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
+                boolean isEditable = false;
+                    for(int i = 0; i<layers.getCount(); i++){
+                        if(!isEditable) {
+                            Layer layer = layers.get(i);
+                            for (int j = 0; j < datasets.getCount(); j++) {
+                                Dataset dataset = datasets.get(j);
+                                if (layer.getDataset() == dataset) {
+                                    if (layer.isEditable()) {
+                                        isEditable = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                promise.resolve(isEditable);
             }
         } catch (Exception e) {
             promise.reject(e);
