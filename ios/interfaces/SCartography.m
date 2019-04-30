@@ -21,7 +21,7 @@ RCT_REMAP_METHOD(getLayerStyle, layerName:(NSString *)layername resolve:(RCTProm
     @try{
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
-            NSString* strJson = [layerSettingVector.geoStyle toJson];
+            NSString* strJson = [layerSettingVector.geoStyle toXML];
             resolve(strJson);
         } else {
             resolve([NSNumber numberWithBool:NO]);
@@ -39,7 +39,7 @@ RCT_REMAP_METHOD(setLayerStyle, layerName:(NSString *)layername style:(NSString*
         LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
         if (layerSettingVector != nil) {
             GeoStyle* style = [[GeoStyle alloc]init];
-            [style fromJson:strStyle];
+            [style fromXML:strStyle];
             layerSettingVector.geoStyle = style;
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [mapControl.map refresh];
