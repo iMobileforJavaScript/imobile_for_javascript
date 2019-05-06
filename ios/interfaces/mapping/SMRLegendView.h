@@ -9,7 +9,7 @@
 #import "SuperMap/LegendView.h"
 #import "SMap.h"
 
-@interface SMRLegendView :RCTEventEmitter<RCTBridgeModule>
+@interface SMRLegendView :NSObject<RCTBridgeModule>
 
 @end
 

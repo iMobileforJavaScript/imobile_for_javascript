@@ -10,10 +10,7 @@
 
 @implementation SMRLegendView
 RCT_EXPORT_MODULE();
-- (NSArray<NSString *> *)supportedEvents
-{
-    return @[];
-}
+
 #pragma mark 测试
 RCT_REMAP_METHOD(legendLayer, legendLayerIsShow:(BOOL)isShow Orientation: (NSString *)orientation resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
      @try {
