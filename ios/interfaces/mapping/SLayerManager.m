@@ -527,6 +527,10 @@ RCT_REMAP_METHOD(setLayerStyle, setLayerStyleWithLayerName:(NSString *)layerName
         
         [sMap.smMapWC.mapControl.map refresh];
         resolve(@(1));
+    }@catch (NSException *exception) {
+        reject(@"SMap", exception.reason, nil);
+    }
+}
 #pragma mark 把多个图层中的对象放到追踪层
 RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:(BOOL)isClear resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {

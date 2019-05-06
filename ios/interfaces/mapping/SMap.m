@@ -687,30 +687,6 @@ RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve 
         reject(@"MapControl", exception.reason, nil);
     }
 }
-
-#pragma mark 获取UDB数据源的数据集列表
-RCT_REMAP_METHOD(getUDBName, getUDBName:(NSString*)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        path = [path stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        NSString* udbName = [[path lastPathComponent] stringByDeletingPathExtension ];
-        //        if ([sMap.smMapWC.mapControl.map.workspace.datasources indexOf:udbName] != -1) {
-        //            [sMap.smMapWC.mapControl.map.workspace.datasources closeAlias:udbName];
-        //        }
-        NSDictionary *params=[[NSDictionary alloc] initWithObjects:@[path,@219,udbName] forKeys:@[@"server",@"engineType",@"alias"]];
-        Datasource* dataSource = [sMap.smMapWC openDatasource:params];
-        NSInteger count = [dataSource.datasets count];
-        NSMutableArray* array = [[NSMutableArray alloc]init];
-        for(int i = 0; i < count; i++)
-        {
-            Dataset* dataSet = [dataSource.datasets get:i];
-            NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
-            [info setObject:dataSet.name forKey:@"title"];
-            NSString* description = dataset.description;
-            if ([description isEqualToString:@"NULL"]) {
-                description = @"";
-            }
-            [info setObject:description forKey:@"description"];
-            [array addObject:info];
 RCT_REMAP_METHOD(getUDBNameOfLabel, getUDBNameOfLabelWithPath:(NSString *)path resolve:(RCTPromiseResolveBlock)resolve rejector:(RCTPromiseRejectBlock)reject){
     @try {
         
@@ -744,7 +720,7 @@ RCT_REMAP_METHOD(getUDBNameOfLabel, getUDBNameOfLabelWithPath:(NSString *)path r
         reject(@"getUDBNameOfLabel",exception.reason,nil);
     }
 }
-
+#pragma mark 获取UDB数据源的数据集列表
 RCT_REMAP_METHOD(getUDBName, getUDBNameWithPath:(NSString *)path resolve:(RCTPromiseResolveBlock)resolve rejector:(RCTPromiseRejectBlock)reject){
     @try {
         NSString *udbName = [[path lastPathComponent] stringByDeletingPathExtension];

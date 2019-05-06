@@ -736,10 +736,15 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             if (layer != null && !styleJson.equals("")) {
                 GeoStyle geoStyle = new GeoStyle();
                 geoStyle.fromJson(styleJson);
-                ((LayerSettingVector)layer.getAdditionalSetting()).setStyle(geoStyle);
+                ((LayerSettingVector) layer.getAdditionalSetting()).setStyle(geoStyle);
             }
 
             sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        }catch (Exception e) {
+            promise.reject(e);
+        }
+    }
     /**
      * 把多个图层中的对象放到追踪层
      *
