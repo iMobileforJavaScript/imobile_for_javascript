@@ -22,6 +22,7 @@ import com.supermap.data.FieldInfo;
 import com.supermap.data.FieldInfos;
 import com.supermap.data.FieldType;
 import com.supermap.data.GeoStyle;
+import com.supermap.data.Geometry;
 import com.supermap.data.Point2D;
 import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
@@ -30,6 +31,7 @@ import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.Map;
 import com.supermap.mapping.Selection;
+import com.supermap.mapping.TrackingLayer;
 import com.supermap.smNative.SMLayer;
 
 import org.apache.http.cookie.SM;
@@ -508,6 +510,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         }
     }
 
+
     /**
      * 向上移动图层
      *
@@ -518,8 +521,14 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         try {
             SMap sMap = SMap.getInstance();
             int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
-            sMap.getSmMapWC().getMapControl().getMap().getLayers().moveUp(index);
-            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            if(index!=0){
+                int before = index-1;
+                Layer beforeLayer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(before);
+                if(beforeLayer.getName().indexOf("@Label_") == -1){
+                    sMap.getSmMapWC().getMapControl().getMap().getLayers().moveUp(index);
+                    sMap.getSmMapWC().getMapControl().getMap().refresh();
+                }
+            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -731,6 +740,100 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             }
 
             sMap.getSmMapWC().getMapControl().getMap().refresh();
+    /**
+     * 把多个图层中的对象放到追踪层
+     *
+     * @param data
+     * @param promise
+     */
+    @ReactMethod
+    public void setTrackingLayer(ReadableArray data, boolean isClear, Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            Map map = sMap.getSmMapWC().getMapControl().getMap();
+            TrackingLayer trackingLayer = map.getTrackingLayer();
+
+            if (isClear) {
+                trackingLayer.clear();
+            }
+
+            WritableArray arr = Arguments.createArray();
+
+            for (int i = 0; i < data.size(); i++) {
+                ReadableMap item = data.getMap(i);
+                String layerPath = item.getString("layerPath");
+                ReadableArray _ids = item.getArray("ids");
+
+                Layer layer = SMLayer.findLayerByPath(layerPath);
+
+                int[] ids = new int[_ids.size()];
+
+                for (int k = 0; k < _ids.size(); k++) {
+                    ids[k] = _ids.getInt(k);
+                }
+
+                Recordset recordset = ((DatasetVector)layer.getDataset()).query(ids, CursorType.STATIC);
+
+                while(!recordset.isEOF()) {
+                    GeoStyle geoStyle = null;
+                    if (item.hasKey("style")) {
+                        String styleJSON = item.getString("style");
+                        geoStyle = new GeoStyle();
+                        geoStyle.fromJson(styleJSON);
+                    }
+
+                    Geometry geometry = recordset.getGeometry();
+                    if (geometry != null) {
+                        geometry.setStyle(geoStyle);
+                    }
+
+                    for (int j = 0; j < ids.length; j++) {
+                        int id = ids[j];
+                        Point2D point2D = recordset.getGeometry().getInnerPoint();
+
+                        WritableMap idInfo = Arguments.createMap();
+
+                        idInfo.putInt("id", id);
+                        idInfo.putDouble("x", point2D.getX());
+                        idInfo.putDouble("y", point2D.getY());
+
+                        arr.pushMap(idInfo);
+                    }
+
+                    trackingLayer.add(geometry, "");
+
+                    recordset.moveNext();
+                }
+            }
+
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void clearTrackingLayer(Promise promise) {
+        try {
+            SMap sMap = SMap.getInstance();
+            Map map = sMap.getSmMapWC().getMapControl().getMap();
+            TrackingLayer trackingLayer = map.getTrackingLayer();
+
+            trackingLayer.clear();
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setEditable(String layerPath, boolean editable, Promise promise) {
+        try {
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+            layer.setEditable(editable);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

@@ -134,6 +134,22 @@ export default (function () {
     }
   }
 
+    /**
+   * 获取UDB中数据集名称
+   * @param params
+   * @param value    UDB在内存中路径
+   * @returns {*}
+   */
+  function getUDBNameOfLabel (value) {
+    try {
+      return SMap.getUDBNameOfLabel(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  
+
   /**
    *
    * @param value       序号或名称
@@ -1130,6 +1146,18 @@ export default (function () {
   }
 
   /**
+   * 判断是否有标注图层
+   * @returns {*|Promise.<void>}
+   */
+  function isTaggingLayer (userpath) {
+    try {
+      return SMap.isTaggingLayer(userpath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 获取当前标注
    * @returns {*|Promise.<void>}
    */
@@ -1152,6 +1180,19 @@ export default (function () {
       console.error(e)
     }
   }
+
+  /**
+   * 获取标注图层个数
+   * @returns {*|Promise.<void>}
+   */
+  function getTaggingLayerCount (userpath) {
+    try {
+      return SMap.getTaggingLayerCount(userpath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
 
   /**
    * 设置标注面随机色
@@ -1359,6 +1400,7 @@ export default (function () {
     moveToPoint,
     closeMap,
     getUDBName,
+    getUDBNameOfLabel,
     submit,
     cancel,
     setGestureDetector,
@@ -1405,7 +1447,9 @@ export default (function () {
     openTaggingDataset,
     getDefaultTaggingDataset,
     getCurrentTaggingDataset,
+    isTaggingLayer,
     getTaggingLayers,
+    getTaggingLayerCount,
     setTaggingGrid,
     setLabelColor,
     updateLegend,

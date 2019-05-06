@@ -292,14 +292,15 @@ RCT_REMAP_METHOD(redo, redoWithType:(int)type resolver:(RCTPromiseResolveBlock)r
 RCT_REMAP_METHOD(submit, submitWithType:(int)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         bool result;
+        SMap* sMap = [SMap singletonInstance];
         if (type == LINE_HAND_PATH || type == REGION_HAND_PATH || type==REGION_HAND_POINT || type==LINE_HAND_POINT || type==POINT_HAND)
         {
-            SMap* sMap = [SMap singletonInstance];
             result = [sMap.smMapWC.mapControl submit];
         } else {
             Collector* collector = [self getCollector];
             result = [collector submit];
         }
+        [sMap.smMapWC.mapControl.map refresh];
         resolve([[NSNumber alloc] initWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"SCollector",@"submit expection",nil);

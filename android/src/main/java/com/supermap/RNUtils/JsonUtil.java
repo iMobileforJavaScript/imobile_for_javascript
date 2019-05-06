@@ -159,7 +159,7 @@ public class JsonUtil {
 //        WritableMap map = Arguments.createMap();
         WritableArray array = Arguments.createArray();
         ArrayList<WritableMap> list = new ArrayList();
-
+        
         boolean isMatching = false;
 
         for (Map.Entry<String,  Map<String, Object>> field : fields.entrySet()) {
@@ -223,7 +223,7 @@ public class JsonUtil {
                             keyMap.putBoolean("value", (Boolean) fieldValue);
                         }
 
-                        if (filterKey != null && !filterKey.equals("") && !isMatching){
+                        if (filterKey != null && !filterKey.equals("") && !isMatching && fieldValue != null){
                             String strV = fieldValue.toString();
                             isMatching = strV.contains(filterKey);
                         }

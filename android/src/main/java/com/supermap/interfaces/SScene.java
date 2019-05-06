@@ -42,6 +42,7 @@ import com.supermap.realspace.Scene;
 import com.supermap.realspace.SceneControl;
 import com.supermap.realspace.Tracking3DEvent;
 import com.supermap.realspace.Tracking3DListener;
+import com.supermap.rnsupermap.SceneViewManager;
 import com.supermap.smNative.SMSceneWC;
 
 import java.util.ArrayList;
@@ -373,9 +374,8 @@ public class SScene extends ReactContextBaseJavaModule {
     public void openMap(String name, Promise promise) {
         try {
             sScene = getInstance();
-            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-
             if (sScene.smSceneWc.getWorkspace().getScenes().getCount() > 0) {
+                Scene scene=sScene.smSceneWc.getSceneControl().getScene();
                 String mapName = name;
                 scene.open(mapName);
                 scene.refresh();
@@ -449,6 +449,10 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            if(scene==null){
+                promise.resolve(false);
+                return;
+            }
             com.supermap.realspace.Layer3DType layer3DType = null;
             ImageFormatType imageFormatType1 = null;
             switch (Layer3DType) {
@@ -1232,7 +1236,7 @@ public class SScene extends ReactContextBaseJavaModule {
      * 标注兴趣点
      */
     @ReactMethod
-    public void startDrawFavorite( Promise promise) {
+    public void startDrawFavorite(final String text,Promise promise) {
         try {
             LabelHelper.getInstence().startDrawFavorite();//SSCENE_FAVORITE
             LabelHelper.getInstence().setDrawFavoriteListener(new LabelHelper.DrawFavoriteListener() {
@@ -1242,7 +1246,7 @@ public class SScene extends ReactContextBaseJavaModule {
                     map.putInt("pointX", pnt.x);
                     map.putInt("pointY", pnt.y);
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.SSCENE_FAVORITE, map);
-                  LabelHelper.getInstence().setFavoriteText("兴趣点");
+                    LabelHelper.getInstence().setFavoriteText(text);
                 }
             });
             promise.resolve(true);
@@ -1258,6 +1262,10 @@ public class SScene extends ReactContextBaseJavaModule {
     public void getcompass( Promise promise) {
         try {
             sScene = getInstance();
+            if(sScene.smSceneWc.getSceneControl()!=null){
+                promise.resolve(0);
+                return;
+            }
             Scene scene=sScene.smSceneWc.getSceneControl().getScene();
             double heading=scene.getCamera().getHeading();
             promise.resolve(heading);
@@ -1418,7 +1426,14 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             SceneControl sceneControl=sScene.smSceneWc.getSceneControl();
-            boolean result=sScene.smSceneWc.openScenceName(name,sceneControl,bPrivate);
+            boolean result=false;
+            if(!SceneViewManager.getResultOfInitScene()){
+                promise.resolve(result);
+                return;
+            }
+            if(sceneControl!=null){
+                result=sScene.smSceneWc.openScenceName(name,sceneControl,bPrivate);
+            }
             if(result){
                 defaultCamera=sceneControl.getScene().getCamera();
             }
