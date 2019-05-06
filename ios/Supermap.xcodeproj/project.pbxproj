@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		000C3FBA227FD8AA006878B2 /* SMRLegendView.m in Sources */ = {isa = PBXBuildFile; fileRef = 000C3FB9227FD8AA006878B2 /* SMRLegendView.m */; };
 		005693BA2191696C00AEC46E /* SOnlineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 005693B92191696C00AEC46E /* SOnlineService.m */; };
 		0A0118A52122BC5600BC4AAB /* JSThemeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0118A42122BC5600BC4AAB /* JSThemeLabel.m */; };
 		0A01192E212412C500BC4AAB /* JSRangeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A01192D212412C500BC4AAB /* JSRangeMode.m */; };
@@ -210,6 +211,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		000C3FB8227FD8AA006878B2 /* SMRLegendView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMRLegendView.h; sourceTree = "<group>"; };
+		000C3FB9227FD8AA006878B2 /* SMRLegendView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMRLegendView.m; sourceTree = "<group>"; };
 		005693B82191696C00AEC46E /* SOnlineService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SOnlineService.h; sourceTree = "<group>"; };
 		005693B92191696C00AEC46E /* SOnlineService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SOnlineService.m; sourceTree = "<group>"; };
 		0A0118A32122BC5600BC4AAB /* JSThemeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSThemeLabel.h; sourceTree = "<group>"; };
@@ -685,6 +688,8 @@
 		D835E5AD219EC6F7008910F0 /* mapping */ = {
 			isa = PBXGroup;
 			children = (
+				000C3FB8227FD8AA006878B2 /* SMRLegendView.h */,
+				000C3FB9227FD8AA006878B2 /* SMRLegendView.m */,
 				D854D868218310720075B5F8 /* SMap.m */,
 				D854D869218310720075B5F8 /* SMap.h */,
 				D835E5AE219EC726008910F0 /* SLayerManager.h */,
@@ -1213,6 +1218,7 @@
 				005693BA2191696C00AEC46E /* SOnlineService.m in Sources */,
 				0A332E08211D623E00F56F26 /* JSDatasetVector.m in Sources */,
 				0A332E50211D623E00F56F26 /* JSSize2D.m in Sources */,
+				000C3FBA227FD8AA006878B2 /* SMRLegendView.m in Sources */,
 				D8DD422721757C8D009D80E9 /* JSSymbolFill.m in Sources */,
 				0A332E30211D623E00F56F26 /* JSMQTTClientSide.m in Sources */,
 				0A332DEF211D623E00F56F26 /* JSBarChart.m in Sources */,

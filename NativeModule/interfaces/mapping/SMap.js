@@ -8,6 +8,7 @@ import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform, PixelR
 import * as MapTool from './SMapTool'
 import * as LayerManager from './SLayerManager'
 import * as Datasource from './SDatasource'
+import * as SMRLegendView from './SMRLegendView'
 import { EventConst } from '../../constains/index'
 let SMap = NativeModules.SMap
 const dpi = PixelRatio.get()
@@ -1470,7 +1471,7 @@ export default (function () {
     addTextRecordset,
     getGestureDetector,
   }
-  Object.assign(SMapExp, MapTool, LayerManager, Datasource)
+  Object.assign(SMapExp, MapTool, LayerManager, Datasource,SMRLegendView)
 
   return SMapExp
 })()
