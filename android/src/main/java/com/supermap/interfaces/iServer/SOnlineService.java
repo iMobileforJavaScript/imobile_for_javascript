@@ -384,7 +384,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     @ReactMethod
     public void registerWithPhone(String phoneNumber,String smsVerifyCode,String nickname,String password,final Promise promise){
         try {
-            OnlineService.registerWithPhone(phoneNumber, smsVerifyCode, nickname, password, new OnlineCallBack.CallBackString() {
+            OnlineService.registerWithPhone(phoneNumber, nickname, smsVerifyCode, password, new OnlineCallBack.CallBackString() {
                 @Override
                 public void onSucceed(String s) {
                     promise.resolve(true);
