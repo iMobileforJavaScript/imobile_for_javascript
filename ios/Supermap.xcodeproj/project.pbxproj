@@ -12,6 +12,7 @@
 		0A01192E212412C500BC4AAB /* JSRangeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A01192D212412C500BC4AAB /* JSRangeMode.m */; };
 		0A17279F212E88AC00CF978C /* JSGPSElementType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A17279E212E88AC00CF978C /* JSGPSElementType.m */; };
 		0A25E2DD22617A4F0009CB35 /* SMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A25E2DC22617A4F0009CB35 /* SMap.m */; };
+		0A27E0552281249700227B8C /* SMediaCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A27E0532281249600227B8C /* SMediaCollector.m */; };
 		0A332DEA211D623E00F56F26 /* JSAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CD7211D623D00F56F26 /* JSAction.m */; };
 		0A332DEB211D623E00F56F26 /* JSAdoptMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CD9211D623D00F56F26 /* JSAdoptMapView.m */; };
 		0A332DEC211D623E00F56F26 /* JSAMQPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CDB211D623D00F56F26 /* JSAMQPManager.m */; };
@@ -220,6 +221,8 @@
 		0A17279D212E88AC00CF978C /* JSGPSElementType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSGPSElementType.h; sourceTree = "<group>"; };
 		0A17279E212E88AC00CF978C /* JSGPSElementType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSGPSElementType.m; sourceTree = "<group>"; };
 		0A25E2DC22617A4F0009CB35 /* SMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMap.m; sourceTree = "<group>"; };
+		0A27E0532281249600227B8C /* SMediaCollector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMediaCollector.m; sourceTree = "<group>"; };
+		0A27E0542281249700227B8C /* SMediaCollector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMediaCollector.h; sourceTree = "<group>"; };
 		0A332CD6211D623D00F56F26 /* JSAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSAction.h; sourceTree = "<group>"; };
 		0A332CD7211D623D00F56F26 /* JSAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSAction.m; sourceTree = "<group>"; };
 		0A332CD8211D623D00F56F26 /* JSAdoptMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSAdoptMapView.h; sourceTree = "<group>"; };
@@ -686,6 +689,8 @@
 		D835E5AC219EC6D3008910F0 /* collector */ = {
 			isa = PBXGroup;
 			children = (
+				0A27E0542281249700227B8C /* SMediaCollector.h */,
+				0A27E0532281249600227B8C /* SMediaCollector.m */,
 				D854DA3A2186F9AF0075B5F8 /* SCollector.h */,
 				D854DA3B2186F9AF0075B5F8 /* SCollector.m */,
 				D82F37782189ABEF00F85267 /* SCollectorType.h */,
@@ -1292,6 +1297,7 @@
 				0A332E52211D623E00F56F26 /* JSSTOMPManager.m in Sources */,
 				0A51674F21AD42B0003C77BE /* TouchUtil3D.m in Sources */,
 				0A332E3C211D623E00F56F26 /* JSPointDensityChart.m in Sources */,
+				0A27E0552281249700227B8C /* SMediaCollector.m in Sources */,
 				4AE32D4621B91EB500555A5A /* SMThemeCartography.m in Sources */,
 				0A332DEE211D623E00F56F26 /* JSAMQPSender.m in Sources */,
 				0A332DF8211D623E00F56F26 /* JSChartData.m in Sources */,

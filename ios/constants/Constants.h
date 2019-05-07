@@ -47,6 +47,8 @@ extern NSString * const MAP_GEOMETRY_SELECTED;
 extern NSString * const MAP_SCALE_CHANGED;
 extern NSString * const MAP_BOUNDS_CHANGED;
 
+extern NSString * const MEDIA_CAPTURE;
+
 @interface Constants : NSObject
 
 @end
