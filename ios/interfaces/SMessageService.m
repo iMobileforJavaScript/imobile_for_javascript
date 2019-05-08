@@ -211,12 +211,12 @@ RCT_REMAP_METHOD(sendFile, connectInfo:(NSString*)connectInfo message:(NSString*
                                  password:[connectinfoDic valueForKey:@"passwd"]
                                  clientId:[connectinfoDic valueForKey:@"userID"]];
             
-            [mAMQPManager_File declareQueue:sQueue];
+//            [mAMQPManager_File declareQueue:sQueue];
             
             //由于错误可能会有未删除的队列
             [mAMQPManager_File deleteQueue:sQueue];
             [mAMQPManager_File declareQueue:sQueue];
-            [mAMQPManager_File bindQueue:sExchange exchange:sQueue routingkey:sRoutingKey];
+            [mAMQPManager_File bindQueue:sQueue exchange:sExchange  routingkey:sRoutingKey];
             AMQPSender* fileSender=[mAMQPManager_File newSender];
             
             NSFileHandle* fh = [NSFileHandle fileHandleForReadingAtPath:filePath];
@@ -242,7 +242,8 @@ RCT_REMAP_METHOD(sendFile, connectInfo:(NSString*)connectInfo message:(NSString*
                 NSData *message_data=[NSJSONSerialization dataWithJSONObject:sub_messageDic options:NSJSONWritingPrettyPrinted error:nil];
                 NSString *message_str=[[NSString alloc]initWithData:message_data encoding:NSUTF8StringEncoding];
                 
-                [fileSender sendMessage:sExchange routingKey:message_str message:sRoutingKey];
+//                [g_AMQPSender sendMessage:sExchange routingKey:sRoutingKey message:message];
+                [fileSender sendMessage:sExchange routingKey:sRoutingKey  message:message_str];
                 
                 int percentage=(index*100)/total;
                 NSMutableDictionary* infoDic = [[NSMutableDictionary alloc] init];
@@ -324,6 +325,7 @@ RCT_REMAP_METHOD(receiveFile, fileName:(NSString*)fileName queueName:(NSString*)
             
             NSData* jsonReceived;
             
+            BOOL bRecieve = false;
             [g_AMQPManager declareQueue:queueName];
             AMQPReceiver* fileReceiver=[g_AMQPManager newReceiver:queueName];
             while (fileReceiver) {
@@ -331,29 +333,35 @@ RCT_REMAP_METHOD(receiveFile, fileName:(NSString*)fileName queueName:(NSString*)
                 NSString* clientId = nil,* msg = nil;
                 [fileReceiver receiveMessage:&clientId message:&msg];
                 
-                //转成JSON
-//                jsonReceived = [NSJSONSerialization dataWithJSONObject:msg options:NSJSONWritingPrettyPrinted error:nil];
-                jsonReceived=[msg dataUsingEncoding:NSUTF8StringEncoding];
-                [fh writeData:jsonReceived];
-                
-                NSMutableDictionary *receivedDic = [NSJSONSerialization JSONObjectWithData:jsonReceived options:NSJSONReadingMutableContainers error:nil];
-                int index =[[[[receivedDic objectForKey:@"message"] objectForKey:@"message"] objectForKey:@"index"] intValue];
-                long length =[[[[receivedDic objectForKey:@"message"] objectForKey:@"message"] objectForKey:@"length"] intValue];
-                int percentage = (int)((float) index / length * 100);
-                NSMutableDictionary* infoMap = [[NSMutableDictionary alloc] init];
-                [infoMap setObject:talkId forKey:@"talkId"];
-                [infoMap setObject:[NSString stringWithFormat:@"%d",msgId] forKey:@"msgId"];
-                [infoMap setObject:[NSString stringWithFormat:@"%d",percentage] forKey:@"percentage"];
-                
-                [self sendEventWithName:MESSAGE_SERVICE_SEND_FILE body:infoMap];
-                
-                if(index == length)
+                if(clientId!=nil && msg!=nil){
+                    //转成JSON
+                    //                jsonReceived = [NSJSONSerialization dataWithJSONObject:msg options:NSJSONWritingPrettyPrinted error:nil];
+                    jsonReceived=[msg dataUsingEncoding:NSUTF8StringEncoding];
+                    [fh writeData:jsonReceived];
+                    
+                    NSMutableDictionary *receivedDic = [NSJSONSerialization JSONObjectWithData:jsonReceived options:NSJSONReadingMutableContainers error:nil];
+                    int index =[[[[receivedDic objectForKey:@"message"] objectForKey:@"message"] objectForKey:@"index"] intValue];
+                    long length =[[[[receivedDic objectForKey:@"message"] objectForKey:@"message"] objectForKey:@"length"] intValue];
+                    int percentage = (int)((float) index / length * 100);
+                    NSMutableDictionary* infoMap = [[NSMutableDictionary alloc] init];
+                    [infoMap setObject:talkId forKey:@"talkId"];
+                    [infoMap setObject:[NSString stringWithFormat:@"%d",msgId] forKey:@"msgId"];
+                    [infoMap setObject:[NSString stringWithFormat:@"%d",percentage] forKey:@"percentage"];
+                    
+                    [self sendEventWithName:MESSAGE_SERVICE_SEND_FILE body:infoMap];
+                    
+                    if(index == length){
+                        bRecieve = true;
+                        break;
+                    }
+                }else{
                     break;
+                }
             }
             [fh closeFile];
             //接收完后删除队列
             [g_AMQPManager deleteQueue:queueName];
-            resolve([NSNumber numberWithBool:TRUE]);
+            resolve([NSNumber numberWithBool:bRecieve]);
         });
     } @catch (NSException *exception) {
         reject(@"SMessageService", exception.reason, nil);
