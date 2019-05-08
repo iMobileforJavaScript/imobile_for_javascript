@@ -8,7 +8,6 @@ import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform, PixelR
 import * as MapTool from './SMapTool'
 import * as LayerManager from './SLayerManager'
 import * as Datasource from './SDatasource'
-import * as SMRLegendView from './SMRLegendView'
 import { EventConst } from '../../constains/index'
 let SMap = NativeModules.SMap
 const dpi = PixelRatio.get()
@@ -28,6 +27,17 @@ export default (function () {
     }
   }
 
+  /**
+   * 测试 原生UIimage读取图例图片数据返回，rn转Image显示
+   * @returns {*}
+   */
+  function getImageSource() {
+    try {
+      return SMap.getImageSource()
+    } catch (e) {
+      console.error(e)
+    }
+  }
   /**
    * 刷新地图
    * @returns {*}
@@ -1469,8 +1479,9 @@ export default (function () {
     setMaxVisibleScale,
     addTextRecordset,
     getGestureDetector,
+    getImageSource,
   }
-  Object.assign(SMapExp, MapTool, LayerManager, Datasource,SMRLegendView)
+  Object.assign(SMapExp, MapTool, LayerManager, Datasource)
 
   return SMapExp
 })()

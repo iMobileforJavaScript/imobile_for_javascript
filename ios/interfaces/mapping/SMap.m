@@ -81,6 +81,22 @@ RCT_EXPORT_MODULE();
     sMap.smMapWC.mapControl.geometrySelectedDelegate = self;
 }
 
+#pragma mark 测试接口。返回legend的数据
+RCT_REMAP_METHOD(getImageSource, getImageSourceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        UIImage *image = [UIImage imageNamed:@"icon.png"];
+        NSData *data = UIImageJPEGRepresentation(image, 1.0f);
+        NSString *base64Str = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+        NSDictionary *dic= @{@"title":@"测试图片",@"image":base64Str};
+        NSMutableArray *arr = [[NSMutableArray alloc] init];
+        for (int i = 0; i < 10; i++) {
+            [arr addObject:dic];
+        }
+        resolve(arr);
+    } @catch (NSException *exception) {
+        reject(@"",@"getImageSource() error",nil);
+    }
+}
 #pragma mark getEnvironmentStatus 获取许可文件状态
 RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
