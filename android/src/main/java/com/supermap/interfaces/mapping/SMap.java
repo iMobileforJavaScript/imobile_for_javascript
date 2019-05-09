@@ -3340,7 +3340,7 @@ public class SMap extends ReactContextBaseJavaModule {
                 }
             }
 
-            Legend lengend = mapControl.getMap().getCreatLegend();
+            Legend lengend = mapControl.getMap().getCreateLegend();
             lengend.dispose();
 
             for (int i = 0; i < arrayList.size(); i++) {
@@ -3349,16 +3349,16 @@ public class SMap extends ReactContextBaseJavaModule {
                 String colorString = hashMap.get("Color");
 
                 int color = android.graphics.Color.parseColor(colorString);
-                ColorLegendItem colorLegendItem = new ColorLegendItem();
-                colorLegendItem.setColor(color);
-                colorLegendItem.setCaption(caption);
-                lengend.addColorLegendItem(2, colorLegendItem);
+//                ColorLegendItem colorLegendItem = new ColorLegendItem();
+//                colorLegendItem.setColor(color);
+//                colorLegendItem.setCaption(caption);
+//                lengend.addColorLegendItem(2, colorLegendItem);
 
 
-//                LegendItem legendItem = new LegendItem();
-//                legendItem.setColor(color);
-//                legendItem.setCaption(caption);
-//                lengend.addUserDefinedLegendItem(legendItem);
+                LegendItem legendItem = new LegendItem();
+                legendItem.setColor(color);
+                legendItem.setCaption(caption);
+                lengend.addUserDefinedLegendItem(legendItem);
             }
 
             mapControl.getMap().refresh();

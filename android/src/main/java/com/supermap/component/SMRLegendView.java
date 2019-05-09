@@ -54,7 +54,7 @@ public class SMRLegendView extends SimpleViewManager<RNLegendView> {
         m_ThemedReactContext = reactContext;
         m_View = new RNLegendView(reactContext);
         com.supermap.mapping.Map M_map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
-        Legend legend = M_map.creatLegend();
+        Legend legend = M_map.createLegend();
         Layers layers = M_map.getLayers();
         ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
 
@@ -80,16 +80,16 @@ public class SMRLegendView extends SimpleViewManager<RNLegendView> {
             String colorString = hashMap.get("Color");
 
             int color = android.graphics.Color.parseColor(colorString);
-            ColorLegendItem colorLegendItem = new ColorLegendItem();
-            colorLegendItem.setColor(color);
-            colorLegendItem.setCaption(caption);
-            legend.addColorLegendItem(2, colorLegendItem);
+//            ColorLegendItem colorLegendItem = new ColorLegendItem();
+//            colorLegendItem.setColor(color);
+//            colorLegendItem.setCaption(caption);
+//            legend.addColorLegendItem(2, colorLegendItem);
 
 
-//            LegendItem legendItem = new LegendItem();
-//            legendItem.setColor(color);
-//            legendItem.setCaption(caption);
-//            lengend.addUserDefinedLegendItem(legendItem);
+            LegendItem legendItem = new LegendItem();
+            legendItem.setColor(color);
+            legendItem.setCaption(caption);
+            legend.addUserDefinedLegendItem(legendItem);
         }
         legend.connectLegendView(m_View);
         return m_View;
