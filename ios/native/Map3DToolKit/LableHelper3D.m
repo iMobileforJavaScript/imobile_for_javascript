@@ -21,7 +21,7 @@
 #import "SuperMap/Tracking3DEvent.h"
 #import "SuperMap/TextStyle.h"
 #import "SuperMap/Feature3D.h"
-
+#import "SScene.h"
 
 typedef enum{
     /**
@@ -166,7 +166,8 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  */
 -(void)startDrawArea{
     [myPoint3DArrayList removeAllObjects];
-    [mSceneControl setAction3D:CREATEPOINT3D];
+    [SScene setActionHelper:CREATEPOINT3D];
+//    [mSceneControl setAction3D:CREATEPOINT3D];
     labelOperate = DRAWAREA;
 }
 
@@ -175,7 +176,8 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  */
 -(void)startDrawText{
     [self reset];
-    [mSceneControl setAction3D:CREATEPOINT3D];
+     [SScene setActionHelper:CREATEPOINT3D];
+//    [mSceneControl setAction3D:CREATEPOINT3D];
     labelOperate = DRAWTEXT;
 }
 
@@ -184,7 +186,8 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  */
 -(void)startDrawLine{
     [myPoint3DArrayList removeAllObjects];
-    [mSceneControl setAction3D:CREATEPOINT3D];
+    [SScene setActionHelper:CREATEPOINT3D];
+//    [mSceneControl setAction3D:CREATEPOINT3D];
     labelOperate = DRAWLINE;
 }
 
@@ -193,7 +196,8 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  */
 -(void)startDrawPoint{
     [myPoint3DArrayList removeAllObjects];
-    [mSceneControl setAction3D:CREATEPOINT3D];
+    [SScene setActionHelper:CREATEPOINT3D];
+//    [mSceneControl setAction3D:CREATEPOINT3D];
     labelOperate = DRAWPOINT;
 }
 
@@ -202,7 +206,8 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  */
 -(void)startDrawFavorite{
     [self reset];
-    [mSceneControl setAction3D:CREATEPOINT3D];
+    [SScene setActionHelper:CREATEPOINT3D];
+//    [mSceneControl setAction3D:CREATEPOINT3D];
     labelOperate = DRAWFAVORITE;
 }
 

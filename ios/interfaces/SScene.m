@@ -1163,7 +1163,8 @@ RCT_REMAP_METHOD(getAttribute,  getAttribute:(RCTPromiseResolveBlock)resolve rej
         SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
 //         sceneControl.sceneControlDelegate = self;
         sSceneAction |= SS_Feature_Action;
-        [sceneControl setAction3D:PANSELECT3D];
+        [SScene setActionHelper:PANSELECT3D];
+//        [sceneControl setAction3D:PANSELECT3D];
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
@@ -1365,7 +1366,8 @@ RCT_REMAP_METHOD( closeAllLabel,   closeAllLabel:(RCTPromiseResolveBlock)resolve
         sSceneEvent = SS_Normal_Event;
         sScene = [SScene singletonInstance];
         SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
-        [sceneControl setAction3D:PANSELECT3D];
+//        [sceneControl setAction3D:PANSELECT3D];
+        [SScene setActionHelper:PANSELECT3D];
         
         resolve(@(1));
     } @catch (NSException *exception) {
@@ -1384,7 +1386,8 @@ RCT_REMAP_METHOD(clearAllLabel,  clearAllLabel:(RCTPromiseResolveBlock)resolve r
         sSceneEvent = SS_Normal_Event;
         sScene = [SScene singletonInstance];
         SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
-        [sceneControl setAction3D:PANSELECT3D];
+        [SScene setActionHelper:PANSELECT3D];
+//        [sceneControl setAction3D:PANSELECT3D];
         
         resolve(@(1));
     } @catch (NSException *exception) {
@@ -1398,7 +1401,8 @@ RCT_REMAP_METHOD(resetLableAction,  resetLableAction:(RCTPromiseResolveBlock)res
         sSceneEvent = SS_Normal_Event;
         sScene = [SScene singletonInstance];
         SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
-        [sceneControl setAction3D:PANSELECT3D];
+        [SScene setActionHelper:PANSELECT3D];
+//        [sceneControl setAction3D:PANSELECT3D];
         
         resolve(@(1));
     } @catch (NSException *exception) {
