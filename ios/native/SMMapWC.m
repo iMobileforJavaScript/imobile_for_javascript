@@ -2253,53 +2253,78 @@
                 }
                 [datasetResult setPrjCoordSys:datasetTemp.prjCoordSys];
                 
-                // 如果是面内裁减则region与clipRegion相同，否则clipRegion需要加上一个外包的矩形
-                GeoRegion *region = [[GeoRegion alloc]init];
-                if (!bClipInRegion) {
-                    Rectangle2D* datasetBounds = datasetTemp.bounds;
-                    NSMutableArray *arrbounds = [[NSMutableArray alloc]init];
-                    [arrbounds addObject:[[Point2D alloc] initWithX:datasetBounds.left Y:datasetBounds.top]];
-                    [arrbounds addObject:[[Point2D alloc] initWithX:datasetBounds.left Y:datasetBounds.bottom]];
-                    [arrbounds addObject:[[Point2D alloc] initWithX:datasetBounds.right Y:datasetBounds.bottom]];
-                    [arrbounds addObject:[[Point2D alloc] initWithX:datasetBounds.right Y:datasetBounds.top]];
-                    Point2Ds *bounds_point2ds = [[Point2Ds alloc]initWithPoint2DsArray:arrbounds];
-                    [region addPart:bounds_point2ds];
-                }
-                for (int j=0; j<clipRegion.getPartCount; j++) {
-                    Point2Ds *partPoint2Ds = [clipRegion getPart:j];
-                    [region addPart:partPoint2Ds];
-                }
-                
                 BOOL bResult = NO;
-                NSMutableArray*arrRegionTemp = [[NSMutableArray alloc]init];
-                [arrRegionTemp addObject:region];
-                
-                OverlayAnalystParameter *parameter = [[OverlayAnalystParameter alloc]init];
-                NSMutableArray *arrFields = [[NSMutableArray alloc]init];
-                
-                FieldInfos* fieldsinfos = [(DatasetVector*)datasetTemp fieldInfos];
-                for (int k=0; k<fieldsinfos.count; k++) {
-                    FieldInfo *field = [fieldsinfos get:k];
-                    [arrFields addObject:[field name]];
-                }
-                [parameter setSourceRetainedFields:arrFields];
                 
                 @try{
-                    
-                    if (bErase) {
-                        // 擦除
-                        bResult = [OverlayAnalyst erase:(DatasetVector *)datasetTemp eraseGeometries:arrRegionTemp
-                                          resultDataset:(DatasetVector *)datasetResult parameter:parameter];
-                    }else{
-                        // 裁减
-                        bResult = [OverlayAnalyst clip:(DatasetVector *)datasetTemp clipGeometries:arrRegionTemp
-                                         resultDataset:(DatasetVector *)datasetResult parameter:parameter];
-                    }
-                    
-                }
-                @catch(NSException *exception){
+                    bResult = [OverlayAnalyst clipEx:(DatasetVector*)datasetTemp clipRegion:clipRegion resultDataset:(DatasetVector *)datasetResult isClipInRegion:bClipInRegion isEraseFromSrc:bErase tolerance:0];
+                }@catch(NSException *exception){
                     bResult=NO;
                 }
+//                if ([datasetTemp datasetType]==TEXT) {
+//                    @try{
+//                        bResult = [OverlayAnalyst clipText:(DatasetVector*)datasetTemp clipRegion:clipRegion resultDataset:(DatasetVector*)datasetResult isClipInRegion:bClipInRegion isErase:bErase tolerance:0];
+//                    }@catch(NSException *exception){
+//                        bResult=NO;
+//                    }
+//                }else{
+//                    // 如果是面内裁减则region与clipRegion相同，否则clipRegion需要加上一个外包的矩形
+//                    GeoRegion *region = [[GeoRegion alloc]init];
+//                    if (!bClipInRegion) {
+//                        Rectangle2D* datasetBounds = datasetTemp.bounds;
+//                        [datasetBounds unions:clipRegion.getBounds];
+//                        NSMutableArray *arrbounds = [[NSMutableArray alloc]init];
+//                        [arrbounds addObject:[[Point2D alloc] initWithX:datasetBounds.left Y:datasetBounds.top]];
+//                        [arrbounds addObject:[[Point2D alloc] initWithX:datasetBounds.left Y:datasetBounds.bottom]];
+//                        [arrbounds addObject:[[Point2D alloc] initWithX:datasetBounds.right Y:datasetBounds.bottom]];
+//                        [arrbounds addObject:[[Point2D alloc] initWithX:datasetBounds.right Y:datasetBounds.top]];
+//                        Point2Ds *bounds_point2ds = [[Point2Ds alloc]initWithPoint2DsArray:arrbounds];
+//                        [region addPart:bounds_point2ds];
+//                    }
+//                    for (int j=0; j<clipRegion.getPartCount; j++) {
+//                        Point2Ds *partPoint2Ds = [clipRegion getPart:j];
+//                        [region addPart:partPoint2Ds];
+//                    }
+//
+//                    if ([datasetTemp datasetType]==CAD) {
+//                        @try{
+//                            bResult = [OverlayAnalyst clipCAD:(DatasetVector*)datasetTemp clipRegion:region resultDataset:(DatasetVector*)datasetResult isClipInRegion:YES isErase:bErase tolerance:0];
+//                        }@catch(NSException *exception){
+//                            bResult=NO;
+//                        }
+//                    }else{
+//                        NSMutableArray*arrRegionTemp = [[NSMutableArray alloc]init];
+//                        [arrRegionTemp addObject:region];
+//
+//                        OverlayAnalystParameter *parameter = [[OverlayAnalystParameter alloc]init];
+//                        NSMutableArray *arrFields = [[NSMutableArray alloc]init];
+//
+//                        FieldInfos* fieldsinfos = [(DatasetVector*)datasetTemp fieldInfos];
+//                        for (int k=0; k<fieldsinfos.count; k++) {
+//                            FieldInfo *field = [fieldsinfos get:k];
+//                            [arrFields addObject:[field name]];
+//                        }
+//                        [parameter setSourceRetainedFields:arrFields];
+//
+//                        @try{
+//
+//                            if (bErase) {
+//                                // 擦除
+//                                bResult = [OverlayAnalyst erase:(DatasetVector *)datasetTemp eraseGeometries:arrRegionTemp
+//                                                  resultDataset:(DatasetVector *)datasetResult parameter:parameter];
+//                            }else{
+//                                // 裁减
+//                                bResult = [OverlayAnalyst clip:(DatasetVector *)datasetTemp clipGeometries:arrRegionTemp
+//                                                 resultDataset:(DatasetVector *)datasetResult parameter:parameter];
+//                            }
+//
+//                        }
+//                        @catch(NSException *exception){
+//                            bResult=NO;
+//                        }
+//
+//                    }
+//
+//                }
 
                 // 裁减失败留下一个空数据集
 //                if(bResult==NO){

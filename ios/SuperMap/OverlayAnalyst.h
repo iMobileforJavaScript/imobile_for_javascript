@@ -9,6 +9,7 @@
 @class DatasetVector;
 @class OverlayAnalystParameter;
 @class Recordset;
+@class Geometry;
 
 /**  叠加分析类。
  <p>该类用于对输入的两个数据集或记录集之间进行各种叠加分析运算，如如裁剪（clip）、擦除（erase）、合并（union）、同一（identity）、对称差（xOR）和更新（update）。</p>
@@ -65,6 +66,22 @@
  @return  分析成功返回值为true,失败返回值为false。
  */
 +(BOOL)clip:(DatasetVector *)dataset clipGeometries:(NSMutableArray *)clipGeometries resultDataset:(DatasetVector *)resultDataset parameter:(OverlayAnalystParameter *)parameter;
+
+/**@brief 对矢量数据集进行裁剪，将被裁剪数据集中不在几何对象数组范围内的对象裁剪并删除。
+ <p>注意：</p>
+ 1. 裁剪几何对象的类型必须是面，被裁减的数据集可以是点、线、面、CAD和Text。
+ 2. 在被裁减数据集中，只有落在裁剪几何对象内的对象才会被输出到结果数据集中。
+ 3. 用于裁剪的几何对象数组、被裁减的数据集以及结果数据集的地理坐标系必须一致。
+ @param  dataset 被裁减的数据集。该数据集类型可以是点、线和面。
+ @param  clipRegion 用于裁剪的面几何对象数。
+ @param  resultDataset 存放裁剪结果的数据集。
+ @param  isClipInRegion 是否范围内裁减。
+ @param  isEraseFromSrc 从源数据集擦除裁减对象。Text型数据集不支持擦除源数据集
+ @param  tolerance 容限
+ @return  分析成功返回值为true,失败返回值为false。
+ */
+
++(BOOL)clipEx:(DatasetVector *)dataset clipRegion:(Geometry *)clipRegion resultDataset:(DatasetVector *)resultDataset isClipInRegion:(BOOL)bClipInRegion isEraseFromSrc:(BOOL)bErase tolerance:(double)dTolerance;
 
 /**@brief 用于对数据集进行擦除方式的叠加分析，将第一个数据集中包含在第二个数据集内的对象裁剪并删除。
  <p>注意：</p>
