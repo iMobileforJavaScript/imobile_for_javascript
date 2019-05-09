@@ -3301,45 +3301,46 @@ public class SMap extends ReactContextBaseJavaModule {
             MapControl mapControl = sMap.smMapWC.getMapControl();
 
             Layers layers = mapControl.getMap().getLayers();
-            Map<String, String> map = new HashMap<String, String>();
-            for(int i=0 ;i<layers.getCount();i++){
+            ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
+
+            for (int i = 0; i < layers.getCount(); i++) {
                 Layer layer = layers.get(i);
-                if(layer.getTheme()!=null){
-                    if(layer.getTheme().getType()== ThemeType.RANGE || layer.getTheme().getType()== ThemeType.UNIQUE || layer.getTheme().getType()== ThemeType.GRIDRANGE){
-                        if(layer.getTheme().getType()== ThemeType.RANGE){
-                            ThemeRange themeRange = (ThemeRange) layer.getTheme();
-                            for(int a=0;a<themeRange.getCount();a++){
-                                GeoStyle GeoStyle = themeRange.getItem(a).getStyle();
-                                map.put(themeRange.getItem(a).getCaption(), GeoStyle.getFillForeColor().toColorString());
-                            }
-                        }
-                        if(layer.getTheme().getType()== ThemeType.UNIQUE){
-                            ThemeUnique themeUnique = (ThemeUnique) layer.getTheme();
-                            for(int a=0;a<themeUnique.getCount();a++){
-                                GeoStyle GeoStyle = themeUnique.getItem(a).getStyle();
-                                map.put(themeUnique.getItem(a).getCaption(), GeoStyle.getFillForeColor().toColorString());
-                            }
-                        }
-                        if(layer.getTheme().getType()== ThemeType.GRIDRANGE){
-                            ThemeGridRange themeGridRange = (ThemeGridRange) layer.getTheme();
-                            for(int a=0;a<themeGridRange.getCount();a++){
-                                map.put(themeGridRange.getItem(a).getCaption(), themeGridRange.getItem(a).getColor().toColorString());
-                            }
+                if (layer.getTheme() != null) {
+                    if (layer.getTheme().getType() == ThemeType.RANGE) {
+                        ThemeRange themeRange = (ThemeRange) layer.getTheme();
+                        for (int j = 0; j < themeRange.getCount(); j++) {
+                            GeoStyle GeoStyle = themeRange.getItem(j).getStyle();
+//                        map.put(themeRange.getItem(j).getCaption(), GeoStyle.getFillForeColor().toColorString());
+
+                            HashMap<String, String> map = new HashMap<String, String>();
+                            map.put("Caption", themeRange.getItem(j).getCaption());
+                            map.put("Color", GeoStyle.getFillForeColor().toColorString());
+                            arrayList.add(map);
                         }
                     }
                 }
             }
 
-            Legend lengend = mapControl.getMap().getLegend();
+            Legend lengend = mapControl.getMap().getCreatLegend();
+            lengend.dispose();
 
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                int color = android.graphics.Color.parseColor(entry.getValue());
+            for (int i = 0; i < arrayList.size(); i++) {
+                HashMap<String, String> hashMap = arrayList.get(i);
+                String caption = hashMap.get("Caption");
+                String colorString = hashMap.get("Color");
+
+                int color = android.graphics.Color.parseColor(colorString);
                 ColorLegendItem colorLegendItem = new ColorLegendItem();
                 colorLegendItem.setColor(color);
-                colorLegendItem.setCaption(entry.getKey());
-                lengend.addColorLegendItem(2,colorLegendItem);
-            }
+                colorLegendItem.setCaption(caption);
+                lengend.addColorLegendItem(2, colorLegendItem);
 
+
+//                LegendItem legendItem = new LegendItem();
+//                legendItem.setColor(color);
+//                legendItem.setCaption(caption);
+//                lengend.addUserDefinedLegendItem(legendItem);
+            }
 
             mapControl.getMap().refresh();
 
