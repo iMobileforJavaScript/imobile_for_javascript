@@ -1683,6 +1683,16 @@ RCT_REMAP_METHOD(saveRoutStop, saveRoutStop:(RCTPromiseResolveBlock)resolve reje
     }
 }
 
+RCT_REMAP_METHOD(pauseRoutStop, pauseRoutStop:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [[FlyHelper3D sharedInstance] routStopPasue];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+
 RCT_REMAP_METHOD(clearRoutStops, clearRoutStops:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         [[FlyHelper3D sharedInstance] clearRoutStops];

@@ -1674,7 +1674,7 @@ public class SScene extends ReactContextBaseJavaModule {
      * 停止站飞行
      */
     @ReactMethod
-    public void pasueRoutStop(Promise promise) {
+    public void pauseRoutStop(Promise promise) {
         try {
             FlyHelper.getInstence().routStopPasue();
             promise.resolve(true);

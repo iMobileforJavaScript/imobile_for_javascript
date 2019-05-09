@@ -70,7 +70,10 @@
  * 停止飞行
  */
 -(void)flyStop;
-
+/**
+ * 暂停飞行
+ */
+-(void)routStopPasue;
 /**
  * 进度接口
  */
