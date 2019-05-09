@@ -13,6 +13,7 @@ import PropTypes from 'prop-types'
 class SMRLegendView extends React.Component {
   constructor() {
     super()
+    this.tableStyle = {}
   }
 
   state = {
@@ -29,6 +30,7 @@ class SMRLegendView extends React.Component {
   render() {
     return (
         <RCTLegendView
+          ref={ref => this.legendview = ref}
           {...this.props}
         />
     )
