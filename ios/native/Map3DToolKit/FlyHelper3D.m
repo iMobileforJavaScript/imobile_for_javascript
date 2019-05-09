@@ -317,6 +317,15 @@
         [m_RouteStops removeRouteStopAtIndex:0];
     }
 }
+/**
+ * 站点暂停飞行
+ */
+-(void)routStopPasue{
+    FlyManager *flyManager = m_sceneControl.scene.flyManager;
+    if(flyManager != nil){
+        [flyManager pause];
+    }
+}
 
 /**
  *获取站点列表
