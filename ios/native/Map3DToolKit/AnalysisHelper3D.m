@@ -13,6 +13,7 @@
 #import "SuperMap/Tracking3DEvent.h"
 #import "SuperMap/GeoPoint3D.h"
 #import "SuperMap/GeoStyle3D.h"
+#import "SScene.h"
 
 @interface AnalysisHelper3D(){
     SceneControl*m_sceneControl;
@@ -56,16 +57,18 @@
 
 // 开启距离测量分析
 -(void)startMeasureAnalysis {
-    if(m_sceneControl){
-        [m_sceneControl setAction3D:MEASUREDISTANCE3D];
-    }
+    [SScene setActionHelper:MEASUREDISTANCE3D];
+//    if(m_sceneControl){
+//        [m_sceneControl setAction3D:MEASUREDISTANCE3D];
+//    }
 }
 
 // 开启测量面积分析
 -(void)startSureArea{
-    if(m_sceneControl){
-        [m_sceneControl setAction3D:MEASUREAREA3D];
-    }
+    [SScene setActionHelper:MEASUREAREA3D];
+//    if(m_sceneControl){
+//        [m_sceneControl setAction3D:MEASUREAREA3D];
+//    }
 }
 
 //开始通视分析
@@ -76,7 +79,8 @@
     if(m_sightLine == nil){
         m_sightLine = [[Sightline alloc]initWith:m_sceneControl.scene];
     }
-    [m_sceneControl setAction3D:CREATEPOINT3D];
+    [SScene setActionHelper:CREATEPOINT3D];
+//    [m_sceneControl setAction3D:CREATEPOINT3D];
 }
 
 // 结束通视分析
@@ -87,14 +91,16 @@
     [m_sceneControl.scene.trackingLayer3D clear];
     [m_sightLine clearResult];
     m_sightLine = nil;
-    [m_sceneControl setAction3D:PANSELECT3D];
+     [SScene setActionHelper:PANSELECT3D];
+//    [m_sceneControl setAction3D:PANSELECT3D];
 }
 
 // 关闭所有情况下的分析
 -(void)closeAnalysis {
-    if(m_sceneControl) {
-        [m_sceneControl setAction3D:PANSELECT3D];
-    }
+    [SScene setActionHelper:PANSELECT3D];
+//    if(m_sceneControl) {
+//        [m_sceneControl setAction3D:PANSELECT3D];
+//    }
 }
 //
 // 测量距离

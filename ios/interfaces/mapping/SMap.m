@@ -25,7 +25,7 @@ MapControl *mapControl;
 @end
 
 static  Point2D* defaultMapCenter;
-static int curLocationTag = 8081;
+static int curLocationTag = 118081;
 @implementation SMap
 RCT_EXPORT_MODULE();
 - (NSArray<NSString *> *)supportedEvents
@@ -105,15 +105,24 @@ RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTProm
 +(void)showMarkerHelper:(Point2D*)pt tag:(int)tag{
    
     dispatch_async(dispatch_get_main_queue(), ^{
-        Callout* callout = [[Callout alloc]initWithMapControl:sMap.smMapWC.mapControl];
-        callout.tag = tag;
-        callout.width = 25;
-        callout.height = 25;
-        UIImageView* image = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"SuperMap.bundle/Contents/Resources/Resource/destination.png"]];
-        image.frame = CGRectMake(0, 0, 25, 25);
-        // UIImage* img = ;
-        [callout addSubview:image];
-        [callout showAt:pt];
+//        Callout* callout = [[Callout alloc]initWithMapControl:sMap.smMapWC.mapControl];
+//        callout.tag = tag;
+//        callout.width = 25;
+//        callout.height = 25;
+//        UIImageView* image = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"SuperMap.bundle/Contents/Resources/Resource/destination.png"]];
+//        image.frame = CGRectMake(0, 0, 25, 25);
+//        // UIImage* img = ;
+//        [callout addSubview:image];
+//        [callout showAt:pt];
+        
+        GeoPoint* point = [[GeoPoint alloc] initWithPoint2D:pt];//new GeoPoint(mapPt.getX(),mapPt.getY());
+        GeoStyle* style = [[GeoStyle alloc]init];
+        [style setMarkerSymbolID:118081];
+        [style setMarkerSize: [[Size2D alloc]initWithWidth:8 Height:8]];// setMarkerSize(new Size2D(6,6));
+//        style.setLineColor(new Color(255,0,0,255));
+        [point setStyle:style];//setStyle(style);
+        [sMap.smMapWC.mapControl.map.trackingLayer addGeometry:point WithTag:[NSString stringWithFormat:@"%d",tag]];
+//        sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(point,tagStr);
         //[sMap.smMapWC.mapControl panTo:pt time:200];
         sMap.smMapWC.mapControl.map.center = pt;
         if(sMap.smMapWC.mapControl.map.scale < 0.000011947150294723098)
@@ -143,10 +152,15 @@ RCT_REMAP_METHOD(showMarker,  longitude:(double)longitude latitude:(double)latit
     }
 }
 
++(void)deleteMarker:(int)tag{
+    [sMap.smMapWC.mapControl.map.trackingLayer removeLabel:[NSString stringWithFormat:@"%d",tag]];
+//    [sMap.smMapWC.mapControl removeCalloutWithTag:tag];
+}
 #pragma mark 移除marker
 RCT_REMAP_METHOD(deleteMarker, tag:(int)tag deleteMarkerResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        [sMap.smMapWC.mapControl removeCalloutWithTag:tag];
+        [SMap deleteMarker:tag];
+//        [sMap.smMapWC.mapControl removeCalloutWithTag:tag];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"SMap", exception.reason, nil);
@@ -683,7 +697,7 @@ RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve 
         if (mapControl) {
             [[mapControl map] close];
         }
-        [sMap.smMapWC.mapControl removeCalloutWithTag:curLocationTag];
+        
         defaultMapCenter = nil;
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
@@ -941,7 +955,8 @@ RCT_REMAP_METHOD(enableSlantTouch, enableSlantTouch:(BOOL)enable resolver:(RCTPr
             pt = [points getItem:0];
         }
         
-        [sMap.smMapWC.mapControl removeCalloutWithTag:curLocationTag];
+        [SMap deleteMarker:curLocationTag];
+       // [sMap.smMapWC.mapControl removeCalloutWithTag:curLocationTag];
         Point2D* mapCenter = pt;
         if (![mapControl.map.bounds containsPoint2D:pt]) {
             if(defaultMapCenter){
