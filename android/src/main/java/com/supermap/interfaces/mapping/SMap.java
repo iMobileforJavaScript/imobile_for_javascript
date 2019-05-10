@@ -1480,7 +1480,7 @@ public class SMap extends ReactContextBaseJavaModule {
 
         private Promise promise;
         private Point2D point2D;
-        private boolean showMarker = false;
+        private boolean showMarker = true;
         public MoveToCurrentThread(Promise promise) {
             this.promise = promise;
         }
