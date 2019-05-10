@@ -702,9 +702,9 @@ export default (function () {
     /**
    * 获取地图对应的数据源别名
    */
-  function showMarker (longitude,latitude) {
+  function showMarker (longitude,latitude,tag) {
     try {
-      return SMap.showMarker(longitude,latitude)
+      return SMap.showMarker(longitude,latitude,tag)
     } catch (e) {
       console.error(e)
     }
@@ -712,9 +712,9 @@ export default (function () {
     /**
    * 获取地图对应的数据源别名
    */
-  function deleteMarker () {
+  function deleteMarker (tag) {
     try {
-      return SMap.deleteMarker()
+      return SMap.deleteMarker(tag)
     } catch (e) {
       console.error(e)
     }
