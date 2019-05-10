@@ -1163,7 +1163,8 @@ RCT_REMAP_METHOD(getAttribute,  getAttribute:(RCTPromiseResolveBlock)resolve rej
         SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
 //         sceneControl.sceneControlDelegate = self;
         sSceneAction |= SS_Feature_Action;
-        [sceneControl setAction3D:PANSELECT3D];
+        [SScene setActionHelper:PANSELECT3D];
+//        [sceneControl setAction3D:PANSELECT3D];
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
@@ -1365,7 +1366,8 @@ RCT_REMAP_METHOD( closeAllLabel,   closeAllLabel:(RCTPromiseResolveBlock)resolve
         sSceneEvent = SS_Normal_Event;
         sScene = [SScene singletonInstance];
         SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
-        [sceneControl setAction3D:PANSELECT3D];
+//        [sceneControl setAction3D:PANSELECT3D];
+        [SScene setActionHelper:PANSELECT3D];
         
         resolve(@(1));
     } @catch (NSException *exception) {
@@ -1384,7 +1386,8 @@ RCT_REMAP_METHOD(clearAllLabel,  clearAllLabel:(RCTPromiseResolveBlock)resolve r
         sSceneEvent = SS_Normal_Event;
         sScene = [SScene singletonInstance];
         SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
-        [sceneControl setAction3D:PANSELECT3D];
+        [SScene setActionHelper:PANSELECT3D];
+//        [sceneControl setAction3D:PANSELECT3D];
         
         resolve(@(1));
     } @catch (NSException *exception) {
@@ -1398,7 +1401,8 @@ RCT_REMAP_METHOD(resetLableAction,  resetLableAction:(RCTPromiseResolveBlock)res
         sSceneEvent = SS_Normal_Event;
         sScene = [SScene singletonInstance];
         SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
-        [sceneControl setAction3D:PANSELECT3D];
+        [SScene setActionHelper:PANSELECT3D];
+//        [sceneControl setAction3D:PANSELECT3D];
         
         resolve(@(1));
     } @catch (NSException *exception) {
@@ -1633,32 +1637,46 @@ RCT_REMAP_METHOD(setNavigationControlVisible,  setNavigationControlVisible:(BOOL
         reject(@"SScene", exception.reason, nil);
     }
 }
-
++(void)setActionHelper:(Action3D)action{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            sScene = [SScene singletonInstance];
+            SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+            [sceneControl setAction3D:action];
+        });
+    });
+}
 RCT_REMAP_METHOD(setAction,  setAction:(NSString*)strAction resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        sScene = [SScene singletonInstance];
-        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
         
         if ([strAction isEqualToString:@"CREATELINE3D"]) {
-            [sceneControl setAction3D:CREATELINE3D];
+            [SScene setActionHelper:CREATELINE3D];
+//            [sceneControl setAction3D:CREATELINE3D];
         }else if([strAction isEqualToString:@"CREATEPOINT3D"]){
-            [sceneControl setAction3D:CREATEPOINT3D];
+            [SScene setActionHelper:CREATEPOINT3D];
+//            [sceneControl setAction3D:CREATEPOINT3D];
         }else if([strAction isEqualToString:@"CREATEPOLYGON3D"]){
-            [sceneControl setAction3D:CREATEPOLYGON3D];
+            [SScene setActionHelper:CREATEPOLYGON3D];
+//            [sceneControl setAction3D:CREATEPOLYGON3D];
         }else if([strAction isEqualToString:@"CREATEPOLYLINE3D"]){
-            [sceneControl setAction3D:CREATEPOLYLINE3D];
+            [SScene setActionHelper:CREATEPOLYLINE3D];
+//            [sceneControl setAction3D:CREATEPOLYLINE3D];
         }else if([strAction isEqualToString:@"MEASUREAREA3D"]){
-            [sceneControl setAction3D:MEASUREAREA3D];
+            [SScene setActionHelper:MEASUREAREA3D];
+//            [sceneControl setAction3D:MEASUREAREA3D];
         }else if([strAction isEqualToString:@"MEASUREDISTANCE3D"]){
-            [sceneControl setAction3D:MEASUREDISTANCE3D];
+            [SScene setActionHelper:MEASUREDISTANCE3D];
+//            [sceneControl setAction3D:MEASUREDISTANCE3D];
         }else if([strAction isEqualToString:@"NULL"]){
-            [sceneControl setAction3D:NONEACTION3D];
+            [SScene setActionHelper:NONEACTION3D];
+//            [sceneControl setAction3D:NONEACTION3D];
         }else if([strAction isEqualToString:@"PAN3D"]){
-            [sceneControl setAction3D:PAN3D];
+            [SScene setActionHelper:PAN3D];
+//            [sceneControl setAction3D:PAN3D];
         }else if([strAction isEqualToString:@"PANSELECT3D"]){
-            [sceneControl setAction3D:PANSELECT3D];
+            [SScene setActionHelper:PANSELECT3D];
+//            [sceneControl setAction3D:PANSELECT3D];
         }
-        
         resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);

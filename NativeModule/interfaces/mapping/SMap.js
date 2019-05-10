@@ -6,6 +6,7 @@
  **********************************************************************************/
 import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform, PixelRatio } from 'react-native'
 import * as MapTool from './SMapTool'
+import * as MapSettings from './SMapSettings'
 import * as LayerManager from './SLayerManager'
 import * as Datasource from './SDatasource'
 import { EventConst } from '../../constains/index'
@@ -702,9 +703,9 @@ export default (function () {
     /**
    * 获取地图对应的数据源别名
    */
-  function showMarker (longitude,latitude) {
+  function showMarker (longitude,latitude,tag) {
     try {
-      return SMap.showMarker(longitude,latitude)
+      return SMap.showMarker(longitude,latitude,tag)
     } catch (e) {
       console.error(e)
     }
@@ -712,9 +713,9 @@ export default (function () {
     /**
    * 获取地图对应的数据源别名
    */
-  function deleteMarker () {
+  function deleteMarker (tag) {
     try {
-      return SMap.deleteMarker()
+      return SMap.deleteMarker(tag)
     } catch (e) {
       console.error(e)
     }
@@ -1481,7 +1482,7 @@ export default (function () {
     getGestureDetector,
     getImageSource,
   }
-  Object.assign(SMapExp, MapTool, LayerManager, Datasource)
+  Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)
 
   return SMapExp
 })()
