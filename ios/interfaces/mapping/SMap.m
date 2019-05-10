@@ -174,6 +174,12 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
         BOOL result = [sMap.smMapWC openWorkspace:infoDic];
         if (result && sMap.smMapWC.mapControl) {
             [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
+           dispatch_async(dispatch_get_main_queue(), ^{
+               sMap.smMapWC.scaleView = [[ScaleView alloc] initWithMapControl:sMap.smMapWC.mapControl];
+               sMap.smMapWC.scaleView.xOffset = 240;
+               sMap.smMapWC.scaleView.yOffset = -15;
+               sMap.smMapWC.scaleView.showEnable = NO;
+            });
         }
         sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
         sMap.smMapWC.mapControl.isMagnifierEnabled = YES;
@@ -185,7 +191,63 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
         reject(@"workspace", exception.reason, nil);
     }
 }
+#pragma mark ---------------------地图设置菜单开始---------------------
 
+#pragma mark 获取地图名称
+RCT_REMAP_METHOD(getMapName, getMapNameWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        NSString *mapName = sMap.smMapWC.mapControl.map.name;
+        resolve(mapName);
+    } @catch (NSException *exception) {
+        reject(@"getMapName",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取比例尺是否显示
+RCT_REMAP_METHOD(getScaleViewEnable, getScaleViewEnableWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL isShow = sMap.smMapWC.scaleView.showEnable;
+        resolve(@(isShow));
+    } @catch (NSException *exception) {
+        reject(@"getScaleViewEnable",exception.reason,nil);
+    }
+}
+
+#pragma mark 设置比例尺是否显示
+RCT_REMAP_METHOD(setScaleViewEnable, setScaleViewEnableWithBool:(BOOL)isEnable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.scaleView.showEnable = isEnable;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+         reject(@"setScaleViewEnable",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取地图旋转角度
+RCT_REMAP_METHOD(getMapAngle, getMapAngleWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        NSString *angleStr = [[NSString stringWithFormat:@"%.1f",sMap.smMapWC.mapControl.map.angle] stringByAppendingString:@"°"];
+        resolve(angleStr);
+    } @catch (NSException *exception) {
+        reject(@"getMapAngle",exception.reason,nil);
+    }
+}
+#pragma mark 获取地图颜色模式
+RCT_REMAP_METHOD(getMapColorMode, getMapColorModeWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        int modeIndex = sMap.smMapWC.mapControl.map.mapColorMode;
+        NSArray *colorMode= @[@"默认色彩模式",@"黑白模式",@"灰度模式",@"黑白反色模式",@"黑白反色，其他颜色不变"];
+        resolve(colorMode[modeIndex]);
+    } @catch (NSException *exception) {
+        reject(@"getMapColorMode",exception.reason,nil);
+    }
+}
+#pragma mark ---------------------地图设置菜单结束---------------------
 //#pragma mark 导入工作空间
 //RCT_REMAP_METHOD(openWorkspace, inputWKPath:(NSString*)inPutWorkspace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
 //    @try {
@@ -380,16 +442,6 @@ RCT_REMAP_METHOD(isDatasourceOpen, isDatasourceOpenWithData:(NSDictionary *)data
     }
 }
 
-#pragma mark 获取地图名称
-RCT_REMAP_METHOD(getMapName, getMapNameWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        sMap = [SMap singletonInstance];
-        NSString *mapName = sMap.smMapWC.mapControl.map.name;
-        resolve(mapName);
-    } @catch (NSException *exception) {
-        reject(@"getMapName",exception.reason,nil);
-    }
-}
 
 #pragma mark 保存地图为xml
 RCT_REMAP_METHOD(saveMapToXML, saveMapToXMLWithFilePath:(NSString *)filepath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -580,7 +632,12 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
         sMap = [SMap singletonInstance];
         Map* map = sMap.smMapWC.mapControl.map;
         Maps* maps = sMap.smMapWC.workspace.maps;
-        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            sMap.smMapWC.scaleView = [[ScaleView alloc] initWithMapControl:sMap.smMapWC.mapControl];
+            sMap.smMapWC.scaleView.xOffset = 240;
+            sMap.smMapWC.scaleView.yOffset = -15;
+            sMap.smMapWC.scaleView.showEnable = NO;
+        });
         BOOL isOpen = NO;
         
         if (![map.name isEqualToString:name] && maps.count > 0) {
@@ -625,7 +682,12 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
         sMap = [SMap singletonInstance];
         Map* map = sMap.smMapWC.mapControl.map;
         Maps* maps = sMap.smMapWC.workspace.maps;
-        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            sMap.smMapWC.scaleView = [[ScaleView alloc] initWithMapControl:sMap.smMapWC.mapControl];
+            sMap.smMapWC.scaleView.xOffset = 240;
+            sMap.smMapWC.scaleView.yOffset = -15;
+            sMap.smMapWC.scaleView.showEnable = NO;
+        });
         BOOL isOpen = YES;
         
         if (maps.count > 0 && index >= 0) {

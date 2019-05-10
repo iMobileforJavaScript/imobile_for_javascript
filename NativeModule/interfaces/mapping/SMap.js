@@ -6,6 +6,7 @@
  **********************************************************************************/
 import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform, PixelRatio } from 'react-native'
 import * as MapTool from './SMapTool'
+import * as MapSettings from './SMapSettings'
 import * as LayerManager from './SLayerManager'
 import * as Datasource from './SDatasource'
 import { EventConst } from '../../constains/index'
@@ -1481,7 +1482,7 @@ export default (function () {
     getGestureDetector,
     getImageSource,
   }
-  Object.assign(SMapExp, MapTool, LayerManager, Datasource)
+  Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)
 
   return SMapExp
 })()
