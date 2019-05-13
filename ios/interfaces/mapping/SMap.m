@@ -255,6 +255,7 @@ RCT_REMAP_METHOD(getMapAngle, getMapAngleWithResolver:(RCTPromiseResolveBlock)re
         reject(@"getMapAngle",exception.reason,nil);
     }
 }
+
 #pragma mark 获取地图颜色模式
 RCT_REMAP_METHOD(getMapColorMode, getMapColorModeWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -266,6 +267,75 @@ RCT_REMAP_METHOD(getMapColorMode, getMapColorModeWithResolver:(RCTPromiseResolve
         reject(@"getMapColorMode",exception.reason,nil);
     }
 }
+
+#pragma mark 获取地图中心点
+RCT_REMAP_METHOD(getMapCenter, getMapCenterWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Point2D *center = sMap.smMapWC.mapControl.map.center;
+        NSString *centerPoint = [NSString stringWithFormat:@"%f%@%f",center.x,@"/",center.y];
+        resolve(centerPoint);
+    } @catch (NSException *exception) {
+        reject(@"getMapCenter",exception.reason,nil);
+    }
+}
+
+#pragma mark 设置地图中心点
+RCT_REMAP_METHOD(setMapCenter, setMapCenterWithX:(double)x Y:(double)y Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Point2D *point = [[Point2D alloc] initWithX:x Y:y];
+        sMap.smMapWC.mapControl.map.center = point;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setMapCenter",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取当前地图是否固定比例尺级别
+RCT_REMAP_METHOD(getFixedScale, getFixedScaleWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL isEnable = sMap.smMapWC.mapControl.map.isVisibleScalesEnabled;
+        resolve(@(isEnable));
+    } @catch (NSException *exception) {
+        reject(@"setFixedScale",exception.reason,nil);
+    }
+}
+
+#pragma mark 设置当前地图是否固定比例尺级别
+RCT_REMAP_METHOD(setFixedScale, setFixedScaleWithBool:(BOOL)isEnable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = isEnable;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setFixedScale",exception.reason,nil);
+    }
+}
+#pragma mark 获取地图比例尺
+RCT_REMAP_METHOD(getMapScale, getMapScaleWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        double mapScale = sMap.smMapWC.mapControl.map.scale;
+        NSString *scaleStr =[NSString stringWithFormat:@"%f",mapScale];
+        resolve(scaleStr);
+    } @catch (NSException *exception) {
+        reject(@"getMapScale",exception.reason,nil);
+    }
+}
+
+#pragma mark 设置地图比例尺
+RCT_REMAP_METHOD(setMapScale, setMapScaleWithValue:(double)value Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.mapControl.map.scale = value;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setMapScale",exception.reason,nil);
+    }
+}
+
 #pragma mark ---------------------地图设置菜单结束---------------------
 //#pragma mark 导入工作空间
 //RCT_REMAP_METHOD(openWorkspace, inputWKPath:(NSString*)inPutWorkspace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

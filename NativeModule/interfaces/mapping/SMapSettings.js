@@ -55,9 +55,93 @@ function getMapColorMode() {
     console.error(e)
   }
 }
+
+/**
+ *  获取当前地图中心点
+ * @returns {*}
+ */
+function getMapCenter() {
+  try {
+    return SMap.getMapCenter();
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+
+ /**
+ * 设置当前地图中心点
+ * @param x
+ * @param y
+ * @returns {*}
+ */
+function setMapCenter(x,y) {
+  try {
+    return SMap.setMapCenter(x,y);
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 获取地图比例尺
+ * @returns {*}
+ */
+function getMapScale() {
+  try {
+    return SMap.getMapScale();
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 设置地图比例尺
+ * @param value double 第二个数字 如 1:10.11 value为10.11
+ * @returns {*}
+ */
+function setMapScale(value) {
+  try {
+    return SMap.setMapScale(value);
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 设置当前地图是否固定比例尺级别
+ * @param value
+ * @returns {*}
+ */
+function setFixedScale(value) {
+  try {
+    return SMap.setFixedScale(value);
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ *  获取当前地图是否固定比例尺级别
+ * @returns {*}
+ */
+function getFixedScale() {
+  try {
+    return SMap.getFixedScale();
+  }catch (e) {
+    console.error(e)
+  }
+}
+
 export {
   getScaleViewEnable,
   setScaleViewEnable,
   getMapAngle,
   getMapColorMode,
+  getMapCenter,
+  setMapCenter,
+  getMapScale,
+  setMapScale,
+  getFixedScale,
+  setFixedScale,
 }
