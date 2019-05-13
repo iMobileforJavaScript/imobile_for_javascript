@@ -1464,11 +1464,8 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             if (point.hasKey("x") && point.hasKey("y")) {
                 Point2D point2D = new Point2D(point.getDouble("x"), point.getDouble("y"));
-                MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(point2D, promise);
+                MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(point2D,false, promise);
                 moveToCurrentThread.run();
-                SMap.getInstance().getSmMapWC().getMapControl().getMap().setAngle(0);
-                SMap.getInstance().getSmMapWC().getMapControl().getMap().SetSlantAngle(0);
-
 //                promise.resolve(true);
             } else {
                 promise.resolve(false);
@@ -1483,7 +1480,7 @@ public class SMap extends ReactContextBaseJavaModule {
 
         private Promise promise;
         private Point2D point2D;
-
+        private boolean showMarker = true;
         public MoveToCurrentThread(Promise promise) {
             this.promise = promise;
         }
@@ -1492,7 +1489,11 @@ public class SMap extends ReactContextBaseJavaModule {
             this.promise = promise;
             this.point2D = point2D;
         }
-
+        public MoveToCurrentThread(Point2D point2D,boolean showMarker, Promise promise) {
+            this.promise = promise;
+            this.point2D = point2D;
+            this.showMarker = showMarker;
+        }
         @Override
         public void run() {
             try {
@@ -1555,7 +1556,9 @@ public class SMap extends ReactContextBaseJavaModule {
                         mapCenter = defaultMapCenter;
                     }
                 }else{
-                    showMarkerHelper(mapCenter,curLocationTag);
+                    if(this.showMarker) {
+                        showMarkerHelper(mapCenter, curLocationTag);
+                    }
                 }
                 if(mapCenter!=null) {
                     mapControl.getMap().setCenter(mapCenter);
@@ -3368,28 +3371,27 @@ public class SMap extends ReactContextBaseJavaModule {
             }
 
             Legend lengend = mapControl.getMap().getCreateLegend();
-            lengend.dispose();
+            if(lengend!=null){
+                lengend.dispose();
 
-            for (int i = 0; i < arrayList.size(); i++) {
-                HashMap<String, String> hashMap = arrayList.get(i);
-                String caption = hashMap.get("Caption");
-                String colorString = hashMap.get("Color");
+                for (int i = 0; i < arrayList.size(); i++) {
+                    HashMap<String, String> hashMap = arrayList.get(i);
+                    String caption = hashMap.get("Caption");
+                    String colorString = hashMap.get("Color");
 
-                int color = android.graphics.Color.parseColor(colorString);
+                    int color = android.graphics.Color.parseColor(colorString);
 //                ColorLegendItem colorLegendItem = new ColorLegendItem();
 //                colorLegendItem.setColor(color);
 //                colorLegendItem.setCaption(caption);
 //                lengend.addColorLegendItem(2, colorLegendItem);
 
-
-                LegendItem legendItem = new LegendItem();
-                legendItem.setColor(color);
-                legendItem.setCaption(caption);
-                lengend.addUserDefinedLegendItem(legendItem);
+                    LegendItem legendItem = new LegendItem();
+                    legendItem.setColor(color);
+                    legendItem.setCaption(caption);
+                    lengend.addUserDefinedLegendItem(legendItem);
+                }
+                mapControl.getMap().refresh();
             }
-
-            mapControl.getMap().refresh();
-
             promise.resolve(true);
 
         } catch (Exception e) {
