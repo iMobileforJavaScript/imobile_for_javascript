@@ -133,6 +133,14 @@ function getFixedScale() {
   }
 }
 
+function getPrjCoordSys() {
+  try {
+    return SMap.getPrjCoordSys();
+  }catch (e) {
+    console.error(e)
+  }
+}
+
 export {
   getScaleViewEnable,
   setScaleViewEnable,
@@ -144,4 +152,5 @@ export {
   setMapScale,
   getFixedScale,
   setFixedScale,
+  getPrjCoordSys,
 }

@@ -52,7 +52,7 @@
 #import "SMSymbol.h"
 #import "SMLayer.h"
 
-@interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate,AfterGeometryAddedDelegate>
+@interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate,AfterGeometryAddedDelegate,LegendContentDelegate>
 @property (strong, nonatomic) SMMapWC* smMapWC;
 @property (strong, nonatomic) Selection* selection;
 

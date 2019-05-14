@@ -29,12 +29,27 @@ export default (function () {
   }
 
   /**
-   * 测试 原生UIimage读取图例图片数据返回，rn转Image显示
+   * 添加图例的监听事件，会返回相应的图例数据
    * @returns {*}
    */
-  function getImageSource() {
+  function addLegendDelegate(handler) {
     try {
-      return SMap.getImageSource()
+      let isSuccess = SMap.addLegendDelegate()
+      if(!isSuccess)
+        return
+      if(Platform.OS === 'ios'){
+        nativeEvt.addListener(EventConst.MAP_LEGEND_CONTENT_CHANGE,(result)=>{
+          if(typeof handler.legendContentChange === 'function'){
+            handler.legendContentChange(result)
+          }
+        })
+      }else {
+        DeviceEventEmitter.addListener(EventConst.MAP_LEGEND_CONTENT_CHANGE,(result)=>{
+          if(typeof handler.legendContentChange === 'function'){
+            handler.legendContentChange(result)
+          }
+        })
+      }
     } catch (e) {
       console.error(e)
     }
@@ -1480,7 +1495,7 @@ export default (function () {
     setMaxVisibleScale,
     addTextRecordset,
     getGestureDetector,
-    getImageSource,
+    addLegendDelegate,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)
 

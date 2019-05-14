@@ -11,7 +11,7 @@
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
 static NSMutableArray *fillColors;
-
+NSString * const LEGEND_CONTENT_CHANGE = @"com.supermap.RN.Map.Legend.legend_content_change";
 /*
  * 用于对象添加监听回调，完成后销毁
  */
@@ -45,6 +45,7 @@ RCT_EXPORT_MODULE();
              MAP_GEOMETRY_SELECTED,
              MAP_SCALE_CHANGED,
              MAP_BOUNDS_CHANGED,
+             LEGEND_CONTENT_CHANGE,
              ];
 }
 
@@ -84,22 +85,6 @@ RCT_EXPORT_MODULE();
     sMap.smMapWC.mapControl.geometrySelectedDelegate = self;
 }
 
-#pragma mark 测试接口。返回legend的数据
-RCT_REMAP_METHOD(getImageSource, getImageSourceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        UIImage *image = [UIImage imageNamed:@"icon.png"];
-        NSData *data = UIImageJPEGRepresentation(image, 1.0f);
-        NSString *base64Str = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-        NSDictionary *dic= @{@"title":@"测试图片",@"image":base64Str};
-        NSMutableArray *arr = [[NSMutableArray alloc] init];
-        for (int i = 0; i < 10; i++) {
-            [arr addObject:dic];
-        }
-        resolve(arr);
-    } @catch (NSException *exception) {
-        reject(@"",@"getImageSource() error",nil);
-    }
-}
 #pragma mark getEnvironmentStatus 获取许可文件状态
 RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -299,7 +284,7 @@ RCT_REMAP_METHOD(getFixedScale, getFixedScaleWithResolver:(RCTPromiseResolveBloc
         BOOL isEnable = sMap.smMapWC.mapControl.map.isVisibleScalesEnabled;
         resolve(@(isEnable));
     } @catch (NSException *exception) {
-        reject(@"setFixedScale",exception.reason,nil);
+        reject(@"getFixedScale",exception.reason,nil);
     }
 }
 
@@ -318,7 +303,7 @@ RCT_REMAP_METHOD(getMapScale, getMapScaleWithResolver:(RCTPromiseResolveBlock)re
     @try {
         sMap = [SMap singletonInstance];
         double mapScale = sMap.smMapWC.mapControl.map.scale;
-        NSString *scaleStr =[NSString stringWithFormat:@"%f",mapScale];
+        NSString *scaleStr =[NSString stringWithFormat:@"%.6f",1/mapScale];
         resolve(scaleStr);
     } @catch (NSException *exception) {
         reject(@"getMapScale",exception.reason,nil);
@@ -334,6 +319,44 @@ RCT_REMAP_METHOD(setMapScale, setMapScaleWithValue:(double)value Resolver:(RCTPr
     } @catch (NSException *exception) {
         reject(@"setMapScale",exception.reason,nil);
     }
+}
+
+#pragma mark 获取地图坐标系
+RCT_REMAP_METHOD(getPrjCoordSys, getPrjCoordSysWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        NSString *prjCoordSysName = sMap.smMapWC.mapControl.map.prjCoordSys.name;
+        NSLog(@"%@",prjCoordSysName);
+        resolve(prjCoordSysName);
+    } @catch (NSException *exception) {
+        reject(@"setMapScale",exception.reason,nil);
+    }
+}
+
+#pragma mark 加此图例的事件监听
+RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        if(sMap.smMapWC.mapControl.map.legend.contentChangeDelegate == nil){
+            sMap.smMapWC.mapControl.map.legend.contentChangeDelegate = self;
+        }
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"addLegendDelegate",exception.reason,nil);
+    }
+}
+
+-(void)legentContentChange:(NSArray*)arrItems{
+    NSMutableArray *legendSource = [[NSMutableArray alloc]init];
+    for(int i = 0,count = arrItems.count; i < count; i++){
+        UIImage *image = arrItems[i][0];
+        NSData *data = UIImageJPEGRepresentation(arrItems[i][0], 1.0f);
+        NSString *base64Str = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+        NSDictionary * temp = @{@"image":base64Str,@"title":arrItems[i][1],@"type":arrItems[i][2]};
+        [legendSource addObject:temp];
+    }
+    
+    [self sendEventWithName:LEGEND_CONTENT_CHANGE body:legendSource];
 }
 
 #pragma mark ---------------------地图设置菜单结束---------------------
@@ -2569,29 +2592,6 @@ RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)data
     }
 }
 
-
-#pragma mark 添加地图图例
-RCT_REMAP_METHOD(addLegend, addLegendWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
-    @try {
-        sMap =[SMap singletonInstance];
-        Map *map = sMap.smMapWC.mapControl.map;
-        Legend *legend = map.legend;
-        LegendItem *legendItem = [[LegendItem alloc] init];
-        NSString *path = [NSHomeDirectory() stringByAppendingString:@"/Pictures/Screenshots/aa.png"];
-        UIImage *image = [[UIImage alloc] initWithContentsOfFile:path];
-        UIImageView *imageView =[[UIImageView alloc]initWithImage:image];
-        // 是否需要CGRect初始化UILabel，如果需要，坐标？
-        UILabel *caption = [[UILabel alloc]init];
-        caption.text = @"测试";
-        [legendItem setBitmap:imageView];
-        [legendItem setCaption:caption];
-        [legend addUserDefinedLegendItem:legendItem];
-        [sMap.smMapWC.mapControl.map refresh];
-        resolve(@(YES));
-    } @catch (NSException *exception) {
-        reject(@"addLegend",exception.reason,nil);
-    }
-}
 
 +(NSMutableArray *) getFillColors{
     if(fillColors == nil){
