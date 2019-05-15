@@ -218,6 +218,10 @@ typedef enum{
  *
  */
 @property(nonatomic)MapColorMode mapColorMode;
+//! \brief  是否文本固定角度
+@property(nonatomic,assign)BOOL isTextFixedAngle;
+//! \brief  是否符号固定角度
+@property(nonatomic,assign)BOOL isMarkerFixedAngle;
 
 /**
  * 设置,获取地图动态投影时所使用的投影算法，在不同椭球体时需要设置。默认值为：MTH_GEOCENTRIC_TRANSLATION

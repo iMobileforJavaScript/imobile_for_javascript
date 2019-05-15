@@ -11,8 +11,11 @@
 @class LegendView;
 @class LegendItem;
 @class ColorLegendItem;
+@protocol LegendContentDelegate;
+
 @interface Legend : NSObject
 
+@property(nonatomic,assign) id<LegendContentDelegate> contentChangeDelegate;
 @property(nonatomic,strong,readonly)LegendView* legendView;
 
 //添加用户自定义颜色图例标示，colorType，0点，1线，2面
@@ -28,4 +31,11 @@
 /** 设置关联的图例控件*/
 -(void) connectLegendView:(LegendView *)legendView;
 -(void) disConnectLegendView;
+@end
+
+@protocol LegendContentDelegate <NSObject>
+@required
+
+-(void)legentContentChange:(NSArray*)arrItems;
+
 @end

@@ -91,6 +91,7 @@ public class SMap extends ReactContextBaseJavaModule {
     private static MeasureListener mMeasureListener;
     private GestureDetector mGestureDetector;
     private GeometrySelectedListener mGeometrySelectedListener;
+    private static final int curLocationTag = 118081;
     public static int fillNum;
     public static Color[] fillColors;
     public static Random random;// 用于保存产生随机的线风格颜色的Random对象
@@ -200,6 +201,35 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+
+    private void showMarkerHelper(Point2D pt,int tag){
+        final  Point2D mapPt = pt;//new Point2D(11584575.605042318,3573118.555091877);
+        final  String tagStr = tag+"";
+        getCurrentActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+//                    final  Point2D mapPt = new Point2D(11584575.605042318,3573118.555091877);
+                GeoPoint point = new GeoPoint(mapPt.getX(),mapPt.getY());
+                GeoStyle style = new GeoStyle();
+                style.setMarkerSymbolID(118081);
+                style.setMarkerSize(new Size2D(6,6));
+                style.setLineColor(new Color(255,0,0,255));
+                point.setStyle(style);
+
+                sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(point,tagStr);
+
+//                sMap.smMapWC.getMapControl().getMap().getMapView().getContext();
+//                CallOut callout = new CallOut(sMap.smMapWC.getMapControl().getMap().getMapView().getContext());
+//                callout.setLocation(mapPt.getX(), mapPt.getY());
+//                sMap.smMapWC.getMapControl().getMap().getMapView().addCallout(callout,tagStr);
+//                sMap.smMapWC.getMapControl().getMap().getMapView().showCallOut();
+                sMap.smMapWC.getMapControl().getMap().setCenter(mapPt);
+                if(sMap.smMapWC.getMapControl().getMap().getScale() < 0.000011947150294723098)
+                    sMap.smMapWC.getMapControl().getMap().setScale(0.000011947150294723098);
+                sMap.smMapWC.getMapControl().getMap().refresh();
+            }
+        });
+    }
     /**
      * 添加marker
      * @param longitude
@@ -207,7 +237,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void showMarker(double longitude, double latitude, Promise promise) {
+    public void showMarker(double longitude, double latitude, int tag,Promise promise) {
         try {
             sMap = getInstance();
             sMap.smMapWC.getMapControl().getMap().refresh();
@@ -222,39 +252,32 @@ public class SMap extends ReactContextBaseJavaModule {
 
                 CoordSysTranslator.convert(point2Ds, prjCoordSys, sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
                 pt = point2Ds.getItem(0);
+                showMarkerHelper(pt,tag);
             }
-            final  Point2D mapPt = pt;//new Point2D(11584575.605042318,3573118.555091877);
-            getCurrentActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-//                    final  Point2D mapPt = new Point2D(11584575.605042318,3573118.555091877);
-                    GeoPoint point = new GeoPoint(mapPt.getX(),mapPt.getY());
-                    GeoStyle style = new GeoStyle();
-                    style.setMarkerSymbolID(1);
-                    style.setMarkerSize(new Size2D(25,25));
-                    style.setLineColor(new Color(255,0,0,255));
-                    point.setStyle(style);
-                    sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(point,"marker_###");
 
-                    sMap.smMapWC.getMapControl().getMap().setCenter(mapPt);
-                    sMap.smMapWC.getMapControl().getMap().setScale(0.000011947150294723098);
-                    sMap.smMapWC.getMapControl().getMap().refresh();
-                }
-            });
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
-
+    private void deleteMarkerHelper(int tag){
+        final  String tagStr = tag+"";
+        getCurrentActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              //  sMap.smMapWC.getMapControl().getMap().getMapView().removeCallOut(tagStr);
+                 sMap.smMapWC.getMapControl().getMap().getTrackingLayer().removeLabel(tagStr);
+            }
+        });
+    }
     /**
      * 移除marker
      * @param promise
      */
     @ReactMethod
-    public void deleteMarker(Promise promise) {
+    public void deleteMarker(int tag ,Promise promise) {
         try {
-            sMap.smMapWC.getMapControl().getMap().getTrackingLayer().removeLabel("marker_###");
+            deleteMarkerHelper(tag);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -868,6 +891,7 @@ public class SMap extends ReactContextBaseJavaModule {
             if (mapControl != null) {
                 com.supermap.mapping.Map map = mapControl.getMap();
                 defaultMapCenter = null;
+                deleteMarkerHelper(curLocationTag);
                 map.close();
             }
             promise.resolve(true);
@@ -1440,11 +1464,8 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             if (point.hasKey("x") && point.hasKey("y")) {
                 Point2D point2D = new Point2D(point.getDouble("x"), point.getDouble("y"));
-                MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(point2D, promise);
+                MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(point2D,false, promise);
                 moveToCurrentThread.run();
-                SMap.getInstance().getSmMapWC().getMapControl().getMap().setAngle(0);
-                SMap.getInstance().getSmMapWC().getMapControl().getMap().SetSlantAngle(0);
-
 //                promise.resolve(true);
             } else {
                 promise.resolve(false);
@@ -1459,7 +1480,7 @@ public class SMap extends ReactContextBaseJavaModule {
 
         private Promise promise;
         private Point2D point2D;
-
+        private boolean showMarker = true;
         public MoveToCurrentThread(Promise promise) {
             this.promise = promise;
         }
@@ -1468,7 +1489,11 @@ public class SMap extends ReactContextBaseJavaModule {
             this.promise = promise;
             this.point2D = point2D;
         }
-
+        public MoveToCurrentThread(Point2D point2D,boolean showMarker, Promise promise) {
+            this.promise = promise;
+            this.point2D = point2D;
+            this.showMarker = showMarker;
+        }
         @Override
         public void run() {
             try {
@@ -1485,7 +1510,7 @@ public class SMap extends ReactContextBaseJavaModule {
                     pt = this.point2D;
                 }
 
-                Boolean isMove = false;
+                Boolean isMove = true;
                 if (pt != null) {
                     // Point2D point2D = new Point2D(pt);
 
@@ -1524,17 +1549,22 @@ public class SMap extends ReactContextBaseJavaModule {
 //                        pt = point2Ds.getItem(0);
 //                    }
                 }
-                if (pt != null && mapControl.getMap().getBounds().contains(pt)) {
-                    mapControl.getMap().setCenter(pt);
-                    isMove = true;
-                } else {
+                deleteMarkerHelper(curLocationTag);
+                Point2D mapCenter = pt;
+                if (pt != null && !mapControl.getMap().getBounds().contains(pt)) {
                     if (defaultMapCenter != null) {
-                        mapControl.getMap().setCenter(defaultMapCenter);
+                        mapCenter = defaultMapCenter;
                     }
-                    //  mapControl.panTo(mapControl.getMap().getCenter(), 200);
+                }else{
+                    if(this.showMarker) {
+                        showMarkerHelper(mapCenter, curLocationTag);
+                    }
                 }
-
-                mapControl.getMap().refresh();
+                if(mapCenter!=null) {
+                    mapControl.getMap().setCenter(mapCenter);
+                    isMove = true;
+                    mapControl.getMap().refresh();
+                }
                 promise.resolve(isMove);
             } catch (Exception e) {
                 promise.resolve(e);
@@ -3341,28 +3371,27 @@ public class SMap extends ReactContextBaseJavaModule {
             }
 
             Legend lengend = mapControl.getMap().getCreateLegend();
-            lengend.dispose();
+            if(lengend!=null){
+                lengend.dispose();
 
-            for (int i = 0; i < arrayList.size(); i++) {
-                HashMap<String, String> hashMap = arrayList.get(i);
-                String caption = hashMap.get("Caption");
-                String colorString = hashMap.get("Color");
+                for (int i = 0; i < arrayList.size(); i++) {
+                    HashMap<String, String> hashMap = arrayList.get(i);
+                    String caption = hashMap.get("Caption");
+                    String colorString = hashMap.get("Color");
 
-                int color = android.graphics.Color.parseColor(colorString);
+                    int color = android.graphics.Color.parseColor(colorString);
 //                ColorLegendItem colorLegendItem = new ColorLegendItem();
 //                colorLegendItem.setColor(color);
 //                colorLegendItem.setCaption(caption);
 //                lengend.addColorLegendItem(2, colorLegendItem);
 
-
-                LegendItem legendItem = new LegendItem();
-                legendItem.setColor(color);
-                legendItem.setCaption(caption);
-                lengend.addUserDefinedLegendItem(legendItem);
+                    LegendItem legendItem = new LegendItem();
+                    legendItem.setColor(color);
+                    legendItem.setCaption(caption);
+                    lengend.addUserDefinedLegendItem(legendItem);
+                }
+                mapControl.getMap().refresh();
             }
-
-            mapControl.getMap().refresh();
-
             promise.resolve(true);
 
         } catch (Exception e) {
