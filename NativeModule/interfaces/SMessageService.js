@@ -32,7 +32,7 @@ function register(handlers) {
 
 function unRegister() {
   try {
-    listener.remove()
+    listener && listener.remove()
   } catch (error) {
     console.log(error)
   }
