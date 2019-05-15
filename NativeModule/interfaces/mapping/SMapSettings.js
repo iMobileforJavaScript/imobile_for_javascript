@@ -45,12 +45,75 @@ function getMapAngle() {
 }
 
 /**
+ * 设置地图旋转角度
+ * @param value
+ * @returns {*}
+ */
+function setMapAngle(value) {
+  try {
+    return SMap.setMapAngle(value);
+  }catch (e) {
+    console.error(e)
+  }
+}
+/**
  * 获取当前地图颜色模式
  * @returns {*}
  */
 function getMapColorMode() {
   try {
     return SMap.getMapColorMode();
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 设置是否固定文本角度
+ * @param value
+ * @returns {*}
+ */
+function setTextFixedAngle(value) {
+  try {
+    return SMap.setTextFixedAngle(value);
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 获取是否固定文本角度
+ * @returns {*}
+ */
+function getTextFixedAngle() {
+  try {
+    return SMap.getTextFixedAngle();
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 设置是否固定符号角度
+ * @param value
+ * @returns {*}
+ */
+function setMarkerFixedAngle(value) {
+  try {
+    return SMap.setMarkerFixedAngle(value);
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 获取是否固定符号角度
+ * @param value
+ * @returns {*}
+ */
+function getMarkerFixedAngle() {
+  try {
+    return SMap.getMarkerFixedAngle();
   }catch (e) {
     console.error(e)
   }
@@ -109,30 +172,9 @@ function setMapScale(value) {
 }
 
 /**
- * 设置当前地图是否固定比例尺级别
- * @param value
- * @returns {*}
+ *  获取当前地图坐标系
+ * @returns {Promise<PrjCoordSys>}
  */
-function setFixedScale(value) {
-  try {
-    return SMap.setFixedScale(value);
-  }catch (e) {
-    console.error(e)
-  }
-}
-
-/**
- *  获取当前地图是否固定比例尺级别
- * @returns {*}
- */
-function getFixedScale() {
-  try {
-    return SMap.getFixedScale();
-  }catch (e) {
-    console.error(e)
-  }
-}
-
 function getPrjCoordSys() {
   try {
     return SMap.getPrjCoordSys();
@@ -145,12 +187,15 @@ export {
   getScaleViewEnable,
   setScaleViewEnable,
   getMapAngle,
+  setMapAngle,
   getMapColorMode,
+  getMarkerFixedAngle,
+  setMarkerFixedAngle,
+  getTextFixedAngle,
+  setTextFixedAngle,
   getMapCenter,
   setMapCenter,
   getMapScale,
   setMapScale,
-  getFixedScale,
-  setFixedScale,
   getPrjCoordSys,
 }
