@@ -241,6 +241,17 @@ RCT_REMAP_METHOD(getMapAngle, getMapAngleWithResolver:(RCTPromiseResolveBlock)re
     }
 }
 
+#pragma mark 设置地图旋转角度
+RCT_REMAP_METHOD(setMapAngle, setMapAngleWithValue:(double)angle Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.mapControl.map.angle = angle;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setMapAngle",exception.reason,nil);
+    }
+}
+
 #pragma mark 获取地图颜色模式
 RCT_REMAP_METHOD(getMapColorMode, getMapColorModeWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -250,6 +261,50 @@ RCT_REMAP_METHOD(getMapColorMode, getMapColorModeWithResolver:(RCTPromiseResolve
         resolve(colorMode[modeIndex]);
     } @catch (NSException *exception) {
         reject(@"getMapColorMode",exception.reason,nil);
+    }
+}
+
+#pragma mark 设置是否固定文本角度
+RCT_REMAP_METHOD(setTextFixedAngle, setTextFixedAngleWithValue: (BOOL)value Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.mapControl.map.isTextFixedAngle = value;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setTextFixedAngle",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取是否固定文本角度
+RCT_REMAP_METHOD(getTextFixedAngle, getTextFixedAngleWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL b = sMap.smMapWC.mapControl.map.isTextFixedAngle;
+        resolve(@(b));
+    } @catch (NSException *exception) {
+        reject(@"getTextFixedAngle",exception.reason,nil);
+    }
+}
+
+#pragma mark 设置是否固定符号角度
+RCT_REMAP_METHOD(setMarkerFixedAngle, setMarkerFixedAngleWithValue: (BOOL)value Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.mapControl.map.isMarkerFixedAngle = value;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setTextFixedAngle",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取是否固定符号角度
+RCT_REMAP_METHOD(getMarkerFixedAngle, getMarkerFixedAngleWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL b = sMap.smMapWC.mapControl.map.isMarkerFixedAngle;
+        resolve(@(b));
+    } @catch (NSException *exception) {
+        reject(@"getMarkerFixedAngle",exception.reason,nil);
     }
 }
 
@@ -277,27 +332,6 @@ RCT_REMAP_METHOD(setMapCenter, setMapCenterWithX:(double)x Y:(double)y Resolver:
     }
 }
 
-#pragma mark 获取当前地图是否固定比例尺级别
-RCT_REMAP_METHOD(getFixedScale, getFixedScaleWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        sMap = [SMap singletonInstance];
-        BOOL isEnable = sMap.smMapWC.mapControl.map.isVisibleScalesEnabled;
-        resolve(@(isEnable));
-    } @catch (NSException *exception) {
-        reject(@"getFixedScale",exception.reason,nil);
-    }
-}
-
-#pragma mark 设置当前地图是否固定比例尺级别
-RCT_REMAP_METHOD(setFixedScale, setFixedScaleWithBool:(BOOL)isEnable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        sMap = [SMap singletonInstance];
-        sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = isEnable;
-        resolve(@(YES));
-    } @catch (NSException *exception) {
-        reject(@"setFixedScale",exception.reason,nil);
-    }
-}
 #pragma mark 获取地图比例尺
 RCT_REMAP_METHOD(getMapScale, getMapScaleWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
