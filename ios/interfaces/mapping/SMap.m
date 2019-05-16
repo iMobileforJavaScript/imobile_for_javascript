@@ -313,8 +313,9 @@ RCT_REMAP_METHOD(getMapCenter, getMapCenterWithResolver:(RCTPromiseResolveBlock)
     @try {
         sMap = [SMap singletonInstance];
         Point2D *center = sMap.smMapWC.mapControl.map.center;
-        NSString *centerPoint = [NSString stringWithFormat:@"%f%@%f",center.x,@"/",center.y];
-        resolve(centerPoint);
+        NSString *centerX = [NSString stringWithFormat:@"%f",center.x];
+        NSString *centerY = [NSString stringWithFormat:@"%f",center.y];
+        resolve(@{@"x":centerX,@"y":centerY});
     } @catch (NSException *exception) {
         reject(@"getMapCenter",exception.reason,nil);
     }
@@ -360,7 +361,6 @@ RCT_REMAP_METHOD(getPrjCoordSys, getPrjCoordSysWithResolver:(RCTPromiseResolveBl
     @try {
         sMap = [SMap singletonInstance];
         NSString *prjCoordSysName = sMap.smMapWC.mapControl.map.prjCoordSys.name;
-        NSLog(@"%@",prjCoordSysName);
         resolve(prjCoordSysName);
     } @catch (NSException *exception) {
         reject(@"setMapScale",exception.reason,nil);
