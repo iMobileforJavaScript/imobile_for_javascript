@@ -222,6 +222,8 @@ typedef enum{
 @property(nonatomic,assign)BOOL isTextFixedAngle;
 //! \brief  是否符号固定角度
 @property(nonatomic,assign)BOOL isMarkerFixedAngle;
+//! \brief  是否固定文本朝向
+@property(nonatomic,assign)BOOL isFixedTextOrientation;
 
 /**
  * 设置,获取地图动态投影时所使用的投影算法，在不同椭球体时需要设置。默认值为：MTH_GEOCENTRIC_TRANSLATION
@@ -236,6 +238,16 @@ typedef enum{
  * 压盖设置 是否显示压盖对象（用于关闭／开启文字和点图层的自动避让）
  */
 @property(nonatomic,assign) BOOL IsOverlapDisplay;
+
+//! \brief 获取/设置文本重叠时是否显示对象
+@property(nonatomic,assign) BOOL IsAllowTextOverlap;
+
+//! \brief 获取/设置点重叠时是否显示对象
+@property(nonatomic,assign) BOOL IsAllowPointOverlap;
+
+//! \brief 获取/设置标签和点是否压盖过滤显示
+@property(nonatomic,assign) BOOL IsAllowTextAndPointOverlap;
+
 
 #pragma Mark functions
 
