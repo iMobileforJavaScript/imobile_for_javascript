@@ -263,6 +263,28 @@ RCT_REMAP_METHOD(getMapColorMode, getMapColorModeWithResolver:(RCTPromiseResolve
         reject(@"getMapColorMode",exception.reason,nil);
     }
 }
+#pragma mark  todo 设置地图颜色模式 设置地图背景颜色
+
+#pragma mark 获取地图背景颜色
+- (Color *)extracted:(GeoStyle *)backgroundStyle {
+    Color *color = [backgroundStyle getFillBackColor];
+    return color;
+}
+
+RCT_REMAP_METHOD(getMapBackgroundColor, getMapBackgroundColorWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        GeoStyle *backgroundStyle = sMap.smMapWC.mapControl.map.backgroundStyle;
+        Color * color = [self extracted:backgroundStyle];
+        NSString *R = [[NSString alloc]initWithFormat:@"%02x",color.red];
+        NSString *G = [[NSString alloc]initWithFormat:@"%02x",color.green];
+        NSString *B = [[NSString alloc]initWithFormat:@"%02x",color.blue];
+        NSString *returnColor = [NSString stringWithFormat:@"%@%@%@%@",@"#",R,G,B];
+        resolve(returnColor);
+    } @catch (NSException *exception) {
+        reject(@"getMapColorMode",exception.reason,nil);
+    }
+}
 
 #pragma mark 设置是否固定文本角度
 RCT_REMAP_METHOD(setTextFixedAngle, setTextFixedAngleWithValue: (BOOL)value Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -302,6 +324,27 @@ RCT_REMAP_METHOD(getMarkerFixedAngle, getMarkerFixedAngleWithResolver:(RCTPromis
     @try {
         sMap = [SMap singletonInstance];
         BOOL b = sMap.smMapWC.mapControl.map.isMarkerFixedAngle;
+        resolve(@(b));
+    } @catch (NSException *exception) {
+        reject(@"getMarkerFixedAngle",exception.reason,nil);
+    }
+}
+//isFixedTextOrientation
+#pragma mark 设置是否文本方向
+RCT_REMAP_METHOD(setFixedTextOrientation, setFixedTextOrientationWithValue: (BOOL)value Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.mapControl.map.isFixedTextOrientation = value;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setFixedTextOrientation",exception.reason,nil);
+    }
+}
+#pragma mark 获取是否固定文本方向
+RCT_REMAP_METHOD(getFixedTextOrientation, getFixedTextOrientationWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL b = sMap.smMapWC.mapControl.map.isFixedTextOrientation;
         resolve(@(b));
     } @catch (NSException *exception) {
         reject(@"getMarkerFixedAngle",exception.reason,nil);
