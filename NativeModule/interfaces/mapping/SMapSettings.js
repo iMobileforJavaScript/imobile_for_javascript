@@ -81,6 +81,21 @@ function getMapBackgroundColor() {
 }
 
 /**
+ * 设置地图背景色
+ * @param value 十六进制颜色 转换成rgb '#FFDE4D'
+ * @returns {*}
+ */
+function setMapBackgroundColor(value) {
+  try {
+    let r = parseInt(`0x${value.substring(1,3)}`)
+    let g = parseInt(`0x${value.substring(3,5)}`)
+    let b = parseInt(`0x${value.substring(5,7)}`)
+    return SMap.setMapBackgroundColor(r,g,b);
+  }catch (e) {
+    console.error(e)
+  }
+}
+/**
  * 设置是否固定文本角度
  * @param value
  * @returns {*}
@@ -225,6 +240,7 @@ export {
   setScaleViewEnable,
   getMapAngle,
   setMapAngle,
+  setMapBackgroundColor,
   getMapBackgroundColor,
   getMapColorMode,
   getMarkerFixedAngle,

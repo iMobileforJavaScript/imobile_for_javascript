@@ -263,24 +263,43 @@ RCT_REMAP_METHOD(getMapColorMode, getMapColorModeWithResolver:(RCTPromiseResolve
         reject(@"getMapColorMode",exception.reason,nil);
     }
 }
-#pragma mark  todo 设置地图颜色模式 设置地图背景颜色
-
-#pragma mark 获取地图背景颜色
-- (Color *)extracted:(GeoStyle *)backgroundStyle {
-    Color *color = [backgroundStyle getFillBackColor];
-    return color;
+#pragma mark 设置地图颜色模式
+RCT_REMAP_METHOD(setMapColorMode, setMapColorModeWithValue:(int)value Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.mapControl.map.mapColorMode = value;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setMapColorMode",exception.reason,nil);
+    }
 }
 
+#pragma mark 获取地图背景颜色
 RCT_REMAP_METHOD(getMapBackgroundColor, getMapBackgroundColorWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         GeoStyle *backgroundStyle = sMap.smMapWC.mapControl.map.backgroundStyle;
-        Color * color = [self extracted:backgroundStyle];
+        Color * color = [backgroundStyle getFillForeColor];
         NSString *R = [[NSString alloc]initWithFormat:@"%02x",color.red];
         NSString *G = [[NSString alloc]initWithFormat:@"%02x",color.green];
         NSString *B = [[NSString alloc]initWithFormat:@"%02x",color.blue];
         NSString *returnColor = [NSString stringWithFormat:@"%@%@%@%@",@"#",R,G,B];
         resolve(returnColor);
+    } @catch (NSException *exception) {
+        reject(@"getMapColorMode",exception.reason,nil);
+    }
+}
+#pragma mark 设置地图背景颜色
+RCT_REMAP_METHOD(setMapBackgroundColor, setMapBackgroundColorWithR:(int)r G:(int)g B:(int)b Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            sMap = [SMap singletonInstance];
+            GeoStyle *backgroundStyle = sMap.smMapWC.mapControl.map.backgroundStyle;
+            Color *color = [[Color alloc] initWithR:r G:g B:b];
+            [backgroundStyle setFillForeColor:color];
+            [sMap.smMapWC.mapControl.map refresh];
+        });
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"getMapColorMode",exception.reason,nil);
     }
@@ -330,7 +349,7 @@ RCT_REMAP_METHOD(getMarkerFixedAngle, getMarkerFixedAngleWithResolver:(RCTPromis
     }
 }
 //isFixedTextOrientation
-#pragma mark 设置是否文本方向
+#pragma mark 设置是否固定文本方向
 RCT_REMAP_METHOD(setFixedTextOrientation, setFixedTextOrientationWithValue: (BOOL)value Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
