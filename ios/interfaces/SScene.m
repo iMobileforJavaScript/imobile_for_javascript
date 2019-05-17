@@ -731,7 +731,8 @@ RCT_REMAP_METHOD(getTerrainLayerList, terrainLayerLisTresolver:(RCTPromiseResolv
             BOOL visible = [scene.terrainLayers getLayerAtIndex:i].visible;
            // BOOL selectable = [scene.terrainLayers getLayerWithIndex:i].selectable;// .isSelectable();
             NSDictionary* map;
-            map = @{@"name":name,@"visible": @(visible)};
+//             map = @{@"name":name,@"visible": @(visible),@"selectable": @(selectable),@"basemap":@(1),@"type":strType};
+            map = @{@"name":name,@"visible": @(visible),@"selectable": @(0),@"basemap":@(0),@"type":@"Terrain"};
             [arr addObject:map];
         }
         
