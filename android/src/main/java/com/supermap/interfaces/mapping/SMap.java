@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Base64;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -53,8 +54,10 @@ import com.supermap.mapping.LayerGroup;
 import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.Legend;
+import com.supermap.mapping.LegendContentChangeListener;
 import com.supermap.mapping.LegendItem;
 import com.supermap.mapping.LegendView;
+import com.supermap.mapping.MapColorMode;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.Selection;
@@ -70,6 +73,7 @@ import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -83,8 +87,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Vector;
 
-public class SMap extends ReactContextBaseJavaModule {
+public class SMap extends ReactContextBaseJavaModule implements LegendContentChangeListener {
     public static final String REACT_CLASS = "SMap";
     private static SMap sMap;
     private static ReactApplicationContext context;
@@ -950,6 +955,7 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
 
     class DisposeThread implements Runnable {
 
@@ -3561,4 +3567,182 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
     /************************************** 地图编辑历史操作 END ****************************************/
+
+    /************************************** 地图设置开始 ****************************************/
+
+
+    /**
+     * 获取比例尺是否显示
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapAngle(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            double angle = sMap.smMapWC.getMapControl().getMap().getAngle();
+
+            promise.resolve(angle);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取地图颜色模式
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapColorMode(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapColorMode colorMode = sMap.smMapWC.getMapControl().getMap().getColorMode();
+            String color = colorMode.toString();
+            promise.resolve(color);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 获取地图中心点
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapCenter(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Point2D center = sMap.smMapWC.getMapControl().getMap().getCenter();
+            double x = center.getX();
+            double y = center.getY();
+            WritableMap writeMap = Arguments.createMap();
+            writeMap.putDouble("x", x);
+            writeMap.putDouble("y", y);
+            promise.resolve(writeMap);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置地图中心点
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setMapCenter(double x,double y,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Point2D center = new Point2D(x,y);
+            sMap.smMapWC.getMapControl().getMap().setCenter(center);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取地图比例尺
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapScale(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            double scale = sMap.smMapWC.getMapControl().getMap().getScale();
+            String mscale = ""+1/scale;
+            promise.resolve(mscale);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 设置地图比例尺
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setMapScale(double scale,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getMap().setScale(scale);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取地图坐标系
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getPrjCoordSys(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            String name = sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getName();
+            promise.resolve(name);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 加此图例的事件监听
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void addLegendDelegate(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getMap().getLegend().setContentChangeListener(this);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @Override
+    public void legendContentChanged(Vector<LegendItem> arrItems) {
+        WritableArray arr = Arguments.createArray();
+        for(int i = 0 ;i < arrItems.size(); i++){
+            WritableMap writeMap = Arguments.createMap();
+            Bitmap bm = arrItems.get(i).getBitmap();
+            String name = arrItems.get(i).getCaption();
+            int type = arrItems.get(i).getType();
+
+            String result = null;
+            ByteArrayOutputStream baos = null;
+
+            try {
+                if (bm != null) {
+                    baos = new ByteArrayOutputStream();
+                    bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    baos.flush();
+                    baos.close();
+                    byte[] bitmapBytes = baos.toByteArray();
+                    result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            writeMap.putString("image",result);
+            writeMap.putString("title",name);
+            writeMap.putInt("type",type);
+            arr.pushMap(writeMap);
+        }
+        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(EventConst.LEGEND_CONTENT_CHANGE, arr);
+    }
+
+    /************************************** 地图设置 END ****************************************/
+
 }

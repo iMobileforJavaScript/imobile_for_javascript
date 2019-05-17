@@ -69,6 +69,18 @@ function getMapColorMode() {
 }
 
 /**
+ * 获取地图背景色
+ * @returns {*}
+ */
+function getMapBackgroundColor() {
+  try {
+    return SMap.getMapBackgroundColor();
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  * 设置是否固定文本角度
  * @param value
  * @returns {*}
@@ -114,6 +126,31 @@ function setMarkerFixedAngle(value) {
 function getMarkerFixedAngle() {
   try {
     return SMap.getMarkerFixedAngle();
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 获取是否固定文本方向
+ * @returns {*}
+ */
+function getFixedTextOrientation() {
+  try {
+    return SMap.getFixedTextOrientation();
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 设置是否固定文本方向
+ * @param value
+ * @returns {*}
+ */
+function setFixedTextOrientation(value) {
+  try {
+    return SMap.setFixedTextOrientation(value);
   }catch (e) {
     console.error(e)
   }
@@ -188,11 +225,14 @@ export {
   setScaleViewEnable,
   getMapAngle,
   setMapAngle,
+  getMapBackgroundColor,
   getMapColorMode,
   getMarkerFixedAngle,
   setMarkerFixedAngle,
   getTextFixedAngle,
   setTextFixedAngle,
+  getFixedTextOrientation,
+  setFixedTextOrientation,
   getMapCenter,
   setMapCenter,
   getMapScale,
