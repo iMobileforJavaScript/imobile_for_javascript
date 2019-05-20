@@ -266,8 +266,11 @@ RCT_REMAP_METHOD(getMapColorMode, getMapColorModeWithResolver:(RCTPromiseResolve
 #pragma mark 设置地图颜色模式
 RCT_REMAP_METHOD(setMapColorMode, setMapColorModeWithValue:(int)value Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        sMap = [SMap singletonInstance];
-        sMap.smMapWC.mapControl.map.mapColorMode = value;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            sMap = [SMap singletonInstance];
+            sMap.smMapWC.mapControl.map.mapColorMode = value;
+            [sMap.smMapWC.mapControl.map refresh];
+        });
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setMapColorMode",exception.reason,nil);
@@ -348,7 +351,7 @@ RCT_REMAP_METHOD(getMarkerFixedAngle, getMarkerFixedAngleWithResolver:(RCTPromis
         reject(@"getMarkerFixedAngle",exception.reason,nil);
     }
 }
-//isFixedTextOrientation
+
 #pragma mark 设置是否固定文本方向
 RCT_REMAP_METHOD(setFixedTextOrientation, setFixedTextOrientationWithValue: (BOOL)value Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -424,6 +427,20 @@ RCT_REMAP_METHOD(getPrjCoordSys, getPrjCoordSysWithResolver:(RCTPromiseResolveBl
         sMap = [SMap singletonInstance];
         NSString *prjCoordSysName = sMap.smMapWC.mapControl.map.prjCoordSys.name;
         resolve(prjCoordSysName);
+    } @catch (NSException *exception) {
+        reject(@"getPrjCoordSys",exception.reason,nil);
+    }
+}
+#pragma mark 设置地图坐标系
+RCT_REMAP_METHOD(setPrjCoordSys, setPrjCoordSysWithXml:(NSString *)xml Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL isCreate = [sMap.smMapWC.mapControl.map.prjCoordSys formXML:xml];
+        if(isCreate){
+            resolve(@(YES));
+        }else{
+            resolve(@(NO));
+        }
     } @catch (NSException *exception) {
         reject(@"setMapScale",exception.reason,nil);
     }

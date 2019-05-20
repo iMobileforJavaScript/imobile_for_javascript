@@ -69,6 +69,18 @@ function getMapColorMode() {
 }
 
 /**
+ * 设置当前地图颜色模式
+ * @param value
+ * @returns {*}
+ */
+function setMapColorMode(value) {
+  try {
+    return SMap.setMapColorMode(value);
+  }catch (e) {
+    console.error(e)
+  }
+}
+/**
  * 获取地图背景色
  * @returns {*}
  */
@@ -235,6 +247,19 @@ function getPrjCoordSys() {
   }
 }
 
+/**
+ * 设置当前地图地理坐标系  通过xml设置
+ * @param xml
+ * @returns {*}
+ */
+function setPrjCoordSys(xml) {
+  try {
+    return SMap.setPrjCoordSys(xml);
+  }catch (e) {
+    console.error(e)
+  }
+}
+
 export {
   getScaleViewEnable,
   setScaleViewEnable,
@@ -243,6 +268,7 @@ export {
   setMapBackgroundColor,
   getMapBackgroundColor,
   getMapColorMode,
+  setMapColorMode,
   getMarkerFixedAngle,
   setMarkerFixedAngle,
   getTextFixedAngle,
@@ -254,4 +280,5 @@ export {
   getMapScale,
   setMapScale,
   getPrjCoordSys,
+  setPrjCoordSys,
 }
