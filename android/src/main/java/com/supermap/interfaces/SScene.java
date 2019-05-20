@@ -560,6 +560,9 @@ public class SScene extends ReactContextBaseJavaModule {
                     WritableMap map = Arguments.createMap();
                     map.putString("name", name);
                     map.putBoolean("visible", visible);
+                    map.putBoolean("selectable", false);
+                    map.putBoolean("basemap", false);
+                    map.putString("type", "Terrain");
                     arr.pushMap(map);
                 }
             }

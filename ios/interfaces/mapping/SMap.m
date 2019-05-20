@@ -1243,8 +1243,10 @@ RCT_REMAP_METHOD(enableSlantTouch, enableSlantTouch:(BOOL)enable resolver:(RCTPr
 RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         [SMap moveHelper];
-        [mapControl.map setAngle:0];
-        [mapControl.map setSlantAngle:0];
+        [[SMap singletonInstance].smMapWC.mapControl.map setAngle:0];
+        [[SMap singletonInstance].smMapWC.mapControl.map setSlantAngle:0];
+//        [mapControl.map setAngle:0];
+//        [mapControl.map setSlantAngle:0];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
