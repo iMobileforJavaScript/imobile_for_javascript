@@ -236,6 +236,18 @@ function setMapScale(value) {
 }
 
 /**
+ * 获取当前窗口四至范围 viewbounds
+ * @returns {*}
+ */
+function getMapViewBounds() {
+  try {
+    return SMap.getMapViewBounds();
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  *  获取当前地图坐标系
  * @returns {Promise<PrjCoordSys>}
  */
@@ -275,6 +287,7 @@ export {
   setTextFixedAngle,
   getFixedTextOrientation,
   setFixedTextOrientation,
+  getMapViewBounds,
   getMapCenter,
   setMapCenter,
   getMapScale,

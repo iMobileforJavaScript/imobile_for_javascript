@@ -179,10 +179,19 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
         if (result && sMap.smMapWC.mapControl) {
             [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
            dispatch_async(dispatch_get_main_queue(), ^{
-               sMap.smMapWC.scaleView = [[ScaleView alloc] initWithMapControl:sMap.smMapWC.mapControl];
-               sMap.smMapWC.scaleView.xOffset = 240;
-               sMap.smMapWC.scaleView.yOffset = -15;
-               sMap.smMapWC.scaleView.showEnable = NO;
+               if(sMap.sOrientation == nil){
+                   sMap.sOrientation = [[SOrientation alloc]initDelegateWithTarget:sMap];
+                   sMap.sOrientation.orientation = [UIApplication sharedApplication].statusBarOrientation;
+               }
+               CGSize size = [UIScreen mainScreen].bounds.size;
+               //兼容小屏设备 至少留出60给scaleView显示
+               double xPos = size.width * 0.1 > 60 ? size.width * 0.9 : size.width - 60;
+               double yPos = size.height * -0.1;
+               if(sMap.smMapWC.scaleView == nil){
+                   sMap.smMapWC.scaleView = [[ScaleView alloc] initWithMapControl:sMap.smMapWC.mapControl];
+               }
+               sMap.smMapWC.scaleView.xOffset = xPos;
+               sMap.smMapWC.scaleView.yOffset = yPos;
             });
         }
         sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
@@ -222,8 +231,10 @@ RCT_REMAP_METHOD(getScaleViewEnable, getScaleViewEnableWithResolver:(RCTPromiseR
 #pragma mark 设置比例尺是否显示
 RCT_REMAP_METHOD(setScaleViewEnable, setScaleViewEnableWithBool:(BOOL)isEnable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        sMap = [SMap singletonInstance];
-        sMap.smMapWC.scaleView.showEnable = isEnable;
+         dispatch_async(dispatch_get_main_queue(), ^{
+             sMap = [SMap singletonInstance];
+             sMap.smMapWC.scaleView.showEnable = isEnable;
+         });
         resolve(@(YES));
     } @catch (NSException *exception) {
          reject(@"setScaleViewEnable",exception.reason,nil);
@@ -420,6 +431,20 @@ RCT_REMAP_METHOD(setMapScale, setMapScaleWithValue:(double)value Resolver:(RCTPr
         reject(@"setMapScale",exception.reason,nil);
     }
 }
+#pragma mark 获取四至范围 viewBounds
+RCT_REMAP_METHOD(getMapViewBounds, getMapViewBoundsWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Rectangle2D *rect = sMap.smMapWC.mapControl.map.viewBounds;
+        NSString *left = [NSString stringWithFormat:@"%.6f",rect.left];
+        NSString *bottom = [NSString stringWithFormat:@"%.6f",rect.bottom];
+        NSString *right = [NSString stringWithFormat:@"%.6f",rect.right];
+        NSString *top = [NSString stringWithFormat:@"%.6f",rect.top];
+        resolve(@{@"left":left,@"bottom":bottom,@"right":right,@"top":top});
+    } @catch (NSException *exception) {
+        reject(@"getMapViewBounds",exception.reason,nil);
+    }
+}
 
 #pragma mark 获取地图坐标系
 RCT_REMAP_METHOD(getPrjCoordSys, getPrjCoordSysWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -456,6 +481,24 @@ RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseRes
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"addLegendDelegate",exception.reason,nil);
+    }
+}
+
+-(void)handleDeviceOrientationChanged:(NSNotification *)notification{
+    UIInterfaceOrientation appOrientation = [UIApplication sharedApplication].statusBarOrientation;
+    sMap = [SMap singletonInstance];
+    if(appOrientation != sMap.sOrientation.orientation){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            CGSize size = [UIScreen mainScreen].bounds.size;
+            double xPos = size.width * 0.1 > 60 ? size.width * 0.9 : size.width - 60;
+            double yPos = size.height * -0.1;
+            if(sMap.smMapWC.scaleView == nil){
+                sMap.smMapWC.scaleView = [[ScaleView alloc] initWithMapControl:sMap.smMapWC.mapControl];
+            }
+            sMap.smMapWC.scaleView.xOffset = xPos;
+            sMap.smMapWC.scaleView.yOffset = yPos;
+            sMap.sOrientation.orientation = appOrientation;
+        });
     }
 }
 
@@ -858,10 +901,18 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
         Map* map = sMap.smMapWC.mapControl.map;
         Maps* maps = sMap.smMapWC.workspace.maps;
         dispatch_async(dispatch_get_main_queue(), ^{
-            sMap.smMapWC.scaleView = [[ScaleView alloc] initWithMapControl:sMap.smMapWC.mapControl];
-            sMap.smMapWC.scaleView.xOffset = 240;
-            sMap.smMapWC.scaleView.yOffset = -15;
-            sMap.smMapWC.scaleView.showEnable = NO;
+            if(sMap.sOrientation == nil){
+                sMap.sOrientation = [[SOrientation alloc]initDelegateWithTarget:sMap];
+                sMap.sOrientation.orientation = [UIApplication sharedApplication].statusBarOrientation;
+            }
+            CGSize size = [UIScreen mainScreen].bounds.size;
+            double xPos = size.width * 0.1 > 60 ? size.width * 0.9 : size.width - 60;
+            double yPos = size.height * -0.1;
+            if(sMap.smMapWC.scaleView == nil){
+                sMap.smMapWC.scaleView = [[ScaleView alloc] initWithMapControl:sMap.smMapWC.mapControl];
+            }
+            sMap.smMapWC.scaleView.xOffset = xPos;
+            sMap.smMapWC.scaleView.yOffset = yPos;
         });
         BOOL isOpen = NO;
         
@@ -908,10 +959,18 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
         Map* map = sMap.smMapWC.mapControl.map;
         Maps* maps = sMap.smMapWC.workspace.maps;
         dispatch_async(dispatch_get_main_queue(), ^{
-            sMap.smMapWC.scaleView = [[ScaleView alloc] initWithMapControl:sMap.smMapWC.mapControl];
-            sMap.smMapWC.scaleView.xOffset = 240;
-            sMap.smMapWC.scaleView.yOffset = -15;
-            sMap.smMapWC.scaleView.showEnable = NO;
+            if(sMap.sOrientation == nil){
+                sMap.sOrientation = [[SOrientation alloc]initDelegateWithTarget:sMap];
+                sMap.sOrientation.orientation = [UIApplication sharedApplication].statusBarOrientation;
+            }
+            CGSize size = [UIScreen mainScreen].bounds.size;
+            double xPos = size.width * 0.1 > 60 ? size.width * 0.9 : size.width - 60;
+            double yPos = size.height * -0.1;
+            if(sMap.smMapWC.scaleView == nil){
+                sMap.smMapWC.scaleView = [[ScaleView alloc] initWithMapControl:sMap.smMapWC.mapControl];
+            }
+            sMap.smMapWC.scaleView.xOffset = xPos;
+            sMap.smMapWC.scaleView.yOffset = yPos;
         });
         BOOL isOpen = YES;
         
@@ -980,6 +1039,12 @@ RCT_REMAP_METHOD(getMapInfo, getMapInfoWithResolver:(RCTPromiseResolveBlock)reso
 RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
+        if(sMap.sOrientation){
+            [sMap.sOrientation removeOrientationObserverWithId:sMap];
+        }
+        if(sMap.smMapWC.scaleView){
+            sMap.smMapWC.scaleView = nil;
+        }
         MapControl* mapControl = sMap.smMapWC.mapControl;
         if (mapControl) {
             [[mapControl map] close];

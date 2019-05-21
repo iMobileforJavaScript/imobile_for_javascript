@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0053633D2293A546004A6C39 /* SOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0053633C2293A546004A6C39 /* SOrientation.m */; };
 		005693BA2191696C00AEC46E /* SOnlineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 005693B92191696C00AEC46E /* SOnlineService.m */; };
 		0A0118A52122BC5600BC4AAB /* JSThemeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0118A42122BC5600BC4AAB /* JSThemeLabel.m */; };
 		0A01192E212412C500BC4AAB /* JSRangeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A01192D212412C500BC4AAB /* JSRangeMode.m */; };
@@ -211,6 +212,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0053633B2293A546004A6C39 /* SOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SOrientation.h; sourceTree = "<group>"; };
+		0053633C2293A546004A6C39 /* SOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SOrientation.m; sourceTree = "<group>"; };
 		005693B82191696C00AEC46E /* SOnlineService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SOnlineService.h; sourceTree = "<group>"; };
 		005693B92191696C00AEC46E /* SOnlineService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SOnlineService.m; sourceTree = "<group>"; };
 		0A0118A32122BC5600BC4AAB /* JSThemeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSThemeLabel.h; sourceTree = "<group>"; };
@@ -673,6 +676,8 @@
 		D83170CA21A399FC00DB5DC0 /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				0053633B2293A546004A6C39 /* SOrientation.h */,
+				0053633C2293A546004A6C39 /* SOrientation.m */,
 				0A56918F21B7E58300F46C9B /* SMFileUtil.h */,
 				0A56919021B7E58300F46C9B /* SMFileUtil.m */,
 				4AA0C2EC21B1316C00614FE4 /* STranslate.h */,
@@ -1160,6 +1165,7 @@
 				0A332DF0211D623E00F56F26 /* JSBarChartData.m in Sources */,
 				D8DD42302175BB69009D80E9 /* JSResources.m in Sources */,
 				0A332E5B211D623E00F56F26 /* JSTextStyle.m in Sources */,
+				0053633D2293A546004A6C39 /* SOrientation.m in Sources */,
 				0A332E51211D623E00F56F26 /* JSSpeechManager.m in Sources */,
 				0A332DED211D623E00F56F26 /* JSAMQPReceiver.m in Sources */,
 				0A332E4A211D623E00F56F26 /* JSScene.m in Sources */,

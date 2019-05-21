@@ -34,7 +34,7 @@
 #import "SuperMap/OverlayAnalyst.h"
 #import "SuperMap/OverlayAnalystParameter.h"
 #import "SuperMap/RasterClip.h"
-#import "Supermap/ScaleView.h"
+#import "SuperMap/ScaleView.h"
 @interface SMMapWC : NSObject
 
 @property (strong, nonatomic) Workspace* workspace;
