@@ -697,7 +697,17 @@ RCT_REMAP_METHOD(addLayer3D,  Url:(NSString*) Url Layer3DType:(NSString*) layer3
             imageFormatType1 = ImageFormatTypeNONE;
         }
         
+//            BOOL isopen = [scene openSceneWithUrl:@"http://10.10.0.66:8090/iserver/services/3D-zhufeng/rest/realspace" Name:@"珠峰" Password:nil];
+        
+//        NSString * tiandituUrl = @"http://t0.tianditu.com/img_c/wmts?tk=22f8a846ef9e3becd95a25b08bde8f36";
         Layer3D* layer3d = nil;
+        
+//        layer3d = [scene.layers addLayerWithURL:@"http://10.10.0.66:8090/iserver/services/3D-zhufeng/rest/realspace" type:IMAGEFILE dataLayerName:@"珠峰" toHead:YES];
+//         [scene ensureVisible:layer3d];
+//        layer3d = [scene.layers addLayerWithTiandituURL:tiandituUrl type:WMTS dataLayerName:@"img" imageFormatType:ImageFormatTypeJPG_PNG dpi:96 toHead:YES];
+
+//        Layer3D* layer3d =  [scene.layers addLayerWithURL:@"" type:BINGMAPS dataLayerName:@"tt1" toHead:YES];
+;
         if (dpi == 0 && imageFormatType == nil) {
             layer3d = [scene.layers addLayerWithURL:Url type:nlayer3DType dataLayerName:layerName toHead:addToHead];
            // scene.getLayers().add(Url, layer3DType, layerName, addToHead);
@@ -712,6 +722,19 @@ RCT_REMAP_METHOD(addLayer3D,  Url:(NSString*) Url Layer3DType:(NSString*) layer3
     }
 }
 
+//缩放到当前图层
+RCT_REMAP_METHOD(ensureVisibleLayer, layer:(NSString*)layerName ensureVisibleLayerResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        Scene* scene = sScene.smSceneWC.sceneControl.scene;
+        Layer3D* layer3d = [sScene.smSceneWC.sceneControl.scene.layers getLayerWithName:layerName];
+        [scene ensureVisible:layer3d];
+        resolve(@(1));
+    }@catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+  
+}
 /**
  * 获取当前场景地形图层列表
  *

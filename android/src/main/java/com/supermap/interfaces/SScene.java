@@ -541,6 +541,19 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void ensureVisibleLayer(String layerName,Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            Layer3D layer3D = scene.getLayers().get(layerName);
+            scene.ensureVisible(layer3D);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
     /**
      * 获取当前场景地形图层列表
