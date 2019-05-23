@@ -446,6 +446,39 @@ RCT_REMAP_METHOD(getMapViewBounds, getMapViewBoundsWithResolver:(RCTPromiseResol
     }
 }
 
+#pragma mark 设置当前窗口四至范围 viewBounds
+RCT_REMAP_METHOD(setMapViewBounds, setMapViewBoundsWithLeft:(double)left Bottom:(double)bottom Right:(double)right Top:(double)top Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Rectangle2D *rect = [[Rectangle2D alloc] initWith:left bottom:bottom right:right top:top];
+        sMap.smMapWC.mapControl.map.viewBounds = rect;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setMapViewBounds",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取动态投影是否已开启
+RCT_REMAP_METHOD(getMapDynamicProjection, getMapDynamicProjectionWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL isDynamicProjection = sMap.smMapWC.mapControl.map.dynamicProjection;
+        resolve(@(isDynamicProjection));
+    } @catch (NSException *exception) {
+        reject(@"getMapDynamicProjection",exception.reason,nil);
+    }
+}
+#pragma mark 设置动态投影开启/关闭
+RCT_REMAP_METHOD(setMapDynamicProjection, setMapDynamicProjectionWithValue:(BOOL)value Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.mapControl.map.dynamicProjection = value;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"getMapDynamicProjection",exception.reason,nil);
+    }
+}
+
 #pragma mark 获取地图坐标系
 RCT_REMAP_METHOD(getPrjCoordSys, getPrjCoordSysWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {

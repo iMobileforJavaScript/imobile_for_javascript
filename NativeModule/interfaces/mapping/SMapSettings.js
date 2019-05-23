@@ -248,6 +248,18 @@ function getMapViewBounds() {
 }
 
 /**
+ * 设置当前窗口四至范围
+ * @param data
+ * @returns {*}
+ */
+function setMapViewBounds({left,bottom,right,top}) {
+  try {
+    return SMap.setMapViewBounds(left,bottom,right,top);
+  }catch (e) {
+    console.error(e)
+  }
+}
+/**
  *  获取当前地图坐标系
  * @returns {Promise<PrjCoordSys>}
  */
@@ -272,6 +284,31 @@ function setPrjCoordSys(xml) {
   }
 }
 
+/**
+ * 获取当前动态投影是否已开启
+ * @returns {*}
+ */
+function getMapDynamicProjection() {
+  try {
+    return SMap.getMapDynamicProjection();
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 设置当前动态投影是否开启
+ * @param value
+ * @returns {*}
+ */
+function setMapDynamicProjection(value) {
+  try {
+    return SMap.setMapDynamicProjection(value);
+  }catch (e) {
+    console.error(e)
+  }
+}
+
 export {
   getScaleViewEnable,
   setScaleViewEnable,
@@ -288,10 +325,13 @@ export {
   getFixedTextOrientation,
   setFixedTextOrientation,
   getMapViewBounds,
+  setMapViewBounds,
   getMapCenter,
   setMapCenter,
   getMapScale,
   setMapScale,
   getPrjCoordSys,
   setPrjCoordSys,
+  getMapDynamicProjection,
+  setMapDynamicProjection,
 }
