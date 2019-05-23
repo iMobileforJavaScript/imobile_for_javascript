@@ -360,6 +360,14 @@ export default (function () {
         }
     }
 
+    function ensureVisibleLayer(name) {
+        try {
+            return SScene.ensureVisibleLayer(name)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     function addTerrainLayer(url, name) {
         try {
             return SScene.addTerrainLayer(url, name)
@@ -863,6 +871,7 @@ export default (function () {
         toLocationPoint,
         savePoint,
         navigationLine,
+        ensureVisibleLayer,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
