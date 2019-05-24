@@ -368,9 +368,53 @@ export default (function () {
         }
     }
 
-    function addTerrainLayer(url, name) {
+    // function addTerrainLayer(url, name) {
+    //     try {
+    //         return SScene.addTerrainLayer(url, name)
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
+
+    function addTerrainCacheLayer(path, name) {
         try {
-            return SScene.addTerrainLayer(url, name)
+            return SScene.addTerrainCacheLayer(path, name)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    function removeTerrainCacheLayer(name) {
+        try {
+            return SScene.removeTerrainCacheLayer(name)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    function addImageCacheLayer(path, name) {
+        try {
+            return SScene.addImageCacheLayer(path, name)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    function removeImageCacheLayer(name) {
+        try {
+            return SScene.removeImageCacheLayer(name)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    function getTerrainCacheNames() {
+        try {
+            return SScene.getTerrainCacheNames()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function getImageCacheNames() {
+        try {
+            return SScene.getImageCacheNames()
         } catch (error) {
             console.log(error)
         }
@@ -830,7 +874,7 @@ export default (function () {
         clearcurrentLabel,
         save,
         setAllLayersSelection,
-        addTerrainLayer,
+        // addTerrainLayer,
         addLayer3D,
         startDrawFavorite,
         setFavoriteText,
@@ -872,6 +916,12 @@ export default (function () {
         savePoint,
         navigationLine,
         ensureVisibleLayer,
+        getImageCacheNames,
+        getTerrainCacheNames,
+        addTerrainCacheLayer,
+        addImageCacheLayer,
+        removeTerrainCacheLayer,
+        removeImageCacheLayer,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
