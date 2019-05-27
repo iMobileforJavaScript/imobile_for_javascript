@@ -234,15 +234,6 @@ export default (function () {
         }
     }
 
-    function changeBaseMap(oldLayer, Url, Layer3DType, layerName, imageFormatType, dpi, addToHead) {
-        try {
-            return SScene.changeBaseMap(oldLayer, Url, Layer3DType, layerName, imageFormatType, dpi, addToHead)
-        } catch (error) {
-            console.log(error)
-        }
-
-    }
-
     function clearSelection() {
         try {
             return SScene.clearSelection()
@@ -397,6 +388,15 @@ export default (function () {
             console.log(error)
         }
     }
+    //type: 1 tianditu 2 bingmap
+    function changeBaseLayer(type) {
+        try {
+            return SScene.changeBaseLayer(type)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
     function removeImageCacheLayer(name) {
         try {
             return SScene.removeImageCacheLayer(name)
@@ -860,7 +860,6 @@ export default (function () {
         setTerrainLayerListVisible,
         getTerrainLayerList,
         setHeading,
-        changeBaseMap,
         clearSelection,
         initsymbol,
         startDrawPoint,
@@ -875,7 +874,7 @@ export default (function () {
         save,
         setAllLayersSelection,
         // addTerrainLayer,
-        addLayer3D,
+        changeBaseLayer,
         startDrawFavorite,
         setFavoriteText,
         getcompass,
@@ -922,6 +921,7 @@ export default (function () {
         addImageCacheLayer,
         removeTerrainCacheLayer,
         removeImageCacheLayer,
+        changeBaseLayer,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp

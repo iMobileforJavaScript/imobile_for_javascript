@@ -656,6 +656,27 @@ RCT_REMAP_METHOD(getLayerList, getLayerList:(RCTPromiseResolveBlock)resolve reje
     }
 }
 
+RCT_REMAP_METHOD(changeBaseLayer, type:(int)type  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    sScene = [SScene singletonInstance];
+    Scene* scene = sScene.smSceneWC.sceneControl.scene;
+     @try {
+         sScene.smSceneWC.sceneControl.isRender = false;
+         [scene.layers removeLayerWithName:@"TianDiTu"];
+         [scene.layers removeLayerWithName:@"BingMap"];
+         Layer3D* layer3d = nil;
+         if(type==1){//tianditu
+             NSString * tiandituUrl = @"http://t0.tianditu.com/img_c/wmts";
+             layer3d = [scene.layers addLayerWithTiandituURL:tiandituUrl type:BINGMAPS dataLayerName:@"TianDiTu" imageFormatType:ImageFormatTypeJPG_PNG dpi:96 toHead:NO];
+         }else if (type==2){//bingMap
+             layer3d = [scene.layers addLayerWithURL:@"" type:BINGMAPS dataLayerName:@"BingMap" toHead:NO];
+
+         }
+         sScene.smSceneWC.sceneControl.isRender = YES;
+         resolve(@(layer3d!=nil));
+     }@catch (NSException *exception) {
+         reject(@"SScene", exception.reason, nil);
+     }
+}
 RCT_REMAP_METHOD(addLayer3D,  Url:(NSString*) Url Layer3DType:(NSString*) layer3DType layerName:(NSString*) layerName imageFormatType:(NSString*) imageFormatType dpi:(double) dpi addToHead:(BOOL)addToHead  token:(NSString*)token resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     sScene = [SScene singletonInstance];
     Scene* scene = sScene.smSceneWC.sceneControl.scene;
@@ -697,23 +718,11 @@ RCT_REMAP_METHOD(addLayer3D,  Url:(NSString*) Url Layer3DType:(NSString*) layer3
             imageFormatType1 = ImageFormatTypeNONE;
         }
         
-//            BOOL isopen = [scene openSceneWithUrl:@"http://10.10.0.66:8090/iserver/services/3D-zhufeng/rest/realspace" Name:@"珠峰" Password:nil];
-        
-//        NSString * tiandituUrl = @"http://t0.tianditu.com/img_c/wmts?tk=22f8a846ef9e3becd95a25b08bde8f36";
         Layer3D* layer3d = nil;
-        
-//        layer3d = [scene.layers addLayerWithURL:@"http://10.10.0.66:8090/iserver/services/3D-zhufeng/rest/realspace" type:IMAGEFILE dataLayerName:@"珠峰" toHead:YES];
-//         [scene ensureVisible:layer3d];
-//        layer3d = [scene.layers addLayerWithTiandituURL:tiandituUrl type:WMTS dataLayerName:@"img" imageFormatType:ImageFormatTypeJPG_PNG dpi:96 toHead:YES];
-
-//        Layer3D* layer3d =  [scene.layers addLayerWithURL:@"" type:BINGMAPS dataLayerName:@"tt1" toHead:YES];
-;
         if (dpi == 0 && imageFormatType == nil) {
             layer3d = [scene.layers addLayerWithURL:Url type:nlayer3DType dataLayerName:layerName toHead:addToHead];
-           // scene.getLayers().add(Url, layer3DType, layerName, addToHead);
         } else {
             layer3d = [scene.layers  addLayerWithTiandituURL:Url type:nlayer3DType dataLayerName:layerName imageFormatType:imageFormatType1 dpi:dpi toHead:dpi];
-           // scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
         }
         
         resolve(@(layer3d!=nil));
