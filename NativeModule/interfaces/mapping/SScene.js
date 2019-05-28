@@ -234,15 +234,6 @@ export default (function () {
         }
     }
 
-    function changeBaseMap(oldLayer, Url, Layer3DType, layerName, imageFormatType, dpi, addToHead) {
-        try {
-            return SScene.changeBaseMap(oldLayer, Url, Layer3DType, layerName, imageFormatType, dpi, addToHead)
-        } catch (error) {
-            console.log(error)
-        }
-
-    }
-
     function clearSelection() {
         try {
             return SScene.clearSelection()
@@ -360,9 +351,70 @@ export default (function () {
         }
     }
 
-    function addTerrainLayer(url, name) {
+    function ensureVisibleLayer(name) {
         try {
-            return SScene.addTerrainLayer(url, name)
+            return SScene.ensureVisibleLayer(name)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    // function addTerrainLayer(url, name) {
+    //     try {
+    //         return SScene.addTerrainLayer(url, name)
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
+
+    function addTerrainCacheLayer(path, name) {
+        try {
+            return SScene.addTerrainCacheLayer(path, name)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    function removeTerrainCacheLayer(name) {
+        try {
+            return SScene.removeTerrainCacheLayer(name)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    function addImageCacheLayer(path, name) {
+        try {
+            return SScene.addImageCacheLayer(path, name)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    //type: 1 tianditu 2 bingmap
+    function changeBaseLayer(type) {
+        try {
+            return SScene.changeBaseLayer(type)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
+    function removeImageCacheLayer(name) {
+        try {
+            return SScene.removeImageCacheLayer(name)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    function getTerrainCacheNames() {
+        try {
+            return SScene.getTerrainCacheNames()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function getImageCacheNames() {
+        try {
+            return SScene.getImageCacheNames()
         } catch (error) {
             console.log(error)
         }
@@ -679,9 +731,9 @@ export default (function () {
         }
     }
 
-    function pasueRoutStop(){
+    function pauseRoutStop(){
         try {
-            return SScene.pasueRoutStop()
+            return SScene.pauseRoutStop()
         } catch (error) {
             console.error(error);
         }
@@ -808,7 +860,6 @@ export default (function () {
         setTerrainLayerListVisible,
         getTerrainLayerList,
         setHeading,
-        changeBaseMap,
         clearSelection,
         initsymbol,
         startDrawPoint,
@@ -822,8 +873,8 @@ export default (function () {
         clearcurrentLabel,
         save,
         setAllLayersSelection,
-        addTerrainLayer,
-        addLayer3D,
+        // addTerrainLayer,
+        changeBaseLayer,
         startDrawFavorite,
         setFavoriteText,
         getcompass,
@@ -855,7 +906,7 @@ export default (function () {
         getAttributeByName,
         saveCurrentRoutStop,
         saveRoutStop,
-        pasueRoutStop,
+        pauseRoutStop,
         clearRoutStops,
         initPointSearch,
         pointSearch,
@@ -863,6 +914,14 @@ export default (function () {
         toLocationPoint,
         savePoint,
         navigationLine,
+        ensureVisibleLayer,
+        getImageCacheNames,
+        getTerrainCacheNames,
+        addTerrainCacheLayer,
+        addImageCacheLayer,
+        removeTerrainCacheLayer,
+        removeImageCacheLayer,
+        changeBaseLayer,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp
