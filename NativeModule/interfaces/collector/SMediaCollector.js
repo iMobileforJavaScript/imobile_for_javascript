@@ -62,14 +62,15 @@ function setCalloutTapListener (handler) {
  * @param handler
  */
 function removeListener () {
-  // mediaCaptureHandler = null
-  calloutTapHandler = null
-  if (calloutTapListener) {
-    calloutTapListener.remove()
+  try {
+    calloutTapHandler = null
+    if (calloutTapListener) {
+      calloutTapListener.remove()
+      calloutTapListener = null
+    }
+  } catch (e) {
+  
   }
-  // if (mediaCaptureListener) {
-  //   mediaCaptureListener.remove()
-  // }
 }
 
 function initMediaCollector (path = '') {
@@ -259,6 +260,10 @@ function saveMedia (layerName = '', geoID = -1, toPath = '', fieldInfo = []) {
   return Collector.saveMedia(layerName, geoID, toPath, info)
 }
 
+function hideMedia () {
+  return Collector.hideMedia()
+}
+
 export default {
   initMediaCollector,
   // captureImage,
@@ -272,4 +277,5 @@ export default {
   // addMediaFiles,
   // deleteMediaFiles,
   saveMedia,
+  hideMedia,
 }

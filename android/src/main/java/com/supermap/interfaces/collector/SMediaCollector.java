@@ -298,4 +298,15 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
             });
         }
     }
+
+    @ReactMethod
+    public void hideMedia(Promise promise) {
+        try {
+            MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
+            mapControl.getMap().getMapView().removeAllCallOut();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 }

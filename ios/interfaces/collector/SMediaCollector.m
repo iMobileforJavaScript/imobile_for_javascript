@@ -143,6 +143,17 @@ RCT_REMAP_METHOD(showMedia, showMedia:(NSString *)layerName resolver:(RCTPromise
     }
 }
 
+#pragma mark 完成采集音频
+RCT_REMAP_METHOD(hideMedia, hideMediaWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [mapControl removeAllCallouts];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"SMediaCollector", exception.reason, nil);
+    }
+}
+
 //#pragma mark 初始化MDataCollector
 //RCT_REMAP_METHOD(initMediaCollector, initMediaCollector:(NSString*)datasourceName dataset:(NSString*)datasetName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
 //    @try {
