@@ -201,6 +201,28 @@ function setLayerFieldInfo(layerPath = '', fieldInfo = {}, params) {
 }
 
 /**
+ * 根据图层名称，找到对应的图层并修改指定recordset中的FieldInfo
+ * @param layerName
+ * @param fieldInfo
+ * @param params
+   {
+     index: int,      // 当前对象所在记录集中的位置
+     filter: string,  // 过滤条件
+     cursorType: int, // 2: DYNAMIC, 3: STATIC
+   }
+ * @returns {*}
+ */
+function setLayerFieldInfoByName(layerName = '', fieldInfo = {}, params) {
+  try {
+    if (JSON.stringify(fieldInfo) === JSON.stringify({})) return false
+    if (!params) params = {index: -1}
+    return LayerManager.setLayerFieldInfoByName(layerName, fieldInfo, params)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  * 移除所有图层
  * @param params
  * @param value
@@ -427,6 +449,7 @@ export {
   searchSelectionAttribute,
   addLayer,
   setLayerFieldInfo,
+  setLayerFieldInfoByName,
   removeAllLayer,
   removeLayer,
   renameLayer,

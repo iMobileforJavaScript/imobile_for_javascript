@@ -3,19 +3,10 @@
  */
 package com.supermap.interfaces.mapping;
 
-import android.content.Context;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.os.Looper;
+import android.app.Activity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -28,6 +19,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.supermap.component.MapWrapView;
 import com.supermap.containts.EventConst;
 import com.supermap.data.*;
 import com.supermap.data.Enum;
@@ -41,41 +33,32 @@ import com.supermap.data.Resources;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.ColorLegendItem;
-import com.supermap.mapping.CallOut;
-import com.supermap.mapping.CalloutAlignment;
 import com.supermap.mapping.EditHistoryType;
 import com.supermap.mapping.GeometryAddedListener;
 import com.supermap.mapping.GeometryEvent;
 import com.supermap.mapping.GeometrySelectedEvent;
 import com.supermap.mapping.GeometrySelectedListener;
 import com.supermap.mapping.Layer;
-import com.supermap.mapping.LayerGroup;
 import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.Legend;
-import com.supermap.mapping.LegendItem;
-import com.supermap.mapping.LegendView;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.Selection;
-import com.supermap.mapping.Theme;
 import com.supermap.mapping.ThemeGridRange;
 import com.supermap.mapping.ThemeRange;
 import com.supermap.mapping.ThemeType;
 import com.supermap.mapping.ThemeUnique;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.plugin.LocationManagePlugin;
-import com.supermap.smNative.SMCollector;
+import com.supermap.smNative.collector.SMCollector;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -176,6 +159,10 @@ public class SMap extends ReactContextBaseJavaModule {
         return getInstance().smMapWC;
     }
 
+    public Activity getActivity() {
+        return getCurrentActivity();
+    }
+
 
     /**
      * 获取许可文件状态
@@ -272,6 +259,13 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             sMap = getInstance();
             sMap.smMapWC.getMapControl().getMap().refresh();
+
+            getCurrentActivity().runOnUiThread(new Runnable(){
+                @Override
+                public void run(){
+                    ((MapWrapView)sMap.smMapWC.getMapControl().getMap().getMapView()).requestLayout();
+                }
+            });
 
             promise.resolve(true);
         } catch (Exception e) {

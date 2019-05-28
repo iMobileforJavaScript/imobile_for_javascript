@@ -64,6 +64,9 @@ NSString * const MAP_BOUNDS_CHANGED = @"Supermap.MapControl.MapParamChanged.Boun
 /** 多媒体采集 **/
 NSString * const MEDIA_CAPTURE = @"com.supermap.RN.MediaCapture";
 
+/** 多媒体采集，Callout点击回调 **/
+NSString * const MEDIA_CAPTURE_TAP_ACTION = @"com.supermap.RN.MediaCaptureTapAction";
+
 @implementation Constants
 
 @end

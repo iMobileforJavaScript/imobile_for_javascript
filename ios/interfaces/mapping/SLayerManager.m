@@ -116,22 +116,21 @@ RCT_REMAP_METHOD(searchSelectionAttribute, searchSelectionAttribute:(NSString *)
     }
 }
 
+#pragma mark - 根据数据源名称和数据集序号，添加图层
+RCT_REMAP_METHOD(addLayerByName, addLayerByName:(NSString *)datasourceName datasetIndex:(int)datasetIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [SMLayer addLayerByName:datasourceName datasetIndex:datasetIndex];
+        resolve([NSNumber numberWithBool:layer != nil]);
+    } @catch (NSException *exception) {
+        reject(@"LayerManager", exception.reason, nil);
+    }
+}
+
 #pragma mark - 根据数据源序号和数据集序号，添加图层
 RCT_REMAP_METHOD(addLayerByIndex, addLayerByIndex:(int)datasourceIndex datasetIndex:(int)datasetIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        SMap* sMap = [SMap singletonInstance];
-        Datasources* dataSources = sMap.smMapWC.workspace.datasources;
-        BOOL result = NO;
-        if (dataSources && dataSources.count > datasourceIndex) {
-            Datasets* dss = [dataSources get:datasourceIndex].datasets;
-            if (dss.count > datasetIndex) {
-                Dataset* ds = [dss get:datasetIndex];
-                Layer* layer = [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
-                sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
-                result = layer != nil;
-            }
-        }
-        resolve([NSNumber numberWithBool:result]);
+        Layer* layer = [SMLayer addLayerByIndex:datasourceIndex datasetIndex:datasetIndex];
+        resolve([NSNumber numberWithBool:layer != nil]);
     } @catch (NSException *exception) {
         reject(@"LayerManager", exception.reason, nil);
     }
@@ -141,142 +140,18 @@ RCT_REMAP_METHOD(addLayerByIndex, addLayerByIndex:(int)datasourceIndex datasetIn
 RCT_REMAP_METHOD(setLayerFieldInfo, setLayerFieldByLayerPath:(NSString *)layerPath fieldInfos:(NSArray *)fieldInfos params:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         Layer* layer = [SMLayer findLayerByPath:layerPath];
-        
-        Layers* layers = [SMap singletonInstance].smMapWC.mapControl.map.layers;
-        Layer* editableLayer = nil;
-        
-        if (layer) {
-            
-            // 找到原来可编辑图层并记录
-            // 三种情况：1.目标图层即为可编辑图层；2.目标图层不为可编辑图层，且layers中不存在编辑图层；3.layers中存在可编辑图层，但不是目标图层
-            int status = 1;
-            if (!layer.editable) {
-                for (int i = 0; i < layers.getCount; i++) {
-                    if ([layers getLayerAtIndex:i].editable) {
-                        editableLayer = [layers getLayerAtIndex:i];
-                        status = 3;
-                        break;
-                    }
-                }
-                
-                layer.editable = YES;
-                if (!editableLayer) {
-                    status = 2;
-                }
-            }
-            
-            DatasetVector* dsVector = (DatasetVector *)layer.dataset;
-            Recordset* recordset;
-            
-            if ([params objectForKey:@"filter"]) {
-                NSString* filter = [params objectForKey:@"filter"];
-                CursorType cursorType = DYNAMIC;
-                if ([params objectForKey:@"cursorType"]) {
-                    NSNumber* cType = [params objectForKey:@"cursorType"];
-                    cursorType = cType.intValue;
-                }
-                
-                QueryParameter* queryParams = [[QueryParameter alloc] init];
-                [queryParams setAttriButeFilter:filter];
-                [queryParams setCursorType:cursorType];
-                recordset = [dsVector query:queryParams];
-            } else {
-                recordset = [dsVector recordset:false cursorType:DYNAMIC];
-                if ([params objectForKey:@"index"] >= 0){
-                    NSNumber* indexNum = [params objectForKey:@"index"];
-                    long index = indexNum.longValue;
-                    index = index >= 0 ? index : (recordset.recordCount - 1);
-                    [recordset moveTo:index];
-                }
-            }
-            [recordset edit];
-            
-            for (int i = 0; i < fieldInfos.count; i++) {
-                NSDictionary* info = fieldInfos[i];
-                
-                NSString* name = [info objectForKey:@"name"];
-                NSObject* value = [info objectForKey:@"value"];
-                FieldInfo* fieldInfo = [recordset.fieldInfos getName:name];
-                
-                if (!fieldInfo) continue;
-                
-                switch (fieldInfo.fieldType) {
-                    case FT_BOOLEAN: {
-                        BOOL boolValue = NO;
-                        if ([value isEqual:@"YES"] || [value isEqual:@"true"]) {
-                            boolValue = YES;
-                        }
-                        [recordset setBOOLWithName:name BOOLValue:boolValue];
-                        break;
-                    }
-                    case FT_BYTE:
-                        [recordset setByteWithName:name ByteValue: (Byte)[[(NSString *)value dataUsingEncoding: NSUTF8StringEncoding] bytes]];
-                        break;
-                    case FT_INT16: {
-                        short shortValue = (short)((NSNumber *)value).intValue;
-                        [recordset setInt16WithName:name shortValue:shortValue];
-                        break;
-                    }
-                    case FT_INT32:
-                        [recordset setInt32WithName:name value:((NSNumber *)value).intValue];
-                        break;
-                    case FT_INT64:
-                        [recordset setInt64WithName:name value:((NSNumber *)value).intValue];
-                        break;
-                    case FT_SINGLE:
-                        [recordset setSingleWithName:name value:((NSNumber *)value).floatValue];
-                        break;
-                    case FT_DOUBLE:
-                        [recordset setDoubleWithName:name DoubleValue:((NSNumber *)value).doubleValue];
-                        break;
-                    case FT_DATE:
-                        break;
-                    case FT_LONGBINARY:
-                    case FT_TEXT:
-                    default:
-                        [recordset setFieldValueWithString:name Obj:value];
-                        break;
-                }
-            }
-            
-            [recordset update];
-            [recordset dispose];
-            recordset = nil;
-            
-            // 还原编辑之前的图层可编辑状态
-            switch (status) {
-                case 2:
-                    layer.editable = NO;
-                    break;
-                case 3:
-                    editableLayer.editable = YES;
-                    break;
-                case 1:
-                default:
-                    break;
-            }
-        }
-        resolve([NSNumber numberWithBool:YES]);
+        BOOL result = [SMLayer setLayerFieldInfo:layer fieldInfos:fieldInfos params:params];
+        resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"LayerManager", exception.reason, nil);
     }
 }
 
-#pragma mark - 根据数据源名称和数据集序号，添加图层
-RCT_REMAP_METHOD(addLayerByName, addLayerByName:(NSString *)datasourceName datasetIndex:(int)datasetIndex resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+#pragma mark - 根据图层名称，找到对应的图层并修改指定recordset中的FieldInfo
+RCT_REMAP_METHOD(setLayerFieldInfoByName, setLayerFieldInfoByName:(NSString *)layerName fieldInfos:(NSArray *)fieldInfos params:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        SMap* sMap = [SMap singletonInstance];
-        Datasources* dataSources = sMap.smMapWC.workspace.datasources;
-        BOOL result = NO;
-        if (dataSources && [dataSources getAlias:datasourceName]) {
-            Datasets* dss = [dataSources getAlias:datasourceName].datasets;
-            if (dss.count > datasetIndex) {
-                Dataset* ds = [dss get:datasetIndex];
-                Layer* layer = [sMap.smMapWC.mapControl.map.layers addDataset:ds ToHead:YES];
-                sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
-                result = layer != nil;
-            }
-        }
+        Layer* layer = [SMLayer findLayerWithName:layerName];
+        BOOL result = [SMLayer setLayerFieldInfo:layer fieldInfos:fieldInfos params:params];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"LayerManager", exception.reason, nil);
@@ -651,4 +526,18 @@ RCT_REMAP_METHOD(setSnapable, setSnapableByLayerPath:(NSString*)layerPath snapab
         reject(@"Layer",@"setSnapable() failed.",nil);
     }
 }
+
+//RCT_REMAP_METHOD(addCallout, addCallout:(NSDictionary *)point imagePath:(NSString *)imagePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        long longitude = [(NSNumber *)[point objectForKey:@"x"] longValue];
+//        long latitude = [(NSNumber *)[point objectForKey:@"y"] longValue];
+//        
+//        NSString* imagePath = [NSHomeDirectory() stringByAppendingFormat:@"/Documents/%@", imagePath];
+//        
+//        [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:imagePath];
+//        resolve(@(YES));
+//    } @catch (NSException *exception) {
+//        reject(@"Layer",@"setSnapable() failed.",nil);
+//    }
+//}
 @end

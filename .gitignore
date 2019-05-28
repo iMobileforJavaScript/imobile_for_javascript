@@ -25,3 +25,4 @@ android/src/.gradle/buildOutputCleanup/cache.properties.lock
 android/build.gradle
 android/build.gradle
 android/libs
+android/src/main/java/com/supermap/.gradle

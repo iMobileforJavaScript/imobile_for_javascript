@@ -1,6 +1,6 @@
 import { SMap, SScene } from './mapping'
 import SAnalyst from './SAnalyst'
-import SCollector from './SCollector'
+import { SCollector, SMediaCollector } from './collector'
 import SCartography from './SCartography'
 import SThemeCartography from './SThemeCartography'
 import {SOnlineService} from './iServer'
@@ -10,6 +10,7 @@ export {
   SMap,
   SAnalyst,
   SCollector,
+  SMediaCollector,
   SScene,
   SCartography,
   SThemeCartography,

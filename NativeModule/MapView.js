@@ -71,9 +71,9 @@ export default class JSMapView {
    * @param {string} pointName - 点名称
    * @returns {Promise.<void>}
    */
-  async addCallOut(callOut, pointName) {
+  async addCallOut(x, y, pointName) {
     try {
-      await MV.addCallOut(this._SMMapViewId, callOut._SMCallOutId, pointName);
+      await MV.addCallOut(x, y, pointName);
     } catch (e) {
       console.error(e);
     }

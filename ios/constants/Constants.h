@@ -48,6 +48,7 @@ extern NSString * const MAP_SCALE_CHANGED;
 extern NSString * const MAP_BOUNDS_CHANGED;
 
 extern NSString * const MEDIA_CAPTURE;
+extern NSString * const MEDIA_CAPTURE_TAP_ACTION;
 
 @interface Constants : NSObject
 

@@ -54,6 +54,10 @@ public class EventConst {
     public static final String SSCENE_SYMBOL = "com.supermap.RN.SMSceneControl.Scene_symbol";
     public static final String SSCENE_FAVORITE = "com.supermap.RN.SMSceneControl.Scene_favorite";
     public static final String SSCENE_CIRCLEFLY = "com.supermap.RN.SMSceneControl.Scene_circleFly";
-
+    
+    /** 多媒体采集 **/
+    public static final String MEDIA_CAPTURE = "com.supermap.RN.MediaCapture";
+    /** 多媒体采集，Callout点击回调 **/
+    public static final String MEDIA_CAPTURE_TAP_ACTION = "com.supermap.RN.MediaCaptureTapAction";
 
 }
