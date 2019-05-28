@@ -23,6 +23,7 @@
 @property (strong, nonatomic) SMSceneWC* smSceneWC;
 //@property (strong, nonatomic) MapControl* mapControl;
 
++(void)setActionHelper:(Action3D)action;
 + (instancetype)singletonInstance;
 + (void)setInstance:(SceneControl *)sceneControl;
 @end

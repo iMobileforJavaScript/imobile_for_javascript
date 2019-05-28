@@ -37,6 +37,8 @@
 #import "SuperMap/EditHistory.h"
 #import "SuperMap/GeoStyle.h"
 #import "SuperMap/GeoRegion.h"
+#import "SuperMap/TrackingLayer.h"
+#import "SuperMap/GeoPoint.h"
 #import "SuperMap/TextPart.h"
 #import "SuperMap/TextStyle.h"
 #import "SuperMap/GeoText.h"
@@ -49,10 +51,12 @@
 #import "SMMapWC.h"
 #import "SMSymbol.h"
 #import "SMLayer.h"
+#import "SOrientation.h"
 
-@interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate,AfterGeometryAddedDelegate>
+@interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate,AfterGeometryAddedDelegate,LegendContentDelegate,OrientationChangeDelegate>
 @property (strong, nonatomic) SMMapWC* smMapWC;
 @property (strong, nonatomic) Selection* selection;
+@property (strong, nonatomic) SOrientation* sOrientation;
 
 + (instancetype)singletonInstance;
 + (void)setInstance:(MapControl *)mapControl;

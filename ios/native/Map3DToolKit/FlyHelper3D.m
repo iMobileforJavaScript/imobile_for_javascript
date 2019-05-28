@@ -17,7 +17,7 @@
 #import "SuperMap/GeoStyle3D.h"
 #import "SuperMap/GeoLine3D.h"
 #import "SuperMap/TrackingLayer3D.h"
-
+#import "SScene.h"
 
 @interface FlyHelper3D()<FlyManagerDelegate>{
     SceneControl* m_sceneControl;
@@ -159,7 +159,8 @@
             }
         }
         
-        [m_sceneControl setAction3D:PAN3D];
+        [SScene setActionHelper:PAN3D];
+//        [m_sceneControl setAction3D:PAN3D];
         [flyManager play];
         
         
@@ -176,7 +177,8 @@
     }
     if ([m_sceneControl.scene.flyManager status]==PLAY) {
         [m_sceneControl.scene.flyManager pause];
-        [m_sceneControl setAction3D:PANSELECT3D];
+         [SScene setActionHelper:PANSELECT3D];
+//        [m_sceneControl setAction3D:PANSELECT3D];
     }
 }
 
@@ -202,13 +204,15 @@
             }
         }
         
-        [m_sceneControl setAction3D:PAN3D];
+        [SScene setActionHelper:PAN3D];
+//        [m_sceneControl setAction3D:PAN3D];
         [flyManager play];
         [self startRefreashFlyProgress];
         
     }else{
         [flyManager pause];
-        [m_sceneControl setAction3D:PANSELECT3D];
+        [SScene setActionHelper:PANSELECT3D];
+//        [m_sceneControl setAction3D:PANSELECT3D];
     }
 }
 
@@ -218,7 +222,8 @@
 -(void)flyStop{
     if ( [m_sceneControl.scene.flyManager status]!=STOP) {
         [m_sceneControl.scene.flyManager stop];
-        [m_sceneControl setAction3D:PANSELECT3D];
+        [SScene setActionHelper:PANSELECT3D];
+//        [m_sceneControl setAction3D:PANSELECT3D];
     }
 }
 
@@ -315,6 +320,15 @@
     int count=(int)m_RouteStops.count;
     for (int i=0; i<count; i++) {
         [m_RouteStops removeRouteStopAtIndex:0];
+    }
+}
+/**
+ * 站点暂停飞行
+ */
+-(void)routStopPasue{
+    FlyManager *flyManager = m_sceneControl.scene.flyManager;
+    if(flyManager != nil){
+        [flyManager pause];
     }
 }
 

@@ -30,4 +30,21 @@ public class RNLegendView extends LegendView{
             }
         });
     }
+
+    @Override
+    public void requestLayout() {
+        super.requestLayout();
+        post(new Runnable(){
+            @Override
+            public void run() {
+                // 就差一个 draw 重绘了
+                measure(
+                        MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
+                        MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY)
+                );
+                layout(getLeft(), getTop(), getRight(), getBottom());
+                // 自定义样式处理
+            }
+        });
+    }
 }

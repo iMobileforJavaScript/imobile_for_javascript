@@ -45,6 +45,9 @@ public class EventConst {
     public static final String MAP_GEOMETRY_MULTI_SELECTED = "com.supermap.RN.Mapcontrol.geometry_multi_selected";
     public static final String MAP_GEOMETRY_SELECTED = "com.supermap.RN.Mapcontrol.geometry_selected";
 
+    /** 图例 **/
+    public static final String LEGEND_CONTENT_CHANGE = "com.supermap.RN.legend_content";
+
     /* 三维模块*/
     public static final String ANALYST_MEASURELINE = "com.supermap.RN.SMSceneControl.Analyst_measureLine";
     public static final String ANALYST_MEASURESQUARE = "com.supermap.RN.SMSceneControl.Analyst_measureSquare";

@@ -1,5 +1,6 @@
 package com.supermap.component;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -21,6 +22,7 @@ import com.supermap.mapping.ColorLegendItem;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.Legend;
+import com.supermap.mapping.LegendItem;
 import com.supermap.mapping.LegendView;
 import com.supermap.mapping.ThemeGridRange;
 import com.supermap.mapping.ThemeRange;
@@ -51,50 +53,62 @@ public class SMRLegendView extends SimpleViewManager<RNLegendView> {
     protected RNLegendView createViewInstance(ThemedReactContext reactContext) {
         m_ThemedReactContext = reactContext;
         m_View = new RNLegendView(reactContext);
-        m_View.setRowWidth(50);
-        m_View.setRowHeight(50);
-        m_View.setNumColumns(2);
-        m_View.setTextSize(8);
         com.supermap.mapping.Map M_map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
-        Legend legend = M_map.getLegend();
+        Legend legend = M_map.createLegend();
         Layers layers = M_map.getLayers();
-        Map<String, String> map = new HashMap<String, String>();
-        for(int i=0 ;i<layers.getCount();i++){
+        ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
+
+        for (int i = 0; i < layers.getCount(); i++) {
             Layer layer = layers.get(i);
-            if(layer.getTheme()!=null){
-                if(layer.getTheme().getType()== ThemeType.RANGE || layer.getTheme().getType()== ThemeType.UNIQUE || layer.getTheme().getType()== ThemeType.GRIDRANGE){
-                    if(layer.getTheme().getType()== ThemeType.RANGE){
-                        ThemeRange themeRange = (ThemeRange) layer.getTheme();
-                        for(int a=0;a<themeRange.getCount();a++){
-                            GeoStyle GeoStyle = themeRange.getItem(a).getStyle();
-                            map.put(themeRange.getItem(a).getCaption(), GeoStyle.getFillForeColor().toColorString());
-                        }
-                    }
-                    if(layer.getTheme().getType()== ThemeType.UNIQUE){
-                        ThemeUnique themeUnique = (ThemeUnique) layer.getTheme();
-                        for(int a=0;a<themeUnique.getCount();a++){
-                            GeoStyle GeoStyle = themeUnique.getItem(a).getStyle();
-                            map.put(themeUnique.getItem(a).getCaption(), GeoStyle.getFillForeColor().toColorString());
-                        }
-                    }
-                    if(layer.getTheme().getType()== ThemeType.GRIDRANGE){
-                        ThemeGridRange themeGridRange = (ThemeGridRange) layer.getTheme();
-                        for(int a=0;a<themeGridRange.getCount();a++){
-                            map.put(themeGridRange.getItem(a).getCaption(), themeGridRange.getItem(a).getColor().toColorString());
-                        }
+            if (layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.RANGE) {
+                    ThemeRange themeRange = (ThemeRange) layer.getTheme();
+                    for (int j = 0; j < themeRange.getCount(); j++) {
+                        GeoStyle GeoStyle = themeRange.getItem(j).getStyle();
+                        HashMap<String, String> map = new HashMap<String, String>();
+                        map.put("Caption", themeRange.getItem(j).getCaption());
+                        map.put("Color", GeoStyle.getFillForeColor().toColorString());
+                        arrayList.add(map);
                     }
                 }
             }
         }
 
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            int color = android.graphics.Color.parseColor(entry.getValue());
-            ColorLegendItem colorLegendItem = new ColorLegendItem();
-            colorLegendItem.setColor(color);
-            colorLegendItem.setCaption(entry.getKey());
-            legend.addColorLegendItem(2,colorLegendItem);
+        for (int i = 0; i < arrayList.size(); i++) {
+            HashMap<String, String> hashMap = arrayList.get(i);
+            String caption = hashMap.get("Caption");
+            String colorString = hashMap.get("Color");
+
+            int color = android.graphics.Color.parseColor(colorString);
+//            ColorLegendItem colorLegendItem = new ColorLegendItem();
+//            colorLegendItem.setColor(color);
+//            colorLegendItem.setCaption(caption);
+//            legend.addColorLegendItem(2, colorLegendItem);
+
+
+            LegendItem legendItem = new LegendItem();
+            legendItem.setColor(color);
+            legendItem.setCaption(caption);
+            legend.addUserDefinedLegendItem(legendItem);
         }
         legend.connectLegendView(m_View);
         return m_View;
     }
+
+    @ReactProp(name = "tableStyle")
+    public void setStyle(RNLegendView view, ReadableMap style) {
+        if (style.hasKey("height") || style.hasKey("width")) {
+            view.setRowWidth(style.getInt("width"));
+            view.setRowHeight(style.getInt("height"));
+        }
+        if (style.hasKey("column")) {
+            view.setNumColumns(style.getInt("column"));
+        }
+        if (style.hasKey("textsize")) {
+            view.setTextSize(style.getInt("textsize"));
+        }
+
+        view.create();
+    }
+
 }

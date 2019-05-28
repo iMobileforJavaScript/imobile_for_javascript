@@ -2957,56 +2957,63 @@ public class SMMapWC {
                         }
                         datasetResult.setPrjCoordSys(datasetTemp.getPrjCoordSys());
 
-
-                        // 如果是面内裁减则region与clipRegion相同，否则clipRegion需要加上一个外包的矩形
-                        GeoRegion region = new GeoRegion();
-                        if (!bClipInRegion) {
-                            Rectangle2D datasetBounds = datasetTemp.getBounds();
-                            Point2D[] arrBounds = new Point2D[4];
-                            arrBounds[0] = new Point2D( datasetBounds.getLeft(),datasetBounds.getTop() );
-                            arrBounds[1] = new Point2D( datasetBounds.getLeft(),datasetBounds.getBottom() );
-                            arrBounds[2] = new Point2D( datasetBounds.getRight(),datasetBounds.getBottom() );
-                            arrBounds[3] = new Point2D( datasetBounds.getRight(),datasetBounds.getTop() );
-                            Point2Ds bounds_point2d = new Point2Ds(arrBounds);
-                            region.addPart(bounds_point2d);
-                        }
-
-                        for (int j = 0; j < clipRegion.getPartCount(); j++) {
-                            Point2Ds partPoint2Ds = clipRegion.getPart(j);
-                            region.addPart(partPoint2Ds);
-                        }
-
                         boolean bResult = false;
-
-                        OverlayAnalystParameter parame = new OverlayAnalystParameter();
-
-                        FieldInfos fieldsinfos = ((DatasetVector) datasetTemp).getFieldInfos();
-                        int nCount = fieldsinfos.getCount();
-                        String[] arrFiels = new String[nCount];
-                        for (int k = 0; k < nCount; k++) {
-                            FieldInfo field = fieldsinfos.get(k);
-                            arrFiels[k] = field.getName();
-                        }
-                        parame.setSourceRetainedFields(arrFiels);
-
-                        Geometry[] arrRegionTemp = new Geometry[1];
-                        arrRegionTemp[0] = region;
-
                         try{
-
-                            if (bErase) {
-
-                                bResult = OverlayAnalyst.erase((DatasetVector) datasetTemp, arrRegionTemp, (DatasetVector) datasetResult, parame);
-
-                            } else {
-
-                                bResult = OverlayAnalyst.clip((DatasetVector) datasetTemp, arrRegionTemp, (DatasetVector) datasetResult, parame);
-
-                            }
-
+                            bResult = OverlayAnalyst.clipEx((DatasetVector) datasetTemp, clipRegion, (DatasetVector) datasetResult,bClipInRegion,bErase,0);
                         }catch (Exception e){
                             bResult = false;
                         }
+
+
+//                        // 如果是面内裁减则region与clipRegion相同，否则clipRegion需要加上一个外包的矩形
+//                        GeoRegion region = new GeoRegion();
+//                        if (!bClipInRegion) {
+//                            Rectangle2D datasetBounds = datasetTemp.getBounds();
+//                            Point2D[] arrBounds = new Point2D[4];
+//                            arrBounds[0] = new Point2D( datasetBounds.getLeft(),datasetBounds.getTop() );
+//                            arrBounds[1] = new Point2D( datasetBounds.getLeft(),datasetBounds.getBottom() );
+//                            arrBounds[2] = new Point2D( datasetBounds.getRight(),datasetBounds.getBottom() );
+//                            arrBounds[3] = new Point2D( datasetBounds.getRight(),datasetBounds.getTop() );
+//                            Point2Ds bounds_point2d = new Point2Ds(arrBounds);
+//                            region.addPart(bounds_point2d);
+//                        }
+//
+//                        for (int j = 0; j < clipRegion.getPartCount(); j++) {
+//                            Point2Ds partPoint2Ds = clipRegion.getPart(j);
+//                            region.addPart(partPoint2Ds);
+//                        }
+//
+//                        boolean bResult = false;
+//
+//                        OverlayAnalystParameter parame = new OverlayAnalystParameter();
+//
+//                        FieldInfos fieldsinfos = ((DatasetVector) datasetTemp).getFieldInfos();
+//                        int nCount = fieldsinfos.getCount();
+//                        String[] arrFiels = new String[nCount];
+//                        for (int k = 0; k < nCount; k++) {
+//                            FieldInfo field = fieldsinfos.get(k);
+//                            arrFiels[k] = field.getName();
+//                        }
+//                        parame.setSourceRetainedFields(arrFiels);
+//
+//                        Geometry[] arrRegionTemp = new Geometry[1];
+//                        arrRegionTemp[0] = region;
+//
+//                        try{
+//
+//                            if (bErase) {
+//
+//                                bResult = OverlayAnalyst.erase((DatasetVector) datasetTemp, arrRegionTemp, (DatasetVector) datasetResult, parame);
+//
+//                            } else {
+//
+//                                bResult = OverlayAnalyst.clip((DatasetVector) datasetTemp, arrRegionTemp, (DatasetVector) datasetResult, parame);
+//
+//                            }
+//
+//                        }catch (Exception e){
+//                            bResult = false;
+//                        }
 
                         // 裁减失败留下一个空数据集
 //                        if (bResult == false) {

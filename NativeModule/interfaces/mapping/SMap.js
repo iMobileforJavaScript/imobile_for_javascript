@@ -6,9 +6,9 @@
  **********************************************************************************/
 import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform, PixelRatio } from 'react-native'
 import * as MapTool from './SMapTool'
+import * as MapSettings from './SMapSettings'
 import * as LayerManager from './SLayerManager'
 import * as Datasource from './SDatasource'
-import * as SMRLegendView from './SMRLegendView'
 import { EventConst } from '../../constains/index'
 let SMap = NativeModules.SMap
 const dpi = PixelRatio.get()
@@ -28,6 +28,32 @@ export default (function () {
     }
   }
 
+  /**
+   * 添加图例的监听事件，会返回相应的图例数据
+   * @returns {*}
+   */
+  function addLegendDelegate(handler) {
+    try {
+      let isSuccess = SMap.addLegendDelegate()
+      if(!isSuccess)
+        return
+      if(Platform.OS === 'ios'){
+        nativeEvt.addListener(EventConst.MAP_LEGEND_CONTENT_CHANGE,(result)=>{
+          if(typeof handler.legendContentChange === 'function'){
+            handler.legendContentChange(result)
+          }
+        })
+      }else {
+        DeviceEventEmitter.addListener(EventConst.MAP_LEGEND_CONTENT_CHANGE,(result)=>{
+          if(typeof handler.legendContentChange === 'function'){
+            handler.legendContentChange(result)
+          }
+        })
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
   /**
    * 刷新地图
    * @returns {*}
@@ -692,9 +718,9 @@ export default (function () {
     /**
    * 获取地图对应的数据源别名
    */
-  function showMarker (longitude,latitude) {
+  function showMarker (longitude,latitude,tag) {
     try {
-      return SMap.showMarker(longitude,latitude)
+      return SMap.showMarker(longitude,latitude,tag)
     } catch (e) {
       console.error(e)
     }
@@ -702,9 +728,9 @@ export default (function () {
     /**
    * 获取地图对应的数据源别名
    */
-  function deleteMarker () {
+  function deleteMarker (tag) {
     try {
-      return SMap.deleteMarker()
+      return SMap.deleteMarker(tag)
     } catch (e) {
       console.error(e)
     }
@@ -1469,8 +1495,9 @@ export default (function () {
     setMaxVisibleScale,
     addTextRecordset,
     getGestureDetector,
+    addLegendDelegate,
   }
-  Object.assign(SMapExp, MapTool, LayerManager, Datasource,SMRLegendView)
+  Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)
 
   return SMapExp
 })()

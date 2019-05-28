@@ -4,6 +4,13 @@
 package com.supermap.interfaces.mapping;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Base64;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -42,6 +49,10 @@ import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.Legend;
+import com.supermap.mapping.LegendContentChangeListener;
+import com.supermap.mapping.LegendItem;
+import com.supermap.mapping.LegendView;
+import com.supermap.mapping.MapColorMode;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.Selection;
@@ -56,9 +67,11 @@ import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -66,14 +79,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Vector;
 
-public class SMap extends ReactContextBaseJavaModule {
+public class SMap extends ReactContextBaseJavaModule implements LegendContentChangeListener {
     public static final String REACT_CLASS = "SMap";
     private static SMap sMap;
     private static ReactApplicationContext context;
     private static MeasureListener mMeasureListener;
     private GestureDetector mGestureDetector;
     private GeometrySelectedListener mGeometrySelectedListener;
+    private static final int curLocationTag = 118081;
     public static int fillNum;
     public static Color[] fillColors;
     public static Random random;// 用于保存产生随机的线风格颜色的Random对象
@@ -187,6 +202,35 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
 
+
+    private void showMarkerHelper(Point2D pt,int tag){
+        final  Point2D mapPt = pt;//new Point2D(11584575.605042318,3573118.555091877);
+        final  String tagStr = tag+"";
+        getCurrentActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+//                    final  Point2D mapPt = new Point2D(11584575.605042318,3573118.555091877);
+                GeoPoint point = new GeoPoint(mapPt.getX(),mapPt.getY());
+                GeoStyle style = new GeoStyle();
+                style.setMarkerSymbolID(118081);
+                style.setMarkerSize(new Size2D(6,6));
+                style.setLineColor(new Color(255,0,0,255));
+                point.setStyle(style);
+
+                sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(point,tagStr);
+
+//                sMap.smMapWC.getMapControl().getMap().getMapView().getContext();
+//                CallOut callout = new CallOut(sMap.smMapWC.getMapControl().getMap().getMapView().getContext());
+//                callout.setLocation(mapPt.getX(), mapPt.getY());
+//                sMap.smMapWC.getMapControl().getMap().getMapView().addCallout(callout,tagStr);
+//                sMap.smMapWC.getMapControl().getMap().getMapView().showCallOut();
+                sMap.smMapWC.getMapControl().getMap().setCenter(mapPt);
+                if(sMap.smMapWC.getMapControl().getMap().getScale() < 0.000011947150294723098)
+                    sMap.smMapWC.getMapControl().getMap().setScale(0.000011947150294723098);
+                sMap.smMapWC.getMapControl().getMap().refresh();
+            }
+        });
+    }
     /**
      * 添加marker
      * @param longitude
@@ -194,7 +238,7 @@ public class SMap extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void showMarker(double longitude, double latitude, Promise promise) {
+    public void showMarker(double longitude, double latitude, int tag,Promise promise) {
         try {
             sMap = getInstance();
             sMap.smMapWC.getMapControl().getMap().refresh();
@@ -209,39 +253,32 @@ public class SMap extends ReactContextBaseJavaModule {
 
                 CoordSysTranslator.convert(point2Ds, prjCoordSys, sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
                 pt = point2Ds.getItem(0);
+                showMarkerHelper(pt,tag);
             }
-            final  Point2D mapPt = pt;//new Point2D(11584575.605042318,3573118.555091877);
-            getCurrentActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-//                    final  Point2D mapPt = new Point2D(11584575.605042318,3573118.555091877);
-                    GeoPoint point = new GeoPoint(mapPt.getX(),mapPt.getY());
-                    GeoStyle style = new GeoStyle();
-                    style.setMarkerSymbolID(1);
-                    style.setMarkerSize(new Size2D(25,25));
-                    style.setLineColor(new Color(255,0,0,255));
-                    point.setStyle(style);
-                    sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(point,"marker_###");
 
-                    sMap.smMapWC.getMapControl().getMap().setCenter(mapPt);
-                    sMap.smMapWC.getMapControl().getMap().setScale(0.000011947150294723098);
-                    sMap.smMapWC.getMapControl().getMap().refresh();
-                }
-            });
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
-
+    private void deleteMarkerHelper(int tag){
+        final  String tagStr = tag+"";
+        getCurrentActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              //  sMap.smMapWC.getMapControl().getMap().getMapView().removeCallOut(tagStr);
+                 sMap.smMapWC.getMapControl().getMap().getTrackingLayer().removeLabel(tagStr);
+            }
+        });
+    }
     /**
      * 移除marker
      * @param promise
      */
     @ReactMethod
-    public void deleteMarker(Promise promise) {
+    public void deleteMarker(int tag ,Promise promise) {
         try {
-            sMap.smMapWC.getMapControl().getMap().getTrackingLayer().removeLabel("marker_###");
+            deleteMarkerHelper(tag);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -862,6 +899,7 @@ public class SMap extends ReactContextBaseJavaModule {
             if (mapControl != null) {
                 com.supermap.mapping.Map map = mapControl.getMap();
                 defaultMapCenter = null;
+                deleteMarkerHelper(curLocationTag);
                 map.close();
             }
             promise.resolve(true);
@@ -920,6 +958,7 @@ public class SMap extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
 
     class DisposeThread implements Runnable {
 
@@ -1434,11 +1473,8 @@ public class SMap extends ReactContextBaseJavaModule {
         try {
             if (point.hasKey("x") && point.hasKey("y")) {
                 Point2D point2D = new Point2D(point.getDouble("x"), point.getDouble("y"));
-                MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(point2D, promise);
+                MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(point2D,false, promise);
                 moveToCurrentThread.run();
-                SMap.getInstance().getSmMapWC().getMapControl().getMap().setAngle(0);
-                SMap.getInstance().getSmMapWC().getMapControl().getMap().SetSlantAngle(0);
-
 //                promise.resolve(true);
             } else {
                 promise.resolve(false);
@@ -1453,7 +1489,7 @@ public class SMap extends ReactContextBaseJavaModule {
 
         private Promise promise;
         private Point2D point2D;
-
+        private boolean showMarker = true;
         public MoveToCurrentThread(Promise promise) {
             this.promise = promise;
         }
@@ -1462,7 +1498,11 @@ public class SMap extends ReactContextBaseJavaModule {
             this.promise = promise;
             this.point2D = point2D;
         }
-
+        public MoveToCurrentThread(Point2D point2D,boolean showMarker, Promise promise) {
+            this.promise = promise;
+            this.point2D = point2D;
+            this.showMarker = showMarker;
+        }
         @Override
         public void run() {
             try {
@@ -1479,7 +1519,7 @@ public class SMap extends ReactContextBaseJavaModule {
                     pt = this.point2D;
                 }
 
-                Boolean isMove = false;
+                Boolean isMove = true;
                 if (pt != null) {
                     // Point2D point2D = new Point2D(pt);
 
@@ -1518,17 +1558,22 @@ public class SMap extends ReactContextBaseJavaModule {
 //                        pt = point2Ds.getItem(0);
 //                    }
                 }
-                if (pt != null && mapControl.getMap().getBounds().contains(pt)) {
-                    mapControl.getMap().setCenter(pt);
-                    isMove = true;
-                } else {
+                deleteMarkerHelper(curLocationTag);
+                Point2D mapCenter = pt;
+                if (pt != null && !mapControl.getMap().getBounds().contains(pt)) {
                     if (defaultMapCenter != null) {
-                        mapControl.getMap().setCenter(defaultMapCenter);
+                        mapCenter = defaultMapCenter;
                     }
-                    //  mapControl.panTo(mapControl.getMap().getCenter(), 200);
+                }else{
+                    if(this.showMarker) {
+                        showMarkerHelper(mapCenter, curLocationTag);
+                    }
                 }
-
-                mapControl.getMap().refresh();
+                if(mapCenter!=null) {
+                    mapControl.getMap().setCenter(mapCenter);
+                    isMove = true;
+                    mapControl.getMap().refresh();
+                }
                 promise.resolve(isMove);
             } catch (Exception e) {
                 promise.resolve(e);
@@ -3314,48 +3359,48 @@ public class SMap extends ReactContextBaseJavaModule {
             MapControl mapControl = sMap.smMapWC.getMapControl();
 
             Layers layers = mapControl.getMap().getLayers();
-            Map<String, String> map = new HashMap<String, String>();
-            for(int i=0 ;i<layers.getCount();i++){
+            ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
+
+            for (int i = 0; i < layers.getCount(); i++) {
                 Layer layer = layers.get(i);
-                if(layer.getTheme()!=null){
-                    if(layer.getTheme().getType()== ThemeType.RANGE || layer.getTheme().getType()== ThemeType.UNIQUE || layer.getTheme().getType()== ThemeType.GRIDRANGE){
-                        if(layer.getTheme().getType()== ThemeType.RANGE){
-                            ThemeRange themeRange = (ThemeRange) layer.getTheme();
-                            for(int a=0;a<themeRange.getCount();a++){
-                                GeoStyle GeoStyle = themeRange.getItem(a).getStyle();
-                                map.put(themeRange.getItem(a).getCaption(), GeoStyle.getFillForeColor().toColorString());
-                            }
-                        }
-                        if(layer.getTheme().getType()== ThemeType.UNIQUE){
-                            ThemeUnique themeUnique = (ThemeUnique) layer.getTheme();
-                            for(int a=0;a<themeUnique.getCount();a++){
-                                GeoStyle GeoStyle = themeUnique.getItem(a).getStyle();
-                                map.put(themeUnique.getItem(a).getCaption(), GeoStyle.getFillForeColor().toColorString());
-                            }
-                        }
-                        if(layer.getTheme().getType()== ThemeType.GRIDRANGE){
-                            ThemeGridRange themeGridRange = (ThemeGridRange) layer.getTheme();
-                            for(int a=0;a<themeGridRange.getCount();a++){
-                                map.put(themeGridRange.getItem(a).getCaption(), themeGridRange.getItem(a).getColor().toColorString());
-                            }
+                if (layer.getTheme() != null) {
+                    if (layer.getTheme().getType() == ThemeType.RANGE) {
+                        ThemeRange themeRange = (ThemeRange) layer.getTheme();
+                        for (int j = 0; j < themeRange.getCount(); j++) {
+                            GeoStyle GeoStyle = themeRange.getItem(j).getStyle();
+//                        map.put(themeRange.getItem(j).getCaption(), GeoStyle.getFillForeColor().toColorString());
+
+                            HashMap<String, String> map = new HashMap<String, String>();
+                            map.put("Caption", themeRange.getItem(j).getCaption());
+                            map.put("Color", GeoStyle.getFillForeColor().toColorString());
+                            arrayList.add(map);
                         }
                     }
                 }
             }
 
-            Legend lengend = mapControl.getMap().getLegend();
+            Legend lengend = mapControl.getMap().getCreateLegend();
+            if(lengend!=null){
+                lengend.dispose();
 
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                int color = android.graphics.Color.parseColor(entry.getValue());
-                ColorLegendItem colorLegendItem = new ColorLegendItem();
-                colorLegendItem.setColor(color);
-                colorLegendItem.setCaption(entry.getKey());
-                lengend.addColorLegendItem(2,colorLegendItem);
+                for (int i = 0; i < arrayList.size(); i++) {
+                    HashMap<String, String> hashMap = arrayList.get(i);
+                    String caption = hashMap.get("Caption");
+                    String colorString = hashMap.get("Color");
+
+                    int color = android.graphics.Color.parseColor(colorString);
+//                ColorLegendItem colorLegendItem = new ColorLegendItem();
+//                colorLegendItem.setColor(color);
+//                colorLegendItem.setCaption(caption);
+//                lengend.addColorLegendItem(2, colorLegendItem);
+
+                    LegendItem legendItem = new LegendItem();
+                    legendItem.setColor(color);
+                    legendItem.setCaption(caption);
+                    lengend.addUserDefinedLegendItem(legendItem);
+                }
+                mapControl.getMap().refresh();
             }
-
-
-            mapControl.getMap().refresh();
-
             promise.resolve(true);
 
         } catch (Exception e) {
@@ -3525,4 +3570,182 @@ public class SMap extends ReactContextBaseJavaModule {
         }
     }
     /************************************** 地图编辑历史操作 END ****************************************/
+
+    /************************************** 地图设置开始 ****************************************/
+
+
+    /**
+     * 获取比例尺是否显示
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapAngle(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            double angle = sMap.smMapWC.getMapControl().getMap().getAngle();
+
+            promise.resolve(angle);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取地图颜色模式
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapColorMode(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapColorMode colorMode = sMap.smMapWC.getMapControl().getMap().getColorMode();
+            String color = colorMode.toString();
+            promise.resolve(color);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 获取地图中心点
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapCenter(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Point2D center = sMap.smMapWC.getMapControl().getMap().getCenter();
+            double x = center.getX();
+            double y = center.getY();
+            WritableMap writeMap = Arguments.createMap();
+            writeMap.putDouble("x", x);
+            writeMap.putDouble("y", y);
+            promise.resolve(writeMap);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置地图中心点
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setMapCenter(double x,double y,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Point2D center = new Point2D(x,y);
+            sMap.smMapWC.getMapControl().getMap().setCenter(center);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取地图比例尺
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapScale(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            double scale = sMap.smMapWC.getMapControl().getMap().getScale();
+            String mscale = ""+1/scale;
+            promise.resolve(mscale);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 设置地图比例尺
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setMapScale(double scale,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getMap().setScale(scale);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取地图坐标系
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getPrjCoordSys(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            String name = sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getName();
+            promise.resolve(name);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 加此图例的事件监听
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void addLegendDelegate(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getMap().getLegend().setContentChangeListener(this);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @Override
+    public void legendContentChanged(Vector<LegendItem> arrItems) {
+        WritableArray arr = Arguments.createArray();
+        for(int i = 0 ;i < arrItems.size(); i++){
+            WritableMap writeMap = Arguments.createMap();
+            Bitmap bm = arrItems.get(i).getBitmap();
+            String name = arrItems.get(i).getCaption();
+            int type = arrItems.get(i).getType();
+
+            String result = null;
+            ByteArrayOutputStream baos = null;
+
+            try {
+                if (bm != null) {
+                    baos = new ByteArrayOutputStream();
+                    bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    baos.flush();
+                    baos.close();
+                    byte[] bitmapBytes = baos.toByteArray();
+                    result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            writeMap.putString("image",result);
+            writeMap.putString("title",name);
+            writeMap.putInt("type",type);
+            arr.pushMap(writeMap);
+        }
+        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(EventConst.LEGEND_CONTENT_CHANGE, arr);
+    }
+
+    /************************************** 地图设置 END ****************************************/
+
 }

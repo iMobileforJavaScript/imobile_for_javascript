@@ -541,6 +541,19 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void ensureVisibleLayer(String layerName,Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            Layer3D layer3D = scene.getLayers().get(layerName);
+            scene.ensureVisible(layer3D);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
     /**
      * 获取当前场景地形图层列表
@@ -560,6 +573,9 @@ public class SScene extends ReactContextBaseJavaModule {
                     WritableMap map = Arguments.createMap();
                     map.putString("name", name);
                     map.putBoolean("visible", visible);
+                    map.putBoolean("selectable", false);
+                    map.putBoolean("basemap", false);
+                    map.putString("type", "Terrain");
                     arr.pushMap(map);
                 }
             }
@@ -1674,7 +1690,7 @@ public class SScene extends ReactContextBaseJavaModule {
      * 停止站飞行
      */
     @ReactMethod
-    public void pasueRoutStop(Promise promise) {
+    public void pauseRoutStop(Promise promise) {
         try {
             FlyHelper.getInstence().routStopPasue();
             promise.resolve(true);
