@@ -84,60 +84,66 @@
 + (GeoStyle *)getGeoStyleByDictionary:(NSDictionary *)geoStyleDic {
     GeoStyle* geoStyle = [[GeoStyle alloc] init];
     if (geoStyleDic) {
-        if ([geoStyleDic objectForKey:@"lineWidth"]) {
-            NSNumber* lineWidthObj = [geoStyleDic objectForKey:@"lineWidth"];
-            [geoStyle setLineWidth: lineWidthObj.doubleValue];
-        }
-        if ([geoStyleDic objectForKey:@"fillForeColor"]) {
-            NSDictionary* fillForeColor = [geoStyleDic objectForKey:@"fillForeColor"];
-            NSNumber* r = [fillForeColor objectForKey:@"r"];
-            NSNumber* g = [fillForeColor objectForKey:@"g"];
-            NSNumber* b = [fillForeColor objectForKey:@"b"];
-            NSNumber* a = [fillForeColor objectForKey:@"a"];
-            
-            if (!a) {
-                [geoStyle setFillForeColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue]];
-            } else {
-                [geoStyle setFillForeColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue A:a.intValue]];
-            }
-            
-        }
+        NSError * error = nil;
+        NSData * jsonData = [NSJSONSerialization dataWithJSONObject:geoStyleDic options:NSJSONWritingPrettyPrinted error:&error];
+        NSString * jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         
-        if ([geoStyleDic objectForKey:@"lineColor"]) {
-            NSDictionary* lineColor = [geoStyleDic objectForKey:@"lineColor"];
-            NSNumber* r = [lineColor objectForKey:@"r"];
-            NSNumber* g = [lineColor objectForKey:@"g"];
-            NSNumber* b = [lineColor objectForKey:@"b"];
-            NSNumber* a = [lineColor objectForKey:@"a"];
-            
-            if (!a) {
-                [geoStyle setLineColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue]];
-            } else {
-                [geoStyle setLineColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue A:a.intValue]];
-            }
-        }
+        [geoStyle fromJson:jsonStr];
         
-        if ([geoStyleDic objectForKey:@"lineSymbolID"]) {
-            NSNumber* lineSymbolID = [geoStyleDic objectForKey:@"lineSymbolID"];
-            [geoStyle setLineSymbolID:lineSymbolID.intValue];
-        }
-        if ([geoStyleDic objectForKey:@"markerSymbolID"]) {
-            NSNumber* markerSymbolID = [geoStyleDic objectForKey:@"markerSymbolID"];
-            [geoStyle setLineSymbolID:markerSymbolID.intValue];
-        }
-        if ([geoStyleDic objectForKey:@"markerSize"]) {
-            NSDictionary* markerSize = [geoStyleDic objectForKey:@"markerSize"];
-            NSNumber* w = [markerSize objectForKey:@"w"];
-            NSNumber* h = [markerSize objectForKey:@"h"];
-            
-            Size2D* size2D = [[Size2D alloc] initWithWidth:w.doubleValue Height:h.doubleValue];
-            [geoStyle setMarkerSize:size2D];
-        }
-        
-        if ([geoStyleDic objectForKey:@"fillOpaqueRate"]) {
-            NSNumber* fillOpaqueRate = [geoStyleDic objectForKey:@"fillOpaqueRate"];
-            [geoStyle setFillOpaqueRate:fillOpaqueRate.intValue];
-        }
+//        if ([geoStyleDic objectForKey:@"lineWidth"]) {
+//            NSNumber* lineWidthObj = [geoStyleDic objectForKey:@"lineWidth"];
+//            [geoStyle setLineWidth: lineWidthObj.doubleValue];
+//        }
+//        if ([geoStyleDic objectForKey:@"fillForeColor"]) {
+//            NSDictionary* fillForeColor = [geoStyleDic objectForKey:@"fillForeColor"];
+//            NSNumber* r = [fillForeColor objectForKey:@"r"];
+//            NSNumber* g = [fillForeColor objectForKey:@"g"];
+//            NSNumber* b = [fillForeColor objectForKey:@"b"];
+//            NSNumber* a = [fillForeColor objectForKey:@"a"];
+//
+//            if (!a) {
+//                [geoStyle setFillForeColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue]];
+//            } else {
+//                [geoStyle setFillForeColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue A:a.intValue]];
+//            }
+//
+//        }
+//
+//        if ([geoStyleDic objectForKey:@"lineColor"]) {
+//            NSDictionary* lineColor = [geoStyleDic objectForKey:@"lineColor"];
+//            NSNumber* r = [lineColor objectForKey:@"r"];
+//            NSNumber* g = [lineColor objectForKey:@"g"];
+//            NSNumber* b = [lineColor objectForKey:@"b"];
+//            NSNumber* a = [lineColor objectForKey:@"a"];
+//
+//            if (!a) {
+//                [geoStyle setLineColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue]];
+//            } else {
+//                [geoStyle setLineColor:[[Color alloc] initWithR:r.intValue G:g.intValue B:b.intValue A:a.intValue]];
+//            }
+//        }
+//
+//        if ([geoStyleDic objectForKey:@"lineSymbolID"]) {
+//            NSNumber* lineSymbolID = [geoStyleDic objectForKey:@"lineSymbolID"];
+//            [geoStyle setLineSymbolID:lineSymbolID.intValue];
+//        }
+//        if ([geoStyleDic objectForKey:@"markerSymbolID"]) {
+//            NSNumber* markerSymbolID = [geoStyleDic objectForKey:@"markerSymbolID"];
+//            [geoStyle setLineSymbolID:markerSymbolID.intValue];
+//        }
+//        if ([geoStyleDic objectForKey:@"markerSize"]) {
+//            NSDictionary* markerSize = [geoStyleDic objectForKey:@"markerSize"];
+//            NSNumber* w = [markerSize objectForKey:@"w"];
+//            NSNumber* h = [markerSize objectForKey:@"h"];
+//
+//            Size2D* size2D = [[Size2D alloc] initWithWidth:w.doubleValue Height:h.doubleValue];
+//            [geoStyle setMarkerSize:size2D];
+//        }
+//
+//        if ([geoStyleDic objectForKey:@"fillOpaqueRate"]) {
+//            NSNumber* fillOpaqueRate = [geoStyleDic objectForKey:@"fillOpaqueRate"];
+//            [geoStyle setFillOpaqueRate:fillOpaqueRate.intValue];
+//        }
     } else {
         [geoStyle setLineColor:[[Color alloc] initWithR:0 G:100 B:255]];
         [geoStyle setFillForeColor:[[Color alloc] initWithR:0 G:255 B:0]];

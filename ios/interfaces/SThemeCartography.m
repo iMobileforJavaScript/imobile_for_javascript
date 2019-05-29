@@ -1,3 +1,4 @@
+
 //
 //  SThemeCartography.m
 //  Supermap
@@ -91,7 +92,7 @@ RCT_REMAP_METHOD(createThemeUniqueMap, createThemeUniqueMapWithResolver:(NSDicti
             }
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [mapControl.map.layers addDataset:dataset Theme:themeUnique ToHead:true];
-            [mapControl.map refresh];    
+            [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         }
         else{
@@ -248,10 +249,10 @@ RCT_REMAP_METHOD(modifyThemeUniqueMap, modifyThemeUniqueMapWithResolver:(NSDicti
                     }
                     else{
                         if (_lastColorUniqueArray != nil) {
-                                int rangeCount = [tu getCount];
-                                Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:_lastColorUniqueArray];
-                                for (int i = 0; i < rangeCount; i++) {
-                                    [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tu getItem:i].mStyle color:[selectedColors get:i]];
+                            int rangeCount = [tu getCount];
+                            Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:_lastColorUniqueArray];
+                            for (int i = 0; i < rangeCount; i++) {
+                                [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tu getItem:i].mStyle color:[selectedColors get:i]];
                             }
                         }
                     }
@@ -783,21 +784,21 @@ RCT_REMAP_METHOD(getUniformLabelBackShape, getUniformLabelBackShapeWithResolver:
         }
         if (layer != nil && layer.theme != nil) {
             if (layer.theme.themeType == TT_label) {
-//                MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
-//                [[mapControl getEditHistory] addMapHistory];
+                //                MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+                //                [[mapControl getEditHistory] addMapHistory];
                 
-//                ThemeLabel* themeLabel =(ThemeLabel*)layer.theme;
-//                LabelBackShape labelBackShape;
-//TODO          labelBackShape  = [themeLabel getBackShape];
-//                NSString* strBackShape = [SMThemeCartography getLabelBackShapeString:labelBackShape];
-//                if (strBackShape != nil) {
-//                    NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
-//                    [dic setValue:strBackShape forKey:@"LabelBackShape"];
-//                    resolve(dic);
-//                }
-//                else{
-//                    resolve([NSNumber numberWithBool:NO]);
-//                }
+                //                ThemeLabel* themeLabel =(ThemeLabel*)layer.theme;
+                //                LabelBackShape labelBackShape;
+                //TODO          labelBackShape  = [themeLabel getBackShape];
+                //                NSString* strBackShape = [SMThemeCartography getLabelBackShapeString:labelBackShape];
+                //                if (strBackShape != nil) {
+                //                    NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+                //                    [dic setValue:strBackShape forKey:@"LabelBackShape"];
+                //                    resolve(dic);
+                //                }
+                //                else{
+                //                    resolve([NSNumber numberWithBool:NO]);
+                //                }
             }
         }
         else{
@@ -1275,7 +1276,7 @@ RCT_REMAP_METHOD(createThemeRangeMap, createThemeRangeMapMapWithResolver:(NSDict
                     arrayColor = [SMThemeCartography getRangeColors:colorScheme];
                     NSArray* arrKey = [arrayColor allKeys];
                     if ([arrKey containsObject:colorScheme]) {
-                    colorArray = [arrayColor objectForKey:colorScheme];
+                        colorArray = [arrayColor objectForKey:colorScheme];
                     }
                     if (colorArray != nil) {
                         int rangeCount = [themeRange getCount];
@@ -1375,7 +1376,7 @@ RCT_REMAP_METHOD(modifyThemeRangeMap, modifyThemeRangeMapWithResolver:(NSDiction
             isContainColorGradientType = true;
         }
         bool result = false;
-
+        
         if (dataset != nil && themeRangeLayer.theme != nil && ![rangeExpression isEqualToString:@""] && isContainRangeMode && rangeParameter != -1 && isContainColorGradientType) {
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [[mapControl getEditHistory] addMapHistory];

@@ -8,6 +8,7 @@ import com.facebook.react.uimanager.ViewManager;
 import com.supermap.component.SMSymbolTable;
 import com.supermap.interfaces.collector.SCollector;
 import com.supermap.interfaces.collector.SCollectorType;
+import com.supermap.interfaces.collector.SMediaCollector;
 import com.supermap.interfaces.mapping.SDatasource;
 import com.supermap.interfaces.mapping.SLayerManager;
 import com.supermap.interfaces.mapping.SMap;
@@ -15,6 +16,7 @@ import com.supermap.interfaces.SScene;
 import com.supermap.interfaces.*;
 import com.supermap.interfaces.iServer.SOnlineService;
 import com.supermap.component.SMRLegendView;
+import com.supermap.interfaces.utils.SMFileUtil;
 import com.supermap.rnsupermap.*;
 
 import java.util.ArrayList;
@@ -187,6 +189,8 @@ public class SupermapFullPackage implements ReactPackage {
 		modules.add(new SCartography(reactContext));
         modules.add(new SThemeCartography(reactContext));
         modules.add(new SDatasource(reactContext));
+
+        modules.add(new SMediaCollector(reactContext));
 
         modules.add(new SMFileUtil(reactContext));
         modules.add(new SMessageService(reactContext));

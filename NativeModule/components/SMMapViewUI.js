@@ -13,11 +13,13 @@ import {
   StyleSheet,
   Image,
   ViewPropTypes,
-  Platform,
+  NativeModules,
 } from 'react-native';
 import MapView from '../MapView.js';
 import Point from '../Point.js';
 let resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
+
+let MV = NativeModules.JSMapView;
 /**
  * ServerMapView视图标签，提供onGetInstance属性，该属性值的类型为函数，
  * 且函数参数为从Native层返回的MapViewId，在使用该标签时，必须通过此属性获得MapViewId
@@ -53,6 +55,7 @@ class SMMapView extends Component {
     this.setState({
       callouts: this.props.callouts,
     });
+    this.mapView = {}
   }
 
   // componentWillUnmount() {
@@ -61,6 +64,11 @@ class SMMapView extends Component {
   //     debugger
   //   })
   // }
+  
+  _addCallout = async (x, y, pointName = 'aa') => {
+    await MV.addCallOut(x, y, pointName);
+    return {x, y}
+  }
 
   _onChange(event) {
     if (!this.props.onGetInstance) {
@@ -69,7 +77,7 @@ class SMMapView extends Component {
     }
     console.log("has onGetInstance:" + event.nativeEvent.mapViewId);
 
-    this.mapView = new MapView();
+    // this.mapView = new MapView();
     this.mapView._SMMapViewId = event.nativeEvent.mapViewId;
     this.props.onGetInstance(this.mapView);
 
@@ -123,39 +131,39 @@ class SMMapView extends Component {
    * @param callout - callout对象，e.g:{uri:require('./../resource/destpoint.png'),mapX:mapPoint.x,mapY:mapPoint.y}
    * @private
    */
-  async _addCallouts(callout, index) {
-    await this.mapControl.setGestureDetector({
-      longPressHandler: (e) => {
-        console.log('MapControl:Longpress:' + JSON.stringify(e));
-
-        (async function () {
-          var pointFac = new Point();
-          var point = await pointFac.createObj(e.x, e.y);
-          var mapPoint = await this.map.pixelToMap(point);
-
-          var arr = this.state.callouts;
-          if (!index) {
-            arr.push(callout);
-          } else {
-            arr[index] = callout;
-          }
-          this.setState({
-            callouts: arr,
-          });
-
-        }).bind(this)();
-        //像素单位转布局单位
-        // var layoutY = e.y/PixelRatio.get();
-        // var layoutX = e.x/PixelRatio.get();
-        // console.log('MapControl:Longpress:' + layoutX + ", " + layoutY);
-        // var arr = this.state.callouts;
-        // arr.push({uri:require('./resource/destpoint.png'),top:layoutY,left:layoutX});
-        // this.setState({
-        //     callouts:arr,
-        // });
-      }
-    });
-  }
+  // async _addCallouts(callout, index) {
+  //   await this.mapControl.setGestureDetector({
+  //     longPressHandler: (e) => {
+  //       console.log('MapControl:Longpress:' + JSON.stringify(e));
+  //
+  //       (async function () {
+  //         var pointFac = new Point();
+  //         var point = await pointFac.createObj(e.x, e.y);
+  //         var mapPoint = await this.map.pixelToMap(point);
+  //
+  //         var arr = this.state.callouts;
+  //         if (!index) {
+  //           arr.push(callout);
+  //         } else {
+  //           arr[index] = callout;
+  //         }
+  //         this.setState({
+  //           callouts: arr,
+  //         });
+  //
+  //       }).bind(this)();
+  //       //像素单位转布局单位
+  //       // var layoutY = e.y/PixelRatio.get();
+  //       // var layoutX = e.x/PixelRatio.get();
+  //       // console.log('MapControl:Longpress:' + layoutX + ", " + layoutY);
+  //       // var arr = this.state.callouts;
+  //       // arr.push({uri:require('./resource/destpoint.png'),top:layoutY,left:layoutX});
+  //       // this.setState({
+  //       //     callouts:arr,
+  //       // });
+  //     }
+  //   });
+  // }
 
   render() {
     var props = { ...this.props };
@@ -163,29 +171,29 @@ class SMMapView extends Component {
 
     return (
       <View style={styles.views}>
-        {Platform.OS === 'android' && <View style={styles.view} />}
+        {/*{Platform.OS === 'android' && <View style={styles.view} />}*/}
         <RCTMapView {...props} style={styles.map} onChange={this._onChange} />
-        { !this.state.callouts ||
-        this.state.callouts.filter(function (item) {
-          if (!item.uri) {
-            return false;
-          }
-          return true;
-        }).map((item, index) => {
-          const sourceBody = resolveAssetSource(item.uri);
-          let { width, height } = sourceBody;
-          var offY = item.top - height;
-          var offX = item.left - width / 2;
-          var indexer = "callout" + index;
-          return <Image key={index} ref={indexer} source={item.uri} style={
-            [styles.pic, {
-              top: offY,
-              left: offX,
-            }]
-          }/>
-        })
-        }
-        {Platform.OS === 'android' && <View style={styles.view} />}
+        {/*{ !this.state.callouts ||*/}
+        {/*this.state.callouts.filter(function (item) {*/}
+          {/*if (!item.uri) {*/}
+            {/*return false;*/}
+          {/*}*/}
+          {/*return true;*/}
+        {/*}).map((item, index) => {*/}
+          {/*const sourceBody = resolveAssetSource(item.uri);*/}
+          {/*let { width, height } = sourceBody;*/}
+          {/*var offY = item.top - height;*/}
+          {/*var offX = item.left - width / 2;*/}
+          {/*var indexer = "callout" + index;*/}
+          {/*return <Image key={index} ref={indexer} source={item.uri} style={*/}
+            {/*[styles.pic, {*/}
+              {/*top: offY,*/}
+              {/*left: offX,*/}
+            {/*}]*/}
+          {/*}/>*/}
+        {/*})*/}
+        {/*}*/}
+        {/*{Platform.OS === 'android' && <View style={styles.view} />}*/}
       </View>
     );
   }

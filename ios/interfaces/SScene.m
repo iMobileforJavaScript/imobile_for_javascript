@@ -656,6 +656,27 @@ RCT_REMAP_METHOD(getLayerList, getLayerList:(RCTPromiseResolveBlock)resolve reje
     }
 }
 
+RCT_REMAP_METHOD(changeBaseLayer, type:(int)type  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    sScene = [SScene singletonInstance];
+    Scene* scene = sScene.smSceneWC.sceneControl.scene;
+     @try {
+         sScene.smSceneWC.sceneControl.isRender = false;
+         [scene.layers removeLayerWithName:@"TianDiTu"];
+         [scene.layers removeLayerWithName:@"BingMap"];
+         Layer3D* layer3d = nil;
+         if(type==1){//tianditu
+             NSString * tiandituUrl = @"http://t0.tianditu.com/img_c/wmts";
+             layer3d = [scene.layers addLayerWithTiandituURL:tiandituUrl type:BINGMAPS dataLayerName:@"TianDiTu" imageFormatType:ImageFormatTypeJPG_PNG dpi:96 toHead:NO];
+         }else if (type==2){//bingMap
+             layer3d = [scene.layers addLayerWithURL:@"" type:BINGMAPS dataLayerName:@"BingMap" toHead:NO];
+
+         }
+         sScene.smSceneWC.sceneControl.isRender = YES;
+         resolve(@(layer3d!=nil));
+     }@catch (NSException *exception) {
+         reject(@"SScene", exception.reason, nil);
+     }
+}
 RCT_REMAP_METHOD(addLayer3D,  Url:(NSString*) Url Layer3DType:(NSString*) layer3DType layerName:(NSString*) layerName imageFormatType:(NSString*) imageFormatType dpi:(double) dpi addToHead:(BOOL)addToHead  token:(NSString*)token resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     sScene = [SScene singletonInstance];
     Scene* scene = sScene.smSceneWC.sceneControl.scene;
@@ -697,23 +718,11 @@ RCT_REMAP_METHOD(addLayer3D,  Url:(NSString*) Url Layer3DType:(NSString*) layer3
             imageFormatType1 = ImageFormatTypeNONE;
         }
         
-//            BOOL isopen = [scene openSceneWithUrl:@"http://10.10.0.66:8090/iserver/services/3D-zhufeng/rest/realspace" Name:@"珠峰" Password:nil];
-        
-//        NSString * tiandituUrl = @"http://t0.tianditu.com/img_c/wmts?tk=22f8a846ef9e3becd95a25b08bde8f36";
         Layer3D* layer3d = nil;
-        
-//        layer3d = [scene.layers addLayerWithURL:@"http://10.10.0.66:8090/iserver/services/3D-zhufeng/rest/realspace" type:IMAGEFILE dataLayerName:@"珠峰" toHead:YES];
-//         [scene ensureVisible:layer3d];
-//        layer3d = [scene.layers addLayerWithTiandituURL:tiandituUrl type:WMTS dataLayerName:@"img" imageFormatType:ImageFormatTypeJPG_PNG dpi:96 toHead:YES];
-
-//        Layer3D* layer3d =  [scene.layers addLayerWithURL:@"" type:BINGMAPS dataLayerName:@"tt1" toHead:YES];
-;
         if (dpi == 0 && imageFormatType == nil) {
             layer3d = [scene.layers addLayerWithURL:Url type:nlayer3DType dataLayerName:layerName toHead:addToHead];
-           // scene.getLayers().add(Url, layer3DType, layerName, addToHead);
         } else {
             layer3d = [scene.layers  addLayerWithTiandituURL:Url type:nlayer3DType dataLayerName:layerName imageFormatType:imageFormatType1 dpi:dpi toHead:dpi];
-           // scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
         }
         
         resolve(@(layer3d!=nil));
@@ -728,7 +737,14 @@ RCT_REMAP_METHOD(ensureVisibleLayer, layer:(NSString*)layerName ensureVisibleLay
         sScene = [SScene singletonInstance];
         Scene* scene = sScene.smSceneWC.sceneControl.scene;
         Layer3D* layer3d = [sScene.smSceneWC.sceneControl.scene.layers getLayerWithName:layerName];
-        [scene ensureVisible:layer3d];
+        Rect2D* bounds = layer3d.bounds;
+        if(!bounds){
+            TerrainLayer* layer3dTerr = [sScene.smSceneWC.sceneControl.scene.terrainLayers getLayerWithName:layerName];
+            bounds = layer3dTerr.bounds;
+        }
+        if(bounds){
+            [scene ensureVisibleWithBounds:[[Rectangle2D alloc]initWith:bounds.left bottom:bounds.bottom right:bounds.right top:bounds.top]];
+        }
         resolve(@(1));
     }@catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
@@ -777,10 +793,10 @@ RCT_REMAP_METHOD(setTerrainLayerListVisible, name:(NSString*)name  bVisual:(BOOL
         //   Maps* maps = sMap.smMapWC.workspace.maps;
         
       //  NSMutableArray* arr = [[NSMutableArray alloc]initWithCapacity:1];
-        int count = scene.terrainLayers.count;
-        if(count>0){
-            [scene.terrainLayers getLayerWithName:name].visible = bVisual;
-        }
+        
+       TerrainLayer* layer3D = [scene.terrainLayers getLayerWithName:name];
+       layer3D.visible = bVisual;
+        
         
         resolve(@(1));
     } @catch (NSException *exception) {
@@ -800,10 +816,8 @@ RCT_REMAP_METHOD(setVisible, name:(NSString*)name  bVisual:(BOOL)bVisual setVisi
         //   Maps* maps = sMap.smMapWC.workspace.maps;
         
         //NSMutableArray* arr = [[NSMutableArray alloc]initWithCapacity:1];
-        int count = scene.layers.count;
-        if(count>0){
-            [scene.layers getLayerWithName:name].visible = bVisual;
-        }
+        [scene.layers getLayerWithName:name].visible = bVisual;
+        
         
         resolve(@(1));
     } @catch (NSException *exception) {
@@ -1050,6 +1064,164 @@ RCT_REMAP_METHOD( getcompass,  getcompassResolver:(RCTPromiseResolveBlock)resolv
 //        reject(@"SScene", exception.reason, nil);
 //    }
 //}
+
++(void)showAllFileWithPath:(NSString *) path filter:(NSString*)fileter resArr:(NSMutableArray*)resArr {
+    NSFileManager * fileManger = [NSFileManager defaultManager];
+    BOOL isDir = NO;
+    BOOL isExist = [fileManger fileExistsAtPath:path isDirectory:&isDir];
+    if (isExist) {
+        if (isDir) {
+            NSArray * dirArray = [fileManger contentsOfDirectoryAtPath:path error:nil];
+            NSString * subPath = nil;
+            for (NSString * str in dirArray) {
+                subPath  = [path stringByAppendingPathComponent:str];
+                BOOL issubDir = NO;
+                [fileManger fileExistsAtPath:subPath isDirectory:&issubDir];
+                [self showAllFileWithPath:subPath filter:fileter resArr:resArr];
+            }
+        }else{
+            NSString *fileName = [[path componentsSeparatedByString:@"/"] lastObject];
+            if ([fileName.uppercaseString hasSuffix:fileter.uppercaseString]) {
+                [resArr addObject:@{@"name":fileName,@"path":path}];
+            }
+        }
+    }else{
+        NSLog(@"this path is not exist!");
+    }
+}
+#pragma mark-获取影像"sci3d"
+RCT_REMAP_METHOD(getImageCacheNames, getImageCacheNames:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = [[sScene smSceneWC]sceneControl];
+        NSString* path = [sScene.smSceneWC.workspace.connectionInfo server];
+        NSArray* strArr = [path componentsSeparatedByString:@"/"];
+        NSString * strServerName = [strArr lastObject];
+        NSString* strDir = [[path substringToIndex:path.length-strServerName.length] stringByAppendingString:@"image"];
+        
+        //        [[FlyHelper3D sharedInstance] resetSceneControl:sceneControl SceneDir:strDir];
+        //        NSArray *resultArray = [[FlyHelper3D sharedInstance] getFlyRouteNames];
+        
+        NSMutableArray* arr = [[NSMutableArray alloc]initWithCapacity:1];
+        [SScene showAllFileWithPath:strDir filter:@".sci3d" resArr:arr];
+        resolve(arr);
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+//+(NSString*)findAvailableName:()
+#pragma mark-添加影像缓存
+RCT_REMAP_METHOD(addTerrainCacheLayer, TerrainCachePath:(NSString*)terrainCache layerName:(NSString*)layerName getTerrainCacheNames:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = [[sScene smSceneWC]sceneControl];
+        int n = 1;
+        NSString* AvailableName = layerName;
+        while(true){
+            if([sceneControl.scene.terrainLayers contains:AvailableName]){
+                AvailableName = [layerName stringByAppendingFormat:@"#%i",n++];
+            }else{
+                break;
+            }
+        }
+//        if([sceneControl.scene.terrainLayers contains:layerName]){
+//
+//            resolve(layerName);
+//        }else
+        {
+            sceneControl.isRender = false;
+            TerrainLayer* layer = [sceneControl.scene.terrainLayers addLayerWithPath:terrainCache toHead:YES name:AvailableName password:nil];
+            sceneControl.isRender = YES;
+            resolve(layer.name);
+        }
+       
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+#pragma mark-移除地形缓存
+RCT_REMAP_METHOD(removeTerrainCacheLayer, terrainlayerName:(NSString*)layerName getTerrainCacheNames:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = [[sScene smSceneWC]sceneControl];
+        
+        sceneControl.isRender = false;
+        BOOL b = [sceneControl.scene.terrainLayers removeLayerWithName:layerName];
+        sceneControl.isRender = YES;
+        resolve(@(b));
+        
+        
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+#pragma mark-添加地形缓存
+RCT_REMAP_METHOD(addImageCacheLayer, ImageCachePath:(NSString*)terrainCache layerName:(NSString*)layerName getTerrainCacheNames:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = [[sScene smSceneWC]sceneControl];
+        
+        int n = 1;
+        NSString* AvailableName = layerName;
+        while(true){
+            if([sceneControl.scene.layers getLayerWithName:AvailableName] != nil){
+                AvailableName = [layerName stringByAppendingFormat:@"#%i",n++];
+            }else{
+                break;
+            }
+        }
+//        if([sceneControl.scene.layers getLayerWithName:layerName] != nil){
+//            resolve(layerName);
+//        }else
+        {
+             sceneControl.isRender = false;
+            Layer3D* layer = [sceneControl.scene.layers addLayerWith:terrainCache Type:IMAGEFILE ToHead:YES LayerName:layerName];
+            sceneControl.isRender = YES;
+            resolve(layer.name);
+        }
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+#pragma mark-移除地形缓存
+RCT_REMAP_METHOD(removeImageCacheLayer, ImagelayerName:(NSString*)layerName getTerrainCacheNames:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = [[sScene smSceneWC]sceneControl];
+        
+        sceneControl.isRender = false;
+        BOOL b = [sceneControl.scene.layers removeLayerWithName:layerName];
+        sceneControl.isRender = YES;
+        resolve(@(b));
+        
+        
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+#pragma mark-获取地形缓存 “.sct”
+RCT_REMAP_METHOD(getTerrainCacheNames, getTerrainCacheNames:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = [[sScene smSceneWC]sceneControl];
+        NSString* path = [sScene.smSceneWC.workspace.connectionInfo server];
+        NSArray* strArr = [path componentsSeparatedByString:@"/"];
+        NSString * strServerName = [strArr lastObject];
+        NSString* strDir = [[path substringToIndex:path.length-strServerName.length] stringByAppendingString:@"terrain"];
+        
+//        [[FlyHelper3D sharedInstance] resetSceneControl:sceneControl SceneDir:strDir];
+//        NSArray *resultArray = [[FlyHelper3D sharedInstance] getFlyRouteNames];
+        
+        NSMutableArray* arr = [[NSMutableArray alloc]initWithCapacity:1];
+        [SScene showAllFileWithPath:strDir filter:@".sct" resArr:arr];
+        resolve(arr);
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
 
 #pragma mark-飞行
 /**
