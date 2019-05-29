@@ -197,13 +197,11 @@
  @param  index 指定的 Callout 对象的索引。
  */
 -(void) removeCalloutAtIndex:(int)index;
--(void)removeCalloutWithTag:(int)tag;
-
+-(void) removeCalloutWithTag:(int)tag;
 /**@brief 从Mapcontrol上移除calloutArr内的callout。
  @param callout数组
  */
 -(void)removeCalloutWithArr:(NSArray*)calloutArr;
-
 
 ///移除 Mapcontrol上所有Callout对象。
 -(void) removeAllCallouts;
@@ -318,7 +316,7 @@
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)longpress:(CGPoint)pressedPos;
 - (void)onDoubleTap:(CGPoint)onDoubleTapPos;
-- (void)onSingleTap:(CGPoint)onSingleTapPos;
+- (void)onSingleTap:(CGPoint)onDoubleTapPos;
 @end
 
 ///地图编辑用户回调。

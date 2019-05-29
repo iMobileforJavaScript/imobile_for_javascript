@@ -480,7 +480,7 @@
 
     NSString* extension = [[imagePath pathExtension] lowercaseString];
     UIImage* img;
-    if ([extension isEqualToString:@"mp4"]) {
+    if ([extension isEqualToString:@"mp4"] || [extension isEqualToString:@"mov"]) {
         img = [MediaUtil getScreenShotImageFromVideoPath:imagePath];
     } else {
         img = [UIImage imageWithContentsOfFile:imagePath];

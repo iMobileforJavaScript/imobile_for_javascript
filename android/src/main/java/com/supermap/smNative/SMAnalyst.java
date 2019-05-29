@@ -22,6 +22,8 @@ import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Map;
 
+import org.json.JSONObject;
+
 /**
   @Author: shanglongyang
   Date:        2019/4/24
@@ -145,30 +147,32 @@ public class SMAnalyst {
     public static GeoStyle getGeoStyleByDictionary(ReadableMap geoStyleDic) {
         GeoStyle geoStyle = new GeoStyle();
         if (geoStyleDic != null) {
-            if (geoStyleDic.hasKey("lineWidth")) {
-                geoStyle.setLineWidth(geoStyleDic.getInt("lineWidth"));
-            }
-            if (geoStyleDic.hasKey("fillForeColor")) {
-                ReadableMap fillForeColor = geoStyleDic.getMap("fillForeColor");
-                geoStyle.setFillForeColor(new Color(fillForeColor.getInt("r"), fillForeColor.getInt("g"), fillForeColor.getInt("b")));
-            }
-            if (geoStyleDic.hasKey("lineColor")) {
-                ReadableMap lineColor = geoStyleDic.getMap("lineColor");
-                geoStyle.setLineColor(new Color(lineColor.getInt("r"), lineColor.getInt("g"), lineColor.getInt("b")));
-            }
-            if (geoStyleDic.hasKey("lineSymbolID")) {
-                geoStyle.setLineSymbolID(geoStyleDic.getInt("lineSymbolID"));
-            }
-            if (geoStyleDic.hasKey("markerSymbolID")) {
-                geoStyle.setMarkerSymbolID(geoStyleDic.getInt("markerSymbolID"));
-            }
-            if (geoStyleDic.hasKey("markerSize")) {
-                ReadableMap markerSize = geoStyleDic.getMap("markerSize");
-                geoStyle.setMarkerSize(new Size2D(markerSize.getInt("w"), markerSize.getInt("h")));
-            }
-            if (geoStyleDic.hasKey("fillOpaqueRate")) {
-                geoStyle.setMarkerSymbolID(geoStyleDic.getInt("fillOpaqueRate"));
-            }
+            JSONObject jsonObject = new JSONObject(geoStyleDic.toHashMap());
+            geoStyle.fromJson(jsonObject.toString());
+//            if (geoStyleDic.hasKey("lineWidth")) {
+//                geoStyle.setLineWidth(geoStyleDic.getInt("lineWidth"));
+//            }
+//            if (geoStyleDic.hasKey("fillForeColor")) {
+//                ReadableMap fillForeColor = geoStyleDic.getMap("fillForeColor");
+//                geoStyle.setFillForeColor(new Color(fillForeColor.getInt("r"), fillForeColor.getInt("g"), fillForeColor.getInt("b")));
+//            }
+//            if (geoStyleDic.hasKey("lineColor")) {
+//                ReadableMap lineColor = geoStyleDic.getMap("lineColor");
+//                geoStyle.setLineColor(new Color(lineColor.getInt("r"), lineColor.getInt("g"), lineColor.getInt("b")));
+//            }
+//            if (geoStyleDic.hasKey("lineSymbolID")) {
+//                geoStyle.setLineSymbolID(geoStyleDic.getInt("lineSymbolID"));
+//            }
+//            if (geoStyleDic.hasKey("markerSymbolID")) {
+//                geoStyle.setMarkerSymbolID(geoStyleDic.getInt("markerSymbolID"));
+//            }
+//            if (geoStyleDic.hasKey("markerSize")) {
+//                ReadableMap markerSize = geoStyleDic.getMap("markerSize");
+//                geoStyle.setMarkerSize(new Size2D(markerSize.getInt("w"), markerSize.getInt("h")));
+//            }
+//            if (geoStyleDic.hasKey("fillOpaqueRate")) {
+//                geoStyle.setMarkerSymbolID(geoStyleDic.getInt("fillOpaqueRate"));
+//            }
         } else {
             geoStyle.setLineColor(new Color(0, 100, 255));
             geoStyle.setFillForeColor(new Color(0, 100, 255));
@@ -194,10 +198,10 @@ public class SMAnalyst {
                 bufferAnalystParameter.setLeftDistance(parameter.getDouble("leftDistance"));
             }
             if (parameter.hasKey("rightDistance")) {
-                bufferAnalystParameter.setLeftDistance(parameter.getDouble("rightDistance"));
+                bufferAnalystParameter.setRightDistance(parameter.getDouble("rightDistance"));
             }
             if (parameter.hasKey("semicircleSegments")) {
-                bufferAnalystParameter.setLeftDistance(parameter.getInt("semicircleSegments"));
+                bufferAnalystParameter.setSemicircleLineSegment(parameter.getInt("semicircleSegments"));
             }
         }
 
