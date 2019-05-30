@@ -460,8 +460,8 @@ public class SScene extends ReactContextBaseJavaModule {
 //                promise.resolve(true);
 //                return;
 //            }
-            scene.getLayers().removeLayerWithName("TianDiTu");
-            scene.getLayers().removeLayerWithName("BingMap");
+            scene.getLayers().removeLayerWithName1("TianDiTu");
+            scene.getLayers().removeLayerWithName1("BingMap");
 
             Thread.sleep(1000);
             Layer3D layer3d = null;
@@ -568,8 +568,10 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            sScene.smSceneWc.getSceneControl().isRender(false);
             scene.getTerrainLayers().clear();
             scene.getTerrainLayers().add(url,name);
+            sScene.smSceneWc.getSceneControl().isRender(true);
             scene.refresh();
             int i=scene.getTerrainLayers().getCount();
             promise.resolve(true);
@@ -622,6 +624,103 @@ public class SScene extends ReactContextBaseJavaModule {
                 }
             }
             promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 添加影像缓存
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void addImageCacheLayer(String ImageCachePath, String layerName, Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            int n = 1;
+            String AvailableName = layerName;
+            while(true){
+                if(scene.getLayers().get(AvailableName) != null){
+                    AvailableName = layerName + "#" + n++;//[layerName stringByAppendingFormat:@"#%i",n++];
+                }else{
+                    break;
+                }
+            }
+            sScene.smSceneWc.getSceneControl().isRender(false);
+            Layer3D layer3D = scene.getLayers().addLayerWith(ImageCachePath,Layer3DType.IMAGEFILE,true,AvailableName);
+            sScene.smSceneWc.getSceneControl().isRender(true);
+            promise.resolve(layer3D.getName());
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 删除影像图层
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void removeImageCacheLayer(String layerName, Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            sScene.smSceneWc.getSceneControl().isRender(false);
+            boolean b = scene.getLayers().removeLayerWithName1(layerName);
+            sScene.smSceneWc.getSceneControl().isRender(true);
+//            Thread.sleep(1000);
+//            Layer3D layer = scene.getLayers().get(layerName);
+            promise.resolve(b);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 添加影像缓存
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void addTerrainCacheLayer(String terrainCache, String layerName, Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            int n = 1;
+            String AvailableName = layerName;
+            while(true){
+                if(scene.getTerrainLayers().get(AvailableName) != null){
+                    AvailableName = layerName + "#" + n++;//[layerName stringByAppendingFormat:@"#%i",n++];
+                }else{
+                    break;
+                }
+            }
+            sScene.smSceneWc.getSceneControl().isRender(false);
+            TerrainLayer layer = scene.getTerrainLayers().add(terrainCache,true,AvailableName,"");//addLayerWith(terrainCache,Layer3DType.IMAGEFILE,true,AvailableName);
+            sScene.smSceneWc.getSceneControl().isRender(true);
+            promise.resolve(layer.getName());
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 删除地形图层
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void removeTerrainCacheLayer(String layerName, Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            sScene.smSceneWc.getSceneControl().isRender(false);
+            boolean b = scene.getTerrainLayers().removeLayerWithName(layerName);
+            sScene.smSceneWc.getSceneControl().isRender(true);
+            promise.resolve(b);
         } catch (Exception e) {
             promise.reject(e);
         }
