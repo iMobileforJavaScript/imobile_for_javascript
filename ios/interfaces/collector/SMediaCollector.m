@@ -290,6 +290,20 @@ RCT_REMAP_METHOD(stopCaptureAudio, stopCaptureAudioWithResolver:(RCTPromiseResol
 //    }
 //}
 
+#pragma mark 获取视频文件缩略图
+RCT_REMAP_METHOD(getVideoInfo, getVideoInfo:(NSString*)path withresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSDictionary* thumbnail = [MediaUtil getScreenShotImage:path];
+        int duration = [MediaUtil getVideoTimeByPath:path];
+        NSMutableDictionary* info = [[NSMutableDictionary alloc] initWithDictionary:thumbnail];
+        [info setObject:@(duration) forKey:@"duration"];
+        
+        resolve(info);
+    } @catch (NSException *exception) {
+        reject(@"SMediaCollector", exception.reason, nil);
+    }
+}
+
 + (MDataCollector *)initMediaCollector:(NSString*)datasourceName dataset:(NSString*)datasetName {
     MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
     if (!mDataCollector) {

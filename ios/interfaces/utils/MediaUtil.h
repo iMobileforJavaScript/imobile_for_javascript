@@ -12,4 +12,6 @@
 
 @interface MediaUtil : NSObject
 + (UIImage *)getScreenShotImageFromVideoPath:(NSString *)filePath;
++ (NSDictionary *)getScreenShotImage:(NSString *)filePath;
++ (int)getVideoTimeByPath:(NSString*)path;
 @end

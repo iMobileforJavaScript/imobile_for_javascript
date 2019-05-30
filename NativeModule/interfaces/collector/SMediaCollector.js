@@ -264,6 +264,15 @@ function hideMedia () {
   return Collector.hideMedia()
 }
 
+/**
+ * 获取视频缩略图
+ * @param videoPath
+ * @returns {Promise.<*>}
+ */
+function getVideoInfo (videoPath) {
+  return Collector.getVideoInfo(videoPath)
+}
+
 export default {
   initMediaCollector,
   // captureImage,
@@ -278,4 +287,6 @@ export default {
   // deleteMediaFiles,
   saveMedia,
   hideMedia,
+  
+  getVideoInfo,
 }
