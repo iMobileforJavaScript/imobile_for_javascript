@@ -56,6 +56,7 @@ import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 import com.supermap.data.DatasetType;
 import com.supermap.mapping.PrjCoordSysTranslatorListener;
+import com.supermap.mapping.ScaleView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,7 +86,14 @@ import java.util.Set;
 public class SMMapWC {
     Workspace workspace;
     MapControl mapControl;
+    ScaleView scaleView;
 
+    public ScaleView getScaleView(){
+        return scaleView;
+    }
+    public void setScaleView(ScaleView scaleview){
+        this.scaleView = scaleview;
+    }
     public Workspace getWorkspace() {
         return workspace;
     }

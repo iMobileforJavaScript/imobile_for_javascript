@@ -46,7 +46,7 @@ public class EventConst {
     public static final String MAP_GEOMETRY_SELECTED = "com.supermap.RN.Mapcontrol.geometry_selected";
 
     /** 图例 **/
-    public static final String LEGEND_CONTENT_CHANGE = "com.supermap.RN.legend_content";
+    public static final String LEGEND_CONTENT_CHANGE = "com.supermap.RN.Map.Legend.legend_content_change";
 
     /* 三维模块*/
     public static final String ANALYST_MEASURELINE = "com.supermap.RN.SMSceneControl.Analyst_measureLine";

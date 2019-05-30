@@ -34,6 +34,7 @@ import com.supermap.data.Maps;
 import com.supermap.data.Point;
 import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
+import com.supermap.data.Rectangle2D;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Resources;
@@ -55,6 +56,7 @@ import com.supermap.mapping.LegendView;
 import com.supermap.mapping.MapColorMode;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
+import com.supermap.mapping.ScaleView;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.ThemeGridRange;
 import com.supermap.mapping.ThemeRange;
@@ -66,6 +68,9 @@ import com.supermap.smNative.collector.SMCollector;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
+import com.supermap.data.Color;
+
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -74,6 +79,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -324,6 +331,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             boolean result = sMap.smMapWC.openWorkspace(params);
             if (result) {
                 sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
+//                if(sMap.smMapWC.getScaleView() == null){
+//                    ScaleView scaleView = new ScaleView(context);
+//                    scaleView.setBackgroundColor(android.graphics.Color.rgb(200,135,205));
+//                    scaleView.setLayoutParams(new LinearLayout.LayoutParams(100,100));
+//                    sMap.smMapWC.getMapControl().getMap().getMapView().addView(scaleView);
+//                    scaleView.setMapView(sMap.smMapWC.getMapControl().getMap().getMapView());
+//                    scaleView.setVisibility(View.VISIBLE);
+//                }
             }
             sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
             sMap.smMapWC.getMapControl().setMagnifierEnabled(true);
@@ -730,6 +745,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             Maps maps = sMap.smMapWC.getWorkspace().getMaps();
+
+
 
             Boolean isOpen = false;
 
@@ -3572,10 +3589,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     /************************************** 地图编辑历史操作 END ****************************************/
 
     /************************************** 地图设置开始 ****************************************/
-
+    
+    
+//    @ReactMethod
+//    public void setScaleViewEnable(Boolean isEnable,Promise promise){
+//        try {
+//            sMap = SMap.getInstance();
+//            Boolean isShow = sMap.smMapWC.scaleView.showEnable;
+//            Promise.resolve(isShow);
+//        } catch (Exception e) {
+//            Promise.reject(e);
+//        }
+//    }
 
     /**
-     * 获取比例尺是否显示
+     * 获取地图旋转角度
      *
      * @param promise
      */
@@ -3584,13 +3612,28 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             double angle = sMap.smMapWC.getMapControl().getMap().getAngle();
-
+            angle = new BigDecimal(angle).setScale(1,RoundingMode.UP).doubleValue();
             promise.resolve(angle);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
 
+    /**
+     * 设置地图旋转角度
+     * @param angle
+     * @param promise
+     */
+    @ReactMethod
+    public void setMapAngle(double angle, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getMap().setAngle(angle);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
     /**
      * 获取地图颜色模式
      *
@@ -3608,7 +3651,164 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     * 设置地图颜色模式
+     *
+     * @param mode
+     * @param promise
+     */
+    @ReactMethod
+    public void setMapColorMode(int mode, Promise promise){
+        try {
+            sMap =SMap.getInstance();
+            MapColorMode colorMode = MapColorMode.DEFAULT;
+            switch (mode){
+                case 0:
+                    colorMode = MapColorMode.DEFAULT;
+                    break;
+                case 1:
+                    colorMode = MapColorMode.BLACKWHITE;
+                    break;
+                case 2:
+                    colorMode = MapColorMode.GRAY;
+                    break;
+                case 3:
+                    colorMode = MapColorMode.BLACK_WHITE_REVERSE;
+                    break;
+                case 4:
+                    colorMode = MapColorMode.ONLY_BLACK_WHITE_REVERSE;
+                    break;
+            }
+            sMap.smMapWC.getMapControl().getMap().setColorMode(colorMode);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.resolve(e);
+        }
+    }
 
+    /**
+     * 获取地图背景色
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapBackgroundColor(Promise promise){
+        try{
+            sMap = SMap.getInstance();
+            GeoStyle backgroundStyle = sMap.smMapWC.getMapControl().getMap().getBackgroundStyle();
+            Color color = backgroundStyle.getFillForeColor();
+            promise.resolve(color.toColorString());
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+    /**
+     * 设置地图背景色
+     * @param r
+     * @param g
+     * @param b
+     * @param promise
+     */
+    @ReactMethod
+    public void setMapBackgroundColor(int r, int g, int b,Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            GeoStyle backgroundStyle = sMap.smMapWC.getMapControl().getMap().getBackgroundStyle();
+            Color color = new Color(r, g, b);
+            backgroundStyle.setFillForeColor(color);
+            sMap.smMapWC.getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取是否固定符号角度
+     */
+    @ReactMethod
+    public void getMarkerFixedAngle(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            //Boolean b = sMap.smMapWC.getMapControl().getMap().getMarkerFixedAngle();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 设置是否固定符号角度
+     * @param b
+     * @param promise
+     */
+    @ReactMethod
+    public void setMarkerFixedAngle(Boolean b,Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            //sMap.smMapWC.getMapControl().getMap().setMarkerFixedAngle(b);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 获取是否固定文本角度
+     * @param promise
+     */
+    @ReactMethod
+    public void getTextFixedAngle(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            //Boolean b = sMap.smMapWC.getMapControl().getMap().getTextFixedAngle();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 获取是否固定文本方向
+     * @param promise
+     */
+    @ReactMethod
+    public void getFixedTextOrientation(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            //Boolean b = sMap.smMapWC.getMapControl().getMap().getFixedTextOrientation();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 设置是否固定文本角度
+     * @param b
+     * @param promise
+     */
+    @ReactMethod
+    public void setTextFixedAngle(Boolean b,Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            //sMap.smMapWC.getMapControl().getMap().setTextFixedAngle(b);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置是否固定文本方向
+     * @param b
+     * @param promise
+     */
+    @ReactMethod
+    public void setFixedTextOrientation(Boolean b, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            //sMap.smMapWC.getMapControl().getMap().setFixedTextOrientation(b);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
     /**
      * 获取地图中心点
      *
@@ -3682,6 +3882,49 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 获取当前窗口的四至范围 viewBounds
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapViewBounds(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Rectangle2D rect = sMap.smMapWC.getMapControl().getMap().getViewBounds();
+            double left = rect.getLeft();
+            double right = rect.getRight();
+            double top = rect.getTop();
+            double bottom = rect.getBottom();
+            WritableMap map = Arguments.createMap();
+            map.putDouble("left",left);
+            map.putDouble("bottom",bottom);
+            map.putDouble("right",right);
+            map.putDouble("top",top);
+            promise.resolve(map);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置当前窗口四至范围
+     * @param left
+     * @param bottom
+     * @param right
+     * @param top
+     * @param promise
+     */
+    @ReactMethod
+    public void setMapViewBounds(double left, double bottom, double right, double top, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Rectangle2D rect = new Rectangle2D(left,bottom,right,top);
+            sMap.smMapWC.getMapControl().getMap().setViewBounds(rect);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
      * 获取地图坐标系
      *
      * @param promise
@@ -3697,6 +3940,53 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     * 设置地图坐标系
+     * @param xml
+     * @param promise
+     */
+    @ReactMethod
+    public void setPrjCoordSys(String xml, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            PrjCoordSys prjCoordSys = new PrjCoordSys();
+            prjCoordSys.fromXML(xml);
+            sMap.smMapWC.getMapControl().getMap().setPrjCoordSys(prjCoordSys);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+    /**
+     * 获取动态投影是否已开启
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapDynamicProjection(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Boolean isDynamicprojection = sMap.smMapWC.getMapControl().getMap().isDynamicProjection();
+            promise.resolve(isDynamicprojection);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置是否开启动态投影
+     * @param value
+     * @param promise
+     */
+    @ReactMethod
+    public void setMapDynamicProjection(Boolean value, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getMap().setDynamicProjection(value);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
     /**
      * 加此图例的事件监听
      *
@@ -3715,28 +4005,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     @Override
     public void legendContentChanged(Vector<LegendItem> arrItems) {
-        WritableArray arr = Arguments.createArray();
+         WritableArray arr = Arguments.createArray();
         for(int i = 0 ;i < arrItems.size(); i++){
             WritableMap writeMap = Arguments.createMap();
             Bitmap bm = arrItems.get(i).getBitmap();
             String name = arrItems.get(i).getCaption();
             int type = arrItems.get(i).getType();
-
             String result = null;
-            ByteArrayOutputStream baos = null;
-
-            try {
-                if (bm != null) {
-                    baos = new ByteArrayOutputStream();
-                    bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                    baos.flush();
-                    baos.close();
-                    byte[] bitmapBytes = baos.toByteArray();
-                    result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (bm != null) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                byte[] bitmapBytes = baos.toByteArray();
+                result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
             }
+            System.out.println(result);
             writeMap.putString("image",result);
             writeMap.putString("title",name);
             writeMap.putInt("type",type);
