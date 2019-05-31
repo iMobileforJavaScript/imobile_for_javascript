@@ -190,8 +190,10 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
             Recordset rs = ((DatasetVector)layer.getDataset()).getRecordset(false, CursorType.DYNAMIC);
             rs.moveLast();
 
-            double longitude = Double.parseDouble(rs.getFieldValue("SmX").toString());
-            double latitude = Double.parseDouble(rs.getFieldValue("SmY").toString());
+//            double longitude = Double.parseDouble(rs.getFieldValue("SmX").toString());
+//            double latitude = Double.parseDouble(rs.getFieldValue("SmY").toString());
+            double longitude = rs.getGeometry().getInnerPoint().getX();
+            double latitude = rs.getGeometry().getInnerPoint().getY();
 
             final InfoCallout callout = SMLayer.addCallOutWithLongitude(getReactApplicationContext(), longitude, latitude, media.getPaths().get(0));
             callout.setMediaFileName(media.getFileName());

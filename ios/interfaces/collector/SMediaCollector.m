@@ -383,8 +383,11 @@ RCT_REMAP_METHOD(getVideoInfo, getVideoInfo:(NSString*)path withresolver:(RCTPro
             Recordset* rs = [((DatasetVector *)layer.dataset) recordset:NO cursorType:DYNAMIC];
             [rs moveLast];
             
-            double longitude = [((NSNumber *)[rs getFieldValueWithString:@"SmX"]) doubleValue];
-            double latitude =  [((NSNumber *)[rs getFieldValueWithString:@"SmY"]) doubleValue];
+//            double longitude = [((NSNumber *)[rs getFieldValueWithString:@"SmX"]) doubleValue];
+//            double latitude =  [((NSNumber *)[rs getFieldValueWithString:@"SmY"]) doubleValue];
+            
+            double longitude = [rs.geometry getInnerPoint].x;
+            double latitude =  [rs.geometry getInnerPoint].y;
             
             
             InfoCallout* callout = [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:media.paths[0]];
