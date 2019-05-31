@@ -139,9 +139,33 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void saveMedia(String layerName, int geoID, String toPath, ReadableArray fieldInfos, Promise promise) {
+    public void saveMediaByLayer(String layerName, int geoID, String toPath, ReadableArray fieldInfos, Promise promise) {
         try {
             Layer layer = SMLayer.findLayerWithName(layerName);
+
+            boolean saveResult = saveMedia(layer, geoID, toPath, fieldInfos);
+
+            promise.resolve(saveResult);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void saveMediaByDataset(String datasetName, int geoID, String toPath, ReadableArray fieldInfos, Promise promise) {
+        try {
+            Layer layer = SMLayer.findLayerByDatasetName(datasetName);
+
+            boolean saveResult = saveMedia(layer, geoID, toPath, fieldInfos);
+
+            promise.resolve(saveResult);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    public boolean saveMedia(Layer layer, int geoID, String toPath, ReadableArray fieldInfos) {
+        try {
             ArrayList<String> copyPaths = null;
 
             WritableArray infos = Arguments.createArray();
@@ -179,9 +203,9 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                 saveResult = SMLayer.setLayerFieldInfo(layer, infos, params);
             }
 
-            promise.resolve(saveResult);
+            return saveResult;
         } catch (Exception e) {
-            promise.reject(e);
+            throw e;
         }
     }
 

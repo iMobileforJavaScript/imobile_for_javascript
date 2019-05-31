@@ -53,7 +53,7 @@
 }
 
 + (NSArray *)copyFiles:(NSArray *)fromPaths targetDictionary:(NSString *)targetDictionary {
-    BOOL result = NO;
+//    BOOL result = NO;
     if (targetDictionary == nil || [targetDictionary isEqualToString:@""]) {
         return nil;
     }
@@ -66,21 +66,23 @@
     for (int i = 0; i < paths.count; i++) {
         NSString* filePath = [NSString stringWithFormat:@"%@/%@", targetDictionary, [fromPaths[i] lastPathComponent]];
         if(
-           [fileManager fileExistsAtPath:fromPaths[i]] &&
-           ![fileManager fileExistsAtPath:filePath]
+           [fileManager fileExistsAtPath:fromPaths[i]]
+//           && ![fileManager fileExistsAtPath:filePath]
            ) {
+            // 如果目标地址文件已存在，则直接存入paths
             if ([fileManager copyItemAtPath:fromPaths[i] toPath:filePath error:&error]) {
-                result = YES;
+//                result = YES;
                 [fileManager removeItemAtPath:fromPaths[i] error:&error];
-                paths[i] = filePath;
+//                paths[i] = filePath;
             } else {
-                result = NO;
-                break;
-                
+//                result = NO;
+//                break;
             }
+            paths[i] = filePath;
         }
     }
-    return result ? paths : nil;
+//    return result ? paths : nil;
+    return paths;
 }
 
 + (NSString*)getLastModifiedTime:(NSDate*) nsDate{

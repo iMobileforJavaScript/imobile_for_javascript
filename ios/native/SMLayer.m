@@ -208,7 +208,7 @@
         Layer* layer = [layers getLayerAtIndex:i];
         Dataset* dataset = layer.dataset;
         
-        if (dataset.name == datasetName) {
+        if ([dataset.name isEqualToString:datasetName]) {
             targetLayer = layer;
             break;
         }
