@@ -9,11 +9,16 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <SuperMap/Color.h>
+#import <SuperMap/LocationManagePlugin.h>
 @class Recordset;
+//@class GPSD
 @interface NativeUtil : NSObject
 +(UIColor*)uiColorTransFromArr:(NSArray<NSNumber*>*)arr;
 +(Color*)smColorTransFromArr:(NSArray<NSNumber*>*)arr;
 +(NSMutableDictionary *)recordsetToDictionary:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size;
 +(NSMutableDictionary *)recordsetToDictionary:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size filterKey:(NSString *)filterKey;
 +(NSMutableArray *)parseRecordset:(Recordset *)recordset fieldsDics:(NSMutableDictionary*)fieldsDics filterKey:(NSString *)filterKey;
++(void)openGPS;
++(void)closeGPS;
++(GPSData*)getGPSData;
 @end
