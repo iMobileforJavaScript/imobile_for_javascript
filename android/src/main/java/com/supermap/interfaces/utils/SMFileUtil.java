@@ -1,4 +1,4 @@
-package com.supermap.interfaces;
+package com.supermap.interfaces.utils;
 
 import android.util.Log;
 
@@ -29,13 +29,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
 public class SMFileUtil extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SMFileUtil";
-//    private static final int BUFF_SIZE = 1024 * 1024; // 1M Byte
+    //    private static final int BUFF_SIZE = 1024 * 1024; // 1M Byte
     private final static String TAG = "ZipHelper";
     private final static int BUFF_SIZE = 2048;
 
@@ -358,16 +359,16 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public static void doZipFiles(ReadableArray array,String toPath,Promise promise) {
+    public static void doZipFiles(ReadableArray array, String toPath, Promise promise) {
         try {
-            int num=array.size();
-            File[] files=new File[num];
+            int num = array.size();
+            File[] files = new File[num];
             for (int i = 0; i < num; i++) {
-                files[i]=new File(array.getString(i));
+                files[i] = new File(array.getString(i));
             }
-            zipFiles(files,toPath);
+            zipFiles(files, toPath);
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
@@ -381,7 +382,7 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
                 result = file.delete();
             }
             promise.resolve(result);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
 
@@ -389,10 +390,10 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
 
     //读文件
     @ReactMethod
-    public static String readFile(String filePath, Promise promise){
+    public static String readFile(String filePath, Promise promise) {
 
         File file = new File(filePath);
-        if(file.isFile() && file.exists()){
+        if (file.isFile() && file.exists()) {
             try {
                 FileInputStream fileInputStream = new FileInputStream(file);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
@@ -400,7 +401,7 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
 
                 StringBuffer sb = new StringBuffer();
                 String text = null;
-                while((text = bufferedReader.readLine()) != null){
+                while ((text = bufferedReader.readLine()) != null) {
                     sb.append(text);
                 }
                 promise.resolve(sb.toString());
@@ -415,15 +416,14 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
 
     /**
      * 以FileWriter方式写入txt文件。
-     *
      */
     @ReactMethod
-    public static void writeToFile(String filePath,String strJson, Promise promise){
+    public static void writeToFile(String filePath, String strJson, Promise promise) {
         try {
 
             File file = new File(filePath);
-            if(file.exists()){
-                FileWriter fw = new FileWriter(file,false);
+            if (file.exists()) {
+                FileWriter fw = new FileWriter(file, false);
                 BufferedWriter bw = new BufferedWriter(fw);
                 bw.write(strJson);
                 bw.close();
@@ -528,6 +528,103 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
             }
             input.close();
         }
+    }
+
+    public static boolean copyFile(String from, String to) {
+        File fromFile = new File(from);
+        File toFile = new File(to);
+        if (!fromFile.exists()) return false;
+        Boolean result = true;
+        try {
+            if (fromFile.isFile()) {
+                return copyFile(fromFile, toFile, true);
+            } else {
+                File[] fileList = fromFile.listFiles();
+                for (File file : fileList) {
+                    if (file.isFile()) {
+                        File desFile = new File(to + "/" + file.getName());
+                        result = copyFile(file, desFile, true) && result;
+                    } else {
+                        result = copyFile(file.getAbsolutePath(), to + "/" + file.getName()) && result;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+
+        return result;
+    }
+
+    public static ArrayList<String> copyFiles(ArrayList<String> fromPaths, String targetDictionary) {
+
+        try {
+//            boolean result = false;
+            if (targetDictionary == null || targetDictionary.equals("")) {
+                return null;
+            }
+
+            ArrayList<String> newPaths = new ArrayList<>(fromPaths);
+
+            for (int i = 0; i < fromPaths.size(); i++) {
+                String fromPath = fromPaths.get(i).indexOf("file://") == 0
+                        ? fromPaths.get(i).replace("file://", "")
+                        : fromPaths.get(i);
+                String toPath = targetDictionary
+                        + (targetDictionary.lastIndexOf("/") == (targetDictionary.length() - 1) ? "" : "/")
+                        + fromPaths.get(i).substring(fromPaths.get(i).lastIndexOf("/") + 1);
+                File fromFile = new File(fromPath);
+                File toFile = new File(toPath);
+
+                if (fromFile.exists() && !toFile.exists()) {
+                    if (copyFile(fromPaths.get(i), toPath)) {
+//                        result = true;
+                        fromFile.delete();
+                        newPaths.set(i, toPath);
+                    } else {
+//                        result = false;
+                        break;
+                    }
+                }
+            }
+            return newPaths;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static boolean copyFile(File from, File des, boolean rewrite) {
+        //目标路径不存在的话就创建一个
+        if (!des.getParentFile().exists()) {
+            des.getParentFile().mkdirs();
+        }
+        if (des.exists()) {
+            if (rewrite) {
+                des.delete();
+            } else {
+                return false;
+            }
+        }
+
+        try {
+            InputStream fis = new FileInputStream(from);
+            FileOutputStream fos = new FileOutputStream(des);
+            //1kb
+            byte[] bytes = new byte[1024];
+            int readlength = -1;
+            while ((readlength = fis.read(bytes)) > 0) {
+                fos.write(bytes, 0, readlength);
+            }
+            fos.flush();
+            fos.close();
+            fis.close();
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
 }

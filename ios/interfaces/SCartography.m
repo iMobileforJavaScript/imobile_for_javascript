@@ -497,7 +497,7 @@ RCT_REMAP_METHOD(setFillRadialGradient, setFillRadialGradientWithResolver:(NSStr
                 
                 GeoStyle *style = layerSettingVector.geoStyle;
                 [style setFillGradientMode:FGM_RADIAL];
-
+                
                 [mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             } else {
@@ -580,7 +580,7 @@ RCT_REMAP_METHOD(setGridOpaqueRate, setGridOpaqueRateWithResolver:(int) gridOpaq
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [[mapControl getEditHistory] addMapHistory];
             
-//            layerSettingGrid.setOpaqueRate(100 - gridOpaqueRate); //新增接口, 待打开
+            //            layerSettingGrid.setOpaqueRate(100 - gridOpaqueRate); //新增接口, 待打开
             
             [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
@@ -862,5 +862,4 @@ RCT_REMAP_METHOD(setTextStyle, setTextStyleWithResolver:(NSString*) style whethe
 }
 
 @end
-
 

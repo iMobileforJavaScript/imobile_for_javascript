@@ -28,7 +28,7 @@ import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.plugin.LocationManagePlugin;
-import com.supermap.smNative.SMCollector;
+import com.supermap.smNative.collector.SMCollector;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 

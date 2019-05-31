@@ -8,9 +8,11 @@ import org.apache.tools.zip.ZipFile;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.zip.ZipException;
 
@@ -136,5 +138,69 @@ public class FileUtil {
             return false;
         }
 
+    }
+
+
+
+    private boolean copyFile(File from, File des,boolean rewrite){
+        //目标路径不存在的话就创建一个
+        if(!des.getParentFile().exists()){
+            des.getParentFile().mkdirs();
+        }
+        if(des.exists()){
+            if(rewrite){
+                des.delete();
+            }else{
+                return false;
+            }
+        }
+
+        try{
+            InputStream fis = new FileInputStream(from);
+            FileOutputStream fos = new FileOutputStream(des);
+            //1kb
+            byte[] bytes = new byte[1024];
+            int readlength = -1;
+            while((readlength = fis.read(bytes))>0){
+                fos.write(bytes, 0, readlength);
+            }
+            fos.flush();
+            fos.close();
+            fis.close();
+        }catch(Exception e){
+            return false;
+        }
+        return true;
+    }
+
+    private boolean copyFile(InputStream from, File des,boolean rewrite){
+        //目标路径不存在的话就创建一个
+        if(!des.getParentFile().exists()){
+            des.getParentFile().mkdirs();
+        }
+        if(des.exists()){
+            if(rewrite){
+                des.delete();
+            }else{
+                return false;
+            }
+        }
+
+        try{
+            InputStream fis = from;
+            FileOutputStream fos = new FileOutputStream(des);
+            //1kb
+            byte[] bytes = new byte[1024];
+            int readlength = -1;
+            while((readlength = fis.read(bytes))>0){
+                fos.write(bytes, 0, readlength);
+            }
+            fos.flush();
+            fos.close();
+            fis.close();
+        }catch(Exception e){
+            return false;
+        }
+        return true;
     }
 }

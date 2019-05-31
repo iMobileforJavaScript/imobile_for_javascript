@@ -10,6 +10,7 @@ import com.supermap.data.Point2D;
 import com.supermap.data.Rectangle2D;
 
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -37,6 +38,15 @@ public class DateUtil {
         }
 
         return Long.parseLong(null);
+    }
+
+    public static String formatDateToString(Date date, String format) {
+        if (date == null) date = new Date();
+        if (format == null || format.equals("")) format = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat formatter = new SimpleDateFormat(format);
+        String dateString = formatter.format(date);
+
+        return dateString;
     }
 
 }

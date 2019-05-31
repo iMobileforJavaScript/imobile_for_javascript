@@ -1,4 +1,4 @@
-package com.supermap.smNative;
+package com.supermap.smNative.collector;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;

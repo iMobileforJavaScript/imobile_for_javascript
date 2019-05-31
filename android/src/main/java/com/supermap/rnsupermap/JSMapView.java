@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.supermap.component.MapWrapView;
 import com.supermap.data.CoordSysTransMethod;
 import com.supermap.data.CoordSysTransParameter;
 import com.supermap.data.CoordSysTranslator;
@@ -31,7 +32,8 @@ import java.util.Map;
  * Created by will on 2016/6/16.
  */
 public class JSMapView extends ReactContextBaseJavaModule {
-    private static MapView mapView = null;
+//    private static MapView mapView = null;
+    private static MapWrapView mapView = null;
     private static Map<String,MapView> mapViewList=new HashMap<String,MapView>();
     private static MapControl mapControl = null;
     Context m_Context = null;
@@ -56,7 +58,7 @@ public class JSMapView extends ReactContextBaseJavaModule {
      * @return
      */
     public static MapView createInstance(ThemedReactContext reactContext){
-        mapView = new MapView(reactContext.getBaseContext());
+        mapView = new MapWrapView(reactContext.getBaseContext());
         mapControl = mapView.getMapControl();
         return mapView;
     }
@@ -69,7 +71,7 @@ public class JSMapView extends ReactContextBaseJavaModule {
         return mapControl;
     }
 
-    public static void setInstance(MapView mMapView){
+    public static void setInstance(MapWrapView mMapView){
         mapView = mMapView;
         mapControl = mapView.getMapControl();
         SMap.setInstance(mapControl);

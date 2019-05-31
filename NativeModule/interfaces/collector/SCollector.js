@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native'
-import Utility from '../utility/utility'
+import Utility from '../../utility/utility'
 let Collector = NativeModules.SCollector
 let CollectorType = NativeModules.SCollectorType
 let DatasetType = NativeModules.JSDatasetType
