@@ -263,7 +263,11 @@ public class SMap extends ReactContextBaseJavaModule {
             @Override
             public void run() {
               //  sMap.smMapWC.getMapControl().getMap().getMapView().removeCallOut(tagStr);
-                 sMap.smMapWC.getMapControl().getMap().getTrackingLayer().removeLabel(tagStr);
+               int n = sMap.smMapWC.getMapControl().getMap().getTrackingLayer().indexOf(tagStr);
+               if(n!=-1) {
+                   sMap.smMapWC.getMapControl().getMap().getTrackingLayer().remove(n);
+                   sMap.smMapWC.getMapControl().getMap().refresh();
+               }
             }
         });
     }

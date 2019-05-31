@@ -153,7 +153,11 @@ RCT_REMAP_METHOD(showMarker,  longitude:(double)longitude latitude:(double)latit
 }
 
 +(void)deleteMarker:(int)tag{
-    [sMap.smMapWC.mapControl.map.trackingLayer removeLabel:[NSString stringWithFormat:@"%d",tag]];
+    int n = [sMap.smMapWC.mapControl.map.trackingLayer indexof:[NSString stringWithFormat:@"%d",tag]];
+    if(n!=-1){
+        [sMap.smMapWC.mapControl.map.trackingLayer removeAt:n];
+        [sMap.smMapWC.mapControl.map refresh];
+    }
 //    [sMap.smMapWC.mapControl removeCalloutWithTag:tag];
 }
 #pragma mark 移除marker
@@ -938,11 +942,12 @@ RCT_REMAP_METHOD(enableSlantTouch, enableSlantTouch:(BOOL)enable resolver:(RCTPr
 #pragma mark 移动到当前位置
 +(void)moveHelper{
     MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
-    Collector* collector = [mapControl getCollector];
+//    Collector* collector = [mapControl getCollector];
     dispatch_async(dispatch_get_main_queue(), ^{
         //            [collector moveToCurrentPos];
         BOOL isMove = NO;
-        Point2D* pt = [[Point2D alloc]initWithPoint2D:[collector getGPSPoint]];
+        GPSData* gpsData = [NativeUtil getGPSData];
+        Point2D* pt = [[Point2D alloc]initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
         if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
             Point2Ds *points = [[Point2Ds alloc]init];
             [points add:pt];
@@ -1051,9 +1056,9 @@ RCT_REMAP_METHOD(moveToPoint, moveToPointWithPoint:(NSDictionary *)point resolve
 }
 
 -(void)openGPS {
-    MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
-    Collector* collector = [mapControl getCollector];
-    [collector openGPS];
+//    MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+//    Collector* collector = [mapControl getCollector];
+    [NativeUtil openGPS];
 }
 
 #pragma mark 提交
