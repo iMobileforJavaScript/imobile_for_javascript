@@ -160,6 +160,7 @@
 /// 秒。
 @property(nonatomic,assign)int nSecond;
 @property(nonatomic)NSString* time;
+-(GPSData*)clone;
 @end
 
 ///位置变化监听器，用于返回最新的位置信息。

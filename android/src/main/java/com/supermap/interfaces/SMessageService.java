@@ -21,12 +21,23 @@ import com.supermap.messagequeue.AMQPReturnMessage;
 import com.supermap.messagequeue.AMQPSender;
 import com.supermap.messagequeue.AMQPExchangeType;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 
 public class SMessageService extends ReactContextBaseJavaModule {
@@ -326,6 +337,111 @@ public class SMessageService extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 文件发送，用第三方服务器发送文件
+     */
+    @ReactMethod
+    public void sendFileWithThirdServer(final String message, final String filePath,
+                         final String talkId, final int msgId ,final Promise promise) {
+
+            try {
+                Thread Thread_Send_File = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            HttpPost httpPost = new HttpPost("http://111.202.121.144:8124/upload");
+                            File file = new File(filePath);
+                            String fileName = file.getName();
+
+                            FileInputStream inStream = new FileInputStream(file);
+                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+                            long startPos = 0;
+                            //BASE64编码的单个文件
+                            String sFileBlock;
+                            //文件大小
+                            long fileSize = file.length();
+                            //2M为单位切割文件后的总个数
+                            long total = (long) (Math.ceil((double) fileSize / ((double) 1024 * 1024 * 2)));
+                            int blockSize = 1024 * 1024 * 2;
+                            byte[] buffer = new byte[blockSize];
+                            int length, count = 0;
+                            String md5 = getFileMD5(file);
+
+                            JSONObject jMessage = new JSONObject(message);
+                            String userId=jMessage.getJSONObject("user").optString("id");
+                            JSONObject filePack = new JSONObject();
+                            filePack.put("md5", md5);
+                            filePack.put("userId", userId);
+                            for (int index = 0; (length = inStream.read(buffer)) != -1; index++, startPos += length) {
+                                bos.write(buffer, 0, length);
+                                byte[] bytes = bos.toByteArray();
+                                sFileBlock = Base64.encodeToString(bytes, Base64.DEFAULT);
+                                bos.reset();
+                                count++;
+
+                                filePack.put("dataLength", length);
+                                filePack.put("startPos", startPos);
+                                filePack.put("index", index);
+                                filePack.put("data", sFileBlock);
+                                StringEntity stringEntity = new StringEntity(filePack.toString());
+                                httpPost.setEntity(stringEntity);
+                                HttpClient client = new DefaultHttpClient();
+                                HttpResponse response = client.execute(httpPost);
+                                if (response.getStatusLine().getStatusCode() == 200) {
+                                    int percentage = (int) ((float) count / total * 100);
+                                    WritableMap infoMap = Arguments.createMap();
+                                    infoMap.putString("talkId", talkId);
+                                    infoMap.putInt("msgId", msgId);
+                                    infoMap.putInt("percentage", percentage);
+                                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                            .emit(EventConst.MESSAGE_SERVICE_SEND_FILE, infoMap);
+                                }
+                            }
+                            bos.close();
+                            inStream.close();
+
+                            WritableMap map = Arguments.createMap();
+                            map.putString("queueName", md5);
+                            map.putString("fileName", fileName);
+                            map.putDouble("fileSize", fileSize);
+                            promise.resolve(map);
+
+                        } catch (Exception e) {
+                            promise.reject(e);
+                        }
+                    }
+                });
+                Thread_Send_File.start();
+            } catch (Exception e) {
+                promise.reject(e);
+            }
+    }
+
+    //获取文件的MD5值
+    private String getFileMD5(File file) {
+        if (!file.isFile()) {
+            return null;
+        }
+        MessageDigest digest = null;
+        FileInputStream in = null;
+        byte buffer[] = new byte[1024];
+        int len;
+        try {
+            digest = MessageDigest.getInstance("MD5");
+            in = new FileInputStream(file);
+            while ((len = in.read(buffer, 0, 1024)) != -1) {
+                digest.update(buffer, 0, len);
+            }
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        BigInteger bigInt = new BigInteger(1, digest.digest());
+        return bigInt.toString(16);
+    }
+
+    /**
      * 消息接收
      */
     @ReactMethod
@@ -420,6 +536,76 @@ public class SMessageService extends ReactContextBaseJavaModule {
         });
 
         mf_Thread_File.start();
+
+    }
+
+    /**
+     * 接收文件,每次接收时运行
+     */
+    @ReactMethod
+    public void receiveFileWithThirdServer(final String fileName, final String queueName, final String receivePath, final String talkId, final int msgId, final String userId, final int fileSize, final Promise promise) {
+        try {
+            Thread Thread_Send_File = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        HttpPost httpPost = new HttpPost("http://111.202.121.144:8124/download");
+                        File path = new File(receivePath);
+                        File file = new File(receivePath + "/" + fileName);
+                        if (!path.exists()) {
+                            path.mkdirs();
+                        }
+                        if (!file.exists()) {
+                            file.createNewFile();
+                        } else if (file.exists()) {
+                            file.delete();
+                        }
+                        int blockSize = 1024 * 1024 * 2;
+                        long total = (long) (Math.ceil((double) fileSize / ((double) 1024 * 1024 * 2)));
+                        HttpClient client = new DefaultHttpClient();
+                        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+                        JSONObject downloadPack = new JSONObject();
+                        downloadPack.put("userID", userId);
+                        downloadPack.put("md5", queueName);
+                        downloadPack.put("dataLength", blockSize);
+                        long start = 0;
+                        for (int index=1;index<=total;index++) {
+                            downloadPack.put("startPos", start);
+                            StringEntity stringEntity = new StringEntity(downloadPack.toString());
+                            httpPost.setEntity(stringEntity);
+                            HttpResponse response = client.execute(httpPost);
+                            String entity = EntityUtils.toString(response.getEntity(), "UTF-8");
+                            JSONObject jsonObject1 = new JSONObject(entity);
+                            int dataLength = jsonObject1.getInt("dataLength");
+                            if (dataLength <= 0) {
+                                break;
+                            }
+                            byte[] values = Base64.decode(jsonObject1.getString("value"), Base64.DEFAULT);
+                            randomAccessFile.seek(start);
+                            randomAccessFile.write(values);
+                            start += dataLength;
+
+                            int percentage = (int)((float) index / total * 100);
+                            WritableMap infoMap = Arguments.createMap();
+                            infoMap.putString("talkId", talkId);
+                            infoMap.putInt("msgId", msgId);
+                            infoMap.putInt("percentage", percentage );
+                            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                    .emit(EventConst.MESSAGE_SERVICE_RECEIVE_FILE, infoMap);
+
+                        }
+                        randomAccessFile.close();
+
+                        promise.resolve(true);
+                    } catch (Exception e) {
+                        promise.reject(e);
+                    }
+                }
+            });
+            Thread_Send_File.start();
+        } catch (Exception e) {
+            promise.reject(e);
+        }
 
     }
 

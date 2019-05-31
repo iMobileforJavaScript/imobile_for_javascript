@@ -52,7 +52,8 @@ function sendMessage(message, targetID) {
 }
 //文件发送
 function sendFile(connectInfo, message, filePath, talkId, msgId) {
-  return MessageServiceeNative.sendFile(connectInfo, message, filePath, talkId, msgId);
+  // return MessageServiceeNative.sendFile(connectInfo, message, filePath, talkId, msgId);   //用rabbitMQ发送文件
+  return MessageServiceeNative.sendFileWithThirdServer(message, filePath, talkId, msgId);     //用第三方服务器发送文件
 }
 //声明多人会话
 function declareSession(memmbers,uuid) {
@@ -70,8 +71,9 @@ function receiveMessage(uuid) {
 }
 
 //开启文件接收
-function receiveFile(fileName, queueName, receivePath, talkId, msgId) {
-  return MessageServiceeNative.receiveFile(fileName, queueName, receivePath, talkId, msgId);
+function receiveFile(fileName, queueName, receivePath, talkId, msgId,userID,fileSize) {
+  // return MessageServiceeNative.receiveFile(fileName, queueName, receivePath, talkId, msgId);  //rabbitMQ接收文件
+  return MessageServiceeNative.receiveFileWithThirdServer(fileName, queueName, receivePath, talkId, msgId,userID,fileSize);  //用第三方服务器接收文件
 }
 
 //开启消息接收

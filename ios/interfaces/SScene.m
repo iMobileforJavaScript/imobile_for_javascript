@@ -1157,7 +1157,7 @@ RCT_REMAP_METHOD(removeTerrainCacheLayer, terrainlayerName:(NSString*)layerName 
     }
 }
 
-#pragma mark-添加地形缓存
+#pragma mark-添加影像缓存
 RCT_REMAP_METHOD(addImageCacheLayer, ImageCachePath:(NSString*)terrainCache layerName:(NSString*)layerName getTerrainCacheNames:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sScene = [SScene singletonInstance];
@@ -1186,7 +1186,7 @@ RCT_REMAP_METHOD(addImageCacheLayer, ImageCachePath:(NSString*)terrainCache laye
     }
 }
 
-#pragma mark-移除地形缓存
+#pragma mark-删除影像图层
 RCT_REMAP_METHOD(removeImageCacheLayer, ImagelayerName:(NSString*)layerName getTerrainCacheNames:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sScene = [SScene singletonInstance];
