@@ -585,8 +585,9 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
                         newPaths.set(i, toPath);
                     } else {
 //                        result = false;
-                        break;
+//                        break;
                     }
+                    newPaths.set(i, toPath);
                 }
             }
             return newPaths;

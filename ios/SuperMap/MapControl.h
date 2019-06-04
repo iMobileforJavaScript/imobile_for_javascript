@@ -197,7 +197,8 @@
  @param  index 指定的 Callout 对象的索引。
  */
 -(void) removeCalloutAtIndex:(int)index;
--(void) removeCalloutWithTag:(int)tag;
+
+-(void) removeCalloutWithTag:(NSString *)tag;
 /**@brief 从Mapcontrol上移除calloutArr内的callout。
  @param callout数组
  */

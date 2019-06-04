@@ -77,11 +77,34 @@ RCT_REMAP_METHOD(addMedia, addMedia:(NSDictionary*)info addToMap:(BOOL)addToMap 
 }
 
 #pragma mark 保存/修改 多媒体采集
-RCT_REMAP_METHOD(saveMedia, saveMedia:(NSString *)layerName geoID:(int)geoID toPath:(NSString *)toPath fieldInfos:(NSArray *)fieldInfos resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(saveMediaByLayer, saveMediaByLayer:(NSString *)layerName geoID:(int)geoID toPath:(NSString *)toPath fieldInfos:(NSArray *)fieldInfos resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+   
+    Layer* layer = [SMLayer findLayerWithName:layerName];
+    
     @try {
-        Layer* layer = [SMLayer findLayerWithName:layerName];
-//        SMMedia* media = [SMMediaCollector findMediaByLayer:layer geoID:geoID];
-        
+        BOOL saveResult = [self saveMedia:layer geoID:geoID toPath:toPath fieldInfos:fieldInfos];
+        resolve(@(saveResult));
+    } @catch (NSException *exception) {
+        reject(@"SMediaCollector", exception.reason, nil);
+    }
+}
+
+#pragma mark 保存/修改 多媒体采集
+RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName geoID:(int)geoID toPath:(NSString *)toPath fieldInfos:(NSArray *)fieldInfos resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    Layer* layer = [SMLayer findLayerByDatasetName:datasetName];
+    
+    @try {
+        BOOL saveResult = [self saveMedia:layer geoID:geoID toPath:toPath fieldInfos:fieldInfos];
+        resolve(@(saveResult));
+    } @catch (NSException *exception) {
+        reject(@"SMediaCollector", exception.reason, nil);
+    }
+}
+
+- (BOOL)saveMedia:(Layer *)layer geoID:(int)geoID toPath:(NSString *)toPath fieldInfos:(NSArray *)fieldInfos {
+    @try {
+        if (layer == nil) return NO;
         NSMutableArray* infos = [[NSMutableArray alloc] init];
         NSArray* copyPaths = nil;
         for (int i = 0; i < [fieldInfos count]; i++) {
@@ -115,9 +138,9 @@ RCT_REMAP_METHOD(saveMedia, saveMedia:(NSString *)layerName geoID:(int)geoID toP
         }
         
         
-        resolve(@(saveResult));
+        return saveResult;
     } @catch (NSException *exception) {
-        reject(@"SMediaCollector", exception.reason, nil);
+        @throw exception;
     }
 }
 
@@ -290,6 +313,20 @@ RCT_REMAP_METHOD(stopCaptureAudio, stopCaptureAudioWithResolver:(RCTPromiseResol
 //    }
 //}
 
+#pragma mark 获取视频文件缩略图
+RCT_REMAP_METHOD(getVideoInfo, getVideoInfo:(NSString*)path withresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSDictionary* thumbnail = [MediaUtil getScreenShotImage:path];
+        int duration = [MediaUtil getVideoTimeByPath:path];
+        NSMutableDictionary* info = [[NSMutableDictionary alloc] initWithDictionary:thumbnail];
+        [info setObject:@(duration) forKey:@"duration"];
+        
+        resolve(info);
+    } @catch (NSException *exception) {
+        reject(@"SMediaCollector", exception.reason, nil);
+    }
+}
+
 + (MDataCollector *)initMediaCollector:(NSString*)datasourceName dataset:(NSString*)datasetName {
     MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
     if (!mDataCollector) {
@@ -369,8 +406,11 @@ RCT_REMAP_METHOD(stopCaptureAudio, stopCaptureAudioWithResolver:(RCTPromiseResol
             Recordset* rs = [((DatasetVector *)layer.dataset) recordset:NO cursorType:DYNAMIC];
             [rs moveLast];
             
-            double longitude = [((NSNumber *)[rs getFieldValueWithString:@"SmX"]) doubleValue];
-            double latitude =  [((NSNumber *)[rs getFieldValueWithString:@"SmY"]) doubleValue];
+//            double longitude = [((NSNumber *)[rs getFieldValueWithString:@"SmX"]) doubleValue];
+//            double latitude =  [((NSNumber *)[rs getFieldValueWithString:@"SmY"]) doubleValue];
+            
+            double longitude = [rs.geometry getInnerPoint].x;
+            double latitude =  [rs.geometry getInnerPoint].y;
             
             
             InfoCallout* callout = [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:media.paths[0]];

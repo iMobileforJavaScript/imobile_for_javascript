@@ -39,7 +39,6 @@
 
 @property (strong, nonatomic) Workspace* workspace;
 @property (strong, nonatomic) MapControl* mapControl;
-@property (strong, nonatomic) ScaleView* scaleView;
 
 - (BOOL)openWorkspace:(NSDictionary *)infoDic;
 - (Datasource *)openDatasource:(NSDictionary *)params;

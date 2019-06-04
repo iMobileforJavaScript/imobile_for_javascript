@@ -227,41 +227,43 @@ function addMedia (info, addToMap = true) {
  * @param fieldInfo  修改数据的属性
  * @returns {*}
  */
-function saveMedia (layerName = '', geoID = -1, toPath = '', fieldInfo = []) {
+function saveMediaByLayer (layerName = '', geoID = -1, toPath = '', fieldInfo = []) {
   if (fieldInfo.length === 0 || geoID < 0) return false
   let info = []
   for (let i = 0; i < fieldInfo.length; i++) {
-    // if (fieldInfo[i].name === 'mediaFilePaths') {
-    //   let paths = ''
-    //   fieldInfo[i].value.forEach((path, index) => {
-    //     if (index !== fieldInfo[i].value.length - 1) {
-    //       paths += path + ','
-    //     } else {
-    //       paths += path
-    //     }
-    //   })
-    //   info.push({
-    //     name: 'MediaFilePaths',
-    //     value: paths,
-    //   })
-    // } else {
-    //   let name = fieldInfo[i].name.substring(0, 1).toUpperCase() + fieldInfo[i].name.slice(1)
-    //   info.push({
-    //     name,
-    //     value: fieldInfo[i].value,
-    //   })
-    // }
     let name = fieldInfo[i].name.substring(0, 1).toUpperCase() + fieldInfo[i].name.slice(1)
     info.push({
       name,
       value: fieldInfo[i].value,
     })
   }
-  return Collector.saveMedia(layerName, geoID, toPath, info)
+  return Collector.saveMediaByLayer(layerName, geoID, toPath, info)
+}
+
+function saveMediaByDataset (datasetName = '', geoID = -1, toPath = '', fieldInfo = []) {
+  if (fieldInfo.length === 0 || geoID < 0) return false
+  let info = []
+  for (let i = 0; i < fieldInfo.length; i++) {
+    let name = fieldInfo[i].name.substring(0, 1).toUpperCase() + fieldInfo[i].name.slice(1)
+    info.push({
+      name,
+      value: fieldInfo[i].value,
+    })
+  }
+  return Collector.saveMediaByDataset(datasetName, geoID, toPath, info)
 }
 
 function hideMedia () {
   return Collector.hideMedia()
+}
+
+/**
+ * 获取视频缩略图
+ * @param videoPath
+ * @returns {Promise.<*>}
+ */
+function getVideoInfo (videoPath) {
+  return Collector.getVideoInfo(videoPath)
 }
 
 export default {
@@ -276,6 +278,9 @@ export default {
   addMedia,
   // addMediaFiles,
   // deleteMediaFiles,
-  saveMedia,
+  saveMediaByLayer,
+  saveMediaByDataset,
   hideMedia,
+  
+  getVideoInfo,
 }

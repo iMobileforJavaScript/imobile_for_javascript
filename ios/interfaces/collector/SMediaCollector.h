@@ -24,6 +24,7 @@
 #import "SMMediaCollector.h"
 #import "SMLayer.h"
 #import "FileUtils.h"
+#import "MediaUtil.h"
 
 @interface SMediaCollector : RCTEventEmitter<RCTBridgeModule, MDataCollectorMediaFileListener>
 {

@@ -107,27 +107,73 @@ public class SMMedia {
         if (index > -1) {
             // Dataset存在
             pDatasetVector = (DatasetVector)datasource.getDatasets().get(index);
-            if (pDatasetVector.getType() != DatasetType.POINT) return false;
+            if (pDatasetVector.getType() != DatasetType.POINT && pDatasetVector.getType() != DatasetType.CAD) return false;
             FieldInfos fieldInfos = pDatasetVector.getFieldInfos();
-            int tag1 = fieldInfos.indexOf("MediaFileName");
-            int tag2 = fieldInfos.indexOf("MediaFileType");
-            int tag3 = fieldInfos.indexOf("ModifiedDate");
-            int tag4 = fieldInfos.indexOf("MediaFilePaths");
-            int tag5 = fieldInfos.indexOf("Description");
-            int tag6 = fieldInfos.indexOf("HttpAddress");
+//            int tag1 = fieldInfos.indexOf("MediaFileName");
+//            int tag2 = fieldInfos.indexOf("MediaFileType");
+//            int tag3 = fieldInfos.indexOf("ModifiedDate");
+//            int tag4 = fieldInfos.indexOf("MediaFilePaths");
+//            int tag5 = fieldInfos.indexOf("Description");
+//            int tag6 = fieldInfos.indexOf("HttpAddress");
+//
+//            if(tag1==-1 || tag2==-1 || tag3==-1 || tag4==-1 || tag5==-1) return false;
+//            if(fieldInfos.get(tag1).getType() != FieldType.TEXT) return false;
+//            if(fieldInfos.get(tag2).getType() != FieldType.INT16) return false;
+//            if(fieldInfos.get(tag3).getType()!= FieldType.TEXT) return false;
+//            if(fieldInfos.get(tag4).getType()!= FieldType.TEXT) return false;
+//            if(fieldInfos.get(tag5).getType()!= FieldType.TEXT) return false;
+//            if(fieldInfos.get(tag6).getType()!= FieldType.TEXT) return false;
 
-            if(tag1==-1 || tag2==-1 || tag3==-1 || tag4==-1 || tag5==-1) return false;
-            if(fieldInfos.get(tag1).getType() != FieldType.TEXT) return false;
-            if(fieldInfos.get(tag2).getType() != FieldType.INT16) return false;
-            if(fieldInfos.get(tag3).getType()!= FieldType.TEXT) return false;
-            if(fieldInfos.get(tag4).getType()!= FieldType.TEXT) return false;
-            if(fieldInfos.get(tag5).getType()!= FieldType.TEXT) return false;
-            if(fieldInfos.get(tag6).getType()!= FieldType.TEXT) return false;
-            if(pDatasetVector.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) return false;
+            if (fieldInfos.indexOf("MediaFileName") == -1) {
+                fieldInfo = new FieldInfo();
+                fieldInfo.setType(FieldType.TEXT);
+                fieldInfo.setName("MediaFileName");
+                fieldInfos.add(fieldInfo);
+                fieldInfo.dispose();
+            }
+//            if (fieldInfos.indexOf("MediaFileType") == -1) {
+//                fieldInfo = new FieldInfo();
+//                fieldInfo.setType(FieldType.INT16);
+//                fieldInfo.setName("MediaFileType");
+//                fieldInfos.add(fieldInfo);
+//                fieldInfo.dispose();
+//            }
+            if (fieldInfos.indexOf("ModifiedDate") == -1) {
+                fieldInfo = new FieldInfo();
+                fieldInfo.setType(FieldType.TEXT);
+                fieldInfo.setName("ModifiedDate");
+                fieldInfos.add(fieldInfo);
+                fieldInfo.dispose();
+            }
+            if (fieldInfos.indexOf("Description") == -1) {
+                fieldInfo = new FieldInfo();
+                fieldInfo.setType(FieldType.TEXT);
+                fieldInfo.setName("Description");
+                fieldInfos.add(fieldInfo);
+                fieldInfo.dispose();
+            }
+            if (fieldInfos.indexOf("MediaFilePaths") == -1) {
+                fieldInfo = new FieldInfo();
+                fieldInfo.setType(FieldType.TEXT);
+                fieldInfo.setName("MediaFilePaths");
+                fieldInfo.setMaxLength(600);
+                fieldInfos.add(fieldInfo);
+                fieldInfo.dispose();
+            }
+            if (fieldInfos.indexOf("HttpAddress") == -1) {
+                fieldInfo = new FieldInfo();
+                fieldInfo.setType(FieldType.TEXT);
+                fieldInfo.setName("HttpAddress");
+                fieldInfos.add(fieldInfo);
+                fieldInfo.dispose();
+            }
+
+
+//            if(pDatasetVector.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) return false;
         } else {
             // Dataset不存在
             try {
-                DatasetVectorInfo info = new DatasetVectorInfo(datasetName, DatasetType.POINT);
+                DatasetVectorInfo info = new DatasetVectorInfo(datasetName, DatasetType.CAD);
                 pDatasetVector = datasource.getDatasets().create(info);
             } catch (Exception e) {
                 return false;
@@ -144,11 +190,11 @@ public class SMMedia {
             fieldInfos.add(fieldInfo);
             fieldInfo.dispose();
 
-            fieldInfo = new FieldInfo();
-            fieldInfo.setType(FieldType.INT16);
-            fieldInfo.setName("MediaFileType");
-            fieldInfos.add(fieldInfo);
-            fieldInfo.dispose();
+//            fieldInfo = new FieldInfo();
+//            fieldInfo.setType(FieldType.INT16);
+//            fieldInfo.setName("MediaFileType");
+//            fieldInfos.add(fieldInfo);
+//            fieldInfo.dispose();
 
             fieldInfo = new FieldInfo();
             fieldInfo.setType(FieldType.TEXT);

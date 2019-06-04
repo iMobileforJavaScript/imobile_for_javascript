@@ -8,8 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <AVKit/AVKit.h>
+#import <AVFoundation/AVFoundation.h>
 
 @interface MediaUtil : NSObject
 + (UIImage *)getScreenShotImageFromVideoPath:(NSString *)filePath;
++ (NSDictionary *)getScreenShotImage:(NSString *)filePath;
++ (int)getVideoTimeByPath:(NSString*)path;
 @end

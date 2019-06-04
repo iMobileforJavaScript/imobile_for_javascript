@@ -57,7 +57,7 @@ RCT_REMAP_METHOD(showAtPoint2d,showByCalloutId:(NSString*)calloutId point2dId:(N
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 2), ^{
             Callout * callout = [JSObjManager getObjWithKey:calloutId];
             Point2D *point2d = [JSObjManager getObjWithKey:point2dId];
-            [callout showAt:point2d];
+//            [callout showAt:point2d];
         });
     } @catch (NSException *exception) {
         reject(@"Callout",@"show at point2d failed.",nil);
@@ -69,7 +69,7 @@ RCT_REMAP_METHOD(showAtXY,showByCalloutId:(NSString*)calloutId x:(double)x y:(do
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             Callout * callout = [JSObjManager getObjWithKey:calloutId];
             Point2D *point2d = [[Point2D alloc]initWithX:x Y:y];
-            [callout showAt:point2d];
+//            [callout showAt:point2d];
         });
     } @catch (NSException *exception) {
         reject(@"Callout",@"show at xy failed.",nil);
@@ -140,7 +140,7 @@ RCT_REMAP_METHOD(showAtPoint,showAtPointBycalloutId:(NSString*)calloutId point2D
   Callout * callout = [JSObjManager getObjWithKey:calloutId];
   if (callout) {
     Point2D * point2D = [JSObjManager getObjWithKey:point2DId];
-    [callout showAt:point2D];
+//    [callout showAt:point2D];
     resolve(@"1");
   }else{
     reject(@"callOut",@"show failed!!!",nil);
@@ -159,12 +159,12 @@ RCT_REMAP_METHOD(setCustomize,calloutId:(NSString*) calloutId isSet:(BOOL)isSet 
 RCT_REMAP_METHOD(setLocation,calloutId:(NSString*)calloutId p2DId:(NSString*)p2DId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     Point2D* point2d = [JSObjManager getObjWithKey:p2DId];
     Callout* callout = [JSObjManager getObjWithKey:calloutId];
-    BOOL isDone = [callout showAt:point2d];
-    if (isDone) {
-      resolve(@"done");
-    }else{
-        reject(@"callout",@"callout location set failed",nil);
-    }
+//    BOOL isDone = [callout showAt:point2d];
+//    if (isDone) {
+//      resolve(@"done");
+//    }else{
+//        reject(@"callout",@"callout location set failed",nil);
+//    }
 }
 
 RCT_REMAP_METHOD(setContentView,calloutId:(NSString*) calloutId imageViewId:(NSString*)imageViewId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

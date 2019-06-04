@@ -14,6 +14,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.RNUtils.DateUtil;
+import com.supermap.RNUtils.MediaUtil;
 import com.supermap.containts.EventConst;
 import com.supermap.data.CoordSysTransMethod;
 import com.supermap.data.CoordSysTransParameter;
@@ -139,9 +140,33 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void saveMedia(String layerName, int geoID, String toPath, ReadableArray fieldInfos, Promise promise) {
+    public void saveMediaByLayer(String layerName, int geoID, String toPath, ReadableArray fieldInfos, Promise promise) {
         try {
             Layer layer = SMLayer.findLayerWithName(layerName);
+
+            boolean saveResult = saveMedia(layer, geoID, toPath, fieldInfos);
+
+            promise.resolve(saveResult);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void saveMediaByDataset(String datasetName, int geoID, String toPath, ReadableArray fieldInfos, Promise promise) {
+        try {
+            Layer layer = SMLayer.findLayerByDatasetName(datasetName);
+
+            boolean saveResult = saveMedia(layer, geoID, toPath, fieldInfos);
+
+            promise.resolve(saveResult);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    public boolean saveMedia(Layer layer, int geoID, String toPath, ReadableArray fieldInfos) {
+        try {
             ArrayList<String> copyPaths = null;
 
             WritableArray infos = Arguments.createArray();
@@ -179,9 +204,9 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                 saveResult = SMLayer.setLayerFieldInfo(layer, infos, params);
             }
 
-            promise.resolve(saveResult);
+            return saveResult;
         } catch (Exception e) {
-            promise.reject(e);
+            throw e;
         }
     }
 
@@ -190,8 +215,10 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
             Recordset rs = ((DatasetVector)layer.getDataset()).getRecordset(false, CursorType.DYNAMIC);
             rs.moveLast();
 
-            double longitude = Double.parseDouble(rs.getFieldValue("SmX").toString());
-            double latitude = Double.parseDouble(rs.getFieldValue("SmY").toString());
+//            double longitude = Double.parseDouble(rs.getFieldValue("SmX").toString());
+//            double latitude = Double.parseDouble(rs.getFieldValue("SmY").toString());
+            double longitude = rs.getGeometry().getInnerPoint().getX();
+            double latitude = rs.getGeometry().getInnerPoint().getY();
 
             final InfoCallout callout = SMLayer.addCallOutWithLongitude(getReactApplicationContext(), longitude, latitude, media.getPaths().get(0));
             callout.setMediaFileName(media.getFileName());
@@ -305,6 +332,21 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
             MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
             mapControl.getMap().getMapView().removeAllCallOut();
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getVideoInfo(String path, Promise promise) {
+        try {
+            WritableMap info = MediaUtil.getScreenShotImage(getReactApplicationContext(), path);
+            int duration = MediaUtil.getVideoDuration(path);
+
+            duration = new Double(duration / 1000).intValue();
+            info.putInt("duration", duration);
+
+            promise.resolve(info);
         } catch (Exception e) {
             promise.reject(e);
         }

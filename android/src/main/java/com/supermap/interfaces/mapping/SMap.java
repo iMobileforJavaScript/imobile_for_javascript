@@ -4,11 +4,9 @@
 package com.supermap.interfaces.mapping;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
@@ -16,6 +14,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -23,6 +22,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -39,6 +39,7 @@ import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Resources;
 import com.supermap.data.Workspace;
+import com.supermap.interfaces.utils.ScaleViewHelper;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.ColorLegendItem;
 import com.supermap.mapping.EditHistoryType;
@@ -55,6 +56,7 @@ import com.supermap.mapping.LegendItem;
 import com.supermap.mapping.LegendView;
 import com.supermap.mapping.MapColorMode;
 import com.supermap.mapping.MapControl;
+import com.supermap.mapping.MapParameterChangedListener;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.ScaleView;
 import com.supermap.mapping.Selection;
@@ -95,6 +97,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private static MeasureListener mMeasureListener;
     private GestureDetector mGestureDetector;
     private GeometrySelectedListener mGeometrySelectedListener;
+    private ScaleViewHelper scaleViewHelper;
     private static final int curLocationTag = 118081;
     public static int fillNum;
     public static Color[] fillColors;
@@ -274,7 +277,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             @Override
             public void run() {
               //  sMap.smMapWC.getMapControl().getMap().getMapView().removeCallOut(tagStr);
-                 sMap.smMapWC.getMapControl().getMap().getTrackingLayer().removeLabel(tagStr);
+               int n = sMap.smMapWC.getMapControl().getMap().getTrackingLayer().indexOf(tagStr);
+               if(n!=-1) {
+                   sMap.smMapWC.getMapControl().getMap().getTrackingLayer().remove(n);
+                   sMap.smMapWC.getMapControl().getMap().refresh();
+               }
             }
         });
     }
@@ -331,14 +338,29 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             boolean result = sMap.smMapWC.openWorkspace(params);
             if (result) {
                 sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
-//                if(sMap.smMapWC.getScaleView() == null){
-//                    ScaleView scaleView = new ScaleView(context);
-//                    scaleView.setBackgroundColor(android.graphics.Color.rgb(200,135,205));
-//                    scaleView.setLayoutParams(new LinearLayout.LayoutParams(100,100));
-//                    sMap.smMapWC.getMapControl().getMap().getMapView().addView(scaleView);
-//                    scaleView.setMapView(sMap.smMapWC.getMapControl().getMap().getMapView());
-//                    scaleView.setVisibility(View.VISIBLE);
-//                }
+
+                if(scaleViewHelper == null){
+                    scaleViewHelper = new ScaleViewHelper(context);
+                    if(scaleViewHelper.mapParameterChangedListener == null){
+                        scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
+                            public void scaleChanged(double newScale) {
+                                scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
+                                scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
+                                scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
+                                WritableMap map = Arguments.createMap();
+                                map.putDouble("width",scaleViewHelper.mScaleWidth);
+                                map.putString("title",scaleViewHelper.mScaleText);
+                                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                        .emit(EventConst.SCALEVIEW_CHANGE, map);
+                            }
+                            public void boundsChanged(Point2D newMapCenter) {}
+                            public void angleChanged(double newAngle) {}
+                            public void sizeChanged(int width, int height) {}
+                        });
+                    }
+                }
+
+
             }
             sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
             sMap.smMapWC.getMapControl().setMagnifierEnabled(true);
@@ -760,6 +782,27 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(mapName);
 
                 if (isOpen) {
+                    if(scaleViewHelper == null){
+                        scaleViewHelper = new ScaleViewHelper(context);
+                        if(scaleViewHelper.mapParameterChangedListener == null){
+                            scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
+                                public void scaleChanged(double newScale) {
+                                    scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
+                                    scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
+                                    scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
+                                    WritableMap map = Arguments.createMap();
+                                    map.putDouble("width",scaleViewHelper.mScaleWidth);
+                                    map.putString("title",scaleViewHelper.mScaleText);
+                                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                            .emit(EventConst.SCALEVIEW_CHANGE, map);
+                                }
+                                public void boundsChanged(Point2D newMapCenter) {}
+                                public void angleChanged(double newAngle) {}
+                                public void sizeChanged(int width, int height) {}
+                            });
+                        }
+                    }
+
                     if (viewEntire) {
                         map.viewEntire();
                     }
@@ -808,6 +851,27 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(name);
 
                 if (isOpen) {
+                    if(scaleViewHelper == null){
+                        scaleViewHelper = new ScaleViewHelper(context);
+                        if(scaleViewHelper.mapParameterChangedListener == null){
+                            scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
+                                public void scaleChanged(double newScale) {
+                                    scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
+                                    scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
+                                    scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
+                                    WritableMap map = Arguments.createMap();
+                                    map.putDouble("width",scaleViewHelper.mScaleWidth);
+                                    map.putString("title",scaleViewHelper.mScaleText);
+                                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                            .emit(EventConst.SCALEVIEW_CHANGE, map);
+                                }
+                                public void boundsChanged(Point2D newMapCenter) {}
+                                public void angleChanged(double newAngle) {}
+                                public void sizeChanged(int width, int height) {}
+                            });
+                        }
+                    }
+
                     if (viewEntire) {
                         map.viewEntire();
                     }
@@ -885,6 +949,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
 //            getCurrentActivity().runOnUiThread(new DisposeThread(promise));
             sMap = getInstance();
+            scaleViewHelper.removeScaleChangeListener();
             MapControl mapControl = sMap.smMapWC.getMapControl();
             Workspace workspace = sMap.smMapWC.getWorkspace();
             com.supermap.mapping.Map map = mapControl.getMap();
@@ -912,6 +977,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void closeMap(Promise promise) {
         try {
             sMap = getInstance();
+            if(scaleViewHelper != null){
+                if(scaleViewHelper.mapParameterChangedListener != null){
+                    scaleViewHelper.removeScaleChangeListener();
+                }
+                scaleViewHelper = null;
+            }
             MapControl mapControl = sMap.smMapWC.getMapControl();
             if (mapControl != null) {
                 com.supermap.mapping.Map map = mapControl.getMap();
@@ -3589,18 +3660,25 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     /************************************** 地图编辑历史操作 END ****************************************/
 
     /************************************** 地图设置开始 ****************************************/
-    
-    
-//    @ReactMethod
-//    public void setScaleViewEnable(Boolean isEnable,Promise promise){
-//        try {
-//            sMap = SMap.getInstance();
-//            Boolean isShow = sMap.smMapWC.scaleView.showEnable;
-//            Promise.resolve(isShow);
-//        } catch (Exception e) {
-//            Promise.reject(e);
-//        }
-//    }
+
+    /**
+     * 获取图例的宽度和title
+     * @param promise
+     */
+    @ReactMethod
+    public void getScaleData(Promise promise){
+        try {
+            scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
+            scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
+            scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
+            WritableMap map = Arguments.createMap();
+            map.putDouble("width",scaleViewHelper.mScaleWidth);
+            map.putString("title",scaleViewHelper.mScaleText);
+            promise.resolve(map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 
     /**
      * 获取地图旋转角度
@@ -3729,8 +3807,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void getMarkerFixedAngle(Promise promise){
         try {
             sMap = SMap.getInstance();
-            //Boolean b = sMap.smMapWC.getMapControl().getMap().getMarkerFixedAngle();
-            promise.resolve(true);
+            Boolean b = sMap.smMapWC.getMapControl().getMap().getIsMarkerFixedAngle();
+            promise.resolve(b);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -3744,7 +3822,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void setMarkerFixedAngle(Boolean b,Promise promise){
         try {
             sMap = SMap.getInstance();
-            //sMap.smMapWC.getMapControl().getMap().setMarkerFixedAngle(b);
+            sMap.smMapWC.getMapControl().getMap().setIsMarkerFixedAngle(b);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -3758,8 +3836,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void getTextFixedAngle(Promise promise){
         try {
             sMap = SMap.getInstance();
-            //Boolean b = sMap.smMapWC.getMapControl().getMap().getTextFixedAngle();
-            promise.resolve(true);
+            Boolean b = sMap.smMapWC.getMapControl().getMap().getIsTextFixedAngle();
+            promise.resolve(b);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -3772,8 +3850,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void getFixedTextOrientation(Promise promise){
         try {
             sMap = SMap.getInstance();
-            //Boolean b = sMap.smMapWC.getMapControl().getMap().getFixedTextOrientation();
-            promise.resolve(true);
+            Boolean b = sMap.smMapWC.getMapControl().getMap().getIsFixedTextOrientation();
+            promise.resolve(b);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -3787,7 +3865,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void setTextFixedAngle(Boolean b,Promise promise){
         try {
             sMap = SMap.getInstance();
-            //sMap.smMapWC.getMapControl().getMap().setTextFixedAngle(b);
+            sMap.smMapWC.getMapControl().getMap().setIsTextFixedAngle(b);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -3803,7 +3881,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void setFixedTextOrientation(Boolean b, Promise promise){
         try {
             sMap = SMap.getInstance();
-            //sMap.smMapWC.getMapControl().getMap().setFixedTextOrientation(b);
+            sMap.smMapWC.getMapControl().getMap().setIsFixedTextOrientation(b);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

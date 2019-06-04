@@ -10,7 +10,38 @@
 #import "SuperMap/Recordset.h"
 #import "SuperMap/FieldInfos.h"
 #import "SuperMap/FieldInfo.h"
+//#import "SuperMap/GPSData.h"
+@interface locationChangedDelegate :NSObject<locationChangedDelegate>
+{
+//    LocationManagePlugin* LocationPlugin;
+//    GPSData* mGPSData;
+}
+@property(nonatomic,strong)GPSData* gpsData;
+@property(nonatomic,strong)LocationManagePlugin* Plugin;
+@end
+@implementation locationChangedDelegate
+-(id)init{
+    if(self = [super init]){
+        _Plugin = [[LocationManagePlugin alloc]init];
+        _Plugin.locationChangedDelegate = self;
+    }
+    return self;
+}
+#pragma mark GPS
+-(void)locationChanged:(GPSData *)oldData newGps:(GPSData *)newData{
+    
+    _gpsData = [newData clone];
+}
+-(void)locationNewDirection:(CLHeading *)newHeading{
+    
+}
+-(void)locationError:(NSString *)error{
+    NSLog(@"%@",error);
+}
+@end
+
 @implementation NativeUtil
+
 +(UIColor*)uiColorTransFromArr:(NSArray<NSNumber*>*)arr{
     @try{
         NSInteger red = arr[0].integerValue;
@@ -175,4 +206,20 @@
     
     return array;
 }
+
+static locationChangedDelegate* LocationPlugin = nil;
++(void)openGPS{
+    if(!LocationPlugin){
+        LocationPlugin = [[locationChangedDelegate alloc]init];
+    }
+    [LocationPlugin.Plugin openGpsDevice];
+}
++(void)closeGPS{
+    [LocationPlugin.Plugin closeGpsDevice];
+}
++(GPSData*)getGPSData{
+    return [LocationPlugin.gpsData clone];
+}
+
+
 @end

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0049743B22A4BD9900267482 /* ScaleViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 0049743A22A4BD9900267482 /* ScaleViewHelper.m */; };
 		0053633D2293A546004A6C39 /* SOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0053633C2293A546004A6C39 /* SOrientation.m */; };
 		005693BA2191696C00AEC46E /* SOnlineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 005693B92191696C00AEC46E /* SOnlineService.m */; };
 		0A0118A52122BC5600BC4AAB /* JSThemeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0118A42122BC5600BC4AAB /* JSThemeLabel.m */; };
@@ -218,6 +219,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0049743922A4BD9900267482 /* ScaleViewHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScaleViewHelper.h; sourceTree = "<group>"; };
+		0049743A22A4BD9900267482 /* ScaleViewHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScaleViewHelper.m; sourceTree = "<group>"; };
 		0053633B2293A546004A6C39 /* SOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SOrientation.h; sourceTree = "<group>"; };
 		0053633C2293A546004A6C39 /* SOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SOrientation.m; sourceTree = "<group>"; };
 		005693B82191696C00AEC46E /* SOnlineService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SOnlineService.h; sourceTree = "<group>"; };
@@ -737,6 +740,8 @@
 				4A99EBEA21EDD9CF00493EB1 /* SPUtils.m */,
 				0A27E3192284293900227B8C /* MediaUtil.h */,
 				0A27E31A2284293900227B8C /* MediaUtil.m */,
+				0049743922A4BD9900267482 /* ScaleViewHelper.h */,
+				0049743A22A4BD9900267482 /* ScaleViewHelper.m */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -1234,6 +1239,7 @@
 				0A332E5C211D623E00F56F26 /* JSTheme.m in Sources */,
 				0A332E0E211D623E00F56F26 /* JSElementPoint.m in Sources */,
 				0A332E59211D623E00F56F26 /* JSTextAlignment.m in Sources */,
+				0049743B22A4BD9900267482 /* ScaleViewHelper.m in Sources */,
 				0A332E70211D623E00F56F26 /* RCTConvert+DatasetType.m in Sources */,
 				0A2F59F0229BB7AD00C42441 /* FileUtils.m in Sources */,
 				0A332E20211D623E00F56F26 /* JSLayer.m in Sources */,

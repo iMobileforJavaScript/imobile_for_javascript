@@ -41,34 +41,75 @@
     int index = (int)[datasource.datasets indexOf:datasetName];
     if (index != -1) {
         pDatasetVector = (DatasetVector*)[datasource.datasets get:index];
-        if(pDatasetVector.datasetType != POINT)
-            return NO;
-        int tag1 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"MediaFileName"];
-//        int tag2 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"MediaFileType"];
-        int tag3 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"ModifiedDate"];
-        int tag4 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"MediaFilePaths"];
-        int tag5 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"Description"];
-        int tag6 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"HttpAddress"];
-        
-        if(tag1==-1 || tag3==-1 || tag4==-1 || tag5==-1)
-            return NO;
-        if([pDatasetVector.fieldInfos get:tag1].fieldType!=FT_TEXT)
-            return NO;
-//        if([pDatasetVector.fieldInfos get:tag2].fieldType!=FT_INT16)
+//        if(pDatasetVector.datasetType != POINT)
 //            return NO;
-        if([pDatasetVector.fieldInfos get:tag3].fieldType!=FT_TEXT)
-            return NO;
-        if([pDatasetVector.fieldInfos get:tag4].fieldType!=FT_TEXT)
-            return NO;
-        if([pDatasetVector.fieldInfos get:tag5].fieldType!=FT_TEXT)
-            return NO;
-        if([pDatasetVector.fieldInfos get:tag6].fieldType!=FT_TEXT)
-            return NO;
-        if(pDatasetVector.prjCoordSys.type != PCST_EARTH_LONGITUDE_LATITUDE)
-            return NO;
+//        int tag1 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"MediaFileName"];
+////        int tag2 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"MediaFileType"];
+//        int tag3 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"ModifiedDate"];
+//        int tag4 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"MediaFilePaths"];
+//        int tag5 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"Description"];
+//        int tag6 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"HttpAddress"];
+        
+        if ((int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"MediaFileName"] == -1) {
+            fieldInfo = [[FieldInfo alloc]init];
+            fieldInfo.fieldType = FT_TEXT;
+            fieldInfo.name = @"MediaFileName";
+            [pDatasetVector.fieldInfos add:fieldInfo];
+            [fieldInfo dispose];
+        }
+        
+        if ((int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"ModifiedDate"] == -1) {
+            fieldInfo = [[FieldInfo alloc]init];
+            fieldInfo.fieldType = FT_TEXT;
+            fieldInfo.name = @"ModifiedDate";
+            [pDatasetVector.fieldInfos add:fieldInfo];
+            [fieldInfo dispose];
+        }
+        
+        if ((int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"Description"] == -1) {
+            fieldInfo = [[FieldInfo alloc]init];
+            fieldInfo.fieldType = FT_TEXT;
+            fieldInfo.name = @"Description";
+            [pDatasetVector.fieldInfos add:fieldInfo];
+            [fieldInfo dispose];
+        }
+        
+        if ((int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"MediaFilePaths"] == -1) {
+            fieldInfo = [[FieldInfo alloc]init];
+            fieldInfo.fieldType = FT_TEXT;
+            fieldInfo.name = @"MediaFilePaths";
+            fieldInfo.maxLength = 600;
+            [pDatasetVector.fieldInfos add:fieldInfo];
+            [fieldInfo dispose];
+        }
+        
+        if ((int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"HttpAddress"] == -1) {
+            fieldInfo = [[FieldInfo alloc]init];
+            fieldInfo.fieldType = FT_TEXT;
+            fieldInfo.name = @"HttpAddress";
+            [pDatasetVector.fieldInfos add:fieldInfo];
+            [fieldInfo dispose];
+        }
+        
+//        if(tag1==-1 || tag3==-1 || tag4==-1 || tag5==-1)
+//            return NO;
+//        if([pDatasetVector.fieldInfos get:tag1].fieldType!=FT_TEXT)
+//            return NO;
+////        if([pDatasetVector.fieldInfos get:tag2].fieldType!=FT_INT16)
+////            return NO;
+//        if([pDatasetVector.fieldInfos get:tag3].fieldType!=FT_TEXT)
+//            return NO;
+//        if([pDatasetVector.fieldInfos get:tag4].fieldType!=FT_TEXT)
+//            return NO;
+//        if([pDatasetVector.fieldInfos get:tag5].fieldType!=FT_TEXT)
+//            return NO;
+//        if([pDatasetVector.fieldInfos get:tag6].fieldType!=FT_TEXT)
+//            return NO;
+//        if(pDatasetVector.prjCoordSys.type != PCST_EARTH_LONGITUDE_LATITUDE)
+//            return NO;
     } else {
         @try {
-            DatasetVectorInfo *vectInfo = [[DatasetVectorInfo alloc]initWithName:datasetName datasetType:POINT];
+            DatasetVectorInfo *vectInfo = [[DatasetVectorInfo alloc]initWithName:datasetName datasetType:CAD];
             pDatasetVector = [datasource.datasets create:vectInfo];
         }
         @catch (NSException *exception) {
@@ -86,10 +127,10 @@
         [pDatasetVector.fieldInfos add:fieldInfo];
         [fieldInfo dispose];
         
-//        fieldInfo = [[FieldInfo alloc]init];
-//        fieldInfo.fieldType = FT_INT16;
-//        fieldInfo.name = @"MediaFileType";
-//        [pDatasetVector.fieldInfos add:fieldInfo];
+        //        fieldInfo = [[FieldInfo alloc]init];
+        //        fieldInfo.fieldType = FT_INT16;
+        //        fieldInfo.name = @"MediaFileType";
+        //        [pDatasetVector.fieldInfos add:fieldInfo];
         
         fieldInfo = [[FieldInfo alloc]init];
         fieldInfo.fieldType = FT_TEXT;
@@ -115,7 +156,7 @@
         fieldInfo.name = @"HttpAddress";
         [pDatasetVector.fieldInfos add:fieldInfo];
         [fieldInfo dispose];
-        
+
         pDatasetVector.prjCoordSys = [[PrjCoordSys alloc]initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
     }
     
