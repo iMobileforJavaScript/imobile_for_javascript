@@ -1,13 +1,21 @@
 package com.supermap.RNUtils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
+import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
+import android.os.Environment;
 import android.provider.MediaStore;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
+
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * @Author: shanglongyang
@@ -72,6 +80,52 @@ public class MediaUtil {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public static WritableMap getScreenShotImage(Context context, String url) {
+        WritableMap info = Arguments.createMap();
+
+        Bitmap bitmap = getScreenShotImageFromVideoPath(url);
+
+        String cachePath = context.getExternalCacheDir().getAbsolutePath();
+
+        File fileFolder = new File(cachePath);
+        if (!fileFolder.exists()) {
+            fileFolder.mkdirs();
+        }
+        String fileName = "Screen_" + System.currentTimeMillis() + ".png";
+        File file = new File(fileFolder, fileName);
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+
+            info.putString("path", "file://" + file.getAbsolutePath());
+            info.putDouble("width", bitmap.getWidth());
+            info.putDouble("height", bitmap.getHeight());
+            return info;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static int getVideoDuration(String url) {
+        try {
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepare();
+            int duration = mediaPlayer.getDuration();
+
+            return duration;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
         }
     }
 }

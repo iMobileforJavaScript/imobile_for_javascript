@@ -52,9 +52,9 @@
                                                                    NSUserDomainMask,
                                                                    YES) lastObject];
     
-    NSData *data = UIImageJPEGRepresentation(shotImage, 1.0);
+    NSData *data = UIImagePNGRepresentation(shotImage);
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSString *fullPath = [tempDirectory stringByAppendingPathComponent: [NSString stringWithFormat:@"thumb-%@.jpg", [[NSProcessInfo processInfo] globallyUniqueString]]];
+    NSString *fullPath = [tempDirectory stringByAppendingPathComponent: [NSString stringWithFormat:@"Screen_%@.png", [[NSProcessInfo processInfo] globallyUniqueString]]];
     [fileManager createFileAtPath:fullPath contents:data attributes:nil];
     
     return @{ @"path" : fullPath,

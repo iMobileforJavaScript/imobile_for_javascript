@@ -492,7 +492,7 @@
     image.frame = CGRectMake(0, 0, 50, 50);
     // UIImage* img = ;
     [callout addSubview:image];
-    [callout showAt:pt];
+    [callout showAt:pt Tag:callout.layerName];
     //[sMap.smMapWC.mapControl panTo:pt time:200];
     sMap.smMapWC.mapControl.map.center = pt;
     sMap.smMapWC.mapControl.map.scale = 0.000011947150294723098;

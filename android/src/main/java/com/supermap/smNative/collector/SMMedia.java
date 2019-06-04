@@ -107,7 +107,7 @@ public class SMMedia {
         if (index > -1) {
             // Dataset存在
             pDatasetVector = (DatasetVector)datasource.getDatasets().get(index);
-            if (pDatasetVector.getType() != DatasetType.POINT) return false;
+            if (pDatasetVector.getType() != DatasetType.POINT && pDatasetVector.getType() != DatasetType.CAD) return false;
             FieldInfos fieldInfos = pDatasetVector.getFieldInfos();
 //            int tag1 = fieldInfos.indexOf("MediaFileName");
 //            int tag2 = fieldInfos.indexOf("MediaFileType");
@@ -169,7 +169,7 @@ public class SMMedia {
             }
 
 
-            if(pDatasetVector.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) return false;
+//            if(pDatasetVector.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) return false;
         } else {
             // Dataset不存在
             try {
