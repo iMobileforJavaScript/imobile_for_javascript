@@ -61,6 +61,8 @@ NSString * const MAP_GEOMETRY_SELECTED = @"com.supermap.RN.Mapcontrol.geometry_s
 NSString * const MAP_SCALE_CHANGED = @"Supermap.MapControl.MapParamChanged.ScaleChanged";
 NSString * const MAP_BOUNDS_CHANGED = @"Supermap.MapControl.MapParamChanged.BoundsChanged";
 
+/** 比例尺改变 RN显示比例尺专用 **/
+NSString * const MAP_SCALEVIEW_CHANGED = @"com.supermap.RN.Map.ScaleView.scaleView_change";
 /** 多媒体采集 **/
 NSString * const MEDIA_CAPTURE = @"com.supermap.RN.MediaCapture";
 

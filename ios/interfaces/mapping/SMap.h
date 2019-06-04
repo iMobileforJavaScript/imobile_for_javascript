@@ -52,11 +52,11 @@
 #import "SMSymbol.h"
 #import "SMLayer.h"
 #import "SOrientation.h"
-
-@interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate,AfterGeometryAddedDelegate,LegendContentDelegate,OrientationChangeDelegate>
+#import "ScaleViewHelper.h"
+@interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate,AfterGeometryAddedDelegate,LegendContentDelegate,MapParameterChangedDelegate>
 @property (strong, nonatomic) SMMapWC* smMapWC;
 @property (strong, nonatomic) Selection* selection;
-@property (strong, nonatomic) SOrientation* sOrientation;
+@property (strong, nonatomic) ScaleViewHelper* scaleViewHelper;
 
 + (instancetype)singletonInstance;
 + (void)setInstance:(MapControl *)mapControl;

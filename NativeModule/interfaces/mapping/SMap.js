@@ -29,6 +29,29 @@ export default (function () {
   }
 
   /**
+   * 比例尺缩放事件
+   * @param handler
+   */
+  function addScaleChangeDelegate(handler) {
+      try {
+        if(Platform.OS === 'ios'){
+          nativeEvt.addListener(EventConst.MAP_SCALEVIEW_CHANGE,result=>{
+            if(typeof handler.scaleViewChange === "function"){
+              handler.scaleViewChange(result);
+            }
+          })
+        }else {
+          DeviceEventEmitter.addListener(EventConst.MAP_SCALEVIEW_CHANGE,result=>{
+            if(typeof handler.scaleViewChange === "function"){
+              handler.scaleViewChange(result);
+            }
+          })
+        }
+      }catch (e) {
+        console.error(e)
+      }
+  }
+  /**
    * 添加图例的监听事件，会返回相应的图例数据
    * @returns {*}
    */
@@ -1496,6 +1519,7 @@ export default (function () {
     addTextRecordset,
     getGestureDetector,
     addLegendDelegate,
+    addScaleChangeDelegate,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)
 
