@@ -64,10 +64,11 @@
 }
 
 + (int)getVideoTimeByPath:(NSString*)path {
-    NSURL*videoUrl = [NSURL URLWithString:path];
+    NSURL*videoUrl = [NSURL fileURLWithPath:path];
     AVURLAsset *avUrl = [AVURLAsset assetWithURL:videoUrl];
     CMTime time = [avUrl duration];
     int seconds = ceil(time.value/time.timescale);
+    
     return seconds;
 }
 
