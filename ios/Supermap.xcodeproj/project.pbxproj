@@ -157,6 +157,8 @@
 		0A334CA52296478900E4F302 /* SScene.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A334CA42296478900E4F302 /* SScene.m */; };
 		0A334CD222978A1400E4F302 /* SMMediaCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A334CD122978A1400E4F302 /* SMMediaCollector.m */; };
 		0A334D2F2297984300E4F302 /* SMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A334D2E2297984300E4F302 /* SMap.m */; };
+		0A4BFCEF22A666D1001563DF /* AMapFoundationKit in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A4BFCED22A666D1001563DF /* AMapFoundationKit */; };
+		0A4BFCF022A666D1001563DF /* AMapLocationKit in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A4BFCEE22A666D1001563DF /* AMapLocationKit */; };
 		0A51674E21AD42AB003C77BE /* Utils3D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD1B26221A6AA54006E1B27 /* Utils3D.m */; };
 		0A51674F21AD42B0003C77BE /* TouchUtil3D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD1B25A21A6AA54006E1B27 /* TouchUtil3D.m */; };
 		0A51675021AD42B6003C77BE /* LableHelper3D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD1B25E21A6AA54006E1B27 /* LableHelper3D.m */; };
@@ -517,6 +519,8 @@
 		0A334CD022978A1400E4F302 /* SMMediaCollector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMediaCollector.h; sourceTree = "<group>"; };
 		0A334CD122978A1400E4F302 /* SMMediaCollector.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMMediaCollector.m; sourceTree = "<group>"; };
 		0A334D2E2297984300E4F302 /* SMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMap.m; sourceTree = "<group>"; };
+		0A4BFCED22A666D1001563DF /* AMapFoundationKit */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = AMapFoundationKit; sourceTree = "<group>"; };
+		0A4BFCEE22A666D1001563DF /* AMapLocationKit */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = AMapLocationKit; sourceTree = "<group>"; };
 		0A51675421AF7EF7003C77BE /* MapTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapTool.h; sourceTree = "<group>"; };
 		0A51675521AF7EF7003C77BE /* MapTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapTool.m; sourceTree = "<group>"; };
 		0A56918F21B7E58300F46C9B /* SMFileUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFileUtil.h; sourceTree = "<group>"; };
@@ -619,6 +623,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A4BFCEF22A666D1001563DF /* AMapFoundationKit in Frameworks */,
+				0A4BFCF022A666D1001563DF /* AMapLocationKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -665,6 +671,15 @@
 				0A334CD122978A1400E4F302 /* SMMediaCollector.m */,
 			);
 			path = collector;
+			sourceTree = "<group>";
+		};
+		0A8D32E622A65D0C007EF3BA /* extern */ = {
+			isa = PBXGroup;
+			children = (
+				0A4BFCED22A666D1001563DF /* AMapFoundationKit */,
+				0A4BFCEE22A666D1001563DF /* AMapLocationKit */,
+			);
+			path = extern;
 			sourceTree = "<group>";
 		};
 		0AB00D2B21A6C6B600C35E4B /* Recovered References */ = {
@@ -714,6 +729,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				0A8D32E622A65D0C007EF3BA /* extern */,
 				D8FB9D3D219AADF600597AE5 /* component */,
 				D854DA522187FCA80075B5F8 /* constants */,
 				D854D9AF218312600075B5F8 /* oldNative */,
@@ -1491,14 +1507,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
 					"$(BUILT_PRODUCTS_DIR)/include/React/**",
 					"$(SRCROOT)",
+					"$(PROJECT_DIR)/extern/Headers",
 				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/extern",
+				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Supermap;
@@ -1511,14 +1532,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
 					"$(BUILT_PRODUCTS_DIR)/include/React/**",
 					"$(SRCROOT)",
+					"$(PROJECT_DIR)/extern/Headers",
 				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/extern",
+				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Supermap;
