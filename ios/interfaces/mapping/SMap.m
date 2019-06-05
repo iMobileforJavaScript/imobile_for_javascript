@@ -2772,7 +2772,7 @@ RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)data
         sMap = [SMap singletonInstance];
         Point2D *p =[sMap.smMapWC.mapControl.map pixelTomap:CGPointMake(x, y)];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-         NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
         Datasets *datasets = opendatasource.datasets;
         DatasetVector *dataset =(DatasetVector *)[datasets getWithName:dataname];

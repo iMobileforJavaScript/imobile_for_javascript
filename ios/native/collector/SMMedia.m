@@ -27,9 +27,8 @@
 }
 
 -(Point2D *)getCurrentLocation {
-    MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
-    Collector* collector = [mapControl getCollector];
-    Point2D* pt = [[Point2D alloc]initWithPoint2D:[collector getGPSPoint]];
+    GPSData* gpsData = [NativeUtil getGPSData];
+    Point2D* pt = [[Point2D alloc] initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
     return pt;
 }
 
@@ -168,13 +167,21 @@
 -(void)saveLocationDataToDataset
 {
     GeoPoint* mGeoPointTem = [[GeoPoint alloc]init];
+    GeoStyle* style = [[GeoStyle alloc] init];
+    [style setMarkerSize:[[Size2D alloc] initWithWidth:2 Height:2]];
+    [style setLineColor:[[Color alloc] initWithR:50 G:240 B:50]];
+    [style setMarkerSymbolID:351];
+    [style setFillForeColor:[[Color alloc] initWithR:244 G:50 B:50]];
+    [mGeoPointTem setStyle:style];
     
     Recordset* mRecordset = [(DatasetVector*)_dataset recordset:NO cursorType:DYNAMIC];
-    [mRecordset edit];
     
     [mGeoPointTem setX:_location.x];
     [mGeoPointTem setY:_location.y];
     [mRecordset addNew:mGeoPointTem];
+    
+    [mRecordset edit];
+    [mRecordset moveLast];
     [mRecordset setStringWithName:@"MediaFileName" StringValue:_fileName];
     
 //    if([_fileName hasSuffix:@".mp4"] || [_fileName hasSuffix:@".mov"])

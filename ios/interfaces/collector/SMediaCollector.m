@@ -65,6 +65,8 @@ RCT_REMAP_METHOD(addMedia, addMedia:(NSDictionary*)info addToMap:(BOOL)addToMap 
                     //                sMediaCollector = [SMediaCollector singletonInstance];
                     //                [sMediaCollector addCallout:media layer:mediaLayer];
                     [self addCallout:media layer:mediaLayer];
+                    
+                    
                 }
                 
             }
@@ -144,33 +146,56 @@ RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName 
     }
 }
 
-#pragma mark 保存/修改 多媒体采集
-RCT_REMAP_METHOD(showMedia, showMedia:(NSString *)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+#pragma mark 移除多媒体callout
+RCT_REMAP_METHOD(removeMedia, removeMediaWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        Layer* layer = [SMLayer findLayerWithName:layerName];
-        
-        Recordset* rs = [((DatasetVector *)layer.dataset) recordset:NO cursorType:STATIC];
-        
-        int index = (int)[rs.fieldInfos indexOfWithFieldName:@"MediaFilePaths"];
-        
-        if (index >= 0) {
-//            index
-        }
-        
-        [rs dispose];
-        
-        
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [mapControl removeAllCallouts];
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"SMediaCollector", exception.reason, nil);
     }
 }
 
-#pragma mark 完成采集音频
-RCT_REMAP_METHOD(hideMedia, hideMediaWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+#pragma mark 显示指定图层多媒体采集callouts
+RCT_REMAP_METHOD(showMedia, showMediaWithLayerName:(NSString *)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [SMLayer findLayerWithName:layerName];
+        
+        if (layer) {
+            SEL selector = @selector(callOutAction:);
+            UITapGestureRecognizer * tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:selector];
+            
+            [tapGesture setNumberOfTapsRequired:1];
+            
+            [SMMediaCollector addMediasByLayer:layer gesture:tapGesture];
+            resolve(@(YES));
+        } else {
+            reject(@"SMediaCollector", @"The layer is not exist", nil);
+        }
+    } @catch (NSException *exception) {
+        reject(@"SMediaCollector", exception.reason, nil);
+    }
+}
+
+#pragma mark 移除指定图层多媒体采集callouts
+RCT_REMAP_METHOD(hideMedia, hideMediaWithLayerName:(NSString *)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
-        [mapControl removeAllCallouts];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            int i = 0;
+            while(i < mapControl.callouts.count) {
+                InfoCallout* callout = (InfoCallout *)mapControl.callouts[i];
+                if (callout && [callout.layerName isEqualToString:layerName]) {
+                    [mapControl removeCalloutAtIndex:i];
+                } else {
+                    i++;
+                }
+            }
+            
+            [mapControl.map refresh];
+        });
+        
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"SMediaCollector", exception.reason, nil);
@@ -406,59 +431,80 @@ RCT_REMAP_METHOD(getVideoInfo, getVideoInfo:(NSString*)path withresolver:(RCTPro
             Recordset* rs = [((DatasetVector *)layer.dataset) recordset:NO cursorType:DYNAMIC];
             [rs moveLast];
             
-//            double longitude = [((NSNumber *)[rs getFieldValueWithString:@"SmX"]) doubleValue];
-//            double latitude =  [((NSNumber *)[rs getFieldValueWithString:@"SmY"]) doubleValue];
-            
-            double longitude = [rs.geometry getInnerPoint].x;
-            double latitude =  [rs.geometry getInnerPoint].y;
-            
-            
-            InfoCallout* callout = [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:media.paths[0]];
-            callout.mediaFileName = media.fileName;
-            callout.mediaFilePaths = media.paths;
-//            callout.type = media.mediaType;
-            callout.layerName = layer.name;
-            callout.httpAddress = @"";
-            callout.description = @"";
-            NSDate* date = [NSDate date];
-            
-            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-            [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-            callout.modifiedDate = [dateFormatter stringFromDate:date];
-            
-            callout.geoID = ((NSNumber *)[rs getFieldValueWithString:@"SmID"]).intValue;
-            
-            [rs edit];
-            
-            NSMutableString* paths = [NSMutableString string];
-//            for (NSString* path in callout.mediaFilePaths) {
-//                paths appendFormat:<#(nonnull NSString *), ...#>
-//            }
-            for (int i = 0; i < callout.mediaFilePaths.count; i++) {
-                [paths appendString:callout.mediaFilePaths[i]];
-                if (i < callout.mediaFilePaths.count - 1) {
-                    [paths appendString:@","];
-                }
-            }
-            
-            
-            [rs setFieldValueWithString:@"ModifiedDate" Obj:callout.modifiedDate];
-            [rs setFieldValueWithString:@"MediaFilePaths" Obj:paths];
-            [rs setFieldValueWithString:@"Description" Obj:callout.description];
-            [rs setFieldValueWithString:@"HttpAddress" Obj:callout.httpAddress];
-            
-            [rs update];
-            
-            [rs dispose];
-            
             SEL selector = @selector(callOutAction:);
             UITapGestureRecognizer * tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:selector];
-            
-            [callout addGestureRecognizer:tapGesture];
             [tapGesture setNumberOfTapsRequired:1];
+            
+            [SMMediaCollector addCalloutByMedia:media recordset:rs layerName:layer.name segesturelector:tapGesture];
+            
+            [rs dispose];
         });
     }
 }
+
+- (void)addCalloutsByLayer:(Layer *)layer {
+    if (layer) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            SEL selector = @selector(callOutAction:);
+            UITapGestureRecognizer * tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:selector];
+            [tapGesture setNumberOfTapsRequired:1];
+            
+            [SMMediaCollector addMediasByLayer:layer gesture:tapGesture];
+        });
+    }
+}
+
+//- (void)addCalloutByMedia:(SMMedia *)media layer:(Layer *)layer {
+//    Recordset* rs = [((DatasetVector *)layer.dataset) recordset:NO cursorType:DYNAMIC];
+//    [rs moveLast];
+//
+//    double longitude = [rs.geometry getInnerPoint].x;
+//    double latitude =  [rs.geometry getInnerPoint].y;
+//
+//
+//    InfoCallout* callout = [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:media.paths[0]];
+//    callout.mediaFileName = media.fileName;
+//    callout.mediaFilePaths = media.paths;
+//    //            callout.type = media.mediaType;
+//    callout.layerName = layer.name;
+//    callout.httpAddress = @"";
+//    callout.description = @"";
+//    NSDate* date = [NSDate date];
+//
+//    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+//    callout.modifiedDate = [dateFormatter stringFromDate:date];
+//
+//    callout.geoID = ((NSNumber *)[rs getFieldValueWithString:@"SmID"]).intValue;
+//
+//    [rs edit];
+//
+//    NSMutableString* paths = [NSMutableString string];
+//    //            for (NSString* path in callout.mediaFilePaths) {
+//    //                paths appendFormat:<#(nonnull NSString *), ...#>
+//    //            }
+//    for (int i = 0; i < callout.mediaFilePaths.count; i++) {
+//        [paths appendString:callout.mediaFilePaths[i]];
+//        if (i < callout.mediaFilePaths.count - 1) {
+//            [paths appendString:@","];
+//        }
+//    }
+//
+//    [rs setFieldValueWithString:@"ModifiedDate" Obj:callout.modifiedDate];
+//    [rs setFieldValueWithString:@"MediaFilePaths" Obj:paths];
+//    [rs setFieldValueWithString:@"Description" Obj:callout.description];
+//    [rs setFieldValueWithString:@"HttpAddress" Obj:callout.httpAddress];
+//
+//    [rs update];
+//
+//    [rs dispose];
+//
+//    SEL selector = @selector(callOutAction:);
+//    UITapGestureRecognizer * tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:selector];
+//
+//    [callout addGestureRecognizer:tapGesture];
+//    [tapGesture setNumberOfTapsRequired:1];
+//}
 
 
 -(void)onCaptureMediaFile:(BOOL)isSuccess fileName:(NSString*)mediaFileName type:(int)type {

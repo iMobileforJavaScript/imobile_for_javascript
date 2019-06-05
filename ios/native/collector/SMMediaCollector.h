@@ -36,6 +36,14 @@ NS_ASSUME_NONNULL_BEGIN
  **/
 + (SMMedia *)findMediaByLayer:(Layer *)layer geoID:(int)geoID;
 
+/**
+ * 根据图层名称，返回对应的SMMedia对象列表
+ **/
++ (NSArray *)findMediasByLayer:(Layer *)layer;
+
++ (void)addMediasByLayer:(Layer *)layer gesture:(UITapGestureRecognizer *)gesture;
+
++ (void)addCalloutByMedia:(SMMedia *)media recordset:(Recordset *)rs layerName:(NSString *)layerName segesturelector:(UITapGestureRecognizer *)gesture;
 @end
 
 NS_ASSUME_NONNULL_END

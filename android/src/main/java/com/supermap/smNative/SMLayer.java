@@ -564,7 +564,9 @@ public class SMLayer {
                 mapWrapView.addCallout(callout, callout.getLayerName());
 
                 map.setCenter(pt);
-                map.setScale(0.000011947150294723098);
+                if (map.getScale() < 0.000011947150294723098) {
+                    map.setScale(0.000011947150294723098);
+                }
                 map.refresh();
 
                 mapWrapView.showCallOut();

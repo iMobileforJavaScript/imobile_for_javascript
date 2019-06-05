@@ -253,8 +253,30 @@ function saveMediaByDataset (datasetName = '', geoID = -1, toPath = '', fieldInf
   return Collector.saveMediaByDataset(datasetName, geoID, toPath, info)
 }
 
-function hideMedia () {
-  return Collector.hideMedia()
+/**
+ * 移除多媒体callout
+ * @returns {*}
+ */
+function removeMedia () {
+  return Collector.removeMedia()
+}
+
+/**
+ * 显示指定图层多媒体采集callouts
+ * @returns {*}
+ */
+function showMedia (layerName) {
+  if (!layerName) return false
+  return Collector.showMedia(layerName)
+}
+
+/**
+ * 移除指定图层多媒体采集callouts
+ * @returns {*}
+ */
+function hideMedia (layerName) {
+  if (!layerName) return false
+  return Collector.hideMedia(layerName)
 }
 
 /**
@@ -280,6 +302,8 @@ export default {
   // deleteMediaFiles,
   saveMediaByLayer,
   saveMediaByDataset,
+  removeMedia,
+  showMedia,
   hideMedia,
   
   getVideoInfo,

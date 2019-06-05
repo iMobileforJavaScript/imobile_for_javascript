@@ -15,6 +15,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.RNUtils.DateUtil;
 import com.supermap.RNUtils.MediaUtil;
+import com.supermap.component.MapWrapView;
 import com.supermap.containts.EventConst;
 import com.supermap.data.CoordSysTransMethod;
 import com.supermap.data.CoordSysTransParameter;
@@ -61,6 +62,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
     private static SMediaCollector collector = null;
     private static ReactApplicationContext context;
     private static Layer mediaLayer;
+    private static View.OnTouchListener calloutListner;
 
     public SMediaCollector(ReactApplicationContext context) {
         super(context);
@@ -72,6 +74,84 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
         return REACT_CLASS;
     }
 
+    public static View.OnTouchListener getCalloutListner() {
+        if (calloutListner == null) {
+            calloutListner = new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_UP: {
+                            InfoCallout infoCallout = (InfoCallout)view;
+                            Point2D pt = new Point2D(infoCallout.getLocationX(), infoCallout.getLocationY());
+                            Map map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
+                            if (map.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+                                Point2Ds points = new Point2Ds();
+                                points.add(pt);
+                                PrjCoordSys desPrjCoorSys = new PrjCoordSys();
+                                desPrjCoorSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                                CoordSysTranslator.convert(points, desPrjCoorSys, map.getPrjCoordSys(),
+                                        new CoordSysTransParameter(),
+                                        CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+
+                                pt.setX(points.getItem(0).getX());
+                                pt.setY(points.getItem(0).getY());
+                            }
+
+                            WritableMap point = Arguments.createMap();
+                            point.putDouble("x", pt.getX());
+                            point.putDouble("y", pt.getY());
+
+                            WritableArray medium = Arguments.createArray();
+
+                            Layer tapLayer = SMLayer.findLayerWithName(infoCallout.getLayerName());
+                            DatasetVector dv = (DatasetVector) tapLayer.getDataset();
+
+                            QueryParameter qp = new QueryParameter();
+                            qp.setAttributeFilter("SmID=" + infoCallout.getGeoID());
+                            qp.setCursorType(CursorType.STATIC);
+                            Recordset recordset = dv.query(qp);
+
+                            String modifiedDate = recordset.getString("ModifiedDate");
+                            String mediaFileName = recordset.getString("MediaFileName");
+                            String httpAddress = recordset.getString("HttpAddress");
+                            String description = recordset.getString("Description");
+
+                            String mediaFilePaths = recordset.getString("MediaFilePaths");
+                            WritableArray paths = Arguments.createArray();
+                            String[] pathArr = mediaFilePaths.split(",");
+                            for (String path : pathArr) {
+                                if (path.indexOf("file://") != 0) {
+                                    path = "file://" + path;
+                                }
+                                paths.pushString(path);
+                            }
+
+                            recordset.dispose();
+
+                            WritableMap data = Arguments.createMap();
+                            data.putMap("coordinate", point);
+                            data.putString("layerName", infoCallout.getLayerName());
+                            data.putInt("geoID", infoCallout.getGeoID());
+                            data.putArray("medium", medium);
+                            data.putString("modifiedDate", modifiedDate);
+                            data.putString("mediaFileName", mediaFileName);
+                            data.putArray("mediaFilePaths", paths);
+                            data.putString("httpAddress", httpAddress);
+                            data.putString("description", description);
+//                        data.putString("type", callout.getType());
+
+                            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                    .emit(EventConst.MEDIA_CAPTURE_TAP_ACTION, data);
+                            break;
+                        }
+                    }
+
+                    return true;
+                }
+            };
+        }
+        return calloutListner;
+    }
 
     @ReactMethod
     public void initMediaCollector(String path, Promise promise) {
@@ -215,122 +295,63 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
             Recordset rs = ((DatasetVector)layer.getDataset()).getRecordset(false, CursorType.DYNAMIC);
             rs.moveLast();
 
-//            double longitude = Double.parseDouble(rs.getFieldValue("SmX").toString());
-//            double latitude = Double.parseDouble(rs.getFieldValue("SmY").toString());
-            double longitude = rs.getGeometry().getInnerPoint().getX();
-            double latitude = rs.getGeometry().getInnerPoint().getY();
+            SMMediaCollector.addCalloutByMedia(getReactApplicationContext(), media, rs, layer.getName(), getCalloutListner());
 
-            final InfoCallout callout = SMLayer.addCallOutWithLongitude(getReactApplicationContext(), longitude, latitude, media.getPaths().get(0));
-            callout.setMediaFileName(media.getFileName());
-            callout.setMediaFilePaths(media.getPaths());
-//            callout.setType(media.getMediaType());
-            callout.setLayerName(layer.getName());
-            callout.setHttpAddress("");
-            callout.setDescription("");
-
-            String date = DateUtil.formatDateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
-            callout.setModifiedDate(date);
-            callout.setGeoID(Integer.parseInt(rs.getFieldValue("SmID").toString()));
-
-            rs.edit();
-
-            rs.setFieldValue("ModifiedDate", callout.getModifiedDate());
-            rs.setFieldValue("HttpAddress", callout.getHttpAddress());
-            rs.setFieldValue("Description", callout.getDescription());
-
-            String paths = "";
-            for (int i = 0; i < callout.getMediaFilePaths().size(); i++) {
-                paths += callout.getMediaFilePaths().get(i);
-                if (i < callout.getMediaFilePaths().size() - 1) {
-                    paths += ",";
-                }
-            }
-            rs.setFieldValue("MediaFilePaths", paths);
-
-            rs.update();
             rs.dispose();
+        }
+    }
 
-            callout.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_UP: {
-                        InfoCallout infoCallout = (InfoCallout)view;
-                        Point2D pt = new Point2D(infoCallout.getLocationX(), infoCallout.getLocationY());
-                        Map map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
-                        if (map.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
-                            Point2Ds points = new Point2Ds();
-                            points.add(pt);
-                            PrjCoordSys desPrjCoorSys = new PrjCoordSys();
-                            desPrjCoorSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-                            CoordSysTranslator.convert(points, desPrjCoorSys, map.getPrjCoordSys(),
-                                    new CoordSysTransParameter(),
-                                    CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
-
-                            pt.setX(points.getItem(0).getX());
-                            pt.setY(points.getItem(0).getY());
-                        }
-
-                        WritableMap point = Arguments.createMap();
-                        point.putDouble("x", pt.getX());
-                        point.putDouble("y", pt.getY());
-
-                        WritableArray medium = Arguments.createArray();
-
-                        Layer tapLayer = SMLayer.findLayerWithName(callout.getLayerName());
-                        DatasetVector dv = (DatasetVector) tapLayer.getDataset();
-
-                        QueryParameter qp = new QueryParameter();
-                        qp.setAttributeFilter("SmID=" + callout.getGeoID());
-                        qp.setCursorType(CursorType.STATIC);
-                        Recordset recordset = dv.query(qp);
-
-                        String modifiedDate = recordset.getString("ModifiedDate");
-                        String mediaFileName = recordset.getString("MediaFileName");
-                        String httpAddress = recordset.getString("HttpAddress");
-                        String description = recordset.getString("Description");
-
-                        String mediaFilePaths = recordset.getString("MediaFilePaths");
-                        WritableArray paths = Arguments.createArray();
-                        String[] pathArr = mediaFilePaths.split(",");
-                        for (String path : pathArr) {
-                            if (path.indexOf("file://") != 0) {
-                                path = "file://" + path;
-                            }
-                            paths.pushString(path);
-                        }
-
-                        recordset.dispose();
-
-                        WritableMap data = Arguments.createMap();
-                        data.putMap("coordinate", point);
-                        data.putString("layerName", callout.getLayerName());
-                        data.putInt("geoID", callout.getGeoID());
-                        data.putArray("medium", medium);
-                        data.putString("modifiedDate", modifiedDate);
-                        data.putString("mediaFileName", mediaFileName);
-                        data.putArray("mediaFilePaths", paths);
-                        data.putString("httpAddress", httpAddress);
-                        data.putString("description", description);
-//                        data.putString("type", callout.getType());
-
-                        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                .emit(EventConst.MEDIA_CAPTURE_TAP_ACTION, data);
-                        break;
-                    }
-                }
-
-                return true;
-                }
-            });
+    private void addCalloutsByLayer(Layer layer) {
+        if (layer != null) {
+            SMMediaCollector.addMediasByLayer(getReactApplicationContext(), layer, getCalloutListner());
         }
     }
 
     @ReactMethod
-    public void hideMedia(Promise promise) {
+    public void removeMedia(Promise promise) {
         try {
-            MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
-            mapControl.getMap().getMapView().removeAllCallOut();
+            SMap.getInstance().getActivity().runOnUiThread(new Runnable(){
+                @Override
+                public void run(){
+                MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
+
+                mapControl.getMap().getMapView().removeAllCallOut();
+                }
+            });
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void showMedia(String layerName, Promise promise) {
+        try {
+            Layer layer = SMLayer.findLayerWithName(layerName);
+            if (layer != null) {
+                SMMediaCollector.addMediasByLayer(getReactApplicationContext(), layer, getCalloutListner());
+                promise.resolve(true);
+            } else {
+                promise.reject(new Error("The layer is not exist"));
+            }
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void hideMedia(final String layerName, Promise promise) {
+        try {
+            SMap.getInstance().getActivity().runOnUiThread(new Runnable(){
+                @Override
+                public void run(){
+                    MapWrapView mapView = (MapWrapView)SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView();
+
+                    mapView.removeCallOut(layerName);
+                }
+            });
+
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

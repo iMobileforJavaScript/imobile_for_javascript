@@ -19,9 +19,12 @@
 #import "SuperMap/GeoPoint.h"
 #import "SuperMap/GeoPoint.h"
 #import "SuperMap/Recordset.h"
+#import "SuperMap/GeoStyle.h"
+#import "SuperMap/Size2D.h"
 #import "SMap.h"
 #import "SMLayer.h"
 #import "FileUtils.h"
+#import "NativeUtil.h"
 
 @interface SMMedia : NSObject
 

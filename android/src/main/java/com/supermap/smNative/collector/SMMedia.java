@@ -232,11 +232,13 @@ public class SMMedia {
         GeoPoint point = new GeoPoint();
 
         Recordset recordset = ((DatasetVector)this.dataset).getRecordset(false, CursorType.DYNAMIC);
-        recordset.edit();
 
         point.setX(this.location.getX());
         point.setY(this.location.getY());
         boolean result = recordset.addNew(point);
+
+        recordset.edit();
+        recordset.moveLast();
         recordset.setString("MediaFileName", this.fileName);
 
         recordset.update();

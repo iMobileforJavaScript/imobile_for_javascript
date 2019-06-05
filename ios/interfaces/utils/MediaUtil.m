@@ -14,8 +14,8 @@
     
     UIImage *shotImage;
     
-    filePath = [filePath stringByReplacingOccurrencesOfString:@"file://"
-                                                   withString:@""];
+//    filePath = [filePath stringByReplacingOccurrencesOfString:@"file://"
+//                                                   withString:@""];
     
     //视频路径URL
     NSURL *fileURL = [NSURL fileURLWithPath:filePath];

@@ -495,7 +495,9 @@
     [callout showAt:pt Tag:callout.layerName];
     //[sMap.smMapWC.mapControl panTo:pt time:200];
     sMap.smMapWC.mapControl.map.center = pt;
-    sMap.smMapWC.mapControl.map.scale = 0.000011947150294723098;
+    if (sMap.smMapWC.mapControl.map.scale < 0.000011947150294723098) {
+        sMap.smMapWC.mapControl.map.scale = 0.000011947150294723098;
+    }
     [sMap.smMapWC.mapControl.map refresh];
     
     return callout;

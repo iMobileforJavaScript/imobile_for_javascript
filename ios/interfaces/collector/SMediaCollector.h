@@ -18,6 +18,7 @@
 #import "SuperMap/FieldInfos.h"
 #import "SuperMap/FieldInfo.h"
 #import "SuperMap/Point2D.h"
+#import "SuperMap/GeoPoint.h"
 #import "SMap.h"
 #import "InfoCallout.h"
 #import "SMMedia.h"
