@@ -8,30 +8,16 @@ import { NativeModules, Platform } from 'react-native'
 let SMap = NativeModules.SMap
 
 /**
- * 获取当前地图比例尺是否显示
+ * 获取当前比例尺的width和title
  * @returns {*}
  */
-function getScaleViewEnable() {
+function getScaleData() {
   try{
-    return SMap.getScaleViewEnable()
-  }catch(e){
-    console.error(e)
+    return SMap.getScaleData();
+  }catch (e) {
+    console.error(e);
   }
 }
-
-/**
- * 设置当前地图比例尺是否显示
- * @param isEnable
- * @returns {*}
- */
-function setScaleViewEnable(isEnable) {
-  try{
-    return SMap.setScaleViewEnable(isEnable)
-  }catch(e){
-    console.error(e)
-  }
-}
-
 /**
  * 获取当前地图旋转角度
  * @returns {*}
@@ -310,8 +296,7 @@ function setMapDynamicProjection(value) {
 }
 
 export {
-  getScaleViewEnable,
-  setScaleViewEnable,
+  getScaleData,
   getMapAngle,
   setMapAngle,
   setMapBackgroundColor,

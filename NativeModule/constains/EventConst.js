@@ -34,6 +34,7 @@ export default {
   MAP_SCROLL: 'com.supermap.RN.Mapcontrol.scroll_event',
 
   MAP_LEGEND_CONTENT_CHANGE:'com.supermap.RN.Map.Legend.legend_content_change',
+  MAP_SCALEVIEW_CHANGE:'com.supermap.RN.Map.ScaleView.scaleView_change',
   MAP_GEOMETRY_MULTI_SELECTED: 'com.supermap.RN.Mapcontrol.geometry_multi_selected',
   MAP_GEOMETRY_SELECTED: "com.supermap.RN.Mapcontrol.geometry_selected",
   MAP_SCALE_CHANGED: "Supermap.MapControl.MapParamChanged.ScaleChanged",

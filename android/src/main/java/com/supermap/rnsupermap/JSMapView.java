@@ -44,6 +44,7 @@ public class JSMapView extends ReactContextBaseJavaModule {
     public static final int STARTPOINT = R.drawable.startpoint;
     public static final int DESTPOINT = R.drawable.destpoint;
 
+
     @Override
     public String getName(){return "JSMapView";}
 
@@ -57,13 +58,13 @@ public class JSMapView extends ReactContextBaseJavaModule {
      * @param reactContext
      * @return
      */
-    public static MapView createInstance(ThemedReactContext reactContext){
+    public static MapWrapView createInstance(ThemedReactContext reactContext){
         mapView = new MapWrapView(reactContext.getBaseContext());
         mapControl = mapView.getMapControl();
         return mapView;
     }
 
-    public static MapView getMapView(){
+    public static MapWrapView getMapView(){
         return mapView;
     }
 

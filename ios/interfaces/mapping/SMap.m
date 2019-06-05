@@ -46,6 +46,7 @@ RCT_EXPORT_MODULE();
              MAP_SCALE_CHANGED,
              MAP_BOUNDS_CHANGED,
              LEGEND_CONTENT_CHANGE,
+             MAP_SCALEVIEW_CHANGED,
              ];
 }
 
@@ -182,21 +183,12 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
         BOOL result = [sMap.smMapWC openWorkspace:infoDic];
         if (result && sMap.smMapWC.mapControl) {
             [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
-           dispatch_async(dispatch_get_main_queue(), ^{
-               if(sMap.sOrientation == nil){
-                   sMap.sOrientation = [[SOrientation alloc]initDelegateWithTarget:sMap];
-                   sMap.sOrientation.orientation = [UIApplication sharedApplication].statusBarOrientation;
-               }
-               CGSize size = [UIScreen mainScreen].bounds.size;
-               //兼容小屏设备 至少留出80给scaleView显示
-               double xPos = size.width * 0.1 > 80 ? size.width * 0.9 : size.width - 80;
-               double yPos = size.height >= 667 ? size.height * -0.1 : -30;
-               if(sMap.smMapWC.scaleView == nil){
-                   sMap.smMapWC.scaleView = [[ScaleView alloc] initWithMapControl:sMap.smMapWC.mapControl];
-               }
-               sMap.smMapWC.scaleView.xOffset = xPos;
-               sMap.smMapWC.scaleView.yOffset = yPos;
-            });
+            if(sMap.scaleViewHelper == nil){
+                sMap.scaleViewHelper = [[ScaleViewHelper alloc]initWithMapControl:sMap.smMapWC.mapControl];
+                if(sMap.smMapWC.mapControl.map.delegate == nil){
+                    sMap.smMapWC.mapControl.map.delegate = self;
+                }
+            }
         }
         sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
         sMap.smMapWC.mapControl.isMagnifierEnabled = YES;
@@ -218,30 +210,6 @@ RCT_REMAP_METHOD(getMapName, getMapNameWithResolver:(RCTPromiseResolveBlock)reso
         resolve(mapName);
     } @catch (NSException *exception) {
         reject(@"getMapName",exception.reason,nil);
-    }
-}
-
-#pragma mark 获取比例尺是否显示
-RCT_REMAP_METHOD(getScaleViewEnable, getScaleViewEnableWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        sMap = [SMap singletonInstance];
-        BOOL isShow = sMap.smMapWC.scaleView.showEnable;
-        resolve(@(isShow));
-    } @catch (NSException *exception) {
-        reject(@"getScaleViewEnable",exception.reason,nil);
-    }
-}
-
-#pragma mark 设置比例尺是否显示
-RCT_REMAP_METHOD(setScaleViewEnable, setScaleViewEnableWithBool:(BOOL)isEnable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-         dispatch_async(dispatch_get_main_queue(), ^{
-             sMap = [SMap singletonInstance];
-             sMap.smMapWC.scaleView.showEnable = isEnable;
-         });
-        resolve(@(YES));
-    } @catch (NSException *exception) {
-         reject(@"setScaleViewEnable",exception.reason,nil);
     }
 }
 
@@ -508,6 +476,20 @@ RCT_REMAP_METHOD(setPrjCoordSys, setPrjCoordSysWithXml:(NSString *)xml Resolver:
     }
 }
 
+#pragma mark 获取图例的宽度和title
+RCT_REMAP_METHOD(getScaleData, getScaleViewDataWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.scaleViewHelper.mScaleLevel =[sMap.scaleViewHelper getScaleLevel];
+        sMap.scaleViewHelper.mScaleText = [sMap.scaleViewHelper getScaleText:sMap.scaleViewHelper.mScaleLevel];
+        sMap.scaleViewHelper.mScaleWidth = [sMap.scaleViewHelper getScaleWidth:sMap.scaleViewHelper.mScaleLevel];
+        double width = [[[NSNumber alloc]initWithFloat:sMap.scaleViewHelper.mScaleWidth] doubleValue];
+        width = width * 100 / 70;
+        resolve(@{@"width":[NSNumber numberWithDouble:width],@"title":sMap.scaleViewHelper.mScaleText});
+    } @catch (NSException *exception) {
+        reject(@"getScaleData",exception.reason,nil);
+    }
+}
 #pragma mark 加此图例的事件监听
 RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -521,23 +503,6 @@ RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseRes
     }
 }
 
--(void)handleDeviceOrientationChanged:(NSNotification *)notification{
-    UIInterfaceOrientation appOrientation = [UIApplication sharedApplication].statusBarOrientation;
-    sMap = [SMap singletonInstance];
-    if(appOrientation != sMap.sOrientation.orientation){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            CGSize size = [UIScreen mainScreen].bounds.size;
-            double xPos = size.width * 0.1 > 80 ? size.width * 0.9 : size.width - 80;
-            double yPos = size.height >= 667 ? size.height * -0.1 : -30;
-            if(sMap.smMapWC.scaleView == nil){
-                sMap.smMapWC.scaleView = [[ScaleView alloc] initWithMapControl:sMap.smMapWC.mapControl];
-            }
-            sMap.smMapWC.scaleView.xOffset = xPos;
-            sMap.smMapWC.scaleView.yOffset = yPos;
-            sMap.sOrientation.orientation = appOrientation;
-        });
-    }
-}
 
 -(void)legentContentChange:(NSArray*)arrItems{
     NSMutableArray *legendSource = [[NSMutableArray alloc]init];
@@ -937,20 +902,12 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
         sMap = [SMap singletonInstance];
         Map* map = sMap.smMapWC.mapControl.map;
         Maps* maps = sMap.smMapWC.workspace.maps;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if(sMap.sOrientation == nil){
-                sMap.sOrientation = [[SOrientation alloc]initDelegateWithTarget:sMap];
-                sMap.sOrientation.orientation = [UIApplication sharedApplication].statusBarOrientation;
+        if(sMap.scaleViewHelper == nil){
+            sMap.scaleViewHelper = [[ScaleViewHelper alloc]initWithMapControl:sMap.smMapWC.mapControl];
+            if(sMap.smMapWC.mapControl.map.delegate == nil){
+                sMap.smMapWC.mapControl.map.delegate = self;
             }
-            CGSize size = [UIScreen mainScreen].bounds.size;
-            double xPos = size.width * 0.1 > 80 ? size.width * 0.9 : size.width - 80;
-            double yPos = size.height >= 667 ? size.height * -0.1 : -30;
-            if(sMap.smMapWC.scaleView == nil){
-                sMap.smMapWC.scaleView = [[ScaleView alloc] initWithMapControl:sMap.smMapWC.mapControl];
-            }
-            sMap.smMapWC.scaleView.xOffset = xPos;
-            sMap.smMapWC.scaleView.yOffset = yPos;
-        });
+        }
         BOOL isOpen = NO;
         
         if (![map.name isEqualToString:name] && maps.count > 0) {
@@ -995,20 +952,12 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
         sMap = [SMap singletonInstance];
         Map* map = sMap.smMapWC.mapControl.map;
         Maps* maps = sMap.smMapWC.workspace.maps;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if(sMap.sOrientation == nil){
-                sMap.sOrientation = [[SOrientation alloc]initDelegateWithTarget:sMap];
-                sMap.sOrientation.orientation = [UIApplication sharedApplication].statusBarOrientation;
+        if(sMap.scaleViewHelper == nil){
+            sMap.scaleViewHelper = [[ScaleViewHelper alloc]initWithMapControl:sMap.smMapWC.mapControl];
+            if(sMap.smMapWC.mapControl.map.delegate == nil){
+                sMap.smMapWC.mapControl.map.delegate = self;
             }
-            CGSize size = [UIScreen mainScreen].bounds.size;
-            double xPos = size.width * 0.1 > 80 ? size.width * 0.9 : size.width - 80;
-            double yPos = size.height >= 667 ? size.height * -0.1 : -30;
-            if(sMap.smMapWC.scaleView == nil){
-                sMap.smMapWC.scaleView = [[ScaleView alloc] initWithMapControl:sMap.smMapWC.mapControl];
-            }
-            sMap.smMapWC.scaleView.xOffset = xPos;
-            sMap.smMapWC.scaleView.yOffset = yPos;
-        });
+        }
         BOOL isOpen = YES;
         
         if (maps.count > 0 && index >= 0) {
@@ -1076,11 +1025,8 @@ RCT_REMAP_METHOD(getMapInfo, getMapInfoWithResolver:(RCTPromiseResolveBlock)reso
 RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        if(sMap.sOrientation){
-            [sMap.sOrientation removeOrientationObserverWithId:sMap];
-        }
-        if(sMap.smMapWC.scaleView){
-            sMap.smMapWC.scaleView = nil;
+        if(sMap.scaleViewHelper){
+            sMap.scaleViewHelper = nil;
         }
         MapControl* mapControl = sMap.smMapWC.mapControl;
         if (mapControl) {
@@ -2930,13 +2876,19 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
                               }];
 }
 
--(void) scaleChanged:(double) newscale{
-    NSNumber* nsNewScale = [NSNumber numberWithDouble:newscale];
-    [self sendEventWithName:MAP_SCALE_CHANGED
-                       body:@{@"scale":nsNewScale
-                              }];
+-(void) scaleChanged:(double)newscale{
+    sMap = [SMap singletonInstance];
+    sMap.scaleViewHelper.mScaleLevel =[sMap.scaleViewHelper getScaleLevel];
+    sMap.scaleViewHelper.mScaleText = [sMap.scaleViewHelper getScaleText:sMap.scaleViewHelper.mScaleLevel];
+    sMap.scaleViewHelper.mScaleWidth = [sMap.scaleViewHelper getScaleWidth:sMap.scaleViewHelper.mScaleLevel];
+    double width = [[[NSNumber alloc]initWithFloat:sMap.scaleViewHelper.mScaleWidth] doubleValue];
+    width = width * 100 / 70;
+    [self sendEventWithName:MAP_SCALEVIEW_CHANGED
+                        body:@{@"width":[NSNumber numberWithDouble:width],
+                                @"title":sMap.scaleViewHelper.mScaleText
+                                }];
+   
 }
-
 
 - (void)longpress:(CGPoint)pressedPos{
     CGFloat x = pressedPos.x;
