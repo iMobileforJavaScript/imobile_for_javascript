@@ -1,5 +1,7 @@
 package com.supermap.smNative.collector;
 
+import android.content.Context;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.supermap.RNUtils.LocationTencent;
@@ -94,7 +96,7 @@ public class SMCollector {
         return result;
     }
 
-    public static void openGPS(ReactApplicationContext context) {
+    public static void openGPS(Context context) {
 //        boolean result = collector.openGPS();
 
         if (locationClient == null) {
