@@ -483,6 +483,23 @@ RCT_REMAP_METHOD(setPrjCoordSys, setPrjCoordSysWithXml:(NSString *)xml Resolver:
     }
 }
 
+#pragma mark 从数据源复制坐标系
+RCT_REMAP_METHOD(copyPrjCoordSysFromDatasourceServer, copyPrjCoordSysFromDatasourceServerWithPath:(NSString *)dataSourcePath resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    
+}
+#pragma mark 获取数据源的坐标系
++(PrjCoordSys *)getDatasoucePrjWithPath:(NSString *)dataSourcePath{
+        Workspace *workspace = [[Workspace alloc]init];
+        
+        DatasourceConnectionInfo *datasourceconnection = [[DatasourceConnectionInfo alloc] init];
+        datasourceconnection.engineType = ET_UDB;
+        datasourceconnection.server = dataSourcePath;
+        datasourceconnection.alias = @"dataSource";
+        Datasource *datasource = [workspace.datasources open:datasourceconnection];
+        PrjCoordSys *coordSys = datasource.prjCoordSys;
+    return coordSys;
+}
+
 #pragma mark 获取图例的宽度和title
 RCT_REMAP_METHOD(getScaleData, getScaleViewDataWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {

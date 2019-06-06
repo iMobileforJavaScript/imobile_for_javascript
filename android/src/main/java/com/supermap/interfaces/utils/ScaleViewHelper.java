@@ -8,6 +8,7 @@
  */
 package com.supermap.interfaces.utils;
 
+import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -128,6 +129,9 @@ public class ScaleViewHelper {
 
     public float getScaleWidth(int level) {
         int nlenth = 0;
+        DisplayMetrics dm = new DisplayMetrics();
+        mContext.getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+        float dpi = dm.density;
         if(level == 0){
             nlenth = 20;
         }else if (level > 19){
@@ -137,6 +141,6 @@ public class ScaleViewHelper {
             nlenth = DISTANCES[level -1];
             nlenth = (int)(pixMapScale * nlenth + 0.7);
         }
-        return nlenth;
+        return nlenth / dpi;
     }
 }

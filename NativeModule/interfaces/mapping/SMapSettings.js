@@ -269,7 +269,24 @@ function setPrjCoordSys(xml) {
     console.error(e)
   }
 }
-
+function copyPrjCoordSysFromDatasourceServer(dataSourceServer){
+  try {
+    return SMap.copyPrjCoordSysFromDatasourceServer(dataSourceServer)
+  } catch (error) {
+    console.error(e)
+  }
+}
+/**
+ * 
+ * @param {*} server 
+ */
+function getDatasourcePrj(server){
+  try {
+    return SMap.getDatasoucePrj(server)
+  } catch (error) {
+    console.error(e)
+  }
+}
 /**
  * 获取当前动态投影是否已开启
  * @returns {*}
