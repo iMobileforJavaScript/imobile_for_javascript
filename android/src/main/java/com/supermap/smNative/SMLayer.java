@@ -561,7 +561,7 @@ public class SMLayer {
 
                 MapWrapView mapWrapView = (MapWrapView)map.getMapView();
 
-                mapWrapView.addCallout(callout, callout.getLayerName());
+                mapWrapView.addCallout(callout, callout.getID());
 
                 map.setCenter(pt);
                 if (map.getScale() < 0.000011947150294723098) {

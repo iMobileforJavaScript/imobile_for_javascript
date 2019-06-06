@@ -153,7 +153,9 @@ static SMMediaCollector* sMediaCollector = nil;
                 double y =  [recordset.geometry getInnerPoint].y;
                 media.location = [[Point2D alloc] initWithX:x Y:y];
                 
-                InfoCallout* callout = [SMLayer addCallOutWithLongitude:x latitude:y image:media.paths[0]];
+                NSString* imgPath = [NSString stringWithFormat:@"%@/%@", [NSHomeDirectory() stringByAppendingString:@"/Documents"], media.paths[0]];
+                
+                InfoCallout* callout = [SMLayer addCallOutWithLongitude:x latitude:y image:imgPath];
                 callout.mediaFileName = media.fileName;
                 callout.mediaFilePaths = media.paths;
                 //            callout.type = media.mediaType;
@@ -187,7 +189,8 @@ static SMMediaCollector* sMediaCollector = nil;
     double longitude = [rs.geometry getInnerPoint].x;
     double latitude =  [rs.geometry getInnerPoint].y;
     
-    InfoCallout* callout = [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:media.paths[0]];
+    NSString* imgPath = [NSString stringWithFormat:@"%@/%@", [NSHomeDirectory() stringByAppendingString:@"/Documents"], media.paths[0]];
+    InfoCallout* callout = [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:imgPath];
     callout.mediaFileName = media.fileName;
     callout.mediaFilePaths = media.paths;
     //            callout.type = media.mediaType;

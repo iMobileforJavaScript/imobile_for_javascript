@@ -460,8 +460,8 @@ public class SScene extends ReactContextBaseJavaModule {
 //                promise.resolve(true);
 //                return;
 //            }
-            scene.getLayers().removeLayerWithName1("TianDiTu");
-            scene.getLayers().removeLayerWithName1("BingMap");
+//            scene.getLayers().removeLayerWithName1("TianDiTu");
+//            scene.getLayers().removeLayerWithName1("BingMap");
 
             Thread.sleep(1000);
             Layer3D layer3d = null;
@@ -568,10 +568,10 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-            sScene.smSceneWc.getSceneControl().isRender(false);
+//            sScene.smSceneWc.getSceneControl().isRender(false);
             scene.getTerrainLayers().clear();
             scene.getTerrainLayers().add(url,name);
-            sScene.smSceneWc.getSceneControl().isRender(true);
+//            sScene.smSceneWc.getSceneControl().isRender(true);
             scene.refresh();
             int i=scene.getTerrainLayers().getCount();
             promise.resolve(true);
@@ -649,9 +649,9 @@ public class SScene extends ReactContextBaseJavaModule {
                     break;
                 }
             }
-            sScene.smSceneWc.getSceneControl().isRender(false);
+//            sScene.smSceneWc.getSceneControl().isRender(false);
             Layer3D layer3D = scene.getLayers().addLayerWith(ImageCachePath,Layer3DType.IMAGEFILE,true,AvailableName);
-            sScene.smSceneWc.getSceneControl().isRender(true);
+//            sScene.smSceneWc.getSceneControl().isRender(true);
             promise.resolve(layer3D.getName());
         } catch (Exception e) {
             promise.reject(e);
@@ -668,12 +668,12 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-            sScene.smSceneWc.getSceneControl().isRender(false);
-            boolean b = scene.getLayers().removeLayerWithName1(layerName);
-            sScene.smSceneWc.getSceneControl().isRender(true);
-//            Thread.sleep(1000);
-//            Layer3D layer = scene.getLayers().get(layerName);
-            promise.resolve(b);
+//            sScene.smSceneWc.getSceneControl().isRender(false);
+//            boolean b = scene.getLayers().removeLayerWithName1(layerName);
+//            sScene.smSceneWc.getSceneControl().isRender(true);
+////            Thread.sleep(1000);
+////            Layer3D layer = scene.getLayers().get(layerName);
+//            promise.resolve(b);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -698,10 +698,10 @@ public class SScene extends ReactContextBaseJavaModule {
                     break;
                 }
             }
-            sScene.smSceneWc.getSceneControl().isRender(false);
-            TerrainLayer layer = scene.getTerrainLayers().add(terrainCache,true,AvailableName,"");//addLayerWith(terrainCache,Layer3DType.IMAGEFILE,true,AvailableName);
-            sScene.smSceneWc.getSceneControl().isRender(true);
-            promise.resolve(layer.getName());
+//            sScene.smSceneWc.getSceneControl().isRender(false);
+//            TerrainLayer layer = scene.getTerrainLayers().add(terrainCache,true,AvailableName,"");//addLayerWith(terrainCache,Layer3DType.IMAGEFILE,true,AvailableName);
+//            sScene.smSceneWc.getSceneControl().isRender(true);
+//            promise.resolve(layer.getName());
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -717,10 +717,10 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-            sScene.smSceneWc.getSceneControl().isRender(false);
-            boolean b = scene.getTerrainLayers().removeLayerWithName(layerName);
-            sScene.smSceneWc.getSceneControl().isRender(true);
-            promise.resolve(b);
+//            sScene.smSceneWc.getSceneControl().isRender(false);
+//            boolean b = scene.getTerrainLayers().removeLayerWithName(layerName);
+//            sScene.smSceneWc.getSceneControl().isRender(true);
+//            promise.resolve(b);
         } catch (Exception e) {
             promise.reject(e);
         }

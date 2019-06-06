@@ -213,6 +213,7 @@
     NSError* error = nil;
     
     NSMutableArray* paths = [[NSMutableArray alloc] initWithArray:filePaths];
+    NSString* appHomePath = [NSString stringWithFormat:@"%@/%@", NSHomeDirectory(), @"Documents"];
     
     for (int i = 0; i < paths.count; i++) {
         NSString* filePath = [NSString stringWithFormat:@"%@%@", toDictionary, [paths[i] lastPathComponent]];
@@ -223,7 +224,7 @@
             if ([fileManager copyItemAtPath:paths[i] toPath:filePath error:&error]) {
                 res = YES;
                 [fileManager removeItemAtPath:paths[i] error:&error];
-                paths[i] = filePath;
+                paths[i] = [filePath stringByReplacingOccurrencesOfString:appHomePath withString:@""];
             } else {
                 res = NO;
             }

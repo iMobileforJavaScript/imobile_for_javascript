@@ -32,6 +32,7 @@ import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.interfaces.utils.SMFileUtil;
+import com.supermap.mapping.CallOut;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Map;
 import com.supermap.mapping.MapControl;
@@ -48,6 +49,7 @@ import java.text.FieldPosition;
 import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author: shanglongyang
@@ -120,15 +122,16 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                             WritableArray paths = Arguments.createArray();
                             String[] pathArr = mediaFilePaths.split(",");
                             for (String path : pathArr) {
-                                if (path.indexOf("file://") != 0) {
-                                    path = "file://" + path;
-                                }
+//                                if (path.indexOf("file://") != 0) {
+//                                    path = "file://" + path;
+//                                }
                                 paths.pushString(path);
                             }
 
                             recordset.dispose();
 
                             WritableMap data = Arguments.createMap();
+                            data.putString("id", infoCallout.getID());
                             data.putMap("coordinate", point);
                             data.putString("layerName", infoCallout.getLayerName());
                             data.putInt("geoID", infoCallout.getGeoID());
@@ -247,9 +250,8 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
 
     public boolean saveMedia(Layer layer, int geoID, String toPath, ReadableArray fieldInfos) {
         try {
-            ArrayList<String> copyPaths = null;
-
             WritableArray infos = Arguments.createArray();
+            SMMedia media = SMMediaCollector.findMediaByLayer(layer, geoID);
 
             for (int i = 0; i < fieldInfos.size(); i++) {
                 WritableMap dic = Arguments.createMap();
@@ -262,9 +264,13 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                         ArrayList<String> fileArr = new ArrayList<>();
                         for (int j = 0; j < files.size(); j++) {
                             fileArr.add(files.getString(j));
-                            mediaPaths += files.getString(j) + (j == files.size() - 1 ? "" : ",");
                         }
-                        copyPaths = SMFileUtil.copyFiles(fileArr, toPath);
+
+                        media.saveMedia(fileArr, toPath, false);
+                        ArrayList<String> paths = media.getPaths();
+                        for (int j = 0; j < paths.size(); j++) {
+                            mediaPaths += paths.get(j) + (j == paths.size() - 1 ? "" : ",");
+                        }
                     }
 
                     dic.putString("value", mediaPaths);
@@ -277,7 +283,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
 
 
             boolean saveResult = false;
-            if (copyPaths != null) {
+            if (media.getPaths() != null) {
                 WritableMap params = Arguments.createMap();
                 String filter = "SmID=" + geoID;
                 params.putString("filter", filter);
@@ -308,7 +314,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removeMedia(Promise promise) {
+    public void removeMedias(Promise promise) {
         try {
             SMap.getInstance().getActivity().runOnUiThread(new Runnable(){
                 @Override
@@ -348,7 +354,14 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                 public void run(){
                     MapWrapView mapView = (MapWrapView)SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView();
 
-                    mapView.removeCallOut(layerName);
+                    List<CallOut> callouts = mapView.getCallouts();
+
+                    for (int i = 0; i < callouts.size(); i++) {
+                        InfoCallout callout = (InfoCallout)callouts.get(i);
+                        if (callout.getLayerName().equals(layerName)) {
+                            mapView.removeCallOut(callout.getID());
+                        }
+                    }
                 }
             });
 

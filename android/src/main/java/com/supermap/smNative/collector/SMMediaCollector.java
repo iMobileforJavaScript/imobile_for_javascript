@@ -35,6 +35,7 @@ import java.util.Locale;
 public class SMMediaCollector {
     private static SMMediaCollector instance;
     private static String mediaPath;
+    public static String sdcard = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 
     public SMMediaCollector() {
 //        this.context = context;
@@ -103,7 +104,12 @@ public class SMMediaCollector {
         smMedia.setFileName((String)recordset.getFieldValue("MediaFileName"));
 
         String paths = (String)recordset.getFieldValue("MediaFilePaths");
-        ArrayList<String> pathArr = (ArrayList<String>)Arrays.asList(paths.split(","));
+        ArrayList<String> pathArr = new ArrayList<>();
+        if (paths.indexOf(",") > 0) {
+            pathArr = new ArrayList<>(Arrays.asList(paths.split(",")));
+        } else {
+            pathArr.add(paths);
+        }
         smMedia.setPaths(pathArr);
 
         double x = recordset.getGeometry().getInnerPoint().getX();
@@ -172,7 +178,8 @@ public class SMMediaCollector {
                 double y = recordset.getGeometry().getInnerPoint().getY();
                 media.setLocation(new Point2D(x, y));
 
-                InfoCallout callout = SMLayer.addCallOutWithLongitude(context, x, y, media.getPaths().get(0));
+                String imgPath = sdcard + media.getPaths().get(0);
+                InfoCallout callout = SMLayer.addCallOutWithLongitude(context, x, y, imgPath);
                 callout.setMediaFileName(media.getFileName());
                 callout.setMediaFilePaths(media.getPaths());
                 callout.setLayerName(layer.getName());
@@ -198,7 +205,8 @@ public class SMMediaCollector {
         double x = recordset.getGeometry().getInnerPoint().getX();
         double y = recordset.getGeometry().getInnerPoint().getY();
 
-        InfoCallout callout = SMLayer.addCallOutWithLongitude(context, x, y, media.getPaths().get(0));
+        String imgPath = sdcard + media.getPaths().get(0);
+        InfoCallout callout = SMLayer.addCallOutWithLongitude(context, x, y, imgPath);
         callout.setMediaFileName(media.getFileName());
         callout.setMediaFilePaths(media.getPaths());
         callout.setLayerName(layerName);

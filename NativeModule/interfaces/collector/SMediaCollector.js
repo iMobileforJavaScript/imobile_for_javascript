@@ -257,8 +257,8 @@ function saveMediaByDataset (datasetName = '', geoID = -1, toPath = '', fieldInf
  * 移除多媒体callout
  * @returns {*}
  */
-function removeMedia () {
-  return Collector.removeMedia()
+function removeMedias () {
+  return Collector.removeMedias()
 }
 
 /**
@@ -302,7 +302,7 @@ export default {
   // deleteMediaFiles,
   saveMediaByLayer,
   saveMediaByDataset,
-  removeMedia,
+  removeMedias,
   showMedia,
   hideMedia,
   

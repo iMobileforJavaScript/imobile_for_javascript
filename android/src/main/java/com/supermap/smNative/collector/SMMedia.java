@@ -246,11 +246,21 @@ public class SMMedia {
     }
 
     public boolean saveMedia(ArrayList<String> filePaths, String toDictionary, boolean addNew) {
-        this.paths = SMFileUtil.copyFiles(filePaths, toDictionary);
+        String sdcard = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 
-        if (paths != null && addNew) saveLocationDataToDataset();
+        ArrayList<String> pathArr = SMFileUtil.copyFiles(filePaths, toDictionary);
 
-        return paths != null;
+        for (int i = 0; i < pathArr.size(); i++) {
+            if (pathArr.get(i).indexOf(sdcard) == 0) {
+                pathArr.set(i, pathArr.get(i).replace(sdcard, ""));
+            }
+        }
+
+        paths = pathArr;
+
+        if (pathArr != null && addNew) saveLocationDataToDataset();
+
+        return pathArr != null;
     }
 
     public boolean addMediaFiles(ArrayList<String> files) {
