@@ -27,6 +27,12 @@ MapControl *mapControl;
 static  Point2D* defaultMapCenter;
 static int curLocationTag = 118081;
 @implementation SMap
+-(ScaleViewHelper*)scaleViewHelper{
+    if(_scaleViewHelper==nil){
+         _scaleViewHelper = [[ScaleViewHelper alloc]initWithMapControl:sMap.smMapWC.mapControl];
+    }
+    return _scaleViewHelper;
+}
 RCT_EXPORT_MODULE();
 - (NSArray<NSString *> *)supportedEvents
 {
@@ -183,12 +189,13 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
         BOOL result = [sMap.smMapWC openWorkspace:infoDic];
         if (result && sMap.smMapWC.mapControl) {
             [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
-            if(sMap.scaleViewHelper == nil){
-                sMap.scaleViewHelper = [[ScaleViewHelper alloc]initWithMapControl:sMap.smMapWC.mapControl];
-                if(sMap.smMapWC.mapControl.map.delegate == nil){
-                    sMap.smMapWC.mapControl.map.delegate = self;
-                }
+            if(sMap.smMapWC.mapControl.map.delegate == nil){
+                sMap.smMapWC.mapControl.map.delegate = self;
             }
+//            if(sMap.scaleViewHelper == nil){
+//
+//
+//            }
         }
         sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
         sMap.smMapWC.mapControl.isMagnifierEnabled = YES;
@@ -902,12 +909,13 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
         sMap = [SMap singletonInstance];
         Map* map = sMap.smMapWC.mapControl.map;
         Maps* maps = sMap.smMapWC.workspace.maps;
-        if(sMap.scaleViewHelper == nil){
-            sMap.scaleViewHelper = [[ScaleViewHelper alloc]initWithMapControl:sMap.smMapWC.mapControl];
-            if(sMap.smMapWC.mapControl.map.delegate == nil){
-                sMap.smMapWC.mapControl.map.delegate = self;
-            }
+        if(sMap.smMapWC.mapControl.map.delegate == nil){
+            sMap.smMapWC.mapControl.map.delegate = self;
         }
+//        if(sMap.scaleViewHelper == nil){
+//            sMap.scaleViewHelper = [[ScaleViewHelper alloc]initWithMapControl:sMap.smMapWC.mapControl];
+//
+//        }
         BOOL isOpen = NO;
         
         if (![map.name isEqualToString:name] && maps.count > 0) {
@@ -952,12 +960,13 @@ RCT_REMAP_METHOD(openMapByIndex, openMapByIndex:(int)index viewEntire:(BOOL)view
         sMap = [SMap singletonInstance];
         Map* map = sMap.smMapWC.mapControl.map;
         Maps* maps = sMap.smMapWC.workspace.maps;
-        if(sMap.scaleViewHelper == nil){
-            sMap.scaleViewHelper = [[ScaleViewHelper alloc]initWithMapControl:sMap.smMapWC.mapControl];
-            if(sMap.smMapWC.mapControl.map.delegate == nil){
-                sMap.smMapWC.mapControl.map.delegate = self;
-            }
+        if(sMap.smMapWC.mapControl.map.delegate == nil){
+            sMap.smMapWC.mapControl.map.delegate = self;
         }
+//        if(sMap.scaleViewHelper == nil){
+//            sMap.scaleViewHelper = [[ScaleViewHelper alloc]initWithMapControl:sMap.smMapWC.mapControl];
+//
+//        }
         BOOL isOpen = YES;
         
         if (maps.count > 0 && index >= 0) {
@@ -2881,8 +2890,11 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
     sMap.scaleViewHelper.mScaleLevel =[sMap.scaleViewHelper getScaleLevel];
     sMap.scaleViewHelper.mScaleText = [sMap.scaleViewHelper getScaleText:sMap.scaleViewHelper.mScaleLevel];
     sMap.scaleViewHelper.mScaleWidth = [sMap.scaleViewHelper getScaleWidth:sMap.scaleViewHelper.mScaleLevel];
-    double width = [[[NSNumber alloc]initWithFloat:sMap.scaleViewHelper.mScaleWidth] doubleValue];
-    width = width * 100 / 70;
+    double width = sMap.scaleViewHelper.mScaleWidth;///[[[NSNumber alloc]initWithFloat:] doubleValue];
+   // width = width * 100 / 70;
+//    if(sMap.scaleViewHelper.mScaleText){
+//
+//    }
     [self sendEventWithName:MAP_SCALEVIEW_CHANGED
                         body:@{@"width":[NSNumber numberWithDouble:width],
                                 @"title":sMap.scaleViewHelper.mScaleText
@@ -3009,8 +3021,8 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
     [self sendEventWithName:MAP_GEOMETRY_MULTI_SELECTED body:@{@"geometries":(NSArray*)layersIdAndIds}];
 }
 
--(void)measureState{
-    
-}
+//-(void)measureState{
+//
+//}
 
 @end
