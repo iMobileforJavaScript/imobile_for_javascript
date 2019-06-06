@@ -6,6 +6,7 @@ import android.view.View;
 import com.supermap.mapping.CallOut;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * @Author: shanglongyang
@@ -17,6 +18,7 @@ import java.util.ArrayList;
  */
 public class InfoCallout extends CallOut {
 
+    private String id;
     private String description;
     private String layerName;
     private String mediaFileName;
@@ -25,6 +27,14 @@ public class InfoCallout extends CallOut {
     int geoID;
     private String modifiedDate;
     private String httpAddress;
+
+    public String getID() {
+        return id;
+    }
+
+//    public void setID(String id) {
+//        this.id = id;
+//    }
 
     public String getDescription() {
         return description;
@@ -40,6 +50,9 @@ public class InfoCallout extends CallOut {
 
     public void setLayerName(String layerName) {
         this.layerName = layerName;
+        if (this.geoID >= 0) {
+            this.id = this.layerName + "-" + this.geoID;
+        }
     }
 
     public String getMediaFileName() {
@@ -64,6 +77,9 @@ public class InfoCallout extends CallOut {
 
     public void setGeoID(int geoID) {
         this.geoID = geoID;
+        if (this.layerName != null && !this.layerName.equals("")) {
+            this.id = this.layerName + "-" + this.geoID;
+        }
     }
 
     public String getHttpAddress() {
@@ -84,10 +100,12 @@ public class InfoCallout extends CallOut {
 
     public InfoCallout(Context context) {
         super(context);
+        this.id = new Date().getTime() + "";
     }
 
     public InfoCallout(Context context, View view) {
         super(context, view);
+        this.id = new Date().getTime() + "";
     }
 
 
