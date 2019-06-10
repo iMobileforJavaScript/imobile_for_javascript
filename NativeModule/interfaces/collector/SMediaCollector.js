@@ -288,6 +288,17 @@ function getVideoInfo (videoPath) {
   return Collector.getVideoInfo(videoPath)
 }
 
+/**
+ * 获取多媒体信息
+ * @param layerName
+ * @param geoID
+ * @returns {*}
+ */
+function getMediaInfo (layerName = '', geoID = -1) {
+  if (!layerName || geoID < 0) return
+  return Collector.getMediaInfo(layerName, geoID)
+}
+
 export default {
   initMediaCollector,
   // captureImage,
@@ -307,4 +318,5 @@ export default {
   hideMedia,
   
   getVideoInfo,
+  getMediaInfo,
 }
