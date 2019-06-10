@@ -216,7 +216,7 @@ RCT_REMAP_METHOD(addGPSPoint, addGPSPointWithResolver:(RCTPromiseResolveBlock)re
             NSMutableDictionary* point = [[NSMutableDictionary alloc] init];
             [point setObject:[NSNumber numberWithDouble:pt.x] forKey:@"x"];
             [point setObject:[NSNumber numberWithDouble:pt.y] forKey:@"y"];
-            [mapControl.map refresh];
+           // [mapControl.map refresh];
             resolve(point);
         } else {
             resolve(nil);

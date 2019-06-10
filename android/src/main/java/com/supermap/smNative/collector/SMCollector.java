@@ -132,7 +132,14 @@ public class SMCollector {
     }
 
     public  static LocationManagePlugin.GPSData getGPSPoint(){
-        return m_gpsData;
+        LocationManagePlugin.GPSData data = new LocationManagePlugin.GPSData();
+        data.dLatitude = m_gpsData.dLatitude;
+        data.dLongitude = m_gpsData.dLongitude ;
+        data.dAccuracy = m_gpsData.dAccuracy ;
+        data.dAltitude = m_gpsData.dAltitude ;
+        data.dSpeed = m_gpsData.dSpeed ;
+        data.dBearing = m_gpsData.dBearing;
+        return  data;
     }
     public static void closeGPS() {
         locationClient.stopLocation();
