@@ -430,7 +430,7 @@ RCT_REMAP_METHOD(getMediaInfo, getMediaInfo:(NSString*)layerName geoID:(int)geoI
     [recordset dispose];
     
     return @{@"id": ID,
-             @"coordinate": @{@"x": @(p t.x), @"y": @(pt.y)},
+             @"coordinate": @{@"x": @(pt.x), @"y": @(pt.y)},
              @"layerName": layerName,
              @"geoID": @(geoID),
              @"medium": @[],
