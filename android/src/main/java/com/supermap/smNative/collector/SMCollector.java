@@ -126,7 +126,7 @@ public class SMCollector {
                             m_gpsData.dBearing = aMapLocation.getBearing();
                             // eventEmitter.emit("AMapGeolocation", toReadableMap(location));
                         }
-//                        Log.v("xzy",m_gpsData.dLatitude+" "+m_gpsData.dLongitude);
+                        Log.v("xzy",m_gpsData.dLatitude+" "+m_gpsData.dLongitude);
                         // TODO: 返回定位错误信息
                     }
                 }
@@ -134,10 +134,10 @@ public class SMCollector {
 
             AMapLocationClientOption option = new AMapLocationClientOption();
             option.setInterval(2000);
-            option.setLocationMode(AMapLocationClientOption.AMapLocationMode.Device_Sensors);
+            option.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
             locationClient.setLocationOption(option);
             locationClient.enableBackgroundLocation(2000, buildNotification(context));
-//            Log.v("xzy","GPS init");
+            Log.v("xzy","GPS init");
         }
 
         locationClient.startLocation();
