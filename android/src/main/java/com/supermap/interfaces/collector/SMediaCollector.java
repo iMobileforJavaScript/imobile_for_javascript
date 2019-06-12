@@ -370,9 +370,9 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
 
                     List<CallOut> callouts = mapView.getCallouts();
 
-                    if (callouts != null) {
+                    if(callouts != null) {
                         for (int i = 0; i < callouts.size(); i++) {
-                            InfoCallout callout = (InfoCallout)callouts.get(i);
+                            InfoCallout callout = (InfoCallout) callouts.get(i);
                             if (callout.getLayerName().equals(layerName)) {
                                 mapView.removeCallOut(callout.getID());
                             }
