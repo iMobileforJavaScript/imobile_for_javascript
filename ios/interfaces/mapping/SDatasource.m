@@ -92,7 +92,7 @@ RCT_REMAP_METHOD(closeDatasourceByAlias, closeDatasourceByAlias:(NSString *)alia
         Datasources* datasources = workspace.datasources;
         BOOL isClosed = YES;
         if (alias == nil || [alias isEqualToString:@""]) {
-            [datasources closeAll];
+                [datasources closeAll];
         } else {
             if ([datasources getAlias:alias]) {
                 isClosed = [datasources closeAlias:alias];

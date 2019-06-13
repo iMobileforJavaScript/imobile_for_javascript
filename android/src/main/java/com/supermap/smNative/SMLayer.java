@@ -1,27 +1,55 @@
 package com.supermap.smNative;
 
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Color;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.JsonUtil;
+import com.supermap.RNUtils.MediaUtil;
+import com.supermap.component.ImageWrapView;
+import com.supermap.component.MapWrapView;
+import com.supermap.data.CoordSysTransMethod;
+import com.supermap.data.CoordSysTransParameter;
+import com.supermap.data.CoordSysTranslator;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetType;
 import com.supermap.data.DatasetVector;
+import com.supermap.data.Datasource;
 import com.supermap.data.Enum;
+import com.supermap.data.FieldInfo;
 import com.supermap.data.FieldInfos;
+import com.supermap.data.FieldType;
+import com.supermap.data.Point2D;
+import com.supermap.data.Point2Ds;
+import com.supermap.data.PrjCoordSys;
+import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
+import com.supermap.data.Workspace;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerHeatmap;
 import com.supermap.mapping.LayerGroup;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.Map;
+import com.supermap.mapping.MapControl;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.Theme;
+import com.supermap.mapping.dyn.DynamicView;
+import com.supermap.smNative.components.InfoCallout;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 public class SMLayer {
     public static WritableArray getLayersByType(int type, String path) {
@@ -163,6 +191,14 @@ public class SMLayer {
         return layer;
     }
 
+    public static Layer findLayerWithName(String name) {
+        if (name == null || name.equals("")) return null;
+        Map map = SMap.getSMWorkspace().getMapControl().getMap();
+        Layers layers = map.getLayers();
+
+        return layers.find(name);
+    }
+
     public static int getLayerIndex(String name){
         Map map = SMap.getSMWorkspace().getMapControl().getMap();
         Layers layers = map.getLayers();
@@ -230,6 +266,24 @@ public class SMLayer {
         return path;
     }
 
+    public static Layer findLayerByDatasetName(String datasetName) {
+        if (datasetName == null || datasetName.equals("")) return null;
+        Map map = SMap.getInstance().getSmMapWC().mapControl.getMap();
+        Layers layers = map.getLayers();
+        Layer targetlayer = null;
+        int count = layers.getCount();
+        for (int i = 0; i < count; i++) {
+            Layer layer = layers.get(i);
+            Dataset dataset = layer.getDataset();
+
+            if (dataset.getName().equals(datasetName)) {
+                targetlayer = layer;
+                break;
+            }
+        }
+        return targetlayer;
+    }
+
     public static WritableMap searchLayerAttribute(String layerPath, ReadableMap params, int start, int number) {
         String filter = params.hasKey("filter") ? params.getString("filter") : "";
         String key = params.hasKey("key") ? params.getString("key") : "";
@@ -287,5 +341,242 @@ public class SMLayer {
         recordset.dispose();
 
         return data;
+    }
+
+    public static Layer addLayerByName(String datasourceName, String datasetName) {
+        SMap sMap = SMap.getInstance();
+        Workspace workspace = sMap.getSmMapWC().getWorkspace();
+        Map map = sMap.getSmMapWC().getMapControl().getMap();
+        if (!datasourceName.equals("") && !datasetName.equals("")) {
+            Datasource datasource = workspace.getDatasources().get(datasourceName);
+            Dataset dataset = datasource.getDatasets().get(datasetName);
+            Layer layer = map.getLayers().add(dataset, true);
+
+            map.setVisibleScalesEnabled(false);
+            map.refresh();
+            return layer;
+        }
+        return null;
+    }
+
+    public static Layer addLayerByIndex(String datasourceName, int datasetIndex) {
+        SMap sMap = SMap.getInstance();
+        Workspace workspace = sMap.getSmMapWC().getWorkspace();
+        Map map = sMap.getSmMapWC().getMapControl().getMap();
+        if (!datasourceName.equals("") && datasetIndex >= 0) {
+            Datasource datasource = workspace.getDatasources().get(datasourceName);
+            Dataset dataset = datasource.getDatasets().get(datasetIndex);
+            Layer layer = map.getLayers().add(dataset, true);
+
+            map.setVisibleScalesEnabled(false);
+            map.refresh();
+            return layer;
+        }
+        return null;
+    }
+
+    public static Layer addLayerByIndex(int datasourceIndex, String datasetName) {
+        SMap sMap = SMap.getInstance();
+        Workspace workspace = sMap.getSmMapWC().getWorkspace();
+        Map map = sMap.getSmMapWC().getMapControl().getMap();
+        if (datasourceIndex >= 0) {
+            Datasource datasource = workspace.getDatasources().get(datasourceIndex);
+            Dataset dataset = datasource.getDatasets().get(datasetName);
+            Layer layer = map.getLayers().add(dataset, true);
+
+            map.setVisibleScalesEnabled(false);
+            map.refresh();
+            return layer;
+        }
+        return null;
+    }
+
+    public static Layer addLayerByName(int datasourceIndex, int datasetIndex) {
+        SMap sMap = SMap.getInstance();
+        Workspace workspace = sMap.getSmMapWC().getWorkspace();
+        Map map = sMap.getSmMapWC().getMapControl().getMap();
+        if (datasourceIndex >= 0 && datasetIndex >= 0) {
+            Datasource datasource = workspace.getDatasources().get(datasourceIndex);
+            Dataset dataset = datasource.getDatasets().get(datasetIndex);
+            Layer layer = map.getLayers().add(dataset, true);
+
+            map.setVisibleScalesEnabled(false);
+            map.refresh();
+            return layer;
+        }
+        return null;
+    }
+
+    public static boolean setLayerFieldInfo(Layer layer, ReadableArray fieldInfos, ReadableMap params) {
+        if (layer == null) return false;
+        Layers layers = SMap.getInstance().getSmMapWC().getMapControl().getMap().getLayers();
+        Layer editableLayer = null;
+
+        // 找到原来可编辑图层并记录
+        // 三种情况：1.目标图层即为可编辑图层；2.目标图层不为可编辑图层，且layers中不存在编辑图层；3.layers中存在可编辑图层，但不是目标图层
+        int status = 1;
+        if (!layer.isEditable()) {
+            for (int i = 0; i < layers.getCount(); i++) {
+                if (layers.get(i).isEditable()) {
+                    editableLayer = layers.get(i);
+                    status = 3;
+                    break;
+                }
+            }
+
+            layer.setEditable(true);
+            if (editableLayer != null) {
+                status = 2;
+            }
+        }
+
+
+        DatasetVector dv = (DatasetVector) layer.getDataset();
+        Recordset recordset;
+
+        if (params.hasKey("filter")) {
+            String filter = params.getString("filter");
+            CursorType cursorType = CursorType.DYNAMIC;
+            if (params.hasKey("cursorType")) {
+                cursorType = (CursorType) Enum.parse(CursorType.class, params.getInt("cursorType"));
+            }
+            QueryParameter queryParameter = new QueryParameter();
+            queryParameter.setAttributeFilter(filter);
+            queryParameter.setCursorType(cursorType);
+            recordset = dv.query(queryParameter);
+        } else {
+            recordset = dv.getRecordset(false, CursorType.DYNAMIC);
+            if (params.hasKey("index")) {
+                int index = params.getInt("index");
+                index = index >= 0 ? index : (recordset.getRecordCount() - 1);
+                recordset.moveTo(index);
+            }
+        }
+
+        recordset.edit();
+
+        for (int i = 0; i < fieldInfos.size(); i++) {
+            ReadableMap info = fieldInfos.getMap(i);
+            String name = info.getString("name");
+            ReadableType valueType = info.getType("value");
+
+            FieldInfo fieldInfo = recordset.getFieldInfos().get(name);
+            FieldType type = fieldInfo.getType();
+
+            switch (valueType) {
+                case Number:{
+                    if (type == FieldType.INT16) {
+                        String value = info.getString("value");
+                        recordset.setInt16(name, Short.parseShort(value));
+                    } else if (type == FieldType.INT32) {
+                        int value = info.getInt("value");
+                        recordset.setInt32(name, value);
+                    } else if (type == FieldType.INT64) {
+                        int value = info.getInt("value");
+                        recordset.setInt64(name, value);
+                    } else if (type == FieldType.SINGLE) {
+                        int value = info.getInt("value");
+                        recordset.setSingle(name, value);
+                    } else if (type == FieldType.DOUBLE) {
+                        Double value = info.getDouble("value");
+                        recordset.setDouble(name, value);
+                    }
+                    break;
+                }
+                case String: {
+                    if (type == FieldType.TEXT || type == FieldType.WTEXT
+                            || type == FieldType.LONGBINARY || type == FieldType.BYTE) {
+                        String value1 = info.getString("value");
+                        recordset.setFieldValue(name, value1);
+                    }
+                    break;
+                }
+                case Boolean: {
+                    if (type == FieldType.BOOLEAN) {
+                        boolean boolValue = info.getBoolean("value");
+                        recordset.setBoolean(name, boolValue);
+                    }
+                }
+            }
+        }
+
+        recordset.update();
+        recordset.dispose();
+        recordset = null;
+
+        // 还原编辑之前的图层可编辑状态
+        switch (status) {
+            case 2:
+                layer.setEditable(false);
+                break;
+            case 3:
+                editableLayer.setEditable(true);
+                break;
+            case 1:
+            default:
+                break;
+        }
+        return true;
+    }
+
+    public static InfoCallout addCallOutWithLongitude(final Context context, double longitude, double latitude, final String imagePath) {
+        int imgSize = 60;
+
+        SMap sMap = SMap.getInstance();
+        final MapControl mapControl = sMap.getSmMapWC().getMapControl();
+        final Map map = mapControl.getMap();
+
+        final Point2D pt = new Point2D(longitude, latitude);
+        if (map.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+            PrjCoordSys Prj = map.getPrjCoordSys();
+            Point2Ds points = new Point2Ds();
+            points.add(pt);
+            PrjCoordSys desPrjCoorSys = new PrjCoordSys();
+            desPrjCoorSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+            CoordSysTranslator.convert(points, desPrjCoorSys, Prj,
+                    new CoordSysTransParameter(),
+                    CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+
+            pt.setX(points.getItem(0).getX());
+            pt.setY(points.getItem(0).getY());
+        }
+
+        final InfoCallout callout = new InfoCallout(context);
+
+        String extension = imagePath.substring(imagePath.lastIndexOf(".") + 1);
+
+        final ImageView img = new ImageView(context);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(imgSize, imgSize);
+        img.setLayoutParams(layoutParams);
+        img.setMinimumHeight(imgSize);
+        img.setMinimumWidth(imgSize);
+
+        if (extension.equals("mp4")) {
+            img.setImageBitmap(MediaUtil.getScreenShotImageFromVideoPath(imagePath, imgSize, imgSize));
+        } else {
+            img.setImageBitmap(MediaUtil.getLocalBitmap(imagePath, imgSize, imgSize));
+        }
+
+        sMap.getActivity().runOnUiThread(new Runnable(){
+            @Override
+            public void run(){
+                callout.setContentView(img);
+                callout.setLocation(pt.getX(), pt.getY());
+
+                MapWrapView mapWrapView = (MapWrapView)map.getMapView();
+
+                mapWrapView.addCallout(callout, callout.getID());
+
+                map.setCenter(pt);
+                if (map.getScale() < 0.000011947150294723098) {
+                    map.setScale(0.000011947150294723098);
+                }
+                map.refresh();
+
+                mapWrapView.showCallOut();
+            }
+        });
+
+        return callout;
     }
 }

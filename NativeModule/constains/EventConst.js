@@ -2,6 +2,10 @@ export default {
   /** 采集 **/
   COLLECTION_CHANGE: 'com.supermap.RN.Mapcontrol.collection_change',
   COLLECTION_SENSER_CHANGE: 'com.supermap.RN.Mapcontrol.collection_sensor_change',
+  
+  /** 多媒体采集 **/
+  MEDIA_CAPTURE : "com.supermap.RN.MediaCapture",
+  MEDIA_CAPTURE_TAP_ACTION : "com.supermap.RN.MediaCaptureTapAction",
 
   /** 在线服务 **/
   ONLINE_SERVICE_LOGIN: 'com.supermap.RN.Mapcontrol.online_service_login',
@@ -30,6 +34,7 @@ export default {
   MAP_SCROLL: 'com.supermap.RN.Mapcontrol.scroll_event',
 
   MAP_LEGEND_CONTENT_CHANGE:'com.supermap.RN.Map.Legend.legend_content_change',
+  MAP_SCALEVIEW_CHANGE:'com.supermap.RN.Map.ScaleView.scaleView_change',
   MAP_GEOMETRY_MULTI_SELECTED: 'com.supermap.RN.Mapcontrol.geometry_multi_selected',
   MAP_GEOMETRY_SELECTED: "com.supermap.RN.Mapcontrol.geometry_selected",
   MAP_SCALE_CHANGED: "Supermap.MapControl.MapParamChanged.ScaleChanged",
@@ -44,5 +49,5 @@ export default {
   SSCENE_SYMBOL : "com.supermap.RN.SMSceneControl.Scene_symbol",
   SSCENE_FAVORITE : "com.supermap.RN.SMSceneControl.Scene_favorite",
   SSCENE_CIRCLEFLY : "com.supermap.RN.SMSceneControl.Scene_circleFly",
-  // SSCENE_REMOVE_ATTRIBUTE : "com.supermap.RN.SMSceneControl.Scene_removeAttribute",
+  // SSCENE_REMOVE_ATTRIBUTE : "com.supermap.RN.SMSceneControl.Scene_removeAttribu
 }

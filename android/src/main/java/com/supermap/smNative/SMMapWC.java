@@ -85,7 +85,6 @@ import java.util.Set;
 public class SMMapWC {
     Workspace workspace;
     MapControl mapControl;
-
     public Workspace getWorkspace() {
         return workspace;
     }

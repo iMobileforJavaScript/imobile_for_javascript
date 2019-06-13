@@ -695,10 +695,10 @@ RCT_REMAP_METHOD(getSuperMapKnown, getSuperMapKnownWithResolver:(RCTPromiseResol
         NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data,NSURLResponse * _Nullable response, NSError * _Nullable error){
             if(error == nil){
                 NSString *receiveStr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"id" withString:@"\"id\""];
-                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"title" withString:@"\"title\""];
-                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"cover" withString:@"\"cover\""];
-                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"time" withString:@"\"time\""];
+//                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"id" withString:@"\"id\""];
+//                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"title" withString:@"\"title\""];
+//                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"cover" withString:@"\"cover\""];
+//                receiveStr = [receiveStr stringByReplacingOccurrencesOfString:@"time" withString:@"\"time\""];
                 NSData * data = [receiveStr dataUsingEncoding:NSUTF8StringEncoding];
                 NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
               

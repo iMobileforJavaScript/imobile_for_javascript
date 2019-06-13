@@ -46,7 +46,9 @@ public class EventConst {
     public static final String MAP_GEOMETRY_SELECTED = "com.supermap.RN.Mapcontrol.geometry_selected";
 
     /** 图例 **/
-    public static final String LEGEND_CONTENT_CHANGE = "com.supermap.RN.legend_content";
+    public static final String LEGEND_CONTENT_CHANGE = "com.supermap.RN.Map.Legend.legend_content_change";
+    /** 比例尺 **/
+    public static final String SCALEVIEW_CHANGE = "com.supermap.RN.Map.ScaleView.scaleView_change";
 
     /* 三维模块*/
     public static final String ANALYST_MEASURELINE = "com.supermap.RN.SMSceneControl.Analyst_measureLine";
@@ -57,6 +59,10 @@ public class EventConst {
     public static final String SSCENE_SYMBOL = "com.supermap.RN.SMSceneControl.Scene_symbol";
     public static final String SSCENE_FAVORITE = "com.supermap.RN.SMSceneControl.Scene_favorite";
     public static final String SSCENE_CIRCLEFLY = "com.supermap.RN.SMSceneControl.Scene_circleFly";
-
+    
+    /** 多媒体采集 **/
+    public static final String MEDIA_CAPTURE = "com.supermap.RN.MediaCapture";
+    /** 多媒体采集，Callout点击回调 **/
+    public static final String MEDIA_CAPTURE_TAP_ACTION = "com.supermap.RN.MediaCaptureTapAction";
 
 }

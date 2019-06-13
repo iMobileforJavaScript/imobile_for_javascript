@@ -9,6 +9,8 @@
 #import "SAnalyst.h"
 #import "SMAnalyst.h"
 
+static
+
 @interface SAnalyst()<Analysis3DDelegate>
 
 @end
@@ -21,6 +23,7 @@ RCT_EXPORT_MODULE();
     return @[
              ANALYST_MEASURELINE,
              ANALYST_MEASURESQUARE,
+             ONLINE_ANALYST_RESULT,
              ];
 }
 /******************************************************************************缓冲区分析*****************************************************************************************/
@@ -266,6 +269,164 @@ RCT_REMAP_METHOD(xOR, xORWithSourceData:(NSDictionary *)sourceData targetData:(N
     }
 }
 
+/********************************************************************************在线分析**************************************************************************************/
+
+#pragma mark 在线分析-密度分析
+RCT_REMAP_METHOD(densityOnline, densityOnline:(NSDictionary *)serverInfo analysisData:(NSDictionary *)analysisData resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        DensityAnalystOnline* analystOnline = [[DensityAnalystOnline alloc] init];
+        analystOnline.delegate = self;
+        NSString* ip = [serverInfo objectForKey:@"ip"];
+        NSString* port = [serverInfo objectForKey:@"port"];
+        NSString* userName = [serverInfo objectForKey:@"userName"];
+        NSString* password = [serverInfo objectForKey:@"password"];
+        
+        [analystOnline login:ip port:port name:userName password:password];
+        
+        analystOnline.dataPath = [analysisData objectForKey:@"datasetName"];
+        
+        if ([analysisData objectForKey:@"analystMethod"]) {
+            analystOnline.analystMethod = [(NSNumber *)[analysisData objectForKey:@"analystMethod"] intValue];
+        }
+        
+        if ([analysisData objectForKey:@"meshSize"]) {
+            analystOnline.resolution = [(NSNumber *)[analysisData objectForKey:@"meshSize"] doubleValue];
+        }
+        
+        if ([analysisData objectForKey:@"weight"]) {
+            analystOnline.weight = [analysisData objectForKey:@"weight"];
+        }
+        
+        if ([analysisData objectForKey:@"radius"]) {
+            analystOnline.radius =  [(NSNumber *)[analysisData objectForKey:@"radius"] doubleValue];
+        }
+        
+        if ([analysisData objectForKey:@"meshType"]) {
+            analystOnline.meshType = [(NSNumber *)[analysisData objectForKey:@"meshType"] intValue];
+        }
+        
+        if ([analysisData objectForKey:@"areaUnit"]) {
+            analystOnline.areaUnit = [analysisData objectForKey:@"areaUnit"];
+        }
+        
+        if ([analysisData objectForKey:@"meshSizeUnit"]) {
+            analystOnline.meshSizeUnit = [analysisData objectForKey:@"meshSizeUnit"];
+        }
+        
+        if ([analysisData objectForKey:@"radiusUnit"]) {
+            analystOnline.radiusUnit = [analysisData objectForKey:@"radiusUnit"];
+        }
+        
+        if ([analysisData objectForKey:@"bounds"]) {
+            NSArray* bounds = [analysisData objectForKey:@"bounds"];
+            double left = [(NSNumber *)bounds[0] doubleValue];
+            double bottom = [(NSNumber *)bounds[1] doubleValue];
+            double right = [(NSNumber *)bounds[2] doubleValue];
+            double top = [(NSNumber *)bounds[3] doubleValue];
+            analystOnline.bounds = [[Rectangle2D alloc] initWith:left bottom:bottom right:right top:top];
+        }
+        
+        if ([analysisData objectForKey:@"rangeCount"]) {
+            analystOnline.rangeCount = [(NSNumber *)[analysisData objectForKey:@"rangeCount"] intValue];
+        }
+        
+        if ([analysisData objectForKey:@"colorGradientType"]) {
+            analystOnline.colorGradientType = [analysisData objectForKey:@"colorGradientType"];
+        }
+        
+        [analystOnline execute];
+        
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"DensityAnalystOnline", exception.description, nil);
+    }
+}
+
+#pragma mark 在线分析-点聚合分析
+RCT_REMAP_METHOD(aggreagatePointsOnline, aggreagatePointsOnline:(NSDictionary *)serverInfo analysisData:(NSDictionary *)analysisData resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        AggreatePointsOnline* analystOnline = [[AggreatePointsOnline alloc] init];
+        analystOnline.delegate = self;
+        NSString* ip = [serverInfo objectForKey:@"ip"];
+        NSString* port = [serverInfo objectForKey:@"port"];
+        NSString* userName = [serverInfo objectForKey:@"userName"];
+        NSString* password = [serverInfo objectForKey:@"password"];
+        
+        [analystOnline login:ip port:port name:userName password:password];
+        
+        analystOnline.dataPath = [analysisData objectForKey:@"datasetName"];
+        
+        if ([analysisData objectForKey:@"aggregateType"]) {
+            analystOnline.aggregateType = [analysisData objectForKey:@"aggregateType"];
+        }
+        if ([analysisData objectForKey:@"meshSize"]) {
+            analystOnline.resolution = [(NSNumber *)[analysisData objectForKey:@"meshSize"] doubleValue];
+        }
+        if ([analysisData objectForKey:@"weight"]) {
+            analystOnline.weight = [analysisData objectForKey:@"weight"];
+        }
+        if ([analysisData objectForKey:@"numericPrecision"]) {
+            analystOnline.numericPrecision =  [(NSNumber *)[analysisData objectForKey:@"numericPrecision"] integerValue];
+        }
+        if ([analysisData objectForKey:@"meshType"]) {
+            analystOnline.meshType = [(NSNumber *)[analysisData objectForKey:@"meshType"] intValue];
+        }
+        if ([analysisData objectForKey:@"regionDataset"]) {
+            analystOnline.regionDataset = [analysisData objectForKey:@"regionDataset"];
+        }
+        if ([analysisData objectForKey:@"meshSizeUnit"]) {
+            analystOnline.meshSizeUnit = [analysisData objectForKey:@"meshSizeUnit"];
+        }
+        if ([analysisData objectForKey:@"statisticModes"]) {
+            analystOnline.statisticModes = [analysisData objectForKey:@"statisticModes"];
+        }
+        if ([analysisData objectForKey:@"rangeCount"]) {
+            analystOnline.rangeCount = [(NSNumber *)[analysisData objectForKey:@"rangeCount"] intValue];
+        }
+        if ([analysisData objectForKey:@"rangeMode"]) {
+            analystOnline.rangeMode = [analysisData objectForKey:@"rangeMode"];
+        }
+        
+        if ([analysisData objectForKey:@"bounds"]) {
+            NSArray* bounds = [analysisData objectForKey:@"bounds"];
+            double left = [(NSNumber *)bounds[0] doubleValue];
+            double bottom = [(NSNumber *)bounds[1] doubleValue];
+            double right = [(NSNumber *)bounds[2] doubleValue];
+            double top = [(NSNumber *)bounds[3] doubleValue];
+            analystOnline.bounds = [[Rectangle2D alloc] initWith:left bottom:bottom right:right top:top];
+        }
+        
+        if ([analysisData objectForKey:@"colorGradientType"]) {
+            analystOnline.colorGradientType = [analysisData objectForKey:@"colorGradientType"];
+        }
+        
+        [analystOnline execute];
+        
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"AggregatePointsOnline", exception.description, nil);
+    }
+}
+
+/**
+ * 执行分析回调
+ */
+-(void)doneExecute:(BOOL)bResult datasources:(NSArray*)datasources {
+    [self sendEventWithName:ONLINE_ANALYST_RESULT body:@{
+                                                         @"result": @(bResult),
+                                                         @"datasources": datasources,
+                                                         }];
+}
+
+/**
+ * 执行失败
+ */
+-(void)doneExecuteFailed:(NSString *) errorInfo {
+    [self sendEventWithName:ONLINE_ANALYST_RESULT body:@{
+                                                          @"result": @(NO),
+                                                          @"error": errorInfo,
+                                                          }];
+}
 
 /********************************************************************************三维分析**************************************************************************************/
 

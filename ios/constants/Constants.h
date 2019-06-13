@@ -47,6 +47,13 @@ extern NSString * const MAP_GEOMETRY_SELECTED;
 extern NSString * const MAP_SCALE_CHANGED;
 extern NSString * const MAP_BOUNDS_CHANGED;
 
+extern NSString * const MAP_SCALEVIEW_CHANGED;
+
+extern NSString * const MEDIA_CAPTURE;
+extern NSString * const MEDIA_CAPTURE_TAP_ACTION;
+
+extern NSString * const ONLINE_ANALYST_RESULT;
+
 @interface Constants : NSObject
 
 @end

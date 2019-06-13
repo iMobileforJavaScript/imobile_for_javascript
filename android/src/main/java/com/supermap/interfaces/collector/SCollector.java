@@ -28,7 +28,7 @@ import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.plugin.LocationManagePlugin;
-import com.supermap.smNative.SMCollector;
+import com.supermap.smNative.collector.SMCollector;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 
@@ -231,7 +231,7 @@ public class SCollector extends ReactContextBaseJavaModule {
         try {
             collector = getCollector();
             SMap sMap = SMap.getInstance();
-            sMap.getSMWorkspace().getMapControl().getMap().refresh();
+//            sMap.getSMWorkspace().getMapControl().getMap().refresh();
 
             LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
             Point2D pt =  new Point2D(gpsDat.dLongitude,gpsDat.dLatitude);
@@ -251,6 +251,7 @@ public class SCollector extends ReactContextBaseJavaModule {
                 WritableMap point = Arguments.createMap();
                 point.putDouble("x", pt.getX());
                 point.putDouble("y", pt.getY());
+                sMap.getSMWorkspace().getMapControl().getMap().setCenter(pt);
                 promise.resolve(point);
             } else {
                 promise.resolve(null);

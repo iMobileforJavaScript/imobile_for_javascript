@@ -38,13 +38,17 @@ import com.supermap.realspace.Camera;
 import com.supermap.realspace.Feature3D;
 import com.supermap.realspace.Feature3Ds;
 import com.supermap.realspace.Layer3D;
+import com.supermap.realspace.Layer3DType;
 import com.supermap.realspace.Scene;
 import com.supermap.realspace.SceneControl;
+import com.supermap.realspace.TerrainLayer;
 import com.supermap.realspace.Tracking3DEvent;
 import com.supermap.realspace.Tracking3DListener;
 import com.supermap.rnsupermap.SceneViewManager;
 import com.supermap.smNative.SMSceneWC;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -443,7 +447,40 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void changeBaseLayer(int type,Promise promise){
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            if(scene==null){
+                promise.resolve(false);
+                return;
+            }
+//            if( scene.getLayers().get("TianDiTu")!=null){
+//                promise.resolve(true);
+//                return;
+//            }
+//            scene.getLayers().removeLayerWithName1("TianDiTu");
+//            scene.getLayers().removeLayerWithName1("BingMap");
 
+            Thread.sleep(1000);
+            Layer3D layer3d = null;
+
+            if(type==1){//tianditu
+                String  tiandituUrl = "http://t0.tianditu.com/img_c/wmts";
+                layer3d = scene.getLayers().add(tiandituUrl,Layer3DType.l3dBingMaps,"TianDiTu",ImageFormatType.JPG_PNG,96,false);
+            }else if (type==2){//bingMap
+                String  tiandituUrl = "http://t0.tianditu.com/img_c/wmts";
+                layer3d = scene.getLayers().add(tiandituUrl,Layer3DType.l3dBingMaps,"BingMap",ImageFormatType.JPG_PNG,96,false);
+//                layer3d = scene.getLayers().add("",Layer3DType.l3dBingMaps,"BingMap",false);
+
+
+            }
+            promise.resolve(layer3d!=null);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
     @ReactMethod
     public void addLayer3D(String Url, String Layer3DType, String layerName, String imageFormatType, double dpi, Boolean addToHead,String token,Promise promise) {
         try {
@@ -531,8 +568,10 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+//            sScene.smSceneWc.getSceneControl().isRender(false);
             scene.getTerrainLayers().clear();
             scene.getTerrainLayers().add(url,name);
+//            sScene.smSceneWc.getSceneControl().isRender(true);
             scene.refresh();
             int i=scene.getTerrainLayers().getCount();
             promise.resolve(true);
@@ -546,15 +585,20 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-            Layer3D layer3D = scene.getLayers().get(layerName);
-            scene.ensureVisible(layer3D);
+            Layer3D layer3d = scene.getLayers().get(layerName);
+            if(layer3d!=null){
+                scene.ensureVisible(layer3d.getBounds());
+            }else{
+                TerrainLayer layerT = scene.getTerrainLayers().get(layerName);
+                if(layerT!=null){
+                    scene.ensureVisible(layerT.getBounds());
+                }
+            }
             promise.resolve(true);
-        } catch (Exception e) {
+        }catch (Exception e) {
             promise.reject(e);
         }
     }
-
-
     /**
      * 获取当前场景地形图层列表
      *
@@ -573,13 +617,110 @@ public class SScene extends ReactContextBaseJavaModule {
                     WritableMap map = Arguments.createMap();
                     map.putString("name", name);
                     map.putBoolean("visible", visible);
-                    map.putBoolean("selectable", false);
-                    map.putBoolean("basemap", false);
                     map.putString("type", "Terrain");
+                    map.putBoolean("basemap", false);
+                    map.putBoolean("selectable", false);
                     arr.pushMap(map);
                 }
             }
             promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 添加影像缓存
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void addImageCacheLayer(String ImageCachePath, String layerName, Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            int n = 1;
+            String AvailableName = layerName;
+            while(true){
+                if(scene.getLayers().get(AvailableName) != null){
+                    AvailableName = layerName + "#" + n++;//[layerName stringByAppendingFormat:@"#%i",n++];
+                }else{
+                    break;
+                }
+            }
+//            sScene.smSceneWc.getSceneControl().isRender(false);
+            Layer3D layer3D = scene.getLayers().addLayerWith(ImageCachePath,Layer3DType.IMAGEFILE,true,AvailableName);
+//            sScene.smSceneWc.getSceneControl().isRender(true);
+            promise.resolve(layer3D.getName());
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 删除影像图层
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void removeImageCacheLayer(String layerName, Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+//            sScene.smSceneWc.getSceneControl().isRender(false);
+//            boolean b = scene.getLayers().removeLayerWithName1(layerName);
+//            sScene.smSceneWc.getSceneControl().isRender(true);
+////            Thread.sleep(1000);
+////            Layer3D layer = scene.getLayers().get(layerName);
+//            promise.resolve(b);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 添加影像缓存
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void addTerrainCacheLayer(String terrainCache, String layerName, Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+            int n = 1;
+            String AvailableName = layerName;
+            while(true){
+                if(scene.getTerrainLayers().get(AvailableName) != null){
+                    AvailableName = layerName + "#" + n++;//[layerName stringByAppendingFormat:@"#%i",n++];
+                }else{
+                    break;
+                }
+            }
+//            sScene.smSceneWc.getSceneControl().isRender(false);
+//            TerrainLayer layer = scene.getTerrainLayers().add(terrainCache,true,AvailableName,"");//addLayerWith(terrainCache,Layer3DType.IMAGEFILE,true,AvailableName);
+//            sScene.smSceneWc.getSceneControl().isRender(true);
+//            promise.resolve(layer.getName());
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 删除地形图层
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void removeTerrainCacheLayer(String layerName, Promise promise) {
+        try {
+            sScene = getInstance();
+            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+//            sScene.smSceneWc.getSceneControl().isRender(false);
+//            boolean b = scene.getTerrainLayers().removeLayerWithName(layerName);
+//            sScene.smSceneWc.getSceneControl().isRender(true);
+//            promise.resolve(b);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -777,6 +918,84 @@ public class SScene extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+
+    private void showAllFileWithPath(String path ,String fileter, WritableArray resArr){
+
+        File fileManger =  new File(path);
+        if (fileManger.exists()) {
+            if(fileManger.isDirectory()){
+                String  subPath = null;
+                File[] mFileList = fileManger.listFiles();
+                for (int i = 0; i <mFileList.length ; i++) {
+                    subPath =  mFileList[i].getPath();
+                    showAllFileWithPath(subPath,fileter,resArr);
+                }
+            }else {
+                try {
+                    String[]  arr = path.split("/");
+                    if(arr.length != 0) {
+                        String fileName = arr[arr.length - 1];
+                        String suffix = fileName.substring(fileName.lastIndexOf("."));
+                        if (suffix.toUpperCase().equals(fileter.toUpperCase())) {
+                            WritableMap map = Arguments.createMap();
+                            map.putString("name", fileName);
+                            map.putString("path", path);
+                            resArr.pushMap(map);
+                        }
+                    }
+                }catch (Exception e){
+                    return;
+                }
+
+            }
+        }
+    }
+
+    /**
+     * 移除影像缓存
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getImageCacheNames(Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            String path = sceneControl.getScene().getWorkspace().getConnectionInfo().getServer();
+            String strDir = path.substring(0, path.lastIndexOf("/")) + "/image";
+
+            WritableArray arr = Arguments.createArray();
+            showAllFileWithPath(strDir,".sci3d",arr);
+            promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取地形缓存
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getTerrainCacheNames(Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            String path = sceneControl.getScene().getWorkspace().getConnectionInfo().getServer();
+
+            String strDir = path.substring(0, path.lastIndexOf("/")) + "/terrain";
+
+            WritableArray arr = Arguments.createArray();
+            showAllFileWithPath(strDir,".sct",arr);
+
+            promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
     /**
      * 获取飞行列表

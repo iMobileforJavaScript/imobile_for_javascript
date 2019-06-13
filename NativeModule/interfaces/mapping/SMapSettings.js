@@ -8,30 +8,16 @@ import { NativeModules, Platform } from 'react-native'
 let SMap = NativeModules.SMap
 
 /**
- * 获取当前地图比例尺是否显示
+ * 获取当前比例尺的width和title
  * @returns {*}
  */
-function getScaleViewEnable() {
+function getScaleData() {
   try{
-    return SMap.getScaleViewEnable()
-  }catch(e){
-    console.error(e)
+    return SMap.getScaleData();
+  }catch (e) {
+    console.error(e);
   }
 }
-
-/**
- * 设置当前地图比例尺是否显示
- * @param isEnable
- * @returns {*}
- */
-function setScaleViewEnable(isEnable) {
-  try{
-    return SMap.setScaleViewEnable(isEnable)
-  }catch(e){
-    console.error(e)
-  }
-}
-
 /**
  * 获取当前地图旋转角度
  * @returns {*}
@@ -285,6 +271,45 @@ function setPrjCoordSys(xml) {
 }
 
 /**
+ * 从数据源复制坐标系
+ * @param dataSourceServer
+ */
+function copyPrjCoordSysFromDatasource(dataSourceServer,engineType){
+  try {
+    return SMap.copyPrjCoordSysFromDatasource(dataSourceServer,engineType)
+  } catch (error) {
+    console.error(e)
+  }
+}
+
+/**
+ * 从数据集复制坐标系
+ * @param datasourceName
+ * @param datasetName
+ * @returns {*}
+ */
+function copyPrjCoordSysFromDataset(datasourceName,datasetName) {
+  try {
+    return SMap.copyPrjCoordSysFromDataset(datasourceName,datasetName)
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 从文件复制坐标系 目前支持的文件类型 xml prj
+ * @param filePath 完整路径
+ * @param fileType
+ * @returns {*}
+ */
+function copyPrjCoordSysFromFile(filePath,fileType) {
+  try {
+    return SMap.copyPrjCoordSysFromFile(filePath,fileType)
+  }catch (e) {
+    console.error(e)
+  }
+}
+/**
  * 获取当前动态投影是否已开启
  * @returns {*}
  */
@@ -310,8 +335,7 @@ function setMapDynamicProjection(value) {
 }
 
 export {
-  getScaleViewEnable,
-  setScaleViewEnable,
+  getScaleData,
   getMapAngle,
   setMapAngle,
   setMapBackgroundColor,
@@ -332,6 +356,9 @@ export {
   setMapScale,
   getPrjCoordSys,
   setPrjCoordSys,
+  copyPrjCoordSysFromDatasource,
+  copyPrjCoordSysFromDataset,
+  copyPrjCoordSysFromFile,
   getMapDynamicProjection,
   setMapDynamicProjection,
 }

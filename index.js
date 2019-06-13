@@ -100,10 +100,10 @@ import RelationalChartPoint from './NativeModule/RelationalChartPoint.js';
 import AMQPManager from './NativeModule/AMQPManager.js';
 import AMQPReceiver from './NativeModule/AMQPReceiver.js';
 import AMQPSender from './NativeModule/AMQPSender.js';
-import STOMPManager from './NativeModule/STOMPManager.js';
-import STOMPReceiver from './NativeModule/STOMPReceiver.js';
-import STOMPSender from './NativeModule/STOMPSender.js';
-import MQTTClientSide from './NativeModule/MQTTClientSide.js';
+// import STOMPManager from './NativeModule/STOMPManager.js';
+// import STOMPReceiver from './NativeModule/STOMPReceiver.js';
+// import STOMPSender from './NativeModule/STOMPSender.js';
+// import MQTTClientSide from './NativeModule/MQTTClientSide.js';
 
 import Layer3Ds from './NativeModule/Layer3Ds';
 import Layer3D from './NativeModule/Layer3D';
@@ -178,6 +178,7 @@ import {
   SMap,
   SAnalyst,
   SCollector,
+  SMediaCollector,
   SScene,
   SCartography,
   SThemeCartography,
@@ -211,10 +212,10 @@ export {
   AMQPManager,
   AMQPReceiver,
   AMQPSender,
-  STOMPManager,
-  STOMPReceiver,
-  STOMPSender,
-  MQTTClientSide,
+  // STOMPManager,
+  // STOMPReceiver,
+  // STOMPSender,
+  // MQTTClientSide,
   
   SMBarChartView,
   SMLineChartView,
@@ -362,6 +363,7 @@ export {
   SMap,
   SAnalyst,
   SCollector,
+  SMediaCollector,
   SScene,
   SMCollectorType,
   SCartography,

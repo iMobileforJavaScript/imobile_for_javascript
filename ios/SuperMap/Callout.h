@@ -50,7 +50,7 @@ typedef enum{
  @return  点标注（Callout）的宽度。
  */
 @property(nonatomic)CGFloat width;
-
+@property(nonatomic,strong)NSString* tag;
 //The User Custom Arrow style
 // @since 1.0
 // */
@@ -83,7 +83,7 @@ typedef enum{
  @param  position2D 点标注对象（Callout）的显示坐标。
  @return  一个布尔值，点标注对象（Callout）显示成功返回true,否则返回false。
  */
-- (BOOL) showAt:(Point2D *)position2D;
+- (BOOL) showAt:(Point2D *)position2D Tag:(NSString*)tag;
 
 ///获取Callout的显示位置
 - (Point2D *)getLocation;

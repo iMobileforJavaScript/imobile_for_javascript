@@ -35,6 +35,9 @@
 #import "SuperMap/BufferRadiusUnit.h"
 #import "SuperMap/LayerSettingVector.h"
 #import "SuperMap/OverlayAnalyst.h"
+#import "SuperMap/DensityAnalystOnline.h"
+#import "SuperMap/AggreatePointsOnline.h"
+#import "SuperMap/Rectangle2D.h"
 
 #import "Constants.h"
 #import "SScene.h"
@@ -42,5 +45,5 @@
 #import "AnalysisHelper3D.h"
 #import "SMLayer.h"
 
-@interface SAnalyst : RCTEventEmitter<RCTBridgeModule>
+@interface SAnalyst : RCTEventEmitter<RCTBridgeModule, DistributeAnalystDelegate>
 @end
