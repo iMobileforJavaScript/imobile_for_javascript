@@ -16,6 +16,7 @@ import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
+import com.supermap.mapping.LayerHeatmap;
 import com.supermap.mapping.LayerGroup;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.Map;
@@ -115,6 +116,8 @@ public class SMLayer {
 
         path = path == null || path.equals("") ? layer.getName() : (path + "/" + layer.getName());
 
+        boolean isHeatmap = layer instanceof LayerHeatmap;//是否是热力图层
+
         wMap.putString("name", layer.getName());
         wMap.putString("caption", layer.getCaption());
         wMap.putString("description", layer.getDescription());
@@ -127,6 +130,7 @@ public class SMLayer {
         wMap.putString("groupName", groupName);
         wMap.putInt("themeType", themeType);
         wMap.putString("path", path);
+        wMap.putBoolean("isHeatmap", isHeatmap);
 
         if (dataset != null && intType >= 0) { // 没有数据集的Layer是LayerGroup
             wMap.putInt("type", intType);
