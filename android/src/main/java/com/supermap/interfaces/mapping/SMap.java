@@ -72,6 +72,7 @@ import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 import com.supermap.data.Color;
 
+import org.apache.http.cookie.SM;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -4035,6 +4036,111 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
+    /**
+     * 从数据源复制坐标系
+     * @param dataSourcePath
+     * @param promise
+     */
+    @ReactMethod
+    public void copyPrjCoordSysFromDatasource(String dataSourcePath, int engineType, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Workspace workspace = new Workspace();
+            DatasourceConnectionInfo datasourceConnectionInfo = new DatasourceConnectionInfo();
+            EngineType eType = EngineType.newInstance(engineType);
+            datasourceConnectionInfo.setEngineType(eType);
+            datasourceConnectionInfo.setServer(dataSourcePath);
+            datasourceConnectionInfo.setAlias("dataSource");
+            Datasource datasource = workspace.getDatasources().open(datasourceConnectionInfo);
+
+            PrjCoordSys prjCoordSys = datasource.getPrjCoordSys();
+            sMap.smMapWC.getMapControl().getMap().setPrjCoordSys(prjCoordSys);
+
+            String coordName = sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getName();
+
+            WritableMap map = Arguments.createMap();
+            map.putString("prjCoordSysName", coordName);
+
+            promise.resolve(map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+
+    }
+
+    /**
+     * 从数据集复制坐标系
+     * @param datasourceName
+     * @param datasetName
+     * @param promise
+     */
+    @ReactMethod
+    public void copyPrjCoordSysFromDataset(String datasourceName, String datasetName, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+
+            Datasource datasource = datasources.get(datasourceName);
+
+            if(datasource != null){
+                Dataset dataset = datasource.getDatasets().get(datasetName);
+                if(dataset != null){
+                    if(dataset.getPrjCoordSys() != null){
+                        sMap.smMapWC.getMapControl().getMap().setPrjCoordSys(dataset.getPrjCoordSys());
+                    }else{
+                        sMap.smMapWC.getMapControl().getMap().setPrjCoordSys(datasource.getPrjCoordSys());
+                    }
+                    String coordName = sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getName();
+
+                    WritableMap map = Arguments.createMap();
+                    map.putString("prjCoordSysName", coordName);
+
+                    promise.resolve(map);
+                }else {
+                    promise.resolve(false);
+                }
+
+            }else{
+                promise.resolve(false);
+            }
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 从文件复制坐标系
+     * @param filePath
+     * @param fileType
+     * @param promise
+     */
+    @ReactMethod
+    public void copyPrjCoordSysFromFile(String filePath, String fileType, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            PrjFileType prjFileType = fileType.equals("xml") ? PrjFileType.SUPERMAP : PrjFileType.ESRI;
+            PrjCoordSys prjCoordSys = new PrjCoordSys();
+            Boolean isSuccess = prjCoordSys.fromFile(filePath,prjFileType);
+
+            WritableMap map = Arguments.createMap();
+
+            if(isSuccess){
+               sMap.smMapWC.getMapControl().getMap().setPrjCoordSys(prjCoordSys);
+                String coordName = sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getName();
+                map.putString("prjCoordSysName", coordName);
+            }else{
+                map.putString("error","ILLEGAL_COORDSYS");
+            }
+
+            promise.resolve(map);
+
+        }catch (Exception e){
+            promise.reject(e);
+        }
+
+    }
+
     /**
      * 获取动态投影是否已开启
      * @param promise
