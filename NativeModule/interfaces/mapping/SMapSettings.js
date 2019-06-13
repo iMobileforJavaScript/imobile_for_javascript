@@ -269,21 +269,43 @@ function setPrjCoordSys(xml) {
     console.error(e)
   }
 }
-function copyPrjCoordSysFromDatasourceServer(dataSourceServer){
+
+/**
+ * 从数据源复制坐标系
+ * @param dataSourceServer
+ */
+function copyPrjCoordSysFromDatasource(dataSourceServer,engineType){
   try {
-    return SMap.copyPrjCoordSysFromDatasourceServer(dataSourceServer)
+    return SMap.copyPrjCoordSysFromDatasource(dataSourceServer,engineType)
   } catch (error) {
     console.error(e)
   }
 }
+
 /**
- * 
- * @param {*} server 
+ * 从数据集复制坐标系
+ * @param datasourceName
+ * @param datasetName
+ * @returns {*}
  */
-function getDatasourcePrj(server){
+function copyPrjCoordSysFromDataset(datasourceName,datasetName) {
   try {
-    return SMap.getDatasoucePrj(server)
-  } catch (error) {
+    return SMap.copyPrjCoordSysFromDataset(datasourceName,datasetName)
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 从文件复制坐标系 目前支持的文件类型 xml prj
+ * @param filePath 完整路径
+ * @param fileType
+ * @returns {*}
+ */
+function copyPrjCoordSysFromFile(filePath,fileType) {
+  try {
+    return SMap.copyPrjCoordSysFromFile(filePath,fileType)
+  }catch (e) {
     console.error(e)
   }
 }
@@ -334,6 +356,9 @@ export {
   setMapScale,
   getPrjCoordSys,
   setPrjCoordSys,
+  copyPrjCoordSysFromDatasource,
+  copyPrjCoordSysFromDataset,
+  copyPrjCoordSysFromFile,
   getMapDynamicProjection,
   setMapDynamicProjection,
 }

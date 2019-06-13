@@ -15,6 +15,8 @@
 ///  该类定义了专题图类型常量。
 typedef enum {
     
+    TGT_None = -1,
+    
     //面积图
     TGT_Area = 0,
     
@@ -53,3 +55,10 @@ typedef enum {
     TGT_Ring = 14,
     
 }ThemeGraphType;
+
+typedef enum {
+    GATDM_NONE = 0,
+    GATDM_XAXES = 1,
+    GATDM_YAXES =2,
+    GATDM_ALL = 3,
+}GraphAxesTextDisplayMode;

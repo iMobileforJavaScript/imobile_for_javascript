@@ -484,22 +484,75 @@ RCT_REMAP_METHOD(setPrjCoordSys, setPrjCoordSysWithXml:(NSString *)xml Resolver:
 }
 
 #pragma mark 从数据源复制坐标系
-RCT_REMAP_METHOD(copyPrjCoordSysFromDatasourceServer, copyPrjCoordSysFromDatasourceServerWithPath:(NSString *)dataSourcePath resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
-    
-}
-#pragma mark 获取数据源的坐标系
-+(PrjCoordSys *)getDatasoucePrjWithPath:(NSString *)dataSourcePath{
+RCT_REMAP_METHOD(copyPrjCoordSysFromDatasource, copyPrjCoordSysFromDatasourceWithPath:(NSString *)dataSourcePath EngineType:(int)enginetype resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        sMap = [SMap singletonInstance];
         Workspace *workspace = [[Workspace alloc]init];
         
         DatasourceConnectionInfo *datasourceconnection = [[DatasourceConnectionInfo alloc] init];
-        datasourceconnection.engineType = ET_UDB;
+        datasourceconnection.engineType = enginetype;
         datasourceconnection.server = dataSourcePath;
         datasourceconnection.alias = @"dataSource";
         Datasource *datasource = [workspace.datasources open:datasourceconnection];
+        
         PrjCoordSys *coordSys = datasource.prjCoordSys;
-    return coordSys;
+        
+        sMap.smMapWC.mapControl.map.prjCoordSys = coordSys;
+        
+        resolve(@{@"prjCoordSysName":sMap.smMapWC.mapControl.map.prjCoordSys.name});
+    } @catch (NSException *exception) {
+        reject(@"copyPrjCoordSysFromDatasourceServer",exception.reason,nil);
+    }
+    
 }
 
+#pragma mark 从数据集复制坐标系
+RCT_REMAP_METHOD(copyPrjCoordSysFromDataset, copyPrjCoordSysFromDatasetWithDatasourceName:(NSString *)datasourceName datasetName:(NSString *)datasetName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Datasources *datasources = sMap.smMapWC.workspace.datasources;
+        
+        Datasource *datasource = [datasources getAlias:datasourceName];
+        
+        if(datasource != nil){
+            Dataset *dataset = [datasource.datasets getWithName:datasetName];
+            if(dataset != nil){
+                if(dataset.prjCoordSys != nil){
+                    sMap.smMapWC.mapControl.map.prjCoordSys = dataset.prjCoordSys;
+                }else{
+                    sMap.smMapWC.mapControl.map.prjCoordSys = datasource.prjCoordSys;
+                }
+                resolve(@{@"prjCoordSysName":sMap.smMapWC.mapControl.map.prjCoordSys.name});
+            }else{
+                resolve(@(NO));
+            }
+        }else{
+            resolve(@(NO));
+        }
+    } @catch (NSException *exception) {
+        reject(@"copyPrjCoordSysFromDataset",exception.reason,nil);
+    }
+    
+}
+
+#pragma mark 从文件复制坐标系
+RCT_REMAP_METHOD(copyPrjCoordSysFromFile, copyPrjCoordSysFromFileWithPath:(NSString *)filePath  type:(NSString *)fileType resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        PrjFileType type  = [fileType isEqualToString:@"xml"] ? SUPERMAP : ESRI;
+        PrjCoordSys *prjCoordSys = [[PrjCoordSys alloc]init];
+        BOOL isSuccess = [prjCoordSys fromFile:filePath Version:type];
+        if(isSuccess){
+            sMap.smMapWC.mapControl.map.prjCoordSys = prjCoordSys;
+            resolve(@{@"prjCoordSysName":sMap.smMapWC.mapControl.map.prjCoordSys.name});
+        }else{
+            resolve(@{@"error":@"ILLEGAL_COORDSYS"});
+        }
+    } @catch (NSException *exception) {
+        reject(@"copyPrjCoordSysFromFile",exception.reason,nil);
+    }
+    
+}
 #pragma mark 获取图例的宽度和title
 RCT_REMAP_METHOD(getScaleData, getScaleViewDataWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
