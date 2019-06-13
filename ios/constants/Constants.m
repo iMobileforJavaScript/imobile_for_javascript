@@ -69,6 +69,9 @@ NSString * const MEDIA_CAPTURE = @"com.supermap.RN.MediaCapture";
 /** 多媒体采集，Callout点击回调 **/
 NSString * const MEDIA_CAPTURE_TAP_ACTION = @"com.supermap.RN.MediaCaptureTapAction";
 
-@implementation Constants
+/** 分析 **/
+NSString * const ONLINE_ANALYST_RESULT = @"com.supermap.RN.online_analyst_result";
+
+@implementation Constants : NSObject
 
 @end

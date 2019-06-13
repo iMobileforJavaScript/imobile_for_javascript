@@ -87,7 +87,6 @@
 		0A332E2D211D623E00F56F26 /* JSMapControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D5D211D623D00F56F26 /* JSMapControl.m */; };
 		0A332E2E211D623E00F56F26 /* JSMaps.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D5F211D623D00F56F26 /* JSMaps.m */; };
 		0A332E2F211D623E00F56F26 /* JSMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D61211D623D00F56F26 /* JSMapView.m */; };
-		0A332E30211D623E00F56F26 /* JSMQTTClientSide.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D63211D623D00F56F26 /* JSMQTTClientSide.m */; };
 		0A332E31211D623E00F56F26 /* JSNavigation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D65211D623D00F56F26 /* JSNavigation.m */; };
 		0A332E32211D623E00F56F26 /* JSNavigation2.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D67211D623D00F56F26 /* JSNavigation2.m */; };
 		0A332E33211D623E00F56F26 /* JSObjManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332D69211D623D00F56F26 /* JSObjManager.m */; };
@@ -121,9 +120,6 @@
 		0A332E4F211D623E00F56F26 /* JSServiceQueryParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DA1211D623E00F56F26 /* JSServiceQueryParameter.m */; };
 		0A332E50211D623E00F56F26 /* JSSize2D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DA3211D623E00F56F26 /* JSSize2D.m */; };
 		0A332E51211D623E00F56F26 /* JSSpeechManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DA5211D623E00F56F26 /* JSSpeechManager.m */; };
-		0A332E52211D623E00F56F26 /* JSSTOMPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DA7211D623E00F56F26 /* JSSTOMPManager.m */; };
-		0A332E53211D623E00F56F26 /* JSSTOMPReceiver.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DA9211D623E00F56F26 /* JSSTOMPReceiver.m */; };
-		0A332E54211D623E00F56F26 /* JSSTOMPSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DAB211D623E00F56F26 /* JSSTOMPSender.m */; };
 		0A332E55211D623E00F56F26 /* JSSupplyCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DAD211D623E00F56F26 /* JSSupplyCenter.m */; };
 		0A332E56211D623E00F56F26 /* JSSupplyCenters.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DAF211D623E00F56F26 /* JSSupplyCenters.m */; };
 		0A332E57211D623E00F56F26 /* JSSupplyCenterType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332DB1211D623E00F56F26 /* JSSupplyCenterType.m */; };
@@ -381,8 +377,6 @@
 		0A332D5F211D623D00F56F26 /* JSMaps.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSMaps.m; sourceTree = "<group>"; };
 		0A332D60211D623D00F56F26 /* JSMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSMapView.h; sourceTree = "<group>"; };
 		0A332D61211D623D00F56F26 /* JSMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSMapView.m; sourceTree = "<group>"; };
-		0A332D62211D623D00F56F26 /* JSMQTTClientSide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSMQTTClientSide.h; sourceTree = "<group>"; };
-		0A332D63211D623D00F56F26 /* JSMQTTClientSide.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSMQTTClientSide.m; sourceTree = "<group>"; };
 		0A332D64211D623D00F56F26 /* JSNavigation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSNavigation.h; sourceTree = "<group>"; };
 		0A332D65211D623D00F56F26 /* JSNavigation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSNavigation.m; sourceTree = "<group>"; };
 		0A332D66211D623D00F56F26 /* JSNavigation2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSNavigation2.h; sourceTree = "<group>"; };
@@ -449,12 +443,6 @@
 		0A332DA3211D623E00F56F26 /* JSSize2D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSSize2D.m; sourceTree = "<group>"; };
 		0A332DA4211D623E00F56F26 /* JSSpeechManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSSpeechManager.h; sourceTree = "<group>"; };
 		0A332DA5211D623E00F56F26 /* JSSpeechManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSSpeechManager.m; sourceTree = "<group>"; };
-		0A332DA6211D623E00F56F26 /* JSSTOMPManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSSTOMPManager.h; sourceTree = "<group>"; };
-		0A332DA7211D623E00F56F26 /* JSSTOMPManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSSTOMPManager.m; sourceTree = "<group>"; };
-		0A332DA8211D623E00F56F26 /* JSSTOMPReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSSTOMPReceiver.h; sourceTree = "<group>"; };
-		0A332DA9211D623E00F56F26 /* JSSTOMPReceiver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSSTOMPReceiver.m; sourceTree = "<group>"; };
-		0A332DAA211D623E00F56F26 /* JSSTOMPSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSSTOMPSender.h; sourceTree = "<group>"; };
-		0A332DAB211D623E00F56F26 /* JSSTOMPSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSSTOMPSender.m; sourceTree = "<group>"; };
 		0A332DAC211D623E00F56F26 /* JSSupplyCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSSupplyCenter.h; sourceTree = "<group>"; };
 		0A332DAD211D623E00F56F26 /* JSSupplyCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSSupplyCenter.m; sourceTree = "<group>"; };
 		0A332DAE211D623E00F56F26 /* JSSupplyCenters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSSupplyCenters.h; sourceTree = "<group>"; };
@@ -1018,8 +1006,6 @@
 				0A332D5F211D623D00F56F26 /* JSMaps.m */,
 				0A332D60211D623D00F56F26 /* JSMapView.h */,
 				0A332D61211D623D00F56F26 /* JSMapView.m */,
-				0A332D62211D623D00F56F26 /* JSMQTTClientSide.h */,
-				0A332D63211D623D00F56F26 /* JSMQTTClientSide.m */,
 				0A332D64211D623D00F56F26 /* JSNavigation.h */,
 				0A332D65211D623D00F56F26 /* JSNavigation.m */,
 				0A332D66211D623D00F56F26 /* JSNavigation2.h */,
@@ -1086,12 +1072,6 @@
 				0A332DA3211D623E00F56F26 /* JSSize2D.m */,
 				0A332DA4211D623E00F56F26 /* JSSpeechManager.h */,
 				0A332DA5211D623E00F56F26 /* JSSpeechManager.m */,
-				0A332DA6211D623E00F56F26 /* JSSTOMPManager.h */,
-				0A332DA7211D623E00F56F26 /* JSSTOMPManager.m */,
-				0A332DA8211D623E00F56F26 /* JSSTOMPReceiver.h */,
-				0A332DA9211D623E00F56F26 /* JSSTOMPReceiver.m */,
-				0A332DAA211D623E00F56F26 /* JSSTOMPSender.h */,
-				0A332DAB211D623E00F56F26 /* JSSTOMPSender.m */,
 				0A332DAC211D623E00F56F26 /* JSSupplyCenter.h */,
 				0A332DAD211D623E00F56F26 /* JSSupplyCenter.m */,
 				0A332DAE211D623E00F56F26 /* JSSupplyCenters.h */,
@@ -1260,7 +1240,6 @@
 				0A2F59F0229BB7AD00C42441 /* FileUtils.m in Sources */,
 				0A332E20211D623E00F56F26 /* JSLayer.m in Sources */,
 				0A332E5A211D623E00F56F26 /* JSTextPart.m in Sources */,
-				0A332E53211D623E00F56F26 /* JSSTOMPReceiver.m in Sources */,
 				0A332E68211D623E00F56F26 /* JSTransportationAnalystSetting.m in Sources */,
 				D854DA552187FD970075B5F8 /* Constants.m in Sources */,
 				0A332E47211D623E00F56F26 /* JSRelationalChartPoint.m in Sources */,
@@ -1313,10 +1292,8 @@
 				0A332E08211D623E00F56F26 /* JSDatasetVector.m in Sources */,
 				0A332E50211D623E00F56F26 /* JSSize2D.m in Sources */,
 				D8DD422721757C8D009D80E9 /* JSSymbolFill.m in Sources */,
-				0A332E30211D623E00F56F26 /* JSMQTTClientSide.m in Sources */,
 				0A332DEF211D623E00F56F26 /* JSBarChart.m in Sources */,
 				0A332E48211D623E00F56F26 /* JSRelationalPointChart.m in Sources */,
-				0A332E54211D623E00F56F26 /* JSSTOMPSender.m in Sources */,
 				0A332DFD211D623E00F56F26 /* JSCollectorElement.m in Sources */,
 				0A332E3E211D623E00F56F26 /* JSPolymerChart.m in Sources */,
 				0A332E6D211D623E00F56F26 /* NativeUtil.m in Sources */,
@@ -1375,7 +1352,6 @@
 				0A332E39211D623E00F56F26 /* JSPieChartViewManager.m in Sources */,
 				0A332E2A211D623E00F56F26 /* JSLocationAnalystParameter.m in Sources */,
 				0A332E6F211D623E00F56F26 /* RCTConvert+BufferEndType.m in Sources */,
-				0A332E52211D623E00F56F26 /* JSSTOMPManager.m in Sources */,
 				0A51674F21AD42B0003C77BE /* TouchUtil3D.m in Sources */,
 				0A332E3C211D623E00F56F26 /* JSPointDensityChart.m in Sources */,
 				0A27E0552281249700227B8C /* SMediaCollector.m in Sources */,
