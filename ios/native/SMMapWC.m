@@ -1085,66 +1085,75 @@
 //bSymReplace 相同id的处理：true替换 false新id
 //返回值：NSString数组 每个字符串形如"nOldId:nNewId" 表重命名了的symbolId
 -(NSArray *)importSymbolsFrom:(SymbolGroup*)srcGroup toGroup:(SymbolGroup*)desGroup isDirRetain:(BOOL)bDirRetain isSymbolReplace:(BOOL)bSymReplace {
+    
     NSMutableArray *arrResult = nil;
-    if (desGroup.symbolLibrary==nil) {
-        //deGroup必须是必须在Lib中
-        return arrResult;
-    }
-    if (srcGroup.symbolLibrary!=nil && desGroup.symbolLibrary==srcGroup.symbolLibrary) {
-        //不支持
-        return arrResult;
-    }
-    
-    // group的名称 symbol的id 都需要desLib查重名
-    SymbolLibrary *desLib = desGroup.symbolLibrary;
-    
-    for (int i=0; i<srcGroup.count; i++) {
-        Symbol * sym = [srcGroup getSymbolWithIndex:i];
-        int nId = sym.getID;
-        BOOL bOld = [desLib containID:sym.getID];
-        if (bOld) {
-            if (bSymReplace) {
-                [desLib removeWithID:nId];
-                [desLib add:sym toGroup:desGroup];
-            }else{
-                int nIDNew = [desLib add:sym toGroup:desGroup];
-                NSString *strResult = [NSString stringWithFormat:@"%d:%d",nId,nIDNew];
+    @try {
+       
+        if (desGroup.symbolLibrary==nil) {
+            //deGroup必须是必须在Lib中
+            return arrResult;
+        }
+        if (srcGroup.symbolLibrary!=nil && desGroup.symbolLibrary==srcGroup.symbolLibrary) {
+            //不支持
+            return arrResult;
+        }
+        
+        // group的名称 symbol的id 都需要desLib查重名
+        SymbolLibrary *desLib = desGroup.symbolLibrary;
+        
+        for (int i=0; i<srcGroup.count; i++) {
+            Symbol * sym = [srcGroup getSymbolWithIndex:i];
+            if(sym){
+                int nId = sym.getID;
+                BOOL bOld = [desLib containID:sym.getID];
+                if (bOld) {
+                    if (bSymReplace) {
+                        [desLib removeWithID:nId];
+                        [desLib add:sym toGroup:desGroup];
+                    }else{
+                        int nIDNew = [desLib add:sym toGroup:desGroup];
+                        NSString *strResult = [NSString stringWithFormat:@"%d:%d",nId,nIDNew];
+                        if (arrResult==nil) {
+                            arrResult = [[NSMutableArray alloc]init];
+                        }
+                        [arrResult addObject:strResult];
+                    }
+                }else{
+                    [desLib add:sym toGroup:desGroup];
+                }
+            }
+        }
+        
+        SymbolGroup* desSubGroup = desGroup;
+        SymbolGroups *srcChildGroups = srcGroup.childSymbolGroups;
+        for (int j=0; j<srcChildGroups.count; j++) {
+            SymbolGroup *subGroup = [srcChildGroups getGroupWithIndex:j];
+            
+            if (bDirRetain) {
+                NSString* subName = subGroup.name;
+                int nAddNum = 1;
+                while ([desGroup.childSymbolGroups indexofGroup:subName]!=-1) {
+                    subName = [NSString stringWithFormat:@"%@#%d",subGroup.name,nAddNum];
+                    nAddNum++;
+                }
+                desSubGroup = [desGroup.childSymbolGroups createGroupWith:subName];
+            }
+            
+            NSArray *arrSubResult = [self importSymbolsFrom:subGroup toGroup:desSubGroup isDirRetain:bDirRetain isSymbolReplace:bSymReplace];
+            if (arrSubResult!=nil) {
                 if (arrResult==nil) {
                     arrResult = [[NSMutableArray alloc]init];
                 }
-                [arrResult addObject:strResult];
+                [arrResult addObjectsFromArray:arrSubResult];
             }
-        }else{
-            [desLib add:sym toGroup:desGroup];
         }
         
+        return arrResult;
+    } @catch (NSException *exception) {
+        NSLog(@"%@",exception.reason);
+         return arrResult;
     }
-    
-    SymbolGroup* desSubGroup = desGroup;
-    SymbolGroups *srcChildGroups = srcGroup.childSymbolGroups;
-    for (int j=0; j<srcChildGroups.count; j++) {
-        SymbolGroup *subGroup = [srcChildGroups getGroupWithIndex:j];
-        
-        if (bDirRetain) {
-            NSString* subName = subGroup.name;
-            int nAddNum = 1;
-            while ([desGroup.childSymbolGroups indexofGroup:subName]!=-1) {
-                subName = [NSString stringWithFormat:@"%@#%d",subGroup.name,nAddNum];
-                nAddNum++;
-            }
-            desSubGroup = [desGroup.childSymbolGroups createGroupWith:subName];
-        }
-        
-        NSArray *arrSubResult = [self importSymbolsFrom:subGroup toGroup:desSubGroup isDirRetain:bDirRetain isSymbolReplace:bSymReplace];
-        if (arrSubResult!=nil) {
-            if (arrResult==nil) {
-                arrResult = [[NSMutableArray alloc]init];
-            }
-            [arrResult addObjectsFromArray:arrSubResult];
-        }
-    }
-    
-    return arrResult;
+
 }
 -(NSString *)getUserName{
     NSString *strServer = SMap.singletonInstance.smMapWC.workspace.connectionInfo.server;
