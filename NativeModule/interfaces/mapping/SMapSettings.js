@@ -334,6 +334,30 @@ function setMapDynamicProjection(value) {
   }
 }
 
+/**
+ * 获取当前动态投影转换方法
+ * @returns {*}  返回值类型{'name':'Geocentric Translation(3-para)','value':9603}
+ */
+function getCoordSysTransMethod() {
+  try {
+    return SMap.getCoordSysTransMethod();
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 设置当前动态投影的方法和参数
+ * @param params  对象  包含方法名和7参数
+ * @returns {*}
+ */
+function setCoordSysTransMethodAndParams(params) {
+  try {
+    return SMap.setCoordSysTransMethodAndParams(params);
+  }catch (e) {
+    console.error(e)
+  }
+}
 export {
   getScaleData,
   getMapAngle,
@@ -361,4 +385,6 @@ export {
   copyPrjCoordSysFromFile,
   getMapDynamicProjection,
   setMapDynamicProjection,
+  getCoordSysTransMethod,
+  setCoordSysTransMethodAndParams,
 }

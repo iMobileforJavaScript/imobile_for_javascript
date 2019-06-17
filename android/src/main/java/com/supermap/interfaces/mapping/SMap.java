@@ -87,8 +87,8 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
+import java.util.Map;
 import java.util.Vector;
 
 public class SMap extends ReactContextBaseJavaModule implements LegendContentChangeListener {
@@ -4166,6 +4166,111 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().setDynamicProjection(value);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取当前投影转换方法
+     * @param promise
+     */
+    @ReactMethod
+    public void getCoordSysTransMethod(Promise promise){
+        try{
+            sMap = SMap.getInstance();
+            CoordSysTransMethod method = sMap.smMapWC.getMapControl().getMap().getDynamicPrjTransMethond();
+            CoordSysTransMethod []methods = new CoordSysTransMethod[6];
+            int index = 0;
+            String name = "";
+            methods[0] = CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION;
+            methods[1] = CoordSysTransMethod.MTH_MOLODENSKY;
+            methods[2] = CoordSysTransMethod.MTH_MOLODENSKY_ABRIDGED;
+            methods[3] = CoordSysTransMethod.MTH_POSITION_VECTOR;
+            methods[4] = CoordSysTransMethod.MTH_COORDINATE_FRAME;
+            methods[5] = CoordSysTransMethod.MTH_BURSA_WOLF;
+            for(int i = 0; i < methods.length; i++){
+                if(method == methods[i])
+                    index = i;
+            }
+            switch (index){
+                case 0:
+                    name = "Geocentric Transalation(3-para)";
+                    break;
+                case 1:
+                    name = "Molodensky(7-para)";
+                    break;
+                case 2:
+                    name = "Abridged Molodensky(7-para)";
+                    break;
+                case 3:
+                    name = "Position Vector(7-para)";
+                    break;
+                case 4:
+                    name = "Coordinate Frame(7-para)";
+                    break;
+                case 5:
+                    name = "Bursa-wolf(7-para)";
+                    break;
+            }
+            promise.resolve(name);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置当前投影转换方法和参数
+     * @param params
+     * @param promise
+     */
+    @ReactMethod
+    public void setCoordSysTransMethodAndParams(ReadableMap params, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            String [] coorMethodArray = new String[6];
+            CoordSysTransMethod method = CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION;
+            int index = 0;
+            coorMethodArray[0] = "Geocentric Transalation(3-para)";
+            coorMethodArray[1] = "Molodensky(7-para)";
+            coorMethodArray[2] = "Abridged Molodensky(7-para)";
+            coorMethodArray[3] = "Position Vector(7-para)";
+            coorMethodArray[4] = "Coordinate Frame(7-para)";
+            coorMethodArray[5] = "Bursa-wolf(7-para)";
+            for(int i = 0; i < coorMethodArray.length; i++){
+                if(params.getString("coordSysTransMethod").equals(coorMethodArray[i]))
+                    index = i;
+            }
+            switch (index) {
+                case 0:
+                    method = CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION;
+                    break;
+                case 1:
+                    method = CoordSysTransMethod.MTH_MOLODENSKY;
+                    break;
+                case 2:
+                    method = CoordSysTransMethod.MTH_MOLODENSKY_ABRIDGED;
+                    break;
+                case 3:
+                    method = CoordSysTransMethod.MTH_POSITION_VECTOR;
+                    break;
+                case 4:
+                    method = CoordSysTransMethod.MTH_COORDINATE_FRAME;
+                    break;
+                case 5:
+                    method = CoordSysTransMethod.MTH_BURSA_WOLF;
+                    break;
+            }
+            map.setDynamicPrjTransMethond(method);
+            map.getDynamicPrjTransParameter().setRotateX(params.getDouble("rotateX"));
+            map.getDynamicPrjTransParameter().setRotateY(params.getDouble("rotateY"));
+            map.getDynamicPrjTransParameter().setRotateZ(params.getDouble("rotateZ"));
+            map.getDynamicPrjTransParameter().setTranslateX(params.getDouble("translateX"));
+            map.getDynamicPrjTransParameter().setTranslateY(params.getDouble("translateY"));
+            map.getDynamicPrjTransParameter().setTranslateZ(params.getDouble("translateZ"));
+
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
