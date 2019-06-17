@@ -3708,6 +3708,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().setAngle(angle);
+            sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
@@ -3759,6 +3760,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     break;
             }
             sMap.smMapWC.getMapControl().getMap().setColorMode(colorMode);
+            sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         }catch (Exception e){
             promise.resolve(e);
@@ -3775,7 +3777,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = SMap.getInstance();
             GeoStyle backgroundStyle = sMap.smMapWC.getMapControl().getMap().getBackgroundStyle();
             Color color = backgroundStyle.getFillForeColor();
-            promise.resolve(color.toColorString());
+            String r = Integer.toHexString(color.getR());
+            String g = Integer.toHexString(color.getG());
+            String b = Integer.toHexString(color.getB());
+            r = r.length() == 1 ? "0" + r : r;
+            g = g.length() == 1 ? "0" + g : g;
+            b = b.length() == 1 ? "0" + b : b;
+            String colorString = "#"+r+g+b;
+            promise.resolve(colorString);
         }catch (Exception e){
             promise.reject(e);
         }
@@ -4286,6 +4295,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().getLegend().setContentChangeListener(this);
+            sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -4307,7 +4317,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 byte[] bitmapBytes = baos.toByteArray();
                 result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
             }
-            System.out.println(result);
             writeMap.putString("image",result);
             writeMap.putString("title",name);
             writeMap.putInt("type",type);

@@ -235,7 +235,9 @@ RCT_REMAP_METHOD(getMapAngle, getMapAngleWithResolver:(RCTPromiseResolveBlock)re
 RCT_REMAP_METHOD(setMapAngle, setMapAngleWithValue:(double)angle Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        sMap.smMapWC.mapControl.map.angle = angle;
+        Map *map = sMap.smMapWC.mapControl.map;
+        map.angle = angle;
+        [map refresh];
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setMapAngle",exception.reason,nil);
@@ -648,6 +650,7 @@ RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseRes
         sMap = [SMap singletonInstance];
         if(sMap.smMapWC.mapControl.map.legend.contentChangeDelegate == nil){
             sMap.smMapWC.mapControl.map.legend.contentChangeDelegate = self;
+            [sMap.smMapWC.mapControl.map refresh];
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
