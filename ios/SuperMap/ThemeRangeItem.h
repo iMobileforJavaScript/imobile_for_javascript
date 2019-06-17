@@ -13,16 +13,7 @@
 * 
 * <p>在分段专题图中，将分段字段的表达式的值按照某种分段模式被分成多个范围段。每个分段都有其分段起始值、终止值、名称和风格等。每个分段所表示的范围为 [Start, End)。</p>
 */
-@interface ThemeRangeItem : NSObject{
-    @private
-    double _mStart;
-    double _mEnd;
-    NSString * _mCaption;
-    GeoStyle * _mStyle;
-    ThemeRange * _mThemeRange;
-    BOOL _mIsVisible;
-    BOOL _mIsUserThemeRange;
-}
+@interface ThemeRangeItem : NSObject
 /**
 * @brief 获取或设置分段专题图子项的起始值。
 * <p>注意：如果该子项是分段中第一个子项，那么该起始值就是分段的最小值；如果子项的序号大于等于 1 的时候，该起始值必须与前一子项的终止值相同，否则系统会抛出异常。</p>

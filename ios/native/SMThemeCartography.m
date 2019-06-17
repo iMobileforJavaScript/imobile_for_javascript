@@ -13,6 +13,7 @@
 
 
 @implementation SMThemeCartography
+static NSArray* lastGridRangeColors = nil;
 
 +(void)setGeoStyleColor:(DatasetType)type geoStyle:(GeoStyle*)geoStyle color:(Color*)color{
     @try{
@@ -100,6 +101,83 @@
             }
             if(color_start == nil || color_end == nil)
             {
+                return nil;
+            }
+            int rgb_start = color_start.rgb;
+            int rgb_end = color_end.rgb;
+            NSEnumerator* enumValue = [[self getRangeColors:@""] objectEnumerator];
+            for (NSObject* object in enumValue) {
+                NSMutableArray* arrayColor = (NSMutableArray*)object;
+                NSUInteger count = arrayColor.count;
+                Color* color01 =[arrayColor objectAtIndex:0];
+                int rgb01 = color01.rgb;
+                Color* color02 = [arrayColor objectAtIndex:count-1];
+                int rgb02 = color02.rgb;
+                if (rgb_start == rgb01 && rgb_end == rgb02) {
+                    return arrayColor;
+                }
+            }
+        }else if (theme.themeType == TT_Graph){
+            ThemeGraph* themeGraph=(ThemeGraph*)theme;
+            int count=[themeGraph getCount];
+            
+            if(count==0){
+                return nil;
+            }else{
+                color_start=[[[themeGraph getItem:0] uniformStyle] getFillForeColor];
+                
+                if(color_start==nil){
+                    return nil;
+                }
+                
+                int rgb_start=color_start.rgb;
+                NSEnumerator* enumValue = [[self getGraphColors:@""] objectEnumerator];
+                for (NSObject* object in enumValue) {
+                    NSMutableArray* arrayColor = (NSMutableArray*)object;
+                    Color* color01 =[arrayColor objectAtIndex:0];
+                    int rgb01 = color01.rgb;
+                    if (rgb_start == rgb01) {
+                        return arrayColor;
+                    }
+                }
+            }
+            
+        }else if(theme.themeType == TT_GridUnique){
+            ThemeGridUnique* themeGridUnique=(ThemeGridUnique*) theme;
+            int count=[themeGridUnique getCount];
+            
+            NSString* strType = [self datasetTypeToString:layer.dataset.datasetType];
+            if ([strType isEqualToString:@"GRID"]) {
+                [themeGridUnique getItem:0];
+                color_start = [[themeGridUnique getItem:0] color];
+                color_end = [[themeGridUnique getItem:(count-1)] color];
+            }
+            if(color_start == nil || color_end == nil)
+            {
+                return nil;
+            }
+            int rgb_start = color_start.rgb;
+            int rgb_end = color_end.rgb;
+            NSEnumerator* enumValue = [[self getRangeColors:@""] objectEnumerator];
+            for (NSObject* object in enumValue) {
+                NSMutableArray* arrayColor = (NSMutableArray*)object;
+                NSUInteger count = arrayColor.count;
+                Color* color01 =[arrayColor objectAtIndex:0];
+                int rgb01 = color01.rgb;
+                Color* color02 = [arrayColor objectAtIndex:count-1];
+                int rgb02 = color02.rgb;
+                if (rgb_start == rgb01 && rgb_end == rgb02) {
+                    return arrayColor;
+                }
+            }
+        }else if(theme.themeType == TT_GridRange){
+            ThemeGridRange* themeGridRange=(ThemeGridRange*) theme;     //组件缺这个类
+            int count = [themeGridRange getCount];
+            if (layer.dataset.datasetType==Grid) {
+                color_start = [[themeGridRange getItem:0] color];
+                color_end = [[themeGridRange getItem:count-1] color];
+            }
+            if (color_start==nil || color_end==nil) {
                 return nil;
             }
             int rgb_start = color_start.rgb;
@@ -673,6 +751,34 @@
     }
     return type;
 }
++(BOOL)addGraphItem:(ThemeGraph*)themeGraph graphExpression:(NSString*)graphExpression colors:(Colors*)colors{
+    BOOL isSuccess=NO;
+    @try{
+        NSMutableArray* existItems=[[NSMutableArray alloc] init];
+        for(int i=0;i<themeGraph.getCount;i++){
+            [existItems addObject:[[themeGraph getItem:i]graphExpression]];
+        }
+        ThemeGraphItem* item=[[ThemeGraphItem alloc] init];
+        NSString* caption=[self getCaption:graphExpression];
+        [item setGraphExpression:graphExpression];
+        [item setCaption:caption];
+        
+        if(![self itemExist:item existItems:existItems]){
+            [themeGraph insert:themeGraph.getCount item:item];
+        }
+        int num=themeGraph.getCount-1;
+        if(num>=colors.getCount){
+            num = num % colors.getCount;
+        }
+        [[[themeGraph getItem:themeGraph.getCount-1] uniformStyle] setFillForeColor:[colors get:num]];
+        
+        isSuccess=YES;
+        return isSuccess;
+    }
+    @catch(NSException *exception){
+        @throw exception;
+    }
+}
 
 +(NSString*)getGeoCoordSysType:(GeoCoordSysType) type{
     //TODO  这个类型枚举较长，解析代码后面再补
@@ -740,8 +846,9 @@
 
 NSMutableDictionary* colorRangeDic = nil;
  NSMutableDictionary* colorUniqueDic = nil;
+NSMutableDictionary* colorGraphDic = nil;
 
-+(NSMutableDictionary*)getRangeColors:(NSString* )colorType{
++(NSArray*)getRangeColors:(NSString* )colorType{
     if (colorRangeDic == nil) {
         colorRangeDic = [[NSMutableDictionary alloc] init];
 
@@ -1541,11 +1648,11 @@ NSMutableDictionary* colorRangeDic = nil;
             [colorRangeDic setValue:array forKey:@"ZK_Altitude 3"];
         }
     }
-    return colorRangeDic;
+    return [colorRangeDic objectForKey:colorType];
         
 }
 
-+(NSMutableDictionary*)getUniqueColors:(NSString* )colorType{
++(NSArray*)getUniqueColors:(NSString* )colorType{
     if (colorUniqueDic == nil) {
         colorUniqueDic = [[NSMutableDictionary alloc]init];
 
@@ -1954,7 +2061,285 @@ NSMutableDictionary* colorRangeDic = nil;
             [colorUniqueDic setValue:array forKey:@"FB_Red-Yellow-Green"];
         }
     }
-    return colorUniqueDic;
+    return [colorUniqueDic objectForKey:colorType];
+}
+
++(NSArray*)getGraphColors:(NSString* )colorType{
+    if (colorGraphDic == nil) {
+        colorGraphDic = [[NSMutableDictionary alloc]init];
+        
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:255 G:244 B:91]];
+            [array addObject:[[Color alloc]initWithR:252 G:216 B:219]];
+            [array addObject:[[Color alloc]initWithR:129 G:195 B:231]];
+            [colorGraphDic setValue:array forKey:@"CA_Red Rose"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:244 G:198 B:162]];
+            [array addObject:[[Color alloc]initWithR:252 G:237 B:136]];
+            [array addObject:[[Color alloc]initWithR:93 G:187 B:197]];
+            [colorGraphDic setValue:array forKey:@"CB_Childish"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:235 G:241 B:221]];
+            [array addObject:[[Color alloc]initWithR:121 G:232 B:208]];
+            [array addObject:[[Color alloc]initWithR:255 G:251 B:0]];
+            [colorGraphDic setValue:array forKey:@"CC_Blue-Yellow"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:183 G:221 B:200]];
+            [array addObject:[[Color alloc]initWithR:87 G:150 B:204]];
+            [array addObject:[[Color alloc]initWithR:149 G:208 B:222]];
+            [colorGraphDic setValue:array forKey:@"CD_Concise"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:233 G:163 B:202]];
+            [array addObject:[[Color alloc]initWithR:247 G:247 B:247]];
+            [array addObject:[[Color alloc]initWithR:161 G:215 B:105]];
+            [colorGraphDic setValue:array forKey:@"CE_Reposeful"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:253 G:140 B:90]];
+            [array addObject:[[Color alloc]initWithR:255 G:255 B:191]];
+            [array addObject:[[Color alloc]initWithR:144 G:207 B:96]];
+            [colorGraphDic setValue:array forKey:@"CF_Home"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:182 G:162 B:222]];
+            [array addObject:[[Color alloc]initWithR:46 G:199 B:201]];
+            [array addObject:[[Color alloc]initWithR:90 G:177 B:239]];
+            [colorGraphDic setValue:array forKey:@"CG_Cold"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:202 G:134 B:34]];
+            [array addObject:[[Color alloc]initWithR:145 G:199 B:174]];
+            [array addObject:[[Color alloc]initWithR:47 G:69 B:84]];
+            [colorGraphDic setValue:array forKey:@"CH_Naive"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:176 G:220 B:233]];
+            [array addObject:[[Color alloc]initWithR:228 G:226 B:103]];
+            [array addObject:[[Color alloc]initWithR:236 G:80 B:94]];
+            [array addObject:[[Color alloc]initWithR:172 G:229 B:194]];
+            [colorGraphDic setValue:array forKey:@"DA_Limber"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:255 G:86 B:0]];
+            [array addObject:[[Color alloc]initWithR:0 G:153 B:102]];
+            [array addObject:[[Color alloc]initWithR:204 G:204 B:0]];
+            [array addObject:[[Color alloc]initWithR:23 G:146 B:192]];
+            [colorGraphDic setValue:array forKey:@"DB_Field"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:47 G:69 B:84]];
+            [array addObject:[[Color alloc]initWithR:194 G:53 B:49]];
+            [array addObject:[[Color alloc]initWithR:212 G:130 B:101]];
+            [array addObject:[[Color alloc]initWithR:145 G:199 B:174]];
+            [colorGraphDic setValue:array forKey:@"DC_Dressy"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:140 G:211 B:200]];
+            [array addObject:[[Color alloc]initWithR:255 G:255 B:180]];
+            [array addObject:[[Color alloc]initWithR:190 G:186 B:218]];
+            [array addObject:[[Color alloc]initWithR:252 G:128 B:114]];
+            [colorGraphDic setValue:array forKey:@"DD_Set"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:103 G:76 B:133]];
+            [array addObject:[[Color alloc]initWithR:183 G:87 B:115]];
+            [array addObject:[[Color alloc]initWithR:212 G:129 B:121]];
+            [array addObject:[[Color alloc]initWithR:244 G:217 B:135]];
+            [colorGraphDic setValue:array forKey:@"DE_Shock"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:119 G:200 B:204]];
+            [array addObject:[[Color alloc]initWithR:240 G:244 B:183]];
+            [array addObject:[[Color alloc]initWithR:204 G:154 B:189]];
+            [array addObject:[[Color alloc]initWithR:245 G:146 B:27]];
+            [colorGraphDic setValue:array forKey:@"DF_Summer"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:240 G:154 B:189]];
+            [array addObject:[[Color alloc]initWithR:243 G:202 B:148]];
+            [array addObject:[[Color alloc]initWithR:255 G:251 B:118]];
+            [array addObject:[[Color alloc]initWithR:185 G:221 B:125]];
+            [colorGraphDic setValue:array forKey:@"DG_Common"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:202 G:0 B:31]];
+            [array addObject:[[Color alloc]initWithR:245 G:165 B:130]];
+            [array addObject:[[Color alloc]initWithR:145 G:197 B:223]];
+            [array addObject:[[Color alloc]initWithR:0 G:113 B:176]];
+            [colorGraphDic setValue:array forKey:@"DH_Red-Blue"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:205 G:228 B:200]];
+            [array addObject:[[Color alloc]initWithR:229 G:146 B:106]];
+            [array addObject:[[Color alloc]initWithR:243 G:209 B:119]];
+            [array addObject:[[Color alloc]initWithR:236 G:216 B:179]];
+            [array addObject:[[Color alloc]initWithR:221 G:90 B:62]];
+            [colorGraphDic setValue:array forKey:@"EA_Orange"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:129 G:194 B:214]];
+            [array addObject:[[Color alloc]initWithR:129 G:146 B:214]];
+            [array addObject:[[Color alloc]initWithR:217 G:179 B:230]];
+            [array addObject:[[Color alloc]initWithR:220 G:247 B:161]];
+            [array addObject:[[Color alloc]initWithR:131 G:252 B:216]];
+            [colorGraphDic setValue:array forKey:@"EB_Cold"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:246 G:134 B:32]];
+            [array addObject:[[Color alloc]initWithR:236 G:28 B:35]];
+            [array addObject:[[Color alloc]initWithR:254 G:236 B:125]];
+            [array addObject:[[Color alloc]initWithR:80 G:76 B:170]];
+            [array addObject:[[Color alloc]initWithR:179 G:227 B:170]];
+            [colorGraphDic setValue:array forKey:@"EC_Distinct"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:103 G:205 B:227]];
+            [array addObject:[[Color alloc]initWithR:165 G:226 B:228]];
+            [array addObject:[[Color alloc]initWithR:99 G:192 B:190]];
+            [array addObject:[[Color alloc]initWithR:183 G:229 B:193]];
+            [array addObject:[[Color alloc]initWithR:102 G:201 B:147]];
+            [colorGraphDic setValue:array forKey:@"ED_Pastal"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:254 G:242 B:0]];
+            [array addObject:[[Color alloc]initWithR:104 G:189 B:178]];
+            [array addObject:[[Color alloc]initWithR:185 G:219 B:65]];
+            [array addObject:[[Color alloc]initWithR:206 G:232 B:142]];
+            [array addObject:[[Color alloc]initWithR:29 G:151 B:121]];
+            [colorGraphDic setValue:array forKey:@"EE_Grass"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:97 G:255 B:105]];
+            [array addObject:[[Color alloc]initWithR:184 G:247 B:136]];
+            [array addObject:[[Color alloc]initWithR:88 G:210 B:232]];
+            [array addObject:[[Color alloc]initWithR:242 G:182 B:182]];
+            [array addObject:[[Color alloc]initWithR:232 G:237 B:81]];
+            [colorGraphDic setValue:array forKey:@"EF_Blind"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:235 G:74 B:19]];
+            [array addObject:[[Color alloc]initWithR:234 G:217 B:0]];
+            [array addObject:[[Color alloc]initWithR:0 G:234 B:180]];
+            [array addObject:[[Color alloc]initWithR:114 G:0 B:234]];
+            [array addObject:[[Color alloc]initWithR:234 G:124 B:0]];
+            [colorGraphDic setValue:array forKey:@"EG_Passion"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:31 G:60 B:255]];
+            [array addObject:[[Color alloc]initWithR:255 G:68 B:255]];
+            [array addObject:[[Color alloc]initWithR:145 G:59 B:255]];
+            [array addObject:[[Color alloc]initWithR:122 G:255 B:201]];
+            [array addObject:[[Color alloc]initWithR:218 G:97 B:74]];
+            [colorGraphDic setValue:array forKey:@"EH_Amazing"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:217 G:77 B:77]];
+            [array addObject:[[Color alloc]initWithR:135 G:171 B:102]];
+            [array addObject:[[Color alloc]initWithR:251 G:180 B:72]];
+            [array addObject:[[Color alloc]initWithR:103 G:205 B:204]];
+            [array addObject:[[Color alloc]initWithR:171 G:58 B:107]];
+            
+            [array addObject:[[Color alloc]initWithR:81 G:48 B:135]];
+            [array addObject:[[Color alloc]initWithR:4 G:101 B:137]];
+            [array addObject:[[Color alloc]initWithR:146 G:2 B:64]];
+            [colorGraphDic setValue:array forKey:@"HA_Calm"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:66 G:80 B:99]];
+            [array addObject:[[Color alloc]initWithR:94 G:213 B:209]];
+            [array addObject:[[Color alloc]initWithR:58 G:154 B:217]];
+            [array addObject:[[Color alloc]initWithR:48 G:173 B:167]];
+            [array addObject:[[Color alloc]initWithR:253 G:224 B:214]];
+            
+            [array addObject:[[Color alloc]initWithR:235 G:114 B:96]];
+            [array addObject:[[Color alloc]initWithR:243 G:152 B:0]];
+            [array addObject:[[Color alloc]initWithR:211 G:50 B:73]];
+            [colorGraphDic setValue:array forKey:@"HB_Distance"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:15 G:99 B:161]];
+            [array addObject:[[Color alloc]initWithR:37 G:143 B:185]];
+            [array addObject:[[Color alloc]initWithR:104 G:161 B:49]];
+            [array addObject:[[Color alloc]initWithR:167 G:202 B:34]];
+            [array addObject:[[Color alloc]initWithR:238 G:119 B:26]];
+            
+            [array addObject:[[Color alloc]initWithR:245 G:193 B:28]];
+            [array addObject:[[Color alloc]initWithR:124 G:61 B:146]];
+            [array addObject:[[Color alloc]initWithR:229 G:74 B:120]];
+            [colorGraphDic setValue:array forKey:@"HC_Exotic"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:228 G:26 B:28]];
+            [array addObject:[[Color alloc]initWithR:55 G:126 B:184]];
+            [array addObject:[[Color alloc]initWithR:77 G:175 B:74]];
+            [array addObject:[[Color alloc]initWithR:152 G:78 B:163]];
+            [array addObject:[[Color alloc]initWithR:255 G:127 B:0]];
+            
+            [array addObject:[[Color alloc]initWithR:255 G:255 B:51]];
+            [array addObject:[[Color alloc]initWithR:166 G:86 B:40]];
+            [array addObject:[[Color alloc]initWithR:247 G:129 B:191]];
+            [colorGraphDic setValue:array forKey:@"HD_Luck"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:91 G:155 B:213]];
+            [array addObject:[[Color alloc]initWithR:237 G:125 B:49]];
+            [array addObject:[[Color alloc]initWithR:165 G:165 B:165]];
+            [array addObject:[[Color alloc]initWithR:255 G:192 B:0]];
+            [array addObject:[[Color alloc]initWithR:68 G:114 B:196]];
+            
+            [array addObject:[[Color alloc]initWithR:112 G:173 B:71]];
+            [array addObject:[[Color alloc]initWithR:158 G:72 B:14]];
+            [array addObject:[[Color alloc]initWithR:67 G:104 B:43]];
+            [colorGraphDic setValue:array forKey:@"HE_Moist"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:237 G:125 B:49]];
+            [array addObject:[[Color alloc]initWithR:255 G:192 B:0]];
+            [array addObject:[[Color alloc]initWithR:112 G:173 B:71]];
+            [array addObject:[[Color alloc]initWithR:158 G:72 B:14]];
+            [array addObject:[[Color alloc]initWithR:153 G:115 B:0]];
+            
+            [array addObject:[[Color alloc]initWithR:67 G:104 B:43]];
+            [array addObject:[[Color alloc]initWithR:227 G:108 B:9]];
+            [array addObject:[[Color alloc]initWithR:182 G:170 B:0]];
+            [colorGraphDic setValue:array forKey:@"HF_Warm"];
+        }
+    }
+    return [colorGraphDic objectForKey:colorType];
 }
 
 +(NSString*)datasetTypeToString:(DatasetType)datasetType{
@@ -2023,4 +2408,451 @@ NSMutableDictionary* colorRangeDic = nil;
     }
     return nil;
 }
++(BOOL)itemExist:(ThemeGraphItem*) item existItems:(NSArray*) existItems{
+    for (int i=0; i<existItems.count; i++) {
+        if([[existItems objectAtIndex:i]isEqualToString:[item graphExpression]]){
+            return YES;
+        }
+    }
+    return NO;
+}
++(NSString*)getCaption:(NSString*)graphExpression{
+    NSString* caption=graphExpression;
+    if([graphExpression containsString:@"."]){
+        NSArray *array = [caption componentsSeparatedByString:@"."];
+        if(array.count==2){
+            caption=[caption pathExtension];
+        }
+    }
+    return caption;
+}
++(ThemeGraphType)getThemeGraphType:(NSString*)type{
+    ThemeGraphType themeGraphType=-1;
+    if([type isEqualToString:@"面积图"]){
+        themeGraphType=TGT_Area;
+    }else if([type isEqualToString:@"阶梯图"]){
+        themeGraphType=TGT_Step;
+    }else if([type isEqualToString:@"折线图"]){
+        themeGraphType=TGT_Line;
+    }else if([type isEqualToString:@"点状图"]){
+        themeGraphType=TGT_Point;
+    }else if([type isEqualToString:@"柱状图"]){
+        themeGraphType=TGT_Bar;
+    }else if([type isEqualToString:@"三维柱状图"]){
+        themeGraphType=TGT_Bar3D;
+    }else if([type isEqualToString:@"饼图"]){
+        themeGraphType=TGT_Pie;
+    }else if([type isEqualToString:@"三维饼图"]){
+        themeGraphType=TGT_Custom;
+    }else if([type isEqualToString:@"玫瑰图"]){
+        themeGraphType=TGT_Rose;
+    }else if([type isEqualToString:@"三维玫瑰图"]){
+        themeGraphType=TGT_Rose3D;
+    }else if([type isEqualToString:@"堆叠柱状图"]){
+        themeGraphType=TGT_Stack_Bar;
+    }else if([type isEqualToString:@"三维堆叠柱状图"]){
+        themeGraphType=TGT_Stack_Bar3D;
+    }else if([type isEqualToString:@"环状图"]){
+        themeGraphType=TGT_Ring;
+    }
+    return themeGraphType;
+}
+//+(GraduatedMode)getGraduatedMode:(NSString*)type{
+//    GraduatedMode graduatedMode=nil;
+//
+//}
+/**
+ * 根据RGB值判断 深色与浅色
+ * @param r
+ * @param g
+ * @param b
+ * @return
+ */
++(BOOL)isDarkR:(int)r G:(int)g B:(int)b{
+    if(r * 0.299 + g * 0.578 + b * 0.114 >= 192){
+        //浅色
+        return false;
+    }else{
+        //深色
+        return true;
+    }
+}
+
+/**
+ * 获取统计专题图,等级符号专题图分级模式
+ * @param type
+ * @return
+ */
++(GraduatedMode)getGraduatedMode:(NSString*)strType{
+    if ([strType isEqualToString:@"CONSTANT"]) {
+        return GM_Constant;//常量分级
+    }else if([strType isEqualToString:@"LOGARITHM"]){
+        return GM_Logarithm;//对数分级
+    }else if([strType isEqualToString:@"SQUAREROOT"]){
+        return GM_Squareroot;//平方根分级
+    }else{
+        return GM_Constant;
+    }
+}
+
+/**
+ * 计算矢量数据集中某个字段的最大值,不支持多字段计算最大值
+ * @param datasetVector
+ * @param dotExpression
+ * @return
+ */
++(double)getMaxValue:(DatasetVector*)datasetVector dotExpression:(NSString*)dotExpression{
+    double maxValue = 1000;
+    QueryParameter *parameter =[[QueryParameter alloc]init];
+    [parameter setAttriButeFilter:dotExpression];
+    [parameter setCursorType:STATIC];
+    [parameter setHasGeometry:true];
+    [parameter setResultFields:[NSArray arrayWithObjects:dotExpression, nil]];
+    Recordset* recordset = [datasetVector query:parameter];
+    if (nil != recordset && [recordset recordCount]!=0){
+        FieldInfos *fieldInfos = [recordset fieldInfos];
+        if([[fieldInfos getName:dotExpression] fieldType]==FT_INT64){
+            // 屏蔽掉64位整形数据,组件不支持
+            return maxValue;
+        }
+        if ([[fieldInfos getName:dotExpression] fieldType]==FT_TEXT) {
+            maxValue = [recordset statisticByName:dotExpression statisticMode:MAX];
+        }
+    }
+    if (nil != recordset) {
+        [recordset close];
+        [recordset dispose];
+    }
+    [parameter dispose];
+    
+    return maxValue;
+}
+
++(ThemeGraduatedSymbol*)getThemeGraduatedSymbol:(NSDictionary*)data{
+    NSString* layerName = nil;
+    int layerIndex = -1;
+    layerName = [data objectForKey:@"LayerName"];
+    layerIndex = [[data objectForKey:@"LayerIndex"] intValue];
+    
+
+    Layer *layer =nil;
+    if (layerName != nil) {
+        layer = [SMThemeCartography getLayerByName:layerName];
+    } else {
+        layer = [SMThemeCartography getLayerByIndex:layerIndex];
+    }
+    
+    if (layer != nil && layer.theme != nil) {
+        if (layer.theme.themeType == TT_GraduatedSymbol) {
+            return (ThemeGraduatedSymbol*) layer.theme;
+        }
+    }
+    
+    return nil;
+}
+
++(ThemeDotDensity*) getThemeDotDensity:(NSDictionary*)data{
+    NSString* layerName = nil;
+    int layerIndex = -1;
+    layerName = [data objectForKey:@"LayerName"];
+    layerIndex = [[data objectForKey:@"LayerIndex"] intValue];
+    
+    
+    Layer *layer =nil;
+    if (layerName != nil) {
+        layer = [SMThemeCartography getLayerByName:layerName];
+    } else {
+        layer = [SMThemeCartography getLayerByIndex:layerIndex];
+    }
+    
+    if (layer != nil && layer.theme != nil) {
+        if (layer.theme.themeType == TT_DotDensity) {
+            return (ThemeDotDensity*) layer.theme;
+        }
+    }
+    
+    return nil;
+}
+
+/**
+ * 获取统计专题图中统计符号显示的最大值,最小值
+ * @return
+ */
++(void)getGraphSizeMax:(double*)dMax min:(double*)dMin{
+    MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
+    Map *map = mapControl.map;
+    
+    CGPoint pointStart = CGPointMake(0, 0);
+    CGPoint pointEnd = CGPointMake(0, (int)([mapControl mapWidth] / 3));
+    Point2D* point2DStart = [map pixelTomap:pointStart];
+    Point2D* point2DEnd = [map pixelTomap:pointEnd];
+    CGPoint pointMinEnd = CGPointMake(0, (int)([mapControl mapWidth] / 18));
+    Point2D* point2DMinEnd = [map pixelTomap:pointMinEnd];
+    
+    double maxSize = sqrt(pow(point2DEnd.x - point2DStart.x, 2) + pow(point2DEnd.y - point2DStart.y, 2));
+    double minSize = sqrt(pow(point2DMinEnd.x - point2DStart.x, 2) + pow(point2DMinEnd.y - point2DStart.y, 2));
+    
+    *dMax = maxSize;
+    *dMin = minSize;
+}
+
+/**
+ * 创建统计专题图
+ * @param dataset
+ * @param graphExpressions
+ * @param themeGraphType
+ * @param colors
+ * @return
+ */
++(BOOL)createThemeGraphMap:(Dataset*)dataset graphExpressions:(NSArray*)graphExpressions type:(ThemeGraphType)themeGraphType colors:(NSArray*)colors{
+    @try{
+        if (dataset!=nil && graphExpressions!=nil && graphExpressions.count>0 &&
+           colors!=nil) {
+            ThemeGraph *themeGraph = [[ThemeGraph alloc] init];
+            [themeGraph setGraphType:themeGraphType];
+            
+            ThemeGraphItem *themeGraphItem = [[ThemeGraphItem alloc]init];
+            [themeGraphItem setGraphExpression:[graphExpressions objectAtIndex:0]];
+            [themeGraphItem setCaption:[graphExpressions objectAtIndex:0]];
+            [themeGraph insert:0 item:themeGraphItem];
+            
+            [[themeGraph axesTextStyle] setFontHeight:6];
+            
+            double dMax = 0;
+            double dMin = 0;
+            [SMThemeCartography getGraphSizeMax:&dMax min:&dMin];
+            [themeGraph setMaxGraphSize:dMax];
+            [themeGraph setMinGraphSize:dMin];
+            
+            int count = [themeGraph getCount];
+            Colors *selectedColors = [Colors makeGradient:colors.count gradientColorArray:colors];
+            //Colors.makeGradient(colors.length, colors);
+            if (count > 0) {
+                for (int i = 0; i < count; i++) {
+                    [[[themeGraph getItem:i] uniformStyle] setFillForeColor:[selectedColors get:i]];
+                }
+            }
+            
+            //若有多个表达式，则从第二个开始添加
+            for (int i = 1; i < graphExpressions.count; i++) {
+                [SMThemeCartography addGraphItem:themeGraph graphExpression:[graphExpressions objectAtIndex:i] colors:selectedColors];
+            }
+            
+            Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
+            [map.layers addDataset:dataset Theme:themeGraph ToHead:YES];
+            [map refresh];
+            
+            return true;
+        }
+    }@catch(NSException *exception){
+        return false;
+    }
+}
+
+/**
+ * 创建栅格单值专题图
+ * @param dataset
+ * @param colors
+ * @return
+ */
++(NSDictionary*)createThemeGridUniqueMap:(Dataset*)dataset colors:(NSArray*)colors{
+    Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
+    DatasetGrid *datasetGrid = nil;
+    NSMutableDictionary *resultDic = [[NSMutableDictionary alloc] init];
+    
+    if (dataset!=nil && dataset.datasetType == Grid) {
+        datasetGrid = (DatasetGrid*) dataset;
+    }else if(dataset!=nil && dataset.datasetType != Grid){
+        [resultDic setObject:@"数据集类型不匹配：栅格专题图只能由栅格数据集制作" forKey:@"Error"];
+        [resultDic setObject:[NSNumber numberWithBool:false] forKey:@"Result"];
+        return resultDic;
+    }
+    
+    if (datasetGrid!=nil && colors!=nil) {
+        
+        ThemeGridUnique *theme = [ThemeGridUnique makeDefault:dataset colorGradientType:CGT_GREENORANGEVIOLET];
+        if ([theme getCount]>3000) {
+            [resultDic setObject:@"所选栅格数据集的单值项超过了系统的最大限制数目3000条，专题图制作失败" forKey:@"Error"];
+            [resultDic setObject:[NSNumber numberWithBool:false] forKey:@"Result"];
+            return resultDic;
+        }
+        
+        if (nil!=theme) {
+            int rangeCount = [theme getCount];
+            Colors *selectedColors = [Colors makeGradient:rangeCount gradientColorArray:colors];
+            if (rangeCount>0) {
+                for (int i=0; i<rangeCount; i++) {
+                    [[theme getItem:i] setColor:[selectedColors get:i]];
+                }
+            }
+            [map.layers addDataset:datasetGrid Theme:theme ToHead:YES];
+            [map refresh];
+        }
+        [resultDic setObject:[NSNumber numberWithBool:true] forKey:@"Result"];
+        return resultDic;
+        
+    }
+    
+    [resultDic setObject:@"专题图创建失败" forKey:@"Error"];
+    [resultDic setObject:[NSNumber numberWithBool:false] forKey:@"Result"];
+    return resultDic;
+    
+}
+
+/**
+ * 创建栅格分段专题图
+ * @param dataset
+ * @param colors
+ * @return
+ */
++(NSDictionary*)createThemeGridRangeMap:(Dataset*)dataset colors:(NSArray*)colors{
+    Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
+    DatasetGrid *datasetGrid = nil;
+    NSMutableDictionary *resultDic = [[NSMutableDictionary alloc] init];
+    
+    if (dataset!=nil && dataset.datasetType == Grid) {
+        datasetGrid = (DatasetGrid*) dataset;
+    }else if(dataset!=nil && dataset.datasetType != Grid){
+        [resultDic setObject:@"数据集类型不匹配：栅格专题图只能由栅格数据集制作" forKey:@"Error"];
+        [resultDic setObject:[NSNumber numberWithBool:false] forKey:@"Result"];
+        return resultDic;
+    }
+    
+    if (datasetGrid!=nil && colors!=nil) {
+        ThemeGridRange *theme = [ThemeGridRange makeDefault:datasetGrid rangeMode:RM_EQUALINTERVAL parameter:5 gradientType:CGT_GREENORANGEVIOLET];
+        
+        if (nil!=theme) {
+            int rangeCount = [theme getCount];
+            Colors *selectedColors = [Colors makeGradient:rangeCount gradientColorArray:colors];
+            if (rangeCount>0) {
+                for (int i=0; i<rangeCount; i++) {
+                    [[theme getItem:i] setColor:[selectedColors get:i]];
+                }
+            }
+            [map.layers addDataset:datasetGrid Theme:theme ToHead:YES];
+            [map refresh];
+        }
+        [resultDic setObject:[NSNumber numberWithBool:true] forKey:@"Result"];
+        return resultDic;
+        
+    }
+    
+    [resultDic setObject:@"专题图创建失败" forKey:@"Error"];
+    [resultDic setObject:[NSNumber numberWithBool:false] forKey:@"Result"];
+    return resultDic;
+    
+}
+
+/**
+ * 修改栅格单值专题图
+ * @param layer
+ * @param newColors
+ * @param specialValue
+ * @param defaultColor
+ * @param specialValueColor
+ * @param isParams
+ * @param isTransparent
+ * @return
+ */
++(BOOL)modifyThemeGridUniqueMap:(Layer*)layer colors:(NSArray*)newColors specialValue:(int)specialValue defaultColor:(Color*)defaultColor specialValueColor:(Color*)specialValueColor isParams:(BOOL)isParams  isTransparent:(BOOL)isTransparent{
+    
+    if (layer != nil && layer.theme != nil && [layer.theme themeType] == TT_GridUnique){
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory]addMapHistory];
+        
+        ThemeGridUnique * themeGridUnique = (ThemeGridUnique*)layer.theme;
+        if(specialValue!=-1){
+            [themeGridUnique setSpecialValue:specialValue];
+        }
+        if(defaultColor!=nil){
+            [themeGridUnique setDefaultColor:defaultColor];
+        }
+        if(isParams){
+            [themeGridUnique setIsSpecialValueTransparent:isTransparent];
+        }
+        if(specialValueColor!=nil){
+            //themeGridUnique.setSpecialValueColor(specialValueColor); //接口还未实现
+        }
+        if(newColors!=nil){
+            int rangeCount = [themeGridUnique getCount];
+            Colors *selectedColors = [Colors makeGradient:rangeCount gradientColorArray:newColors];
+            if (rangeCount>0) {
+                for (int i=0; i<rangeCount; i++) {
+                    [[themeGridUnique getItem:i] setColor:[selectedColors get:i]];
+                }
+            }
+        }
+        [mapControl.map refresh];
+        return true;
+    }
+    return false;
+}
+
+/**
+ * 修改栅格分段专题图
+ * @param layer
+ * @param rangeMode
+ * @param rangeParameter
+ * @param newColors
+ * @return
+ */
++(BOOL)modifyThemeGridRangeMap:(Layer*)layer rangeMode:(RangeMode)rangeMode  rangeParameter:(double)rangeParameter newColors:(NSArray*)newColors{
+    
+    if (layer != nil && layer.theme != nil && [layer.theme themeType] == TT_GridUnique){
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory]addMapHistory];
+        
+        ThemeGridRange* themeGridRange = (ThemeGridRange*)layer.theme;
+        if (rangeMode==RM_None) {
+            rangeMode = [themeGridRange getRangeMode];
+        }
+        if (rangeParameter==-1) {
+            rangeParameter = [themeGridRange getCount];
+        }
+        
+        ThemeGridRange *themeTemp = [ThemeGridRange makeDefault:((DatasetGrid*)layer.dataset) rangeMode:rangeMode parameter:rangeParameter gradientType:CGT_GREENORANGEVIOLET];
+        
+        if (themeTemp!=nil) {
+            if (newColors!=nil) {
+                int rangeCount = [themeTemp getCount];
+                Colors *selectedColors = [Colors makeGradient:rangeCount gradientColorArray:newColors];
+                if (rangeCount>0) {
+                    for (int i=0; i<rangeCount; i++) {
+                        [[themeTemp getItem:i] setColor:[selectedColors get:i]];
+                    }
+                }
+            }else{
+                //获取上次的颜色方案(先从专题图中获取，再从内存中获取)
+                NSArray* colorsArr = [SMThemeCartography getLastThemeColors:layer];
+                if (colorsArr!=nil && colorsArr.count!=0) {
+                    lastGridRangeColors = colorsArr;
+                    int rangeCount = [themeTemp getCount];
+                    Colors *selectedColors = [Colors makeGradient:rangeCount gradientColorArray:lastGridRangeColors];
+                    if (rangeCount>0) {
+                        for (int i=0; i<rangeCount; i++) {
+                            [[themeTemp getItem:i] setColor:[selectedColors get:i]];
+                        }
+                    }
+                }else{
+                    if (lastGridRangeColors!=nil) {
+                        int rangeCount = [themeTemp getCount];
+                        Colors *selectedColors = [Colors makeGradient:rangeCount gradientColorArray:lastGridRangeColors];
+                        if (rangeCount>0) {
+                            for (int i=0; i<rangeCount; i++) {
+                                [[themeTemp getItem:i] setColor:[selectedColors get:i]];
+                            }
+                        }
+                    }
+                }
+            }
+            [themeGridRange fromXML:[themeTemp toXML]];
+            [mapControl.map refresh];
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
 @end

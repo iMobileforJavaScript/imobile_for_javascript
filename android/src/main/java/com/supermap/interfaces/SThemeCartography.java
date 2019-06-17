@@ -3426,6 +3426,430 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
 
+    /*热力图
+     * ********************************************************************************************/
+    /**
+     * 数据集->新建热力图层
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void createHeatMap(ReadableMap readableMap, Promise promise) {
+        try {
+            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            int datasourceIndex = -1;
+            String datasourceAlias = null;
+
+            String datasetName = null;//数据集名称
+            int KernelRadius = 20;//核半径
+            double FuzzyDegree = 0.1;//颜色渐变模糊度
+            double Intensity = 0.1;//最大颜色权重
+            Color[] colors = null;//颜色方案
+
+
+            if (data.containsKey("DatasetName")){
+                datasetName = data.get("DatasetName").toString();
+            }
+            if (data.containsKey("KernelRadius")){
+                KernelRadius  = Integer.parseInt(data.get("KernelRadius").toString());
+            }
+            if (data.containsKey("FuzzyDegree")){
+                FuzzyDegree  = Double.parseDouble(data.get("FuzzyDegree").toString());
+            }
+            if (data.containsKey("Intensity")){
+                Intensity  = Double.parseDouble(data.get("Intensity").toString());
+            }
+            if (data.containsKey("ColorType")){
+                String type = data.get("ColorType").toString();
+                colors = SMThemeCartography.getAggregationColors(type);
+            } else {
+                colors = SMThemeCartography.getAggregationColors("BA_Rainbow");//默认
+            }
+
+            Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
+            if (dataset == null) {
+                if (data.containsKey("DatasourceIndex")){
+                    String index = data.get("DatasourceIndex").toString();
+                    datasourceIndex = Integer.parseInt(index);
+                }
+                if (data.containsKey("DatasourceAlias")){
+                    datasourceAlias = data.get("DatasourceAlias").toString();
+                }
+
+                if (datasourceAlias != null) {
+                    dataset = SMThemeCartography.getDataset(datasourceAlias, datasetName);
+                }  else {
+                    dataset = SMThemeCartography.getDataset(datasourceIndex, datasetName);
+                }
+            }
+
+            WritableMap writableMap = SMThemeCartography.createLayerHeatMap(dataset, KernelRadius, FuzzyDegree,Intensity, colors);
+            promise.resolve(writableMap);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+//    /**
+//     * 图层->新建热力图层
+//     *
+//     * @param readableMap
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void createHeatMapByLayer(ReadableMap readableMap, Promise promise) {
+//        try {
+//            MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+//            mapControl.getEditHistory().addMapHistory();
+//
+//            HashMap<String, Object> data = readableMap.toHashMap();
+//
+//            String layerName = null;//图层名称
+//            int layerIndex = -1;
+//            ArrayList<String> graphExpressions = null;//字段表达式
+//            ThemeGraphType themeGraphType = null;//统计图类型
+//            Color[] colors = null;//颜色方案
+//
+//            if (data.containsKey("LayerName")){
+//                layerName = data.get("LayerName").toString();
+//            }
+//            if (data.containsKey("LayerIndex")){
+//                String index = data.get("LayerIndex").toString();
+//                layerIndex = Integer.parseInt(index);
+//            }
+//            if (data.containsKey("GraphExpressions")){
+//                graphExpressions  = (ArrayList<String>) data.get("GraphExpressions");
+//            }
+//            if (data.containsKey("ThemeGraphType")){
+//                String type = data.get("ThemeGraphType").toString();
+//                themeGraphType  = SMThemeCartography.getThemeGraphType(type);
+//            }
+//            if (data.containsKey("GraphColorType")){
+//                String type = data.get("GraphColorType").toString();
+//                colors = SMThemeCartography.getGraphColors(type);
+//            } else {
+//                colors = SMThemeCartography.getGraphColors("HA_Calm");//默认
+//            }
+//
+//            Layer layer = null;
+//            if (layerName != null) {
+//                layer = SMThemeCartography.getLayerByName(layerName);
+//            } else {
+//                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+//            }
+//            Dataset dataset = null;
+//            if (layer != null) {
+//                dataset = layer.getDataset();
+//            }
+//
+//            boolean result = SMThemeCartography.createThemeGraphMap(dataset, graphExpressions, themeGraphType, colors);
+//            promise.resolve(result);
+//        } catch (Exception e) {
+//            Log.e(REACT_CLASS, e.getMessage());
+//            e.printStackTrace();
+//            promise.reject(e);
+//        }
+//    }
+
+    /**
+     * 获取热力图的核半径
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getHeatMapRadius(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() == null) {
+                LayerHeatmap heatMap = (LayerHeatmap) layer;
+                int kernelRadius = heatMap.getKernelRadius();
+
+                promise.resolve(kernelRadius);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置热力图的核半径
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void setHeatMapRadius(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+            int radius = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("Radius")){
+                String size = data.get("Radius").toString();
+                radius = (int)Double.parseDouble(size);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && radius != -1 && layer.getTheme() == null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
+                LayerHeatmap heatmap = (LayerHeatmap) layer;
+                heatmap.setKernelRadius(radius);
+                mapControl.getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取热力图的颜色渐变模糊度
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getHeatMapFuzzyDegree(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() == null) {
+                LayerHeatmap heatMap = (LayerHeatmap) layer;
+                double fuzzyDegree = heatMap.getFuzzyDegree();
+
+                promise.resolve(fuzzyDegree);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置热力图的颜色渐变模糊度(0-1)
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void setHeatMapFuzzyDegree(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+            double fuzzyDegree = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("FuzzyDegree")){
+                String size = data.get("FuzzyDegree").toString();
+                fuzzyDegree = Double.parseDouble(size);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && fuzzyDegree != -1 && layer.getTheme() == null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
+                LayerHeatmap heatmap = (LayerHeatmap) layer;
+                heatmap.setFuzzyDegree(fuzzyDegree / 10);
+                mapControl.getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取热力图的最大颜色权重
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getHeatMapMaxColorWeight(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() == null) {
+                LayerHeatmap heatMap = (LayerHeatmap) layer;
+                double intensity = heatMap.getIntensity();
+
+                promise.resolve(intensity);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置热力图的最大颜色权重(0-1)
+     *
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void setHeatMapMaxColorWeight(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+            double intensity = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("MaxColorWeight")){
+                String size = data.get("MaxColorWeight").toString();
+                intensity = Double.parseDouble(size);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && intensity != -1 && layer.getTheme() == null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
+                LayerHeatmap heatmap = (LayerHeatmap) layer;
+                heatmap.setIntensity(intensity / 10);
+                mapControl.getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+
     /***************************************************************************************/
 
     /**

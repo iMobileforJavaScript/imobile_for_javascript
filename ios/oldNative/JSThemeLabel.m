@@ -31,7 +31,7 @@ RCT_REMAP_METHOD(createObj,createObjWithresolver:(RCTPromiseResolveBlock)resolve
 RCT_REMAP_METHOD(createObjClone,createObjCloneById:(NSString*)themeId withResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         ThemeLabel* oldTheme = [JSObjManager getObjWithKey:themeId];
-        ThemeLabel* theme = [[ThemeLabel alloc] initThemeLabel:oldTheme];
+        ThemeLabel* theme = [[ThemeLabel alloc] initWithThemeLabel:oldTheme];
         NSString* key = [JSObjManager addObj:theme];
         resolve(key);
     } @catch (NSException *exception) {
