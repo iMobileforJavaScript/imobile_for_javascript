@@ -2069,6 +2069,61 @@ RCT_REMAP_METHOD(setDynamicProjection, setDynamicProjectionWithResolve:(RCTPromi
         reject(@"setDynamicProjection", exception.reason, nil);
     }
 }
+//addLayers, addLayers:(NSArray*)datasetNames dataSourceName:(NSString*)dataSourceName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
+#pragma mark 初始化标绘符号库
+RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymbolPaths resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        NSMutableArray* resultArr = [[NSMutableArray alloc] init];
+        for (NSString* path in plotSymbolPaths) {
+            int libId=[mapControl addPlotLibrary:path];
+            [resultArr addObject:@(libId)];
+        }
+        resolve(resultArr);
+    } @catch (NSException *exception) {
+        reject(@"setDynamicProjection", exception.reason, nil);
+    }
+}
+
+#pragma mark 设置标绘符号
+RCT_REMAP_METHOD(setPlotSymbol, setPlotSymbol:(int)libId symbolCode:(int)symbolCode resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        [mapControl setAction:CREATE_PLOT];
+        [mapControl setPlotSymbol:libId symbolCode:symbolCode];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setDynamicProjection", exception.reason, nil);
+    }
+}
+
+#pragma mark 添加cad图层
+RCT_REMAP_METHOD(addCadLayer, addCadLayer:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        Layer* layer=[mapControl.map.layers getLayerWithName:layerName];
+        if(!layer){
+            DatasetVectorInfo* datasetVectorInfo=[[DatasetVectorInfo alloc] init];
+            [datasetVectorInfo setDatasetType:CAD];
+            [datasetVectorInfo setName:layerName];
+            Dataset* datasetVector=[[sMap.smMapWC.workspace.datasources get:0].datasets getWithName:layerName];
+            if(!datasetVector){
+                datasetVector=[[sMap.smMapWC.workspace.datasources get:0].datasets create:datasetVectorInfo];
+            }
+            layer=[mapControl.map.layers addDataset:datasetVector ToHead:true];
+            [mapControl.map.layers addLayer:layer];
+        }
+        [layer setEditable:YES];
+        
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setDynamicProjection", exception.reason, nil);
+    }
+}
+
 
 #pragma mark /************************************** 选择集操作 BEGIN****************************************/
 #pragma mark 设置Selection样式

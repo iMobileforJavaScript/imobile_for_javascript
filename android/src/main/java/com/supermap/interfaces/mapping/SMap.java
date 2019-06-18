@@ -3507,6 +3507,74 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     }
 
+    /**
+     * 初始化标绘符号库
+     *
+     * @param plotSymbolPaths
+     * @param promise
+     */
+    @ReactMethod
+    public void initPlotSymbolLibrary(ReadableArray plotSymbolPaths, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            WritableArray resultArr = Arguments.createArray();
+            for (int i = 0; i < plotSymbolPaths.size(); i++) {
+                int libId= (int) mapControl.addPlotLibrary(plotSymbolPaths.getString(i));
+                resultArr.pushInt(libId);
+            }
+            promise.resolve(resultArr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标绘符号
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setPlotSymbol(int libID,int symbolCode, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.setPlotSymbol(libID, symbolCode);
+            mapControl.setAction(Action.CREATEPLOT);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 添加cad图层
+     * @param layerName
+     * @param promise
+     */
+    public void  addCadLayer(String layerName,Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            Layer cadLayer=mapControl.getMap().getLayers().get(layerName);
+            if(cadLayer==null) {
+                DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+                datasetVectorInfo.setType(DatasetType.CAD);
+                datasetVectorInfo.setName(layerName);
+                DatasetVector datasetVector = (DatasetVector) sMap.smMapWC.getWorkspace().getDatasources().get(0).getDatasets().get(layerName);
+                if(datasetVector==null){
+                    datasetVector = sMap.smMapWC.getWorkspace().getDatasources().get(0).getDatasets().create(datasetVectorInfo);
+                }
+                cadLayer=mapControl.getMap().getLayers().add(datasetVector, true);
+            }
+            cadLayer.setEditable(true);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+
+    }
 
 
 /************************************** 地图编辑历史操作 BEGIN****************************************/
