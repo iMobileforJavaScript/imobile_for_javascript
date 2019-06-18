@@ -4373,7 +4373,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
     /**
-     * 加此图例的事件监听
+     * 添加图例的事件监听
      *
      * @param promise
      */

@@ -644,14 +644,14 @@ RCT_REMAP_METHOD(getScaleData, getScaleViewDataWithResolver:(RCTPromiseResolveBl
         reject(@"getScaleData",exception.reason,nil);
     }
 }
-#pragma mark 加此图例的事件监听
+#pragma mark 添加图例的事件监听
 RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         if(sMap.smMapWC.mapControl.map.legend.contentChangeDelegate == nil){
             sMap.smMapWC.mapControl.map.legend.contentChangeDelegate = self;
-            [sMap.smMapWC.mapControl.map refresh];
         }
+        [sMap.smMapWC.mapControl.map refresh];
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"addLegendDelegate",exception.reason,nil);
