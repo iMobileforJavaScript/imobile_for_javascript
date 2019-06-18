@@ -3209,6 +3209,25 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 设置当前图层全副
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setLayerFullView(String name, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
+            Rectangle2D bounds =  layer.getDataset().getBounds();
+            sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置最小比例尺范围
      *
      * @param promise

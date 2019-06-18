@@ -1044,6 +1044,17 @@ export default (function () {
   }
 
   /**
+   * 全副显示图层
+   */
+  function setLayerFullView (name) {
+    try {
+      return SMap.setLayerFullView(name)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 导入符号库
    * @param path
    * @param isReplace 是否替换
@@ -1516,6 +1527,7 @@ export default (function () {
     
     addMap,
     addLayers,
+    setLayerFullView,
     importSymbolLibrary,
     isOverlapDisplayed,
     setOverlapDisplayed,

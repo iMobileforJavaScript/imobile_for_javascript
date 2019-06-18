@@ -1164,6 +1164,24 @@ RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve re
     }
 }
 
+#pragma mark 设置当前图层全副
+/**
+ * 设置当前图层全副
+ *
+ * @param promise
+ */
+RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+     @try{
+         Map* map = sMap.smMapWC.mapControl.map;
+         Rectangle2D* bounds =  [map.layers getLayerWithName:name].dataset.bounds;
+         map.viewBounds = bounds;
+         [map refresh];
+       resolve(@(1));
+     } @catch (NSException *exception) {
+         reject(@"workspace", exception.reason, nil);
+     }
+}
+
 #pragma mark 获取地图信息
 RCT_REMAP_METHOD(getMapInfo, getMapInfoWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
