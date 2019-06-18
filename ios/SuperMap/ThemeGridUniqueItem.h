@@ -7,24 +7,20 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ThemeGridUnique.h"
+@class ThemeGridUnique;
 @class Color;
 
-@interface ThemeGridUniqueItem : NSObject{
-    ThemeGridUnique* _themeGridUnique;
-    Color* _color;
-    @private
-    BOOL _isUserThemeGridUnique;
-}
-@property(nonatomic,retain)ThemeGridUnique* themeGridUnique;
+@interface ThemeGridUniqueItem : NSObject
+//@property(nonatomic,retain)ThemeGridUnique* themeGridUnique;
 @property(nonatomic)Color* color;
+@property(nonatomic,assign) double unique;
+@property(nonatomic,strong) NSString* caption;
+@property(nonatomic,assign) BOOL visable;
+
 
 -(id)initWithThemeGridUnique:(ThemeGridUnique*)themeGridUnique;
 
 -(id)initWithThemeGridUniqueItem:(ThemeGridUniqueItem*) themeGridUniqueItem;
 
--(void)setColor:(Color*)color;
-
--(Color*)getColor;
 
 @end

@@ -11,15 +11,7 @@
 /** 单值专题图子项类。
  <p>单值专题图是将专题值相同的要素归为一类，为每一类设定一种渲染风格，其中每一类就是一个专题图子项。比如，利用单值专题图制作行政区划图，Name 字段代表省/直辖市名，该字段用来做专题变量，如果该字段的字段值总共有5种不同值，则该行政区划图有5个专题图子项，其中每一个子项内的要素 Name 字段值都相同。</p>
 */
-@interface ThemeUniqueItem : NSObject{
-@private
-    NSString *_mUnique;//指定单值专题图子项的单值
-    BOOL _mIsVisible;
-    NSString *_mCaption;//指定单值专题图子项的名称
-    GeoStyle *_mStyle;
-    ThemeUnique *_mThemeUnique;
-    BOOL _mIsUserThemeUnique;
-}
+@interface ThemeUniqueItem : NSObject
 
 /**@brief 获取或设置单值专题图子项的单值。
  <p>默认值为一个空字符串。</p>

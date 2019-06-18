@@ -9,9 +9,7 @@
 #import "ThemeType.h"
 
 ///专题图类，该类是所有专题图的基类。所有专题图类，如单值专题图，标签专题图，分段专题图等都继承自该类。
-@interface Theme : NSObject {
-    ThemeType _themeType;
-}
+@interface Theme : NSObject 
 
 /**
      * @brief 获取专题图的类型。详细信息请参见ThemeType类。

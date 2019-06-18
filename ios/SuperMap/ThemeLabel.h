@@ -27,19 +27,7 @@
 * <P>在标签专题图中，你可以对标签的显示风格和位置进行设置或控制，你可以为所有的标签都设置统一的显示风格和位置选项来显示，也可以通过分段的方式，对单个或每个分段内的标签的风格分别进行设置，另外，单个标签的位置也是可以修改的。</p>
 * <p>注：地图上一般还会出现图例说明，图名，比例尺等等，哪些都是制图元素，不属于标签专题图标注的范畴。</p>
 */
-@interface ThemeLabel : Theme{
-    
-    RangeMode _mRangeMode;
-    NSMutableArray * _mLableItems;
-    ThemeLabel *_mThemeLabel;
-    TextStyle *_mUniformStyle;
-    GeoStyle *_mBackStyle;
-    GeoStyle *_mLeaderLineStyle;
-    MixedTextStyle *_mixedTextStyle;
-    LabelMatrix *_mLabelMatrix;
-    Size2D *_mSize2D;
-    
-}
+@interface ThemeLabel : Theme
 
 /**
 * @brief 获取或设置统一文本风格。
@@ -63,7 +51,7 @@
 * @brief 拷贝构造函数，根据给定的  <ThemeLabel> 对象构造一个与其完全相同的新对象。
 * @param themeLabel 给定的  <ThemeLabel>  对象。
 */
--(id)initThemeLabel:(ThemeLabel *)themeLabel;
+-(id)initWithThemeLabel:(ThemeLabel *)themeLabel;
 /**
 * @brief 获取标签专题图子项列表。
 * @return 标签专题图子项列表。

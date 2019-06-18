@@ -72,6 +72,7 @@ import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 import com.supermap.data.Color;
 
+import org.apache.http.cookie.SM;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -86,8 +87,8 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
+import java.util.Map;
 import java.util.Vector;
 
 public class SMap extends ReactContextBaseJavaModule implements LegendContentChangeListener {
@@ -3507,6 +3508,74 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     }
 
+    /**
+     * 初始化标绘符号库
+     *
+     * @param plotSymbolPaths
+     * @param promise
+     */
+    @ReactMethod
+    public void initPlotSymbolLibrary(ReadableArray plotSymbolPaths, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            WritableArray resultArr = Arguments.createArray();
+            for (int i = 0; i < plotSymbolPaths.size(); i++) {
+                int libId= (int) mapControl.addPlotLibrary(plotSymbolPaths.getString(i));
+                resultArr.pushInt(libId);
+            }
+            promise.resolve(resultArr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标绘符号
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setPlotSymbol(int libID,int symbolCode, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.setPlotSymbol(libID, symbolCode);
+            mapControl.setAction(Action.CREATEPLOT);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 添加cad图层
+     * @param layerName
+     * @param promise
+     */
+    public void  addCadLayer(String layerName,Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            Layer cadLayer=mapControl.getMap().getLayers().get(layerName);
+            if(cadLayer==null) {
+                DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+                datasetVectorInfo.setType(DatasetType.CAD);
+                datasetVectorInfo.setName(layerName);
+                DatasetVector datasetVector = (DatasetVector) sMap.smMapWC.getWorkspace().getDatasources().get(0).getDatasets().get(layerName);
+                if(datasetVector==null){
+                    datasetVector = sMap.smMapWC.getWorkspace().getDatasources().get(0).getDatasets().create(datasetVectorInfo);
+                }
+                cadLayer=mapControl.getMap().getLayers().add(datasetVector, true);
+            }
+            cadLayer.setEditable(true);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+
+    }
 
 
 /************************************** 地图编辑历史操作 BEGIN****************************************/
@@ -3707,6 +3776,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().setAngle(angle);
+            sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
@@ -3758,6 +3828,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     break;
             }
             sMap.smMapWC.getMapControl().getMap().setColorMode(colorMode);
+            sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         }catch (Exception e){
             promise.resolve(e);
@@ -3774,7 +3845,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = SMap.getInstance();
             GeoStyle backgroundStyle = sMap.smMapWC.getMapControl().getMap().getBackgroundStyle();
             Color color = backgroundStyle.getFillForeColor();
-            promise.resolve(color.toColorString());
+            String r = Integer.toHexString(color.getR());
+            String g = Integer.toHexString(color.getG());
+            String b = Integer.toHexString(color.getB());
+            r = r.length() == 1 ? "0" + r : r;
+            g = g.length() == 1 ? "0" + g : g;
+            b = b.length() == 1 ? "0" + b : b;
+            String colorString = "#"+r+g+b;
+            promise.resolve(colorString);
         }catch (Exception e){
             promise.reject(e);
         }
@@ -4035,6 +4113,111 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
+    /**
+     * 从数据源复制坐标系
+     * @param dataSourcePath
+     * @param promise
+     */
+    @ReactMethod
+    public void copyPrjCoordSysFromDatasource(String dataSourcePath, int engineType, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Workspace workspace = new Workspace();
+            DatasourceConnectionInfo datasourceConnectionInfo = new DatasourceConnectionInfo();
+            EngineType eType = EngineType.newInstance(engineType);
+            datasourceConnectionInfo.setEngineType(eType);
+            datasourceConnectionInfo.setServer(dataSourcePath);
+            datasourceConnectionInfo.setAlias("dataSource");
+            Datasource datasource = workspace.getDatasources().open(datasourceConnectionInfo);
+
+            PrjCoordSys prjCoordSys = datasource.getPrjCoordSys();
+            sMap.smMapWC.getMapControl().getMap().setPrjCoordSys(prjCoordSys);
+
+            String coordName = sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getName();
+
+            WritableMap map = Arguments.createMap();
+            map.putString("prjCoordSysName", coordName);
+
+            promise.resolve(map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+
+    }
+
+    /**
+     * 从数据集复制坐标系
+     * @param datasourceName
+     * @param datasetName
+     * @param promise
+     */
+    @ReactMethod
+    public void copyPrjCoordSysFromDataset(String datasourceName, String datasetName, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+
+            Datasource datasource = datasources.get(datasourceName);
+
+            if(datasource != null){
+                Dataset dataset = datasource.getDatasets().get(datasetName);
+                if(dataset != null){
+                    if(dataset.getPrjCoordSys() != null){
+                        sMap.smMapWC.getMapControl().getMap().setPrjCoordSys(dataset.getPrjCoordSys());
+                    }else{
+                        sMap.smMapWC.getMapControl().getMap().setPrjCoordSys(datasource.getPrjCoordSys());
+                    }
+                    String coordName = sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getName();
+
+                    WritableMap map = Arguments.createMap();
+                    map.putString("prjCoordSysName", coordName);
+
+                    promise.resolve(map);
+                }else {
+                    promise.resolve(false);
+                }
+
+            }else{
+                promise.resolve(false);
+            }
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 从文件复制坐标系
+     * @param filePath
+     * @param fileType
+     * @param promise
+     */
+    @ReactMethod
+    public void copyPrjCoordSysFromFile(String filePath, String fileType, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            PrjFileType prjFileType = fileType.equals("xml") ? PrjFileType.SUPERMAP : PrjFileType.ESRI;
+            PrjCoordSys prjCoordSys = new PrjCoordSys();
+            Boolean isSuccess = prjCoordSys.fromFile(filePath,prjFileType);
+
+            WritableMap map = Arguments.createMap();
+
+            if(isSuccess){
+               sMap.smMapWC.getMapControl().getMap().setPrjCoordSys(prjCoordSys);
+                String coordName = sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getName();
+                map.putString("prjCoordSysName", coordName);
+            }else{
+                map.putString("error","ILLEGAL_COORDSYS");
+            }
+
+            promise.resolve(map);
+
+        }catch (Exception e){
+            promise.reject(e);
+        }
+
+    }
+
     /**
      * 获取动态投影是否已开启
      * @param promise
@@ -4065,8 +4248,113 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
     /**
-     * 加此图例的事件监听
+     * 获取当前投影转换方法
+     * @param promise
+     */
+    @ReactMethod
+    public void getCoordSysTransMethod(Promise promise){
+        try{
+            sMap = SMap.getInstance();
+            CoordSysTransMethod method = sMap.smMapWC.getMapControl().getMap().getDynamicPrjTransMethond();
+            CoordSysTransMethod []methods = new CoordSysTransMethod[6];
+            int index = 0;
+            String name = "";
+            methods[0] = CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION;
+            methods[1] = CoordSysTransMethod.MTH_MOLODENSKY;
+            methods[2] = CoordSysTransMethod.MTH_MOLODENSKY_ABRIDGED;
+            methods[3] = CoordSysTransMethod.MTH_POSITION_VECTOR;
+            methods[4] = CoordSysTransMethod.MTH_COORDINATE_FRAME;
+            methods[5] = CoordSysTransMethod.MTH_BURSA_WOLF;
+            for(int i = 0; i < methods.length; i++){
+                if(method == methods[i])
+                    index = i;
+            }
+            switch (index){
+                case 0:
+                    name = "Geocentric Transalation(3-para)";
+                    break;
+                case 1:
+                    name = "Molodensky(7-para)";
+                    break;
+                case 2:
+                    name = "Abridged Molodensky(7-para)";
+                    break;
+                case 3:
+                    name = "Position Vector(7-para)";
+                    break;
+                case 4:
+                    name = "Coordinate Frame(7-para)";
+                    break;
+                case 5:
+                    name = "Bursa-wolf(7-para)";
+                    break;
+            }
+            promise.resolve(name);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置当前投影转换方法和参数
+     * @param params
+     * @param promise
+     */
+    @ReactMethod
+    public void setCoordSysTransMethodAndParams(ReadableMap params, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            String [] coorMethodArray = new String[6];
+            CoordSysTransMethod method = CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION;
+            int index = 0;
+            coorMethodArray[0] = "Geocentric Transalation(3-para)";
+            coorMethodArray[1] = "Molodensky(7-para)";
+            coorMethodArray[2] = "Abridged Molodensky(7-para)";
+            coorMethodArray[3] = "Position Vector(7-para)";
+            coorMethodArray[4] = "Coordinate Frame(7-para)";
+            coorMethodArray[5] = "Bursa-wolf(7-para)";
+            for(int i = 0; i < coorMethodArray.length; i++){
+                if(params.getString("coordSysTransMethod").equals(coorMethodArray[i]))
+                    index = i;
+            }
+            switch (index) {
+                case 0:
+                    method = CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION;
+                    break;
+                case 1:
+                    method = CoordSysTransMethod.MTH_MOLODENSKY;
+                    break;
+                case 2:
+                    method = CoordSysTransMethod.MTH_MOLODENSKY_ABRIDGED;
+                    break;
+                case 3:
+                    method = CoordSysTransMethod.MTH_POSITION_VECTOR;
+                    break;
+                case 4:
+                    method = CoordSysTransMethod.MTH_COORDINATE_FRAME;
+                    break;
+                case 5:
+                    method = CoordSysTransMethod.MTH_BURSA_WOLF;
+                    break;
+            }
+            map.setDynamicPrjTransMethond(method);
+            map.getDynamicPrjTransParameter().setRotateX(params.getDouble("rotateX"));
+            map.getDynamicPrjTransParameter().setRotateY(params.getDouble("rotateY"));
+            map.getDynamicPrjTransParameter().setRotateZ(params.getDouble("rotateZ"));
+            map.getDynamicPrjTransParameter().setTranslateX(params.getDouble("translateX"));
+            map.getDynamicPrjTransParameter().setTranslateY(params.getDouble("translateY"));
+            map.getDynamicPrjTransParameter().setTranslateZ(params.getDouble("translateZ"));
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+    /**
+     * 添加图例的事件监听
      *
      * @param promise
      */
@@ -4075,6 +4363,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().getLegend().setContentChangeListener(this);
+            sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -4096,7 +4385,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 byte[] bitmapBytes = baos.toByteArray();
                 result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
             }
-            System.out.println(result);
             writeMap.putString("image",result);
             writeMap.putString("title",name);
             writeMap.putInt("type",type);

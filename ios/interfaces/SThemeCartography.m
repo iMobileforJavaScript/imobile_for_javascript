@@ -1,4 +1,3 @@
-
 //
 //  SThemeCartography.m
 //  Supermap
@@ -12,8 +11,9 @@
 #import "STranslate.h"
 #import "SMap.h"
 
-static NSMutableArray* _lastColorUniqueArray = nil;
-static NSMutableArray* _lastColorRangeArray = nil;
+static NSArray* _lastColorUniqueArray = nil;
+static NSArray* _lastColorRangeArray = nil;
+static NSArray* _lastColorGraphArray = nil;
 
 @implementation SThemeCartography
 RCT_EXPORT_MODULE();
@@ -72,12 +72,8 @@ RCT_REMAP_METHOD(createThemeUniqueMap, createThemeUniqueMapWithResolver:(NSDicti
             if ([array containsObject:@"ColorScheme"]) {
                 NSString* colorScheme = [dataDic objectForKey:@"ColorScheme"];
                 NSMutableDictionary* arrayColor = nil;
-                NSMutableArray* colorArray;
-                arrayColor = [SMThemeCartography getUniqueColors:colorScheme];
-                NSArray* arrKey = [arrayColor allKeys];
-                if ([arrKey containsObject:colorScheme]) {
-                    colorArray = [arrayColor objectForKey:colorScheme];
-                }
+                NSArray* colorArray;
+                colorArray = [SMThemeCartography getUniqueColors:colorScheme];
                 if (colorArray != nil) {
                     int rangeCount = [themeUnique getCount];
                     Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:colorArray];
@@ -92,7 +88,7 @@ RCT_REMAP_METHOD(createThemeUniqueMap, createThemeUniqueMapWithResolver:(NSDicti
             }
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [mapControl.map.layers addDataset:dataset Theme:themeUnique ToHead:true];
-            [mapControl.map refresh];
+            [mapControl.map refresh];    
             resolve([NSNumber numberWithBool:YES]);
         }
         else{
@@ -249,10 +245,10 @@ RCT_REMAP_METHOD(modifyThemeUniqueMap, modifyThemeUniqueMapWithResolver:(NSDicti
                     }
                     else{
                         if (_lastColorUniqueArray != nil) {
-                            int rangeCount = [tu getCount];
-                            Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:_lastColorUniqueArray];
-                            for (int i = 0; i < rangeCount; i++) {
-                                [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tu getItem:i].mStyle color:[selectedColors get:i]];
+                                int rangeCount = [tu getCount];
+                                Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:_lastColorUniqueArray];
+                                for (int i = 0; i < rangeCount; i++) {
+                                    [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tu getItem:i].mStyle color:[selectedColors get:i]];
                             }
                         }
                     }
@@ -456,6 +452,211 @@ RCT_REMAP_METHOD(getUniqueExpression, getUniqueExpressionWithResolver:(NSDiction
 
 /*标签专题图
  * ********************************************************************************************/
+
+/**
+ * 新建单值标签图层
+ *
+ * @param readableMap (数据源的索引/数据源的别名/打开本地数据源、数据集名称、 分段字段表达式、分段模式、分段参数、颜色渐变模式)
+ * @param promise
+ */
+RCT_REMAP_METHOD(createUniqueThemeLabelMap, createUniqueThemeLabelMapWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        int datasourceIndex = -1;
+        NSString* datasourceAlias = @"";
+        NSString* datasetName = @"";
+        NSString* rangeExpression = @"";//分段字段表达式
+        RangeMode rangeMode = RM_None;//分段模式
+        double rangeParameter = -1;//分段参数
+        ColorGradientType colorGradientType = CGT_NULL;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"DatasetName"]) {
+            datasetName = [dataDic objectForKey:@"DatasetName"];
+        }
+        if ([array containsObject:@"RangeExpression"]) {
+            rangeExpression = [dataDic objectForKey:@"RangeExpression"];
+        }
+        if ([array containsObject:@"RangeMode"]) {
+            NSString* type = [dataDic objectForKey:@"RangeMode"];
+            rangeMode = [SMThemeCartography getRangeMode:type];
+        }
+        if ([array containsObject:@"RangeParameter"]) {
+            NSString* param = [dataDic objectForKey:@"RangeParameter"];
+            rangeParameter = [param doubleValue];
+        }
+        if ([array containsObject:@"ColorGradientType"]){
+            NSString* type = [dataDic objectForKey: @"ColorGradientType" ];
+            colorGradientType = [SMThemeCartography getColorGradientType:type];
+        } else {
+            colorGradientType = CGT_YELLOWGREEN;
+        }
+        
+        Dataset *dataset = nil;
+        dataset = [SMThemeCartography getDataset:datasetName data:dataDic];
+        if (dataset == nil) {
+            if ([array containsObject:@"DatasourceIndex"]) {
+                NSNumber* index = [dataDic objectForKey:@"DatasourceIndex"];
+                datasourceIndex = index.intValue;
+            }
+            if ([array containsObject:@"DatasourceAlias"]) {
+                datasourceAlias = [dataDic objectForKey:@"DatasourceAlias"];
+            }
+            if ([datasourceAlias isEqualToString:@""]) {
+                dataset = [SMThemeCartography getDataset:datasetName datasourceIndex:datasourceIndex];
+            }
+            else{
+                dataset = [SMThemeCartography getDataset:datasetName datasourceAlias:datasourceAlias];
+            }
+        }
+        BOOL result = false;
+        if (dataset != nil && ![rangeExpression isEqualToString:@""] && rangeMode!=RM_None && rangeParameter!=-1) {
+            JoinItems *joinItems = nil;
+            ThemeLabel *themeLabel = [ThemeLabel makeDefault:(DatasetVector*)dataset rangeExpression:rangeExpression rangeMode:rangeMode rangeParameter:rangeParameter colorGradientType:colorGradientType joinItems:joinItems];
+            
+            if (themeLabel!=nil) {
+                [themeLabel setLabelExpression:rangeExpression];
+                //themeLabel.setFlowEnabled(true); 组件无接口
+                if([array containsObject:@"ColorScheme"]){
+                    NSString *strColorScheme = [dataDic objectForKey:@"ColorScheme"];
+                    NSArray* rangeColors = [SMThemeCartography getRangeColors:strColorScheme];
+                    if (rangeColors!=nil) {
+                        int rangecount = [themeLabel getCount];
+                        Colors* selectedColors;
+                        if (rangecount>0) {
+                            selectedColors = [Colors makeGradient:rangecount gradientColorArray:rangeColors];
+                        }else{
+                             selectedColors = [Colors makeGradient:1 gradientColorArray:rangeColors];
+                        }
+                        
+                        for (int i=0; i<rangecount; i++) {
+                            [[[themeLabel getItem:i] mTextStyle] setForeColor:[selectedColors get:i]];
+                        }
+                        
+                    }
+                }
+                [mapControl.map.layers addDataset:dataset Theme:themeLabel ToHead:YES];
+                [mapControl.map refresh];
+                result = true;
+            }
+            
+            resolve([NSNumber numberWithBool:result]);
+        }
+        else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/**
+ * 新建分段标签图层
+ *
+ * @param readableMap (数据源的索引/数据源的别名/打开本地数据源、数据集名称、 分段字段表达式、分段模式、分段参数、颜色渐变模式)
+ * @param promise
+ */
+RCT_REMAP_METHOD(createRangeThemeLabelMap, createRangeThemeLabelMapWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        int datasourceIndex = -1;
+        NSString* datasourceAlias = @"";
+        NSString* datasetName = @"";
+        NSString* rangeExpression = @"";//分段字段表达式
+        RangeMode rangeMode = RM_None;//分段模式
+        double rangeParameter = -1;//分段参数
+        ColorGradientType colorGradientType = CGT_NULL;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"DatasetName"]) {
+            datasetName = [dataDic objectForKey:@"DatasetName"];
+        }
+        if ([array containsObject:@"RangeExpression"]) {
+            rangeExpression = [dataDic objectForKey:@"RangeExpression"];
+        }
+        if ([array containsObject:@"RangeMode"]) {
+            NSString* type = [dataDic objectForKey:@"RangeMode"];
+            rangeMode = [SMThemeCartography getRangeMode:type];
+        }
+        if ([array containsObject:@"RangeParameter"]) {
+            NSString* param = [dataDic objectForKey:@"RangeParameter"];
+            rangeParameter = [param doubleValue];
+        }
+        if ([array containsObject:@"ColorGradientType"]){
+            NSString* type = [dataDic objectForKey: @"ColorGradientType" ];
+            colorGradientType = [SMThemeCartography getColorGradientType:type];
+        } else {
+            colorGradientType = CGT_YELLOWGREEN;
+        }
+        
+        Dataset *dataset = nil;
+        dataset = [SMThemeCartography getDataset:datasetName data:dataDic];
+        if (dataset == nil) {
+            if ([array containsObject:@"DatasourceIndex"]) {
+                NSNumber* index = [dataDic objectForKey:@"DatasourceIndex"];
+                datasourceIndex = index.intValue;
+            }
+            if ([array containsObject:@"DatasourceAlias"]) {
+                datasourceAlias = [dataDic objectForKey:@"DatasourceAlias"];
+            }
+            if ([datasourceAlias isEqualToString:@""]) {
+                dataset = [SMThemeCartography getDataset:datasetName datasourceIndex:datasourceIndex];
+            }
+            else{
+                dataset = [SMThemeCartography getDataset:datasetName datasourceAlias:datasourceAlias];
+            }
+        }
+        BOOL result = false;
+        if (dataset != nil && ![rangeExpression isEqualToString:@""] && rangeMode!=RM_None && rangeParameter!=-1) {
+            JoinItems *joinItems = nil;
+            ThemeLabel *themeLabel = [ThemeLabel makeDefault:(DatasetVector*)dataset rangeExpression:rangeExpression rangeMode:rangeMode rangeParameter:5 colorGradientType:colorGradientType];
+            
+            if (themeLabel!=nil) {
+                [themeLabel setMaxLabelLength:8];
+                [themeLabel setLabelExpression:rangeExpression];
+                //themeLabel.setNumericPrecision(1);
+                //themeLabel.setFlowEnabled(true); 组件无接口
+                if([array containsObject:@"ColorScheme"]){
+                    NSString *strColorScheme = [dataDic objectForKey:@"ColorScheme"];
+                    NSArray* rangeColors = [SMThemeCartography getRangeColors:strColorScheme];
+                    if (rangeColors!=nil) {
+                        int rangecount = [themeLabel getCount];
+                        Colors* selectedColors;
+                        if (rangecount>0) {
+                            selectedColors = [Colors makeGradient:rangecount gradientColorArray:rangeColors];
+                        }else{
+                            selectedColors = [Colors makeGradient:1 gradientColorArray:rangeColors];
+                        }
+                        
+                        for (int i=0; i<rangecount; i++) {
+                            [[[themeLabel getItem:i] mTextStyle] setForeColor:[selectedColors get:i]];
+                        }
+                        
+                    }
+                }
+                [mapControl.map.layers addDataset:dataset Theme:themeLabel ToHead:YES];
+                [mapControl.map refresh];
+                result = true;
+            }
+            
+            resolve([NSNumber numberWithBool:result]);
+        }
+        else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
 /**
  * 新建统一标签专题图
  *
@@ -784,21 +985,21 @@ RCT_REMAP_METHOD(getUniformLabelBackShape, getUniformLabelBackShapeWithResolver:
         }
         if (layer != nil && layer.theme != nil) {
             if (layer.theme.themeType == TT_label) {
-                //                MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
-                //                [[mapControl getEditHistory] addMapHistory];
+//                MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+//                [[mapControl getEditHistory] addMapHistory];
                 
-                //                ThemeLabel* themeLabel =(ThemeLabel*)layer.theme;
-                //                LabelBackShape labelBackShape;
-                //TODO          labelBackShape  = [themeLabel getBackShape];
-                //                NSString* strBackShape = [SMThemeCartography getLabelBackShapeString:labelBackShape];
-                //                if (strBackShape != nil) {
-                //                    NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
-                //                    [dic setValue:strBackShape forKey:@"LabelBackShape"];
-                //                    resolve(dic);
-                //                }
-                //                else{
-                //                    resolve([NSNumber numberWithBool:NO]);
-                //                }
+//                ThemeLabel* themeLabel =(ThemeLabel*)layer.theme;
+//                LabelBackShape labelBackShape;
+//TODO          labelBackShape  = [themeLabel getBackShape];
+//                NSString* strBackShape = [SMThemeCartography getLabelBackShapeString:labelBackShape];
+//                if (strBackShape != nil) {
+//                    NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+//                    [dic setValue:strBackShape forKey:@"LabelBackShape"];
+//                    resolve(dic);
+//                }
+//                else{
+//                    resolve([NSNumber numberWithBool:NO]);
+//                }
             }
         }
         else{
@@ -1273,11 +1474,8 @@ RCT_REMAP_METHOD(createThemeRangeMap, createThemeRangeMapMapWithResolver:(NSDict
                     NSString* colorScheme = [dataDic objectForKey:@"ColorScheme"];
                     NSMutableDictionary* arrayColor = nil;
                     NSMutableArray* colorArray;
-                    arrayColor = [SMThemeCartography getRangeColors:colorScheme];
-                    NSArray* arrKey = [arrayColor allKeys];
-                    if ([arrKey containsObject:colorScheme]) {
-                        colorArray = [arrayColor objectForKey:colorScheme];
-                    }
+                    colorArray = [SMThemeCartography getRangeColors:colorScheme];
+                    
                     if (colorArray != nil) {
                         int rangeCount = [themeRange getCount];
                         if(rangeCount <= 0)
@@ -1376,7 +1574,7 @@ RCT_REMAP_METHOD(modifyThemeRangeMap, modifyThemeRangeMapWithResolver:(NSDiction
             isContainColorGradientType = true;
         }
         bool result = false;
-        
+
         if (dataset != nil && themeRangeLayer.theme != nil && ![rangeExpression isEqualToString:@""] && isContainRangeMode && rangeParameter != -1 && isContainColorGradientType) {
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [[mapControl getEditHistory] addMapHistory];
@@ -1440,15 +1638,11 @@ RCT_REMAP_METHOD(setUniqueColorScheme, setUniqueColorSchemeWithResolver:(NSDicti
             NSNumber* indexValue = [dataDic objectForKey:@"LayerIndex"];
             layerIndex = indexValue.intValue;
         }
-        NSMutableDictionary* arrayColor = nil;
-        NSMutableArray* colorArray;
+
+        NSArray* colorArray = nil;
         if ([array containsObject:@"ColorScheme"]) {
             strColor = [dataDic objectForKey:@"ColorScheme"];
-            arrayColor = [SMThemeCartography getUniqueColors:strColor];
-            NSArray* arrKey = [arrayColor allKeys];
-            if ([arrKey containsObject:strColor]) {
-                colorArray = [arrayColor objectForKey:strColor];
-            }
+            colorArray = [SMThemeCartography getUniqueColors:strColor];
         }
         
         Layer* layer = nil;
@@ -1459,7 +1653,7 @@ RCT_REMAP_METHOD(setUniqueColorScheme, setUniqueColorSchemeWithResolver:(NSDicti
             layer = [SMThemeCartography getLayerByName:layerName];
         }
         
-        if (layer != nil && arrayColor != nil && layer.theme != nil) {
+        if (layer != nil && colorArray != nil && layer.theme != nil) {
             if (layer.theme.themeType == TT_Unique) {
                 MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
                 [[mapControl getEditHistory] addMapHistory];
@@ -1505,15 +1699,11 @@ RCT_REMAP_METHOD(setRangeColorScheme, setRangeColorSchemeWithResolver:(NSDiction
             NSNumber* indexValue = [dataDic objectForKey:@"LayerIndex"];
             layerIndex = indexValue.intValue;
         }
-        NSMutableDictionary* arrayColor = nil;
-        NSMutableArray* colorArray;
+    
+        NSArray* colorArray;
         if ([array containsObject:@"ColorScheme"]) {
             strColor = [dataDic objectForKey:@"ColorScheme"];
-            arrayColor = [SMThemeCartography getRangeColors:strColor];
-            NSArray* arrKey = [arrayColor allKeys];
-            if ([arrKey containsObject:strColor]) {
-                colorArray = [arrayColor objectForKey:strColor];
-            }
+            colorArray = [SMThemeCartography getRangeColors:strColor];
         }
         
         Layer* layer = nil;
@@ -1524,7 +1714,7 @@ RCT_REMAP_METHOD(setRangeColorScheme, setRangeColorSchemeWithResolver:(NSDiction
             layer = [SMThemeCartography getLayerByName:layerName];
         }
         
-        if (layer != nil && arrayColor != nil && layer.theme != nil) {
+        if (layer != nil && colorArray != nil && layer.theme != nil) {
             if (layer.theme.themeType == TT_Range) {
                 MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
                 [[mapControl getEditHistory] addMapHistory];
@@ -1732,6 +1922,1389 @@ RCT_REMAP_METHOD(getRangeExpression, getRangeExpressionWithResolver:(NSDictionar
 }
 /*栅格分段专题图
  * ********************************************************************************************/
+/**
+ * 数据集->创建栅格分段专题图
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(createThemeGridRangeMap, createThemeGridRangeMapWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        int datasourceIndex = -1;
+        NSString* datasourceAlias = @"";
+        NSString* datasetName = @"";
+        NSArray* colors = nil;//颜色方案
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"DatasetName"]) {
+            datasetName = [dataDic objectForKey:@"DatasetName"];
+        }
+        if ([array containsObject:@"GridRangeColorScheme"]){
+            NSString* type = [dataDic objectForKey: @"GridRangeColorScheme" ];
+            colors = [SMThemeCartography getRangeColors:type];
+        } else {
+            colors = [SMThemeCartography getRangeColors:@"FF_Blues"];//默认
+        }
+        
+        Dataset *dataset = nil;
+        dataset = [SMThemeCartography getDataset:datasetName data:dataDic];
+        if (dataset == nil) {
+            if ([array containsObject:@"DatasourceIndex"]) {
+                NSNumber* index = [dataDic objectForKey:@"DatasourceIndex"];
+                datasourceIndex = index.intValue;
+            }
+            if ([array containsObject:@"DatasourceAlias"]) {
+                datasourceAlias = [dataDic objectForKey:@"DatasourceAlias"];
+            }
+            if ([datasourceAlias isEqualToString:@""]) {
+                dataset = [SMThemeCartography getDataset:datasetName datasourceIndex:datasourceIndex];
+            }
+            else{
+                dataset = [SMThemeCartography getDataset:datasetName datasourceAlias:datasourceAlias];
+            }
+        }
+        
+        NSDictionary *resDic = [SMThemeCartography createThemeGridRangeMap:dataset colors:colors];
+     
+        resolve(resDic);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/**
+ * 图层->创建栅格分段专题图
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(createThemeGridRangeMapByLayer, createThemeGridRangeMapByLayerWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+//        int datasourceIndex = -1;
+//        NSString* datasourceAlias = @"";
+//        NSString* datasetName = @"";
+       
+        NSArray* colors = nil;//颜色方案
+        
+        NSArray* array = [dataDic allKeys];
+
+        if ([array containsObject:@"GridRangeColorScheme"]){
+            NSString* type = [dataDic objectForKey: @"GridRangeColorScheme" ];
+            colors = [SMThemeCartography getRangeColors:type];
+        } else {
+            colors = [SMThemeCartography getRangeColors:@"FF_Blues"];//默认
+        }
+        
+        Layer* layer = nil;
+        Dataset *dataset = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        if (layer!=nil) {
+            dataset = layer.dataset;
+        }
+        
+        NSDictionary *resDic = [SMThemeCartography createThemeGridRangeMap:dataset colors:colors];
+        
+        resolve(resDic);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/**
+ * 修改栅格分段专题图(分段方法，分段参数，颜色方案)
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(modifyThemeGridRangeMap,  modifyThemeGridRangeMapWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        //        int datasourceIndex = -1;
+        //        NSString* datasourceAlias = @"";
+        //        NSString* datasetName = @"";
+        RangeMode rangeMode = RM_None;//分段方法：等距，平方根，对数
+        double rangeParameter = -1;
+        NSArray* colors = nil;//颜色方案
+        
+        NSArray* array = [dataDic allKeys];
+
+        if ([array containsObject:@"RangeMode"]) {
+            NSString* type = [dataDic objectForKey:@"RangeMode"];
+            rangeMode = [SMThemeCartography getRangeMode:type];
+        }
+        if ([array containsObject:@"RangeParameter"]) {
+            NSString* param = [dataDic objectForKey:@"RangeParameter"];
+            rangeParameter = [param doubleValue];
+        }
+        if ([array containsObject:@"GridRangeColorScheme"]){
+            NSString* type = [dataDic objectForKey: @"GridRangeColorScheme" ];
+            colors = [SMThemeCartography getRangeColors:type];
+        }
+        
+        
+        Layer* layer = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        BOOL result = [SMThemeCartography modifyThemeGridRangeMap:layer rangeMode:rangeMode rangeParameter:rangeParameter newColors:colors];
+        
+        resolve([NSNumber numberWithBool:result]);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/**
+ * 获取栅格分段专题图的分段数
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(getGridRangeCount,  getGridRangeCountWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        NSArray* array = [dataDic allKeys];
+        
+        Layer* layer = nil;
+        Dataset *dataset = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        if (layer!=nil && layer.theme!=nil && layer.theme.themeType == TT_GridRange) {
+            ThemeGridRange *themeGridRange = (ThemeGridRange*) layer.theme;
+            resolve([NSNumber numberWithInt:[themeGridRange getCount]]);
+        }else{
+            resolve([NSNumber numberWithBool:false]);
+        }
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/*栅格单值专题图
+ * ********************************************************************************************/
+/**
+ * 数据集->创建栅格单值专题图
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(createThemeGridUniqueMap, createThemeGridUniqueMapWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        int datasourceIndex = -1;
+        NSString* datasourceAlias = @"";
+        NSString* datasetName = @"";
+        NSArray* colors = nil;//颜色方案
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"DatasetName"]) {
+            datasetName = [dataDic objectForKey:@"DatasetName"];
+        }
+        if ([array containsObject:@"GridUniqueColorScheme"]){
+            NSString* type = [dataDic objectForKey: @"GridUniqueColorScheme" ];
+            colors = [SMThemeCartography getUniqueColors:type];
+        } else {
+            colors = [SMThemeCartography getUniqueColors:@"EE_Lake"];//默认
+        }
+        
+        Dataset *dataset = nil;
+        dataset = [SMThemeCartography getDataset:datasetName data:dataDic];
+        if (dataset == nil) {
+            if ([array containsObject:@"DatasourceIndex"]) {
+                NSNumber* index = [dataDic objectForKey:@"DatasourceIndex"];
+                datasourceIndex = index.intValue;
+            }
+            if ([array containsObject:@"DatasourceAlias"]) {
+                datasourceAlias = [dataDic objectForKey:@"DatasourceAlias"];
+            }
+            if ([datasourceAlias isEqualToString:@""]) {
+                dataset = [SMThemeCartography getDataset:datasetName datasourceIndex:datasourceIndex];
+            }
+            else{
+                dataset = [SMThemeCartography getDataset:datasetName datasourceAlias:datasourceAlias];
+            }
+        }
+        
+        NSDictionary *resDic = [SMThemeCartography createThemeGridUniqueMap:dataset colors:colors];
+        
+        resolve(resDic);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+/**
+ * 图层->创建栅格单值专题图
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(createThemeGridUniqueMapByLayer, createThemeGridUniqueMapByLayerWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        //        int datasourceIndex = -1;
+        //        NSString* datasourceAlias = @"";
+        //        NSString* datasetName = @"";
+        
+        NSArray* colors = nil;//颜色方案
+        
+        NSArray* array = [dataDic allKeys];
+        
+        if ([array containsObject:@"GridUniqueColorScheme"]){
+            NSString* type = [dataDic objectForKey: @"GridUniqueColorScheme" ];
+            colors = [SMThemeCartography getUniqueColors:type];
+        } else {
+            colors = [SMThemeCartography getUniqueColors:@"EE_Lake"];//默认
+        }
+        
+        Layer* layer = nil;
+        Dataset *dataset = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        if (layer!=nil) {
+            dataset = layer.dataset;
+        }
+        
+        NSDictionary *resDic = [SMThemeCartography createThemeGridUniqueMap:dataset colors:colors];
+        
+        resolve(resDic);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/**
+ * 设置栅格单值专题图层的特殊值。
+ * 设置栅格单值专题图的默认颜色，对于那些未在栅格单值专题图子项之列的对象使用该颜色显示。
+ * 设置栅格单值专题图层特殊值的颜色。
+ * 设置栅格单值专题图层的特殊值所处区域是否透明。
+ * 设置颜色方案。
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(modifyThemeGridUniqueMap, modifyThemeGridUniqueMapWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        int specialValue = -1;
+        Color *defaultColor = nil;
+        Color *specialValueColor = nil;
+        
+        BOOL isParams = false;
+        BOOL isTransparent = false;//特殊值透明显示：默认false
+        NSArray* colors = nil;//颜色方案
+        
+        NSArray* array = [dataDic allKeys];
+        
+        if ([array containsObject:@"SpecialValue"]) {
+            NSString* value = [dataDic objectForKey:@"SpecialValue"];
+            specialValue = [value intValue];
+        }
+        if ([array containsObject:@"DefaultColor"]) {
+            NSString* strColor = [dataDic objectForKey:@"DefaultColor"];
+            defaultColor = [STranslate colorFromHexString:strColor];
+        }
+        if ([array containsObject:@"SpecialValueColor"]) {
+            NSString* strColor = [dataDic objectForKey:@"SpecialValueColor"];
+            specialValueColor = [STranslate colorFromHexString:strColor];
+        }
+        if ([array containsObject:@"SpecialValueTransparent"]){
+            isParams = true;
+            NSString* value = [dataDic objectForKey: @"SpecialValueTransparent" ];
+            isTransparent = [value boolValue];
+        }
+        if ([array containsObject:@"GridUniqueColorScheme"]){
+            NSString* type = [dataDic objectForKey: @"GridUniqueColorScheme" ];
+            colors = [SMThemeCartography getUniqueColors:type];
+        }
+        
+        
+        Layer* layer = nil;
+        Dataset *dataset = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        BOOL result = [SMThemeCartography modifyThemeGridUniqueMap:layer colors:colors specialValue:specialValue defaultColor:defaultColor specialValueColor:specialValueColor isParams:isParams isTransparent:isTransparent];
+        
+        resolve([NSNumber numberWithBool:result]);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/*统计专题图
+ * ********************************************************************************************/
+/**
+ * 数据集->新建统计专题图层
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(createThemeGraphMap, createThemeGraphMapWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
+            int datasourceIndex = -1;
+            NSString* datasourceAlias = @"";
+            NSString* datasetName = @"";
+            NSArray* graphExpressions = nil;//字段表达式
+            ThemeGraphType themeGraphType = TGT_Area;//统计图类型
+            NSArray* colors = nil;//颜色方案
+            
+            NSArray* array = [dataDic allKeys];
+            if ([array containsObject:@"DatasetName"]) {
+                datasetName = [dataDic objectForKey:@"DatasetName"];
+            }
+            if ([array containsObject:@"GraphExpressions"]){
+                graphExpressions = [dataDic objectForKey: @"GraphExpressions" ];
+            }
+            if ([array containsObject:@"ThemeGraphType"]){
+                NSString *type = [dataDic objectForKey: @"ThemeGraphType" ];
+                themeGraphType = [SMThemeCartography getThemeGraphType:type];
+            }
+            if ([array containsObject:@"GraphColorType"]){
+                NSString* type = [dataDic objectForKey: @"GraphColorType" ];
+                colors = [SMThemeCartography getGraphColors:type];
+            } else {
+                colors = [SMThemeCartography getGraphColors:@"HA_Calm"];//默认
+            }
+            
+            Dataset *dataset = nil;
+            dataset = [SMThemeCartography getDataset:datasetName data:dataDic];
+            if (dataset == nil) {
+                if ([array containsObject:@"DatasourceIndex"]) {
+                    NSNumber* index = [dataDic objectForKey:@"DatasourceIndex"];
+                    datasourceIndex = index.intValue;
+                }
+                if ([array containsObject:@"DatasourceAlias"]) {
+                    datasourceAlias = [dataDic objectForKey:@"DatasourceAlias"];
+                }
+                if ([datasourceAlias isEqualToString:@""]) {
+                    dataset = [SMThemeCartography getDataset:datasetName datasourceIndex:datasourceIndex];
+                }
+                else{
+                    dataset = [SMThemeCartography getDataset:datasetName datasourceAlias:datasourceAlias];
+                }
+            }
+            
+            BOOL result = [SMThemeCartography createThemeGraphMap:dataset graphExpressions:graphExpressions type:themeGraphType colors:colors];
+            
+            resolve([NSNumber numberWithBool:result]);
+            
+        });
+        
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/**
+ * 图层->新建统计专题图层
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(createThemeGraphMapByLayer, createThemeGraphMapByLayerWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+    
+        NSArray* graphExpressions = nil;//字段表达式
+        ThemeGraphType themeGraphType = TGT_Area;//统计图类型
+        NSArray* colors = nil;//颜色方案
+
+        Layer* layer = nil;
+        Dataset *dataset = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        if ([array containsObject:@"GraphExpressions"]){
+            graphExpressions = [dataDic objectForKey: @"GraphExpressions" ];
+        }
+        if ([array containsObject:@"ThemeGraphType"]){
+            NSString *type = [dataDic objectForKey: @"ThemeGraphType" ];
+            themeGraphType = [SMThemeCartography getThemeGraphType:type];
+        }
+        if ([array containsObject:@"GraphColorType"]){
+            NSString* type = [dataDic objectForKey: @"GraphColorType" ];
+            colors = [SMThemeCartography getGraphColors:type];
+        } else {
+            colors = [SMThemeCartography getGraphColors:@"HA_Calm"];//默认
+        }
+       
+        if (layer!=nil) {
+            dataset = layer.dataset;
+        }
+        
+        BOOL result = [SMThemeCartography createThemeGraphMap:dataset graphExpressions:graphExpressions type:themeGraphType colors:colors];
+        
+        resolve([NSNumber numberWithBool:result]);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+/**
+ * 设置统计专题图的最大显示值
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(setGraphMaxValue, setGraphMaxValueWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        
+        Layer* layer = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        double maxValue = -1;//倍数
+        if ([array containsObject:@"MaxValue"]) {
+            NSString*value = [dataDic objectForKey:@"MaxValue"];
+            maxValue = [value doubleValue];
+        }
+        
+        if (layer!=nil && maxValue>=1 && layer.theme!=nil && layer.theme.themeType==TT_Graph) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            ThemeGraph* themeGraph = (ThemeGraph*) layer.theme;
+            double dMax = 0;
+            double dMin = 0;
+            [SMThemeCartography getGraphSizeMax:&dMax min:&dMin];
+            [themeGraph setMaxGraphSize:dMax*maxValue];
+            [themeGraph setMinGraphSize:dMin];
+            [mapControl.map refresh];
+            resolve([NSNumber numberWithBool:YES]);
+        }else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/**
+ * 获取统计专题图的最大显示值
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(getGraphMaxValue, getGraphMaxValueWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        
+        Layer* layer = nil;
+        Dataset *dataset = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        
+        if (layer!=nil && layer.theme!=nil && layer.theme.themeType==TT_Graph) {
+            
+            ThemeGraph* themeGraph = (ThemeGraph*) layer.theme;
+            double dMax = 0;
+            double dMin = 0;
+            [SMThemeCartography getGraphSizeMax:&dMax min:&dMin];
+            double maxGraphSize = [themeGraph maxGraphSize];
+            
+            double maxSize = 1;
+            if (maxGraphSize / dMax < 1) {
+                maxSize = 1;
+            } else if ((maxGraphSize / dMax) > 20 ) {
+                maxSize = 20;
+            } else {
+                maxSize = (maxGraphSize / dMax);
+            }
+            
+
+            resolve([NSNumber numberWithBool:YES]);
+        }else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/**
+ * 设置统计专题图的表达式
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(setThemeGraphExpressions, setThemeGraphExpressionsWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        
+        Layer* layer = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        NSArray *graphExpressions = nil;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        if ([array containsObject:@"GraphExpressions"]){
+            graphExpressions = [dataDic objectForKey: @"GraphExpressions" ];
+        }
+        
+        if (layer!=nil && graphExpressions!=nil && layer.theme!=nil && layer.theme.themeType==TT_Graph) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            ThemeGraph* themeGraph = (ThemeGraph*) layer.theme;
+            
+            int count = [themeGraph getCount];
+            NSMutableArray *listExpression = [[NSMutableArray alloc] init];
+            for (int i=0; i<count; i++) {
+                [listExpression addObject:[[themeGraph getItem:i] graphExpression]];
+            }
+            //移除的表达式
+            NSMutableArray *listremovedExpressions = [[NSMutableArray alloc] init];
+            for (int i=0; i<count; i++) {
+                NSString*expression = [[themeGraph getItem:i] graphExpression];
+                if (![graphExpressions containsObject:expression]) {
+                    [listremovedExpressions addObject:expression];
+                }
+            }
+            //新增的表达式
+            NSMutableArray *listAddedExpressions = [[NSMutableArray alloc] init];
+            for (int i=0; i<graphExpressions.count; i++) {
+                NSString*expression = [graphExpressions objectAtIndex:i];
+                if (![listExpression containsObject:expression]) {
+                    [listAddedExpressions addObject:expression];
+                }
+            }
+            if (listAddedExpressions.count>0||listremovedExpressions.count>0) {
+                
+                NSArray *colors = [SMThemeCartography getLastThemeColors:layer];
+                if (colors!=nil) {
+                    _lastColorGraphArray = colors;
+                }else{
+                    if (_lastColorGraphArray!=nil) {
+                        colors = _lastColorGraphArray;
+                    }else{
+                        colors = [SMThemeCartography getGraphColors:@"HA_Calm"];
+                    }
+                }
+                Colors *selectedColors = [Colors makeGradient:[colors count] gradientColorArray:colors];
+                
+                //移除
+                for (int i = 0; i < listremovedExpressions.count; i++) {
+                    [themeGraph remove: [themeGraph indexOf: [listremovedExpressions objectAtIndex:i] ] ];
+                }
+                //防止因为修改字段表达式造成的颜色值重复，遍历设置每个子项的颜色值
+                for (int i = 0; i < [themeGraph getCount]; i++) {
+                    int index = i;
+                    if (index >= [selectedColors getCount]) {
+                        index = index % [selectedColors getCount];
+                    }
+                    [[[themeGraph getItem:i] uniformStyle] setFillForeColor:[selectedColors get:index]];
+                }
+                //添加
+                for (int i = 0; i < [listAddedExpressions count]; i++) {
+                    [SMThemeCartography addGraphItem:themeGraph graphExpression:[listAddedExpressions objectAtIndex:i] colors:selectedColors];
+                }
+                [mapControl.map refresh];
+                [mapControl.map refresh];
+                resolve([NSNumber numberWithBool:YES]);
+            }else{
+                resolve([NSNumber numberWithBool:NO]);
+            }
+        }else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/**
+ * 设置统计专题图的颜色方案
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(setThemeGraphColorScheme, setThemeGraphColorSchemeWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        
+        Layer* layer = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        NSArray*colors = nil;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        if ([array containsObject:@"GraphColorType"]){
+            NSString* type = [dataDic objectForKey: @"GraphColorType" ];
+            colors = [SMThemeCartography getGraphColors:type];
+        }
+        
+        if (layer!=nil && colors!=nil && layer.theme!=nil && layer.theme.themeType==TT_Graph) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            ThemeGraph* themeGraph = (ThemeGraph*) layer.theme;
+            
+            int count = [themeGraph getCount];
+            Colors *selectedColors = [Colors makeGradient:[colors count] gradientColorArray:colors];
+            for (int i = 0; i < count; i++) {
+                int index = i;
+                if (index >= [selectedColors getCount]) {
+                    index = index % selectedColors.getCount;
+                }
+                [[[themeGraph getItem:i] uniformStyle] setFillForeColor:[selectedColors get:index]];
+            }
+            [mapControl.map refresh];
+            resolve([NSNumber numberWithBool:YES]);
+        }else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/**
+ * 设置统计专题图的类型
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(setThemeGraphType, setThemeGraphTypeWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        
+        Layer* layer = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        ThemeGraphType themeGraphType = TGT_Area;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        if ([array containsObject:@"ThemeGraphType"]){
+            NSString* type = [dataDic objectForKey: @"ThemeGraphType" ];
+            themeGraphType = [SMThemeCartography getThemeGraphType:type];
+        }
+        
+        if (layer!=nil  && layer.theme!=nil && layer.theme.themeType==TT_Graph) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            ThemeGraph* themeGraph = (ThemeGraph*) layer.theme;
+            [themeGraph setGraphType:themeGraphType];
+            [mapControl.map refresh];
+            resolve([NSNumber numberWithBool:YES]);
+        }else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
+ * 设置统计专题图的统计值的计算方法
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(setThemeGraphGraduatedMode, setThemeGraphGraduatedModeWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        
+        Layer* layer = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        GraduatedMode graduatedMode = GM_Constant;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        if ([array containsObject:@"GraduatedMode"]){
+            NSString* type = [dataDic objectForKey: @"GraduatedMode" ];
+            graduatedMode = [SMThemeCartography getGraduatedMode:type];
+        }
+        
+        if (layer!=nil  && layer.theme!=nil && layer.theme.themeType==TT_Graph) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            ThemeGraph* themeGraph = (ThemeGraph*) layer.theme;
+            [themeGraph setGraduatedMode:graduatedMode];
+            [mapControl.map refresh];
+            resolve([NSNumber numberWithBool:YES]);
+        }else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
+ * 获取统计专题图的表达式
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(getGraphExpressions, getGraphExpressionsWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        
+        Layer* layer = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        GraduatedMode graduatedMode = GM_Constant;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        if (layer!=nil  && layer.theme!=nil && layer.theme.themeType==TT_Graph) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            ThemeGraph* themeGraph = (ThemeGraph*) layer.theme;
+            
+            NSMutableArray *arrResult = [[NSMutableArray alloc] init];
+            for (int i=0; i<[themeGraph getCount]; i++) {
+                [arrResult addObject:[[themeGraph getItem:i]graphExpression]];
+            }
+        
+            resolve(@{@"list":arrResult});
+        }else{
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**点密度专题图*************************************************************************************/
+/**
+ * 新建点密度专题图
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(createDotDensityThemeMap, createDotDensityThemeMapWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        int datasourceIndex = -1;
+        NSString* datasourceAlias = @"";
+        NSString* datasetName = @"";
+        NSString* dotExpression = nil;//字段表达式
+        Color* lineColor = nil;
+        double value = -1;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"DatasetName"]) {
+            datasetName = [dataDic objectForKey:@"DatasetName"];
+        }
+        if ([array containsObject:@"DotExpression"]){
+            dotExpression = [dataDic objectForKey: @"DotExpression" ];
+        }
+        if ([array containsObject:@"LineColor"]) {
+            NSString* strColor = [dataDic objectForKey:@"LineColor"];
+            lineColor = [STranslate colorFromHexString:strColor];
+        }else{
+            lineColor = [[Color alloc] initWithR:255 G:165 B:0 A:0];
+        }
+        if ([array containsObject:@"Value"]){
+            NSString *strValue = [dataDic objectForKey: @"Value" ];
+            value = [strValue doubleValue];
+        }
+        
+        Dataset *dataset = nil;
+        dataset = [SMThemeCartography getDataset:datasetName data:dataDic];
+        if (dataset == nil) {
+            if ([array containsObject:@"DatasourceIndex"]) {
+                NSNumber* index = [dataDic objectForKey:@"DatasourceIndex"];
+                datasourceIndex = index.intValue;
+            }
+            if ([array containsObject:@"DatasourceAlias"]) {
+                datasourceAlias = [dataDic objectForKey:@"DatasourceAlias"];
+            }
+            if ([datasourceAlias isEqualToString:@""]) {
+                dataset = [SMThemeCartography getDataset:datasetName datasourceIndex:datasourceIndex];
+            }
+            else{
+                dataset = [SMThemeCartography getDataset:datasetName datasourceAlias:datasourceAlias];
+            }
+        }
+        
+        BOOL result = false;
+        if (dataset != nil && dotExpression != nil) {
+            ThemeDotDensity *themeDotDensity = [[ThemeDotDensity alloc] init];
+            if (themeDotDensity != nil) {
+                [themeDotDensity setDotExpression:dotExpression];
+                GeoStyle *geoStyle = [[GeoStyle alloc]init];
+                [geoStyle setMarkerSize:[[Size2D alloc]initWithWidth:2 Height:2] ];
+                [geoStyle setLineColor:lineColor];
+                [themeDotDensity setStyle:geoStyle];
+                if (value != -1) {
+                    [themeDotDensity setValue:value];
+                } else {
+                    double maxValue = [ SMThemeCartography getMaxValue:(DatasetVector*)dataset dotExpression:dotExpression];
+                    [themeDotDensity setValue:maxValue / 1000];
+                }
+                [mapControl.map.layers addDataset:dataset Theme:themeDotDensity ToHead:YES];
+                [mapControl.map refresh];
+                result = true;
+            }
+        }
+        
+        resolve([NSNumber numberWithBool:result]);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/**
+ * 修改点密度专题图：设置点密度图的表达式，单点代表的值，点风格（符号，大小和颜色）。
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(modifyDotDensityThemeMap, modifyDotDensityThemeMapWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        
+        Layer* layer = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        GraduatedMode graduatedMode = GM_Constant;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        NSString* dotExpression = nil;
+        double value = -1;
+        double dotSize = -1;
+        Color* lineColor = nil;
+        int symbolID = -1;
+        
+        if ([array containsObject:@"DotExpression"]){
+            dotExpression = [dataDic objectForKey: @"DotExpression" ];
+        }
+        if ([array containsObject:@"LineColor"]) {
+            NSString* strColor = [dataDic objectForKey:@"LineColor"];
+            lineColor = [STranslate colorFromHexString:strColor];
+        }
+        if ([array containsObject:@"Value"]){
+            NSString *strValue = [dataDic objectForKey: @"Value" ];
+            value = [strValue doubleValue];
+        }
+        if ([array containsObject:@"SymbolSize"]){
+            NSString *strValue = [dataDic objectForKey: @"SymbolSize" ];
+            dotSize = [strValue doubleValue];
+        }
+        if ([array containsObject:@"SymbolID"]){
+            NSString *strValue = [dataDic objectForKey: @"SymbolID" ];
+            symbolID = [strValue intValue];
+        }
+        
+        if (layer != nil && layer.theme != nil && layer.theme.themeType!=TT_DotDensity) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
+            ThemeDotDensity* themeDotDensity = (ThemeDotDensity*) layer.theme;
+            if (dotExpression != nil) {
+                [themeDotDensity setDotExpression:dotExpression];
+            }
+            if (value != -1) {
+                [themeDotDensity setValue:value];
+            }
+            if (dotSize != -1) {
+                [[themeDotDensity getStyle] setMarkerSize:[[Size2D alloc]initWithWidth:dotSize Height:dotSize]];
+            }
+            if (lineColor != nil) {
+                [[themeDotDensity getStyle]setLineColor:lineColor];
+            }
+            if (symbolID != -1) {
+                [[themeDotDensity getStyle]setMarkerSymbolID:symbolID];
+            }
+            [mapControl.map refresh];
+            resolve([NSNumber numberWithBool:YES]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
+ * 获取点密度专题图的表达式
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(getDotDensityExpression, getDotDensityExpressionWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+       
+        ThemeDotDensity *themeDot = [SMThemeCartography getThemeDotDensity:dataDic];
+        if(themeDot!=nil){
+            resolve([themeDot getDotExpression]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
+ * 获取点密度专题图的单点代表值
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(getDotDensityValue, getDotDensityValueWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        
+        ThemeDotDensity *themeDot = [SMThemeCartography getThemeDotDensity:dataDic];
+        if(themeDot!=nil){
+            resolve([NSNumber numberWithDouble:[themeDot getValue]]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
+ * 获取点密度专题图的点符号大小
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(getDotDensityDotSize, getDotDensityDotSizeWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        
+        ThemeDotDensity *themeDot = [SMThemeCartography getThemeDotDensity:dataDic];
+        if(themeDot!=nil){
+            Size2D* markerSize = [[themeDot getStyle]getMarkerSize];
+            resolve([NSNumber numberWithDouble:markerSize.height]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**等级符号专题图*************************************************************************************/
+/**
+ * 新建等级符号专题图
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(createGraduatedSymbolThemeMap, createGraduatedSymbolThemeMapWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        int datasourceIndex = -1;
+        NSString* datasourceAlias = @"";
+        NSString* datasetName = @"";
+        NSString* graSymbolExpression = nil;//字段表达式
+        Color* lineColor = nil;
+        double symbolSize = -1;
+        GraduatedMode graduatedMode = GM_Constant;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"DatasetName"]) {
+            datasetName = [dataDic objectForKey:@"DatasetName"];
+        }
+        if ([array containsObject:@"GraduatedMode"]){
+            NSString* mode = [dataDic objectForKey: @"GraduatedMode" ];
+            graduatedMode = [SMThemeCartography getGraduatedMode:mode];
+        }
+        if ([array containsObject:@"GraSymbolExpression"]){
+            graSymbolExpression = [dataDic objectForKey: @"GraSymbolExpression" ];
+        }
+        if ([array containsObject:@"LineColor"]) {
+            NSString* strColor = [dataDic objectForKey:@"LineColor"];
+            lineColor = [STranslate colorFromHexString:strColor];
+        }else{
+            lineColor = [[Color alloc] initWithR:255 G:165 B:0 A:0];
+        }
+        if ([array containsObject:@"SymbolSize"]){
+            NSString *strValue = [dataDic objectForKey: @"SymbolSize" ];
+            symbolSize = [strValue doubleValue];
+        }
+        
+        Dataset *dataset = nil;
+        dataset = [SMThemeCartography getDataset:datasetName data:dataDic];
+        if (dataset == nil) {
+            if ([array containsObject:@"DatasourceIndex"]) {
+                NSNumber* index = [dataDic objectForKey:@"DatasourceIndex"];
+                datasourceIndex = index.intValue;
+            }
+            if ([array containsObject:@"DatasourceAlias"]) {
+                datasourceAlias = [dataDic objectForKey:@"DatasourceAlias"];
+            }
+            if ([datasourceAlias isEqualToString:@""]) {
+                dataset = [SMThemeCartography getDataset:datasetName datasourceIndex:datasourceIndex];
+            }
+            else{
+                dataset = [SMThemeCartography getDataset:datasetName datasourceAlias:datasourceAlias];
+            }
+        }
+        
+        BOOL result = false;
+        if (dataset != nil && graSymbolExpression != nil) {
+            ThemeGraduatedSymbol *themeGraduatedSymbol = [ThemeGraduatedSymbol makeDefault:(DatasetVector *)dataset expression:graSymbolExpression graduatedMode:graduatedMode];
+            if (themeGraduatedSymbol==nil) {
+                themeGraduatedSymbol = [[ThemeGraduatedSymbol alloc] init];
+            }
+            [themeGraduatedSymbol setFlowEnabled:true];
+            [themeGraduatedSymbol setExpression:graSymbolExpression];
+            [[themeGraduatedSymbol getPositiveStyle]setLineColor:lineColor];
+            if (symbolSize!=-1) {
+                [[themeGraduatedSymbol getPositiveStyle]setMarkerSize:[[Size2D alloc]initWithWidth:symbolSize Height:symbolSize]];
+            }
+            
+            [mapControl.map.layers addDataset:dataset Theme:themeGraduatedSymbol ToHead:YES];
+            [mapControl.map refresh];
+            result = true;
+        }
+        
+        resolve([NSNumber numberWithBool:result]);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/**
+ * 修改等级符号专题图：设置表达式，分级方式，基准值，正值基准值风格（大小和颜色）。
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(modifyGraduatedSymbolThemeMap, modifyGraduatedSymbolThemeMapWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        
+        Layer* layer = nil;
+        NSString* layerName = nil;//图层名称
+        int layerIndex = -1;
+        
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }else if([array containsObject:@"LayerIndex"]){
+            NSString* index = [dataDic objectForKey:@"LayerIndex"];
+            layerIndex = [index intValue];
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        }
+        
+        NSString* graSymbolExpression = nil;//字段表达式
+        Color* lineColor = nil;
+        double baseValue = -1;//基准值
+        int symbolID = -1;
+        double symbolSize = -1;
+        GraduatedMode graduatedMode = GM_Constant;
+
+        if ([array containsObject:@"GraduatedMode"]){
+            NSString* mode = [dataDic objectForKey: @"GraduatedMode" ];
+            graduatedMode = [SMThemeCartography getGraduatedMode:mode];
+        }
+        if ([array containsObject:@"GraSymbolExpression"]){
+            graSymbolExpression = [dataDic objectForKey: @"GraSymbolExpression" ];
+        }
+        if ([array containsObject:@"LineColor"]) {
+            NSString* strColor = [dataDic objectForKey:@"LineColor"];
+            lineColor = [STranslate colorFromHexString:strColor];
+        }
+        if ([array containsObject:@"BaseValue"]){
+            NSString *strValue = [dataDic objectForKey: @"BaseValue" ];
+            baseValue = [strValue doubleValue];
+        }
+        if ([array containsObject:@"SymbolSize"]){
+            NSString *strValue = [dataDic objectForKey: @"SymbolSize" ];
+            symbolSize = [strValue doubleValue];
+        }
+        if ([array containsObject:@"SymbolID"]){
+            NSString *strValue = [dataDic objectForKey: @"SymbolID" ];
+            symbolID = [strValue intValue];
+        }
+        
+        if (layer!=nil && layer.theme!=nil && layer.theme.themeType==TT_GraduatedSymbol) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            ThemeGraduatedSymbol* themeGraduatedSymbol = (ThemeGraduatedSymbol*) layer.theme;
+            if (graSymbolExpression != nil) {
+                [themeGraduatedSymbol setExpression:graSymbolExpression];
+            }
+           
+            [themeGraduatedSymbol setGraduatedMode:graduatedMode];
+            
+            if (baseValue != -1) {
+                [themeGraduatedSymbol setBaseValue:baseValue];
+            }
+            if (symbolSize != -1) {
+                [[themeGraduatedSymbol getPositiveStyle] setMarkerSize:[[Size2D alloc]initWithWidth:symbolSize Height:symbolSize]];
+            }
+            if (lineColor != nil) {
+                [[themeGraduatedSymbol getPositiveStyle] setLineColor:lineColor];
+            }
+            if (symbolID != -1) {
+                [[themeGraduatedSymbol getPositiveStyle] setMarkerSymbolID:symbolID];
+            }
+
+            [mapControl.map refresh];
+            resolve([NSNumber numberWithBool:true]);
+        }else{
+            resolve([NSNumber numberWithBool:false]);
+        }
+
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+    
+}
+
+/**
+ * 获取等级符号专题图的表达式
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(getGraduatedSymbolExpress, getGraduatedSymbolExpressWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        
+        ThemeGraduatedSymbol* theme = [SMThemeCartography getThemeGraduatedSymbol:dataDic];
+        if(theme!=nil){
+
+            resolve([theme getExpression]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
+ * 获取等级符号专题图的基准值
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(getGraduatedSymbolValue, getGraduatedSymbolValueWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        
+        ThemeGraduatedSymbol* theme = [SMThemeCartography getThemeGraduatedSymbol:dataDic];
+        if(theme!=nil){
+            
+            resolve([NSNumber numberWithDouble:[theme getBaseValue]]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
+ * 获取等级符号专题图的符号大小
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(getGraduatedSymbolSize, getGraduatedSymbolSizeWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        
+        ThemeGraduatedSymbol* theme = [SMThemeCartography getThemeGraduatedSymbol:dataDic];
+        if(theme!=nil){
+            Size2D *markerSize = [[theme getPositiveStyle] getMarkerSize];
+            resolve([NSNumber numberWithDouble:[markerSize height]]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
 
 /**
  * 获取数据集中的字段
@@ -1770,6 +3343,7 @@ RCT_REMAP_METHOD(getThemeExpressByUdb, getThemeExpressByUdbWithResolver:(NSStrin
         reject(@"workspace", exception.reason, nil);
     }
 }
+
 /**
  * 获取数据集中的字段
  * @param layerName 图层名称

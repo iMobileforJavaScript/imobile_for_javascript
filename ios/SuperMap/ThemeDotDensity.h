@@ -22,7 +22,8 @@
 -(double) getValue;
 //设置专题图中每一个点所代表的数值。
 -(void)setValue:(double) value;
-
+//获取密度专题图的字段或字段表达式。
+-(NSString*) getDotExpression;
 //设置用于创建点密度专题图的字段或字段表达式。
 -(void) setDotExpression:(NSString*)value;
 
