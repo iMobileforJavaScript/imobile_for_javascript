@@ -460,8 +460,8 @@ public class SScene extends ReactContextBaseJavaModule {
 //                promise.resolve(true);
 //                return;
 //            }
-            scene.getLayers().removeLayerWithName1("TianDiTu");
-            scene.getLayers().removeLayerWithName1("BingMap");
+//            scene.getLayers().removeLayerWithName1("TianDiTu");
+//            scene.getLayers().removeLayerWithName1("BingMap");
 
             Thread.sleep(1000);
             Layer3D layer3d = null;
@@ -669,11 +669,11 @@ public class SScene extends ReactContextBaseJavaModule {
             sScene = getInstance();
             Scene scene = sScene.smSceneWc.getSceneControl().getScene();
             sScene.smSceneWc.getSceneControl().isRender(false);
-            boolean b = scene.getLayers().removeLayerWithName1(layerName);
+            boolean b = scene.getLayers().removeLayerWithName(layerName);
             sScene.smSceneWc.getSceneControl().isRender(true);
-//            Thread.sleep(1000);
+            Thread.sleep(1000);
 //            Layer3D layer = scene.getLayers().get(layerName);
-            promise.resolve(b);
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }

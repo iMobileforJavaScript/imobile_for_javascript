@@ -1,5 +1,9 @@
 import { NativeModules } from 'react-native'
 import Utility from '../../utility/utility'
+
+import BackgroundTimer from 'react-native-background-timer'
+
+// let BackgroundTimer = require('react-native-background-timer')
 let Collector = NativeModules.SCollector
 let CollectorType = NativeModules.SCollectorType
 let DatasetType = NativeModules.JSDatasetType
@@ -51,41 +55,54 @@ async function setDataset(info = {}) {
   }
 }
 
-let gpsTimer = null
+let gpsTimer = false
 async function initCollect(type = -1) {
   if (gpsTimer) {
-    clearInterval(gpsTimer)
-    gpsTimer = null
+    BackgroundTimer.stopBackgroundTimer()
+    // clearInterval(gpsTimer)
+    gpsTimer = false
   }
+  BackgroundTimer.stopBackgroundTimer()
   currentType = type
   return await Collector.startCollect(type)
 }
 
 async function startAddGPSPoint () {
+
+  await addGPSPoint()
+
   if (!gpsTimer) {
-    await addGPSPoint()
-    gpsTimer = setInterval(async () => {
-      await addGPSPoint()
-      // let point = await Collector.getGPSPoint()
-      // if (point) {
-      //   if (lastPoint) {
-      //     let distance = Utility.convertDistanceByPoints(point, lastPoint)
-      //     if (distance >= 0.005) {
-      //       lastPoint = await addGPSPoint()
-      //     }
-      //   } else {
-      //     lastPoint = await addGPSPoint()
-      //   }
-      // }
-    }, 1000)
+    BackgroundTimer.runBackgroundTimer(async () => { 
+       console.log("xzy ####")
+       await addGPSPoint()
+      }, 
+    2000)
+
+    gpsTimer = true
+
+    // gpsTimer = setInterval(async () => {
+    //   await addGPSPoint()
+    //   // let point = await Collector.getGPSPoint()
+    //   // if (point) {
+    //   //   if (lastPoint) {
+    //   //     let distance = Utility.convertDistanceByPoints(point, lastPoint)
+    //   //     if (distance >= 0.005) {
+    //   //       lastPoint = await addGPSPoint()
+    //   //     }
+    //   //   } else {
+    //   //     lastPoint = await addGPSPoint()
+    //   //   }
+    //   // }
+    // }, 1000)
   }
 }
 
 async function startCollect(type = -1) {
   try {
     if (gpsTimer) {
-      clearInterval(gpsTimer)
-      gpsTimer = null
+      BackgroundTimer.stopBackgroundTimer()
+      // clearInterval(gpsTimer)
+      gpsTimer = false
     }
     currentType = type
     // let result = await Collector.startCollect(type)
@@ -117,8 +134,10 @@ async function getGPSPoint() {
 async function pauseCollect() {
   try {
     currentType = -1
-    if (gpsTimer !== null) {
-      clearInterval(gpsTimer)
+    if (gpsTimer !== false) {
+      BackgroundTimer.stopBackgroundTimer()
+      gpsTimer = false
+      // clearInterval(gpsTimer)
     }
   } catch (e) {
     console.error(e)
@@ -128,8 +147,10 @@ async function pauseCollect() {
 async function stopCollect() {
   try {
     currentType = -1
-    if (gpsTimer !== null) {
-      clearInterval(gpsTimer)
+    if (gpsTimer !== false) {
+      BackgroundTimer.stopBackgroundTimer()
+      gpsTimer = false
+      // clearInterval(gpsTimer)
     }
     return Collector.stopCollect()
   } catch (e) {

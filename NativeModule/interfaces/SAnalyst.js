@@ -3,29 +3,6 @@ import {
 } from 'react-native'
 
 let Analyst = NativeModules.SAnalyst
-// const nativeEvt = new NativeEventEmitter(Analyst);
-// async function bufferAnalyst (layerName, params) {
-//   try {
-//     return await Analyst.analystBuffer(layerName, params)
-//   } catch (e) {
-//     console.error(e)
-//   }
-// }
-//
-// /**
-//  * @DEPRECATED 将被下面的方法代替
-//  * @param datasetPath
-//  * @param clipDatasetPath
-//  * @param analystType
-//  * @returns {Promise.<void>}
-//  */
-// async function overlayAnalyst (datasetPath, clipDatasetPath, analystType) {
-//   try {
-//     await Analyst.overlayAnalyst(datasetPath, clipDatasetPath, analystType)
-//   } catch (error) {
-//     console.error(error)
-//   }
-// }
 
 /**
  * 缓冲区分析
@@ -122,9 +99,6 @@ async function xOR (sourceData = {}, targetData = {}, resultData = {}, optionPar
 }
 
 export default {
-  // bufferAnalyst,
-  // overlayAnalyst,
-  
   // 缓冲分析
   createBuffer,
   createMultiBuffer,

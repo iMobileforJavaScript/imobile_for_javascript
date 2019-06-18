@@ -1,9 +1,7 @@
 package com.supermap.smNative;
 
 import android.util.Log;
-
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.ColorParseUtil;
@@ -22,6 +20,7 @@ public class SMThemeCartography {
     private static ArrayList<HashMap<String, Object>> listUniqueColors = new ArrayList<>();//单值专题图颜色方案
     private static ArrayList<HashMap<String, Object>> listRangeColors = new ArrayList<>();//分段专题图颜色方案
     private static ArrayList<HashMap<String, Object>> listGraphColors = new ArrayList<>();//统计专题图颜色方案
+    private static ArrayList<HashMap<String, Object>> listAggregationColors = new ArrayList<>();//聚合图颜色方案(热力图、网格图)
 
     private static Color[] lastGridUniqueColors = null;//记录上次设置的颜色方案
     private static Color[] lastGridRangeColors = null;
@@ -848,6 +847,92 @@ public class SMThemeCartography {
                     new Color(227, 108, 9),
                     new Color(182, 170, 0)};
             listGraphColors.add(createColorScheme(colors, "HF_Warm"));
+        }
+
+        {
+            Color[] colors = new Color[]{
+                    new Color(2, 255, 255),
+                    new Color(255, 0, 0)};
+            listAggregationColors.add(createColorScheme(colors, "BA_Rainbow"));
+            colors = new Color[]{
+                    new Color(219, 238, 243),
+                    new Color(227, 108, 9)};
+            listAggregationColors.add(createColorScheme(colors, "BB_LightRainbow"));
+            colors = new Color[]{
+                    new Color(166, 230, 166),
+                    new Color(255, 255, 0)};
+            listAggregationColors.add(createColorScheme(colors, "BC_Lemon"));
+            colors = new Color[]{
+                    new Color(253, 248, 202),
+                    new Color(211, 50, 73)};
+            listAggregationColors.add(createColorScheme(colors, "BD_Scarlet"));
+            colors = new Color[]{
+                    new Color(247, 255, 247),
+                    new Color(8, 92, 165)};
+            listAggregationColors.add(createColorScheme(colors, "BE_Sea"));
+            colors = new Color[]{
+                    new Color(252, 255, 247),
+                    new Color(255, 114, 0)};
+            listAggregationColors.add(createColorScheme(colors, "BF_Orange"));
+            colors = new Color[]{
+                    new Color(253, 255, 247),
+                    new Color(0, 102, 56)};
+            listAggregationColors.add(createColorScheme(colors, "BG_Green"));
+            colors = new Color[]{
+                    new Color(250, 247, 255),
+                    new Color(74, 20, 134)};
+            listAggregationColors.add(createColorScheme(colors, "BH_Purple"));
+            colors = new Color[]{
+                    new Color(0, 0, 255),
+                    new Color(0, 255, 255),
+                    new Color(0, 255, 0),
+                    new Color(255, 255, 10),
+                    new Color(255, 0, 0)};
+            listAggregationColors.add(createColorScheme(colors, "ZA_Insights"));
+            colors = new Color[]{
+                    new Color(0, 68, 123),
+                    new Color(0, 111, 171),
+                    new Color(0, 156, 209),
+                    new Color(139, 199, 212),
+                    new Color(222, 230, 183),
+                    new Color(210, 202, 99),
+                    new Color(225, 182, 0),
+                    new Color(228, 159, 0)};
+            listAggregationColors.add(createColorScheme(colors, "ZB_Sunrise"));
+            colors = new Color[]{
+                    new Color(77, 146, 33),
+                    new Color(127, 188, 65),
+                    new Color(184, 225, 134),
+                    new Color(230, 254, 208),
+                    new Color(253, 224, 239),
+                    new Color(241, 182, 218),
+                    new Color(241, 119, 174),
+                    new Color(197, 27, 125)};
+            listAggregationColors.add(createColorScheme(colors, "ZC_Garden"));
+            colors = new Color[]{
+                    new Color(0, 118, 110),
+                    new Color(2, 164, 160),
+                    new Color(255, 217, 68),
+                    new Color(242, 145, 41),
+                    new Color(169, 26, 134)};
+            listAggregationColors.add(createColorScheme(colors, "ZD_Classic"));
+            colors = new Color[]{
+                    new Color(104, 38, 102),
+                    new Color(255, 206, 0),
+                    new Color(255, 182, 0),
+                    new Color(231, 62, 81),
+                    new Color(207, 10, 44)};
+            listAggregationColors.add(createColorScheme(colors, "ZE_Warm"));
+            colors = new Color[]{
+                    new Color(11, 167, 218),
+                    new Color(38, 102, 190),
+                    new Color(77, 86, 191),
+                    new Color(117, 50, 166),
+                    new Color(229, 115, 202),
+                    new Color(237, 88, 117),
+                    new Color(242, 84, 98),
+                    new Color(245, 122, 81)};
+            listAggregationColors.add(createColorScheme(colors, "ZF_Dreamlike"));
         }
     }
 
@@ -2008,6 +2093,27 @@ public class SMThemeCartography {
     }
 
     /**
+     * 获取聚合图颜色方案
+     * @param colorType
+     * @return
+     */
+    public static Color[] getAggregationColors(String colorType) {
+        try{
+            for (int i = 0; i < listAggregationColors.size(); i++) {
+                HashMap<String, Object> hashMap = listAggregationColors.get(i);
+                String colorScheme = (String) hashMap.get("ColorScheme");
+                if (colorScheme.equals(colorType)) {
+                    return (Color[]) hashMap.get("Colors");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
+    /**
      * 获取统计专题图,等级符号专题图分级模式
      * @param type
      * @return
@@ -2411,5 +2517,46 @@ public class SMThemeCartography {
             return false;
         }
     }
+
+    /**
+     * 创建热力图
+     * @param dataset
+     * @param KernelRadius
+     * @param FuzzyDegree
+     * @param Intensity
+     * @param colors
+     * @return
+     */
+    public static WritableMap createLayerHeatMap(Dataset dataset, int KernelRadius, double FuzzyDegree, double Intensity, Color[] colors) {
+        WritableMap writableMap = Arguments.createMap();
+        try {
+            if (dataset != null && colors != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+                Layers layers = mapControl.getMap().getLayers();
+
+                LayerHeatmap layerHeatmap = layers.addHeatmap(dataset, KernelRadius, new Color(255, 0, 0), new Color(0, 0, 255));
+                layerHeatmap.setColorset(Colors.makeGradient(colors.length, colors));
+                layerHeatmap.setIntensity(Intensity);
+                layerHeatmap.setFuzzyDegree(FuzzyDegree);
+
+                layerHeatmap.updateData();
+                mapControl.getMap().refresh();
+
+                writableMap.putBoolean("Result", true);
+                return writableMap;
+            }
+
+            writableMap.putString("Error", "专题图创建失败");
+            writableMap.putBoolean("Result", false);
+            return writableMap;
+        } catch (Exception e) {
+            e.printStackTrace();
+            writableMap.putString("Error", "专题图创建失败：" + e.getMessage());
+            writableMap.putBoolean("Result", false);
+            return writableMap;
+        }
+    }
+
 
 }

@@ -8,7 +8,7 @@
 #import "Theme.h"
 #import "RangeMode.h"
 #import "ColorGradientType.h"
-@class ThemeRangeItem;
+#import "ThemeRangeItem.h"
 @class GeoStyle;
 @class DatasetVector;
 @class JoinItems;
@@ -19,11 +19,8 @@
 * <p>注意：</p>
 * <p>制作分段专题图，如果首尾区间没有设置风格，且没有设置默认风格，那么无论是采用 addToHead  还是 ddToTail   方法，首尾区间默认采用用户所添加的第一个分段的风格，比如：总共分5段，addToTail 方法依次添加 [0，1）、[1，2）、[2，4）三段，那么首区间(负无穷，0)，尾区间[4，正无穷),采用[0,1)的风格。</p>
 */
-@interface ThemeRange : Theme{
-@private
-    RangeMode _mRangeMode;
-    NSMutableArray * _mRangeItems;
-}
+@interface ThemeRange : Theme
+
 /**
 * @brief 获取或设置当前的分段模式。
 * @return 当前的分段模式。

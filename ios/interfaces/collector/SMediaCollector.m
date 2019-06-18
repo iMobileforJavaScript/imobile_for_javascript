@@ -108,7 +108,8 @@ RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName 
     @try {
         if (layer == nil) return NO;
         NSMutableArray* infos = [[NSMutableArray alloc] init];
-        NSArray* copyPaths = nil;
+//        NSArray* copyPaths = nil;
+        SMMedia* media = [SMMediaCollector findMediaByLayer:layer geoID:geoID];
         for (int i = 0; i < [fieldInfos count]; i++) {
             NSDictionary* dic = (NSDictionary *)fieldInfos[i];
             if ([[dic objectForKey:@"name"] isEqualToString:@"MediaFilePaths"]) {
@@ -116,12 +117,14 @@ RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName 
                 NSString* mediaPaths = @"";
                 NSArray* files = (NSArray *)[dic objectForKey:@"value"];
                 if ([files count]) {
-                    copyPaths = [FileUtils copyFiles:files targetDictionary:toPath];
-                    for (int i = 0; i < [copyPaths count]; i++) {
+                    [media saveMedia:files toDictionary:toPath addNew:NO];
+//                    copyPaths = [FileUtils copyFiles:files targetDictionary:toPath];
+//                    for (int i = 0; i < [copyPaths count]; i++) {
+                    for (int i = 0; i < media.paths.count; i++) {
                         if (i == 0) {
-                            mediaPaths = copyPaths[i];
+                            mediaPaths = media.paths[i];
                         } else {
-                            mediaPaths = [NSString stringWithFormat:@"%@,%@", mediaPaths, copyPaths[i]];
+                            mediaPaths = [NSString stringWithFormat:@"%@,%@", mediaPaths, media.paths[i]];
                         }
                     }
                 }
@@ -132,7 +135,7 @@ RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName 
         }
         
         BOOL saveResult = NO;
-        if (copyPaths != nil) {
+        if (media.paths != nil) {
             NSMutableDictionary* params = [[NSMutableDictionary alloc] init];
             NSString* filter = [NSString stringWithFormat:@"SmID=%d", geoID];
             [params setObject:filter forKey:@"filter"];
@@ -147,7 +150,7 @@ RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName 
 }
 
 #pragma mark 移除多媒体callout
-RCT_REMAP_METHOD(removeMedia, removeMediaWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(removeMedias, removeMediaWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
         [mapControl removeAllCallouts];
@@ -352,6 +355,19 @@ RCT_REMAP_METHOD(getVideoInfo, getVideoInfo:(NSString*)path withresolver:(RCTPro
     }
 }
 
+#pragma mark 获取多媒体数据
+RCT_REMAP_METHOD(getMediaInfo, getMediaInfo:(NSString*)layerName geoID:(int)geoID withresolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSDictionary* data = [SMediaCollector getCalloutDataWithID:[NSString stringWithFormat:@"%@-%d", layerName, geoID] layerName:layerName geoID:geoID point:nil];
+        
+        resolve(data);
+    } @catch (NSException *exception) {
+        reject(@"SMediaCollector", exception.reason, nil);
+    }
+}
+
+/************************************分割线*****************************************/
+
 + (MDataCollector *)initMediaCollector:(NSString*)datasourceName dataset:(NSString*)datasetName {
     MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
     if (!mDataCollector) {
@@ -372,33 +388,37 @@ RCT_REMAP_METHOD(getVideoInfo, getVideoInfo:(NSString*)path withresolver:(RCTPro
     return mDataCollector;
 }
 
++ (NSDictionary *)getCalloutData:(InfoCallout *)infoCallout {
+    return [SMediaCollector getCalloutDataWithID:infoCallout.ID layerName:infoCallout.layerName geoID:infoCallout.geoID point:[infoCallout getLocation]];
+}
 
-/** 回调 **/
-- (void)callOutAction:(UITapGestureRecognizer *)tapGesture {
-    InfoCallout* callout = (InfoCallout *)tapGesture.view;
-    Point2D* pt = [callout getLocation];
++ (NSDictionary *)getCalloutDataWithID:(NSString *)ID layerName:(NSString *)layerName geoID:(int)geoID point:(Point2D *)pt{
     SMap* sMap = [SMap singletonInstance];
+    Layer* layer = [SMLayer findLayerWithName:layerName];
+    DatasetVector* dv = (DatasetVector*) layer.dataset;
+    
+    QueryParameter* qp = [[QueryParameter alloc] init];
+    Recordset* recordset;
+    qp.attriButeFilter = [NSString stringWithFormat:@"SmID=%d", geoID];
+    qp.cursorType = STATIC;
+    recordset = [dv query:qp];
+    
+    if (pt == nil) {
+        pt = [recordset.geometry getInnerPoint];
+    }
     if ([sMap.smMapWC.mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
-        Point2Ds *points = [[Point2Ds alloc]init];
+        Point2Ds *points = [[Point2Ds alloc] init];
         [points add:pt];
         PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
         [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
         CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-        
+
         //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
         [CoordSysTranslator convert:points PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] PrjCoordSys:srcPrjCoorSys CoordSysTransParameter:param CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
         pt = [points getItem:0];
     }
     
-    Layer* layer = [SMLayer findLayerWithName:callout.layerName];
-    DatasetVector* dv = (DatasetVector*) layer.dataset;
-
-    QueryParameter* qp = [[QueryParameter alloc] init];
-    Recordset* recordset;
-    qp.attriButeFilter = [NSString stringWithFormat:@"SmID=%d", callout.geoID];
-    qp.cursorType = STATIC;
-    recordset = [dv query:qp];
-
+    
     NSString* modifiedDate = (NSString *)[recordset getFieldValueWithString:@"ModifiedDate"];
     NSString* mediaFileName = (NSString *)[recordset getFieldValueWithString:@"MediaFileName"];
     
@@ -408,20 +428,29 @@ RCT_REMAP_METHOD(getVideoInfo, getVideoInfo:(NSString*)path withresolver:(RCTPro
     NSString* httpAddress = (NSString *)[recordset getFieldValueWithString:@"HttpAddress"];
     NSString* description = (NSString *)[recordset getFieldValueWithString:@"Description"];
     [recordset dispose];
+    
+    return @{@"id": ID,
+             @"coordinate": @{@"x": @(pt.x), @"y": @(pt.y)},
+             @"layerName": layerName,
+             @"geoID": @(geoID),
+             @"medium": @[],
+             @"modifiedDate": modifiedDate ? modifiedDate : @"",
+             @"mediaFileName": mediaFileName ? mediaFileName : @"",
+             @"mediaFilePaths": paths ? paths : @[],
+             @"httpAddress": httpAddress ? httpAddress : @"",
+             @"description": description ? description : @"",
+             //                                  @"type": callout.type,
+             };
+}
+
+/** 回调 **/
+- (void)callOutAction:(UITapGestureRecognizer *)tapGesture {
+    InfoCallout* callout = (InfoCallout *)tapGesture.view;
+    
+    NSDictionary* data = [SMediaCollector getCalloutData:callout];
 
     if (self.bridge) {
-        [self sendEventWithName:MEDIA_CAPTURE_TAP_ACTION
-                           body:@{@"coordinate": @{@"x": @(pt.x), @"y": @(pt.y)},
-                                  @"layerName": callout.layerName,
-                                  @"geoID": @(callout.geoID),
-                                  @"medium": @[],
-                                  @"modifiedDate": modifiedDate ? modifiedDate : @"",
-                                  @"mediaFileName": mediaFileName ? mediaFileName : @"",
-                                  @"mediaFilePaths": paths ? paths : @[],
-                                  @"httpAddress": httpAddress ? httpAddress : @"",
-                                  @"description": description ? description : @"",
-//                                  @"type": callout.type,
-                                  }];
+        [self sendEventWithName:MEDIA_CAPTURE_TAP_ACTION body:data];
     }
 }
 
@@ -508,63 +537,63 @@ RCT_REMAP_METHOD(getVideoInfo, getVideoInfo:(NSString*)path withresolver:(RCTPro
 
 
 -(void)onCaptureMediaFile:(BOOL)isSuccess fileName:(NSString*)mediaFileName type:(int)type {
-    NSString* typeStr = @"";
-    switch (type) {
-        case 1:
-            typeStr = @"image";
-            break;
-        case 2:
-            typeStr = @"video";
-            break;
-        case 3:
-            typeStr = @"audio";
-            break;
-            
-        default:
-            break;
-    }
-    NSString* mediaFilePath = [NSString stringWithFormat:@"%@/%@", mDataCollector.localFilePath, mediaFileName];
-    if (mediaLayer) {
-        Recordset* rs = [((DatasetVector *)mediaLayer.dataset) recordset:NO cursorType:DYNAMIC];
-        [rs moveLast];
-        FieldInfo* modifiedDateInfo = [[FieldInfo alloc] initWithName:@"modifiedDate" fieldType:FT_DATE];
-        FieldInfo* descriptionInfo = [[FieldInfo alloc] initWithName:@"Description" fieldType:FT_DATE];
-        [rs.fieldInfos add:modifiedDateInfo];
-        [rs.fieldInfos add:descriptionInfo];
-        
-        double longitude = [((NSNumber *)[rs getFieldValueWithString:@"SmX"]) doubleValue];
-        double latitude =  [((NSNumber *)[rs getFieldValueWithString:@"SmY"]) doubleValue];
-        NSString* imagePath = [NSHomeDirectory() stringByAppendingFormat:@"/Documents/%@", mediaFilePath];
-
-        SEL selector = @selector(callOutAction:);
-        InfoCallout* callout = [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:imagePath];
-        callout.mediaFileName = mediaFileName;
-        callout.mediaFilePaths = [[NSMutableArray alloc] initWithObjects:mediaFilePath, nil];
-//        callout.type = typeStr;
-        callout.layerName = mediaLayer.name;
-        callout.httpAddress = @"";
-        callout.description = @"";
-        NSDate* date = [NSDate date];
-        
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-        callout.modifiedDate = [dateFormatter stringFromDate:date];
-        
-        callout.geoID = ((NSNumber *)[rs getFieldValueWithString:@"SmID"]).intValue;
-        
-        [rs dispose];
-        
-        UITapGestureRecognizer * tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:selector];
-        
-        [callout addGestureRecognizer:tapGesture];
-        [tapGesture setNumberOfTapsRequired:1];
-    }
-    [self sendEventWithName:MEDIA_CAPTURE
-                       body:@{@"result":@(isSuccess),
-                              @"mediaFileName":mediaFileName,
-                              @"mediaFilePaths":[[NSMutableArray alloc] initWithObjects:mediaFilePath, nil],
-                              @"type":typeStr,
-                              }];
+//    NSString* typeStr = @"";
+//    switch (type) {
+//        case 1:
+//            typeStr = @"image";
+//            break;
+//        case 2:
+//            typeStr = @"video";
+//            break;
+//        case 3:
+//            typeStr = @"audio";
+//            break;
+//
+//        default:
+//            break;
+//    }
+//    NSString* mediaFilePath = [NSString stringWithFormat:@"%@/%@", mDataCollector.localFilePath, mediaFileName];
+//    if (mediaLayer) {
+//        Recordset* rs = [((DatasetVector *)mediaLayer.dataset) recordset:NO cursorType:DYNAMIC];
+//        [rs moveLast];
+//        FieldInfo* modifiedDateInfo = [[FieldInfo alloc] initWithName:@"modifiedDate" fieldType:FT_DATE];
+//        FieldInfo* descriptionInfo = [[FieldInfo alloc] initWithName:@"Description" fieldType:FT_DATE];
+//        [rs.fieldInfos add:modifiedDateInfo];
+//        [rs.fieldInfos add:descriptionInfo];
+//
+//        double longitude = [((NSNumber *)[rs getFieldValueWithString:@"SmX"]) doubleValue];
+//        double latitude =  [((NSNumber *)[rs getFieldValueWithString:@"SmY"]) doubleValue];
+//        NSString* imagePath = [NSHomeDirectory() stringByAppendingFormat:@"/Documents/%@", mediaFilePath];
+//
+//        SEL selector = @selector(callOutAction:);
+//        InfoCallout* callout = [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:imagePath];
+//        callout.mediaFileName = mediaFileName;
+//        callout.mediaFilePaths = [[NSMutableArray alloc] initWithObjects:mediaFilePath, nil];
+////        callout.type = typeStr;
+//        callout.layerName = mediaLayer.name;
+//        callout.httpAddress = @"";
+//        callout.description = @"";
+//        NSDate* date = [NSDate date];
+//
+//        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//        [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+//        callout.modifiedDate = [dateFormatter stringFromDate:date];
+//
+//        callout.geoID = ((NSNumber *)[rs getFieldValueWithString:@"SmID"]).intValue;
+//
+//        [rs dispose];
+//
+//        UITapGestureRecognizer * tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:selector];
+//
+//        [callout addGestureRecognizer:tapGesture];
+//        [tapGesture setNumberOfTapsRequired:1];
+//    }
+//    [self sendEventWithName:MEDIA_CAPTURE
+//                       body:@{@"result":@(isSuccess),
+//                              @"mediaFileName":mediaFileName,
+//                              @"mediaFilePaths":[[NSMutableArray alloc] initWithObjects:mediaFilePath, nil],
+//                              @"type":typeStr,
+//                              }];
 }
 
 @end

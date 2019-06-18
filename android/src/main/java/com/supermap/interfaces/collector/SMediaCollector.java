@@ -32,6 +32,7 @@ import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.interfaces.utils.SMFileUtil;
+import com.supermap.mapping.CallOut;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Map;
 import com.supermap.mapping.MapControl;
@@ -48,6 +49,7 @@ import java.text.FieldPosition;
 import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author: shanglongyang
@@ -82,63 +84,8 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_UP: {
                             InfoCallout infoCallout = (InfoCallout)view;
-                            Point2D pt = new Point2D(infoCallout.getLocationX(), infoCallout.getLocationY());
-                            Map map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
-                            if (map.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
-                                Point2Ds points = new Point2Ds();
-                                points.add(pt);
-                                PrjCoordSys desPrjCoorSys = new PrjCoordSys();
-                                desPrjCoorSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-                                CoordSysTranslator.convert(points, desPrjCoorSys, map.getPrjCoordSys(),
-                                        new CoordSysTransParameter(),
-                                        CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
 
-                                pt.setX(points.getItem(0).getX());
-                                pt.setY(points.getItem(0).getY());
-                            }
-
-                            WritableMap point = Arguments.createMap();
-                            point.putDouble("x", pt.getX());
-                            point.putDouble("y", pt.getY());
-
-                            WritableArray medium = Arguments.createArray();
-
-                            Layer tapLayer = SMLayer.findLayerWithName(infoCallout.getLayerName());
-                            DatasetVector dv = (DatasetVector) tapLayer.getDataset();
-
-                            QueryParameter qp = new QueryParameter();
-                            qp.setAttributeFilter("SmID=" + infoCallout.getGeoID());
-                            qp.setCursorType(CursorType.STATIC);
-                            Recordset recordset = dv.query(qp);
-
-                            String modifiedDate = recordset.getString("ModifiedDate");
-                            String mediaFileName = recordset.getString("MediaFileName");
-                            String httpAddress = recordset.getString("HttpAddress");
-                            String description = recordset.getString("Description");
-
-                            String mediaFilePaths = recordset.getString("MediaFilePaths");
-                            WritableArray paths = Arguments.createArray();
-                            String[] pathArr = mediaFilePaths.split(",");
-                            for (String path : pathArr) {
-                                if (path.indexOf("file://") != 0) {
-                                    path = "file://" + path;
-                                }
-                                paths.pushString(path);
-                            }
-
-                            recordset.dispose();
-
-                            WritableMap data = Arguments.createMap();
-                            data.putMap("coordinate", point);
-                            data.putString("layerName", infoCallout.getLayerName());
-                            data.putInt("geoID", infoCallout.getGeoID());
-                            data.putArray("medium", medium);
-                            data.putString("modifiedDate", modifiedDate);
-                            data.putString("mediaFileName", mediaFileName);
-                            data.putArray("mediaFilePaths", paths);
-                            data.putString("httpAddress", httpAddress);
-                            data.putString("description", description);
-//                        data.putString("type", callout.getType());
+                            WritableMap data = getCalloutData(infoCallout);
 
                             context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                                     .emit(EventConst.MEDIA_CAPTURE_TAP_ACTION, data);
@@ -151,6 +98,76 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
             };
         }
         return calloutListner;
+    }
+
+    public static WritableMap getCalloutData(InfoCallout infoCallout) {
+        Point2D pt = new Point2D(infoCallout.getLocationX(), infoCallout.getLocationY());
+        return getCalloutData(infoCallout.getID(), infoCallout.getLayerName(), infoCallout.getGeoID(), pt);
+    }
+
+    public static WritableMap getCalloutData(String id, String layerName, int geoID, Point2D pt) {
+        Map map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
+
+        WritableArray medium = Arguments.createArray();
+
+        Layer tapLayer = SMLayer.findLayerWithName(layerName);
+        DatasetVector dv = (DatasetVector) tapLayer.getDataset();
+
+        QueryParameter qp = new QueryParameter();
+        qp.setAttributeFilter("SmID=" + geoID);
+        qp.setCursorType(CursorType.STATIC);
+        Recordset recordset = dv.query(qp);
+
+        if (pt == null) {
+            pt = recordset.getGeometry().getInnerPoint();
+        }
+        if (map.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+            Point2Ds points = new Point2Ds();
+            points.add(pt);
+            PrjCoordSys desPrjCoorSys = new PrjCoordSys();
+            desPrjCoorSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+            CoordSysTranslator.convert(points, desPrjCoorSys, map.getPrjCoordSys(),
+                    new CoordSysTransParameter(),
+                    CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+
+            pt.setX(points.getItem(0).getX());
+            pt.setY(points.getItem(0).getY());
+        }
+
+        WritableMap point = Arguments.createMap();
+        point.putDouble("x", pt.getX());
+        point.putDouble("y", pt.getY());
+
+        String modifiedDate = recordset.getString("ModifiedDate");
+        String mediaFileName = recordset.getString("MediaFileName");
+        String httpAddress = recordset.getString("HttpAddress");
+        String description = recordset.getString("Description");
+
+        String mediaFilePaths = recordset.getString("MediaFilePaths");
+        WritableArray paths = Arguments.createArray();
+        String[] pathArr = mediaFilePaths.split(",");
+        for (String path : pathArr) {
+//                                if (path.indexOf("file://") != 0) {
+//                                    path = "file://" + path;
+//                                }
+            paths.pushString(path);
+        }
+
+        recordset.dispose();
+
+        WritableMap data = Arguments.createMap();
+        data.putString("id", id);
+        data.putMap("coordinate", point);
+        data.putString("layerName", layerName);
+        data.putInt("geoID", geoID);
+        data.putArray("medium", medium);
+        data.putString("modifiedDate", modifiedDate);
+        data.putString("mediaFileName", mediaFileName);
+        data.putArray("mediaFilePaths", paths);
+        data.putString("httpAddress", httpAddress);
+        data.putString("description", description);
+
+        return data;
     }
 
     @ReactMethod
@@ -247,9 +264,8 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
 
     public boolean saveMedia(Layer layer, int geoID, String toPath, ReadableArray fieldInfos) {
         try {
-            ArrayList<String> copyPaths = null;
-
             WritableArray infos = Arguments.createArray();
+            SMMedia media = SMMediaCollector.findMediaByLayer(layer, geoID);
 
             for (int i = 0; i < fieldInfos.size(); i++) {
                 WritableMap dic = Arguments.createMap();
@@ -262,9 +278,13 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                         ArrayList<String> fileArr = new ArrayList<>();
                         for (int j = 0; j < files.size(); j++) {
                             fileArr.add(files.getString(j));
-                            mediaPaths += files.getString(j) + (j == files.size() - 1 ? "" : ",");
                         }
-                        copyPaths = SMFileUtil.copyFiles(fileArr, toPath);
+
+                        media.saveMedia(fileArr, toPath, false);
+                        ArrayList<String> paths = media.getPaths();
+                        for (int j = 0; j < paths.size(); j++) {
+                            mediaPaths += paths.get(j) + (j == paths.size() - 1 ? "" : ",");
+                        }
                     }
 
                     dic.putString("value", mediaPaths);
@@ -277,7 +297,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
 
 
             boolean saveResult = false;
-            if (copyPaths != null) {
+            if (media.getPaths() != null) {
                 WritableMap params = Arguments.createMap();
                 String filter = "SmID=" + geoID;
                 params.putString("filter", filter);
@@ -308,7 +328,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removeMedia(Promise promise) {
+    public void removeMedias(Promise promise) {
         try {
             SMap.getInstance().getActivity().runOnUiThread(new Runnable(){
                 @Override
@@ -348,7 +368,16 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                 public void run(){
                     MapWrapView mapView = (MapWrapView)SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView();
 
-                    mapView.removeCallOut(layerName);
+                    List<CallOut> callouts = mapView.getCallouts();
+
+                    if(callouts != null) {
+                        for (int i = 0; i < callouts.size(); i++) {
+                            InfoCallout callout = (InfoCallout) callouts.get(i);
+                            if (callout.getLayerName().equals(layerName)) {
+                                mapView.removeCallOut(callout.getID());
+                            }
+                        }
+                    }
                 }
             });
 
@@ -368,6 +397,21 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
             info.putInt("duration", duration);
 
             promise.resolve(info);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getMediaInfo(String layerName, int geoID, Promise promise) {
+        try {
+            WritableMap data = getCalloutData(layerName + "-" + geoID, layerName, geoID, null);
+
+            if (data != null) {
+                promise.resolve(data);
+            } else {
+                promise.reject(new Error("Can not find this media"));
+            }
         } catch (Exception e) {
             promise.reject(e);
         }

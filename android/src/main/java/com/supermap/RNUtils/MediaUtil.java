@@ -102,7 +102,8 @@ public class MediaUtil {
             fos.flush();
             fos.close();
 
-            info.putString("path", "file://" + file.getAbsolutePath());
+//            info.putString("path", "file://" + file.getAbsolutePath());
+            info.putString("path", file.getAbsolutePath());
             info.putDouble("width", bitmap.getWidth());
             info.putDouble("height", bitmap.getHeight());
             return info;

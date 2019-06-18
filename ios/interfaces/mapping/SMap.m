@@ -235,7 +235,9 @@ RCT_REMAP_METHOD(getMapAngle, getMapAngleWithResolver:(RCTPromiseResolveBlock)re
 RCT_REMAP_METHOD(setMapAngle, setMapAngleWithValue:(double)angle Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        sMap.smMapWC.mapControl.map.angle = angle;
+        Map *map = sMap.smMapWC.mapControl.map;
+        map.angle = angle;
+        [map refresh];
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setMapAngle",exception.reason,nil);
@@ -483,6 +485,151 @@ RCT_REMAP_METHOD(setPrjCoordSys, setPrjCoordSysWithXml:(NSString *)xml Resolver:
     }
 }
 
+#pragma mark 从数据源复制坐标系
+RCT_REMAP_METHOD(copyPrjCoordSysFromDatasource, copyPrjCoordSysFromDatasourceWithPath:(NSString *)dataSourcePath EngineType:(int)enginetype resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Workspace *workspace = [[Workspace alloc]init];
+        
+        DatasourceConnectionInfo *datasourceconnection = [[DatasourceConnectionInfo alloc] init];
+        datasourceconnection.engineType = enginetype;
+        datasourceconnection.server = dataSourcePath;
+        datasourceconnection.alias = @"dataSource";
+        Datasource *datasource = [workspace.datasources open:datasourceconnection];
+        
+        PrjCoordSys *coordSys = datasource.prjCoordSys;
+        
+        sMap.smMapWC.mapControl.map.prjCoordSys = coordSys;
+        
+        resolve(@{@"prjCoordSysName":sMap.smMapWC.mapControl.map.prjCoordSys.name});
+    } @catch (NSException *exception) {
+        reject(@"copyPrjCoordSysFromDatasourceServer",exception.reason,nil);
+    }
+    
+}
+
+#pragma mark 从数据集复制坐标系
+RCT_REMAP_METHOD(copyPrjCoordSysFromDataset, copyPrjCoordSysFromDatasetWithDatasourceName:(NSString *)datasourceName datasetName:(NSString *)datasetName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Datasources *datasources = sMap.smMapWC.workspace.datasources;
+        
+        Datasource *datasource = [datasources getAlias:datasourceName];
+        
+        if(datasource != nil){
+            Dataset *dataset = [datasource.datasets getWithName:datasetName];
+            if(dataset != nil){
+                if(dataset.prjCoordSys != nil){
+                    sMap.smMapWC.mapControl.map.prjCoordSys = dataset.prjCoordSys;
+                }else{
+                    sMap.smMapWC.mapControl.map.prjCoordSys = datasource.prjCoordSys;
+                }
+                resolve(@{@"prjCoordSysName":sMap.smMapWC.mapControl.map.prjCoordSys.name});
+            }else{
+                resolve(@(NO));
+            }
+        }else{
+            resolve(@(NO));
+        }
+    } @catch (NSException *exception) {
+        reject(@"copyPrjCoordSysFromDataset",exception.reason,nil);
+    }
+    
+}
+
+#pragma mark 从文件复制坐标系
+RCT_REMAP_METHOD(copyPrjCoordSysFromFile, copyPrjCoordSysFromFileWithPath:(NSString *)filePath  type:(NSString *)fileType resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        PrjFileType type  = [fileType isEqualToString:@"xml"] ? SUPERMAP : ESRI;
+        PrjCoordSys *prjCoordSys = [[PrjCoordSys alloc]init];
+        BOOL isSuccess = [prjCoordSys fromFile:filePath Version:type];
+        if(isSuccess){
+            sMap.smMapWC.mapControl.map.prjCoordSys = prjCoordSys;
+            resolve(@{@"prjCoordSysName":sMap.smMapWC.mapControl.map.prjCoordSys.name});
+        }else{
+            resolve(@{@"error":@"ILLEGAL_COORDSYS"});
+        }
+    } @catch (NSException *exception) {
+        reject(@"copyPrjCoordSysFromFile",exception.reason,nil);
+    }
+    
+}
+
+#pragma mark 获取当前投影转换方法
+RCT_REMAP_METHOD(getCoordSysTransMethod, getCoordSysTransMethodWithResolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        CoordSysTransMethod method = sMap.smMapWC.mapControl.map.dynamicPrjTransMethond;
+        NSString *name = @"";
+        switch (method) {
+            case MTH_GEOCENTRIC_TRANSLATION:
+                name = @"Geocentric Transalation(3-para)";
+                break;
+            case MTH_MOLODENSKY:
+                name = @"Molodensky(7-para)";
+                break;
+            case MTH_MOLODENSKY_ABRIDGED:
+                name = @"Abridged Molodensky(7-para)";
+                break;
+            case MTH_POSITION_VECTOR:
+                name = @"Position Vector(7-para)";
+                break;
+            case MTH_COORDINATE_FRAME:
+                name = @"Coordinate Frame(7-para)";
+                break;
+            case MTH_BURSA_WOLF:
+                name = @"Bursa-wolf(7-para)";
+                break;
+        }
+        resolve(name);
+    } @catch (NSException *exception) {
+        reject(@"getCoordSysTransMethod",exception.reason,nil);
+    }
+    
+}
+#pragma mark 设置当前投影转换方法和参数
+RCT_REMAP_METHOD(setCoordSysTransMethodAndParams, setCoordSysTransMethodAndParamsWithDic:(NSDictionary *) params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        Map *map = sMap.smMapWC.mapControl.map;
+        CoordSysTransMethod method;
+        NSArray *coorMethodArray = @[@"Geocentric Transalation(3-para)",@"Molodensky(7-para)",@"Abridged Molodensky(7-para)",@"Position Vector(7-para)",@"Coordinate Frame(7-para)",@"Bursa-wolf(7-para)"];
+        NSString *name = [params valueForKey:@"coordSysTransMethod"];
+        int index = [coorMethodArray indexOfObject:name];
+        switch (index) {
+            case 0:
+                method = MTH_GEOCENTRIC_TRANSLATION;
+                break;
+            case 1:
+                method = MTH_MOLODENSKY;
+                break;
+            case 2:
+                method = MTH_MOLODENSKY_ABRIDGED;
+                break;
+            case 3:
+                method = MTH_POSITION_VECTOR;
+                break;
+            case 4:
+                method = MTH_COORDINATE_FRAME;
+                break;
+            case 5:
+                method =MTH_BURSA_WOLF;
+                break;
+        }
+        map.dynamicPrjTransMethond = method;
+        map.dynamicPrjTransParameter.translateX = [[params valueForKey:@"translateX"] doubleValue];
+        map.dynamicPrjTransParameter.translateY = [[params valueForKey:@"translateY"] doubleValue];
+        map.dynamicPrjTransParameter.translateZ = [[params valueForKey:@"translateZ"] doubleValue];
+        map.dynamicPrjTransParameter.rotateX = [[params valueForKey:@"rotateX"] doubleValue];
+        map.dynamicPrjTransParameter.rotateY = [[params valueForKey:@"rotateY"] doubleValue];
+        map.dynamicPrjTransParameter.rotateZ = [[params valueForKey:@"rotateZ"] doubleValue];
+        
+        resolve(@(YES));
+    }@catch(NSException *exception){
+        reject(@"setCoordSysTransMethodAndParams",exception.reason,nil);
+    }
+}
 #pragma mark 获取图例的宽度和title
 RCT_REMAP_METHOD(getScaleData, getScaleViewDataWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -503,6 +650,7 @@ RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseRes
         sMap = [SMap singletonInstance];
         if(sMap.smMapWC.mapControl.map.legend.contentChangeDelegate == nil){
             sMap.smMapWC.mapControl.map.legend.contentChangeDelegate = self;
+            [sMap.smMapWC.mapControl.map refresh];
         }
         resolve(@(YES));
     } @catch (NSException *exception) {

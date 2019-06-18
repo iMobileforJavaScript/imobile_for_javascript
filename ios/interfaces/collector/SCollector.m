@@ -182,7 +182,8 @@ RCT_REMAP_METHOD(stopCollect, stopCollectWithResolver:(RCTPromiseResolveBlock)re
         Collector* collector = [self getCollector];
         [collector setIsSingleTapEnable:NO];
         [sMap.smMapWC.mapControl setAction:PAN];
-        [SMCollector closeGPS:collector];
+//        [NativeUtil closeGPS];
+//        [SMCollector closeGPS:collector];
         
         resolve([NSNumber numberWithBool:YES]);
         
@@ -198,25 +199,26 @@ RCT_REMAP_METHOD(addGPSPoint, addGPSPointWithResolver:(RCTPromiseResolveBlock)re
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
 //        dispatch_async(dispatch_get_main_queue(), ^{
             //            [collector moveToCurrentPos];
-            Point2D* pt = [[Point2D alloc]initWithPoint2D:[collector getGPSPoint]];
-            if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
-                Point2Ds *points = [[Point2Ds alloc]init];
-                [points add:pt];
-                PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-                [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-                CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+        GPSData* gpsData = [NativeUtil getGPSData];
+        Point2D* pt = [[Point2D alloc]initWithPoint2D:[[Point2D alloc]initWithX:gpsData.dLongitude Y:gpsData.dLatitude]];
+        if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+            Point2Ds *points = [[Point2Ds alloc]init];
+            [points add:pt];
+            PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+            [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+            CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
 
-                //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-                [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-                pt = [points getItem:0];
-            }
+            //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+            [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+            pt = [points getItem:0];
+        }
 //        });
         BOOL result = [collector addGPSPoint:pt];
         if (result) {
             NSMutableDictionary* point = [[NSMutableDictionary alloc] init];
             [point setObject:[NSNumber numberWithDouble:pt.x] forKey:@"x"];
             [point setObject:[NSNumber numberWithDouble:pt.y] forKey:@"y"];
-            [mapControl.map refresh];
+            [mapControl.map setCenter:pt];
             resolve(point);
         } else {
             resolve(nil);
@@ -230,9 +232,11 @@ RCT_REMAP_METHOD(addGPSPoint, addGPSPointWithResolver:(RCTPromiseResolveBlock)re
 #pragma mark 获取GPS点
 RCT_REMAP_METHOD(getGPSPoint, getGPSPointWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        Collector* collector = [self getCollector];
+//        Collector* collector = [self getCollector];
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
-        Point2D* pt = [[Point2D alloc]initWithPoint2D:[collector getGPSPoint]];
+//        Point2D* pt = [[Point2D alloc]initWithPoint2D:[collector getGPSPoint]];
+        GPSData* gpsData = [NativeUtil getGPSData];
+        Point2D* pt = [[Point2D alloc]initWithPoint2D:[[Point2D alloc]initWithX:gpsData.dLongitude Y:gpsData.dLatitude]];
         if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
             Point2Ds *points = [[Point2Ds alloc]init];
             [points add:pt];
@@ -321,8 +325,8 @@ RCT_REMAP_METHOD(cancel, cancelWithType:(int)type resolver:(RCTPromiseResolveBlo
 #pragma mark 打开GPS定位
 RCT_REMAP_METHOD(openGPS, openGPSWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        Collector* collector = [self getCollector];
-        [collector openGPS];
+//        Collector* collector = [self getCollector];
+        [NativeUtil openGPS];
         
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
@@ -333,8 +337,8 @@ RCT_REMAP_METHOD(openGPS, openGPSWithResolver:(RCTPromiseResolveBlock)resolve re
 #pragma mark 关闭GPS
 RCT_REMAP_METHOD(closeGPS, closeGPSWesolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        Collector* collector = [self getCollector];
-        [collector closeGPS];
+//        Collector* collector = [self getCollector];
+        [NativeUtil closeGPS];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"SCollector", exception.reason, nil);
