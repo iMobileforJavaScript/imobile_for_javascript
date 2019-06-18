@@ -1279,6 +1279,40 @@ export default (function () {
     }
   }
 
+  /**
+   * 初始化标绘符号库
+   */
+  function initPlotSymbolLibrary(plotSymbolPaths) {
+    try {
+      return SMap.initPlotSymbolLibrary(plotSymbolPaths)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 设置标绘符号
+   */
+  function setPlotSymbol(libId,symbolCode) {
+    try {
+      return SMap.setPlotSymbol(libId,symbolCode)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 新建cad图层
+   */
+  function addCadLayer(layerName){
+    try {
+      return SMap.addCadLayer(layerName)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  
   /************************************** 地图编辑历史操作 ****************************************/
   /**
    * 地图撤销
@@ -1506,6 +1540,10 @@ export default (function () {
 
     showMarker,
     deleteMarker,
+
+    initPlotSymbolLibrary,
+    setPlotSymbol,
+    addCadLayer,
     /** 地图编辑历史操作 **/
     undo,
     redo,
