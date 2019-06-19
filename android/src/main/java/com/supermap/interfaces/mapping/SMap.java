@@ -3220,6 +3220,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
             Rectangle2D bounds =  layer.getDataset().getBounds();
             sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
+            sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale()*0.8,200);
             sMap.getSmMapWC().getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
