@@ -55,9 +55,9 @@ export default (function () {
    * 添加图例的监听事件，会返回相应的图例数据
    * @returns {*}
    */
-  function addLegendDelegate(handler) {
+  function addLegendListener(handler) {
     try {
-      let isSuccess = SMap.addLegendDelegate()
+      let isSuccess = SMap.addLegendListener()
       if(!isSuccess)
         return
       if(Platform.OS === 'ios'){
@@ -74,6 +74,18 @@ export default (function () {
         })
       }
     } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移除图例事件监听
+   * @returns {*}
+   */
+  function removeLegendListener() {
+    try {
+      return SMap.removeLegendListener()
+    }catch (e) {
       console.error(e)
     }
   }
@@ -1568,7 +1580,8 @@ export default (function () {
     setMaxVisibleScale,
     addTextRecordset,
     getGestureDetector,
-    addLegendDelegate,
+    addLegendListener,
+    removeLegendListener,
     addScaleChangeDelegate,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)

@@ -645,7 +645,7 @@ RCT_REMAP_METHOD(getScaleData, getScaleViewDataWithResolver:(RCTPromiseResolveBl
     }
 }
 #pragma mark 添加图例的事件监听
-RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addLegendListener, addLegendListenerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         if(sMap.smMapWC.mapControl.map.legend.contentChangeDelegate == nil){
@@ -660,6 +660,7 @@ RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseRes
 
 
 -(void)legentContentChange:(NSArray*)arrItems{
+    sMap = [SMap singletonInstance];
     NSMutableArray *legendSource = [[NSMutableArray alloc]init];
     for(int i = 0,count = arrItems.count; i < count; i++){
         UIImage *image = arrItems[i][0];
@@ -672,6 +673,15 @@ RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseRes
     [self sendEventWithName:LEGEND_CONTENT_CHANGE body:legendSource];
 }
 
+#pragma mark 移除图例的事件监听
+RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.mapControl.map.legend.contentChangeDelegate = nil;
+    } @catch (NSException *exception) {
+        reject(@"removeLegendListener",exception.reason,nil);
+    }
+}
 #pragma mark ---------------------地图设置菜单结束---------------------
 //#pragma mark 导入工作空间
 //RCT_REMAP_METHOD(openWorkspace, inputWKPath:(NSString*)inPutWorkspace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

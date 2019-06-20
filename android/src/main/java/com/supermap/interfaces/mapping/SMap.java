@@ -4379,7 +4379,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void addLegendDelegate(Promise promise) {
+    public void addLegendListener(Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().getLegend().setContentChangeListener(this);
@@ -4414,6 +4414,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 .emit(EventConst.LEGEND_CONTENT_CHANGE, arr);
     }
 
+    /**
+     * 移除图例的事件监听
+     * @param promise
+     */
+    @ReactMethod
+    public void removeLegendListener(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getMap().getLegend().setContentChangeListener(null);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
     /************************************** 地图设置 END ****************************************/
 
 }
