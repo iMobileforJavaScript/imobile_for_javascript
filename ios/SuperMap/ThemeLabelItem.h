@@ -16,18 +16,7 @@
 * <p>标签专题图用专题值对点、线、面等对象做标注，值得注意的是，标签专题图允许用户设置范围段，同一范围段内的标签具有相同的显示风格，其中每一个范围段就是一个专题图子项，每一个子项都具有其名称、风格、起始值和终止值。</p>
 * <P>注意：每个分段所表示的范围为[Start,End)。例如：标签专题图的分段点有两个子项，它们所代表的分段区间分别为[0,5)，[5,10)。那么需要分别设置  [themelabelItems0 setMStart:0]，[themelabelItems0 setMEnd:5]，[themelabelItems1 setMStart:5]，[themelabelItems1 setMEnd:10]。</p>
 */
-@interface ThemeLabelItem : NSObject{
-    
-@private
-    
-    NSString *_mCaption;
-    TextStyle *_mTextStyle;
-    BOOL _mVisible;
-    double _mStart;
-    double _mEnd;
-    ThemeLabel *_mThemeLabel;
-    BOOL _mIsUserThemeLabel;
-}
+@interface ThemeLabelItem : NSObject
 
 /**
 * @brief 获取或设置标签专题图子项的分段起始值。

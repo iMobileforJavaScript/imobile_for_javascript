@@ -2540,7 +2540,7 @@ public class SMThemeCartography {
                 layerHeatmap.setIntensity(Intensity);
                 layerHeatmap.setFuzzyDegree(FuzzyDegree);
 
-                layerHeatmap.updateData();
+//                layerHeatmap.updateData();
                 mapControl.getMap().refresh();
 
                 writableMap.putBoolean("Result", true);

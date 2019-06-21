@@ -55,9 +55,9 @@ export default (function () {
    * 添加图例的监听事件，会返回相应的图例数据
    * @returns {*}
    */
-  function addLegendDelegate(handler) {
+  function addLegendListener(handler) {
     try {
-      let isSuccess = SMap.addLegendDelegate()
+      let isSuccess = SMap.addLegendListener()
       if(!isSuccess)
         return
       if(Platform.OS === 'ios'){
@@ -74,6 +74,18 @@ export default (function () {
         })
       }
     } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移除图例事件监听
+   * @returns {*}
+   */
+  function removeLegendListener() {
+    try {
+      return SMap.removeLegendListener()
+    }catch (e) {
       console.error(e)
     }
   }
@@ -1044,6 +1056,17 @@ export default (function () {
   }
 
   /**
+   * 全副显示图层
+   */
+  function setLayerFullView (name) {
+    try {
+      return SMap.setLayerFullView(name)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 导入符号库
    * @param path
    * @param isReplace 是否替换
@@ -1279,6 +1302,40 @@ export default (function () {
     }
   }
 
+  /**
+   * 初始化标绘符号库
+   */
+  function initPlotSymbolLibrary(plotSymbolPaths) {
+    try {
+      return SMap.initPlotSymbolLibrary(plotSymbolPaths)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 设置标绘符号
+   */
+  function setPlotSymbol(libId,symbolCode) {
+    try {
+      return SMap.setPlotSymbol(libId,symbolCode)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 新建cad图层
+   */
+  function addCadLayer(layerName){
+    try {
+      return SMap.addCadLayer(layerName)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  
   /************************************** 地图编辑历史操作 ****************************************/
   /**
    * 地图撤销
@@ -1482,6 +1539,7 @@ export default (function () {
     
     addMap,
     addLayers,
+    setLayerFullView,
     importSymbolLibrary,
     isOverlapDisplayed,
     setOverlapDisplayed,
@@ -1506,6 +1564,10 @@ export default (function () {
 
     showMarker,
     deleteMarker,
+
+    initPlotSymbolLibrary,
+    setPlotSymbol,
+    addCadLayer,
     /** 地图编辑历史操作 **/
     undo,
     redo,
@@ -1518,7 +1580,8 @@ export default (function () {
     setMaxVisibleScale,
     addTextRecordset,
     getGestureDetector,
-    addLegendDelegate,
+    addLegendListener,
+    removeLegendListener,
     addScaleChangeDelegate,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)

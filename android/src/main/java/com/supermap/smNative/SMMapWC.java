@@ -1128,23 +1128,25 @@ public class SMMapWC {
         }
         for (int i = 0; i < srcGroup.getCount(); i++) {
             Symbol sym = srcGroup.get(i);
-            int nId = sym.getID();
-            boolean bOld = (desLib.findSymbol(sym.getID()) != null);
-            if (bOld){
-                if (bSymReplace){
-                    desLib.remove(nId);
-                    desLib.add(sym,desGroup);
-                }else{
-                    int nIdNew = desLib.add(sym,desGroup);
-                    String strResult = "" + nId + ":" + nIdNew;
-                    if (arrResult==null){
-                        arrResult = new ArrayList<String>();
+            if(sym!=null){
+                int nId = sym.getID();
+                boolean bOld = (desLib.findSymbol(sym.getID()) != null);
+                if (bOld){
+                    if (bSymReplace){
+                        desLib.remove(nId);
+                        desLib.add(sym,desGroup);
+                    }else{
+                        int nIdNew = desLib.add(sym,desGroup);
+                        String strResult = "" + nId + ":" + nIdNew;
+                        if (arrResult==null){
+                            arrResult = new ArrayList<String>();
+                        }
+                        arrResult.add(strResult);
                     }
-                    arrResult.add(strResult);
-                }
 
-            }else{
-                desLib.add(sym,desGroup);
+                }else{
+                    desLib.add(sym,desGroup);
+                }
             }
         }
 
