@@ -147,6 +147,7 @@ import SMPieChartView from './NativeModule/components/SMPieChartViewUI.js';
 import SMInstrumentChartView from './NativeModule/components/SMInstrumentChartViewUI.js';
 import SMWorkspaceManagerView from './NativeModule/components/SMWorkspaceManagerComponent.js';
 import SMSymbolTable from './NativeModule/components/SMSymbolTable';
+import SMDynamicArrowView from './NativeModule/components/SMDynamicArrowView.js';
 
 import EngineType from './NativeModule/EngineType'
 import ThemeLabelItem from './NativeModule/ThemeLabelItem'
@@ -197,9 +198,10 @@ export {
   // SMSearchView,
   SMWorkspaceManagerView,
   SMRLegendView,
-  
+  SMDynamicArrowView,
+
   Utility,
-  
+
   Layer3Ds,
   Layer3D,
   Feature3D,
@@ -208,7 +210,7 @@ export {
   Point3D,
   Camera,
   Layer3DOSGBFile,
-  
+
   AMQPManager,
   AMQPReceiver,
   AMQPSender,
@@ -216,7 +218,7 @@ export {
   // STOMPReceiver,
   // STOMPSender,
   // MQTTClientSide,
-  
+
   SMBarChartView,
   SMLineChartView,
   SMPieChartView,
@@ -247,7 +249,7 @@ export {
   TextAlignment,
   Layer3DType,
   ImageFormatType,
-  
+
   BufferAnalyst,
   BufferAnalystGeometry,
   BufferAnalystParameter,
@@ -301,7 +303,7 @@ export {
   TextStyle,
   TextPart,
   GeoText,
-  
+
   SupplyCenterType,
   PrjCoordSysType,
   CoordSysTransMethod,
@@ -313,9 +315,9 @@ export {
   TransportationAnalystSetting,
   CoordSysTranslator,
   CoordSysTransParameter,
-  
+
   EngineType,
-  
+
   RangeMode,
   ThemeLabelItem,
   ThemeRangeItem,
@@ -323,18 +325,18 @@ export {
   ThemeLabel,
   ThemeRange,
   ThemeUnique,
-  
+
   ColorGradientType,
-  
+
   GPSElementType,
   Collector,
   CollectorElement,
   ElementPoint,
   ElementLine,
   ElementPolygon,
-  
+
   SpeechManager,
-  
+
   ThemeType,
   WorkspaceType,
   OnlineService,
