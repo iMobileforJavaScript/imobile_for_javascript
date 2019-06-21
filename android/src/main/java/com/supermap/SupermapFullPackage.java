@@ -6,6 +6,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.supermap.component.SMSymbolTable;
+import com.supermap.interfaces.ar.RCTArrowRenderView;
 import com.supermap.interfaces.collector.SCollector;
 import com.supermap.interfaces.collector.SCollectorType;
 import com.supermap.interfaces.collector.SMediaCollector;
@@ -37,7 +38,7 @@ public class SupermapFullPackage implements ReactPackage {
         return Arrays.<ViewManager>asList(
                 new MapViewManager(),
                 new LayerListViewManager(),new ScaleViewManager(),new CallOutManager()
-                ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView()
+                ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView()
         );
     }
 
