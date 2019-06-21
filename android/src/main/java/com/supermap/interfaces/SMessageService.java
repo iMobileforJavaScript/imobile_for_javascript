@@ -617,9 +617,9 @@ public class SMessageService extends ReactContextBaseJavaModule {
         try {
 
             boolean bRes = false;
+            final String sQueue = "Message_" + uuid;
             if(g_AMQPManager!=null && uuid!=null){
                 if(g_AMQPReceiver==null){
-                    String sQueue = "Message_" + uuid;
                     g_AMQPManager.declareQueue(sQueue);
                     g_AMQPReceiver = g_AMQPManager.newReceiver(sQueue);
                 }
@@ -630,6 +630,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
              class MessageReceiveThread extends Thread{
                 @Override
                 public void run(){
+                    int n = 0;
                     while (true){
                         if(isRecieving){
                             AMQPReturnMessage resMessage = g_AMQPReceiver.receiveMessage();
@@ -654,6 +655,18 @@ public class SMessageService extends ReactContextBaseJavaModule {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
+                        }
+
+                        //一分钟重新连接一次：
+                        if(n++ == 60){
+                            if (g_AMQPManager != null) {
+                                g_AMQPManager.suspend();
+                                g_AMQPManager.resume();
+                            }
+//                            g_AMQPReceiver.dispose();
+//                            g_AMQPManager.declareQueue(sQueue);
+//                            g_AMQPReceiver = g_AMQPManager.newReceiver(sQueue);
+                            n = 0;
                         }
                     }
 
@@ -695,6 +708,9 @@ public class SMessageService extends ReactContextBaseJavaModule {
         try {
             boolean bRes = false;
             isRecieving = false;
+            while (!bStopRecieve) {
+                Thread.sleep(500);
+            }
             promise.resolve(bRes);
         } catch (Exception e) {
             promise.reject(e);
