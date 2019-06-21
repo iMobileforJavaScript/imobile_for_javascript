@@ -46,6 +46,7 @@
 #import "SuperMap/LegendItem.h"
 #import "SuperMap/Size2D.h"
 #import "SuperMap/Callout.h"
+#import "SuperMap/Point2D.h"
 #import "SuperMap/LayerSettingVector.h"
 #import "JSMapControl.h"
 #import "SMMapWC.h"

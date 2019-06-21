@@ -1174,8 +1174,22 @@ RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver
      @try{
          Map* map = sMap.smMapWC.mapControl.map;
          Rectangle2D* bounds =  [map.layers getLayerWithName:name].dataset.bounds;
+         if([map.layers getLayerWithName:name].dataset.prjCoordSys.type != map.prjCoordSys.type){
+             Point2Ds *points = [[Point2Ds alloc]init];
+             [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
+             [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
+             PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+             [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+             CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+             
+             //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+             [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+             Point2D* pt1 = [points getItem:0];
+             Point2D* pt2 = [points getItem:1];
+             bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
+         }
          map.viewBounds = bounds;
-         [sMap.smMapWC.mapControl zoomTo:map.scale*0.8 time:200];
+//         [sMap.smMapWC.mapControl zoomTo:map.scale*0.8 time:200];
 //         [map refresh];
        resolve(@(1));
      } @catch (NSException *exception) {
