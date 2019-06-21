@@ -329,7 +329,7 @@ public class SDatasource extends ReactContextBaseJavaModule {
                 datasource = workspace.getDatasources().open(info);
             } else if (datasource == null || datasource.getConnectionInfo().getEngineType() != EngineType.UDB) {
                 //除了UDB数据源都排除
-                promise.resolve(false);
+                promise.resolve(Arguments.createMap());
                 return;
             }
 
