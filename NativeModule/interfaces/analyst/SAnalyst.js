@@ -4,7 +4,7 @@ import {
   NativeEventEmitter,
   Platform,
 } from 'react-native'
-import { EventConst } from '../constains'
+import { EventConst } from '../../constains/index'
 let Analyst = NativeModules.SAnalyst
 const nativeEvt = new NativeEventEmitter(Analyst)
 

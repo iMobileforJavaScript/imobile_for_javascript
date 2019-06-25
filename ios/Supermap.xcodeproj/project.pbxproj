@@ -12,7 +12,11 @@
 		005693BA2191696C00AEC46E /* SOnlineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 005693B92191696C00AEC46E /* SOnlineService.m */; };
 		0A0118A52122BC5600BC4AAB /* JSThemeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0118A42122BC5600BC4AAB /* JSThemeLabel.m */; };
 		0A01192E212412C500BC4AAB /* JSRangeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A01192D212412C500BC4AAB /* JSRangeMode.m */; };
+		0A0EDC4822C0B2C5003990A6 /* SNetworkAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0EDC4722C0B2C5003990A6 /* SNetworkAnalyst.m */; };
 		0A17279F212E88AC00CF978C /* JSGPSElementType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A17279E212E88AC00CF978C /* JSGPSElementType.m */; };
+		0A22980C22B9CC9E001B2356 /* SFacilityAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A22980B22B9CC9E001B2356 /* SFacilityAnalyst.m */; };
+		0A22980F22BA3643001B2356 /* STransportationAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A22980E22BA3643001B2356 /* STransportationAnalyst.m */; };
+		0A22981222BB1762001B2356 /* SMParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A22981122BB1762001B2356 /* SMParameter.m */; };
 		0A27E0552281249700227B8C /* SMediaCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A27E0532281249600227B8C /* SMediaCollector.m */; };
 		0A27E31B2284293900227B8C /* MediaUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A27E31A2284293900227B8C /* MediaUtil.m */; };
 		0A27E3812288FFF600227B8C /* InfoCallout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A27E3802288FFF600227B8C /* InfoCallout.m */; };
@@ -227,8 +231,16 @@
 		0A0118A42122BC5600BC4AAB /* JSThemeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSThemeLabel.m; sourceTree = "<group>"; };
 		0A01192C212412C500BC4AAB /* JSRangeMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSRangeMode.h; sourceTree = "<group>"; };
 		0A01192D212412C500BC4AAB /* JSRangeMode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSRangeMode.m; sourceTree = "<group>"; };
+		0A0EDC4622C0B2C5003990A6 /* SNetworkAnalyst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SNetworkAnalyst.h; sourceTree = "<group>"; };
+		0A0EDC4722C0B2C5003990A6 /* SNetworkAnalyst.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SNetworkAnalyst.m; sourceTree = "<group>"; };
 		0A17279D212E88AC00CF978C /* JSGPSElementType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSGPSElementType.h; sourceTree = "<group>"; };
 		0A17279E212E88AC00CF978C /* JSGPSElementType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSGPSElementType.m; sourceTree = "<group>"; };
+		0A22980A22B9CC9E001B2356 /* SFacilityAnalyst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SFacilityAnalyst.h; sourceTree = "<group>"; };
+		0A22980B22B9CC9E001B2356 /* SFacilityAnalyst.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SFacilityAnalyst.m; sourceTree = "<group>"; };
+		0A22980D22BA3643001B2356 /* STransportationAnalyst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STransportationAnalyst.h; sourceTree = "<group>"; };
+		0A22980E22BA3643001B2356 /* STransportationAnalyst.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STransportationAnalyst.m; sourceTree = "<group>"; };
+		0A22981022BB1762001B2356 /* SMParameter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMParameter.h; sourceTree = "<group>"; };
+		0A22981122BB1762001B2356 /* SMParameter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMParameter.m; sourceTree = "<group>"; };
 		0A27E0532281249600227B8C /* SMediaCollector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMediaCollector.m; sourceTree = "<group>"; };
 		0A27E0542281249700227B8C /* SMediaCollector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMediaCollector.h; sourceTree = "<group>"; };
 		0A27E3192284293900227B8C /* MediaUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MediaUtil.h; sourceTree = "<group>"; };
@@ -705,6 +717,12 @@
 			children = (
 				0AF348672270018F004D6D09 /* SAnalyst.h */,
 				0AF348662270018F004D6D09 /* SAnalyst.m */,
+				0A22980A22B9CC9E001B2356 /* SFacilityAnalyst.h */,
+				0A22980B22B9CC9E001B2356 /* SFacilityAnalyst.m */,
+				0A22980D22BA3643001B2356 /* STransportationAnalyst.h */,
+				0A22980E22BA3643001B2356 /* STransportationAnalyst.m */,
+				0A0EDC4622C0B2C5003990A6 /* SNetworkAnalyst.h */,
+				0A0EDC4722C0B2C5003990A6 /* SNetworkAnalyst.m */,
 			);
 			path = analyst;
 			sourceTree = "<group>";
@@ -821,6 +839,8 @@
 				0A84DED521BA44C9007995FC /* SMDatasource.m */,
 				0AF3485F227000BC004D6D09 /* SMAnalyst.h */,
 				0AF34860227000BD004D6D09 /* SMAnalyst.m */,
+				0A22981022BB1762001B2356 /* SMParameter.h */,
+				0A22981122BB1762001B2356 /* SMParameter.m */,
 			);
 			path = native;
 			sourceTree = "<group>";
@@ -1315,6 +1335,7 @@
 				D8DD42362175D025009D80E9 /* JSSymbolMarkerLibrary.m in Sources */,
 				0AB00D5A21A6C93A00C35E4B /* SMLayer.m in Sources */,
 				0A332E03211D623E00F56F26 /* JSCoordSysTransParameter.m in Sources */,
+				0A22980C22B9CC9E001B2356 /* SFacilityAnalyst.m in Sources */,
 				0A332E6E211D623E00F56F26 /* RCTConvert+Action.m in Sources */,
 				0A332E38211D623E00F56F26 /* JSPieChartData.m in Sources */,
 				D8DD42332175CC32009D80E9 /* JSSymbolLineLibrary.m in Sources */,
@@ -1348,6 +1369,7 @@
 				0A332E41211D623E00F56F26 /* JSProjectionType.m in Sources */,
 				0A332E05211D623E00F56F26 /* JSDataset.m in Sources */,
 				0AB00D5621A6C8F800C35E4B /* SMSymbol.m in Sources */,
+				0A22981222BB1762001B2356 /* SMParameter.m in Sources */,
 				0A51675621AF7EF7003C77BE /* MapTool.m in Sources */,
 				0A332E39211D623E00F56F26 /* JSPieChartViewManager.m in Sources */,
 				0A332E2A211D623E00F56F26 /* JSLocationAnalystParameter.m in Sources */,
@@ -1396,6 +1418,7 @@
 				0A332E26211D623E00F56F26 /* JSLegendViewManager.m in Sources */,
 				0A332E72211D623E00F56F26 /* RCTConvert+RadiusUnit.m in Sources */,
 				0A332E44211D623E00F56F26 /* JSRadiusUnit.m in Sources */,
+				0A0EDC4822C0B2C5003990A6 /* SNetworkAnalyst.m in Sources */,
 				0A332DFA211D623E00F56F26 /* JSChartPoint.m in Sources */,
 				0A332E04211D623E00F56F26 /* JSDataDownloadService.m in Sources */,
 				0A332E64211D623E00F56F26 /* JSTrack.m in Sources */,
@@ -1404,6 +1427,7 @@
 				0A17279F212E88AC00CF978C /* JSGPSElementType.m in Sources */,
 				0A332E12211D623E00F56F26 /* JSFacilityAnalyst.m in Sources */,
 				0A332E4C211D623E00F56F26 /* JSSceneView.m in Sources */,
+				0A22980F22BA3643001B2356 /* STransportationAnalyst.m in Sources */,
 				0AD551A122389E9E00D24453 /* SMessageService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,5 +1,5 @@
 import { SMap, SScene } from './mapping'
-import SAnalyst from './SAnalyst'
+import { SAnalyst, SFacilityAnalyst } from './analyst'
 import { SCollector, SMediaCollector } from './collector'
 import SCartography from './SCartography'
 import SThemeCartography from './SThemeCartography'
@@ -9,6 +9,7 @@ import SMessageService from './SMessageService'
 export {
   SMap,
   SAnalyst,
+  SFacilityAnalyst,
   SCollector,
   SMediaCollector,
   SScene,

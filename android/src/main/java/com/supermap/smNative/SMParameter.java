@@ -10,21 +10,23 @@ import com.supermap.analyst.networkanalyst.WeightFieldInfo;
 import com.supermap.analyst.spatialanalyst.OverlayAnalyst;
 import com.supermap.analyst.spatialanalyst.OverlayAnalystParameter;
 import com.supermap.data.CursorType;
+import com.supermap.data.DatasetVector;
 import com.supermap.data.QueryParameter;
 import com.supermap.data.SpatialQueryMode;
+import com.supermap.mapping.Layer;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 public class SMParameter {
 
-    public static QueryParameter setQueryParameter(Map data){
-        QueryParameter queryParameter=new QueryParameter();
+    public static QueryParameter setQueryParameter(Map data) {
+        QueryParameter queryParameter = new QueryParameter();
         if (data.containsKey("attributeFilter")) {
             queryParameter.setAttributeFilter(data.get("attributeFilter").toString());
         }
         if (data.containsKey("cursorType")) {
-            switch (data.get("cursorType").toString()){
+            switch (data.get("cursorType").toString()) {
                 case "DYNAMIC":
                     queryParameter.setCursorType(CursorType.DYNAMIC);
                     break;
@@ -33,36 +35,36 @@ public class SMParameter {
             }
         }
         if (data.containsKey("groupBy")) {
-            ArrayList<String> resultFields=(ArrayList<String>) data.get("groupBy");
-            String[] arr= new String[resultFields.size()];
-            for (int i = 0; i <resultFields.size() ; i++) {
-                arr[i]=resultFields.get(i);
+            ArrayList<String> resultFields = (ArrayList<String>) data.get("groupBy");
+            String[] arr = new String[resultFields.size()];
+            for (int i = 0; i < resultFields.size(); i++) {
+                arr[i] = resultFields.get(i);
             }
             queryParameter.setGroupBy(arr);
         }
 
         if (data.containsKey("hasGeometry")) {
-            boolean hasGeometry= Boolean.parseBoolean(data.get("attributeFilter").toString());
+            boolean hasGeometry = Boolean.parseBoolean(data.get("attributeFilter").toString());
             queryParameter.setHasGeometry(hasGeometry);
         }
         if (data.containsKey("orderBy")) {
-            ArrayList<String> resultFields=(ArrayList<String>) data.get("orderBy");
-            String[] arr= new String[resultFields.size()];
-            for (int i = 0; i <resultFields.size() ; i++) {
-                arr[i]=resultFields.get(i);
+            ArrayList<String> resultFields = (ArrayList<String>) data.get("orderBy");
+            String[] arr = new String[resultFields.size()];
+            for (int i = 0; i < resultFields.size(); i++) {
+                arr[i] = resultFields.get(i);
             }
             queryParameter.setOrderBy(arr);
         }
         if (data.containsKey("resultFields")) {
-            ArrayList<String> resultFields=(ArrayList<String>) data.get("resultFields");
-            String[] arr= new String[resultFields.size()];
-            for (int i = 0; i <resultFields.size() ; i++) {
-                arr[i]=resultFields.get(i);
+            ArrayList<String> resultFields = (ArrayList<String>) data.get("resultFields");
+            String[] arr = new String[resultFields.size()];
+            for (int i = 0; i < resultFields.size(); i++) {
+                arr[i] = resultFields.get(i);
             }
             queryParameter.setResultFields(arr);
         }
         if (data.containsKey("spatialQueryMode")) {
-            switch (data.get("spatialQueryMode").toString()){
+            switch (data.get("spatialQueryMode").toString()) {
                 case "CONTAIN":
                     queryParameter.setSpatialQueryMode(SpatialQueryMode.CONTAIN);
                     break;
@@ -87,74 +89,74 @@ public class SMParameter {
                     queryParameter.setSpatialQueryMode(SpatialQueryMode.WITHIN);
             }
         }
-        return  queryParameter;
+        return queryParameter;
     }
 
-    public static OverlayAnalystParameter setOverlayParameter(Map data){
-        OverlayAnalystParameter overlayAnalystParameter =new OverlayAnalystParameter();
+    public static OverlayAnalystParameter setOverlayParameter(Map data) {
+        OverlayAnalystParameter overlayAnalystParameter = new OverlayAnalystParameter();
         if (data.containsKey("operationRetainedFields")) {
-            ArrayList<String> resultFields=(ArrayList<String>) data.get("operationRetainedFields");
-            String[] arr= new String[resultFields.size()];
-            for (int i = 0; i <resultFields.size() ; i++) {
-                arr[i]=resultFields.get(i);
+            ArrayList<String> resultFields = (ArrayList<String>) data.get("operationRetainedFields");
+            String[] arr = new String[resultFields.size()];
+            for (int i = 0; i < resultFields.size(); i++) {
+                arr[i] = resultFields.get(i);
             }
             overlayAnalystParameter.setOperationRetainedFields(arr);
         }
         if (data.containsKey("sourceRetainedFields")) {
-            ArrayList<String> resultFields=(ArrayList<String>) data.get("sourceRetainedFields");
-            String[] arr= new String[resultFields.size()];
-            for (int i = 0; i <resultFields.size() ; i++) {
-                arr[i]=resultFields.get(i);
+            ArrayList<String> resultFields = (ArrayList<String>) data.get("sourceRetainedFields");
+            String[] arr = new String[resultFields.size()];
+            for (int i = 0; i < resultFields.size(); i++) {
+                arr[i] = resultFields.get(i);
             }
             overlayAnalystParameter.setSourceRetainedFields(arr);
         }
         if (data.containsKey("tolerance")) {
-            double tolerance= Double.parseDouble(data.get("tolerance").toString());
+            double tolerance = Double.parseDouble(data.get("tolerance").toString());
             overlayAnalystParameter.setTolerance(tolerance);
         }
         return overlayAnalystParameter;
     }
 
-    public static BufferAnalystParameter setBufferParameter(Map data){
-        BufferAnalystParameter bufferAnalystParameter=new BufferAnalystParameter();
+    public static BufferAnalystParameter setBufferParameter(Map data) {
+        BufferAnalystParameter bufferAnalystParameter = new BufferAnalystParameter();
         if (data.containsKey("endType")) {
-            switch (data.get("endType").toString()){
+            switch (data.get("endType").toString()) {
                 case "FLAT":
                     bufferAnalystParameter.setEndType(BufferEndType.FLAT);
                     break;
-                case"ROUND":
+                case "ROUND":
                     bufferAnalystParameter.setEndType(BufferEndType.ROUND);
                     break;
             }
         }
         if (data.containsKey("leftDistance")) {
-            double leftDistance= Double.parseDouble(data.get("leftDistance").toString());
+            double leftDistance = Double.parseDouble(data.get("leftDistance").toString());
             bufferAnalystParameter.setLeftDistance(leftDistance);
         }
         if (data.containsKey("radiusUnit")) {
-            switch (data.get("radiusUnit").toString()){
+            switch (data.get("radiusUnit").toString()) {
                 case "CentiMeter":
                     bufferAnalystParameter.setRadiusUnit(BufferRadiusUnit.CentiMeter);
                     break;
                 case "DeciMeter":
                     bufferAnalystParameter.setRadiusUnit(BufferRadiusUnit.DeciMeter);
                     break;
-                case"Foot":
+                case "Foot":
                     bufferAnalystParameter.setRadiusUnit(BufferRadiusUnit.Foot);
                     break;
-                case"Inch":
+                case "Inch":
                     bufferAnalystParameter.setRadiusUnit(BufferRadiusUnit.Inch);
                     break;
-                case"KiloMeter":
+                case "KiloMeter":
                     bufferAnalystParameter.setRadiusUnit(BufferRadiusUnit.KiloMeter);
                     break;
-                case"Meter":
+                case "Meter":
                     bufferAnalystParameter.setRadiusUnit(BufferRadiusUnit.Meter);
                     break;
-                case"Mile":
+                case "Mile":
                     bufferAnalystParameter.setRadiusUnit(BufferRadiusUnit.Mile);
                     break;
-                case"MiliMeter":
+                case "MiliMeter":
                     bufferAnalystParameter.setRadiusUnit(BufferRadiusUnit.MiliMeter);
                     break;
                 case "Yard":
@@ -163,33 +165,43 @@ public class SMParameter {
             }
         }
         if (data.containsKey("rightDistance")) {
-            double rightDistance= Double.parseDouble(data.get("rightDistance").toString());
+            double rightDistance = Double.parseDouble(data.get("rightDistance").toString());
             bufferAnalystParameter.setRightDistance(rightDistance);
         }
         if (data.containsKey("rightDistance")) {
-            Integer semicircleLineSegment= Integer.parseInt(data.get("rightDistance").toString());
-            if(semicircleLineSegment>=4){
+            Integer semicircleLineSegment = Integer.parseInt(data.get("rightDistance").toString());
+            if (semicircleLineSegment >= 4) {
                 bufferAnalystParameter.setSemicircleLineSegment(semicircleLineSegment);
             }
         }
         return bufferAnalystParameter;
     }
 
-    public static FacilityAnalystSetting setfacilitySetting(Map data){
-        FacilityAnalystSetting facilityAnalystSetting=new FacilityAnalystSetting();
+    public static FacilityAnalystSetting setFacilitySetting(Map data) {
+        FacilityAnalystSetting facilityAnalystSetting = new FacilityAnalystSetting();
+//        if (data.containsKey("networkDataset")) {
+//            Layer layer = SMLayer.findLayerByDatasetName((String) data.get("networkDataset"));
+//            facilityAnalystSetting.setNetworkDataset((DatasetVector) layer.getDataset());
+//        } else if (data.containsKey("networkLayer")) {
+//            Layer layer = SMLayer.findLayerWithName((String) data.get("networkLayer"));
+//            facilityAnalystSetting.setNetworkDataset((DatasetVector) layer.getDataset());
+//        } else {
+//            return null;
+//        }
+
         if (data.containsKey("barrierEdges")) {
-            ArrayList<Integer> barrierEdges=(ArrayList<Integer>) data.get("barrierEdges");
-            int[] arr= new int[barrierEdges.size()];
-            for (int i = 0; i <barrierEdges.size() ; i++) {
-                arr[i]=barrierEdges.get(i);
+            ArrayList<Integer> barrierEdges = (ArrayList<Integer>) data.get("barrierEdges");
+            int[] arr = new int[barrierEdges.size()];
+            for (int i = 0; i < barrierEdges.size(); i++) {
+                arr[i] = barrierEdges.get(i);
             }
             facilityAnalystSetting.setBarrierEdges(arr);
         }
         if (data.containsKey("barrierNodes")) {
-            ArrayList<Integer> barrierEdges=(ArrayList<Integer>) data.get("barrierEdges");
-            int[] arr= new int[barrierEdges.size()];
-            for (int i = 0; i <barrierEdges.size() ; i++) {
-                arr[i]=barrierEdges.get(i);
+            ArrayList<Integer> barrierEdges = (ArrayList<Integer>) data.get("barrierEdges");
+            int[] arr = new int[barrierEdges.size()];
+            for (int i = 0; i < barrierEdges.size(); i++) {
+                arr[i] = barrierEdges.get(i);
             }
             facilityAnalystSetting.setBarrierNodes(arr);
         }
@@ -214,21 +226,21 @@ public class SMParameter {
         return facilityAnalystSetting;
     }
 
-    public static TransportationAnalystParameter settransportationParameter(Map data){
-        TransportationAnalystParameter transportationAnalystParameter=new TransportationAnalystParameter();
+    public static TransportationAnalystParameter setTransportationParameter(Map data) {
+        TransportationAnalystParameter transportationAnalystParameter = new TransportationAnalystParameter();
         if (data.containsKey("barrierEdges")) {
-            ArrayList<Integer> barrierEdges=(ArrayList<Integer>) data.get("barrierEdges");
-            int[] arr= new int[barrierEdges.size()];
-            for (int i = 0; i <barrierEdges.size() ; i++) {
-                arr[i]=barrierEdges.get(i);
+            ArrayList<Integer> barrierEdges = (ArrayList<Integer>) data.get("barrierEdges");
+            int[] arr = new int[barrierEdges.size()];
+            for (int i = 0; i < barrierEdges.size(); i++) {
+                arr[i] = barrierEdges.get(i);
             }
             transportationAnalystParameter.setBarrierEdges(arr);
         }
         if (data.containsKey("barrierNodes")) {
-            ArrayList<Integer> barrierEdges=(ArrayList<Integer>) data.get("barrierEdges");
-            int[] arr= new int[barrierEdges.size()];
-            for (int i = 0; i <barrierEdges.size() ; i++) {
-                arr[i]=barrierEdges.get(i);
+            ArrayList<Integer> barrierEdges = (ArrayList<Integer>) data.get("barrierEdges");
+            int[] arr = new int[barrierEdges.size()];
+            for (int i = 0; i < barrierEdges.size(); i++) {
+                arr[i] = barrierEdges.get(i);
             }
             transportationAnalystParameter.setBarrierNodes(arr);
         }
@@ -236,10 +248,10 @@ public class SMParameter {
             transportationAnalystParameter.setEdgesReturn(Boolean.parseBoolean(data.get("attributeFilter").toString()));
         }
         if (data.containsKey("nodes")) {
-            ArrayList<Integer> barrierEdges=(ArrayList<Integer>) data.get("nodes");
-            int[] arr= new int[barrierEdges.size()];
-            for (int i = 0; i <barrierEdges.size() ; i++) {
-                arr[i]=barrierEdges.get(i);
+            ArrayList<Integer> barrierEdges = (ArrayList<Integer>) data.get("nodes");
+            int[] arr = new int[barrierEdges.size()];
+            for (int i = 0; i < barrierEdges.size(); i++) {
+                arr[i] = barrierEdges.get(i);
             }
             transportationAnalystParameter.setNodes(arr);
         }
@@ -264,21 +276,21 @@ public class SMParameter {
         return transportationAnalystParameter;
     }
 
-    public static TransportationAnalystSetting settransportationSetting(Map data){
-        TransportationAnalystSetting transportationAnalystSetting=new TransportationAnalystSetting();
+    public static TransportationAnalystSetting setTransportationSetting(Map data) {
+        TransportationAnalystSetting transportationAnalystSetting = new TransportationAnalystSetting();
         if (data.containsKey("barrierEdges")) {
-            ArrayList<Integer> barrierEdges=(ArrayList<Integer>) data.get("barrierEdges");
-            int[] arr= new int[barrierEdges.size()];
-            for (int i = 0; i <barrierEdges.size() ; i++) {
-                arr[i]=barrierEdges.get(i);
+            ArrayList<Integer> barrierEdges = (ArrayList<Integer>) data.get("barrierEdges");
+            int[] arr = new int[barrierEdges.size()];
+            for (int i = 0; i < barrierEdges.size(); i++) {
+                arr[i] = barrierEdges.get(i);
             }
             transportationAnalystSetting.setBarrierEdges(arr);
         }
         if (data.containsKey("barrierNodes")) {
-            ArrayList<Integer> barrierEdges=(ArrayList<Integer>) data.get("barrierEdges");
-            int[] arr= new int[barrierEdges.size()];
-            for (int i = 0; i <barrierEdges.size() ; i++) {
-                arr[i]=barrierEdges.get(i);
+            ArrayList<Integer> barrierEdges = (ArrayList<Integer>) data.get("barrierEdges");
+            int[] arr = new int[barrierEdges.size()];
+            for (int i = 0; i < barrierEdges.size(); i++) {
+                arr[i] = barrierEdges.get(i);
             }
             transportationAnalystSetting.setBarrierNodes(arr);
         }
@@ -295,10 +307,10 @@ public class SMParameter {
             transportationAnalystSetting.setFNodeIDField(data.get("fNodeIDField").toString());
         }
         if (data.containsKey("fTSingleWayRuleValues")) {
-            ArrayList<String> RuleValues=(ArrayList<String>) data.get("fTSingleWayRuleValues");
-            String[] arr= new String[RuleValues.size()];
-            for (int i = 0; i <RuleValues.size() ; i++) {
-                arr[i]=RuleValues.get(i);
+            ArrayList<String> RuleValues = (ArrayList<String>) data.get("fTSingleWayRuleValues");
+            String[] arr = new String[RuleValues.size()];
+            for (int i = 0; i < RuleValues.size(); i++) {
+                arr[i] = RuleValues.get(i);
             }
             transportationAnalystSetting.setFTSingleWayRuleValues(arr);
         }
@@ -309,10 +321,10 @@ public class SMParameter {
             transportationAnalystSetting.setNodeIDField(data.get("nodeNameField").toString());
         }
         if (data.containsKey("prohibitedWayRuleValues")) {
-            ArrayList<String> RuleValues=(ArrayList<String>) data.get("prohibitedWayRuleValues");
-            String[] arr= new String[RuleValues.size()];
-            for (int i = 0; i <RuleValues.size() ; i++) {
-                arr[i]=RuleValues.get(i);
+            ArrayList<String> RuleValues = (ArrayList<String>) data.get("prohibitedWayRuleValues");
+            String[] arr = new String[RuleValues.size()];
+            for (int i = 0; i < RuleValues.size(); i++) {
+                arr[i] = RuleValues.get(i);
             }
             transportationAnalystSetting.setProhibitedWayRuleValues(arr);
         }
@@ -320,10 +332,10 @@ public class SMParameter {
             transportationAnalystSetting.setRuleField(data.get("ruleField").toString());
         }
         if (data.containsKey("tFSingleWayRuleValues")) {
-            ArrayList<String> RuleValues=(ArrayList<String>) data.get("tFSingleWayRuleValues");
-            String[] arr= new String[RuleValues.size()];
-            for (int i = 0; i <RuleValues.size() ; i++) {
-                arr[i]=RuleValues.get(i);
+            ArrayList<String> RuleValues = (ArrayList<String>) data.get("tFSingleWayRuleValues");
+            String[] arr = new String[RuleValues.size()];
+            for (int i = 0; i < RuleValues.size(); i++) {
+                arr[i] = RuleValues.get(i);
             }
             transportationAnalystSetting.setTFSingleWayRuleValues(arr);
         }
@@ -343,26 +355,26 @@ public class SMParameter {
             transportationAnalystSetting.setTurnTEdgeIDField(data.get("turnTEdgeIDField").toString());
         }
         if (data.containsKey("twoWayRuleValues")) {
-            ArrayList<String> RuleValues=(ArrayList<String>) data.get("twoWayRuleValues");
-            String[] arr= new String[RuleValues.size()];
-            for (int i = 0; i <RuleValues.size() ; i++) {
-                arr[i]=RuleValues.get(i);
+            ArrayList<String> RuleValues = (ArrayList<String>) data.get("twoWayRuleValues");
+            String[] arr = new String[RuleValues.size()];
+            for (int i = 0; i < RuleValues.size(); i++) {
+                arr[i] = RuleValues.get(i);
             }
             transportationAnalystSetting.setTwoWayRuleValues(arr);
         }
         return transportationAnalystSetting;
     }
 
-    public static WeightFieldInfo setweightFieldInfo(Map data){
-        WeightFieldInfo weightFieldInfo=new WeightFieldInfo();
-        if (data.containsKey("fTWeightField")) {
-            weightFieldInfo.setFTWeightField(data.get("fTWeightField").toString());
+    public static WeightFieldInfo setWeightFieldInfo(Map data) {
+        WeightFieldInfo weightFieldInfo = new WeightFieldInfo();
+        if (data.containsKey("ftWeightField")) {
+            weightFieldInfo.setFTWeightField(data.get("ftWeightField").toString());
         }
         if (data.containsKey("name")) {
             weightFieldInfo.setName(data.get("name").toString());
         }
-        if (data.containsKey("tFweightField")) {
-            weightFieldInfo.setTFWeightField(data.get("tFweightField").toString());
+        if (data.containsKey("tfWeightField")) {
+            weightFieldInfo.setTFWeightField(data.get("tfWeightField").toString());
         }
         return weightFieldInfo;
     }

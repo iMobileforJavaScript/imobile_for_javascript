@@ -483,6 +483,8 @@ export default (function () {
     return SMap.cancel()
   }
 
+  let longPressDetector, singleTapDetector, doubleTapDetector, touchBeganDetector, touchEndDetector, scrollDetector
+  let gestureHandlers
   /**
    * 手势监听
    * @memberOf MapControl
@@ -491,84 +493,86 @@ export default (function () {
    */
   setGestureDetector = handlers => {
     try {
-      if (handlers) {
+      gestureHandlers = handlers
+      if (longPressDetector && singleTapDetector && doubleTapDetector && touchBeganDetector && touchEndDetector && scrollDetector) return
+      if (gestureHandlers) {
         SMap.setGestureDetector()
       } else {
         throw new Error('setGestureDetector need callback functions as first two argument!')
       }
       //差异化
       if (Platform.OS === 'ios') {
-        if (typeof handlers.longPressHandler === 'function') {
-          nativeEvt.addListener(EventConst.MAP_LONG_PRESS, function (e) {
+        if (typeof gestureHandlers.longPressHandler === 'function') {
+          longPressDetector = nativeEvt.addListener(EventConst.MAP_LONG_PRESS, function (e) {
             // longPressHandler && longPressHandler(e)
-            handlers.longPressHandler(e)
+            gestureHandlers.longPressHandler(e)
           })
         }
 
-        if (typeof handlers.singleTapHandler === 'function') {
-          nativeEvt.addListener(EventConst.MAP_SINGLE_TAP, function (e) {
-            handlers.singleTapHandler(e)
+        if (typeof gestureHandlers.singleTapHandler === 'function') {
+          singleTapDetector = nativeEvt.addListener(EventConst.MAP_SINGLE_TAP, function (e) {
+            gestureHandlers.singleTapHandler(e)
           })
         }
 
-        if (typeof handlers.doubleTapHandler === 'function') {
-          nativeEvt.addListener(EventConst.MAP_DOUBLE_TAP, function (e) {
-            handlers.doubleTapHandler(e)
+        if (typeof gestureHandlers.doubleTapHandler === 'function') {
+          doubleTapDetector = nativeEvt.addListener(EventConst.MAP_DOUBLE_TAP, function (e) {
+            gestureHandlers.doubleTapHandler(e)
           })
         }
 
-        if (typeof handlers.touchBeganHandler === 'function') {
-          nativeEvt.addListener(EventConst.MAP_TOUCH_BEGAN, function (e) {
-            handlers.touchBeganHandler(e)
+        if (typeof gestureHandlers.touchBeganHandler === 'function') {
+          touchBeganDetector = nativeEvt.addListener(EventConst.MAP_TOUCH_BEGAN, function (e) {
+            gestureHandlers.touchBeganHandler(e)
           })
         }
 
-        if (typeof handlers.touchEndHandler === 'function') {
-          nativeEvt.addListener(EventConst.MAP_TOUCH_END, function (e) {
-            handlers.touchEndHandler(e)
+        if (typeof gestureHandlers.touchEndHandler === 'function') {
+          touchEndDetector = nativeEvt.addListener(EventConst.MAP_TOUCH_END, function (e) {
+            gestureHandlers.touchEndHandler(e)
           })
         }
 
-        if (typeof handlers.scrollHandler === 'function') {
-          nativeEvt.addListener(EventConst.MAP_SCROLL, function (e) {
-            handlers.scrollHandler(e)
+        if (typeof gestureHandlers.scrollHandler === 'function') {
+          scrollDetector = nativeEvt.addListener(EventConst.MAP_SCROLL, function (e) {
+            gestureHandlers.scrollHandler(e)
           })
         }
       } else {
-        if (typeof handlers.longPressHandler === 'function') {
-          DeviceEventEmitter.addListener(EventConst.MAP_LONG_PRESS, function (e) {
+        if (typeof gestureHandlers.longPressHandler === 'function') {
+          longPressDetector = DeviceEventEmitter.addListener(EventConst.MAP_LONG_PRESS, function (e) {
             // longPressHandler && longPressHandler(e)
-            handlers.longPressHandler(e)
+            gestureHandlers.longPressHandler(e)
           })
         }
 
-        if (typeof handlers.singleTapHandler === 'function') {
-          DeviceEventEmitter.addListener(EventConst.MAP_SINGLE_TAP, function (e) {
-            handlers.singleTapHandler(e)
+        if (typeof gestureHandlers.singleTapHandler === 'function') {
+          singleTapDetector = DeviceEventEmitter.addListener(EventConst.MAP_SINGLE_TAP, function (e) {
+            gestureHandlers.singleTapHandler(e)
           })
         }
 
-        if (typeof handlers.doubleTapHandler === 'function') {
-          DeviceEventEmitter.addListener(EventConst.MAP_DOUBLE_TAP, function (e) {
-            handlers.doubleTapHandler(e)
+        if (typeof gestureHandlers.doubleTapHandler === 'function') {
+          doubleTapDetector = DeviceEventEmitter.addListener(EventConst.MAP_DOUBLE_TAP, function (e) {
+            gestureHandlers.doubleTapHandler(e)
           })
         }
 
-        if (typeof handlers.touchBeganHandler === 'function') {
-          DeviceEventEmitter.addListener(EventConst.MAP_TOUCH_BEGAN, function (e) {
-            handlers.touchBeganHandler(e)
+        if (typeof gestureHandlers.touchBeganHandler === 'function') {
+          touchBeganDetector = DeviceEventEmitter.addListener(EventConst.MAP_TOUCH_BEGAN, function (e) {
+            gestureHandlers.touchBeganHandler(e)
           })
         }
 
-        if (typeof handlers.touchEndHandler === 'function') {
-          DeviceEventEmitter.addListener(EventConst.MAP_TOUCH_END, function (e) {
-            handlers.touchEndHandler(e)
+        if (typeof gestureHandlers.touchEndHandler === 'function') {
+          touchEndDetector = DeviceEventEmitter.addListener(EventConst.MAP_TOUCH_END, function (e) {
+            gestureHandlers.touchEndHandler(e)
           })
         }
 
-        if (typeof handlers.scrollHandler === 'function') {
-          DeviceEventEmitter.addListener(EventConst.MAP_SCROLL, function (e) {
-            handlers.scrollHandler(e)
+        if (typeof gestureHandlers.scrollHandler === 'function') {
+          scrollDetector = DeviceEventEmitter.addListener(EventConst.MAP_SCROLL, function (e) {
+            gestureHandlers.scrollHandler(e)
           })
         }
       }
@@ -586,11 +590,39 @@ export default (function () {
   deleteGestureDetector = () => {
     try {
       SMap.deleteGestureDetector()
+      gestureHandlers = null
+      if (longPressDetector) {
+        longPressDetector.remove()
+        longPressDetector = null
+      }
+      if (singleTapDetector) {
+        singleTapDetector.remove()
+        singleTapDetector = null
+      }
+      if (doubleTapDetector) {
+        doubleTapDetector.remove()
+        doubleTapDetector = null
+      }
+      if (touchBeganDetector) {
+        touchBeganDetector.remove()
+        touchBeganDetector = null
+      }
+      if (touchEndDetector) {
+        touchEndDetector.remove()
+        touchEndDetector = null
+      }
+      if (scrollDetector) {
+        scrollDetector.remove()
+        scrollDetector = null
+      }
     } catch (e) {
       console.error(e)
     }
   }
-
+  
+  let geometrySelectedListener
+  let geometryMultiSelectedListener
+  let geometryHandlers
   /**
    * 添加对象修改前监听器
    * @memberOf MapControl
@@ -602,35 +634,37 @@ export default (function () {
   addGeometrySelectedListener = events => {
     (async function () {
       try {
+        geometryHandlers = events
+        if (geometrySelectedListener || geometryMultiSelectedListener) return
         let success = await SMap.addGeometrySelectedListener()
         if (!success) return
         //差异化
         if (Platform.OS === 'ios') {
-          nativeEvt.addListener(EventConst.MAP_GEOMETRY_SELECTED, function (e) {
-            if (typeof events.geometrySelected === 'function') {
-              events.geometrySelected(e)
+          geometrySelectedListener = nativeEvt.addListener(EventConst.MAP_GEOMETRY_SELECTED, function (e) {
+            if (typeof geometryHandlers.geometrySelected === 'function') {
+              geometryHandlers.geometrySelected(e)
             } else {
               console.error('Please set a callback to the first argument.')
             }
           })
-          nativeEvt.addListener(EventConst.MAP_GEOMETRY_MULTI_SELECTED, function (e) {
-            if (typeof events.geometryMultiSelected === 'function') {
-              events.geometryMultiSelected(e)
+          geometryMultiSelectedListener = nativeEvt.addListener(EventConst.MAP_GEOMETRY_MULTI_SELECTED, function (e) {
+            if (typeof geometryHandlers.geometryMultiSelected === 'function') {
+              geometryHandlers.geometryMultiSelected(e)
             } else {
               console.error('Please set a callback to the first argument.')
             }
           })
         } else {
-          DeviceEventEmitter.addListener(EventConst.MAP_GEOMETRY_SELECTED, function (e) {
-            if (typeof events.geometrySelected === 'function') {
-              events.geometrySelected(e)
+          geometrySelectedListener = DeviceEventEmitter.addListener(EventConst.MAP_GEOMETRY_SELECTED, function (e) {
+            if (typeof geometryHandlers.geometrySelected === 'function') {
+              geometryHandlers.geometrySelected(e)
             } else {
               console.error('Please set a callback to the first argument.')
             }
           })
-          DeviceEventEmitter.addListener(EventConst.MAP_GEOMETRY_MULTI_SELECTED, function (e) {
-            if (typeof events.geometryMultiSelected === 'function') {
-              events.geometryMultiSelected(e)
+          geometryMultiSelectedListener = DeviceEventEmitter.addListener(EventConst.MAP_GEOMETRY_MULTI_SELECTED, function (e) {
+            if (typeof geometryHandlers.geometryMultiSelected === 'function') {
+              geometryHandlers.geometryMultiSelected(e)
             } else {
               console.error('Please set a callback to the first argument.')
             }
@@ -651,6 +685,15 @@ export default (function () {
   removeGeometrySelectedListener = () => {
     try {
       SMap.removeGeometrySelectedListener()
+      geometryHandlers = null
+      if (geometrySelectedListener) {
+        geometrySelectedListener.remove()
+        geometrySelectedListener = null
+      }
+      if (geometryMultiSelectedListener) {
+        geometryMultiSelectedListener.remove()
+        geometryMultiSelectedListener = null
+      }
     } catch (e) {
       console.error(e)
     }

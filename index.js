@@ -177,6 +177,7 @@ import Environment from './NativeModule/Environment'
 import {
   SMap,
   SAnalyst,
+  SFacilityAnalyst,
   SCollector,
   SMediaCollector,
   SScene,
@@ -362,6 +363,7 @@ export {
 
   SMap,
   SAnalyst,
+  SFacilityAnalyst,
   SCollector,
   SMediaCollector,
   SScene,

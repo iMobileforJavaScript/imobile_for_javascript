@@ -1703,19 +1703,39 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 }
 
                 public boolean onDown(MotionEvent event) {
+                    WritableMap screenPoint = Arguments.createMap();
+                    screenPoint.putInt("x", (int) event.getX());
+                    screenPoint.putInt("y", (int) event.getY());
+
+                    Point2D point2D = SMap.getInstance().getSmMapWC().getMapControl().getMap()
+                            .pixelToMap(new Point((int) event.getX(), (int) event.getY()));
+                    WritableMap mapPoint = Arguments.createMap();
+                    mapPoint.putInt("x", (int) point2D.getX());
+                    mapPoint.putInt("y", (int) point2D.getY());
+
                     WritableMap map = Arguments.createMap();
-                    map.putInt("x", (int) event.getX());
-                    map.putInt("y", (int) event.getY());
+                    map.putMap("screenPoint", screenPoint);
+                    map.putMap("mapPoint", mapPoint);
 
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                             .emit(EventConst.MAP_TOUCH_BEGAN, map);
                     return false;
                 }
 
-                public boolean onSingleTapUp(MotionEvent e) {
+                public boolean onSingleTapUp(MotionEvent event) {
+                    WritableMap screenPoint = Arguments.createMap();
+                    screenPoint.putInt("x", (int) event.getX());
+                    screenPoint.putInt("y", (int) event.getY());
+
+                    Point2D point2D = SMap.getInstance().getSmMapWC().getMapControl().getMap()
+                            .pixelToMap(new Point((int) event.getX(), (int) event.getY()));
+                    WritableMap mapPoint = Arguments.createMap();
+                    mapPoint.putInt("x", (int) point2D.getX());
+                    mapPoint.putInt("y", (int) point2D.getY());
+
                     WritableMap map = Arguments.createMap();
-                    map.putInt("x", (int) e.getX());
-                    map.putInt("y", (int) e.getY());
+                    map.putMap("screenPoint", screenPoint);
+                    map.putMap("mapPoint", mapPoint);
 
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                             .emit(EventConst.MAP_SINGLE_TAP, map);
@@ -1723,28 +1743,58 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 }
 
                 public void onLongPress(MotionEvent event) {
+                    WritableMap screenPoint = Arguments.createMap();
+                    screenPoint.putInt("x", (int) event.getX());
+                    screenPoint.putInt("y", (int) event.getY());
+
+                    Point2D point2D = SMap.getInstance().getSmMapWC().getMapControl().getMap()
+                            .pixelToMap(new Point((int) event.getX(), (int) event.getY()));
+                    WritableMap mapPoint = Arguments.createMap();
+                    mapPoint.putInt("x", (int) point2D.getX());
+                    mapPoint.putInt("y", (int) point2D.getY());
+
                     WritableMap map = Arguments.createMap();
-                    map.putInt("x", (int) event.getX());
-                    map.putInt("y", (int) event.getY());
+                    map.putMap("screenPoint", screenPoint);
+                    map.putMap("mapPoint", mapPoint);
 
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                             .emit(EventConst.MAP_LONG_PRESS, map);
                 }
 
-                public boolean onSingleTapConfirmed(MotionEvent e) {
+                public boolean onSingleTapConfirmed(MotionEvent event) {
+                    WritableMap screenPoint = Arguments.createMap();
+                    screenPoint.putInt("x", (int) event.getX());
+                    screenPoint.putInt("y", (int) event.getY());
+
+                    Point2D point2D = SMap.getInstance().getSmMapWC().getMapControl().getMap()
+                            .pixelToMap(new Point((int) event.getX(), (int) event.getY()));
+                    WritableMap mapPoint = Arguments.createMap();
+                    mapPoint.putInt("x", (int) point2D.getX());
+                    mapPoint.putInt("y", (int) point2D.getY());
+
                     WritableMap map = Arguments.createMap();
-                    map.putInt("x", (int) e.getX());
-                    map.putInt("y", (int) e.getY());
+                    map.putMap("screenPoint", screenPoint);
+                    map.putMap("mapPoint", mapPoint);
 
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                             .emit(EventConst.MAP_SINGLE_TAP_CONFIR, map);
                     return false;
                 }
 
-                public boolean onDoubleTap(MotionEvent e) {
+                public boolean onDoubleTap(MotionEvent event) {
+                    WritableMap screenPoint = Arguments.createMap();
+                    screenPoint.putInt("x", (int) event.getX());
+                    screenPoint.putInt("y", (int) event.getY());
+
+                    Point2D point2D = SMap.getInstance().getSmMapWC().getMapControl().getMap()
+                            .pixelToMap(new Point((int) event.getX(), (int) event.getY()));
+                    WritableMap mapPoint = Arguments.createMap();
+                    mapPoint.putInt("x", (int) point2D.getX());
+                    mapPoint.putInt("y", (int) point2D.getY());
+
                     WritableMap map = Arguments.createMap();
-                    map.putInt("x", (int) e.getX());
-                    map.putInt("y", (int) e.getY());
+                    map.putMap("screenPoint", screenPoint);
+                    map.putMap("mapPoint", mapPoint);
 
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                             .emit(EventConst.MAP_DOUBLE_TAP, map);

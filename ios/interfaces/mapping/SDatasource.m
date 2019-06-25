@@ -279,4 +279,45 @@ RCT_REMAP_METHOD(removeDatasetByName, removeDatasetByNameWithPath:(NSString *)pa
     }
 }
 
+/**
+ * 根据数据源目录，获取指定数据源中的数据集（非工作空间已存在的数据源）
+ *
+ * @param dataDic DatasourceConnectionInfo
+ * @param promise
+ */
+RCT_REMAP_METHOD(getDatasetsByExternalDatasource, getDatasetsByExternalDatasourceWithInfo:(NSDictionary*)dataDic resolver:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
+    @try{
+        NSString* alias = @"";
+        Workspace *workspaceTemp = [[Workspace alloc]init];
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"Alias"]) {
+            alias = [dataDic objectForKey:@"Alias"];
+        } else if ([array containsObject:@"alias"]) {
+            alias = [dataDic objectForKey:@"alias"];
+        }
+        
+        DatasourceConnectionInfo* info = [SMDatasource convertDicToInfo:dataDic];
+        Datasource* datasource = [workspaceTemp.datasources open:info];
+        
+        Datasets* datasets = datasource.datasets;
+        NSInteger datasetsCount = datasets.count;
+        NSMutableArray* arr = [[NSMutableArray alloc] init];
+        for (int i = 0; i < datasetsCount; i++) {
+            NSMutableDictionary* datasetInfo = [[NSMutableDictionary alloc] init];
+            [datasetInfo setValue:[datasets get:i].name forKey:@"datasetName"];
+            [datasetInfo setValue:[NSNumber numberWithInt:[datasets get:i].datasetType] forKey:@"datasetType"];
+            [datasetInfo setValue:datasource.alias forKey:@"datasourceName"];
+            [arr addObject:datasetInfo];
+        }
+        
+        resolve(arr);
+        
+        [info dispose];
+        [workspaceTemp close];
+        [workspaceTemp dispose];
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
 @end
