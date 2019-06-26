@@ -33,6 +33,7 @@ function register(handlers) {
 function unRegister() {
   try {
     listener && listener.remove()
+    listener = undefined
   } catch (error) {
     console.log(error)
   }
@@ -43,7 +44,6 @@ function connectService(ip, port,hostName,userName,passwd,userID) {
 }
 //断开服务链接
 function disconnectionService() {
-  unRegister()
   return MessageServiceeNative.disconnectionService();
 }
 //消息发送
@@ -94,6 +94,7 @@ function resume() {
 
 //恢复操作，用户APP唤醒
 function stopReceiveMessage() {
+  unRegister()
   return MessageServiceeNative.stopReceiveMessage();
 }
 
