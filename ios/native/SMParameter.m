@@ -34,12 +34,12 @@
     
     if ([data objectForKey:@"barrierEdges"]) setting.barrierEdges = [data objectForKey:@"barrierEdges"];
     if ([data objectForKey:@"barrierNodes"]) setting.barrierNodes = [data objectForKey:@"barrierNodes"];
-    if ([data objectForKey:@"directionField"] != nil) setting.directionField = [data objectForKey:@"directionField"];
+    if ([data objectForKey:@"directionField"]) setting.directionField = [data objectForKey:@"directionField"];
     if ([data objectForKey:@"edgeIDField"]) setting.edgeIDField = [data objectForKey:@"edgeIDField"];
     if ([data objectForKey:@"fNodeIDField"]) setting.fNodeIDField = [data objectForKey:@"fNodeIDField"];
     if ([data objectForKey:@"nodeIDField"]) setting.nodeIDField = [data objectForKey:@"nodeIDField"];
     if ([data objectForKey:@"tNodeIDField"]) setting.fNodeIDField = [data objectForKey:@"tNodeIDField"];
-    if ([data objectForKey:@"tolerance"]) setting.tolerance = [(NSNumber *)[data objectForKey:@"tolerance"] integerValue];
+    if ([data objectForKey:@"tolerance"] != nil) setting.tolerance = [(NSNumber *)[data objectForKey:@"tolerance"] integerValue];
     
     return setting;
 }

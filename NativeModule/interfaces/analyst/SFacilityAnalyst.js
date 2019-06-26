@@ -8,7 +8,14 @@ import { EventConst } from '../../constains/index'
 let Analyst = NativeModules.SFacilityAnalyst
 
 /**
+ *
  * 加载设施网络分析模型
+ * @param datasourceInfo
+ * {
+      alias,
+      server,
+      engineType,
+ * }
  * @param setting
  * {
  *  networkDataset / networkLayer,
@@ -24,8 +31,8 @@ let Analyst = NativeModules.SFacilityAnalyst
  * }
  * @returns {Promise.<void>}
  */
-async function load (setting = {}) {
-  return Analyst.load(setting)
+async function load (datasourceInfo = {}, setting = {}) {
+  return Analyst.load(datasourceInfo, setting)
 }
 
 /**

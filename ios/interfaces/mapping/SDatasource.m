@@ -222,7 +222,7 @@ RCT_REMAP_METHOD(getDatasetsByDatasource, getDatasetsByDatasourceWithResolver:(N
             DatasourceConnectionInfo* info = [SMDatasource convertDicToInfo:dataDic];
             datasource = [workspace.datasources open:info];
         } else if (datasource == nil && !autoOpen || datasource.datasourceConnectionInfo.engineType!=ET_UDB) {
-            resolve([NSNumber numberWithBool:false]);
+            resolve([[NSDictionary alloc]init]);
             return;
         }
         Datasets* datasets = datasource.datasets;

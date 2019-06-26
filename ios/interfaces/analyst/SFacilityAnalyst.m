@@ -36,13 +36,17 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo facilityS
         
         if ([datasourceInfo objectForKey:@"server"]) {
             DatasourceConnectionInfo* connectInfo = [SMDatasource convertDicToInfo:datasourceInfo];
-            Datasource* datasource = [workspace.datasources open:connectInfo];
+            Datasources* dss = [SMap singletonInstance].smMapWC.workspace.datasources;
+            Datasource* datasource = [dss getAlias:[datasourceInfo objectForKey:@"alias"]];
+            if (!datasource) {
+                datasource = [workspace.datasources open:connectInfo];
+            }
             
-            if ([facilitySetting objectForKey:@"dataset"]) {
-                ds = [datasource.datasets getWithName:[facilitySetting objectForKey:@"dataset"]];
+            if ([facilitySetting objectForKey:@"networkDataset"]) {
+                ds = [datasource.datasets getWithName:[facilitySetting objectForKey:@"networkDataset"]];
             }
         } else {
-            if ([facilitySetting objectForKey:@"dataset"]) {
+            if ([facilitySetting objectForKey:@"networkDataset"]) {
                 layer = [SMLayer findLayerByDatasetName:[facilitySetting objectForKey:@"networkDataset"]];
                 ds = layer.dataset;
             }
@@ -55,11 +59,13 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo facilityS
                 selection = [[Selection alloc] init];
             }
             
+            facilityAnalyst = [self getFacilityAnalyst];
+            
             setting = [SMParameter setFacilitySetting:facilitySetting];
             setting.netWorkDataset = (DatasetVector *)ds;
             [facilityAnalyst setAnalystSetting:setting];
             
-            BOOL result = facilityAnalyst.load;
+            BOOL result = [facilityAnalyst load];
             NSNumber* number = [NSNumber numberWithBool:result];
             
             [[SMap singletonInstance].smMapWC.mapControl setAction:PAN];

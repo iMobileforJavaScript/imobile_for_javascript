@@ -56,6 +56,10 @@ RCT_REMAP_METHOD(connectService, ip:(NSString*)serverIP port:(int)port hostName:
     if(g_AMQPManager){
         [g_AMQPManager suspend];
     }
+    
+    if(g_AMQPReceiver){
+        [g_AMQPReceiver dispose];
+    }
     g_AMQPReceiver = nil;
     g_AMQPSender = nil;
     g_AMQPManager = nil;
@@ -534,9 +538,9 @@ RCT_REMAP_METHOD(startReceiveMessage, uuid:(NSString*)uuid  startReceiveMessageR
     
     @try {
         BOOL bRes = false;
+        NSString* sQueue = [@"Message_"  stringByAppendingString:uuid];
         if(g_AMQPManager!=nil && uuid!=nil){
             if(g_AMQPReceiver==nil){
-                NSString* sQueue = [@"Message_"  stringByAppendingString:uuid];
                 [g_AMQPManager declareQueue:sQueue];
                 g_AMQPReceiver = [g_AMQPManager newReceiver:sQueue];
             }
@@ -568,8 +572,13 @@ RCT_REMAP_METHOD(startReceiveMessage, uuid:(NSString*)uuid  startReceiveMessageR
                 //一分钟重新连接一次：
                 if(n++ == 60){
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                        [g_AMQPManager suspend];
-                        [g_AMQPManager resume];
+                        if(g_AMQPManager!=nil){
+                            [g_AMQPManager suspend];
+                            [g_AMQPManager resume];
+                        }
+//                        [g_AMQPReceiver dispose];
+//                        [g_AMQPManager declareQueue:sQueue];
+//                        g_AMQPReceiver = [g_AMQPManager newReceiver:sQueue];
                     });
                     
                     n = 0;
@@ -609,6 +618,9 @@ RCT_REMAP_METHOD(stopReceiveMessage, stopReceiveMessageResolver:(RCTPromiseResol
     @try {
         BOOL bRes = false;
         isRecieving=false;
+        while (!bStopRecieve) {
+            [NSThread sleepForTimeInterval:0.5];
+        }
         NSNumber* number =[NSNumber numberWithBool:bRes];
         resolve(number);
     } @catch (NSException *exception) {

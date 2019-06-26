@@ -645,7 +645,7 @@ RCT_REMAP_METHOD(getScaleData, getScaleViewDataWithResolver:(RCTPromiseResolveBl
     }
 }
 #pragma mark 添加图例的事件监听
-RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addLegendListener, addLegendListenerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         if(sMap.smMapWC.mapControl.map.legend.contentChangeDelegate == nil){
@@ -660,6 +660,7 @@ RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseRes
 
 
 -(void)legentContentChange:(NSArray*)arrItems{
+    sMap = [SMap singletonInstance];
     NSMutableArray *legendSource = [[NSMutableArray alloc]init];
     for(int i = 0,count = arrItems.count; i < count; i++){
         UIImage *image = arrItems[i][0];
@@ -672,6 +673,15 @@ RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseRes
     [self sendEventWithName:LEGEND_CONTENT_CHANGE body:legendSource];
 }
 
+#pragma mark 移除图例的事件监听
+RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.mapControl.map.legend.contentChangeDelegate = nil;
+    } @catch (NSException *exception) {
+        reject(@"removeLegendListener",exception.reason,nil);
+    }
+}
 #pragma mark ---------------------地图设置菜单结束---------------------
 //#pragma mark 导入工作空间
 //RCT_REMAP_METHOD(openWorkspace, inputWKPath:(NSString*)inPutWorkspace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -1174,8 +1184,22 @@ RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver
      @try{
          Map* map = sMap.smMapWC.mapControl.map;
          Rectangle2D* bounds =  [map.layers getLayerWithName:name].dataset.bounds;
+         if([map.layers getLayerWithName:name].dataset.prjCoordSys.type != map.prjCoordSys.type){
+             Point2Ds *points = [[Point2Ds alloc]init];
+             [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
+             [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
+             PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+             [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+             CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+             
+             //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+             [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+             Point2D* pt1 = [points getItem:0];
+             Point2D* pt2 = [points getItem:1];
+             bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
+         }
          map.viewBounds = bounds;
-         [sMap.smMapWC.mapControl zoomTo:map.scale*0.8 time:200];
+//         [sMap.smMapWC.mapControl zoomTo:map.scale*0.8 time:200];
 //         [map refresh];
        resolve(@(1));
      } @catch (NSException *exception) {
