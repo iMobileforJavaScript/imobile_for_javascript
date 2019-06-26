@@ -4,19 +4,19 @@ export default {
   COLLECTION_SENSER_CHANGE: 'com.supermap.RN.Mapcontrol.collection_sensor_change',
   
   /** 多媒体采集 **/
-  MEDIA_CAPTURE : "com.supermap.RN.MediaCapture",
-  MEDIA_CAPTURE_TAP_ACTION : "com.supermap.RN.MediaCaptureTapAction",
+  MEDIA_CAPTURE: "com.supermap.RN.MediaCapture",
+  MEDIA_CAPTURE_TAP_ACTION: "com.supermap.RN.MediaCaptureTapAction",
 
   /** 在线服务 **/
   ONLINE_SERVICE_LOGIN: 'com.supermap.RN.Mapcontrol.online_service_login',
   ONLINE_SERVICE_LOGOUT: 'com.supermap.RN.Mapcontrol.online_service_logout',
   ONLINE_SERVICE_DOWNLOADING: 'com.supermap.RN.Mapcontrol.online_service_downloading',
-  ONLINE_SERVICE_DOWNLOADED :'com.supermap.RN.Mapcontrol.online_service_downloaded',
+  ONLINE_SERVICE_DOWNLOADED: 'com.supermap.RN.Mapcontrol.online_service_downloaded',
   ONLINE_SERVICE_DOWNLOADFAILURE: 'com.supermap.RN.Mapcontrol.online_service_downloadfailure',
   ONLINE_SERVICE_UPLOADING: 'com.supermap.RN.Mapcontrol.online_service_uploading',
-  ONLINE_SERVICE_UPLOADED:'com.supermap.RN.Mapcontrol.online_service_uploaded',
-  ONLINE_SERVICE_UPLOADFAILURE:'com.supermap.RN.Mapcontrol.online_service_uploadfailure',
-  ONLINE_SERVICE_REVERSEGEOCODING : 'com.supermap.RN.Mapcontrol.online_service_reversegeocoding',
+  ONLINE_SERVICE_UPLOADED: 'com.supermap.RN.Mapcontrol.online_service_uploaded',
+  ONLINE_SERVICE_UPLOADFAILURE: 'com.supermap.RN.Mapcontrol.online_service_uploadfailure',
+  ONLINE_SERVICE_REVERSEGEOCODING: 'com.supermap.RN.Mapcontrol.online_service_reversegeocoding',
 
   /** 消息服务 **/
   MESSAGE_SERVICE_RECEIVE:'com.supermap.RN.Mapcontrol.message_service_receive',
@@ -41,13 +41,16 @@ export default {
   MAP_BOUNDS_CHANGED: "Supermap.MapControl.MapParamChanged.BoundsChanged",
 
  /** 三维模块 */
-  ANALYST_MEASURELINE : "com.supermap.RN.SMSceneControl.Analyst_measureLine",
-  ANALYST_MEASURESQUARE : "com.supermap.RN.SMSceneControl.Analyst_measureSquare",
-  POINTSEARCH_KEYWORDS : "com.supermap.RN.SMSceneControl.PointSearch_keyWords",
-  SSCENE_FLY : "com.supermap.RN.SMSceneControl.Scene_fly",
-  SSCENE_ATTRIBUTE : "com.supermap.RN.SMSceneControl.Scene_attribute",
-  SSCENE_SYMBOL : "com.supermap.RN.SMSceneControl.Scene_symbol",
-  SSCENE_FAVORITE : "com.supermap.RN.SMSceneControl.Scene_favorite",
-  SSCENE_CIRCLEFLY : "com.supermap.RN.SMSceneControl.Scene_circleFly",
-  // SSCENE_REMOVE_ATTRIBUTE : "com.supermap.RN.SMSceneControl.Scene_removeAttribu
+  ANALYST_MEASURELINE: "com.supermap.RN.SMSceneControl.Analyst_measureLine",
+  ANALYST_MEASURESQUARE: "com.supermap.RN.SMSceneControl.Analyst_measureSquare",
+  POINTSEARCH_KEYWORDS: "com.supermap.RN.SMSceneControl.PointSearch_keyWords",
+  SSCENE_FLY: "com.supermap.RN.SMSceneControl.Scene_fly",
+  SSCENE_ATTRIBUTE: "com.supermap.RN.SMSceneControl.Scene_attribute",
+  SSCENE_SYMBOL: "com.supermap.RN.SMSceneControl.Scene_symbol",
+  SSCENE_FAVORITE: "com.supermap.RN.SMSceneControl.Scene_favorite",
+  SSCENE_CIRCLEFLY: "com.supermap.RN.SMSceneControl.Scene_circleFly",
+  // SSCENE_REMOVE_ATTRIBUTE: "com.supermap.RN.SMSceneControl.Scene_removeAttribu
+  
+  /** 在线分析 **/
+  ONLINE_ANALYST_RESULT: 'com.supermap.RN.online_analyst_result'
 }

@@ -146,6 +146,19 @@ function getDatasetsByDatasource(info, autoOpen = false){
   }
 }
 
+/**
+ * 根据数据源目录，获取指定数据源中的数据集（非工作空间已存在的数据源）
+ * @param info
+ * @returns {*}
+ */
+function getDatasetsByExternalDatasource(info){
+  try {
+    return SDatasource.getDatasetsByExternalDatasource(info)
+  } catch (error) {
+    console.error(e)
+  }
+}
+
 export {
   createDatasource,
   createDatasourceOfLabel,
@@ -157,4 +170,5 @@ export {
   copyDataset,
   getDatasources,
   getDatasetsByDatasource,
+  getDatasetsByExternalDatasource,
 }

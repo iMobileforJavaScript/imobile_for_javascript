@@ -696,4 +696,40 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void setVisible(String layerPath, boolean v, Promise promise) {
+        try {
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+            layer.setVisible(v);
+            SMap sMap = SMap.getInstance();
+            Map map = sMap.getSmMapWC().getMapControl().getMap();
+            map.refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setSelectable(String layerPath, boolean s, Promise promise) {
+        try {
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+            layer.setSelectable(s);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setSnapable(String layerPath, boolean s, Promise promise) {
+        try {
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+            layer.setSnapable(s);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 }

@@ -644,14 +644,14 @@ RCT_REMAP_METHOD(getScaleData, getScaleViewDataWithResolver:(RCTPromiseResolveBl
         reject(@"getScaleData",exception.reason,nil);
     }
 }
-#pragma mark 加此图例的事件监听
-RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+#pragma mark 添加图例的事件监听
+RCT_REMAP_METHOD(addLegendListener, addLegendListenerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         if(sMap.smMapWC.mapControl.map.legend.contentChangeDelegate == nil){
             sMap.smMapWC.mapControl.map.legend.contentChangeDelegate = self;
-            [sMap.smMapWC.mapControl.map refresh];
         }
+        [sMap.smMapWC.mapControl.map refresh];
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"addLegendDelegate",exception.reason,nil);
@@ -660,6 +660,7 @@ RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseRes
 
 
 -(void)legentContentChange:(NSArray*)arrItems{
+    sMap = [SMap singletonInstance];
     NSMutableArray *legendSource = [[NSMutableArray alloc]init];
     for(int i = 0,count = arrItems.count; i < count; i++){
         UIImage *image = arrItems[i][0];
@@ -672,6 +673,15 @@ RCT_REMAP_METHOD(addLegendDelegate, addLegendDelegateWithResolver:(RCTPromiseRes
     [self sendEventWithName:LEGEND_CONTENT_CHANGE body:legendSource];
 }
 
+#pragma mark 移除图例的事件监听
+RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.mapControl.map.legend.contentChangeDelegate = nil;
+    } @catch (NSException *exception) {
+        reject(@"removeLegendListener",exception.reason,nil);
+    }
+}
 #pragma mark ---------------------地图设置菜单结束---------------------
 //#pragma mark 导入工作空间
 //RCT_REMAP_METHOD(openWorkspace, inputWKPath:(NSString*)inPutWorkspace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -1162,6 +1172,39 @@ RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve re
     }@catch (NSException *exception) {
         reject(@"workspace", exception.reason, nil);
     }
+}
+
+#pragma mark 设置当前图层全副
+/**
+ * 设置当前图层全副
+ *
+ * @param promise
+ */
+RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+     @try{
+         Map* map = sMap.smMapWC.mapControl.map;
+         Rectangle2D* bounds =  [map.layers getLayerWithName:name].dataset.bounds;
+         if([map.layers getLayerWithName:name].dataset.prjCoordSys.type != map.prjCoordSys.type){
+             Point2Ds *points = [[Point2Ds alloc]init];
+             [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
+             [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
+             PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+             [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+             CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+             
+             //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+             [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+             Point2D* pt1 = [points getItem:0];
+             Point2D* pt2 = [points getItem:1];
+             bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
+         }
+         map.viewBounds = bounds;
+//         [sMap.smMapWC.mapControl zoomTo:map.scale*0.8 time:200];
+//         [map refresh];
+       resolve(@(1));
+     } @catch (NSException *exception) {
+         reject(@"workspace", exception.reason, nil);
+     }
 }
 
 #pragma mark 获取地图信息
@@ -2745,8 +2788,9 @@ RCT_REMAP_METHOD(getTaggingLayers, getTaggingLayersWithUserpath:(NSString *)user
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-         NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
+        NSMutableArray *arr = [[NSMutableArray alloc] init];
         if(opendatasource == nil){
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
             info.alias = labelName;
@@ -2757,7 +2801,6 @@ RCT_REMAP_METHOD(getTaggingLayers, getTaggingLayersWithUserpath:(NSString *)user
             if(datasource != nil && [datasource.description isEqualToString:@"Label"]){
                 Datasets *datasets = datasource.datasets;
                 Map *map = sMap.smMapWC.mapControl.map;
-                NSMutableArray *arr = [[NSMutableArray alloc]init];
                 Layers *layers = map.layers;
                 
                 for(int i = 0, count = datasets.count; i < count; i++){
@@ -2770,12 +2813,10 @@ RCT_REMAP_METHOD(getTaggingLayers, getTaggingLayersWithUserpath:(NSString *)user
                         }
                     }
                 }
-                resolve(arr);
             }
-        }else{
+        } else {
             Datasets *datasets = opendatasource.datasets;
             Map *map = sMap.smMapWC.mapControl.map;
-            NSMutableArray *arr = [[NSMutableArray alloc] init];
             Layers *layers = map.layers;
             
             for(int i = 0, count = datasets.count; i < count; i++){
@@ -2788,8 +2829,8 @@ RCT_REMAP_METHOD(getTaggingLayers, getTaggingLayersWithUserpath:(NSString *)user
                     }
                 }
             }
-            resolve(arr);
         }
+        resolve(arr);
     } @catch (NSException *exception) {
         reject(@"getTaggingLayers",exception.reason,nil);
     }
@@ -3110,9 +3151,16 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
     CGFloat y = pressedPos.y;
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
+    Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:pressedPos];
     [self sendEventWithName:MAP_LONG_PRESS
-                       body:@{@"x":nsX,
-                              @"y":nsY
+                       body:@{@"mapPoint": @{
+                                      @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
+                                      @"y":@(point2D.y == INFINITY ? 0 : point2D.y),
+                                      },
+                              @"screenPoint": @{
+                                      @"x":nsX,
+                                      @"y":nsY
+                                      },
                               }];
 }
 
@@ -3121,9 +3169,16 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
     CGFloat y = onDoubleTapPos.y;
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
+    Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:onDoubleTapPos];
     [self sendEventWithName:MAP_DOUBLE_TAP
-                       body:@{@"x":nsX,
-                              @"y":nsY
+                       body:@{@"mapPoint": @{
+                                      @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
+                                      @"y":@(point2D.y == INFINITY ? 0 : point2D.y),
+                                      },
+                              @"screenPoint": @{
+                                      @"x":nsX,
+                                      @"y":nsY
+                                      },
                               }];
 }
 
@@ -3134,9 +3189,17 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
     CGFloat y = point.y;
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
+    
+    Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:point];
     [self sendEventWithName:MAP_TOUCH_BEGAN
-                       body:@{@"x":nsX,
-                              @"y":nsY
+                       body:@{@"mapPoint": @{
+                                      @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
+                                      @"y":@(point2D.y == INFINITY ? 0 : point2D.y),
+                                      },
+                              @"screenPoint": @{
+                                      @"x":nsX,
+                                      @"y":nsY
+                                      },
                               }];
 }
 
@@ -3148,9 +3211,16 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
     
+    Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:point];
     [self sendEventWithName:MAP_TOUCH_END
-                       body:@{@"x":nsX,
-                              @"y":nsY
+                       body:@{@"mapPoint": @{
+                                      @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
+                                      @"y":@(point2D.y == INFINITY ? 0 : point2D.y),
+                                      },
+                              @"screenPoint": @{
+                                      @"x":nsX,
+                                      @"y":nsY
+                                      },
                               }];
 }
 
@@ -3159,9 +3229,16 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
     CGFloat y = onSingleTapPos.y;
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
+    Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:onSingleTapPos];
     [self sendEventWithName:MAP_SINGLE_TAP
-                       body:@{@"x":nsX,
-                              @"y":nsY
+                       body:@{@"mapPoint": @{
+                                      @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
+                                      @"y":@(point2D.y == INFINITY ? 0 : point2D.y),
+                                      },
+                              @"screenPoint": @{
+                                              @"x":nsX,
+                                              @"y":nsY
+                                              },
                               }];
 }
 
@@ -3173,8 +3250,16 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
     
+    Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:startPoint];
     [self sendEventWithName:MAP_SCROLL
-                       body:@{@"local":@{@"x":nsX,@"y":nsY}
+                       body:@{@"mapPoint": @{
+                                      @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
+                                      @"y":@(point2D.y == INFINITY ? 0 : point2D.y),
+                                      },
+                              @"screenPoint": @{
+                                      @"x":nsX,
+                                      @"y":nsY
+                                      },
                               }];
 }
 

@@ -1,8 +1,14 @@
 import {
   NativeModules,
+  DeviceEventEmitter,
+  NativeEventEmitter,
+  Platform,
 } from 'react-native'
-
+import { EventConst } from '../../constains/index'
 let Analyst = NativeModules.SAnalyst
+const nativeEvt = new NativeEventEmitter(Analyst)
+
+/*********************************************** 缓冲分析 *************************************************/
 
 /**
  * 缓冲区分析
@@ -35,6 +41,7 @@ async function createMultiBuffer (sourceData = {}, resultData = {}, bufferRadius
   return Analyst.createMultiBuffer(sourceData, resultData, bufferRadiuses, bufferRadiusUnit, semicircleSegment, isUnion, isAttributeRetained, isRing, optionParameter)
 }
 
+/*********************************************** 叠加分析 *************************************************/
 /** 叠加分析-裁剪 **/
 async function clip (sourceData = {}, targetData = {}, resultData = {}, optionParameter = {}) {
   if (optionParameter.showResult === undefined) {
@@ -98,6 +105,65 @@ async function xOR (sourceData = {}, targetData = {}, resultData = {}, optionPar
   return Analyst.xOR(sourceData, targetData, resultData, optionParameter)
 }
 
+/*********************************************** 在线分析 *************************************************/
+
+let onlineAnalystListener
+let onlineAnalystHandler
+function setOnlineAnalystListener (handler) {
+  onlineAnalystHandler = handler
+  if (onlineAnalystListener) return
+  if (Platform.OS === 'ios') {
+    onlineAnalystListener = nativeEvt.addListener(EventConst.ONLINE_ANALYST_RESULT, function (e) {
+      if (onlineAnalystHandler && typeof onlineAnalystHandler === 'function') {
+        onlineAnalystHandler(e)
+        removeOnlineAnalystListener()
+      }
+    })
+  } else {
+    onlineAnalystListener = DeviceEventEmitter.addListener(EventConst.ONLINE_ANALYST_RESULT, function (e) {
+      if (onlineAnalystHandler && typeof onlineAnalystHandler === 'function') {
+        onlineAnalystHandler(e)
+        removeOnlineAnalystListener()
+      }
+    })
+  }
+}
+
+function removeOnlineAnalystListener () {
+  try {
+    onlineAnalystHandler = null
+    if (onlineAnalystListener) {
+      onlineAnalystListener.remove()
+      onlineAnalystListener = null
+    }
+  } catch (e) {
+  
+  }
+}
+
+/**
+ * 获取在线分析数据
+ * @param ip
+ * @param port
+ * @param type  获取数据类型 0:源数据 1:密度数据集数据 2:点聚合数据集数据
+ * @returns {Promise.<void>}
+ */
+async function getOnlineAnalysisData (ip, port, type = 0) {
+  if (!ip || !port) return
+  let data = await Analyst.getOnlineAnalysisData(ip, port, type)
+  return JSON.parse(data)
+}
+/** 在线分析-密度分析 **/
+async function densityOnline (serverData = {}, analysisData = {}, handler) {
+  setOnlineAnalystListener(handler)
+  return Analyst.densityOnline(serverData, analysisData)
+}
+/** 在线分析-点聚合分析 **/
+async function aggregatePointsOnline (serverData = {}, analysisData = {}, handler) {
+  setOnlineAnalystListener(handler)
+  return Analyst.aggregatePointsOnline(serverData, analysisData)
+}
+
 export default {
   // 缓冲分析
   createBuffer,
@@ -111,4 +177,9 @@ export default {
   union,
   update,
   xOR,
+  
+  // 在线分析
+  getOnlineAnalysisData,
+  densityOnline,
+  aggregatePointsOnline,
 }

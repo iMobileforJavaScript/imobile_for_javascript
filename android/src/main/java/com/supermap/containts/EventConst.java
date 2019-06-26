@@ -65,4 +65,7 @@ public class EventConst {
     /** 多媒体采集，Callout点击回调 **/
     public static final String MEDIA_CAPTURE_TAP_ACTION = "com.supermap.RN.MediaCaptureTapAction";
 
+    /** 分析 **/
+    public static final String ONLINE_ANALYST_RESULT = "com.supermap.RN.online_analyst_result";
+
 }
