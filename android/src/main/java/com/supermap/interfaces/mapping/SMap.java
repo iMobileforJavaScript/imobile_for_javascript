@@ -91,6 +91,9 @@ import java.util.Random;
 import java.util.Map;
 import java.util.Vector;
 
+import static com.supermap.interfaces.utils.SMFileUtil.copyFiles;
+import static com.supermap.RNUtils.FileUtil.homeDirectory;
+
 public class SMap extends ReactContextBaseJavaModule implements LegendContentChangeListener {
     public static final String REACT_CLASS = "SMap";
     private static SMap sMap;
@@ -3531,6 +3534,26 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 移除标绘库
+     *
+     * @param plotSymbolIds
+     * @param promise
+     */
+    @ReactMethod
+    public void removePlotSymbolLibraryArr(ReadableArray plotSymbolIds, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            for (int i = 0; i < plotSymbolIds.size(); i++) {
+                mapControl.removePlotLibrary(plotSymbolIds.getInt(i));
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置标绘符号
      *
      * @param promise
@@ -3554,6 +3577,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param layerName
      * @param promise
      */
+    @ReactMethod
     public void  addCadLayer(String layerName,Promise promise){
         try {
             sMap = SMap.getInstance();
@@ -3574,7 +3598,45 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         } catch (Exception e) {
             promise.reject(e);
         }
+    }
 
+    /**
+     * 导入标绘模板库
+     * @param fromPath
+     */
+    @ReactMethod
+    public static void importPlotLibData(String fromPath, Promise promise){
+        try{
+            promise.resolve(importPlotLibDataMethod(fromPath));
+        }catch (Exception e){
+            promise.resolve(false);
+        }
+    }
+    /**
+     * 导入标绘模板库
+     * @param fromPath
+     */
+    public static boolean importPlotLibDataMethod(String fromPath){
+        String toPath=homeDirectory+"/iTablet/User/"+SMap.getInstance().smMapWC.getUserName()+"/Data"+"/Plotting/";
+        boolean result=copyFiles(fromPath,toPath,"plot","Symbol","SymbolIcon");
+        return result;
+    }
+
+    /**
+     * 根据标绘库id获取标绘库名称
+     * @param libId
+     */
+    @ReactMethod
+    public static void getPlotSymbolLibNameById(int libId, Promise promise){
+        try{
+
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            String libName=mapControl.getPlotSymbolLibName((long)libId);
+            promise.resolve(libName);
+        }catch (Exception e){
+            promise.reject(e);
+        }
     }
 
 

@@ -1312,7 +1312,43 @@ export default (function () {
     }
   }
 
+  /**
+   * 导入标绘库数据
+   * @param fromPath  标绘库数据路径
+   */
+  function importPlotLibData(fromPath){
+    try{
+      return SMap.importPlotLibData(fromPath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
   
+  /**
+   * 移除标绘库
+   * @param plotSymbolIds  标绘库数据id
+   */
+  function removePlotSymbolLibraryArr(plotSymbolIds){
+    try{
+      return SMap.removePlotSymbolLibraryArr(plotSymbolIds)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 根据标绘库获取标绘库名称
+   * @param {标绘库id} libId 
+   */
+  function getPlotSymbolLibNameById(libId){
+    try{
+      return SMap.getPlotSymbolLibNameById(libId)
+    } catch (e){
+      console.error(e)
+    }
+  }
+  
+
   /************************************** 地图编辑历史操作 ****************************************/
   /**
    * 地图撤销
@@ -1544,7 +1580,9 @@ export default (function () {
     initPlotSymbolLibrary,
     setPlotSymbol,
     addCadLayer,
-    /** 地图编辑历史操作 **/
+    importPlotLibData,
+    removePlotSymbolLibraryArr,
+    getPlotSymbolLibNameById,
     undo,
     redo,
     removeHistory,
