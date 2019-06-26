@@ -68,4 +68,6 @@
 */
 +(Theme *)clone:(Theme *)theme;
 
+-(void)dispose;
+
 @end

@@ -523,7 +523,7 @@ RCT_REMAP_METHOD(createUniqueThemeLabelMap, createUniqueThemeLabelMapWithResolve
                     NSString *strColorScheme = [dataDic objectForKey:@"ColorScheme"];
                     NSArray* rangeColors = [SMThemeCartography getRangeColors:strColorScheme];
                     if (rangeColors!=nil) {
-                        int rangecount = [themeLabel getCount];
+                        int rangecount = [themeLabel getRangeCount];
                         Colors* selectedColors;
                         if (rangecount>0) {
                             selectedColors = [Colors makeGradient:rangecount gradientColorArray:rangeColors];
@@ -532,7 +532,7 @@ RCT_REMAP_METHOD(createUniqueThemeLabelMap, createUniqueThemeLabelMapWithResolve
                         }
                         
                         for (int i=0; i<rangecount; i++) {
-                            [[[themeLabel getItem:i] mTextStyle] setForeColor:[selectedColors get:i]];
+                            [[[themeLabel getRangeItem:i] mTextStyle] setForeColor:[selectedColors get:i]];
                         }
                         
                     }
@@ -626,7 +626,7 @@ RCT_REMAP_METHOD(createRangeThemeLabelMap, createRangeThemeLabelMapWithResolver:
                     NSString *strColorScheme = [dataDic objectForKey:@"ColorScheme"];
                     NSArray* rangeColors = [SMThemeCartography getRangeColors:strColorScheme];
                     if (rangeColors!=nil) {
-                        int rangecount = [themeLabel getCount];
+                        int rangecount = [themeLabel getRangeCount];
                         Colors* selectedColors;
                         if (rangecount>0) {
                             selectedColors = [Colors makeGradient:rangecount gradientColorArray:rangeColors];
@@ -635,7 +635,7 @@ RCT_REMAP_METHOD(createRangeThemeLabelMap, createRangeThemeLabelMapWithResolver:
                         }
                         
                         for (int i=0; i<rangecount; i++) {
-                            [[[themeLabel getItem:i] mTextStyle] setForeColor:[selectedColors get:i]];
+                            [[[themeLabel getRangeItem:i] mTextStyle] setForeColor:[selectedColors get:i]];
                         }
                         
                     }
@@ -835,7 +835,7 @@ RCT_REMAP_METHOD(getUniformLabelExpression, getUniformLabelExpressionWithResolve
             if (layer.theme.themeType == TT_label) {
                 ThemeLabel* themeLabel =(ThemeLabel*)layer.theme;
                 NSString* strExpression = @"";
-                strExpression = [themeLabel getLabelExpression];
+                strExpression = [themeLabel labelExpression];
                 resolve(strExpression);
             }
         }
