@@ -32,6 +32,7 @@
 + (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path page:(int)page size:(int)size;
 + (NSDictionary *)getAttributeByLayer:(NSString *)path ids:(NSArray *)ids;
 + (Layer *)findLayerByPath:(NSString *)path;
++ (void)findLayerAndGroupByPath:(NSString *)path layer:(Layer**)pLayer group:(LayerGroup**)pGroup;
 + (Layer *)findLayerWithName:(NSString *)name;
 + (NSString *)getLayerPath:(Layer *)layer;
 + (Layer *)findLayerByDatasetName:(NSString *)datasetName;

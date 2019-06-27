@@ -120,7 +120,7 @@
     LayerGroup* layerGroup;
     layer = [layers getLayerWithName:pathParams[0]];
     for (int i = 1; i < pathParams.count; i++) {
-        if (layer.dataset == nil) {
+        if ([layer isKindOfClass: [LayerGroup class]]) {
             layerGroup = (LayerGroup *)layer;
             layer = [layerGroup getLayerWithName:pathParams[i]];
         } else {
@@ -130,11 +130,30 @@
     return layer;
 }
 
++ (void)findLayerAndGroupByPath:(NSString *)path layer:(Layer**)pLayer group:(LayerGroup**)pGroup{
+    if (path == nil || [path isEqualToString:@""]) return ;
+    Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
+    Layers* layers = map.layers;
+    
+    NSArray* pathParams = [path componentsSeparatedByString:@"/"];
+//    Layer* layer;
+//    LayerGroup* layerGroup;
+    *pLayer = [layers getLayerWithName:pathParams[0]];
+    for (int i = 1; i < pathParams.count; i++) {
+        if ([*pLayer isKindOfClass: [LayerGroup class]]) {
+            *pGroup = (LayerGroup *)*pLayer;
+            *pLayer = [*pGroup getLayerWithName:pathParams[i]];
+        } else {
+            break;
+        }
+    }
+}
+
 + (Layer *)findLayerWithName:(NSString *)name {
     if (name == nil || [name isEqualToString:@""]) return nil;
     Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
     Layers* layers = map.layers;
-    
+
     return [layers findLayerWithName:name];
 }
 
