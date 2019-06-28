@@ -537,13 +537,18 @@ RCT_REMAP_METHOD(receiveFileWithThirdServer, fileName:(NSString*)fileName queueN
 RCT_REMAP_METHOD(startReceiveMessage, uuid:(NSString*)uuid  startReceiveMessageResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try {
+        while (!bStopRecieve) {
+            [NSThread sleepForTimeInterval:0.5];
+        }
+        
+        if(g_AMQPReceiver != nil){
+            g_AMQPReceiver = nil;
+        }
+        
         BOOL bRes = false;
         NSString* sQueue = [@"Message_"  stringByAppendingString:uuid];
         if(g_AMQPManager!=nil && uuid!=nil){
-            if(g_AMQPReceiver==nil){
-                [g_AMQPManager declareQueue:sQueue];
-                g_AMQPReceiver = [g_AMQPManager newReceiver:sQueue];
-            }
+            g_AMQPReceiver = [g_AMQPManager newReceiver:sQueue];
         }
         
         isRecieving=true;
@@ -551,21 +556,18 @@ RCT_REMAP_METHOD(startReceiveMessage, uuid:(NSString*)uuid  startReceiveMessageR
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             int n = 0;
             while (1) {
-                
                 // NSLog(@"+++ receive +++ %@",[NSThread currentThread]);
-                if(isRecieving){
-                    if(g_AMQPReceiver != nil){
-                        NSString* str1 = nil,* str2 = nil;
-                        [g_AMQPReceiver receiveMessage:&str1 message:&str2];
-                        if (str1!=nil && str2!=nil) {
-                            [self sendEventWithName:MESSAGE_SERVICE_RECEIVE body:@{@"clientId":str1,@"message":str2}];
-                        }
-                    }
+                if(isRecieving && g_AMQPReceiver != nil && g_AMQPManager != nil){
                     bStopRecieve = false;
+                    NSString* str1 = nil,* str2 = nil;
+                    [g_AMQPManager declareQueue:sQueue];
+                    [g_AMQPReceiver receiveMessage:&str1 message:&str2];
+                    if (str1!=nil && str2!=nil) {
+                        [self sendEventWithName:MESSAGE_SERVICE_RECEIVE body:@{@"clientId":str1,@"message":str2}];
+                    }
                 }else{
                     // NSLog(@"+++ receive  stop +++ %@",[NSThread currentThread]);
                     if(g_AMQPReceiver != nil){
-                        [g_AMQPReceiver dispose];
                         g_AMQPReceiver = nil;
                     }
                     bStopRecieve=true;

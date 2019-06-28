@@ -1202,10 +1202,6 @@ RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver
              Point2D* pt2 = [points getItem:1];
              bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
          }
-         map.viewBounds = bounds;
-//         [sMap.smMapWC.mapControl zoomTo:map.scale*0.8 time:200];
-//         [map refresh];
-       resolve(@(1));
      } @catch (NSException *exception) {
          reject(@"workspace", exception.reason, nil);
      }
