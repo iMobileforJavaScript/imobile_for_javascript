@@ -358,4 +358,48 @@ public class SDatasource extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 根据数据源目录，获取指定数据源中的数据集（非工作空间已存在的数据源）
+     * @param infoMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getDatasetsByExternalDatasource(ReadableMap infoMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = infoMap.toHashMap();
+            Workspace workspaceTemp = new Workspace();
+//            String alias = "";
+//
+//            if (data.containsKey("Alias")) {
+//                alias = data.get("Alias").toString();
+//            } else if (data.containsKey("alias")) {
+//                alias = data.get("alias").toString();
+//            }
+
+            DatasourceConnectionInfo info = SMDatasource.convertDicToInfo(data);
+            Datasource datasource = workspaceTemp.getDatasources().open(info);
+
+            Datasets datasets = datasource.getDatasets();
+            int datasetsCount = datasets.getCount();
+
+            WritableArray arr = Arguments.createArray();
+            for (int j = 0; j < datasetsCount; j++) {
+                WritableMap writeMap = Arguments.createMap();
+                writeMap.putString("datasetName", datasets.get(j).getName());
+                writeMap.putInt("datasetType", datasets.get(j).getType().value());
+                writeMap.putString("datasourceName", datasource.getAlias());
+                arr.pushMap(writeMap);
+            }
+
+            promise.resolve(arr);
+
+            info.dispose();
+            workspaceTemp.close();
+            workspaceTemp.dispose();
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 }

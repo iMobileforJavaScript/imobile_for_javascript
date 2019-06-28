@@ -22,6 +22,8 @@
 #import "SuperMap/DatasourceConnectionInfo.h"
 #import "SuperMap/Selection.h"
 #import "SuperMap/TrackingLayer.h"
+#import "SuperMap/Layers.h"
+#import "SuperMap/Layer.h"
 #import "SuperMap/Recordset.h"
 #import "SuperMap/Geometry.h"
 #import "SuperMap/GeoStyle.h"
@@ -35,8 +37,20 @@
 
 @interface SNetworkAnalyst : NSObject<RCTBridgeModule> {
 @public
+    Layer* layer;
+    Layer* nodeLayer;
     Selection* selection;
+    NSMutableArray* elementIDs;
+    int startNodeID;
+    int endNodeID;
+    Point2D* startPoint;
+    Point2D* endPoint;
+    NSMutableArray* middleNodeIDs;
 }
-- (void)displayResult:(NSArray *)ids;
+- (void)displayResult:(NSArray *)ids selection:(Selection *)selection;
 - (GeoStyle *)getGeoStyle:(Size2D *)size2D color:(Color *)color;
+- (void)clear:(Selection *)selection;
+- (int)selectPoint:(NSDictionary *)point layer:(Layer *)layer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag;
+- (Point2D *)selectByPoint:(NSDictionary *)point layer:(Layer *)nodeLayer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag;
+- (void)removeTagFromTrackingLayer:(NSString *)tag;
 @end

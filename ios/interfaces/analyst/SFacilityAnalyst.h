@@ -32,6 +32,7 @@
 #import "SMDatasource.h"
 #import "SMParameter.h"
 #import "SNetworkAnalyst.h"
+#import "SMAnalyst.h"
 
 @interface SFacilityAnalyst : SNetworkAnalyst
 - (FacilityAnalyst *)getFacilityAnalyst;

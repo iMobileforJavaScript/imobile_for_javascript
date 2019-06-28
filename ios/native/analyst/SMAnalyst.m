@@ -177,6 +177,73 @@
     return bufferAnalystParameter;
 }
 
++ (TransportationAnalystParameter *)getTransportationAnalystParameterByDictionary:(NSDictionary *)params {
+    TransportationAnalystParameter* parameter = [[TransportationAnalystParameter alloc] init];
+    if (params) {
+        if ([params objectForKey:@"barrierEdges"] != nil) {
+            parameter.barrierEdges = [params objectForKey:@"barrierEdges"];
+        }
+        if ([params objectForKey:@"barrierNodes"] != nil) {
+            parameter.barrierNodes = [params objectForKey:@"barrierNodes"];
+        }
+        if ([params objectForKey:@"barrierPoints"] != nil) {
+            NSArray* points =  [params objectForKey:@"barrierPoints"];
+            Point2Ds* barrierPoints = [[Point2Ds alloc] init];
+            for (int i = 0; i < points.count; i++) {
+                double x = [(NSNumber *) [points[i] objectForKey:@"x"] doubleValue];
+                double y = [(NSNumber *) [points[i] objectForKey:@"y"] doubleValue];
+                
+                [barrierPoints add:[[Point2D alloc] initWithX:x Y:y]];
+            }
+            parameter.barrierPoints = barrierPoints;
+        }
+        if ([params objectForKey:@"isEdgesReturn"] != nil) {
+            parameter.isEdgesReturn = [(NSNumber *)[params objectForKey:@"isEdgesReturn"] boolValue];
+        } else {
+            parameter.isEdgesReturn = YES;
+        }
+        if ([params objectForKey:@"nodes"] != nil) {
+            parameter.nodes = [params objectForKey:@"nodes"];
+        }
+        if ([params objectForKey:@"isNodesReturn"] != nil) {
+            parameter.isNodesReturn = [(NSNumber *)[params objectForKey:@"isNodesReturn"] boolValue];
+        } else {
+            parameter.isNodesReturn = YES;
+        }
+        if ([params objectForKey:@"isPathGuidesReturn"] != nil) {
+            parameter.isPathGuidesReturn = [(NSNumber *)[params objectForKey:@"isPathGuidesReturn"] boolValue];
+        } else {
+            parameter.isPathGuidesReturn = YES;
+        }
+        if ([params objectForKey:@"points"] != nil) {
+            NSArray* points =  [params objectForKey:@"points"];
+            Point2Ds* ps = [[Point2Ds alloc] init];
+            for (int i = 0; i < points.count; i++) {
+                double x = [(NSNumber *) [points[i] objectForKey:@"x"] doubleValue];
+                double y = [(NSNumber *) [points[i] objectForKey:@"y"] doubleValue];
+                
+                [ps add:[[Point2D alloc] initWithX:x Y:y]];
+            }
+            parameter.points = ps;
+        }
+        if ([params objectForKey:@"isRoutesReturn"] != nil) {
+            parameter.isRoutesReturn = [(NSNumber *)[params objectForKey:@"isRoutesReturn"] boolValue];
+        } else {
+            parameter.isRoutesReturn = YES;
+        }
+        if ([params objectForKey:@"isStopsReturn"] != nil) {
+            parameter.isStopsReturn = [(NSNumber *)[params objectForKey:@"isStopsReturn"] boolValue];
+        }
+        if ([params objectForKey:@"turnWeightField"] != nil) {
+            parameter.turnWeightField = [params objectForKey:@"turnWeightField"];
+        }
+        if ([params objectForKey:@"weightName"] != nil) {
+            parameter.weightName = [params objectForKey:@"weightName"];
+        }
+    }
+    return parameter;
+}
+
 + (BufferRadiusUnit)getBufferRadiusUnit:(NSString *)unitStr {
     if ([unitStr isEqualToString:@"MiliMeter"]) {
         return MiliMeter;
@@ -267,5 +334,114 @@
     if (resultDatasetIndex >= 0) {
         [ds.datasets delete:resultDatasetIndex];
     }
+}
+
++ (int)selectPoint:(NSDictionary *)point layer:(Layer *)layer geoStyle:(GeoStyle *)geoStyle {
+    int ID = -1;
+    double x = [(NSNumber *)[point objectForKey:@"x"] doubleValue];
+    double y = [(NSNumber *)[point objectForKey:@"y"] doubleValue];
+    CGPoint p = CGPointMake(x, y);
+    Selection* hitSelection = [layer hitTestEx:p With:20];
+    
+    if (hitSelection && hitSelection.getCount > 0) {
+        Recordset* rs = hitSelection.toRecordset;
+        GeoPoint* gPoint = (GeoPoint *)rs.geometry;
+        ID = [(NSNumber *)[rs getFieldValueWithString:@"SMNODEID"] intValue];
+        
+        GeoStyle* style = geoStyle;
+        if (!style) {
+            style = [[GeoStyle alloc] init];
+            [style setMarkerSymbolID:3614];
+        }
+        [gPoint setStyle:style];
+        
+        TrackingLayer* trackingLayer = [SMap singletonInstance].smMapWC.mapControl.map.trackingLayer;
+        [trackingLayer addGeometry:gPoint WithTag:@""];
+        [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+        
+        [gPoint dispose];
+        [rs close];
+        [rs dispose];
+    }
+    return ID;
+}
+
++ (FacilityAnalystSetting *)setFacilitySetting:(NSDictionary *)data {
+    FacilityAnalystSetting* setting = [[FacilityAnalystSetting alloc] init];
+    //    if ([data objectForKey:@"networkDataset"]) {
+    //        Layer* layer = [SMLayer findLayerByDatasetName:[data objectForKey:@"networkDataset"]];
+    //        setting.netWorkDataset = (DatasetVector *)layer.dataset;
+    //    } else if ([data objectForKey:@"networkLayer"]) {
+    //        Layer* layer = [SMLayer findLayerWithName:[data objectForKey:@"networkLayer"]];
+    //        setting.netWorkDataset = (DatasetVector *)layer.dataset;
+    //    } else {
+    //        return nil;
+    //    }
+    
+    if ([data objectForKey:@"weightFieldInfos"]) {
+        NSArray* infos = [data objectForKey:@"weightFieldInfos"];
+        WeightFieldInfos* weightFieldInfos = [[WeightFieldInfos alloc] init];
+        for (int i = 0; i < [infos count]; i++) {
+            WeightFieldInfo* info = [SMAnalyst setWeightFieldInfo:infos[i]];
+            [weightFieldInfos add:info];
+        }
+        setting.weightFieldInfos = weightFieldInfos;
+    }
+    
+    if ([data objectForKey:@"barrierEdges"]) setting.barrierEdges = [data objectForKey:@"barrierEdges"];
+    if ([data objectForKey:@"barrierNodes"]) setting.barrierNodes = [data objectForKey:@"barrierNodes"];
+    if ([data objectForKey:@"directionField"]) setting.directionField = [data objectForKey:@"directionField"];
+    if ([data objectForKey:@"edgeIDField"]) setting.edgeIDField = [data objectForKey:@"edgeIDField"];
+    if ([data objectForKey:@"fNodeIDField"]) setting.fNodeIDField = [data objectForKey:@"fNodeIDField"];
+    if ([data objectForKey:@"nodeIDField"]) setting.nodeIDField = [data objectForKey:@"nodeIDField"];
+    if ([data objectForKey:@"tNodeIDField"]) setting.tNodeIDField = [data objectForKey:@"tNodeIDField"];
+    if ([data objectForKey:@"tolerance"] != nil) setting.tolerance = [(NSNumber *)[data objectForKey:@"tolerance"] integerValue];
+    
+    return setting;
+}
+
++ (TransportationAnalystSetting *)setTransportSetting:(NSDictionary *)data {
+    TransportationAnalystSetting* setting = [[TransportationAnalystSetting alloc] init];
+    if ([data objectForKey:@"weightFieldInfos"]) {
+        NSArray* infos = [data objectForKey:@"weightFieldInfos"];
+        WeightFieldInfos* weightFieldInfos = [[WeightFieldInfos alloc] init];
+        for (int i = 0; i < [infos count]; i++) {
+            WeightFieldInfo* info = [SMAnalyst setWeightFieldInfo:infos[i]];
+            [weightFieldInfos add:info];
+        }
+        setting.weightFieldInfos = weightFieldInfos;
+    }
+    
+    if ([data objectForKey:@"barrierEdges"]) setting.barrierEdges = [data objectForKey:@"barrierEdges"];
+    if ([data objectForKey:@"barrierNodes"]) setting.barrierNodes = [data objectForKey:@"barrierNodes"];
+    if ([data objectForKey:@"edgeFilter"]) setting.edgeFilter = [data objectForKey:@"edgeFilter"];
+    if ([data objectForKey:@"edgeIDField"]) setting.edgeIDField = [data objectForKey:@"edgeIDField"];
+    if ([data objectForKey:@"edgeNameField"]) setting.edgeNameField = [data objectForKey:@"edgeNameField"];
+    if ([data objectForKey:@"fTSingleWayRuleValues"]) setting.fTSingleWayRuleValues = [data objectForKey:@"fTSingleWayRuleValues"];
+    if ([data objectForKey:@"fNodeIDField"]) setting.fNodeIDField = [data objectForKey:@"fNodeIDField"];
+    if ([data objectForKey:@"nodeIDField"]) setting.nodeIDField = [data objectForKey:@"nodeIDField"];
+    if ([data objectForKey:@"nodeNameField"]) setting.nodeNameField = [data objectForKey:@"nodeNameField"];
+    if ([data objectForKey:@"prohibitedWayRuleValues"]) setting.prohibitedWayRuleValues = [data objectForKey:@"prohibitedWayRuleValues"];
+    if ([data objectForKey:@"ruleField"]) setting.ruleField = [data objectForKey:@"ruleField"];
+    if ([data objectForKey:@"tFSingleWayRuleValues"]) setting.tFSingleWayRuleValues = [data objectForKey:@"tFSingleWayRuleValues"];
+    if ([data objectForKey:@"tNodeIDField"]) setting.tNodeIDField = [data objectForKey:@"tNodeIDField"];
+    if ([data objectForKey:@"tolerance"] != nil) setting.tolerance = [(NSNumber *)[data objectForKey:@"tolerance"] integerValue];
+//    if ([data objectForKey:@"turnDataset"]) setting.turnDataset = [data objectForKey:@"turnDataset"];
+    if ([data objectForKey:@"turnFEdgeIDField"]) setting.turnFEdgeIDField = [data objectForKey:@"turnFEdgeIDField"];
+    if ([data objectForKey:@"turnNodeIDField"]) setting.turnNodeIDField = [data objectForKey:@"turnNodeIDField"];
+    if ([data objectForKey:@"turnTEdgeIDField"]) setting.turnTEdgeIDField = [data objectForKey:@"turnTEdgeIDField"];
+    if ([data objectForKey:@"turnWeightFields"]) setting.turnWeightFields = [data objectForKey:@"turnWeightFields"];
+    if ([data objectForKey:@"twoWayRuleValues"]) setting.twoWayRuleValues = [data objectForKey:@"twoWayRuleValues"];
+    
+    return setting;
+}
+
++ (WeightFieldInfo *)setWeightFieldInfo:(NSDictionary *)data {
+    WeightFieldInfo* info = [[WeightFieldInfo alloc] init];
+    if ([data objectForKey:@"name"]) info.name = [data objectForKey:@"name"];
+    if ([data objectForKey:@"ftWeightField"]) info.ftWeightField = [data objectForKey:@"ftWeightField"];
+    if ([data objectForKey:@"tfWeightField"]) info.tfWeightField = [data objectForKey:@"tfWeightField"];
+    
+    return info;
 }
 @end

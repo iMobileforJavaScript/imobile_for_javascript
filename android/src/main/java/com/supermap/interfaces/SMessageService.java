@@ -615,14 +615,19 @@ public class SMessageService extends ReactContextBaseJavaModule {
     @ReactMethod
     public void startReceiveMessage(String uuid, Promise promise) {
         try {
+            while (!bStopRecieve) {
+                Thread.sleep(500);
+            }
+
+            if(g_AMQPReceiver != null) {
+                g_AMQPReceiver.dispose();
+                g_AMQPReceiver = null;
+            }
 
             boolean bRes = false;
             final String sQueue = "Message_" + uuid;
             if(g_AMQPManager!=null && uuid!=null){
-                if(g_AMQPReceiver==null){
-                    g_AMQPManager.declareQueue(sQueue);
-                    g_AMQPReceiver = g_AMQPManager.newReceiver(sQueue);
-                }
+                g_AMQPReceiver = g_AMQPManager.newReceiver(sQueue);
             }
 
             isRecieving = true;
@@ -632,20 +637,19 @@ public class SMessageService extends ReactContextBaseJavaModule {
                 public void run(){
                     int n = 0;
                     while (true){
-                        if(isRecieving){
-                            if(g_AMQPReceiver != null) {
-                                AMQPReturnMessage resMessage = g_AMQPReceiver.receiveMessage();
-                                String sQueue = resMessage.getQueue();
-                                String sMessage = resMessage.getMessage();
-                                if (!sQueue.isEmpty() && !sMessage.isEmpty()) {
-                                    WritableMap map = Arguments.createMap();
-                                    map.putString("clientId", sQueue);
-                                    map.putString("message", sMessage);
-                                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                            .emit(EventConst.MESSAGE_SERVICE_RECEIVE, map);
-                                }
-                            }
+                        if(isRecieving && g_AMQPReceiver != null && g_AMQPManager != null){
                             bStopRecieve = false;
+                            g_AMQPManager.declareQueue(sQueue);
+                            AMQPReturnMessage resMessage = g_AMQPReceiver.receiveMessage();
+                            String sQueue = resMessage.getQueue();
+                            String sMessage = resMessage.getMessage();
+                            if (!sQueue.isEmpty() && !sMessage.isEmpty()) {
+                                WritableMap map = Arguments.createMap();
+                                map.putString("clientId", sQueue);
+                                map.putString("message", sMessage);
+                                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                        .emit(EventConst.MESSAGE_SERVICE_RECEIVE, map);
+                            }
                         }else{
                             if(g_AMQPReceiver != null) {
                                 g_AMQPReceiver.dispose();

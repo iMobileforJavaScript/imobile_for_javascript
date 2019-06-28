@@ -221,7 +221,8 @@
 + (NSString *)getLayerPath:(Layer *)layer {
     NSString* path = layer.name;
     while (layer.parentGroup != nil) {
-        path = [NSString stringWithFormat:@"%@/%@", layer.parentGroup, path];
+        path = [NSString stringWithFormat:@"%@/%@", layer.parentGroup.name, path];
+        layer = layer.parentGroup;
     }
     return path;
 }

@@ -36,6 +36,13 @@
 #import "SuperMap/BufferRadiusUnit.h"
 #import "SuperMap/LayerSettingVector.h"
 #import "SuperMap/OverlayAnalyst.h"
+#import "SuperMap/TransportationAnalystParameter.h"
+#import "SuperMap/Point2Ds.h"
+#import "SuperMap/Point2D.h"
+#import "SuperMap/FacilityAnalystSetting.h"
+#import "SuperMap/WeightFieldInfo.h"
+#import "SuperMap/WeightFieldInfos.h"
+#import "SuperMap/TransportationAnalystSetting.h"
 
 #import "Constants.h"
 #import "SScene.h"
@@ -53,4 +60,9 @@
 + (Layer *)displayResult:(Dataset *)ds style:(GeoStyle *)style;
 + (BOOL)overlayerAnalystWithType:(NSString *)type sourceData:(NSDictionary *)sourceData targetData:(NSDictionary *)targetData resultData:(NSDictionary *)resultData optionParameter:(NSDictionary *)optionParameter;
 + (void)deleteDataset:(NSDictionary *)dsInfo;
++ (int)selectPoint:(NSDictionary *)point layer:(Layer *)layer geoStyle:(GeoStyle *)geoStyle;
++ (TransportationAnalystParameter *)getTransportationAnalystParameterByDictionary:(NSDictionary *)params;
++ (FacilityAnalystSetting *)setFacilitySetting:(NSDictionary *)data;
++ (TransportationAnalystSetting *)setTransportSetting:(NSDictionary *)data;
++ (WeightFieldInfo *)setWeightFieldInfo:(NSDictionary *)data;
 @end
