@@ -196,8 +196,8 @@ public class STransportationAnalyst extends SNetworkAnalyst {
             endNodeID = -1;
             startPoint = null;
             endPoint = null;
-            nodes.clear();
-            barrierNodes.clear();
+            if (nodes != null) nodes.clear();
+            if (barrierNodes != null) barrierNodes.clear();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

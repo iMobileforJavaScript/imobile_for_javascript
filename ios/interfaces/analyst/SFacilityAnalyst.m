@@ -44,7 +44,7 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo facilityS
             NSString* datasetName = [facilitySetting objectForKey:@"networkDataset"];
             if (datasetName) {
                 ds = [datasource.datasets getWithName:datasetName];
-                layer = [layers findLayerWithName:ds.name];
+                layer = [SMLayer findLayerByDatasetName:ds.name];
                 if (!layer) {
                     layer = [layers addDataset:ds ToHead:YES];
                     layer.selectable = NO;
@@ -52,7 +52,7 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo facilityS
                 
                 Dataset* nodeDataset = ((DatasetVector *)ds).childDataset;
                 if (nodeDataset) {
-                    nodeLayer = [layers findLayerWithName:nodeDataset.name];
+                    nodeLayer = [SMLayer findLayerByDatasetName:nodeDataset.name];
                     if (!nodeLayer) {
                         nodeLayer = [layers addDataset:nodeDataset ToHead:YES];
                         nodeLayer.selectable = YES;
@@ -86,7 +86,12 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo facilityS
             
             [[SMap singletonInstance].smMapWC.mapControl setAction:PAN];
             
-            resolve(number);
+            NSMutableDictionary* layerInfo = [SMLayer getLayerInfo:layer path:@""];
+            
+            resolve(@{
+                      @"result": number,
+                      @"layerInfo": layerInfo,
+                      });
         } else {
             reject(@"SFacilityAnalyst", @"No networkDataset", nil);
         }
@@ -107,7 +112,7 @@ RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point resolver:(RC
         if (nodeLayer) {
             GeoStyle* style = [[GeoStyle alloc] init];
             [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
-            [style setLineColor:[[Color alloc] initWithR:105 G:255 B:0]];
+            [style setLineColor:[[Color alloc] initWithR:255 G:105 B:0]];
             [style setMarkerSymbolID:3614];
             startNodeID = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
         }
@@ -128,7 +133,7 @@ RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point resolver:(RCTPro
         if (nodeLayer) {
             GeoStyle* style = [[GeoStyle alloc] init];
             [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
-            [style setLineColor:[[Color alloc] initWithR:255 G:105 B:0]];
+            [style setLineColor:[[Color alloc] initWithR:105 G:255 B:0]];
             [style setMarkerSymbolID:3614];
             endNodeID = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
         }
@@ -367,10 +372,10 @@ RCT_REMAP_METHOD(findPathFromNodes,findPathFromNodesById:(NSInteger)startID endN
         
         NSInteger mStartID = startID;
         NSInteger mEndID = endID;
-        if (mStartID < 0) {
+        if (mStartID <= 0) {
             mStartID = startNodeID;
         }
-        if (endID < 0) {
+        if (endID <= 0) {
             mEndID = endNodeID;
         }
         if (weightName == nil || [weightName isEqualToString:@""]) {
@@ -384,8 +389,7 @@ RCT_REMAP_METHOD(findPathFromNodes,findPathFromNodesById:(NSInteger)startID endN
             NSArray* edges = result.edges;
             NSArray* nodes = result.nodes;
             
-            NSArray* resultIds = [edges arrayByAddingObjectsFromArray:nodes];
-            [self displayResult:resultIds selection:selection];
+            [self displayResult:edges selection:selection];
             
             resolve(@{@"coast":@(cost),
                       @"edges":edges,
@@ -769,6 +773,8 @@ RCT_REMAP_METHOD(clear, clearWithResolver:(RCTPromiseResolveBlock)resolve reject
         }
         startNodeID = -1;
         endNodeID = -1;
+        startPoint = nil;
+        endPoint = nil;
         [middleNodeIDs removeAllObjects];
         [[SMap singletonInstance].smMapWC.mapControl.map.trackingLayer clear];
         resolve(@(YES));
