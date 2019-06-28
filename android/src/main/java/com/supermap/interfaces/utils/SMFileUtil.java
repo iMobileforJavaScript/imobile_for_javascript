@@ -21,6 +21,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -591,6 +592,107 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    /**
+     * 拷贝文件夹，并根据后缀不同拷贝到不同的文件夹下,过滤两级目录
+     * @param from  待拷贝文件路径
+     * @param to    将要拷贝到的文件路径
+     * @param filterFileSuffix  过滤文件后缀
+     * @param filterFileDicName     过滤的文件存放的文件夹名称
+     * @param otherFileDicName          其他文件存放的文件夹名称
+     * @return
+     */
+    public static boolean copyFiles(String from, String to, final String filterFileSuffix, String filterFileDicName, String otherFileDicName){
+        File fromFile = new File(from);
+        if (!fromFile.exists()) return false;
+        String toPath=formateNoneExistFileName(to+fromFile.getName(),fromFile.isDirectory());
+        String filterFileDicPath=toPath+"/"+filterFileDicName;
+        String otherFileDicPath=toPath+"/"+otherFileDicName;
+        File toFile = new File(toPath);
+        if (!toFile.exists()) {
+            toFile.mkdirs();
+        }
+        try {
+            if (fromFile.isFile()) {
+                return copyFile(fromFile, toFile, true);
+            }
+            File filterFileDic=new File(filterFileDicPath);
+            File otherFileDic=new File(otherFileDicPath);
+            if(!filterFileDic.exists()){
+                filterFileDic.mkdirs();
+            }
+            if(!otherFileDic.exists()){
+                otherFileDic.mkdirs();
+            }
+            File[] fileList = fromFile.listFiles();
+            for (File file : fileList) {
+                if (file.isFile()) {
+                    String filePath=file.getAbsolutePath();
+                    int index = filePath.lastIndexOf(".");
+                    String strSuffix = filePath.substring(index);
+                    String copyDic=strSuffix.equals(filterFileSuffix)?filterFileDicPath:otherFileDicPath;
+                    copyFile(file, new File(copyDic+"/"+file.getName()), true);
+                    continue;
+                }
+                File[] filterFileList=file.listFiles(new FileFilter() {
+                    @Override
+                    public boolean accept(File pathname) {
+                        String s = pathname.getName();
+                        if(s.endsWith("."+filterFileSuffix)){
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+                if(filterFileList.length==0){
+                    copyFile(file.getAbsolutePath(), otherFileDicPath);
+                }else {
+                    File[] subFileList = file.listFiles();
+                    for (File subFile :subFileList) {
+                        if (subFile.isFile()) {
+                            String filePath=subFile.getAbsolutePath();
+                            int index = filePath.lastIndexOf(".");
+                            String strSuffix = filePath.substring(index);
+                            String copyDic=strSuffix.equals("."+filterFileSuffix)?filterFileDicPath:otherFileDicPath;
+                            copyFile(subFile, new File(copyDic+"/"+subFile.getName()), true);
+                            continue;
+                        }else {
+//                            copyFile(file, new File(otherFileDicPath+"/"+file.getName()), true);
+                            copyFile(subFile.getAbsolutePath(), otherFileDicPath+"/"+subFile.getName());
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    private static String formateNoneExistFileName(String strPath, boolean isDir) {
+        String strName = strPath;
+        String strSuffix = "";
+        if (!isDir) {
+            int index = strPath.lastIndexOf(".");
+            strName = strPath.substring(0, index);
+            strSuffix = strPath.substring(index);
+        }
+        String result = strPath;
+        int nAddNum = 1;
+        while (true) {
+            File fileTemp = new File(result);
+            if (!fileTemp.exists()) {
+                return result;
+            } else if (isDir != fileTemp.isDirectory()) {
+                return result;
+            } else {
+                result = strName + "_" + nAddNum + strSuffix;
+                nAddNum++;
+            }
         }
     }
 

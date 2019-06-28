@@ -81,19 +81,19 @@ public class SMessageService extends ReactContextBaseJavaModule {
                 Thread.sleep(500);
             }
 
-            if(g_AMQPManager != null){
-                g_AMQPManager.suspend();
-            }
-            if(g_AMQPReceiver != null){
-                g_AMQPReceiver.dispose();
-            }
-            g_AMQPManager = null;
-            g_AMQPSender = null;
-            g_AMQPReceiver = null;
+//            if(g_AMQPManager != null){
+//                g_AMQPManager.suspend();
+//            }
+//            if(g_AMQPReceiver != null){
+//                g_AMQPReceiver.dispose();
+//            }
+//            g_AMQPManager = null;
+//            g_AMQPSender = null;
+//            g_AMQPReceiver = null;
 
 
 
-            boolean bRes = false;
+            boolean bRes = true;
             if (g_AMQPManager==null){
 
                 g_AMQPManager = new AMQPManager();
@@ -633,20 +633,24 @@ public class SMessageService extends ReactContextBaseJavaModule {
                     int n = 0;
                     while (true){
                         if(isRecieving){
-                            AMQPReturnMessage resMessage = g_AMQPReceiver.receiveMessage();
-                            String sQueue = resMessage.getQueue();
-                            String sMessage = resMessage.getMessage();
-                            if(!sQueue.isEmpty() && !sMessage.isEmpty()){
-                                WritableMap map = Arguments.createMap();
-                                map.putString("clientId",sQueue);
-                                map.putString("message",sMessage);
-                                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                        .emit(EventConst.MESSAGE_SERVICE_RECEIVE, map);
+                            if(g_AMQPReceiver != null) {
+                                AMQPReturnMessage resMessage = g_AMQPReceiver.receiveMessage();
+                                String sQueue = resMessage.getQueue();
+                                String sMessage = resMessage.getMessage();
+                                if (!sQueue.isEmpty() && !sMessage.isEmpty()) {
+                                    WritableMap map = Arguments.createMap();
+                                    map.putString("clientId", sQueue);
+                                    map.putString("message", sMessage);
+                                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                            .emit(EventConst.MESSAGE_SERVICE_RECEIVE, map);
+                                }
                             }
                             bStopRecieve = false;
                         }else{
-                            g_AMQPReceiver.dispose();
-                            g_AMQPReceiver = null;
+                            if(g_AMQPReceiver != null) {
+                                g_AMQPReceiver.dispose();
+                                g_AMQPReceiver = null;
+                            }
                             bStopRecieve = true;
                             break;
                         }
@@ -663,9 +667,6 @@ public class SMessageService extends ReactContextBaseJavaModule {
                                 g_AMQPManager.suspend();
                                 g_AMQPManager.resume();
                             }
-//                            g_AMQPReceiver.dispose();
-//                            g_AMQPManager.declareQueue(sQueue);
-//                            g_AMQPReceiver = g_AMQPManager.newReceiver(sQueue);
                             n = 0;
                         }
                     }

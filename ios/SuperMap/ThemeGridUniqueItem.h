@@ -22,5 +22,6 @@
 
 -(id)initWithThemeGridUniqueItem:(ThemeGridUniqueItem*) themeGridUniqueItem;
 
+-(id)initWithUnique:(double)unique color:(Color*)color caption:(NSString*)caption;
 
 @end

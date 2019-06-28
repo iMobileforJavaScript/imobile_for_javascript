@@ -21,6 +21,8 @@ RCT_EXPORT_MODULE();
              @"CUSTOM":@(TT_Custom),
              @"GRIDUNIQUE":@(TT_GridUnique),
              @"GRIDRANGE":@(TT_GridRange),
+             @"LABELUNIQUE":@(TT_label+100),
+             @"LABELRANGE":@(TT_label+200),
            };
 }
 

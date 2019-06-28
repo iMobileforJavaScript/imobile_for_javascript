@@ -31,6 +31,29 @@ RCT_REMAP_METHOD(getLayersByGroupPath, getLayersByGroupPath:(NSString *)path res
     }
 }
 
+
+RCT_REMAP_METHOD(setLayerSelectable, setSelectableByLayerPath:(NSString*)layerPath selectable:(BOOL)selectable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [SMLayer findLayerByPath:layerPath];
+        layer.selectable = selectable;
+        NSNumber* num = [NSNumber numberWithBool:true];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"Layer",@"setSelectable() failed.",nil);
+    }
+}
+
+RCT_REMAP_METHOD(setLayerSnapable, setSnapableByLayerPath:(NSString*)layerPath snapable:(BOOL)snapable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [SMLayer findLayerByPath:layerPath];
+        layer.isSnapable = snapable;
+        NSNumber* num = [NSNumber numberWithBool:true];
+        resolve(num);
+    } @catch (NSException *exception) {
+        reject(@"Layer",@"setSnapable() failed.",nil);
+    }
+}
+
 #pragma mark 设置制定名字图层是否可见
 RCT_REMAP_METHOD(setLayerVisible, setLayerVisible:(NSString *)path value:(BOOL)value resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -162,7 +185,20 @@ RCT_REMAP_METHOD(setLayerFieldInfoByName, setLayerFieldInfoByName:(NSString *)la
 RCT_REMAP_METHOD(removeLayerWithName, removeLayerWithNameByParams:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
-        BOOL result = [sMap.smMapWC.mapControl.map.layers removeWithName:layerName];
+        Layer* layer = nil;LayerGroup* layerGroup = nil;
+        [SMLayer findLayerAndGroupByPath:layerName layer:&layer group:&layerGroup];
+        
+        BOOL result = false;
+        if(layerGroup!=nil){
+            if(layer!=nil){
+                result = [layerGroup removeLayer:layer];
+            }
+        }else{
+            if(layer!=nil){
+               result = [sMap.smMapWC.mapControl.map.layers remove:layer];
+            }
+        }
+//        BOOL result = [sMap.smMapWC.mapControl.map.layers removeWithName:layerName];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"workspace", exception.reason, nil);
@@ -196,7 +232,8 @@ RCT_REMAP_METHOD(removeAllLayer, removeAllLayerWithResolver:(RCTPromiseResolveBl
 RCT_REMAP_METHOD(renameLayer, renameLayerWithNameByParams:(NSString*)layerName relayerName:(NSString*)relayerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
-        Layer* layer = [sMap.smMapWC.mapControl.map.layers getLayerWithName:layerName];
+        
+        Layer* layer = [SMLayer findLayerByPath:layerName];// [sMap.smMapWC.mapControl.map.layers getLayerWithName:layerName];
         [layer setCaption:relayerName];
         resolve([NSNumber numberWithBool:true]);
     } @catch (NSException *exception) {
@@ -208,14 +245,32 @@ RCT_REMAP_METHOD(renameLayer, renameLayerWithNameByParams:(NSString*)layerName r
 RCT_REMAP_METHOD(moveUpLayer, moveUpLayerWithIndexByParams:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
-        int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
-        if(index != 0){
-            Layer *layer = [sMap.smMapWC.mapControl.map.layers getLayerAtIndex:index-1];
-            if(![layer.name containsString:@"Label"]){
-                [sMap.smMapWC.mapControl.map.layers moveUp:index];
-                [sMap.smMapWC.mapControl.map refresh];
+        
+        Layer* layer = nil;LayerGroup* layerGroup = nil;
+        [SMLayer findLayerAndGroupByPath:layerName layer:&layer group:&layerGroup];
+        
+        BOOL result = false;
+        if(layerGroup!=nil){
+            if(layer!=nil){
+               int nInsert = [layerGroup indexOfLayer:layer] - 1;
+                if(nInsert>=0){
+                    [layerGroup insert:nInsert Layer:layer];
+                }
+            }
+        }else{
+            if(layer!=nil){
+                int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
+                if(index != 0){
+                    Layer *layer = [sMap.smMapWC.mapControl.map.layers getLayerAtIndex:index-1];
+                    if(![layer.name containsString:@"Label"]){
+                        [sMap.smMapWC.mapControl.map.layers moveUp:index];
+                        [sMap.smMapWC.mapControl.map refresh];
+                    }
+                }
             }
         }
+        
+       
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"workspace", exception.reason, nil);
@@ -248,8 +303,25 @@ RCT_REMAP_METHOD(moveDownLayer, moveDownLayerWithResolver:(NSString*)layerName r
             }
         }
         if(move){
-            [sMap.smMapWC.mapControl.map.layers moveDown:index];
-            [sMap.smMapWC.mapControl.map refresh];
+            
+            Layer* layer = nil;LayerGroup* layerGroup = nil;
+            [SMLayer findLayerAndGroupByPath:layerName layer:&layer group:&layerGroup];
+            BOOL result = false;
+            if(layerGroup!=nil){
+                if(layer!=nil){
+                    int nInsert = [layerGroup indexOfLayer:layer] + 1;
+                    if(nInsert<=[layerGroup getCount]){
+                       result = [layerGroup insert:nInsert Layer:layer];
+                    }
+                }
+            }else{
+                if(layer!=nil){
+                    [sMap.smMapWC.mapControl.map.layers moveDown:index];
+                    [sMap.smMapWC.mapControl.map refresh];
+                }
+            }
+            
+           
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -261,11 +333,26 @@ RCT_REMAP_METHOD(moveDownLayer, moveDownLayerWithResolver:(NSString*)layerName r
 RCT_REMAP_METHOD(moveToTop, moveToTopWithResolver:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
-        int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
-        bool result =  false;
-        result = [sMap.smMapWC.mapControl.map.layers moveTop:index];
+        
+        Layer* layer = nil;LayerGroup* layerGroup = nil;
+        [SMLayer findLayerAndGroupByPath:layerName layer:&layer group:&layerGroup];
+        if(layerGroup!=nil){
+            if(layer!=nil){
+                int nInsert = 0;
+                if(nInsert<=[layerGroup getCount]){
+                   [layerGroup insert:nInsert Layer:layer];
+                }
+            }
+        }else{
+            if(layer!=nil){
+                int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
+                
+               [sMap.smMapWC.mapControl.map.layers moveTop:index];
+            }
+        }
+        
         [sMap.smMapWC.mapControl.map refresh];
-        resolve([NSNumber numberWithBool:result]);
+        resolve([NSNumber numberWithBool:1]);
     } @catch (NSException *exception) {
         reject(@"SMap", exception.reason, nil);
     }
@@ -275,11 +362,25 @@ RCT_REMAP_METHOD(moveToTop, moveToTopWithResolver:(NSString*)layerName resolver:
 RCT_REMAP_METHOD(moveToBottom, moveToBottomWithResolver:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
-        int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
-        bool result =  false;
-        result = [sMap.smMapWC.mapControl.map.layers moveBottom:index];
+        Layer* layer = nil;LayerGroup* layerGroup = nil;
+        [SMLayer findLayerAndGroupByPath:layerName layer:&layer group:&layerGroup];
+        if(layerGroup!=nil){
+            if(layer!=nil){
+                int nInsert = [layerGroup getCount];
+                if(nInsert<=[layerGroup getCount]){
+                    [layerGroup insert:nInsert Layer:layer];
+                }
+            }
+        }else{
+            if(layer!=nil){
+                int index = [sMap.smMapWC.mapControl.map.layers indexOf:layerName];
+                [sMap.smMapWC.mapControl.map.layers moveBottom:index];
+            }
+        }
+        
+       
         [sMap.smMapWC.mapControl.map refresh];
-        resolve([NSNumber numberWithBool:result]);
+        resolve([NSNumber numberWithBool:1]);
     } @catch (NSException *exception) {
         reject(@"SMap", exception.reason, nil);
     }
@@ -483,49 +584,49 @@ RCT_REMAP_METHOD(clearTrackingLayer, clearTrackingLayerWithResolver:(RCTPromiseR
     }
 }
 
-RCT_REMAP_METHOD(setEditable, setEditableByLayerPath:(NSString*)layerPath editable:(BOOL)editable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        Layer* layer = [SMLayer findLayerByPath:layerPath];
-        layer.editable = editable;
-        NSNumber* num = [NSNumber numberWithBool:true];
-        resolve(num);
-    } @catch (NSException *exception) {
-        reject(@"Layer",@"setEditable() failed.",nil);
-    }
-}
+//RCT_REMAP_METHOD(setEditable, setEditableByLayerPath:(NSString*)layerPath editable:(BOOL)editable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        Layer* layer = [SMLayer findLayerByPath:layerPath];
+//        layer.editable = editable;
+//        NSNumber* num = [NSNumber numberWithBool:true];
+//        resolve(num);
+//    } @catch (NSException *exception) {
+//        reject(@"Layer",@"setEditable() failed.",nil);
+//    }
+//}
+//
+//RCT_REMAP_METHOD(setVisible, setVisibleByLayerPath:(NSString*)layerPath visible:(BOOL)visible resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        Layer* layer = [SMLayer findLayerByPath:layerPath];
+//        layer.visible = visible;
+//        NSNumber* num = [NSNumber numberWithBool:true];
+//        resolve(num);
+//    } @catch (NSException *exception) {
+//        reject(@"Layer",@"setVisible() failed.",nil);
+//    }
+//}
 
-RCT_REMAP_METHOD(setVisible, setVisibleByLayerPath:(NSString*)layerPath visible:(BOOL)visible resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        Layer* layer = [SMLayer findLayerByPath:layerPath];
-        layer.visible = visible;
-        NSNumber* num = [NSNumber numberWithBool:true];
-        resolve(num);
-    } @catch (NSException *exception) {
-        reject(@"Layer",@"setVisible() failed.",nil);
-    }
-}
-
-RCT_REMAP_METHOD(setSelectable, setSelectableByLayerPath:(NSString*)layerPath selectable:(BOOL)selectable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        Layer* layer = [SMLayer findLayerByPath:layerPath];
-        layer.selectable = selectable;
-        NSNumber* num = [NSNumber numberWithBool:true];
-        resolve(num);
-    } @catch (NSException *exception) {
-        reject(@"Layer",@"setSelectable() failed.",nil);
-    }
-}
-
-RCT_REMAP_METHOD(setSnapable, setSnapableByLayerPath:(NSString*)layerPath snapable:(BOOL)snapable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        Layer* layer = [SMLayer findLayerByPath:layerPath];
-        layer.isSnapable = snapable;
-        NSNumber* num = [NSNumber numberWithBool:true];
-        resolve(num);
-    } @catch (NSException *exception) {
-        reject(@"Layer",@"setSnapable() failed.",nil);
-    }
-}
+//RCT_REMAP_METHOD(setSelectable, setSelectableByLayerPath:(NSString*)layerPath selectable:(BOOL)selectable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        Layer* layer = [SMLayer findLayerByPath:layerPath];
+//        layer.selectable = selectable;
+//        NSNumber* num = [NSNumber numberWithBool:true];
+//        resolve(num);
+//    } @catch (NSException *exception) {
+//        reject(@"Layer",@"setSelectable() failed.",nil);
+//    }
+//}
+//
+//RCT_REMAP_METHOD(setSnapable, setSnapableByLayerPath:(NSString*)layerPath snapable:(BOOL)snapable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        Layer* layer = [SMLayer findLayerByPath:layerPath];
+//        layer.isSnapable = snapable;
+//        NSNumber* num = [NSNumber numberWithBool:true];
+//        resolve(num);
+//    } @catch (NSException *exception) {
+//        reject(@"Layer",@"setSnapable() failed.",nil);
+//    }
+//}
 
 //RCT_REMAP_METHOD(addCallout, addCallout:(NSDictionary *)point imagePath:(NSString *)imagePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
 //    @try {
