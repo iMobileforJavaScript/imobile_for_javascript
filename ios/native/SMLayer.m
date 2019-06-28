@@ -7,6 +7,7 @@
 //
 
 #import "SMLayer.h"
+#import "SuperMap/ThemeLabel.h"
 
 @implementation SMLayer
 
@@ -69,6 +70,14 @@
 
 + (NSMutableDictionary *)getLayerInfo:(Layer *)layer path:(NSString *)path {
     int themeType = (int)layer.theme.themeType;
+    if( themeType == TT_label ){
+        ThemeLabel* themelabel = ( ThemeLabel* )layer.theme;
+        if ([themelabel rangeExpression]!=nil && [[themelabel rangeExpression] length]!=0 && [themelabel getRangeCount]!=0 ) {
+            themeType = TT_label+200;
+        }else if([themelabel uniqueExpression]!=nil && [[themelabel uniqueExpression] length]!=0 && [themelabel getUniqueCount]!=0){
+            themeType = TT_label+100;
+        }
+    }
     
     NSString* datasetName = @"";
     if (layer.dataset != nil) {
