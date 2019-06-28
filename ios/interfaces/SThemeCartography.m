@@ -578,6 +578,7 @@ RCT_REMAP_METHOD(getUniqueLabelExpression, getUniqueLabelExpressionWithResolver:
                 strExpression = [themeLabel uniqueExpression];
                 if(strExpression!=nil && strExpression.length>0){
                     resolve(strExpression);
+                    return;
                 }
             }
         }
@@ -837,6 +838,7 @@ RCT_REMAP_METHOD(getRangeLabelExpression, getRangeLabelExpressionWithResolver:(N
                 strExpression = [themeLabel rangeExpression];
                 if(strExpression!=nil && strExpression.length>0){
                     resolve(strExpression);
+                    return;
                 }
             }
         }
@@ -927,8 +929,8 @@ RCT_REMAP_METHOD(setRangeLabelExpression, setRangeLabelExpressionWithResolver:(N
         if ([array containsObject:@"LayerName"]) {
             layerName = [dataDic objectForKey:@"LayerName"];
         }
-        if ([array containsObject:@"UniqueExpression"]) {
-            labelExpression = [dataDic objectForKey:@"UniqueExpression"];
+        if ([array containsObject:@"RangeExpression"]) {
+            labelExpression = [dataDic objectForKey:@"RangeExpression"];
         }
         if ([array containsObject:@"LayerIndex"]) {
             NSNumber* indexValue = [dataDic objectForKey:@"LayerIndex"];
