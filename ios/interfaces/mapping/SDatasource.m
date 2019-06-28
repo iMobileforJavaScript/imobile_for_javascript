@@ -287,14 +287,14 @@ RCT_REMAP_METHOD(removeDatasetByName, removeDatasetByNameWithPath:(NSString *)pa
  */
 RCT_REMAP_METHOD(getDatasetsByExternalDatasource, getDatasetsByExternalDatasourceWithInfo:(NSDictionary*)dataDic resolver:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
     @try{
-        NSString* alias = @"";
         Workspace *workspaceTemp = [[Workspace alloc]init];
-        NSArray* array = [dataDic allKeys];
-        if ([array containsObject:@"Alias"]) {
-            alias = [dataDic objectForKey:@"Alias"];
-        } else if ([array containsObject:@"alias"]) {
-            alias = [dataDic objectForKey:@"alias"];
-        }
+//        NSString* alias = @"";
+//        NSArray* array = [dataDic allKeys];
+//        if ([array containsObject:@"Alias"]) {
+//            alias = [dataDic objectForKey:@"Alias"];
+//        } else if ([array containsObject:@"alias"]) {
+//            alias = [dataDic objectForKey:@"alias"];
+//        }
         
         DatasourceConnectionInfo* info = [SMDatasource convertDicToInfo:dataDic];
         Datasource* datasource = [workspaceTemp.datasources open:info];

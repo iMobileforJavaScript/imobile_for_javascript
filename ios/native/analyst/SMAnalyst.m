@@ -186,7 +186,7 @@
         if ([params objectForKey:@"barrierNodes"] != nil) {
             parameter.barrierNodes = [params objectForKey:@"barrierNodes"];
         }
-        if ([params objectForKey:@"barrierNodes"] != nil) {
+        if ([params objectForKey:@"barrierPoints"] != nil) {
             NSArray* points =  [params objectForKey:@"barrierPoints"];
             Point2Ds* barrierPoints = [[Point2Ds alloc] init];
             for (int i = 0; i < points.count; i++) {
@@ -426,7 +426,7 @@
     if ([data objectForKey:@"tFSingleWayRuleValues"]) setting.tFSingleWayRuleValues = [data objectForKey:@"tFSingleWayRuleValues"];
     if ([data objectForKey:@"tNodeIDField"]) setting.tNodeIDField = [data objectForKey:@"tNodeIDField"];
     if ([data objectForKey:@"tolerance"] != nil) setting.tolerance = [(NSNumber *)[data objectForKey:@"tolerance"] integerValue];
-    if ([data objectForKey:@"turnDataset"]) setting.turnDataset = [data objectForKey:@"turnDataset"];
+//    if ([data objectForKey:@"turnDataset"]) setting.turnDataset = [data objectForKey:@"turnDataset"];
     if ([data objectForKey:@"turnFEdgeIDField"]) setting.turnFEdgeIDField = [data objectForKey:@"turnFEdgeIDField"];
     if ([data objectForKey:@"turnNodeIDField"]) setting.turnNodeIDField = [data objectForKey:@"turnNodeIDField"];
     if ([data objectForKey:@"turnTEdgeIDField"]) setting.turnTEdgeIDField = [data objectForKey:@"turnTEdgeIDField"];

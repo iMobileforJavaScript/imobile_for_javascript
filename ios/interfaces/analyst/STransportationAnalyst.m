@@ -25,6 +25,7 @@ RCT_EXPORT_MODULE();
     return transportationAnalyst;
 }
 
+#pragma mark - 设置起点
 RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         NSString* nodeTag = @"startNode";
@@ -47,6 +48,7 @@ RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point resolver:(RC
     }
 }
 
+#pragma mark - 设置终点
 RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         NSString* nodeTag = @"endNode";
@@ -69,6 +71,7 @@ RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point resolver:(RCTPro
     }
 }
 
+#pragma mark - 添加障碍点
 RCT_REMAP_METHOD(addBarrierNode, addBarrierNode:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         NSString* nodeTag = @"";
@@ -80,7 +83,7 @@ RCT_REMAP_METHOD(addBarrierNode, addBarrierNode:(NSDictionary *)point resolver:(
             [style setMarkerSymbolID:3614];
             node = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
             if (!barrierNodes) barrierNodes = [[NSMutableArray alloc] init];
-            if (node >= 0) [barrierNodes addObject:@(node)];
+            if (node > 0) [barrierNodes addObject:@(node)];
         }
         
         resolve(@(node));
@@ -89,6 +92,7 @@ RCT_REMAP_METHOD(addBarrierNode, addBarrierNode:(NSDictionary *)point resolver:(
     }
 }
 
+#pragma mark - 添加结点
 RCT_REMAP_METHOD(addNode, addNode:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         NSString* nodeTag = @"";
@@ -100,7 +104,7 @@ RCT_REMAP_METHOD(addNode, addNode:(NSDictionary *)point resolver:(RCTPromiseReso
             [style setMarkerSymbolID:3614];
             node = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
             if (!nodes) nodes = [[NSMutableArray alloc] init];
-            if (node >= 0) [nodes addObject:@(node)];
+            if (node > 0) [nodes addObject:@(node)];
         }
         
         resolve(@(node));
@@ -109,6 +113,7 @@ RCT_REMAP_METHOD(addNode, addNode:(NSDictionary *)point resolver:(RCTPromiseReso
     }
 }
 
+#pragma mark - 清除记录
 RCT_REMAP_METHOD(clear, clearWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         if (selection) {
@@ -137,25 +142,25 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo setting:(
         
         if ([datasourceInfo objectForKey:@"server"]) {
             DatasourceConnectionInfo* connectInfo = [SMDatasource convertDicToInfo:datasourceInfo];
-            Datasources* dss = [SMap singletonInstance].smMapWC.workspace.datasources;
+            Datasources* dss = workspace.datasources;
             Datasource* datasource = [dss getAlias:[datasourceInfo objectForKey:@"alias"]];
             if (!datasource) {
-                datasource = [workspace.datasources open:connectInfo];
+                datasource = [dss open:connectInfo];
             }
             
             NSString* datasetName = [settingDic objectForKey:@"networkDataset"];
             if (datasetName) {
                 ds = [datasource.datasets getWithName:datasetName];
-                layer = [layers findLayerWithName:ds.name];
+                layer = [SMLayer findLayerByDatasetName:ds.name];
                 if (!layer) {
-                    [[SMap singletonInstance].smMapWC.mapControl.map setDynamicProjection:YES];
+//                    [[SMap singletonInstance].smMapWC.mapControl.map setDynamicProjection:YES];
                     layer = [layers addDataset:ds ToHead:YES];
                     layer.selectable = NO;
                 }
                 
                 Dataset* nodeDataset = ((DatasetVector *)ds).childDataset;
                 if (nodeDataset) {
-                    nodeLayer = [layers findLayerWithName:nodeDataset.name];
+                    nodeLayer = [SMLayer findLayerByDatasetName:nodeDataset.name];
                     if (!nodeLayer) {
                         nodeLayer = [layers addDataset:nodeDataset ToHead:YES];
                         nodeLayer.selectable = YES;
@@ -189,7 +194,12 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo setting:(
             
             [[SMap singletonInstance].smMapWC.mapControl setAction:PAN];
             
-            resolve(number);
+            NSMutableDictionary* layerInfo = [SMLayer getLayerInfo:layer path:@""];
+            
+            resolve(@{
+                      @"result": number,
+                      @"layerInfo": layerInfo,
+                      });
         } else {
             reject(@"STransportationAnalyst", @"No networkDataset", nil);
         }
@@ -234,12 +244,15 @@ RCT_REMAP_METHOD(findPath,findPath:(NSDictionary*)params hasLeastEdgeCount:(BOOL
 //        NSMutableArray* stopWeights = result.stopWeights;
 //        NSMutableArray* weights = result.weights;
         
+        long routesCount = 0;
         if (routes) {
+            routesCount = [routes count];
             [self displayRoutes:routes];
         }
         
         resolve(@{@"edges":edges ? edges : @[],
                   @"nodes":nodes ? nodes : @[],
+                  @"routesCount": @(routesCount),
 //                  @"pathGuides":pathGuides,
 //                  @"routes":routes,
 //                  @"stops":stops,
@@ -287,12 +300,15 @@ RCT_REMAP_METHOD(findTSPPath, findTSPPath:(NSDictionary*)params isEndNodeAssigne
 //        NSMutableArray* stopWeights = result.stopWeights;
 //        NSMutableArray* weights = result.weights;
         
+        long routesCount = 0;
         if (routes) {
+            routesCount = [routes count];
             [self displayRoutes:routes];
         }
         
         resolve(@{@"edges":edges ? edges : @[],
                   @"nodes":nodes ? nodes : @[],
+                  @"routesCount":@(routesCount),
 //                  @"pathGuides":pathGuides,
 //                  @"routes":routes,
 //                  @"stops":stops,
@@ -307,7 +323,7 @@ RCT_REMAP_METHOD(findTSPPath, findTSPPath:(NSDictionary*)params isEndNodeAssigne
 - (void)displayRoutes:(NSMutableArray *)routesArr {
     for (int i = 0; i < routesArr.count; i++) {
         GeoLineM* line = routesArr[i];
-        GeoStyle* style = [self getGeoStyle:[[Size2D alloc] initWithWidth:10 Height:10] color:[[Color alloc] initWithR:255 G:105 B:0]];
+        GeoStyle* style = [self getGeoStyle:[[Size2D alloc] initWithWidth:10 Height:10] color:[[Color alloc] initWithR:255 G:80 B:0]];
         [line setStyle:style];
         TrackingLayer* trackingLayer = [SMap singletonInstance].smMapWC.mapControl.map.trackingLayer;
         [trackingLayer addGeometry:line WithTag:@""];

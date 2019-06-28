@@ -82,7 +82,7 @@ async function clear () {
  * @param hasLeastEdgeCount 是否是最少弧段
  * @returns {Promise}
  */
-async function findPath (params, hasLeastEdgeCount = true) {
+async function findPath (params = {}, hasLeastEdgeCount = true) {
   return Analyst.findPath(params, hasLeastEdgeCount)
 }
 
@@ -92,7 +92,7 @@ async function findPath (params, hasLeastEdgeCount = true) {
  * @param isEndNodeAssigned 是否指定终点。为true则最后一个站点为终点
  * @returns {Promise.<*>}
  */
-async function findTSPPath (params, isEndNodeAssigned = false) {
+async function findTSPPath (params = {}, isEndNodeAssigned = false) {
   return Analyst.findTSPPath(params, isEndNodeAssigned)
 }
 export default {
