@@ -1183,7 +1183,11 @@ RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve re
 RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
      @try{
          Map* map = sMap.smMapWC.mapControl.map;
-         Rectangle2D* bounds =  [map.layers getLayerWithName:name].dataset.bounds;
+         Layer* layer =  [SMLayer findLayerByPath:name];
+         Rectangle2D* bounds =  layer.dataset.bounds;
+         if(bounds.width<=0 || bounds.height<=0){
+             [bounds inflateX:20 Y:20];
+         }
          if([map.layers getLayerWithName:name].dataset.prjCoordSys.type != map.prjCoordSys.type){
              Point2Ds *points = [[Point2Ds alloc]init];
              [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
@@ -1197,13 +1201,6 @@ RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver
              Point2D* pt1 = [points getItem:0];
              Point2D* pt2 = [points getItem:1];
              bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
-             
-         }
-         if (bounds.width > 0 && bounds.height > 0) {
-             map.viewBounds = bounds;
-             resolve(@(1));
-         } else {
-             resolve(@(0));
          }
          
      } @catch (NSException *exception) {
@@ -1803,7 +1800,8 @@ RCT_REMAP_METHOD(removeGeometrySelectedListener, resolver:(RCTPromiseResolveBloc
 RCT_REMAP_METHOD(appointEditGeometry, appointEditGeometryByGeoId:(int)geoId layerName:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
-        Layer* layer = [mapControl.map.layers getLayerWithName:layerName];
+        Layer* layer = [SMLayer findLayerByPath:layerName];
+//        Layer* layer = [mapControl.map.layers getLayerWithName:layerName];
         bool result = [mapControl appointEditGeometryWithID:geoId Layer:layer];
         [layer setEditable:YES];
         resolve([NSNumber numberWithBool:result]);
