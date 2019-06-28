@@ -50,6 +50,7 @@ import com.supermap.smNative.components.InfoCallout;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 
 public class SMLayer {
     public static WritableArray getLayersByType(int type, String path) {
@@ -189,6 +190,29 @@ public class SMLayer {
             }
         }
         return layer;
+    }
+
+    public static HashMap<String,Object> findLayerAndGroupByPath(String path) {
+        if (path == null || path.equals("")) return null;
+        Map map = SMap.getSMWorkspace().getMapControl().getMap();
+        Layers layers = map.getLayers();
+
+        String[] pathParams = path.split("/");
+        Layer layer = null;
+        LayerGroup layerGroup = null;
+        layer = layers.get(pathParams[0]);
+        for (int i = 1; i < pathParams.length; i++) {
+            if (layer.getDataset() == null) {
+                layerGroup = (LayerGroup) layer;
+                layer = layerGroup.getLayerByName(pathParams[i]);
+            } else {
+                break;
+            }
+        }
+        HashMap<String,Object> res = new HashMap<>();
+        res.put("layer",layer);
+        res.put("layerGroup",layerGroup);
+        return res;
     }
 
     public static Layer findLayerWithName(String name) {

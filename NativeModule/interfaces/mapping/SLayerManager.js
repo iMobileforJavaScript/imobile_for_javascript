@@ -56,6 +56,28 @@ function setLayerEditable(path, value){
 }
 
 /**
+ * 设置图层是否可选
+ * @param layerPath
+ * @param selectable
+ * @returns {*}
+ */
+function setLayerSelectable(layerPath, selectable = true) {
+  if (!layerPath) return false
+  return LayerManager.setLayerSelectable(layerPath, selectable)
+}
+
+/**
+ * 设置图层是否可捕获
+ * @param layerPath
+ * @param snapable
+ * @returns {*}
+ */
+function setLayerSnapable(layerPath, snapable = true) {
+  if (!layerPath) return false
+  return LayerManager.setLayerSnapable(layerPath, snapable)
+}
+
+/**
  * 获取指定名字的图层索引
  * @param name
  * @param promise
@@ -398,10 +420,10 @@ function clearTrackingLayer() {
  * @param editable
  * @returns {*}
  */
-function setEditable(layerPath, editable = true) {
-  if (!layerPath) return false
-  return LayerManager.setEditable(layerPath, editable)
-}
+// function setEditable(layerPath, editable = true) {
+//   if (!layerPath) return false
+//   return LayerManager.setEditable(layerPath, editable)
+// }
 
 /**
  * 设置图层是否可见
@@ -409,38 +431,19 @@ function setEditable(layerPath, editable = true) {
  * @param visible
  * @returns {*}
  */
-function setVisible(layerPath, visible = true) {
-  if (!layerPath) return false
-  return LayerManager.setVisible(layerPath, visible)
-}
+// function setVisible(layerPath, visible = true) {
+//   if (!layerPath) return false
+//   return LayerManager.setVisible(layerPath, visible)
+// }
 
-/**
- * 设置图层是否可选
- * @param layerPath
- * @param selectable
- * @returns {*}
- */
-function setSelectable(layerPath, selectable = true) {
-  if (!layerPath) return false
-  return LayerManager.setSelectable(layerPath, selectable)
-}
-
-/**
- * 设置图层是否可捕获
- * @param layerPath
- * @param snapable
- * @returns {*}
- */
-function setSnapable(layerPath, snapable = true) {
-  if (!layerPath) return false
-  return LayerManager.setSnapable(layerPath, snapable)
-}
 
 export {
   getLayersByType,
   getLayersByGroupPath,
   setLayerVisible,
   setLayerEditable,
+  setLayerSelectable,
+  setLayerSnapable,
   getLayerIndexByName,
   getLayerAttribute,
   getSelectionAttributeByLayer,
@@ -462,8 +465,6 @@ export {
   setLayerStyle,
   setTrackingLayer,
   clearTrackingLayer,
-  setEditable,
-  setVisible,
-  setSelectable,
-  setSnapable,
+  // setEditable,
+  // setVisible,
 }

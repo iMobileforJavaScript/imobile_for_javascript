@@ -20,11 +20,14 @@ import com.supermap.data.Geometry;
 import com.supermap.data.Point2D;
 import com.supermap.data.Recordset;
 import com.supermap.mapping.Layer;
+import com.supermap.mapping.LayerGroup;
 import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Map;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.TrackingLayer;
 import com.supermap.smNative.SMLayer;
+
+import java.util.HashMap;
 
 public class SLayerManager extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SLayerManager";
@@ -108,6 +111,28 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         try {
             SMLayer.setLayerEditable(path, value);
             SMap.getSMWorkspace().getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setLayerSelectable(String layerPath, boolean s, Promise promise) {
+        try {
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+            layer.setSelectable(s);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setLayerSnapable(String layerPath, boolean s, Promise promise) {
+        try {
+            Layer layer = SMLayer.findLayerByPath(layerPath);
+            layer.setSnapable(s);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -318,7 +343,20 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     public void removeLayerWithName(String layerName, Promise promise) {
         try {
             SMap sMap = SMap.getInstance();
-            boolean result = sMap.getSmMapWC().getMapControl().getMap().getLayers().remove(layerName);
+            boolean result = false;
+
+            HashMap<String,Object>res =  SMLayer.findLayerAndGroupByPath(layerName);
+            LayerGroup layerGroup = (LayerGroup)res.get("layerGroup");
+            Layer layer =  (Layer)res.get("layer");
+            if(layerGroup != null){
+                if(layer != null){
+                    layerGroup.remove(layer);
+                }
+            }else{
+                if(layer != null){
+                    result = sMap.getSmMapWC().getMapControl().getMap().getLayers().remove(layerName);
+                }
+            }
 
             promise.resolve(result);
         } catch (Exception e) {
@@ -354,7 +392,8 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     public void renameLayer(String layerName, String relayerName, Promise promise) {
         try {
             SMap sMap = SMap.getInstance();
-            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(layerName);
+
+            Layer layer = SMLayer.findLayerByPath(layerName);//sMap.getSmMapWC().getMapControl().getMap().getLayers().get(layerName);
             layer.setCaption(relayerName);
             promise.resolve(true);
         } catch (Exception e) {
@@ -372,13 +411,28 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     public void moveUpLayer(String layerName, Promise promise) {
         try {
             SMap sMap = SMap.getInstance();
-            int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
-            if(index!=0){
-                int before = index-1;
-                Layer beforeLayer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(before);
-                if(beforeLayer.getName().indexOf("@Label_") == -1){
-                    sMap.getSmMapWC().getMapControl().getMap().getLayers().moveUp(index);
-                    sMap.getSmMapWC().getMapControl().getMap().refresh();
+
+            HashMap<String,Object>res =  SMLayer.findLayerAndGroupByPath(layerName);
+            LayerGroup layerGroup = (LayerGroup)res.get("layerGroup");
+            Layer layer =  (Layer)res.get("layer");
+            if(layerGroup != null){
+                if(layer != null){
+                    int nInsert = layerGroup.indexOf(layer)-1;// indexOfLayer:layer] - 1;
+                    if(nInsert>=0) {
+                        layerGroup.insert(nInsert, layer);// insert:nInsert Layer:layer];
+                    }
+                }
+            }else{
+                if(layer != null){
+                    int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
+                    if(index!=0){
+                        int before = index-1;
+                        Layer beforeLayer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(before);
+                        if(beforeLayer.getName().indexOf("@Label_") == -1){
+                            sMap.getSmMapWC().getMapControl().getMap().getLayers().moveUp(index);
+                            sMap.getSmMapWC().getMapControl().getMap().refresh();
+                        }
+                    }
                 }
             }
             promise.resolve(true);
@@ -418,7 +472,22 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                 }
             }
             if (move){
-                sMap.getSmMapWC().getMapControl().getMap().getLayers().moveDown(index);
+                HashMap<String,Object>res =  SMLayer.findLayerAndGroupByPath(layerName);
+                LayerGroup layerGroup = (LayerGroup)res.get("layerGroup");
+                Layer layer =  (Layer)res.get("layer");
+                if(layerGroup != null){
+                    if(layer != null){
+                        int nInsert = layerGroup.indexOf(layer)+1;// indexOfLayer:layer] - 1;
+                        if(nInsert<=layerGroup.getCount()) {
+                            layerGroup.insert(nInsert, layer);// insert:nInsert Layer:layer];
+                        }
+                    }
+                }else{
+                    if(layer != null){
+                        sMap.getSmMapWC().getMapControl().getMap().getLayers().moveDown(index);
+                    }
+                }
+
                 sMap.getSmMapWC().getMapControl().getMap().refresh();
             }
             promise.resolve(true);
@@ -436,9 +505,26 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     public void moveToTop(String layerName, Promise promise) {
         try {
             SMap sMap = SMap.getInstance();
-            int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
-            sMap.getSmMapWC().getMapControl().getMap().getLayers().moveToTop(index);
-            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            HashMap<String,Object>res =  SMLayer.findLayerAndGroupByPath(layerName);
+            LayerGroup layerGroup = (LayerGroup)res.get("layerGroup");
+            Layer layer =  (Layer)res.get("layer");
+            if(layerGroup != null){
+                if(layer != null){
+                    int nInsert = 0;// indexOfLayer:layer] - 1;
+                    if(nInsert>=0) {
+                        layerGroup.insert(nInsert, layer);// insert:nInsert Layer:layer];
+                    }
+                }
+            }else{
+                if(layer != null){
+
+                    int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
+                    sMap.getSmMapWC().getMapControl().getMap().getLayers().moveToTop(index);
+                }
+            }
+
+
+//            sMap.getSmMapWC().getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -454,9 +540,26 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     public void moveToBottom(String layerName, Promise promise) {
         try {
             SMap sMap = SMap.getInstance();
-            int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
-            sMap.getSmMapWC().getMapControl().getMap().getLayers().moveToBottom(index);
-            sMap.getSmMapWC().getMapControl().getMap().refresh();
+            HashMap<String,Object>res =  SMLayer.findLayerAndGroupByPath(layerName);
+            LayerGroup layerGroup = (LayerGroup)res.get("layerGroup");
+            Layer layer =  (Layer)res.get("layer");
+            if(layerGroup != null){
+                if(layer != null){
+                    int nInsert = layerGroup.getCount();// indexOfLayer:layer] - 1;
+                    if(nInsert<=layerGroup.getCount()) {
+                        layerGroup.insert(nInsert, layer);// insert:nInsert Layer:layer];
+                    }
+                }
+            }else{
+                if(layer != null){
+
+                    int index = sMap.getSmMapWC().getMapControl().getMap().getLayers().indexOf(layerName);
+                    sMap.getSmMapWC().getMapControl().getMap().getLayers().moveToBottom(index);
+                }
+            }
+
+
+//            sMap.getSmMapWC().getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -680,53 +783,6 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             trackingLayer.clear();
             sMap.getSmMapWC().getMapControl().getMap().refresh();
 
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    @ReactMethod
-    public void setEditable(String layerPath, boolean editable, Promise promise) {
-        try {
-            Layer layer = SMLayer.findLayerByPath(layerPath);
-            layer.setEditable(editable);
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    @ReactMethod
-    public void setVisible(String layerPath, boolean v, Promise promise) {
-        try {
-            Layer layer = SMLayer.findLayerByPath(layerPath);
-            layer.setVisible(v);
-            SMap sMap = SMap.getInstance();
-            Map map = sMap.getSmMapWC().getMapControl().getMap();
-            map.refresh();
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    @ReactMethod
-    public void setSelectable(String layerPath, boolean s, Promise promise) {
-        try {
-            Layer layer = SMLayer.findLayerByPath(layerPath);
-            layer.setSelectable(s);
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    @ReactMethod
-    public void setSnapable(String layerPath, boolean s, Promise promise) {
-        try {
-            Layer layer = SMLayer.findLayerByPath(layerPath);
-            layer.setSnapable(s);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
