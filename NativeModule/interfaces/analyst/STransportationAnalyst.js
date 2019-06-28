@@ -5,7 +5,7 @@ import {
   Platform,
 } from 'react-native'
 import { EventConst } from '../../constains/index'
-let Analyst = NativeModules.SFacilityAnalyst
+let Analyst = NativeModules.STransportationAnalyst
 
 /**
  *
@@ -36,24 +36,21 @@ async function load (datasourceInfo = {}, setting = {}) {
 }
 
 /**
- * 传入节点ID数组，查找与节点相连通的弧段ID数组
- * @param ids
- * @returns {Promise}
+ * 设置障碍点
+ * @param point
+ * @returns {Promise.<Promise|Promise.<void>>}
  */
-async function findConnectedEdgesFromNodes (ids = []) {
-  return Analyst.findConnectedEdgesFromNodes(ids)
+async function addBarrierNode (point) {
+  return Analyst.addBarrierNode(point)
 }
 
 /**
- * 设施网络路径分析，即根据给定的起始和终止结点 ID，查找其间耗费最小的路径，返回该路径包含的弧段、结点及耗费。
- * @param startNodeID
- * @param endNodeID
- * @param weightName
- * @param isUncertainDirectionValid
- * @returns {Promise.<{coast: Promise.coast, edges: Promise.edges, nodes: Promise.nodes}>}
+ * 设置站点
+ * @param point
+ * @returns {Promise.<Promise|Promise.<void>>}
  */
-async function findPathFromNodes (startNodeID = -1, endNodeID = -1, weightName = 'Length', isUncertainDirectionValid = true) {
-  return Analyst.findPathFromNodes(startNodeID, endNodeID, weightName, isUncertainDirectionValid)
+async function addNode (point) {
+  return Analyst.addNode(point)
 }
 
 /**
@@ -78,11 +75,34 @@ async function clear () {
   return Analyst.clear()
 }
 
+
+/**
+ * 最佳路径分析
+ * @param params
+ * @param hasLeastEdgeCount 是否是最少弧段
+ * @returns {Promise}
+ */
+async function findPath (params, hasLeastEdgeCount = true) {
+  return Analyst.findPath(params, hasLeastEdgeCount)
+}
+
+/**
+ * 旅行商分析
+ * @param params
+ * @param isEndNodeAssigned 是否指定终点。为true则最后一个站点为终点
+ * @returns {Promise.<*>}
+ */
+async function findTSPPath (params, isEndNodeAssigned = false) {
+  return Analyst.findTSPPath(params, isEndNodeAssigned)
+}
 export default {
   load,
-  findPathFromNodes,
-  findConnectedEdgesFromNodes,
+  addBarrierNode,
+  addNode,
   setStartPoint,
   setEndPoint,
   clear,
+  
+  findPath,
+  findTSPPath,
 }

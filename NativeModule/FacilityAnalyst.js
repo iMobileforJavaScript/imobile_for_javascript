@@ -260,7 +260,7 @@ export default class FacilityAnalyst {
    * @param isUncertainDirectionValid
    * @returns {Promise.<{coast: Promise.coast, edges: Promise.edges, nodes: Promise.nodes}>}
    */
-  async findPathFromNodes (startNodeId, endNodeId, weightName, isUncertainDirectionValid) {
+  async findPathFromNodes (startNodeId = -1, endNodeId = -1, weightName = 'length', isUncertainDirectionValid = false) {
     try {
       let { coast, edges, nodes, message } = await FA.findPathFromNodes(this._SMFacilityAnalystId, startNodeId, endNodeId, weightName, isUncertainDirectionValid);
       return { coast, edges, nodes, message }

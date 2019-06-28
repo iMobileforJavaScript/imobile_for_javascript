@@ -7,14 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SuperMap/FacilityAnalystSetting.h"
-#import "SuperMap/WeightFieldInfo.h"
-#import "SuperMap/TransportationAnalystParameter.h"
-#import "SuperMap/WeightFieldInfos.h"
-#import "SuperMap/Layer.h"
-#import "SMLayer.h"
 
 @interface SMParameter : NSObject
-+ (FacilityAnalystSetting *)setFacilitySetting:(NSDictionary *)data;
-+ (WeightFieldInfo *)setWeightFieldInfo:(NSDictionary *)data;
 @end
