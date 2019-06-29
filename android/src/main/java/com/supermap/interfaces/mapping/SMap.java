@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
@@ -3588,16 +3589,136 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void initPlotSymbolLibrary(ReadableArray plotSymbolPaths, Promise promise) {
+    public void initPlotSymbolLibrary(final ReadableArray plotSymbolPaths, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            MapControl mapControl = sMap.smMapWC.getMapControl();
-            WritableArray resultArr = Arguments.createArray();
+            final MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            Dataset dataset=null;
+            boolean isNewDateset=false;
+            String userpath=null,name="PlotEdit";
+            if(plotSymbolPaths.size()>0) {
+                String[] strArr = plotSymbolPaths.getString(0).split("/");
+                for (int index = 0; index < strArr.length; index++) {
+                    if (strArr[index].equals("User") && (index + 1) <strArr.length) {
+                        userpath=strArr[index+1];
+                        break;
+                    }
+                }
+            }
+
+            sMap = SMap.getInstance();
+            Workspace workspace = mapControl.getMap().getWorkspace();
+            Datasource opendatasource = workspace.getDatasources().get("Plotting_"+userpath+"#");
+            if (opendatasource == null) {
+                DatasourceConnectionInfo info = new DatasourceConnectionInfo();
+                info.setAlias("Plotting_"+userpath+"#");
+                info.setEngineType(EngineType.UDB);
+                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Datasource/Plotting_"+userpath+"#.udb");
+                Datasource datasource = workspace.getDatasources().open(info);
+                if(datasource  ==null){
+                    datasource=workspace.getDatasources().create(info);
+                }
+                if (datasource == null) {
+                    datasource = workspace.getDatasources().open(info);
+                }
+                if (datasource != null) {
+                    Datasets datasets = datasource.getDatasets();
+                    dataset=datasets.get(name);
+                    DatasetVector datasetVector;
+                    String datasetName;
+                    if(dataset==null) {
+                        datasetName = datasets.getAvailableDatasetName(name);
+                        DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+                        datasetVectorInfo.setType(DatasetType.CAD);
+                        datasetVectorInfo.setEncodeType(EncodeType.NONE);
+                        datasetVectorInfo.setName(datasetName);
+                        datasetVector = datasets.create(datasetVectorInfo);
+                        //创建数据集时创建好字段
+                        addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
+                        addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);
+                        addFieldInfo(datasetVector, "address", FieldType.TEXT, false, "", 255);
+
+                        dataset = datasets.get(datasetName);
+                        com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                        Layer layer = map.getLayers().add(dataset, true);
+                        layer.setEditable(true);
+                        datasetVectorInfo.dispose();
+                        datasetVector.close();
+                        info.dispose();
+                        isNewDateset=true;
+                    }else {
+                        Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
+                        Layer editLayer=layers.get(name+"@"+datasource.getAlias());
+                        if(editLayer!=null){
+                            editLayer.setEditable(true);
+                        }else {
+
+                            Dataset ds = dataset;
+                            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                            Layer layer = map.getLayers().add(ds, true);
+                            layer.setEditable(true);
+                        }
+                    }
+                }
+            } else {
+
+
+                Datasets datasets = opendatasource.getDatasets();
+                dataset=datasets.get(name);
+                DatasetVector datasetVector;
+                String datasetName;
+                if(dataset==null) {
+                    datasetName = datasets.getAvailableDatasetName(name);
+                    DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+                    datasetVectorInfo.setType(DatasetType.CAD);
+                    datasetVectorInfo.setEncodeType(EncodeType.NONE);
+                    datasetVectorInfo.setName(datasetName);
+                    datasetVector = datasets.create(datasetVectorInfo);
+                    //创建数据集时创建好字段
+                    addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
+                    addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);
+                    addFieldInfo(datasetVector, "address", FieldType.TEXT, false, "", 255);
+
+                    dataset = datasets.get(datasetName);
+                    com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                    Layer layer = map.getLayers().add(dataset, true);
+                    layer.setEditable(true);
+                    datasetVectorInfo.dispose();
+                    datasetVector.close();
+                    isNewDateset=true;
+                }else {
+                    Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
+                    for(int i = 0; i<layers.getCount(); i++){
+                        Layer layer = layers.get(i);
+                        for (int j = 0; j < datasets.getCount(); j++) {
+                            if (layer.getDataset().getName().equals(datasets.get(j).getName())) {
+                                layer.setEditable(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            WritableMap writeMap = Arguments.createMap();
             for (int i = 0; i < plotSymbolPaths.size(); i++) {
                 int libId= (int) mapControl.addPlotLibrary(plotSymbolPaths.getString(i));
-                resultArr.pushInt(libId);
+                String libName=mapControl.getPlotSymbolLibName((long)libId);
+                writeMap.putInt(libName,libId);
+                if(isNewDateset&&libName.equals("警用标号")){
+                    Point2Ds point2Ds=new Point2Ds();
+                    point2Ds.add(mapControl.getMap().getCenter());
+                    mapControl.addPlotObject(libId,20100,point2Ds);
+                    mapControl.cancel();
+                    Recordset recordset = ((DatasetVector)dataset).getRecordset(false, CursorType.DYNAMIC);
+                    recordset.deleteAll();
+                    recordset.update();
+                    recordset.dispose();
+                    mapControl.getMap().refresh();
+                }
             }
-            promise.resolve(resultArr);
+
+            promise.resolve(writeMap);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -3708,7 +3829,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
-
+    
 
 /************************************** 地图编辑历史操作 BEGIN****************************************/
 
