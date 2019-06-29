@@ -7,6 +7,7 @@
 //
 
 #import "SMLayer.h"
+#import "SuperMap/ThemeLabel.h"
 
 @implementation SMLayer
 
@@ -69,6 +70,14 @@
 
 + (NSMutableDictionary *)getLayerInfo:(Layer *)layer path:(NSString *)path {
     int themeType = (int)layer.theme.themeType;
+    if( themeType == TT_label ){
+        ThemeLabel* themelabel = ( ThemeLabel* )layer.theme;
+        if ([themelabel rangeExpression]!=nil && [[themelabel rangeExpression] length]!=0 && [themelabel getRangeCount]!=0 ) {
+            themeType = TT_label+200;
+        }else if([themelabel uniqueExpression]!=nil && [[themelabel uniqueExpression] length]!=0 && [themelabel getUniqueCount]!=0){
+            themeType = TT_label+100;
+        }
+    }
     
     NSString* datasetName = @"";
     if (layer.dataset != nil) {
@@ -120,7 +129,7 @@
     LayerGroup* layerGroup;
     layer = [layers getLayerWithName:pathParams[0]];
     for (int i = 1; i < pathParams.count; i++) {
-        if (layer.dataset == nil) {
+        if ([layer isKindOfClass: [LayerGroup class]]) {
             layerGroup = (LayerGroup *)layer;
             layer = [layerGroup getLayerWithName:pathParams[i]];
         } else {
@@ -130,11 +139,30 @@
     return layer;
 }
 
++ (void)findLayerAndGroupByPath:(NSString *)path layer:(Layer**)pLayer group:(LayerGroup**)pGroup{
+    if (path == nil || [path isEqualToString:@""]) return ;
+    Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
+    Layers* layers = map.layers;
+    
+    NSArray* pathParams = [path componentsSeparatedByString:@"/"];
+//    Layer* layer;
+//    LayerGroup* layerGroup;
+    *pLayer = [layers getLayerWithName:pathParams[0]];
+    for (int i = 1; i < pathParams.count; i++) {
+        if ([*pLayer isKindOfClass: [LayerGroup class]]) {
+            *pGroup = (LayerGroup *)*pLayer;
+            *pLayer = [*pGroup getLayerWithName:pathParams[i]];
+        } else {
+            break;
+        }
+    }
+}
+
 + (Layer *)findLayerWithName:(NSString *)name {
     if (name == nil || [name isEqualToString:@""]) return nil;
     Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
     Layers* layers = map.layers;
-    
+
     return [layers findLayerWithName:name];
 }
 
@@ -193,7 +221,8 @@
 + (NSString *)getLayerPath:(Layer *)layer {
     NSString* path = layer.name;
     while (layer.parentGroup != nil) {
-        path = [NSString stringWithFormat:@"%@/%@", layer.parentGroup, path];
+        path = [NSString stringWithFormat:@"%@/%@", layer.parentGroup.name, path];
+        layer = layer.parentGroup;
     }
     return path;
 }

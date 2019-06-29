@@ -1,9 +1,16 @@
 package com.supermap.smNative;
 
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.supermap.RNUtils.DataUtil;
 import com.supermap.analyst.BufferAnalystParameter;
 import com.supermap.analyst.BufferEndType;
 import com.supermap.analyst.BufferRadiusUnit;
+import com.supermap.analyst.networkanalyst.FacilityAnalystSetting;
+import com.supermap.analyst.networkanalyst.TransportationAnalystParameter;
+import com.supermap.analyst.networkanalyst.TransportationAnalystSetting;
+import com.supermap.analyst.networkanalyst.WeightFieldInfo;
+import com.supermap.analyst.networkanalyst.WeightFieldInfos;
 import com.supermap.analyst.spatialanalyst.OverlayAnalyst;
 import com.supermap.analyst.spatialanalyst.OverlayAnalystParameter;
 import com.supermap.data.Color;
@@ -15,6 +22,8 @@ import com.supermap.data.Datasource;
 import com.supermap.data.Datasources;
 import com.supermap.data.EncodeType;
 import com.supermap.data.GeoStyle;
+import com.supermap.data.Point2D;
+import com.supermap.data.Point2Ds;
 import com.supermap.data.QueryParameter;
 import com.supermap.data.Size2D;
 import com.supermap.interfaces.mapping.SMap;
@@ -304,5 +313,187 @@ public class SMAnalyst {
         if (dsIndex >= 0) {
             ds.getDatasets().delete(dsIndex);
         }
+    }
+
+    public static WeightFieldInfo setWeightFieldInfo(ReadableMap data) {
+        WeightFieldInfo info = new WeightFieldInfo();
+        if (data.hasKey("name")) {
+            String name = data.getString("name");
+            info.setName(name);
+        }
+        if (data.hasKey("ftWeightField")) {
+            String ftWeightField = data.getString("ftWeightField");
+            info.setFTWeightField(ftWeightField);
+        }
+        if (data.hasKey("tfWeightField")) {
+            String tfWeightField = data.getString("tfWeightField");
+            info.setTFWeightField(tfWeightField);
+        }
+        return info;
+    }
+
+    public static FacilityAnalystSetting setFacilitySetting(ReadableMap data) {
+        FacilityAnalystSetting setting = new FacilityAnalystSetting();
+        if (data.hasKey("weightFieldInfos")) {
+            ReadableArray infos = data.getArray("weightFieldInfos");
+            WeightFieldInfos weightFieldInfos = new WeightFieldInfos();
+            for (int i = 0; i < infos.size(); i++) {
+                WeightFieldInfo info = setWeightFieldInfo(infos.getMap(i));
+                weightFieldInfos.add(info);
+            }
+            setting.setWeightFieldInfos(weightFieldInfos);
+        }
+
+        if (data.hasKey("barrierEdges")) {
+            ReadableArray barrierEdges = data.getArray("barrierEdges");
+            setting.setBarrierEdges(DataUtil.rnArrayToIntArray(barrierEdges));
+        }
+
+        if (data.hasKey("barrierNodes")) {
+            ReadableArray barrierNodes = data.getArray("barrierNodes");
+            setting.setBarrierNodes(DataUtil.rnArrayToIntArray(barrierNodes));
+        }
+
+        if (data.hasKey("directionField")) setting.setDirectionField(data.getString("directionField"));
+        if (data.hasKey("edgeIDField")) setting.setEdgeIDField(data.getString("edgeIDField"));
+
+        if (data.hasKey("fNodeIDField")) setting.setFNodeIDField(data.getString("fNodeIDField"));
+        if (data.hasKey("nodeIDField")) setting.setNodeIDField(data.getString("nodeIDField"));
+        if (data.hasKey("tNodeIDField")) setting.setTNodeIDField(data.getString("tNodeIDField"));
+        if (data.hasKey("tolerance")) setting.setTolerance(data.getDouble("tolerance"));
+
+        return setting;
+    }
+
+    public static TransportationAnalystSetting setTransportSetting(ReadableMap data) {
+        TransportationAnalystSetting setting = new TransportationAnalystSetting();
+        if (data.hasKey("weightFieldInfos")) {
+            ReadableArray infos = data.getArray("weightFieldInfos");
+            WeightFieldInfos weightFieldInfos = new WeightFieldInfos();
+            for (int i = 0; i < infos.size(); i++) {
+                WeightFieldInfo info = setWeightFieldInfo(infos.getMap(i));
+                weightFieldInfos.add(info);
+            }
+            setting.setWeightFieldInfos(weightFieldInfos);
+        }
+
+        if (data.hasKey("barrierEdges")) {
+            ReadableArray barrierEdges = data.getArray("barrierEdges");
+            setting.setBarrierEdges(DataUtil.rnArrayToIntArray(barrierEdges));
+        }
+
+        if (data.hasKey("barrierNodes")) {
+            ReadableArray barrierNodes = data.getArray("barrierNodes");
+            setting.setBarrierNodes(DataUtil.rnArrayToIntArray(barrierNodes));
+        }
+
+        if (data.hasKey("edgeFilter")) setting.setEdgeFilter(data.getString("edgeFilter"));
+        if (data.hasKey("edgeIDField")) setting.setEdgeIDField(data.getString("edgeIDField"));
+        if (data.hasKey("edgeNameField")) setting.setEdgeNameField(data.getString("edgeNameField"));
+        if (data.hasKey("fTSingleWayRuleValues")) {
+            ReadableArray fTSingleWayRuleValues = data.getArray("fTSingleWayRuleValues");
+            setting.setFTSingleWayRuleValues(DataUtil.rnArrayToStringArray(fTSingleWayRuleValues));
+        }
+
+        if (data.hasKey("fNodeIDField")) setting.setFNodeIDField(data.getString("fNodeIDField"));
+        if (data.hasKey("nodeIDField")) setting.setNodeIDField(data.getString("nodeIDField"));
+        if (data.hasKey("nodeNameField")) setting.setNodeNameField(data.getString("nodeNameField"));
+        if (data.hasKey("prohibitedWayRuleValues")) {
+            ReadableArray prohibitedWayRuleValues = data.getArray("prohibitedWayRuleValues");
+            setting.setFTSingleWayRuleValues(DataUtil.rnArrayToStringArray(prohibitedWayRuleValues));
+        }
+
+        if (data.hasKey("ruleField")) setting.setRuleField(data.getString("ruleField"));
+        if (data.hasKey("tFSingleWayRuleValues")) {
+            ReadableArray tFSingleWayRuleValues = data.getArray("tFSingleWayRuleValues");
+            setting.setFTSingleWayRuleValues(DataUtil.rnArrayToStringArray(tFSingleWayRuleValues));
+        }
+        if (data.hasKey("tNodeIDField")) setting.setTNodeIDField(data.getString("tNodeIDField"));
+        if (data.hasKey("tolerance")) setting.setTolerance(data.getDouble("tolerance"));
+        if (data.hasKey("turnFEdgeIDField")) setting.setTurnFEdgeIDField(data.getString("turnFEdgeIDField"));
+        if (data.hasKey("turnNodeIDField")) setting.setTurnNodeIDField(data.getString("turnNodeIDField"));
+        if (data.hasKey("turnTEdgeIDField")) setting.setTurnTEdgeIDField(data.getString("turnTEdgeIDField"));
+
+        if (data.hasKey("turnWeightFields")) {
+            ReadableArray turnWeightFields = data.getArray("turnWeightFields");
+            setting.setFTSingleWayRuleValues(DataUtil.rnArrayToStringArray(turnWeightFields));
+        }
+        if (data.hasKey("twoWayRuleValues")) {
+            ReadableArray twoWayRuleValues = data.getArray("twoWayRuleValues");
+            setting.setFTSingleWayRuleValues(DataUtil.rnArrayToStringArray(twoWayRuleValues));
+        }
+
+//        if (data.hasKey("turnDataset")) setting.setTurnDataset(data.getString("turnDataset"));
+
+        return setting;
+    }
+
+    public static TransportationAnalystParameter getTransportationAnalystParameterByDictionary(ReadableMap data) {
+        TransportationAnalystParameter parameter = new TransportationAnalystParameter();
+
+        if (data.hasKey("barrierEdges")) {
+            ReadableArray barrierEdges = data.getArray("barrierEdges");
+            parameter.setBarrierEdges(DataUtil.rnArrayToIntArray(barrierEdges));
+        }
+
+        if (data.hasKey("barrierNodes")) {
+            ReadableArray barrierNodes = data.getArray("barrierNodes");
+            parameter.setBarrierNodes(DataUtil.rnArrayToIntArray(barrierNodes));
+        }
+
+        if (data.hasKey("barrierPoints")) {
+            ReadableArray barrierPoints = data.getArray("barrierPoints");
+            Point2Ds point2Ds = new Point2Ds();
+            for (int i = 0; i < barrierPoints.size(); i++) {
+                ReadableMap p = barrierPoints.getMap(i);
+                double x = p.getDouble("x");
+                double y = p.getDouble("y");
+                point2Ds.add(new Point2D(x, y));
+            }
+            parameter.setBarrierPoints(point2Ds);
+        }
+
+        if (data.hasKey("isEdgesReturn")) {
+            parameter.setEdgesReturn(data.getBoolean("isEdgesReturn"));
+        } else {
+            parameter.setEdgesReturn(true);
+        }
+        if (data.hasKey("nodes")) {
+            ReadableArray nodes = data.getArray("nodes");
+            parameter.setNodes(DataUtil.rnArrayToIntArray(nodes));
+        }
+
+        if (data.hasKey("isNodesReturn")) {
+            parameter.setNodesReturn(data.getBoolean("isNodesReturn"));
+        } else {
+            parameter.setNodesReturn(true);
+        }
+        if (data.hasKey("isPathGuidesReturn")) {
+            parameter.setPathGuidesReturn(data.getBoolean("isPathGuidesReturn"));
+        } else {
+            parameter.setPathGuidesReturn(true);
+        }
+
+        if (data.hasKey("points")) {
+            ReadableArray points = data.getArray("points");
+            Point2Ds point2Ds = new Point2Ds();
+            for (int i = 0; i < points.size(); i++) {
+                ReadableMap p = points.getMap(i);
+                double x = p.getDouble("x");
+                double y = p.getDouble("y");
+                point2Ds.add(new Point2D(x, y));
+            }
+            parameter.setPoints(point2Ds);
+        }
+        if (data.hasKey("isRoutesReturn")) {
+            parameter.setRoutesReturn(data.getBoolean("isRoutesReturn"));
+        } else {
+            parameter.setRoutesReturn(true);
+        }
+        if (data.hasKey("isStopsReturn")) parameter.setStopIndexesReturn(data.getBoolean("isStopsReturn"));
+        if (data.hasKey("turnWeightField")) parameter.setTurnWeightField(data.getString("turnWeightField"));
+        if (data.hasKey("weightName")) parameter.setWeightName(data.getString("weightName"));
+
+        return parameter;
     }
 }

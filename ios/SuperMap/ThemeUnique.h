@@ -109,11 +109,6 @@
 -(void)clear;
 
 /**
-* @brief 释放对象所占用的资源。调用该方法之后，此对象不再可用。
-*/
--(void)dispose;
-
-/**
 * @brief 根据传入的XML字符串重新构造对象。
 * @param xml 传入的XML字符串。
 * @return 一个布尔值，构造成功返回true,否则返回false。

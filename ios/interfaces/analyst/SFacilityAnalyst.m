@@ -29,8 +29,7 @@ RCT_EXPORT_MODULE();
 RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo facilitySetting:(NSDictionary *)facilitySetting resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         Workspace* workspace = [SMap singletonInstance].smMapWC.workspace;
-        Layer* layer;
-//        Layers* layers = [SMap singletonInstance].smMapWC.mapControl.map.layers;
+        Layers* layers = [SMap singletonInstance].smMapWC.mapControl.map.layers;
         FacilityAnalystSetting* setting = nil;
         Dataset* ds = nil;
         
@@ -42,26 +41,43 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo facilityS
                 datasource = [workspace.datasources open:connectInfo];
             }
             
-            if ([facilitySetting objectForKey:@"networkDataset"]) {
-                ds = [datasource.datasets getWithName:[facilitySetting objectForKey:@"networkDataset"]];
+            NSString* datasetName = [facilitySetting objectForKey:@"networkDataset"];
+            if (datasetName) {
+                ds = [datasource.datasets getWithName:datasetName];
+                layer = [SMLayer findLayerByDatasetName:ds.name];
+                if (!layer) {
+                    layer = [layers addDataset:ds ToHead:YES];
+                    layer.selectable = NO;
+                }
+                
+                Dataset* nodeDataset = ((DatasetVector *)ds).childDataset;
+                if (nodeDataset) {
+                    nodeLayer = [SMLayer findLayerByDatasetName:nodeDataset.name];
+                    if (!nodeLayer) {
+                        nodeLayer = [layers addDataset:nodeDataset ToHead:YES];
+                        nodeLayer.selectable = YES;
+                        nodeLayer.visible = YES;
+                    }
+                }
             }
+            
         } else {
             if ([facilitySetting objectForKey:@"networkDataset"]) {
                 layer = [SMLayer findLayerByDatasetName:[facilitySetting objectForKey:@"networkDataset"]];
-                ds = layer.dataset;
             }
         }
         
-        if (ds) {
+        if (layer) {
+            ds = layer.dataset;
             if (selection) {
                 [selection clear];
             } else {
-                selection = [[Selection alloc] init];
+                selection = [layer getSelection];
             }
             
             facilityAnalyst = [self getFacilityAnalyst];
             
-            setting = [SMParameter setFacilitySetting:facilitySetting];
+            setting = [SMAnalyst setFacilitySetting:facilitySetting];
             setting.netWorkDataset = (DatasetVector *)ds;
             [facilityAnalyst setAnalystSetting:setting];
             
@@ -70,12 +86,59 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo facilityS
             
             [[SMap singletonInstance].smMapWC.mapControl setAction:PAN];
             
-            resolve(number);
+            NSMutableDictionary* layerInfo = [SMLayer getLayerInfo:layer path:@""];
+            
+            resolve(@{
+                      @"result": number,
+                      @"layerInfo": layerInfo,
+                      });
         } else {
             reject(@"SFacilityAnalyst", @"No networkDataset", nil);
         }
         
         
+    } @catch (NSException *exception) {
+        reject(@"SFacilityAnalyst", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSString* nodeTag = @"startNode";
+        if (startNodeID > 0) {
+            [self removeTagFromTrackingLayer:nodeTag];
+            startNodeID = -1;
+        }
+        if (nodeLayer) {
+            GeoStyle* style = [[GeoStyle alloc] init];
+            [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
+            [style setLineColor:[[Color alloc] initWithR:255 G:105 B:0]];
+            [style setMarkerSymbolID:3614];
+            startNodeID = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+        }
+        
+        resolve(@(startNodeID));
+    } @catch (NSException *exception) {
+        reject(@"SFacilityAnalyst", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSString* nodeTag = @"endNode";
+        if (endNodeID > 0) {
+            [self removeTagFromTrackingLayer:nodeTag];
+            endNodeID = -1;
+        }
+        if (nodeLayer) {
+            GeoStyle* style = [[GeoStyle alloc] init];
+            [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
+            [style setLineColor:[[Color alloc] initWithR:105 G:255 B:0]];
+            [style setMarkerSymbolID:3614];
+            endNodeID = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+        }
+        
+        resolve(@(endNodeID));
     } @catch (NSException *exception) {
         reject(@"SFacilityAnalyst", exception.reason, nil);
     }
@@ -90,7 +153,7 @@ RCT_REMAP_METHOD(findCommonAncestorsFromEdges,findCommonAncestorsFromEdgesById:(
     @try {
         facilityAnalyst = [self getFacilityAnalyst];
         NSMutableArray* ids = [facilityAnalyst findCommonAncestorsFromEdges:edgeIDs isUncertainDirectionValid:isUncertainDirectionValid];
-        [self displayResult:ids];
+        [self displayResult:ids selection:selection];
         resolve(ids);
     } @catch (NSException *exception) {
         reject(@"SFacilityAnalyst", exception.reason, nil);
@@ -105,7 +168,7 @@ RCT_REMAP_METHOD(findCommonAncestorsFromNodes,findCommonAncestorsFromNodesById:(
     @try {
         facilityAnalyst = [self getFacilityAnalyst];
         NSMutableArray* ids =[facilityAnalyst findCommonAncestorsFromNodes:nodeIDs isUncertainDirectionValid:isUncertainDirectionValid];
-        [self displayResult:ids];
+        [self displayResult:ids selection:selection];
         resolve(ids);
     } @catch (NSException *exception) {
         reject(@"SFacilityAnalyst", exception.reason, nil);
@@ -120,7 +183,7 @@ RCT_REMAP_METHOD(findCommonCatchmentsFromEdges,findCommonCatchmentsFromEdgesById
     @try {
         facilityAnalyst = [self getFacilityAnalyst];
         NSMutableArray* ids =[facilityAnalyst findCommonCatchmentsFromEdges:edgeIDs isUncertainDirectionValid:isUncertainDirectionValid];
-        [self displayResult:ids];
+        [self displayResult:ids selection:selection];
         resolve(ids);
     } @catch (NSException *exception) {
         reject(@"SFacilityAnalyst", exception.reason, nil);
@@ -135,7 +198,7 @@ RCT_REMAP_METHOD(findCommonCatchmentsFromNodes,findCommonCatchmentsFromNodesById
     @try {
         facilityAnalyst = [self getFacilityAnalyst];
         NSMutableArray* ids =[facilityAnalyst findCommonCatchmentsFromNodes:nodeIDs isUncertainDirectionValid:isUncertainDirectionValid];
-        [self displayResult:ids];
+        [self displayResult:ids selection:selection];
         resolve(ids);
     } @catch (NSException *exception) {
         reject(@"SFacilityAnalyst", exception.reason, nil);
@@ -149,7 +212,7 @@ RCT_REMAP_METHOD(findConnectedEdgesFromEdges,findConnectedEdgesFromEdgesById:(NS
     @try {
         facilityAnalyst = [self getFacilityAnalyst];
         NSMutableArray* ids =[facilityAnalyst findConnectedEdgesFromEdges:edgeIDs];
-        [self displayResult:ids];
+        [self displayResult:ids selection:selection];
         resolve(ids);
     } @catch (NSException *exception) {
         reject(@"SFacilityAnalyst", exception.reason, nil);
@@ -158,13 +221,18 @@ RCT_REMAP_METHOD(findConnectedEdgesFromEdges,findConnectedEdgesFromEdgesById:(NS
 /**
  * 根据给定的结点 ID 数组，查找与这些结点相连通弧段，返回弧段 ID 数组
  * @param nodeIDs
- * @param isUncertainDirectionValid
  */
-RCT_REMAP_METHOD(findConnectedEdgesFromNodes,findConnectedEdgesFromNodesById:(NSMutableArray*)nodeIDs isUncertainDirectionValid:(BOOL)isUncertainDirectionValid resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(findConnectedEdgesFromNodes,findConnectedEdgesFromNodesById:(NSArray*)nodeIDs resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+        NSMutableArray* IDs = [[NSMutableArray alloc] initWithArray:nodeIDs];
+        if (IDs.count == 0) {
+            [IDs addObject:@(startNodeID)];
+            if (middleNodeIDs.count > 0) [IDs addObjectsFromArray:middleNodeIDs];
+            [IDs addObject:@(endNodeID)];
+        }
         facilityAnalyst = [self getFacilityAnalyst];
-        NSMutableArray* ids =[facilityAnalyst findConnectedEdgesFromNodes:nodeIDs];
-        [self displayResult:ids];
+        NSMutableArray* ids = [facilityAnalyst findConnectedEdgesFromNodes:IDs];
+        [self displayResult:ids selection:selection];
         resolve(ids);
     } @catch (NSException *exception) {
         reject(@"SFacilityAnalyst", exception.reason, nil);
@@ -178,7 +246,7 @@ RCT_REMAP_METHOD(findLoopsFromEdges,findLoopsFromEdgesById:(NSMutableArray*)edge
     @try {
         facilityAnalyst = [self getFacilityAnalyst];
         NSMutableArray* ids =[facilityAnalyst findLoopsFromEdges:edgeIDs];
-        [self displayResult:ids];
+        [self displayResult:ids selection:selection];
         resolve(ids);
     } @catch (NSException *exception) {
         reject(@"SFacilityAnalyst", exception.reason, nil);
@@ -193,7 +261,7 @@ RCT_REMAP_METHOD(findLoopsFromNodes,findLoopsFromNodesById:(NSMutableArray*)node
     @try {
         facilityAnalyst = [self getFacilityAnalyst];
         NSMutableArray* ids =[facilityAnalyst findLoopsFromNodes:nodeIDs];
-        [self displayResult:ids];
+        [self displayResult:ids selection:selection];
         resolve(ids);
     } @catch (NSException *exception) {
         reject(@"SFacilityAnalyst", exception.reason, nil);
@@ -214,7 +282,7 @@ RCT_REMAP_METHOD(findPathDownFromEdge,findPathDownFromEdgeById:(NSInteger)edgeID
         NSArray* nodes = result.nodes;
         
         NSArray* resultIds = [edges arrayByAddingObjectsFromArray:nodes];
-        [self displayResult:resultIds];
+        [self displayResult:resultIds selection:selection];
         
         resolve(@{@"coast":@(cost),
                   @"edges":edges,
@@ -240,7 +308,7 @@ RCT_REMAP_METHOD(findPathDownFromNode,findPathDownFromNodeById:(NSInteger)nodeID
         NSArray* nodes = result.nodes;
         
         NSArray* resultIds = [edges arrayByAddingObjectsFromArray:nodes];
-        [self displayResult:resultIds];
+        [self displayResult:resultIds selection:selection];
         
         resolve(@{@"coast":@(cost),
                   @"edges":edges,
@@ -258,16 +326,29 @@ RCT_REMAP_METHOD(findPathDownFromNode,findPathDownFromNodeById:(NSInteger)nodeID
  * @param weightName
  * @param isUncertainDirectionValid
  */
-RCT_REMAP_METHOD(findPathFromEdges,findPathFromEdgesById:(NSInteger)startEdgeID endEdgeID:(NSInteger)endEdgeID weightName:(NSString*)weightName isUncertainDirectionValid:(BOOL)isUncertainDirectionValid resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(findPathFromEdges,findPathFromEdgesById:(NSInteger)startID endEdgeID:(NSInteger)endID weightName:(NSString*)weightName isUncertainDirectionValid:(BOOL)isUncertainDirectionValid resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         facilityAnalyst = [self getFacilityAnalyst];
-        FacilityAnalystResult* result= [facilityAnalyst findPathFromEdges:startEdgeID endEdgeID:endEdgeID weightName:weightName isUncertainDirectionValid:isUncertainDirectionValid];
+        
+        NSInteger mStartID = startID;
+        NSInteger mEndID = endID;
+        if (mStartID < 0) {
+            mStartID = startNodeID;
+        }
+        if (endID < 0) {
+            mEndID = endNodeID;
+        }
+        if (weightName == nil || [weightName isEqualToString:@""]) {
+            weightName = @"Length";
+        }
+        
+        FacilityAnalystResult* result = [facilityAnalyst findPathFromEdges:mStartID endEdgeID:mEndID weightName:weightName isUncertainDirectionValid:isUncertainDirectionValid];
         double cost = result.dCost;
         NSArray* edges = result.edges;
         NSArray* nodes = result.nodes;
         
         NSArray* resultIds = [edges arrayByAddingObjectsFromArray:nodes];
-        [self displayResult:resultIds];
+        [self displayResult:resultIds selection:selection];
         
         resolve(@{@"coast":@(cost),
                   @"edges":edges,
@@ -285,18 +366,30 @@ RCT_REMAP_METHOD(findPathFromEdges,findPathFromEdgesById:(NSInteger)startEdgeID 
  * @param weightName
  * @param isUncertainDirectionValid
  */
-RCT_REMAP_METHOD(findPathFromNodes,findPathFromNodesById:(NSInteger)startNodeID endNodeID:(NSInteger)endNodeID weightName:(NSString*)weightName isUncertainDirectionValid:(BOOL)isUncertainDirectionValid resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(findPathFromNodes,findPathFromNodesById:(NSInteger)startID endNodeID:(NSInteger)endID weightName:(NSString*)weightName isUncertainDirectionValid:(BOOL)isUncertainDirectionValid resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         facilityAnalyst = [self getFacilityAnalyst];
-        FacilityAnalystResult* result= [facilityAnalyst findPathFromNodes:startNodeID endNodeID:endNodeID weightName:weightName isUncertainDirectionValid:isUncertainDirectionValid];
+        
+        NSInteger mStartID = startID;
+        NSInteger mEndID = endID;
+        if (mStartID <= 0) {
+            mStartID = startNodeID;
+        }
+        if (endID <= 0) {
+            mEndID = endNodeID;
+        }
+        if (weightName == nil || [weightName isEqualToString:@""]) {
+            weightName = @"Length";
+        }
+        
+        FacilityAnalystResult* result= [facilityAnalyst findPathFromNodes:mStartID endNodeID:mEndID weightName:weightName isUncertainDirectionValid:isUncertainDirectionValid];
         
         if(result != nil){
             double cost = result.dCost;
             NSArray* edges = result.edges;
             NSArray* nodes = result.nodes;
             
-            NSArray* resultIds = [edges arrayByAddingObjectsFromArray:nodes];
-            [self displayResult:resultIds];
+            [self displayResult:edges selection:selection];
             
             resolve(@{@"coast":@(cost),
                       @"edges":edges,
@@ -327,7 +420,7 @@ RCT_REMAP_METHOD(findPathUpFromEdge,findPathUpFromEdgeById:(NSInteger)edgeID wei
             NSArray* nodes = result.nodes;
             
             NSArray* resultIds = [edges arrayByAddingObjectsFromArray:nodes];
-            [self displayResult:resultIds];
+            [self displayResult:resultIds selection:selection];
             
             resolve(@{@"coast":@(cost),
                       @"edges":edges,
@@ -358,7 +451,7 @@ RCT_REMAP_METHOD(findPathUpFromNode,findPathUpFromNodeById:(NSInteger)nodeID wei
             NSArray* nodes = result.nodes;
             
             NSArray* resultIds = [edges arrayByAddingObjectsFromArray:nodes];
-            [self displayResult:resultIds];
+            [self displayResult:resultIds selection:selection];
             
             resolve(@{@"coast":@(cost),
                       @"edges":edges,
@@ -389,7 +482,7 @@ RCT_REMAP_METHOD(findSinkFromEdge,findSinkFromEdgeById:(NSInteger)edgeID weightN
             NSArray* nodes = result.nodes;
             
             NSArray* resultIds = [edges arrayByAddingObjectsFromArray:nodes];
-            [self displayResult:resultIds];
+            [self displayResult:resultIds selection:selection];
             
             resolve(@{@"coast":@(cost),
                       @"edges":edges,
@@ -420,7 +513,7 @@ RCT_REMAP_METHOD(findSinkFromNode,findSinkFromNodeById:(NSInteger)nodeID weightN
             NSArray* nodes = result.nodes;
             
             NSArray* resultIds = [edges arrayByAddingObjectsFromArray:nodes];
-            [self displayResult:resultIds];
+            [self displayResult:resultIds selection:selection];
             
             resolve(@{@"coast":@(cost),
                       @"edges":edges,
@@ -451,7 +544,7 @@ RCT_REMAP_METHOD(findSourceFromEdge,findSourceFromEdgeById:(NSInteger)edgeID wei
             NSArray* nodes = result.nodes;
             
             NSArray* resultIds = [edges arrayByAddingObjectsFromArray:nodes];
-            [self displayResult:resultIds];
+            [self displayResult:resultIds selection:selection];
             
             resolve(@{@"coast":@(cost),
                       @"edges":edges,
@@ -482,7 +575,7 @@ RCT_REMAP_METHOD(findSourceFromNode,findSourceFromNodeById:(NSInteger)edgeID wei
             NSArray* nodes = result.nodes;
             
             NSArray* resultIds = [edges arrayByAddingObjectsFromArray:nodes];
-            [self displayResult:resultIds];
+            [self displayResult:resultIds selection:selection];
             
             resolve(@{@"coast":@(cost),
                       @"edges":edges,
@@ -506,7 +599,7 @@ RCT_REMAP_METHOD(findUnconnectedEdgesFromEdges,findUnconnectedEdgesFromEdgesById
         facilityAnalyst = [self getFacilityAnalyst];
         
         NSMutableArray* unconnectedEdges = [facilityAnalyst findUnconnectedEdgesFromEdges:edgeIDs];
-        [self displayResult:unconnectedEdges];
+        [self displayResult:unconnectedEdges selection:selection];
         
         resolve(unconnectedEdges);
     } @catch (NSException *exception) {
@@ -522,7 +615,7 @@ RCT_REMAP_METHOD(findUnconnectedEdgesFromNodes,findUnconnectedEdgesFromNodesById
         facilityAnalyst = [self getFacilityAnalyst];
         
         NSMutableArray* unconnectedEdges = [facilityAnalyst findUnconnectedEdgesFromNodes:nodeIDs];
-        [self displayResult:unconnectedEdges];
+        [self displayResult:unconnectedEdges selection:selection];
         
         resolve(unconnectedEdges);
     } @catch (NSException *exception) {
@@ -557,7 +650,7 @@ RCT_REMAP_METHOD(traceDownFromEdge,traceDownFromEdgeById:(NSArray *)edgeIDs weig
                                    @"nodes":nodes
                                    }];
         }
-        [self displayResult:resultIds];
+        [self displayResult:resultIds selection:selection];
         
         resolve(resultArr);
         
@@ -593,7 +686,7 @@ RCT_REMAP_METHOD(traceDownFromNode,traceDownFromNodeById:(NSArray *)nodeIDs weig
                                    @"nodes":nodes
                                    }];
         }
-        [self displayResult:resultIds];
+        [self displayResult:resultIds selection:selection];
         
         resolve(resultArr);
         
@@ -629,7 +722,7 @@ RCT_REMAP_METHOD(traceUpFromEdge,traceUpFromEdgeById:(NSArray *)edgeIDs weightNa
                                    @"nodes":nodes
                                    }];
         }
-        [self displayResult:resultIds];
+        [self displayResult:resultIds selection:selection];
         
         resolve(resultArr);
         
@@ -665,7 +758,7 @@ RCT_REMAP_METHOD(traceUpFromNode,traceUpFromNodeById:(NSArray *)nodeIDs weightNa
                                    @"nodes":nodes
                                    }];
         }
-        [self displayResult:resultIds];
+        [self displayResult:resultIds selection:selection];
         resolve(resultArr);
         
     } @catch (NSException *exception) {
@@ -673,11 +766,16 @@ RCT_REMAP_METHOD(traceUpFromNode,traceUpFromNodeById:(NSArray *)nodeIDs weightNa
     }
 }
 
-RCT_REMAP_METHOD(searchAround, searchAroundWithPoint:(NSDictionary *)point radius:(double)radius Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(clear, clearWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         if (selection) {
             [selection clear];
         }
+        startNodeID = -1;
+        endNodeID = -1;
+        startPoint = nil;
+        endPoint = nil;
+        [middleNodeIDs removeAllObjects];
         [[SMap singletonInstance].smMapWC.mapControl.map.trackingLayer clear];
         resolve(@(YES));
     } @catch (NSException *exception) {

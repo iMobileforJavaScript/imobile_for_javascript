@@ -25,9 +25,9 @@
 }
 @end
 //静态的，保证线程能共享
-static AMQPManager* g_AMQPManager;
-static AMQPSender* g_AMQPSender;
-static AMQPReceiver* g_AMQPReceiver;
+static AMQPManager* g_AMQPManager = nil;
+static AMQPSender* g_AMQPSender = nil;
+static AMQPReceiver* g_AMQPReceiver = nil;
 static BOOL bStopRecieve = true;
 static BOOL isRecieving = true;
 //
@@ -53,20 +53,20 @@ RCT_REMAP_METHOD(connectService, ip:(NSString*)serverIP port:(int)port hostName:
         [NSThread sleepForTimeInterval:0.5];
     }
     
-    if(g_AMQPManager){
-        [g_AMQPManager suspend];
-    }
+//    if(g_AMQPManager){
+//        [g_AMQPManager suspend];
+//    }
+//
+//    if(g_AMQPReceiver){
+//        [g_AMQPReceiver dispose];
+//    }
+//    g_AMQPReceiver = nil;
+//    g_AMQPSender = nil;
+//    g_AMQPManager = nil;
     
-    if(g_AMQPReceiver){
-        [g_AMQPReceiver dispose];
-    }
-    g_AMQPReceiver = nil;
-    g_AMQPSender = nil;
-    g_AMQPManager = nil;
-    
+    BOOL bRes = true;
     @try {
         NSLog(@"______ %@",userID);
-        BOOL bRes = false;
         if(g_AMQPManager==nil){
             //构造AMQPManager
             g_AMQPManager = [[AMQPManager alloc]init];
@@ -537,13 +537,18 @@ RCT_REMAP_METHOD(receiveFileWithThirdServer, fileName:(NSString*)fileName queueN
 RCT_REMAP_METHOD(startReceiveMessage, uuid:(NSString*)uuid  startReceiveMessageResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try {
+        while (!bStopRecieve) {
+            [NSThread sleepForTimeInterval:0.5];
+        }
+        
+        if(g_AMQPReceiver != nil){
+            g_AMQPReceiver = nil;
+        }
+        
         BOOL bRes = false;
         NSString* sQueue = [@"Message_"  stringByAppendingString:uuid];
         if(g_AMQPManager!=nil && uuid!=nil){
-            if(g_AMQPReceiver==nil){
-                [g_AMQPManager declareQueue:sQueue];
-                g_AMQPReceiver = [g_AMQPManager newReceiver:sQueue];
-            }
+            g_AMQPReceiver = [g_AMQPManager newReceiver:sQueue];
         }
         
         isRecieving=true;
@@ -551,19 +556,20 @@ RCT_REMAP_METHOD(startReceiveMessage, uuid:(NSString*)uuid  startReceiveMessageR
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             int n = 0;
             while (1) {
-                
                 // NSLog(@"+++ receive +++ %@",[NSThread currentThread]);
-                if(isRecieving){
+                if(isRecieving && g_AMQPReceiver != nil && g_AMQPManager != nil){
+                    bStopRecieve = false;
                     NSString* str1 = nil,* str2 = nil;
+                    [g_AMQPManager declareQueue:sQueue];
                     [g_AMQPReceiver receiveMessage:&str1 message:&str2];
                     if (str1!=nil && str2!=nil) {
                         [self sendEventWithName:MESSAGE_SERVICE_RECEIVE body:@{@"clientId":str1,@"message":str2}];
                     }
-                    bStopRecieve = false;
                 }else{
                     // NSLog(@"+++ receive  stop +++ %@",[NSThread currentThread]);
-                    [g_AMQPReceiver dispose];
-                    g_AMQPReceiver = nil;
+                    if(g_AMQPReceiver != nil){
+                        g_AMQPReceiver = nil;
+                    }
                     bStopRecieve=true;
                     break;
                 }
@@ -571,16 +577,10 @@ RCT_REMAP_METHOD(startReceiveMessage, uuid:(NSString*)uuid  startReceiveMessageR
                 
                 //一分钟重新连接一次：
                 if(n++ == 60){
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                        if(g_AMQPManager!=nil){
-                            [g_AMQPManager suspend];
-                            [g_AMQPManager resume];
-                        }
-//                        [g_AMQPReceiver dispose];
-//                        [g_AMQPManager declareQueue:sQueue];
-//                        g_AMQPReceiver = [g_AMQPManager newReceiver:sQueue];
-                    });
-                    
+                    if(g_AMQPManager!=nil){
+                        [g_AMQPManager suspend];
+                        [g_AMQPManager resume];
+                    }
                     n = 0;
                 }
             }

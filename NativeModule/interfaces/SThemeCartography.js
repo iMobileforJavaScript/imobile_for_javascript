@@ -23,19 +23,6 @@ createThemeUniqueMap = (params) => {
 }
 
 /**
- * 新建单值风格标签专题图
- *
- * @param params (数据源的索引/数据源的别名、 数据集名称、 单值专题图字段表达式、 颜色表样式)
- */
-createUniqueThemeLabelMap = (params) => {
-  try {
-    return SThemeCartography.createUniqueThemeLabelMap(params)
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-/**
  * 设置单值专题图的默认风格
  *
  * @param params 显示风格
@@ -149,19 +136,6 @@ createThemeRangeMap = (params) => {
 }
 
 /**
- * 新建分段标签图层
- *
- * @param params(数据源的索引 / 数据源的别名 / 打开本地数据源、 数据集名称、 分段字段表达式、 分段模式、 分段参数、 颜色渐变模式)
- */
-createRangeThemeLabelMap = (params) => {
-  try {
-    return SThemeCartography.createRangeThemeLabelMap(params)
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-/**
  * 设置分段专题图的分段字段表达式
  *
  * @param params 分段字段表达式 图层名称 图层索引
@@ -195,7 +169,6 @@ createUniformThemeLabelMap = (params) => {
     console.error(error)
   }
 }
-
 
 /**
  * 设置统一标签专题图的表达式
@@ -340,6 +313,99 @@ getUniformLabelColor = (params) => {
     console.error(error)
   }
 }
+
+/**
+ * 新建单值风格标签专题图
+ *
+ * @param params (数据源的索引/数据源的别名、 数据集名称、 单值专题图字段表达式、 颜色表样式)
+ */
+createUniqueThemeLabelMap = (params) => {
+  try {
+    return SThemeCartography.createUniqueThemeLabelMap(params)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * @param params
+ */
+getUniqueLabelExpression = (params) => {
+  try {
+    return SThemeCartography.getUniqueLabelExpression(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 设置单值标签专题图的表达式
+ *
+ * @param params
+ */
+setUniqueLabelExpression = (params) => {
+  try {
+    return SThemeCartography.setUniqueLabelExpression(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**设置单值标签专题图的颜色方案 */
+setUniqueLabelColorScheme = (params) => {
+  try {
+    return SThemeCartography.setUniqueLabelColorScheme(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+ 
+/**
+ * 新建分段标签图层
+ *
+ * @param params(数据源的索引 / 数据源的别名 / 打开本地数据源、 数据集名称、 分段字段表达式、 分段模式、 分段参数、 颜色渐变模式)
+ */
+createRangeThemeLabelMap = (params) => {
+  try {
+    return SThemeCartography.createRangeThemeLabelMap(params)
+  } catch (e) {
+    console.error(e)
+  }
+}
+ 
+/**
+ * @param params
+ */
+getRangeLabelExpression = (params) => {
+  try {
+    return SThemeCartography.getRangeLabelExpression(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * 设置分段标签专题图的表达式
+ *
+ * @param params
+ */
+setRangeLabelExpression = (params) => {
+  try {
+    return SThemeCartography.setRangeLabelExpression(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**设置分段标签专题图的颜色方案 */
+setRangeLabelColorScheme = (params) => {
+  try {
+    return SThemeCartography.setRangeLabelColorScheme(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 
 /**获取所有数据源中的所有数据集名称 */
 getAllDatasetNames = () => {
@@ -1087,7 +1153,6 @@ export default {
   getThemeUniqueDefaultStyle,
   getUniqueExpression,
   setUniqueColorScheme,
-  createUniqueThemeLabelMap,
   //分段
   createThemeRangeMap,
   setRangeExpression,
@@ -1096,7 +1161,6 @@ export default {
   getRangeExpression,
   getRangeMode,
   getRangeCount,
-  createRangeThemeLabelMap,
   //统一标签
   createUniformThemeLabelMap,
   setUniformLabelExpression,
@@ -1112,6 +1176,16 @@ export default {
   getUniformLabelRotaion,
   getUniformLabelColor,
   setUniformLabelBackColor,
+  //单值标签
+  createUniqueThemeLabelMap,
+  getUniqueLabelExpression,
+  setUniqueLabelExpression,
+  setUniqueLabelColorScheme,
+  //分段标签
+  createRangeThemeLabelMap,
+  getRangeLabelExpression,
+  setRangeLabelExpression,
+  setRangeLabelColorScheme,
   //统计专题图
   createThemeGraphMap,
   createThemeGraphMapByLayer,

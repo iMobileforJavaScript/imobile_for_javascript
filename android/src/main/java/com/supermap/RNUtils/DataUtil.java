@@ -1,5 +1,12 @@
 package com.supermap.RNUtils;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
+import com.supermap.data.Point2D;
+import com.supermap.data.Point2Ds;
+
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -115,6 +122,46 @@ public class DataUtil {
         int length= typeName.lastIndexOf(".");
         String type = typeName.substring(length + 1);
         return type;
+    }
+
+    public static int[] rnArrayToIntArray(ReadableArray array) {
+        int[] newArray = new int[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            newArray[i] = array.getInt(i);
+        }
+
+        return newArray;
+    }
+
+    public static String[] rnArrayToStringArray(ReadableArray array) {
+        String[] newArray = new String[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            newArray[i] = array.getString(i);
+        }
+
+        return newArray;
+    }
+
+    public static int[] arrayToIntArray(ArrayList<Integer> array) {
+        int[] newArray = new int[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            newArray[i] = array.get(i);
+        }
+
+        return newArray;
+    }
+
+    public static WritableArray array2DToRnArray(int[][] array) {
+        WritableArray newArray = Arguments.createArray();
+        for (int i = 0; i < array.length; i++) {
+            WritableArray subArrary = Arguments.createArray();
+            for (int j = 0; j < array[i].length; j++) {
+                subArrary.pushInt(array[i][j]);
+            }
+            newArray.pushArray(subArrary);
+        }
+
+        return newArray;
     }
 
 }

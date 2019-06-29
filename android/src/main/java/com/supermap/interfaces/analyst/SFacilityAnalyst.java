@@ -9,32 +9,53 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.RNUtils.DataUtil;
 import com.supermap.analyst.networkanalyst.FacilityAnalyst;
 import com.supermap.analyst.networkanalyst.FacilityAnalystResult;
 import com.supermap.analyst.networkanalyst.FacilityAnalystSetting;
+import com.supermap.analyst.networkanalyst.TransportationAnalystParameter;
+import com.supermap.analyst.networkanalyst.TransportationAnalystResult;
+import com.supermap.analyst.networkanalyst.TransportationAnalystSetting;
 import com.supermap.data.Color;
+import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
+import com.supermap.data.Datasource;
+import com.supermap.data.DatasourceConnectionInfo;
+import com.supermap.data.Datasources;
+import com.supermap.data.GeoLineM;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
 import com.supermap.data.Recordset;
 import com.supermap.data.Size2D;
+import com.supermap.data.Workspace;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.Layer;
+import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.Selection;
+import com.supermap.smNative.SMAnalyst;
+import com.supermap.smNative.SMDatasource;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMParameter;
 
+import java.util.ArrayList;
 import java.util.Map;
 
-public class SFacilityAnalyst extends ReactContextBaseJavaModule {
+public class SFacilityAnalyst extends SNetworkAnalyst {
     public static final String REACT_CLASS = "SFacilityAnalyst";
     private static SFacilityAnalyst analyst;
     private static ReactApplicationContext context;
     //    private LongPressAction longPressAction = LongPressAction.NULL;
     private Selection selection = null;
     private FacilityAnalyst facilityAnalyst = null;
+
+    private FacilityAnalyst getFacilityAnalyst() {
+        if (facilityAnalyst == null) {
+            facilityAnalyst = new FacilityAnalyst();
+        }
+        return facilityAnalyst;
+    }
 
     private GeoStyle getGeoStyle(Size2D size2D, Color color) {
         GeoStyle geoStyle = new GeoStyle();
@@ -60,9 +81,12 @@ public class SFacilityAnalyst extends ReactContextBaseJavaModule {
     @ReactMethod
     public void clear(Promise promise) {
         try {
-            if (selection != null) {
-                selection.clear();
-            }
+            clear();
+            startNodeID = -1;
+            endNodeID = -1;
+            startPoint = null;
+            endPoint = null;
+            if (middleNodeIDs != null) middleNodeIDs.clear();
             SMap.getInstance().getSmMapWC().getMapControl().getMap().getTrackingLayer().clear();
             promise.resolve(true);
         } catch (Exception e) {
@@ -74,27 +98,123 @@ public class SFacilityAnalyst extends ReactContextBaseJavaModule {
      * 加载设施网络分析模型
      */
     @ReactMethod
-    public void load(ReadableMap facilitySetting, Promise promise) {
+    public void load(ReadableMap datasourceInfo, ReadableMap settingMap, Promise promise) {
         try {
-            Layer layer = null;
-            Map params = facilitySetting.toHashMap();
-            if (params.containsKey("networkDataset")) {
-                layer = SMLayer.findLayerByDatasetName((String) params.get("networkDataset"));
-            } else if (params.containsKey("networkLayer")) {
-                layer = SMLayer.findLayerWithName((String) params.get("networkLayer"));
+            Workspace workspace = SMap.getSMWorkspace().getWorkspace();
+            Layers layers = SMap.getInstance().getSmMapWC().getMapControl().getMap().getLayers();
+            FacilityAnalystSetting setting = null;
+            Dataset dataset = null;
+            if (datasourceInfo.hasKey("server")) {
+                DatasourceConnectionInfo connectionInfo = SMDatasource.convertDicToInfo(datasourceInfo.toHashMap());
+                Datasources dss = workspace.getDatasources();
+                Datasource datasource = dss.get(datasourceInfo.getString("alias"));
+                if (datasource == null) {
+                    datasource = dss.open(connectionInfo);
+                }
+
+                String datasetName = settingMap.getString("networkDataset");
+                if (datasetName != null && !datasetName.equals("")) {
+                    dataset = datasource.getDatasets().get(datasetName);
+                    layer = SMLayer.findLayerByDatasetName(dataset.getName());
+                    if (layer == null) {
+                        layer = layers.add(dataset, true);
+                        layer.setSelectable(false);
+                    }
+
+                    Dataset nodeDataset = ((DatasetVector)dataset).getChildDataset();
+                    if (nodeDataset != null) {
+                        nodeLayer = SMLayer.findLayerByDatasetName(nodeDataset.getName());
+                        if (nodeLayer == null) {
+                            nodeLayer = layers.add(nodeDataset, true);
+                            nodeLayer.setSelectable(true);
+                            nodeLayer.setVisible(true);
+                        }
+                    }
+                }
+            } else {
+                if (settingMap.hasKey("networkDataset")) {
+                    layer = SMLayer.findLayerByDatasetName(settingMap.getString("networkDataset"));
+                }
             }
 
             if (layer != null) {
-                FacilityAnalystSetting analystSetting = SMParameter.setFacilitySetting(params);
-                analystSetting.setNetworkDataset((DatasetVector)layer.getDataset());
+                dataset = layer.getDataset();
+                if (selection != null) {
+                    selection.clear();
+                } else {
+                    selection = layer.getSelection();
+                }
 
-                facilityAnalyst = new FacilityAnalyst();
-                facilityAnalyst.setAnalystSetting(analystSetting);
-                facilityAnalyst.load();
-                promise.resolve(true);
+                facilityAnalyst = getFacilityAnalyst();
+
+                setting = SMAnalyst.setFacilitySetting(settingMap);
+                setting.setNetworkDataset((DatasetVector) dataset);
+                facilityAnalyst.setAnalystSetting(setting);
+
+                boolean result = facilityAnalyst.load();
+
+                SMap.getInstance().getSmMapWC().getMapControl().setAction(Action.PAN);
+
+                WritableMap layerInfo = SMLayer.getLayerInfo(layer, "");
+
+                WritableMap resultMap = Arguments.createMap();
+                resultMap.putBoolean("result", result);
+                resultMap.putMap("layerInfo", layerInfo);
+
+                promise.resolve(resultMap);
             } else {
-                promise.reject(new Error("No networkDataset"));
+                promise.reject(new Exception("No networkDataset"));
             }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置起点
+     * @param point
+     * @param promise
+     */
+    @ReactMethod
+    public void setStartPoint(ReadableMap point, Promise promise) {
+        try {
+            String nodeTag = "startNode";
+            if (startNodeID > 0) {
+                this.removeTagFromTrackingLayer(nodeTag);
+                startNodeID = -1;
+            }
+            if (nodeLayer != null) {
+                GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(255, 105, 0));
+                style.setMarkerSymbolID(3614);
+
+                startNodeID = this.selectPoint(point, nodeLayer, style, nodeTag);
+            }
+            promise.resolve(startNodeID);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置终点
+     * @param point
+     * @param promise
+     */
+    @ReactMethod
+    public void setEndPoint(ReadableMap point, Promise promise) {
+        try {
+            String nodeTag = "endNode";
+            if (endNodeID > 0) {
+                this.removeTagFromTrackingLayer(nodeTag);
+                endNodeID = -1;
+            }
+            if (nodeLayer != null) {
+                GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(105, 255, 0));
+                style.setMarkerSymbolID(3614);
+
+                endNodeID = this.selectPoint(point, nodeLayer, style, nodeTag);
+            }
+            promise.resolve(endNodeID);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -405,12 +525,29 @@ public class SFacilityAnalyst extends ReactContextBaseJavaModule {
     @ReactMethod
     public void findPathFromNodes(int startId, int endId, String weightName, boolean isUncertainDirectionValid, Promise promise) {
         try {
-            MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
+            facilityAnalyst = getFacilityAnalyst();
 
-            FacilityAnalystResult result = facilityAnalyst.findPathFromNodes(startId, endId, weightName, isUncertainDirectionValid);
+            int mStartID = startId;
+            int mEndID = endId;
 
+            if (mStartID <= 0) {
+                mStartID = startNodeID;
+            }
+            if (mEndID <= 0) {
+                mEndID = endNodeID;
+            }
+
+            if (weightName == null || weightName.equals("")) {
+                weightName = "Length";
+            }
+
+            FacilityAnalystResult result = facilityAnalyst.findPathFromNodes(mStartID, mEndID, weightName, isUncertainDirectionValid);
+
+            if (result != null && result.getEdges() != null && result.getEdges().length > 0) {
+                displayResult(result.getEdges());
+                SMap.getInstance().getSmMapWC().getMapControl().setAction(Action.PAN);
+            }
             WritableMap map = dealResult(result);
-            mapControl.setAction(Action.PAN);
             promise.resolve(map);
         } catch (Exception e) {
             promise.reject(e);
@@ -735,22 +872,24 @@ public class SFacilityAnalyst extends ReactContextBaseJavaModule {
     }
 
     public WritableMap dealResult(FacilityAnalystResult result) {
-        int[] edges = result.getEdges();
-        int[] nodes = result.getNodes();
-        double cost = result.getCost();
-
         WritableMap map = Arguments.createMap();
         WritableArray edgess = Arguments.createArray();
         WritableArray nodess = Arguments.createArray();
+        double cost = 0;
+        if (result != null) {
+            int[] edges = result.getEdges();
+            int[] nodes = result.getNodes();
+            cost = result.getCost();
 
-        for (int j = 0; j < edges.length; j++) {
-            selection.add(edges[j]);
-            edgess.pushInt(edges[j]);
-        }
+            for (int j = 0; j < edges.length; j++) {
+                selection.add(edges[j]);
+                edgess.pushInt(edges[j]);
+            }
 
-        for (int j = 0; j < nodes.length; j++) {
-            selection.add(nodes[j]);
-            nodess.pushInt(nodes[j]);
+            for (int j = 0; j < nodes.length; j++) {
+                selection.add(nodes[j]);
+                nodess.pushInt(nodes[j]);
+            }
         }
 
         map.putDouble("cost", cost);

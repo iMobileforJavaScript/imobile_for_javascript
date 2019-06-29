@@ -188,7 +188,7 @@ RCT_REMAP_METHOD(getCount,getCountId:(NSString*)themeId    resolver:(RCTPromiseR
     @try {
         ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
         
-        int n = [theme getCount];
+        int n = [theme getRangeCount];
        // NSNumber* number =[NSNumber numberWithBool:YES];
         resolve(@(n));
     } @catch (NSException *exception) {
@@ -208,7 +208,7 @@ RCT_REMAP_METHOD(getCount,getCountId:(NSString*)themeId    resolver:(RCTPromiseR
 RCT_REMAP_METHOD(getItem,getItemId:(NSString*)themeId  index:(int)idx  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
-        ThemeLabelItem* item = [theme getItem:idx];
+        ThemeLabelItem* item = [theme getRangeItem:idx];
         
         resolve([JSObjManager addObj:item]);
     } @catch (NSException *exception) {
@@ -229,7 +229,7 @@ RCT_REMAP_METHOD(getItem,getItemId:(NSString*)themeId  index:(int)idx  resolver:
 RCT_REMAP_METHOD(indexOf,indexOfId:(NSString*)themeId  index:(double)value  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         ThemeLabel* theme = [JSObjManager getObjWithKey: themeId];
-        int idx = [theme indexOf:value];
+        int idx = [theme rangeIndexOf:value];
         
         resolve(@(idx));
     } @catch (NSException *exception) {

@@ -22,7 +22,7 @@
 * 
 * @param colorsArray 指定的颜色列表。
 */
--(id)initColorsArray:(NSMutableArray *)colorsArray;
+-(id)initColorsArray:(NSArray *)colorsArray;
 
 /** 根据给定的 Colors 对象构造一个与其完全相同的新对象。
 * 
@@ -35,7 +35,7 @@
 * @param colors 要添加到此颜色集合对象实例的颜色几何数组。
 * @return 添加的个数。
 */
--(int)addRange:(NSMutableArray *)colors;
+-(int)addRange:(NSArray *)colors;
 
 /**
 * 将当前颜色集合对象转换为一个颜色对象数组。
@@ -68,7 +68,7 @@
 -(void) clear;
 -(void) dispose;
 -(BOOL) insertAtIndex:(int)index color:(Color *)color;
-+(Colors *)makeGradient:(int)count gradientColorArray:(NSMutableArray *)gradientColorArray;
++(Colors *)makeGradient:(int)count gradientColorArray:(NSArray *)gradientColorArray;
 +(Colors *)makeGradient2:(int)count colorGradientType:(ColorGradientType)colorGradientType reverse:(BOOL)reverse;
 -(BOOL) removeAtIndex:(int)index;
 -(void) setAtIndex:(int)index color:(Color *)color;
