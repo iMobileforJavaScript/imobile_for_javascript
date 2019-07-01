@@ -32,6 +32,8 @@ public class JSThemeType extends ReactContextBaseJavaModule {
         constants.put("CUSTOM", 8);
         constants.put("GRIDUNIQUE", 11);
         constants.put("GRIDRANGE", 12);
+        constants.put("LABELUNIQUE", 107);
+        constants.put("LABELRANGE", 207);
         return constants;
     }
 }

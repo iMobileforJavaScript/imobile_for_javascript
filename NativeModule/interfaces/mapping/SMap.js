@@ -1361,9 +1361,9 @@ export default (function () {
   /**
    * 初始化标绘符号库
    */
-  function initPlotSymbolLibrary(plotSymbolPaths) {
+  function initPlotSymbolLibrary(plotSymbolPaths,isFirst) {
     try {
-      return SMap.initPlotSymbolLibrary(plotSymbolPaths)
+      return SMap.initPlotSymbolLibrary(plotSymbolPaths,isFirst)
     } catch (e) {
       console.error(e)
     }
