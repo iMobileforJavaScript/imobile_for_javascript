@@ -1174,6 +1174,7 @@ RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve re
     }
 }
 
+
 #pragma mark 设置当前图层全副
 /**
  * 设置当前图层全副
@@ -1184,25 +1185,12 @@ RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver
      @try{
          Map* map = sMap.smMapWC.mapControl.map;
          Layer* layer =  [SMLayer findLayerByPath:name];
-         Rectangle2D* bounds =  layer.dataset.bounds;
-         if(bounds.width<=0 || bounds.height<=0){
-             [bounds inflateX:20 Y:20];
+         //sMap.smMapWC.mapControl.map.viewBounds
+         Rectangle2D* bounds = [self getLayerMapBounds:layer];
+         if(![bounds isEmpty]){
+             sMap.smMapWC.mapControl.map.viewBounds = bounds;
+             [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.8 time:200];
          }
-         if(layer.dataset.prjCoordSys.type != map.prjCoordSys.type){
-             Point2Ds *points = [[Point2Ds alloc]init];
-             [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
-             [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
-             PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-             [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-             CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-             
-             //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-             [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-             Point2D* pt1 = [points getItem:0];
-             Point2D* pt2 = [points getItem:1];
-             bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
-         }
-         sMap.smMapWC.mapControl.map.viewBounds = bounds;
           resolve(@(1));
      } @catch (NSException *exception) {
          reject(@"workspace", exception.reason, nil);
@@ -2236,6 +2224,30 @@ RCT_REMAP_METHOD(isOverlapDisplayed, isOverlapDisplayed:(RCTPromiseResolveBlock)
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
+}
+
+-(Rectangle2D*)getLayerMapBounds:(Layer*)layer{
+    Rectangle2D* bounds =  layer.dataset.bounds;
+    if(bounds.width<=0 || bounds.height<=0){
+        [bounds setEmpty];
+    }else{
+        Map* map = sMap.smMapWC.mapControl.map;
+        if(layer.dataset.prjCoordSys.type != map.prjCoordSys.type){
+            Point2Ds *points = [[Point2Ds alloc]init];
+            [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
+            [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
+            PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+            [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+            CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+            
+            //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+            [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+            Point2D* pt1 = [points getItem:0];
+            Point2D* pt2 = [points getItem:1];
+            bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
+        }
+    }
+    return bounds;
 }
 
 #pragma mark 显示全幅
