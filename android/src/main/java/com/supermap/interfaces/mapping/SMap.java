@@ -3593,13 +3593,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void initPlotSymbolLibrary(final ReadableArray plotSymbolPaths, Promise promise) {
+    public void initPlotSymbolLibrary(ReadableArray plotSymbolPaths,boolean isFirst, Promise promise) {
         try {
             sMap = SMap.getInstance();
             final MapControl mapControl = sMap.smMapWC.getMapControl();
 
             Dataset dataset=null;
-            boolean isNewDateset=false;
             String userpath=null,name="PlotEdit";
             if(plotSymbolPaths.size()>0) {
                 String[] strArr = plotSymbolPaths.getString(0).split("/");
@@ -3614,61 +3613,26 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = SMap.getInstance();
             Workspace workspace = mapControl.getMap().getWorkspace();
             Datasource opendatasource = workspace.getDatasources().get("Plotting_"+userpath+"#");
+            Datasource datasource=null;
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
                 info.setAlias("Plotting_"+userpath+"#");
                 info.setEngineType(EngineType.UDB);
                 info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Datasource/Plotting_"+userpath+"#.udb");
-                Datasource datasource = workspace.getDatasources().open(info);
+                datasource = workspace.getDatasources().open(info);
                 if(datasource  ==null){
                     datasource=workspace.getDatasources().create(info);
                 }
                 if (datasource == null) {
                     datasource = workspace.getDatasources().open(info);
                 }
-                if (datasource != null) {
-                    Datasets datasets = datasource.getDatasets();
-                    dataset=datasets.get(name);
-                    DatasetVector datasetVector;
-                    String datasetName;
-                    if(dataset==null) {
-                        datasetName = datasets.getAvailableDatasetName(name);
-                        DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
-                        datasetVectorInfo.setType(DatasetType.CAD);
-                        datasetVectorInfo.setEncodeType(EncodeType.NONE);
-                        datasetVectorInfo.setName(datasetName);
-                        datasetVector = datasets.create(datasetVectorInfo);
-                        //创建数据集时创建好字段
-                        addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
-                        addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);
-                        addFieldInfo(datasetVector, "address", FieldType.TEXT, false, "", 255);
+                info.dispose();
+            }else {
+                datasource=opendatasource;
+            }
 
-                        dataset = datasets.get(datasetName);
-                        com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                        Layer layer = map.getLayers().add(dataset, true);
-                        layer.setEditable(true);
-                        datasetVectorInfo.dispose();
-                        datasetVector.close();
-                        info.dispose();
-                        isNewDateset=true;
-                    }else {
-                        Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
-                        Layer editLayer=layers.get(name+"@"+datasource.getAlias());
-                        if(editLayer!=null){
-                            editLayer.setEditable(true);
-                        }else {
-
-                            Dataset ds = dataset;
-                            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                            Layer layer = map.getLayers().add(ds, true);
-                            layer.setEditable(true);
-                        }
-                    }
-                }
-            } else {
-
-
-                Datasets datasets = opendatasource.getDatasets();
+            if (datasource != null) {
+                Datasets datasets = datasource.getDatasets();
                 dataset=datasets.get(name);
                 DatasetVector datasetVector;
                 String datasetName;
@@ -3690,32 +3654,35 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     layer.setEditable(true);
                     datasetVectorInfo.dispose();
                     datasetVector.close();
-                    isNewDateset=true;
                 }else {
                     Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
-                    for(int i = 0; i<layers.getCount(); i++){
-                        Layer layer = layers.get(i);
-                        for (int j = 0; j < datasets.getCount(); j++) {
-                            if (layer.getDataset().getName().equals(datasets.get(j).getName())) {
-                                layer.setEditable(true);
-                                break;
-                            }
-                        }
+                    Layer editLayer=layers.get(name+"@"+datasource.getAlias());
+                    if(editLayer!=null){
+                        editLayer.setEditable(true);
+                    }else {
+
+                        Dataset ds = dataset;
+                        com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                        Layer layer = map.getLayers().add(ds, true);
+                        layer.setEditable(true);
                     }
                 }
             }
+
+
             WritableMap writeMap = Arguments.createMap();
             for (int i = 0; i < plotSymbolPaths.size(); i++) {
                 int libId= (int) mapControl.addPlotLibrary(plotSymbolPaths.getString(i));
                 String libName=mapControl.getPlotSymbolLibName((long)libId);
                 writeMap.putInt(libName,libId);
-                if(isNewDateset&&libName.equals("警用标号")){
+                if(isFirst&&libName.equals("警用标号")){
                     Point2Ds point2Ds=new Point2Ds();
                     point2Ds.add(mapControl.getMap().getCenter());
                     mapControl.addPlotObject(libId,20100,point2Ds);
                     mapControl.cancel();
                     Recordset recordset = ((DatasetVector)dataset).getRecordset(false, CursorType.DYNAMIC);
-                    recordset.deleteAll();
+                    recordset.moveLast();
+                    recordset.delete();
                     recordset.update();
                     recordset.dispose();
                     mapControl.getMap().refresh();
