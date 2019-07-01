@@ -95,9 +95,10 @@ public class SMAnalyst {
                 datasource = datasources.get(alias);
                 if (datasource != null && dic.hasKey("dataset")) {
                     String datasetName = dic.getString("dataset");
-                    if (datasource.getDatasets().contains(datasetName)) {
-                        throw new RuntimeException("dataset is exist");
-                    }
+                    datasetName = datasource.getDatasets().getAvailableDatasetName(datasetName);
+//                    if (datasource.getDatasets().contains(datasetName)) {
+//                        throw new RuntimeException("dataset is exist");
+//                    }
 
                     DatasetType datasetType = DatasetType.REGION;
 
@@ -144,7 +145,7 @@ public class SMAnalyst {
                     DatasetVectorInfo info = new DatasetVectorInfo();
                     info.setType(datasetType);
                     info.setEncodeType(encodeType);
-                    info.setName(dic.getString("dataset"));
+                    info.setName(datasetName);
 
                     dataset = datasource.getDatasets().create(info);
                 }

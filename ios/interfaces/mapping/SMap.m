@@ -673,6 +673,38 @@ RCT_REMAP_METHOD(addLegendListener, addLegendListenerWithResolver:(RCTPromiseRes
     [self sendEventWithName:LEGEND_CONTENT_CHANGE body:legendSource];
 }
 
+#pragma mark 获取图例要显示的其他信息
+RCT_REMAP_METHOD(getOtherLegendData, getOtherLegendDataWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSMutableArray *otherLegendData = [[NSMutableArray alloc]init];
+        sMap = [SMap singletonInstance];
+        Layers *layers = sMap.smMapWC.mapControl.map.layers;
+        for (int i = 0; i < [layers getCount]; i++) {
+            Layer *layer = [layers getLayerAtIndex:i];
+            if(layer.theme != nil){
+                if(layer.theme.themeType == TT_Range){
+                    ThemeRange *themeRange = (ThemeRange *)layer.theme;
+                    for(int j = 0; j < [themeRange getCount]; j++){
+                        GeoStyle *geoStyle = [themeRange getItem:j].mStyle;
+                        Color *color = [geoStyle getFillForeColor];
+                        NSString *caption = [themeRange getItem:j].mCaption;
+                        NSString *R = [[NSString alloc]initWithFormat:@"%02x",color.red];
+                        NSString *G = [[NSString alloc]initWithFormat:@"%02x",color.green];
+                        NSString *B = [[NSString alloc]initWithFormat:@"%02x",color.blue];
+                        NSString *returnColor = [NSString stringWithFormat:@"%@%@%@%@",@"#",R,G,B];
+                        NSLog(@"%@",returnColor);
+                        NSLog(@"%@",caption);
+                        NSDictionary * temp = @{@"color":returnColor,@"title":caption,@"type":@3};
+                        [otherLegendData addObject:temp];
+                    }
+                }
+            }
+        }
+        resolve(otherLegendData);
+    } @catch (NSException *exception) {
+        reject(@"getOtherLegendData()",exception.reason,nil);
+    }
+}
 #pragma mark 移除图例的事件监听
 RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -1174,6 +1206,7 @@ RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve re
     }
 }
 
+
 #pragma mark 设置当前图层全副
 /**
  * 设置当前图层全副
@@ -1184,25 +1217,14 @@ RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver
      @try{
          Map* map = sMap.smMapWC.mapControl.map;
          Layer* layer =  [SMLayer findLayerByPath:name];
-         Rectangle2D* bounds =  layer.dataset.bounds;
-         if(bounds.width<=0 || bounds.height<=0){
-             [bounds inflateX:20 Y:20];
+         //sMap.smMapWC.mapControl.map.viewBounds
+         Rectangle2D* bounds = [self getLayerMapBounds:layer];
+         if(![bounds isEmpty]){
+             sMap.smMapWC.mapControl.map.viewBounds = bounds;
+             [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.8 time:200];
          }
-         if([map.layers getLayerWithName:name].dataset.prjCoordSys.type != map.prjCoordSys.type){
-             Point2Ds *points = [[Point2Ds alloc]init];
-             [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
-             [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
-             PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-             [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-             CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-             
-             //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-             [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-             Point2D* pt1 = [points getItem:0];
-             Point2D* pt2 = [points getItem:1];
-             bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
-         }
-         
+         map.viewBounds = bounds;
+         resolve(@(1));
      } @catch (NSException *exception) {
          reject(@"workspace", exception.reason, nil);
      }
@@ -2237,6 +2259,30 @@ RCT_REMAP_METHOD(isOverlapDisplayed, isOverlapDisplayed:(RCTPromiseResolveBlock)
     }
 }
 
+-(Rectangle2D*)getLayerMapBounds:(Layer*)layer{
+    Rectangle2D* bounds =  layer.dataset.bounds;
+    if(bounds.width<=0 || bounds.height<=0){
+        [bounds setEmpty];
+    }else{
+        Map* map = sMap.smMapWC.mapControl.map;
+        if(layer.dataset.prjCoordSys.type != map.prjCoordSys.type){
+            Point2Ds *points = [[Point2Ds alloc]init];
+            [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
+            [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
+            PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+            [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+            CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+            
+            //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+            [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+            Point2D* pt1 = [points getItem:0];
+            Point2D* pt2 = [points getItem:1];
+            bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
+        }
+    }
+    return bounds;
+}
+
 #pragma mark 显示全幅
 RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -2960,7 +3006,7 @@ RCT_REMAP_METHOD(getTaggingLayerCount, getTaggingLayerCountWithPath:(NSString *)
 RCT_REMAP_METHOD(setMinVisibleScale, setMinVisibleScaleWithName:(NSString *)name Number:(double)number Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
-        Layer *layer =[sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
+        Layer *layer = [SMLayer findLayerByPath:name];//[sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
         double scale = 1 / number;
         [layer setMinVisibleScale:scale];
         resolve(@(YES));
@@ -2968,6 +3014,20 @@ RCT_REMAP_METHOD(setMinVisibleScale, setMinVisibleScaleWithName:(NSString *)name
         reject(@"setMinVisibleScale",exception.reason,nil);
     }
 }
+
+#pragma mark 设置最大比例尺范围
+RCT_REMAP_METHOD(setMaxVisibleScale, setMaxVisibleScaleWithName:(NSString *)name Number:(double)number Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        Layer *layer = [SMLayer findLayerByPath:name];//[sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
+        double scale = 1 / number;
+        [layer setMaxVisibleScale:scale];
+        resolve(@(YES));
+    }@catch(NSException *exception){
+        reject(@"setMaxVisibleScale",exception.reason,nil);
+    }
+}
+
 #pragma mark 添加文字标注
 RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)dataname Name:(NSString *)name Path:(NSString *)userpath X:(int)x Y:(int)y Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
