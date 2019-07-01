@@ -58,9 +58,10 @@
             datasource = [datasources getAlias:alias];
             NSString* datasetName =  [dic objectForKey:@"dataset"];
             if (datasource && datasetName) {
-                if ([datasource.datasets getWithName:datasetName]) {
-                    @throw [[NSException alloc] initWithName:@"Create Dataset Error" reason:@"dataset is exist" userInfo:nil];
-                }
+                datasetName = [datasource.datasets availableDatasetName:datasetName];
+//                if ([datasource.datasets getWithName:datasetName]) {
+//                    @throw [[NSException alloc] initWithName:@"Create Dataset Error" reason:@"dataset is exist" userInfo:nil];
+//                }
                 int datasetType = REGION;
                 if ([dic objectForKey:@"datasetType"]) {
                     datasetType = ((NSNumber *)[dic objectForKey:@"datasetType"]).intValue;

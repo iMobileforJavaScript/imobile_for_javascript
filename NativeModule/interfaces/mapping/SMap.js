@@ -89,6 +89,19 @@ export default (function () {
       console.error(e)
     }
   }
+
+  /**
+   * 获取其他图例数据（分段值）
+   * @returns {*}
+   */
+  function getOtherLegendData() {
+    try {
+      return SMap.getOtherLegendData()
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
   /**
    * 刷新地图
    * @returns {*}
@@ -1663,6 +1676,7 @@ export default (function () {
     getGestureDetector,
     addLegendListener,
     removeLegendListener,
+    getOtherLegendData,
     addScaleChangeDelegate,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)
