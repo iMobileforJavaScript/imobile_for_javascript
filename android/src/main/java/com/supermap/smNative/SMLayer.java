@@ -296,6 +296,7 @@ public class SMLayer {
         String path = layer.getName();
         while (layer.getParentGroup() != null) {
             path = layer.getParentGroup().getName() + "/" + path;
+            layer = layer.getParentGroup();
         }
         return path;
     }

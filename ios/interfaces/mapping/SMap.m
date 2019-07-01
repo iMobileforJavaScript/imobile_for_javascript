@@ -1188,7 +1188,7 @@ RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver
          if(bounds.width<=0 || bounds.height<=0){
              [bounds inflateX:20 Y:20];
          }
-         if([map.layers getLayerWithName:name].dataset.prjCoordSys.type != map.prjCoordSys.type){
+         if(layer.dataset.prjCoordSys.type != map.prjCoordSys.type){
              Point2Ds *points = [[Point2Ds alloc]init];
              [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
              [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
@@ -1202,7 +1202,8 @@ RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver
              Point2D* pt2 = [points getItem:1];
              bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
          }
-         
+         map.viewBounds = bounds;
+         resolve(@(1));
      } @catch (NSException *exception) {
          reject(@"workspace", exception.reason, nil);
      }
@@ -2960,7 +2961,7 @@ RCT_REMAP_METHOD(getTaggingLayerCount, getTaggingLayerCountWithPath:(NSString *)
 RCT_REMAP_METHOD(setMinVisibleScale, setMinVisibleScaleWithName:(NSString *)name Number:(double)number Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
-        Layer *layer =[sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
+        Layer *layer = [SMLayer findLayerByPath:name];//[sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
         double scale = 1 / number;
         [layer setMinVisibleScale:scale];
         resolve(@(YES));
@@ -2968,6 +2969,20 @@ RCT_REMAP_METHOD(setMinVisibleScale, setMinVisibleScaleWithName:(NSString *)name
         reject(@"setMinVisibleScale",exception.reason,nil);
     }
 }
+
+#pragma mark 设置最大比例尺范围
+RCT_REMAP_METHOD(setMaxVisibleScale, setMaxVisibleScaleWithName:(NSString *)name Number:(double)number Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        Layer *layer = [SMLayer findLayerByPath:name];//[sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
+        double scale = 1 / number;
+        [layer setMaxVisibleScale:scale];
+        resolve(@(YES));
+    }@catch(NSException *exception){
+        reject(@"setMaxVisibleScale",exception.reason,nil);
+    }
+}
+
 #pragma mark 添加文字标注
 RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)dataname Name:(NSString *)name Path:(NSString *)userpath X:(int)x Y:(int)y Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
