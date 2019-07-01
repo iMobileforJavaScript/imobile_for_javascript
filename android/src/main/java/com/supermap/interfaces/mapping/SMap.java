@@ -1955,7 +1955,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
-            Layer layer = mapControl.getMap().getLayers().get(layerName);
+            Layer layer = SMLayer.findLayerByPath(layerName);//mapControl.getMap().getLayers().get(layerName);
             boolean result = mapControl.appointEditGeometry(geoID, layer);
             layer.setEditable(true);
             promise.resolve(result);
@@ -3271,16 +3271,32 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void setLayerFullView(String name, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
+            Layer layer = SMLayer.findLayerByPath(name);
+//            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
             Rectangle2D bounds =  layer.getDataset().getBounds();
-            if (bounds.getWidth() > 0 && bounds.getHeight() > 0) {
-                sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
-                sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale()*0.8,200);
-                sMap.getSmMapWC().getMapControl().getMap().refresh();
-                promise.resolve(true);
-            } else {
-                promise.resolve(false);
+            if(bounds.getWidth()<=0 || bounds.getHeight()<=0){
+                bounds.inflate(20,20);
             }
+            if (layer.getDataset().getPrjCoordSys().getType() != sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getType()) {
+                Point2Ds point2Ds = new Point2Ds();
+                point2Ds.add(new Point2D(bounds.getLeft(),bounds.getTop()));
+                point2Ds.add(new Point2D(bounds.getRight(),bounds.getBottom()));
+                PrjCoordSys prjCoordSys = new PrjCoordSys();
+                prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                CoordSysTransParameter parameter = new CoordSysTransParameter();
+
+                CoordSysTranslator.convert(point2Ds, prjCoordSys, sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                Point2D pt1 = point2Ds.getItem(0);
+                Point2D pt2 = point2Ds.getItem(1);
+
+                bounds = new Rectangle2D(pt1.getX(),pt2.getY(),pt2.getX(),pt1.getY());
+            }
+
+            sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
+            sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale()*0.8,200);
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -3295,7 +3311,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void setMinVisibleScale(String name, double number, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
+            Layer layer = SMLayer.findLayerByPath(name);
             double scale = 1 / number;
             layer.setMinVisibleScale(scale);
             promise.resolve(true);
@@ -3313,7 +3329,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void setMaxVisibleScale(String name, double number, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
+            Layer layer = SMLayer.findLayerByPath(name);//sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
             double scale = 1 / number;
             layer.setMaxVisibleScale(scale);
             promise.resolve(true);
