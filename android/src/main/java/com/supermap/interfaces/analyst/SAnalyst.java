@@ -310,12 +310,13 @@ public class SAnalyst extends ReactContextBaseJavaModule {
             }
 
             WritableMap resultMap = Arguments.createMap();
+            resultMap.putBoolean("result", result);
             if (result) {
-                resultMap.putBoolean("result", result);
-                promise.resolve(result);
+                promise.resolve(resultMap);
             } else {
                 SMAnalyst.deleteDataset(resultData);
-                promise.reject(null, errorMsg);
+                resultMap.putString("errorMsg", errorMsg);
+                promise.resolve(resultMap);
             }
         } catch (Exception e) {
             SMAnalyst.deleteDataset(resultData);
@@ -603,7 +604,6 @@ public class SAnalyst extends ReactContextBaseJavaModule {
                         analystOnline.setColorGradientType(analysisData.getString("colorGradientType"));
                     }
 
-
                     analystOnline.execute();
                     analystOnline.addListener(new DistributeAnalystListener() {
                         @Override
@@ -634,6 +634,7 @@ public class SAnalyst extends ReactContextBaseJavaModule {
 
                         }
                     });
+                    analystOnline.execute();
 
                     promise.resolve(true);
                 }
@@ -738,8 +739,6 @@ public class SAnalyst extends ReactContextBaseJavaModule {
                     analystOnline.setRangeMode(analysisData.getString("RangeMode"));
                 }
 
-
-                analystOnline.execute();
                 analystOnline.addListener(new DistributeAnalystListener() {
                     @Override
                     public void onPostExecute(boolean bResult, ArrayList<String> datasources) {
@@ -766,9 +765,9 @@ public class SAnalyst extends ReactContextBaseJavaModule {
                         data.putString("error", errorInfo);
                         context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                                 .emit(EventConst.ONLINE_ANALYST_RESULT, data);
-
                     }
                 });
+                analystOnline.execute();
 
                 promise.resolve(true);
             }
