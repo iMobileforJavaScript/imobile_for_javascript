@@ -17,6 +17,7 @@
 #import "SuperMap/Datasets.h"
 #import "SuperMap/Layers.h"
 #import "SuperMap/Maps.h"
+#import "SuperMap/ThemeRange.h"
 #import "SuperMap/Point2D.h"
 #import "SuperMap/Point2Ds.h"
 #import "SuperMap/Collector.h"
