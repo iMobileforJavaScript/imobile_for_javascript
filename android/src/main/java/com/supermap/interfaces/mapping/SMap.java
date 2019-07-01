@@ -3593,13 +3593,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void initPlotSymbolLibrary(ReadableArray plotSymbolPaths,boolean isFirst, Promise promise) {
+    public void initPlotSymbolLibrary(ReadableArray plotSymbolPaths,boolean isFirst,String newName ,boolean isDefaultNew ,Promise promise) {
         try {
             sMap = SMap.getInstance();
             final MapControl mapControl = sMap.smMapWC.getMapControl();
 
             Dataset dataset=null;
-            String userpath=null,name="PlotEdit";
+            String userpath=null,name="PlotEdit_"+(isDefaultNew?newName:mapControl.getMap().getName());
             if(plotSymbolPaths.size()>0) {
                 String[] strArr = plotSymbolPaths.getString(0).split("/");
                 for (int index = 0; index < strArr.length; index++) {
