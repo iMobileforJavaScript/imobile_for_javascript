@@ -12,7 +12,7 @@ let listener = undefined
 
 function register(handlers) {
   try {
-
+    listener && listener.remove()
     if (handlers && typeof handlers.callback === "function") {
       if (Platform.OS === 'ios' && handlers){
         listener = callBackIOS.addListener(EventConst.MESSAGE_SERVICE_RECEIVE, function (e) {
