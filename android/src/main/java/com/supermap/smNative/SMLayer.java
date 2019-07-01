@@ -45,6 +45,8 @@ import com.supermap.mapping.Map;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.Theme;
+import com.supermap.mapping.ThemeType;
+import com.supermap.mapping.ThemeLabel;
 import com.supermap.mapping.dyn.DynamicView;
 import com.supermap.smNative.components.InfoCallout;
 
@@ -133,6 +135,14 @@ public class SMLayer {
         int themeType = 0;
         if (theme != null) {
             themeType = theme.getType().value();
+            if( themeType == ThemeType.LABEL.value()){
+                ThemeLabel  themelabel = ( ThemeLabel )layer.getTheme();
+                if (themelabel.getRangeExpression()!=null && !themelabel.getRangeExpression().isEmpty() && themelabel.getRangeItems().getCount()!=0 ) {
+                    themeType = ThemeType.LABEL.value() + 200;
+                }else if(themelabel.getUniqueExpression()!=null && !themelabel.getUniqueExpression().isEmpty() && themelabel.getUniqueItems().getCount()!=0){
+                    themeType = ThemeType.LABEL.value() + 100;
+                }
+            }
         }
 
         WritableMap wMap = Arguments.createMap();
