@@ -669,42 +669,36 @@ RCT_REMAP_METHOD(addLegendListener, addLegendListenerWithResolver:(RCTPromiseRes
         NSDictionary * temp = @{@"image":base64Str,@"title":arrItems[i][1],@"type":arrItems[i][2]};
         [legendSource addObject:temp];
     }
-    
+    [legendSource addObjectsFromArray:[sMap getOtherLegendData]];
     [self sendEventWithName:LEGEND_CONTENT_CHANGE body:legendSource];
 }
 
-#pragma mark 获取图例要显示的其他信息
-RCT_REMAP_METHOD(getOtherLegendData, getOtherLegendDataWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        NSMutableArray *otherLegendData = [[NSMutableArray alloc]init];
-        sMap = [SMap singletonInstance];
-        Layers *layers = sMap.smMapWC.mapControl.map.layers;
-        for (int i = 0; i < [layers getCount]; i++) {
-            Layer *layer = [layers getLayerAtIndex:i];
-            if(layer.theme != nil){
-                if(layer.theme.themeType == TT_Range){
-                    ThemeRange *themeRange = (ThemeRange *)layer.theme;
-                    for(int j = 0; j < [themeRange getCount]; j++){
-                        GeoStyle *geoStyle = [themeRange getItem:j].mStyle;
-                        Color *color = [geoStyle getFillForeColor];
-                        NSString *caption = [themeRange getItem:j].mCaption;
-                        NSString *R = [[NSString alloc]initWithFormat:@"%02x",color.red];
-                        NSString *G = [[NSString alloc]initWithFormat:@"%02x",color.green];
-                        NSString *B = [[NSString alloc]initWithFormat:@"%02x",color.blue];
-                        NSString *returnColor = [NSString stringWithFormat:@"%@%@%@%@",@"#",R,G,B];
-                        NSLog(@"%@",returnColor);
-                        NSLog(@"%@",caption);
-                        NSDictionary * temp = @{@"color":returnColor,@"title":caption,@"type":@3};
-                        [otherLegendData addObject:temp];
-                    }
+-(NSArray *)getOtherLegendData{
+    NSMutableArray *otherLegendData = [[NSMutableArray alloc]init];
+    sMap = [SMap singletonInstance];
+    Layers *layers = sMap.smMapWC.mapControl.map.layers;
+    for (int i = 0; i < [layers getCount]; i++) {
+        Layer *layer = [layers getLayerAtIndex:i];
+        if(layer.theme != nil){
+            if(layer.theme.themeType == TT_Range){
+                ThemeRange *themeRange = (ThemeRange *)layer.theme;
+                for(int j = 0; j < [themeRange getCount]; j++){
+                    GeoStyle *geoStyle = [themeRange getItem:j].mStyle;
+                    Color *color = [geoStyle getFillForeColor];
+                    NSString *caption = [themeRange getItem:j].mCaption;
+                    NSString *R = [[NSString alloc]initWithFormat:@"%02x",color.red];
+                    NSString *G = [[NSString alloc]initWithFormat:@"%02x",color.green];
+                    NSString *B = [[NSString alloc]initWithFormat:@"%02x",color.blue];
+                    NSString *returnColor = [NSString stringWithFormat:@"%@%@%@%@",@"#",R,G,B];
+                    NSDictionary * temp = @{@"color":returnColor,@"title":caption,@"type":@3};
+                    [otherLegendData addObject:temp];
                 }
             }
         }
-        resolve(otherLegendData);
-    } @catch (NSException *exception) {
-        reject(@"getOtherLegendData()",exception.reason,nil);
     }
+    return otherLegendData;
 }
+
 #pragma mark 移除图例的事件监听
 RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {

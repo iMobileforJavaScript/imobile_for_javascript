@@ -3530,66 +3530,66 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
 
-    /**
-     * 更新图例
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void updateLegend(Promise promise){
-        try {
-            sMap = SMap.getInstance();
-            MapControl mapControl = sMap.smMapWC.getMapControl();
-
-            Layers layers = mapControl.getMap().getLayers();
-            ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-
-            for (int i = 0; i < layers.getCount(); i++) {
-                Layer layer = layers.get(i);
-                if (layer.getTheme() != null) {
-                    if (layer.getTheme().getType() == ThemeType.RANGE) {
-                        ThemeRange themeRange = (ThemeRange) layer.getTheme();
-                        for (int j = 0; j < themeRange.getCount(); j++) {
-                            GeoStyle GeoStyle = themeRange.getItem(j).getStyle();
-//                        map.put(themeRange.getItem(j).getCaption(), GeoStyle.getFillForeColor().toColorString());
-
-                            HashMap<String, String> map = new HashMap<String, String>();
-                            map.put("Caption", themeRange.getItem(j).getCaption());
-                            map.put("Color", GeoStyle.getFillForeColor().toColorString());
-                            arrayList.add(map);
-                        }
-                    }
-                }
-            }
-
-            Legend lengend = mapControl.getMap().getCreateLegend();
-            if(lengend!=null){
-                lengend.dispose();
-
-                for (int i = 0; i < arrayList.size(); i++) {
-                    HashMap<String, String> hashMap = arrayList.get(i);
-                    String caption = hashMap.get("Caption");
-                    String colorString = hashMap.get("Color");
-
-                    int color = android.graphics.Color.parseColor(colorString);
-//                ColorLegendItem colorLegendItem = new ColorLegendItem();
-//                colorLegendItem.setColor(color);
-//                colorLegendItem.setCaption(caption);
-//                lengend.addColorLegendItem(2, colorLegendItem);
-
-                    LegendItem legendItem = new LegendItem();
-                    legendItem.setColor(color);
-                    legendItem.setCaption(caption);
-                    lengend.addUserDefinedLegendItem(legendItem);
-                }
-                mapControl.getMap().refresh();
-            }
-            promise.resolve(true);
-
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
+//    /**
+//     * 更新图例
+//     *
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void updateLegend(Promise promise){
+//        try {
+//            sMap = SMap.getInstance();
+//            MapControl mapControl = sMap.smMapWC.getMapControl();
+//
+//            Layers layers = mapControl.getMap().getLayers();
+//            ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
+//
+//            for (int i = 0; i < layers.getCount(); i++) {
+//                Layer layer = layers.get(i);
+//                if (layer.getTheme() != null) {
+//                    if (layer.getTheme().getType() == ThemeType.RANGE) {
+//                        ThemeRange themeRange = (ThemeRange) layer.getTheme();
+//                        for (int j = 0; j < themeRange.getCount(); j++) {
+//                            GeoStyle GeoStyle = themeRange.getItem(j).getStyle();
+////                        map.put(themeRange.getItem(j).getCaption(), GeoStyle.getFillForeColor().toColorString());
+//
+//                            HashMap<String, String> map = new HashMap<String, String>();
+//                            map.put("Caption", themeRange.getItem(j).getCaption());
+//                            map.put("Color", GeoStyle.getFillForeColor().toColorString());
+//                            arrayList.add(map);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            Legend lengend = mapControl.getMap().getCreateLegend();
+//            if(lengend!=null){
+//                lengend.dispose();
+//
+//                for (int i = 0; i < arrayList.size(); i++) {
+//                    HashMap<String, String> hashMap = arrayList.get(i);
+//                    String caption = hashMap.get("Caption");
+//                    String colorString = hashMap.get("Color");
+//
+//                    int color = android.graphics.Color.parseColor(colorString);
+////                ColorLegendItem colorLegendItem = new ColorLegendItem();
+////                colorLegendItem.setColor(color);
+////                colorLegendItem.setCaption(caption);
+////                lengend.addColorLegendItem(2, colorLegendItem);
+//
+//                    LegendItem legendItem = new LegendItem();
+//                    legendItem.setColor(color);
+//                    legendItem.setCaption(caption);
+//                    lengend.addUserDefinedLegendItem(legendItem);
+//                }
+//                mapControl.getMap().refresh();
+//            }
+//            promise.resolve(true);
+//
+//        } catch (Exception e) {
+//            promise.reject(e);
+//        }
+//    }
 
 
     /**
@@ -4612,7 +4612,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     @Override
     public void legendContentChanged(Vector<LegendItem> arrItems) {
-         WritableArray arr = Arguments.createArray();
+        sMap = SMap.getInstance();
+        WritableArray arr = Arguments.createArray();
         for(int i = 0 ;i < arrItems.size(); i++){
             WritableMap writeMap = Arguments.createMap();
             Bitmap bm = arrItems.get(i).getBitmap();
@@ -4630,10 +4631,46 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             writeMap.putInt("type",type);
             arr.pushMap(writeMap);
         }
+        ReadableArray array = sMap.getOtherLegendData(arr);
         context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit(EventConst.LEGEND_CONTENT_CHANGE, arr);
+                .emit(EventConst.LEGEND_CONTENT_CHANGE, array);
     }
 
+    /**
+     * 获取分段图例数据
+     * @return
+     */
+    public ReadableArray getOtherLegendData(WritableArray array){
+        sMap = SMap.getInstance();
+        Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
+        for(int i = 0; i < layers.getCount(); i++){
+            Layer layer = layers.get(i);
+            if (layer.getTheme() != null ){
+                if(layer.getTheme().getType() == ThemeType.RANGE){
+                    ThemeRange themeRange = (ThemeRange)layer.getTheme();
+                    for(int j = 0; j < themeRange.getCount(); j++){
+                        GeoStyle geoStyle = themeRange.getItem(j).getStyle();
+                        Color color = geoStyle.getFillForeColor();
+                        String caption = themeRange.getItem(j).getCaption();
+                        String r = Integer.toHexString(color.getR());
+                        String g = Integer.toHexString(color.getG());
+                        String b = Integer.toHexString(color.getB());
+                        r = r.length() == 1 ? "0" + r : r;
+                        g = g.length() == 1 ? "0" + g : g;
+                        b = b.length() == 1 ? "0" + b : b;
+                        String colorString = "#"+r+g+b;
+                        System.out.print(colorString);
+                        WritableMap writableMap = Arguments.createMap();
+                        writableMap.putString("color",colorString);
+                        writableMap.putString("title",caption);
+                        writableMap.putInt("type",3);
+                        array.pushMap(writableMap);
+                    }
+                }
+            }
+        }
+        return array;
+    }
     /**
      * 移除图例的事件监听
      * @param promise
