@@ -7,6 +7,7 @@
 //
 
 #import "SMap.h"
+#import "FileUtils.h"
 
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
@@ -2311,16 +2312,113 @@ RCT_REMAP_METHOD(setDynamicProjection, setDynamicProjectionWithResolve:(RCTPromi
 }
 //addLayers, addLayers:(NSArray*)datasetNames dataSourceName:(NSString*)dataSourceName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
 #pragma mark 初始化标绘符号库
-RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymbolPaths resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymbolPaths isFirst:(BOOL) isFirst newName:(NSString*)newName isDefaultNew:(BOOL)isDefaultNew resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    @try {
+        sMap = [SMap singletonInstance];
+        Workspace *workspace =sMap.smMapWC.mapControl.map.workspace;
+        
+        Dataset* dataset=nil;
+        NSString* userpath=nil;
+        NSString* Name=[@"PlotEdit_" stringByAppendingString:(isDefaultNew?newName:sMap.smMapWC.mapControl.map.name)];
+        NSArray *array = [plotSymbolPaths[0] componentsSeparatedByString:@"/"];
+        for (int i=0; i<array.count; i++) {
+            if([array[i] isEqualToString:@"User"]&&(i+1)<array.count){
+                userpath=array[i+1];
+                break;
+            }
+        }
+        
+        NSString *plotDatasourceName = [NSString  stringWithFormat:@"%@%@%@",@"Plotting_",userpath,@"#"];
+        Datasource *opendatasource = [workspace.datasources getAlias:plotDatasourceName];
+        Datasource *datasource = nil;
+        if(opendatasource == nil){
+            DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
+            info.alias = plotDatasourceName;
+            info.engineType = ET_UDB;
+            NSString *path = [NSString stringWithFormat: @"%@%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Datasource/",plotDatasourceName];
+            info.server = path;
+            datasource = [workspace.datasources open:info];
+            if(!datasource){
+                datasource=[workspace.datasources create:info];
+            }
+            if(!datasource){
+                datasource=[workspace.datasources open:info];
+            }
+            [info dispose];
+        }else{
+            datasource=opendatasource;
+        }
+        
+        if(datasource){
+            Datasets *datasets = datasource.datasets;
+            dataset = [datasets getWithName:Name];
+            NSString* datasetName;
+            if(!dataset){
+                datasetName = [datasets availableDatasetName: Name];
+                DatasetVectorInfo *datasetVectorInfo = [[DatasetVectorInfo alloc]init];
+                [datasetVectorInfo setDatasetType:CAD];
+                [datasetVectorInfo setEncodeType:NONE];
+                [datasetVectorInfo setName:datasetName];
+                DatasetVector *datasetVector = [datasets create:datasetVectorInfo];
+                //创建数据集时创建好字段
+                [SMap addFieldInfo:datasetVector Name:@"name" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
+                [SMap addFieldInfo:datasetVector Name:@"remark" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
+                [SMap addFieldInfo:datasetVector Name:@"address" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
+                
+                dataset = [datasets getWithName:datasetName];
+                Map *map = sMap.smMapWC.mapControl.map;
+                Layer *layer = [map.layers addDataset:dataset ToHead:YES];
+                [layer setEditable:YES];
+                [datasetVectorInfo dispose];
+                [datasetVector close];
+            }else{
+                Layers *layers =sMap.smMapWC.mapControl.map.layers;
+                Layer *editLayer = [layers getLayerWithName:[NSString stringWithFormat:@"%@@%@",Name,datasource.alias]];
+                if(editLayer){
+                    [editLayer setEditable:YES];
+                }else{
+                    Layer* layer=[layers addDataset:dataset ToHead:true];
+                    [layer setEditable:YES];
+                }
+            }
+        }
+    
+        NSMutableDictionary* libInfo = [[NSMutableDictionary alloc] init];
+        for (NSString* path in plotSymbolPaths) {
+            int libId=[sMap.smMapWC.mapControl addPlotLibrary:path];
+            NSString* libName=[sMap.smMapWC.mapControl getPlotSymbolLibName: libId];
+            [libInfo setObject:@(libId) forKey:libName];
+            
+            if(isFirst&&[libName isEqualToString:@"警用标号"]){
+                Point2Ds* point2Ds=[[Point2Ds alloc] init];
+                [point2Ds add:sMap.smMapWC.mapControl.map.center];
+                [sMap.smMapWC.mapControl addPlotObject:libId symbolCode:20100 point:point2Ds];
+                [sMap.smMapWC.mapControl cancel];
+                Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
+                [recordset moveLast];
+                [recordset delete];
+                [recordset update];
+                [recordset dispose];
+                [sMap.smMapWC.mapControl.map refresh];
+                [sMap.smMapWC.mapControl setAction:PAN];
+            }
+        }
+        resolve(libInfo);
+    } @catch (NSException *exception) {
+        reject(@"newTaggingDataset", exception.reason, nil);
+    }
+}
+
+#pragma mark 移除标绘库
+RCT_REMAP_METHOD(removePlotSymbolLibraryArr, removePlotSymbolLibraryArr:(NSArray*)plotSymbolIds resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
-        NSMutableArray* resultArr = [[NSMutableArray alloc] init];
-        for (NSString* path in plotSymbolPaths) {
-            int libId=[mapControl addPlotLibrary:path];
-            [resultArr addObject:@(libId)];
+        for (int i=0; i<[plotSymbolIds count]; i++) {
+            [mapControl removePlotLibrary:(int)plotSymbolIds[i]];
         }
-        resolve(resultArr);
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setDynamicProjection", exception.reason, nil);
     }
@@ -2338,6 +2436,28 @@ RCT_REMAP_METHOD(setPlotSymbol, setPlotSymbol:(int)libId symbolCode:(int)symbolC
         reject(@"setDynamicProjection", exception.reason, nil);
     }
 }
+
+#pragma mark 导入标绘模板库
+RCT_REMAP_METHOD(importPlotLibData, importPlotLibData:(NSString*)fromPath  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+   
+        NSString* userpath=nil;
+        NSArray *array = [fromPath componentsSeparatedByString:@"/"];
+        for (int i=0; i<array.count; i++) {
+            if([array[i] isEqualToString:@"User"]&&(i+1)<array.count){
+                userpath=array[i+1];
+                break;
+            }
+        }
+        NSString *toPath = [NSString stringWithFormat: @"%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Plotting/"];
+        BOOL result=[FileUtils copyFiles:fromPath targetDictionary:toPath filterFileSuffix:@"plot" filterFileDicName:@"Symbol" otherFileDicName:@"SymbolIcon"];
+
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"setDynamicProjection", exception.reason, nil);
+    }
+}
+
 
 #pragma mark 添加cad图层
 RCT_REMAP_METHOD(addCadLayer, addCadLayer:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

@@ -52,6 +52,102 @@
     return result;
 }
 
++ (BOOL)copyFiles:(NSString *)from targetDictionary:(NSString *)to filterFileSuffix:(NSString *)filterFileSuffix
+        filterFileDicName:(NSString*)filterFileDicName otherFileDicName:(NSString*)otherFileDicName{
+    
+    if (to == nil || [to isEqualToString:@""]) {
+        return NO;
+    }
+    BOOL idDicfromFile=FALSE;
+    NSFileManager* fileManager=[NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:from isDirectory:&idDicfromFile] ) {
+        return NO;
+    }
+    NSString* fromName=[fileManager displayNameAtPath:from];
+    NSString* toPath=[self formateNoneExistFileName:[NSString stringWithFormat:@"%@/%@",to ,fromName] isDir:idDicfromFile];
+    NSString* filterFileDicPath=[NSString stringWithFormat:@"%@/%@",toPath ,filterFileDicName];
+    NSString* otherFileDicPath=[NSString stringWithFormat:@"%@/%@",toPath ,otherFileDicName];
+    if(![fileManager fileExistsAtPath:toPath]){
+        [fileManager createDirectoryAtPath:toPath withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    if(!idDicfromFile){
+        return [self copyFile:from targetPath:toPath];
+    }
+    
+    [fileManager createDirectoryAtPath:filterFileDicPath withIntermediateDirectories:YES attributes:nil error:nil];
+    [fileManager createDirectoryAtPath:otherFileDicPath withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    NSArray *array = [fileManager contentsOfDirectoryAtPath:from error:nil];
+    for (int i=0; i<array.count; i++) {
+        NSString *filePath = [from stringByAppendingPathComponent:[array objectAtIndex:i]];
+        BOOL isDic=NO;
+        [fileManager fileExistsAtPath:filePath isDirectory:&isDic];
+        if(!isDic){
+            NSString* strSuffix=[filePath pathExtension];
+            NSString* copyDic=[strSuffix isEqualToString:filterFileSuffix]?filterFileDicPath:otherFileDicPath;
+            [self copyFile:filePath targetPath:[NSString stringWithFormat:@"%@/%@",copyDic,[filePath lastPathComponent]]];
+            continue;
+        }
+        NSArray *subArr = [fileManager contentsOfDirectoryAtPath:filePath error:nil];
+        int count=0;
+        for (int index=0; index<subArr.count; index++) {
+            NSString *subFilePath = [from stringByAppendingPathComponent:[subArr objectAtIndex:index]];
+            if([[subFilePath pathExtension] isEqualToString:filterFileSuffix]){
+                count++;
+            }
+        }
+        if(count==0){
+            [self copyFile:filePath targetPath:otherFileDicPath];
+        }else{
+            NSArray *childArr = [fileManager contentsOfDirectoryAtPath:filePath error:nil];
+            for (int childIndex=0; childIndex<subArr.count; childIndex++) {
+                NSString *childFilePath = [filePath stringByAppendingPathComponent:[childArr objectAtIndex:childIndex]];
+                [fileManager fileExistsAtPath:childFilePath isDirectory:&isDic];
+                if(!isDic){
+                    NSString* strSuffix=[childFilePath pathExtension];
+                    NSString* copyDic=[strSuffix isEqualToString:filterFileSuffix]?filterFileDicPath:otherFileDicPath;
+                    [self copyFile:childFilePath targetPath:[NSString stringWithFormat:@"%@/%@",copyDic,[childFilePath lastPathComponent]]];
+                    continue;
+                }else{
+                    [self copyFile:childFilePath targetPath:[otherFileDicPath stringByAppendingPathComponent:[childArr objectAtIndex:childIndex]]];
+                }
+            }
+        }
+    }
+    return YES;
+}
+
++(NSString*)formateNoneExistFileName:(NSString*)strPath isDir:(BOOL)bDirFile{
+    NSString*strName = strPath;
+    NSString*strSuffix = @"";
+    if (!bDirFile) {
+        NSArray *arrPath = [strPath componentsSeparatedByString:@"/"];
+        NSString *strFileName = [arrPath lastObject];
+        NSArray *arrFileName = [strFileName componentsSeparatedByString:@"."];
+        strSuffix = [arrFileName lastObject];
+        strName = [strPath substringToIndex:strPath.length-strSuffix.length-1];
+    }
+    NSString *strResult = strPath;
+    int nAddNumber = 1;
+    while (1) {
+        BOOL isDir  = false;
+        BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:strResult isDirectory:&isDir];
+        if (!isExist) {
+            return strResult;
+        }else if(isDir!=bDirFile){
+            return strResult;
+        }else{
+            if (!bDirFile) {
+                strResult = [NSString stringWithFormat:@"%@_%d.%@",strName,nAddNumber,strSuffix];
+            }else{
+                strResult = [NSString stringWithFormat:@"%@_%d",strName,nAddNumber];
+            }
+            nAddNumber++;
+        }
+    }
+}
+
 + (NSArray *)copyFiles:(NSArray *)fromPaths targetDictionary:(NSString *)targetDictionary {
 //    BOOL result = NO;
     if (targetDictionary == nil || [targetDictionary isEqualToString:@""]) {
