@@ -403,20 +403,20 @@ RCT_REMAP_METHOD(getMediaInfo, getMediaInfo:(NSString*)layerName geoID:(int)geoI
     qp.cursorType = STATIC;
     recordset = [dv query:qp];
     
-    if (pt == nil) {
+//    if (pt == nil) {
         pt = [recordset.geometry getInnerPoint];
-    }
-    if ([sMap.smMapWC.mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
-        Point2Ds *points = [[Point2Ds alloc] init];
-        [points add:pt];
-        PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-        [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-        CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-
-        //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-        [CoordSysTranslator convert:points PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] PrjCoordSys:srcPrjCoorSys CoordSysTransParameter:param CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
-        pt = [points getItem:0];
-    }
+//    }
+//    if ([sMap.smMapWC.mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+//        Point2Ds *points = [[Point2Ds alloc] init];
+//        [points add:pt];
+//        PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+//        [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+//        CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+//
+//        //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+//        [CoordSysTranslator convert:points PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] PrjCoordSys:srcPrjCoorSys CoordSysTransParameter:param CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+//        pt = [points getItem:0];
+//    }
     
     
     NSString* modifiedDate = (NSString *)[recordset getFieldValueWithString:@"ModifiedDate"];

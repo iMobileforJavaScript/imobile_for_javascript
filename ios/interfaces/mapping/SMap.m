@@ -670,42 +670,36 @@ RCT_REMAP_METHOD(addLegendListener, addLegendListenerWithResolver:(RCTPromiseRes
         NSDictionary * temp = @{@"image":base64Str,@"title":arrItems[i][1],@"type":arrItems[i][2]};
         [legendSource addObject:temp];
     }
-    
+    [legendSource addObjectsFromArray:[sMap getOtherLegendData]];
     [self sendEventWithName:LEGEND_CONTENT_CHANGE body:legendSource];
 }
 
-#pragma mark 获取图例要显示的其他信息
-RCT_REMAP_METHOD(getOtherLegendData, getOtherLegendDataWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        NSMutableArray *otherLegendData = [[NSMutableArray alloc]init];
-        sMap = [SMap singletonInstance];
-        Layers *layers = sMap.smMapWC.mapControl.map.layers;
-        for (int i = 0; i < [layers getCount]; i++) {
-            Layer *layer = [layers getLayerAtIndex:i];
-            if(layer.theme != nil){
-                if(layer.theme.themeType == TT_Range){
-                    ThemeRange *themeRange = (ThemeRange *)layer.theme;
-                    for(int j = 0; j < [themeRange getCount]; j++){
-                        GeoStyle *geoStyle = [themeRange getItem:j].mStyle;
-                        Color *color = [geoStyle getFillForeColor];
-                        NSString *caption = [themeRange getItem:j].mCaption;
-                        NSString *R = [[NSString alloc]initWithFormat:@"%02x",color.red];
-                        NSString *G = [[NSString alloc]initWithFormat:@"%02x",color.green];
-                        NSString *B = [[NSString alloc]initWithFormat:@"%02x",color.blue];
-                        NSString *returnColor = [NSString stringWithFormat:@"%@%@%@%@",@"#",R,G,B];
-                        NSLog(@"%@",returnColor);
-                        NSLog(@"%@",caption);
-                        NSDictionary * temp = @{@"color":returnColor,@"title":caption,@"type":@3};
-                        [otherLegendData addObject:temp];
-                    }
+-(NSArray *)getOtherLegendData{
+    NSMutableArray *otherLegendData = [[NSMutableArray alloc]init];
+    sMap = [SMap singletonInstance];
+    Layers *layers = sMap.smMapWC.mapControl.map.layers;
+    for (int i = 0; i < [layers getCount]; i++) {
+        Layer *layer = [layers getLayerAtIndex:i];
+        if(layer.theme != nil){
+            if(layer.theme.themeType == TT_Range){
+                ThemeRange *themeRange = (ThemeRange *)layer.theme;
+                for(int j = 0; j < [themeRange getCount]; j++){
+                    GeoStyle *geoStyle = [themeRange getItem:j].mStyle;
+                    Color *color = [geoStyle getFillForeColor];
+                    NSString *caption = [themeRange getItem:j].mCaption;
+                    NSString *R = [[NSString alloc]initWithFormat:@"%02x",color.red];
+                    NSString *G = [[NSString alloc]initWithFormat:@"%02x",color.green];
+                    NSString *B = [[NSString alloc]initWithFormat:@"%02x",color.blue];
+                    NSString *returnColor = [NSString stringWithFormat:@"%@%@%@%@",@"#",R,G,B];
+                    NSDictionary * temp = @{@"color":returnColor,@"title":caption,@"type":@3};
+                    [otherLegendData addObject:temp];
                 }
             }
         }
-        resolve(otherLegendData);
-    } @catch (NSException *exception) {
-        reject(@"getOtherLegendData()",exception.reason,nil);
     }
+    return otherLegendData;
 }
+
 #pragma mark 移除图例的事件监听
 RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -3247,6 +3241,39 @@ RCT_REMAP_METHOD(setTaggingGrid, setTaggingGridWithName:(NSString *)name UserPat
 
 #pragma mark 设置标注默认的结点，线，面颜色
 RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl *mapControl = sMap.smMapWC.mapControl;
+        [mapControl setStrokeColor: [[Color alloc] initWithValue:0x3999FF]];
+        [mapControl setStrokeWidth:1];
+        
+        GeoStyle *geoStyle_P = [[GeoStyle alloc] init];
+        
+        Workspace *workspace = mapControl.map.workspace;
+        Resources *m_resources = workspace.resources;
+        SymbolMarkerLibrary *symbol_m = [m_resources markerLibrary];
+        
+        if([symbol_m containID:332]){
+            [geoStyle_P setMarkerSymbolID:332];
+            [mapControl setNodeStyle:geoStyle_P];
+        }else if([symbol_m containID:313]){
+            [geoStyle_P setMarkerSymbolID:313];
+            [mapControl setNodeStyle:geoStyle_P];
+        }else if([symbol_m containID:321]){
+            [geoStyle_P setMarkerSymbolID:321];
+            [mapControl setNodeStyle:geoStyle_P];
+        }else {
+            [mapControl setNodeColor:[[Color alloc] initWithValue:0x3999FF]];
+            [mapControl setNodeSize:2.0];
+        }
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
+    }
+}
+
+#pragma mark 更新图例
+RCT_REMAP_METHOD(updateLegend, updateLegendWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         MapControl *mapControl = sMap.smMapWC.mapControl;
