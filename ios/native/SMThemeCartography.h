@@ -12,6 +12,7 @@
 #import "SuperMap/ThemeGridRange.h"
 #import "SuperMap/ThemeGraduatedSymbol.h"
 #import "SuperMap/ThemeDotDensity.h"
+#import "SuperMap/LayerHeatmap.h"
 
 @interface SMThemeCartography : NSObject
 +(void)setGeoStyleColor:(DatasetType)type geoStyle:(GeoStyle*)geoStyle color:(Color*)color;
@@ -33,6 +34,7 @@
 +(LabelBackShape)getLabelBackShape:(NSString*) shape;
 +(NSString*)getLabelBackShapeString:(LabelBackShape) shape;
 +(NSArray*)getColorList;
++(NSArray*)getAggregationColors:(NSString* )colorType;
 +(NSArray*)getRangeColors:(NSString* )colorType;
 +(NSArray*)getUniqueColors:(NSString* )colorType;
 +(NSArray*)getGraphColors:(NSString* )colorType;
@@ -98,4 +100,14 @@
  */
 +(BOOL)modifyThemeGridRangeMap:(Layer*)layer rangeMode:(RangeMode)rangeMode  rangeParameter:(double)rangeParameter newColors:(NSArray*)newColors;
 
+/**
+ * 创建热力图
+ * @param dataset
+ * @param KernelRadius
+ * @param FuzzyDegree
+ * @param Intensity
+ * @param colors
+ * @return
+ */
++(NSDictionary*)createLayerHeatMap:(Dataset*)dataset radius:(int)KernelRadius fuzzyDegree:(double)FuzzyDegree intensity:(double)Intensity colors:(NSArray *)colors;
 @end
