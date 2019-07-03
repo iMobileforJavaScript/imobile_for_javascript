@@ -3882,6 +3882,56 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 //        }
 //    }
 
+
+
+
+    @ReactMethod
+    public void setHeatMapColorScheme(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+            String ColorScheme = null;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("HeatmapColorScheme")){
+                ColorScheme= data.get("HeatmapColorScheme").toString();
+
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && ColorScheme != null && layer.getTheme() == null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
+                LayerHeatmap heatmap = (LayerHeatmap) layer;
+                Color[] colors =  SMThemeCartography.getAggregationColors(ColorScheme);
+                heatmap.setColorset(Colors.makeGradient(colors.length, colors));
+                mapControl.getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
     /**
      * 获取热力图的核半径
      *

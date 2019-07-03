@@ -4208,6 +4208,47 @@ RCT_REMAP_METHOD(getHeatMapFuzzyDegree, getHeatMapFuzzyDegree:(NSDictionary*) da
     }
 }
 
+RCT_REMAP_METHOD(setHeatMapColorScheme, setHeatMapColorScheme:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        NSString* layerName = nil;
+        int layerIndex = -1;
+        NSString* ColorScheme = nil;
+        
+        if (dataDic[@"LayerName"]){
+            layerName = dataDic[@"LayerName"];
+        }
+        if (dataDic[@"LayerIndex"]){
+            NSString* index = dataDic[@"LayerIndex"];
+            layerIndex = index.intValue;
+        }
+        
+        if (dataDic[@"HeatmapColorScheme"]){
+            ColorScheme = dataDic[@"HeatmapColorScheme"];
+        }
+        
+        Layer* layer = nil;
+        if (layerName != nil) {
+            layer = [SMThemeCartography getLayerByName:layerName];// getLayerByName(layerName);
+        } else {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex]; // etLayerByIndex(layerIndex);
+        }
+        
+        if (layer != nil && layer.theme == nil && ColorScheme != nil) {
+            
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
+            LayerHeatmap* heatMap = (LayerHeatmap*) layer;
+            NSArray* colors = [SMThemeCartography getAggregationColors:ColorScheme];
+            heatMap.colorset = [Colors makeGradient:colors.count gradientColorArray:colors];
+            [mapControl.map refresh];
+        }
+        
+        
+    }@catch(NSException *exception){
+        reject(@"setHeatMapColorScheme", exception.reason, nil);
+    }
+}
 /**
  * 设置热力图的颜色渐变模糊度(0-1)
  *

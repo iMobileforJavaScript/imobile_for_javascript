@@ -192,7 +192,7 @@ public class SMLayer {
         LayerGroup layerGroup;
         layer = layers.get(pathParams[0]);
         for (int i = 1; i < pathParams.length; i++) {
-            if (layer.getDataset() == null) {
+            if (layer instanceof  LayerGroup) {
                 layerGroup = (LayerGroup) layer;
                 layer = layerGroup.getLayerByName(pathParams[i]);
             } else {
@@ -212,7 +212,7 @@ public class SMLayer {
         LayerGroup layerGroup = null;
         layer = layers.get(pathParams[0]);
         for (int i = 1; i < pathParams.length; i++) {
-            if (layer.getDataset() == null) {
+            if (layer instanceof LayerGroup) {
                 layerGroup = (LayerGroup) layer;
                 layer = layerGroup.getLayerByName(pathParams[i]);
             } else {

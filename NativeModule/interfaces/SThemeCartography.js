@@ -22,6 +22,7 @@ createThemeUniqueMap = (params) => {
   }
 }
 
+
 /**
  * 设置单值专题图的默认风格
  *
@@ -902,7 +903,17 @@ setHeatMapRadius = (params) => {
   }
 }
 
-
+setHeatMapColorScheme = (params)=>{
+  // console.warn(params)
+  try {
+    // if (Platform.OS === 'android') 
+    {
+      return SThemeCartography.setHeatMapColorScheme(params)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 /**
  * @param params
@@ -1044,6 +1055,7 @@ export default {
   setHeatMapRadius,
   setHeatMapFuzzyDegree,
   setHeatMapMaxColorWeight,
+  setHeatMapColorScheme,
   //其他
   getThemeExpressionByLayerName,
   getThemeExpressionByLayerIndex,
