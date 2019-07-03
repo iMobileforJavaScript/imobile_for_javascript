@@ -377,12 +377,16 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             Map params = data.toHashMap();
             boolean result = sMap.smMapWC.openWorkspace(params);
             if (result) {
-                sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
+                if (sMap.getSmMapWC().getMapControl() != null && sMap.getSmMapWC().getMapControl().getMap() != null && !sMap.getSmMapWC().getMapControl().getMap().getName().equals("")) {
+//                    sMap.getSmMapWC().getMapControl().getMap().close();
+//                    sMap.getSmMapWC().getMapControl().getMap().setWorkspace(sMap.getSmMapWC().getWorkspace());
+
+                    sMap.getSmMapWC().getMapControl().getMap().setVisibleScalesEnabled(false);
+                    sMap.getSmMapWC().getMapControl().setMagnifierEnabled(true);
+                    sMap.getSmMapWC().getMapControl().getMap().setAntialias(true);
+                    sMap.getSmMapWC().getMapControl().getMap().refresh();
+                }
             }
-            sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
-            sMap.smMapWC.getMapControl().setMagnifierEnabled(true);
-            sMap.smMapWC.getMapControl().getMap().setAntialias(true);
-            sMap.smMapWC.getMapControl().getMap().refresh();
 
             promise.resolve(result);
         } catch (Exception e) {
@@ -3583,7 +3587,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     /**
      * 初始化标绘符号库
      *
-     * @param plotSymbolPaths
+     * @param plotSymbolPaths       标号路径列表
+     * @param isFirst       是否是第一次初始化，第一次初始化需要新建一个点标号再删掉
+     * @param newName       创建默认地图的地图名
+     * @param isDefaultNew  是否是创建默认地图，创建默认地图不能从mapControl获取地图名，地图名由参数newName传入
+     * 
      * @param promise
      */
     @ReactMethod
@@ -3604,7 +3612,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 }
             }
 
-            sMap = SMap.getInstance();
             Workspace workspace = mapControl.getMap().getWorkspace();
             Datasource opendatasource = workspace.getDatasources().get("Plotting_" + userpath + "#");
             Datasource datasource = null;
@@ -3680,6 +3687,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     recordset.update();
                     recordset.dispose();
                     mapControl.getMap().refresh();
+                    mapControl.setAction(Action.PAN);
                 }
             }
 

@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-@class Map,Layer,Dataset,LayerGroup;
-@class Theme,Datasource;
+@class Map,Layer,Dataset,LayerGroup,LayerHeatmap;
+@class Theme,Datasource,Color;
 @protocol LayersStateDelegate;
 @protocol LayerGroupStateDelegate;
 @protocol LayerStateDelegate;
@@ -138,6 +138,24 @@
  */
 -(void)addLayer:(Layers*)layers datasource:(Datasource*)datasource path:(NSString*)strSLDFilePath;
 
+/**
+ * 根据给点的点数据集和参数设置制作一幅热力图
+ * @param dataset 参与制作的热力图的数据，该数据必须为点矢量数据集
+ * @param kernelRadius 用于计算密度的查找半径
+ * @return
+ */
+-(LayerHeatmap*)addHeatmap:(Dataset*)dataset radius:(int)kernelRadius;
+
+/**
+ * 根据给点的点数据集和参数设置制作一幅热力图
+ * @param dataset
+ * @param kernelRadius
+ * @param maxColor 高点密度的颜色
+ * @param minColor 低点密度的颜色
+ * @return
+ */
+-(LayerHeatmap*)addHeatmap:(Dataset*)dataset radius:(int)kernelRadius maxColor:(Color*)maxColor minColor:(Color*)minColor;
+    
 //添加图层
 -(BOOL)addLayer:(Layer*)layer;
 //插入图层

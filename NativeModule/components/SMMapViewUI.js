@@ -11,12 +11,9 @@ import {
   requireNativeComponent,
   View,
   StyleSheet,
-  Image,
   ViewPropTypes,
   NativeModules,
 } from 'react-native';
-import MapView from '../MapView.js';
-import Point from '../Point.js';
 let resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
 
 let MV = NativeModules.JSMapView;
@@ -57,13 +54,6 @@ class SMMapView extends Component {
     });
     this.mapView = {}
   }
-
-  // componentWillUnmount() {
-  //   debugger
-  //   SMap.closeMapControl().then(result => {
-  //     debugger
-  //   })
-  // }
   
   _addCallout = async (x, y, pointName = 'aa') => {
     await MV.addCallOut(x, y, pointName);
@@ -72,98 +62,11 @@ class SMMapView extends Component {
 
   _onChange(event) {
     if (!this.props.onGetInstance) {
-      console.error("no onGetInstance property!");
       return;
     }
-    console.log("has onGetInstance:" + event.nativeEvent.mapViewId);
-
-    // this.mapView = new MapView();
     this.mapView._SMMapViewId = event.nativeEvent.mapViewId;
     this.props.onGetInstance(this.mapView);
-
-    // (async function () {
-    //     try{
-    //         this.mapControl = await this.mapView.getMapControl();
-    //         this.map = await this.mapControl.getMap();
-    //
-    //         this.mapControl.setRefreshListener(
-    //             //刷新地图重绘callouts
-    //             async () => {
-    //                 if(this.state.callouts.length !== 0) {
-    //                     var arr = this.state.callouts;
-    //                     for(var i = 0 ; i < arr.length; i++){
-    //                         var Point2DFac = new Point2D();
-    //                         console.log("SMMapViewUI:mapPoint:" + arr[i].mapX + "," + arr[i].mapY);
-    //                         var point2D = await Point2DFac.createObj(arr[i].mapX,arr[i].mapY);
-    //                         var pixalPoint = await this.map.mapToPixel(point2D);
-    //                         console.log("SMMapViewUI:pixalPoint:" + pixalPoint.x + "," + pixalPoint.y);
-    //                         //转布局坐标
-    //                         arr[i].top = pixalPoint.y / PixelRatio.get();
-    //                         arr[i].left = pixalPoint.x / PixelRatio.get();
-    //
-    //                         //调整图标锚点位置
-    //                         const sourceBody = resolveAssetSource(arr[i].uri);
-    //                         let {width,height} = sourceBody;
-    //                         var offY = arr[i].top - height;
-    //                         var offX = arr[i].left - width/2;
-    //
-    //                         var indexer = "callout" + i;
-    //                         this.refs[indexer].setNativeProps({
-    //                             style:{
-    //                                 top:offY,
-    //                                 left:offX,
-    //                             }
-    //                         });
-    //                     }
-    //                 }
-    //             }
-    //         );
-    //
-    //
-    //     }catch (e){
-    //         console.log(e);
-    //     }
-    // }).bind(this)();
   }
-
-  /**
-   * 长按添加图片callout监听器
-   * @param callout - callout对象，e.g:{uri:require('./../resource/destpoint.png'),mapX:mapPoint.x,mapY:mapPoint.y}
-   * @private
-   */
-  // async _addCallouts(callout, index) {
-  //   await this.mapControl.setGestureDetector({
-  //     longPressHandler: (e) => {
-  //       console.log('MapControl:Longpress:' + JSON.stringify(e));
-  //
-  //       (async function () {
-  //         var pointFac = new Point();
-  //         var point = await pointFac.createObj(e.x, e.y);
-  //         var mapPoint = await this.map.pixelToMap(point);
-  //
-  //         var arr = this.state.callouts;
-  //         if (!index) {
-  //           arr.push(callout);
-  //         } else {
-  //           arr[index] = callout;
-  //         }
-  //         this.setState({
-  //           callouts: arr,
-  //         });
-  //
-  //       }).bind(this)();
-  //       //像素单位转布局单位
-  //       // var layoutY = e.y/PixelRatio.get();
-  //       // var layoutX = e.x/PixelRatio.get();
-  //       // console.log('MapControl:Longpress:' + layoutX + ", " + layoutY);
-  //       // var arr = this.state.callouts;
-  //       // arr.push({uri:require('./resource/destpoint.png'),top:layoutY,left:layoutX});
-  //       // this.setState({
-  //       //     callouts:arr,
-  //       // });
-  //     }
-  //   });
-  // }
 
   render() {
     var props = { ...this.props };
@@ -171,29 +74,7 @@ class SMMapView extends Component {
 
     return (
       <View style={styles.views}>
-        {/*{Platform.OS === 'android' && <View style={styles.view} />}*/}
         <RCTMapView {...props} style={styles.map} onChange={this._onChange} />
-        {/*{ !this.state.callouts ||*/}
-        {/*this.state.callouts.filter(function (item) {*/}
-          {/*if (!item.uri) {*/}
-            {/*return false;*/}
-          {/*}*/}
-          {/*return true;*/}
-        {/*}).map((item, index) => {*/}
-          {/*const sourceBody = resolveAssetSource(item.uri);*/}
-          {/*let { width, height } = sourceBody;*/}
-          {/*var offY = item.top - height;*/}
-          {/*var offX = item.left - width / 2;*/}
-          {/*var indexer = "callout" + index;*/}
-          {/*return <Image key={index} ref={indexer} source={item.uri} style={*/}
-            {/*[styles.pic, {*/}
-              {/*top: offY,*/}
-              {/*left: offX,*/}
-            {/*}]*/}
-          {/*}/>*/}
-        {/*})*/}
-        {/*}*/}
-        {/*{Platform.OS === 'android' && <View style={styles.view} />}*/}
       </View>
     );
   }

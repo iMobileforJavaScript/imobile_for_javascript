@@ -352,7 +352,7 @@ static NSArray* lastGridRangeColors = nil;
     @try{
         MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
         Layers *layers = mapControl.map.layers;
-        return [layers getLayerWithName:layerName];
+        return [layers findLayerWithName:layerName];
     }
     @catch(NSException *exception){
         @throw exception;
@@ -847,6 +847,7 @@ static NSArray* lastGridRangeColors = nil;
 NSMutableDictionary* colorRangeDic = nil;
  NSMutableDictionary* colorUniqueDic = nil;
 NSMutableDictionary* colorGraphDic = nil;
+NSMutableDictionary* listAggregationColors = nil;//聚合图颜色方案(热力图、网格图)
 
 +(NSArray*)getRangeColors:(NSString* )colorType{
     if (colorRangeDic == nil) {
@@ -1651,7 +1652,271 @@ NSMutableDictionary* colorGraphDic = nil;
     return [colorRangeDic objectForKey:colorType];
         
 }
-
++(NSArray*)getGraphColors:(NSString* )colorType{
+    if (colorGraphDic == nil) {
+        colorGraphDic = [[NSMutableDictionary alloc]init];
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:255 G:244 B:91]];
+            [array addObject:[[Color alloc]initWithR:252 G:216 B:219]];
+            [array addObject:[[Color alloc]initWithR:129 G:195 B:231]];
+            [colorGraphDic setValue:array forKey:@"CA_Red Rose"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:244 G:198 B:162]];
+            [array addObject:[[Color alloc]initWithR:252 G:237 B:136]];
+            [array addObject:[[Color alloc]initWithR:93 G:187 B:197]];
+            [colorGraphDic setValue:array forKey:@"CB_Childish"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:235 G:241 B:221]];
+            [array addObject:[[Color alloc]initWithR:121 G:232 B:208]];
+            [array addObject:[[Color alloc]initWithR:255 G:251 B:0]];
+            [colorGraphDic setValue:array forKey:@"CC_Blue-Yellow"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:183 G:221 B:200]];
+            [array addObject:[[Color alloc]initWithR:87 G:150 B:204]];
+            [array addObject:[[Color alloc]initWithR:149 G:208 B:222]];
+            [colorGraphDic setValue:array forKey:@"CD_Concise"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:233 G:163 B:202]];
+            [array addObject:[[Color alloc]initWithR:247 G:247 B:247]];
+            [array addObject:[[Color alloc]initWithR:161 G:215 B:105]];
+            [colorGraphDic setValue:array forKey:@"CE_Reposeful"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:253 G:140 B:90]];
+            [array addObject:[[Color alloc]initWithR:255 G:255 B:191]];
+            [array addObject:[[Color alloc]initWithR:144 G:207 B:96]];
+            [colorGraphDic setValue:array forKey:@"CF_Home"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:182 G:162 B:222]];
+            [array addObject:[[Color alloc]initWithR:46 G:199 B:201]];
+            [array addObject:[[Color alloc]initWithR:90 G:177 B:239]];
+            [colorGraphDic setValue:array forKey:@"CG_Cold"];
+        }{
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:202 G:134 B:34]];
+            [array addObject:[[Color alloc]initWithR:145 G:199 B:174]];
+            [array addObject:[[Color alloc]initWithR:47 G:69 B:84]];
+            [colorGraphDic setValue:array forKey:@"CH_Naive"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:176 G:220 B:233]];
+            [array addObject:[[Color alloc]initWithR:228 G:226 B:103]];
+            [array addObject:[[Color alloc]initWithR:236 G:80 B:94]];
+            [array addObject:[[Color alloc]initWithR:172 G:229 B:194]];
+            [colorGraphDic setValue:array forKey:@"DA_Limber"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:255 G:86 B:0]];
+            [array addObject:[[Color alloc]initWithR:0 G:153 B:102]];
+            [array addObject:[[Color alloc]initWithR:204 G:204 B:0]];
+            [array addObject:[[Color alloc]initWithR:23 G:146 B:192]];
+            [colorGraphDic setValue:array forKey:@"DB_Field"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:47 G:69 B:84]];
+            [array addObject:[[Color alloc]initWithR:194 G:53 B:49]];
+            [array addObject:[[Color alloc]initWithR:212 G:130 B:101]];
+            [array addObject:[[Color alloc]initWithR:145 G:199 B:174]];
+            [colorGraphDic setValue:array forKey:@"DC_Dressy"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:140 G:211 B:200]];
+            [array addObject:[[Color alloc]initWithR:255 G:255 B:180]];
+            [array addObject:[[Color alloc]initWithR:190 G:186 B:218]];
+            [array addObject:[[Color alloc]initWithR:252 G:128 B:114]];
+            [colorGraphDic setValue:array forKey:@"DD_Set"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:103 G:76 B:133]];
+            [array addObject:[[Color alloc]initWithR:183 G:87 B:115]];
+            [array addObject:[[Color alloc]initWithR:212 G:129 B:121]];
+            [array addObject:[[Color alloc]initWithR:244 G:217 B:135]];
+            [colorGraphDic setValue:array forKey:@"DE_Shock"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:119 G:200 B:204]];
+            [array addObject:[[Color alloc]initWithR:240 G:244 B:183]];
+            [array addObject:[[Color alloc]initWithR:204 G:154 B:189]];
+            [array addObject:[[Color alloc]initWithR:245 G:146 B:27]];[colorGraphDic setValue:array forKey:@"DF_Summer"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:240 G:154 B:189]];
+            [array addObject:[[Color alloc]initWithR:243 G:202 B:148]];
+            [array addObject:[[Color alloc]initWithR:255 G:251 B:118]];
+            [array addObject:[[Color alloc]initWithR:185 G:221 B:125]];
+            [colorGraphDic setValue:array forKey:@"DG_Common"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:202 G:0 B:31]];
+            [array addObject:[[Color alloc]initWithR:245 G:165 B:130]];
+            [array addObject:[[Color alloc]initWithR:145 G:197 B:223]];
+            [array addObject:[[Color alloc]initWithR:0 G:113 B:176]];
+            [colorGraphDic setValue:array forKey:@"DH_Red-Blue"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:205 G:228 B:200]];
+            [array addObject:[[Color alloc]initWithR:229 G:146 B:106]];
+            [array addObject:[[Color alloc]initWithR:243 G:209 B:119]];
+            [array addObject:[[Color alloc]initWithR:236 G:216 B:179]];
+            [array addObject:[[Color alloc]initWithR:221 G:90 B:62]];
+            [colorGraphDic setValue:array forKey:@"EA_Orange"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:129 G:194 B:214]];
+            [array addObject:[[Color alloc]initWithR:129 G:146 B:214]];
+            [array addObject:[[Color alloc]initWithR:217 G:179 B:230]];
+            [array addObject:[[Color alloc]initWithR:220 G:247 B:161]];
+            [array addObject:[[Color alloc]initWithR:131 G:252 B:216]];
+            [colorGraphDic setValue:array forKey:@"EB_Cold"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:246 G:134 B:32]];
+            [array addObject:[[Color alloc]initWithR:236 G:28 B:35]];
+            [array addObject:[[Color alloc]initWithR:254 G:236 B:125]];
+            [array addObject:[[Color alloc]initWithR:80 G:76 B:170]];
+            [array addObject:[[Color alloc]initWithR:179 G:227 B:170]];
+            [colorGraphDic setValue:array forKey:@"EC_Distinct"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:103 G:205 B:227]];
+            [array addObject:[[Color alloc]initWithR:165 G:226 B:228]];
+            [array addObject:[[Color alloc]initWithR:99 G:192 B:190]];
+            [array addObject:[[Color alloc]initWithR:183 G:229 B:193]];
+            [array addObject:[[Color alloc]initWithR:102 G:201 B:147]];
+            [colorGraphDic setValue:array forKey:@"ED_Pastal"];}
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:254 G:242 B:0]];
+            [array addObject:[[Color alloc]initWithR:104 G:189 B:178]];
+            [array addObject:[[Color alloc]initWithR:185 G:219 B:65]];
+            [array addObject:[[Color alloc]initWithR:206 G:232 B:142]];
+            [array addObject:[[Color alloc]initWithR:29 G:151 B:121]];
+            [colorGraphDic setValue:array forKey:@"EE_Grass"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:97 G:255 B:105]];
+            [array addObject:[[Color alloc]initWithR:184 G:247 B:136]];
+            [array addObject:[[Color alloc]initWithR:88 G:210 B:232]];
+            [array addObject:[[Color alloc]initWithR:242 G:182 B:182]];
+            [array addObject:[[Color alloc]initWithR:232 G:237 B:81]];
+            [colorGraphDic setValue:array forKey:@"EF_Blind"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:235 G:74 B:19]];
+            [array addObject:[[Color alloc]initWithR:234 G:217 B:0]];
+            [array addObject:[[Color alloc]initWithR:0 G:234 B:180]];
+            [array addObject:[[Color alloc]initWithR:114 G:0 B:234]];
+            [array addObject:[[Color alloc]initWithR:234 G:124 B:0]];
+            [colorGraphDic setValue:array forKey:@"EG_Passion"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:31 G:60 B:255]];
+            [array addObject:[[Color alloc]initWithR:255 G:68 B:255]];
+            [array addObject:[[Color alloc]initWithR:145 G:59 B:255]];
+            [array addObject:[[Color alloc]initWithR:122 G:255 B:201]];
+            [array addObject:[[Color alloc]initWithR:218 G:97 B:74]];
+            [colorGraphDic setValue:array forKey:@"EH_Amazing"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:217 G:77 B:77]];
+            [array addObject:[[Color alloc]initWithR:135 G:171 B:102]];
+            [array addObject:[[Color alloc]initWithR:251 G:180 B:72]];
+            [array addObject:[[Color alloc]initWithR:103 G:205 B:204]];
+            [array addObject:[[Color alloc]initWithR:171 G:58 B:107]];
+            [array addObject:[[Color alloc]initWithR:81 G:48 B:135]];
+            [array addObject:[[Color alloc]initWithR:4 G:101 B:137]];
+            [array addObject:[[Color alloc]initWithR:146 G:2 B:64]];
+            [colorGraphDic setValue:array forKey:@"HA_Calm"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:66 G:80 B:99]];[array addObject:[[Color alloc]initWithR:94 G:213 B:209]];
+            [array addObject:[[Color alloc]initWithR:58 G:154 B:217]];
+            [array addObject:[[Color alloc]initWithR:48 G:173 B:167]];
+            [array addObject:[[Color alloc]initWithR:253 G:224 B:214]];
+            [array addObject:[[Color alloc]initWithR:235 G:114 B:96]];
+            [array addObject:[[Color alloc]initWithR:243 G:152 B:0]];
+            [array addObject:[[Color alloc]initWithR:211 G:50 B:73]];
+            [colorGraphDic setValue:array forKey:@"HB_Distance"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:15 G:99 B:161]];
+            [array addObject:[[Color alloc]initWithR:37 G:143 B:185]];
+            [array addObject:[[Color alloc]initWithR:104 G:161 B:49]];
+            [array addObject:[[Color alloc]initWithR:167 G:202 B:34]];
+            [array addObject:[[Color alloc]initWithR:238 G:119 B:26]];
+            [array addObject:[[Color alloc]initWithR:245 G:193 B:28]];
+            [array addObject:[[Color alloc]initWithR:124 G:61 B:146]];
+            [array addObject:[[Color alloc]initWithR:229 G:74 B:120]];
+            [colorGraphDic setValue:array forKey:@"HC_Exotic"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:228 G:26 B:28]];
+            [array addObject:[[Color alloc]initWithR:55 G:126 B:184]];
+            [array addObject:[[Color alloc]initWithR:77 G:175 B:74]];
+            [array addObject:[[Color alloc]initWithR:152 G:78 B:163]];
+            [array addObject:[[Color alloc]initWithR:255 G:127 B:0]];
+            [array addObject:[[Color alloc]initWithR:255 G:255 B:51]];
+            [array addObject:[[Color alloc]initWithR:166 G:86 B:40]];
+            [array addObject:[[Color alloc]initWithR:247 G:129 B:191]];
+            [colorGraphDic setValue:array forKey:@"HD_Luck"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:91 G:155 B:213]];
+            [array addObject:[[Color alloc]initWithR:237 G:125 B:49]];
+            [array addObject:[[Color alloc]initWithR:165 G:165 B:165]];
+            [array addObject:[[Color alloc]initWithR:255 G:192 B:0]];
+            [array addObject:[[Color alloc]initWithR:68 G:114 B:196]];
+            [array addObject:[[Color alloc]initWithR:112 G:173 B:71]];
+            [array addObject:[[Color alloc]initWithR:158 G:72 B:14]];
+            [array addObject:[[Color alloc]initWithR:67 G:104 B:43]];
+            [colorGraphDic setValue:array forKey:@"HE_Moist"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:237 G:125 B:49]];
+            [array addObject:[[Color alloc]initWithR:255 G:192 B:0]];[array addObject:[[Color alloc]initWithR:112 G:173 B:71]];
+            [array addObject:[[Color alloc]initWithR:158 G:72 B:14]];
+            [array addObject:[[Color alloc]initWithR:153 G:115 B:0]];
+            [array addObject:[[Color alloc]initWithR:67 G:104 B:43]];
+            [array addObject:[[Color alloc]initWithR:227 G:108 B:9]];
+            [array addObject:[[Color alloc]initWithR:182 G:170 B:0]];
+            [colorGraphDic setValue:array forKey:@"HF_Warm"];
+        }
+    }
+    return [colorGraphDic objectForKey:colorType];
+}
 +(NSArray*)getUniqueColors:(NSString* )colorType{
     if (colorUniqueDic == nil) {
         colorUniqueDic = [[NSMutableDictionary alloc]init];
@@ -2064,282 +2329,123 @@ NSMutableDictionary* colorGraphDic = nil;
     return [colorUniqueDic objectForKey:colorType];
 }
 
-+(NSArray*)getGraphColors:(NSString* )colorType{
-    if (colorGraphDic == nil) {
-        colorGraphDic = [[NSMutableDictionary alloc]init];
++(NSArray*)getAggregationColors:(NSString* )colorType{
+    if (listAggregationColors == nil) {
+        listAggregationColors = [[NSMutableDictionary alloc]init];
         
         {
             NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:255 G:244 B:91]];
-            [array addObject:[[Color alloc]initWithR:252 G:216 B:219]];
-            [array addObject:[[Color alloc]initWithR:129 G:195 B:231]];
-            [colorGraphDic setValue:array forKey:@"CA_Red Rose"];
+            [array addObject:[[Color alloc]initWithR:2 G:255 B:255]];
+            [array addObject:[[Color alloc]initWithR:255 G:0 B:0]];
+            [listAggregationColors setValue:array forKey:@"BA_Rainbow"];
         }
         {
             NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:244 G:198 B:162]];
-            [array addObject:[[Color alloc]initWithR:252 G:237 B:136]];
-            [array addObject:[[Color alloc]initWithR:93 G:187 B:197]];
-            [colorGraphDic setValue:array forKey:@"CB_Childish"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:235 G:241 B:221]];
-            [array addObject:[[Color alloc]initWithR:121 G:232 B:208]];
-            [array addObject:[[Color alloc]initWithR:255 G:251 B:0]];
-            [colorGraphDic setValue:array forKey:@"CC_Blue-Yellow"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:183 G:221 B:200]];
-            [array addObject:[[Color alloc]initWithR:87 G:150 B:204]];
-            [array addObject:[[Color alloc]initWithR:149 G:208 B:222]];
-            [colorGraphDic setValue:array forKey:@"CD_Concise"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:233 G:163 B:202]];
-            [array addObject:[[Color alloc]initWithR:247 G:247 B:247]];
-            [array addObject:[[Color alloc]initWithR:161 G:215 B:105]];
-            [colorGraphDic setValue:array forKey:@"CE_Reposeful"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:253 G:140 B:90]];
-            [array addObject:[[Color alloc]initWithR:255 G:255 B:191]];
-            [array addObject:[[Color alloc]initWithR:144 G:207 B:96]];
-            [colorGraphDic setValue:array forKey:@"CF_Home"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:182 G:162 B:222]];
-            [array addObject:[[Color alloc]initWithR:46 G:199 B:201]];
-            [array addObject:[[Color alloc]initWithR:90 G:177 B:239]];
-            [colorGraphDic setValue:array forKey:@"CG_Cold"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:202 G:134 B:34]];
-            [array addObject:[[Color alloc]initWithR:145 G:199 B:174]];
-            [array addObject:[[Color alloc]initWithR:47 G:69 B:84]];
-            [colorGraphDic setValue:array forKey:@"CH_Naive"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:176 G:220 B:233]];
-            [array addObject:[[Color alloc]initWithR:228 G:226 B:103]];
-            [array addObject:[[Color alloc]initWithR:236 G:80 B:94]];
-            [array addObject:[[Color alloc]initWithR:172 G:229 B:194]];
-            [colorGraphDic setValue:array forKey:@"DA_Limber"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:255 G:86 B:0]];
-            [array addObject:[[Color alloc]initWithR:0 G:153 B:102]];
-            [array addObject:[[Color alloc]initWithR:204 G:204 B:0]];
-            [array addObject:[[Color alloc]initWithR:23 G:146 B:192]];
-            [colorGraphDic setValue:array forKey:@"DB_Field"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:47 G:69 B:84]];
-            [array addObject:[[Color alloc]initWithR:194 G:53 B:49]];
-            [array addObject:[[Color alloc]initWithR:212 G:130 B:101]];
-            [array addObject:[[Color alloc]initWithR:145 G:199 B:174]];
-            [colorGraphDic setValue:array forKey:@"DC_Dressy"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:140 G:211 B:200]];
-            [array addObject:[[Color alloc]initWithR:255 G:255 B:180]];
-            [array addObject:[[Color alloc]initWithR:190 G:186 B:218]];
-            [array addObject:[[Color alloc]initWithR:252 G:128 B:114]];
-            [colorGraphDic setValue:array forKey:@"DD_Set"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:103 G:76 B:133]];
-            [array addObject:[[Color alloc]initWithR:183 G:87 B:115]];
-            [array addObject:[[Color alloc]initWithR:212 G:129 B:121]];
-            [array addObject:[[Color alloc]initWithR:244 G:217 B:135]];
-            [colorGraphDic setValue:array forKey:@"DE_Shock"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:119 G:200 B:204]];
-            [array addObject:[[Color alloc]initWithR:240 G:244 B:183]];
-            [array addObject:[[Color alloc]initWithR:204 G:154 B:189]];
-            [array addObject:[[Color alloc]initWithR:245 G:146 B:27]];
-            [colorGraphDic setValue:array forKey:@"DF_Summer"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:240 G:154 B:189]];
-            [array addObject:[[Color alloc]initWithR:243 G:202 B:148]];
-            [array addObject:[[Color alloc]initWithR:255 G:251 B:118]];
-            [array addObject:[[Color alloc]initWithR:185 G:221 B:125]];
-            [colorGraphDic setValue:array forKey:@"DG_Common"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:202 G:0 B:31]];
-            [array addObject:[[Color alloc]initWithR:245 G:165 B:130]];
-            [array addObject:[[Color alloc]initWithR:145 G:197 B:223]];
-            [array addObject:[[Color alloc]initWithR:0 G:113 B:176]];
-            [colorGraphDic setValue:array forKey:@"DH_Red-Blue"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:205 G:228 B:200]];
-            [array addObject:[[Color alloc]initWithR:229 G:146 B:106]];
-            [array addObject:[[Color alloc]initWithR:243 G:209 B:119]];
-            [array addObject:[[Color alloc]initWithR:236 G:216 B:179]];
-            [array addObject:[[Color alloc]initWithR:221 G:90 B:62]];
-            [colorGraphDic setValue:array forKey:@"EA_Orange"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:129 G:194 B:214]];
-            [array addObject:[[Color alloc]initWithR:129 G:146 B:214]];
-            [array addObject:[[Color alloc]initWithR:217 G:179 B:230]];
-            [array addObject:[[Color alloc]initWithR:220 G:247 B:161]];
-            [array addObject:[[Color alloc]initWithR:131 G:252 B:216]];
-            [colorGraphDic setValue:array forKey:@"EB_Cold"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:246 G:134 B:32]];
-            [array addObject:[[Color alloc]initWithR:236 G:28 B:35]];
-            [array addObject:[[Color alloc]initWithR:254 G:236 B:125]];
-            [array addObject:[[Color alloc]initWithR:80 G:76 B:170]];
-            [array addObject:[[Color alloc]initWithR:179 G:227 B:170]];
-            [colorGraphDic setValue:array forKey:@"EC_Distinct"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:103 G:205 B:227]];
-            [array addObject:[[Color alloc]initWithR:165 G:226 B:228]];
-            [array addObject:[[Color alloc]initWithR:99 G:192 B:190]];
-            [array addObject:[[Color alloc]initWithR:183 G:229 B:193]];
-            [array addObject:[[Color alloc]initWithR:102 G:201 B:147]];
-            [colorGraphDic setValue:array forKey:@"ED_Pastal"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:254 G:242 B:0]];
-            [array addObject:[[Color alloc]initWithR:104 G:189 B:178]];
-            [array addObject:[[Color alloc]initWithR:185 G:219 B:65]];
-            [array addObject:[[Color alloc]initWithR:206 G:232 B:142]];
-            [array addObject:[[Color alloc]initWithR:29 G:151 B:121]];
-            [colorGraphDic setValue:array forKey:@"EE_Grass"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:97 G:255 B:105]];
-            [array addObject:[[Color alloc]initWithR:184 G:247 B:136]];
-            [array addObject:[[Color alloc]initWithR:88 G:210 B:232]];
-            [array addObject:[[Color alloc]initWithR:242 G:182 B:182]];
-            [array addObject:[[Color alloc]initWithR:232 G:237 B:81]];
-            [colorGraphDic setValue:array forKey:@"EF_Blind"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:235 G:74 B:19]];
-            [array addObject:[[Color alloc]initWithR:234 G:217 B:0]];
-            [array addObject:[[Color alloc]initWithR:0 G:234 B:180]];
-            [array addObject:[[Color alloc]initWithR:114 G:0 B:234]];
-            [array addObject:[[Color alloc]initWithR:234 G:124 B:0]];
-            [colorGraphDic setValue:array forKey:@"EG_Passion"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:31 G:60 B:255]];
-            [array addObject:[[Color alloc]initWithR:255 G:68 B:255]];
-            [array addObject:[[Color alloc]initWithR:145 G:59 B:255]];
-            [array addObject:[[Color alloc]initWithR:122 G:255 B:201]];
-            [array addObject:[[Color alloc]initWithR:218 G:97 B:74]];
-            [colorGraphDic setValue:array forKey:@"EH_Amazing"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:217 G:77 B:77]];
-            [array addObject:[[Color alloc]initWithR:135 G:171 B:102]];
-            [array addObject:[[Color alloc]initWithR:251 G:180 B:72]];
-            [array addObject:[[Color alloc]initWithR:103 G:205 B:204]];
-            [array addObject:[[Color alloc]initWithR:171 G:58 B:107]];
-            
-            [array addObject:[[Color alloc]initWithR:81 G:48 B:135]];
-            [array addObject:[[Color alloc]initWithR:4 G:101 B:137]];
-            [array addObject:[[Color alloc]initWithR:146 G:2 B:64]];
-            [colorGraphDic setValue:array forKey:@"HA_Calm"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:66 G:80 B:99]];
-            [array addObject:[[Color alloc]initWithR:94 G:213 B:209]];
-            [array addObject:[[Color alloc]initWithR:58 G:154 B:217]];
-            [array addObject:[[Color alloc]initWithR:48 G:173 B:167]];
-            [array addObject:[[Color alloc]initWithR:253 G:224 B:214]];
-            
-            [array addObject:[[Color alloc]initWithR:235 G:114 B:96]];
-            [array addObject:[[Color alloc]initWithR:243 G:152 B:0]];
-            [array addObject:[[Color alloc]initWithR:211 G:50 B:73]];
-            [colorGraphDic setValue:array forKey:@"HB_Distance"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:15 G:99 B:161]];
-            [array addObject:[[Color alloc]initWithR:37 G:143 B:185]];
-            [array addObject:[[Color alloc]initWithR:104 G:161 B:49]];
-            [array addObject:[[Color alloc]initWithR:167 G:202 B:34]];
-            [array addObject:[[Color alloc]initWithR:238 G:119 B:26]];
-            
-            [array addObject:[[Color alloc]initWithR:245 G:193 B:28]];
-            [array addObject:[[Color alloc]initWithR:124 G:61 B:146]];
-            [array addObject:[[Color alloc]initWithR:229 G:74 B:120]];
-            [colorGraphDic setValue:array forKey:@"HC_Exotic"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:228 G:26 B:28]];
-            [array addObject:[[Color alloc]initWithR:55 G:126 B:184]];
-            [array addObject:[[Color alloc]initWithR:77 G:175 B:74]];
-            [array addObject:[[Color alloc]initWithR:152 G:78 B:163]];
-            [array addObject:[[Color alloc]initWithR:255 G:127 B:0]];
-            
-            [array addObject:[[Color alloc]initWithR:255 G:255 B:51]];
-            [array addObject:[[Color alloc]initWithR:166 G:86 B:40]];
-            [array addObject:[[Color alloc]initWithR:247 G:129 B:191]];
-            [colorGraphDic setValue:array forKey:@"HD_Luck"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:91 G:155 B:213]];
-            [array addObject:[[Color alloc]initWithR:237 G:125 B:49]];
-            [array addObject:[[Color alloc]initWithR:165 G:165 B:165]];
-            [array addObject:[[Color alloc]initWithR:255 G:192 B:0]];
-            [array addObject:[[Color alloc]initWithR:68 G:114 B:196]];
-            
-            [array addObject:[[Color alloc]initWithR:112 G:173 B:71]];
-            [array addObject:[[Color alloc]initWithR:158 G:72 B:14]];
-            [array addObject:[[Color alloc]initWithR:67 G:104 B:43]];
-            [colorGraphDic setValue:array forKey:@"HE_Moist"];
-        }
-        {
-            NSMutableArray* array = [[NSMutableArray alloc] init];
-            [array addObject:[[Color alloc]initWithR:237 G:125 B:49]];
-            [array addObject:[[Color alloc]initWithR:255 G:192 B:0]];
-            [array addObject:[[Color alloc]initWithR:112 G:173 B:71]];
-            [array addObject:[[Color alloc]initWithR:158 G:72 B:14]];
-            [array addObject:[[Color alloc]initWithR:153 G:115 B:0]];
-            
-            [array addObject:[[Color alloc]initWithR:67 G:104 B:43]];
+            [array addObject:[[Color alloc]initWithR:219 G:238 B:243]];
             [array addObject:[[Color alloc]initWithR:227 G:108 B:9]];
-            [array addObject:[[Color alloc]initWithR:182 G:170 B:0]];
-            [colorGraphDic setValue:array forKey:@"HF_Warm"];
+            [listAggregationColors setValue:array forKey:@"BB_LightRainbow"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:166 G:230 B:166]];
+            [array addObject:[[Color alloc]initWithR:255 G:255 B:0]];
+            [listAggregationColors setValue:array forKey:@"BC_Lemon"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:253 G:248 B:202]];
+            [array addObject:[[Color alloc]initWithR:211 G:50 B:73]];
+            [listAggregationColors setValue:array forKey:@"BD_Scarlet"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:247 G:255 B:247]];
+            [array addObject:[[Color alloc]initWithR:8 G:92 B:165]];
+            [listAggregationColors setValue:array forKey:@"BE_Sea"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:252 G:255 B:247]];
+            [array addObject:[[Color alloc]initWithR:255 G:114 B:0]];
+            [listAggregationColors setValue:array forKey:@"BF_Orange"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:253 G:255 B:247]];
+            [array addObject:[[Color alloc]initWithR:0 G:102 B:56]];
+            [listAggregationColors setValue:array forKey:@"BG_Green"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:250 G:247 B:255]];
+            [array addObject:[[Color alloc]initWithR:74 G:20 B:134]];
+            [listAggregationColors setValue:array forKey:@"BH_Purple"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:0 G:0 B:255]];
+            [array addObject:[[Color alloc]initWithR:0 G:255 B:255]];
+            [array addObject:[[Color alloc]initWithR:0 G:255 B:0]];
+            [array addObject:[[Color alloc]initWithR:255 G:255 B:0]];
+            [array addObject:[[Color alloc]initWithR:255 G:0 B:0]];
+            [listAggregationColors setValue:array forKey:@"ZA_Insights"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:0 G:68 B:123]];
+            [array addObject:[[Color alloc]initWithR:0 G:111 B:171]];
+            [array addObject:[[Color alloc]initWithR:0 G:156 B:209]];
+            [array addObject:[[Color alloc]initWithR:139 G:199 B:212]];
+            [array addObject:[[Color alloc]initWithR:222 G:230 B:183]];
+            [array addObject:[[Color alloc]initWithR:210 G:202 B:99]];
+            [array addObject:[[Color alloc]initWithR:225 G:182 B:0]];
+            [array addObject:[[Color alloc]initWithR:228 G:159 B:0]];
+            [listAggregationColors setValue:array forKey:@"ZB_Sunrise"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:77 G:146 B:33]];
+            [array addObject:[[Color alloc]initWithR:127 G:188 B:65]];
+            [array addObject:[[Color alloc]initWithR:184 G:225 B:134]];
+            [array addObject:[[Color alloc]initWithR:230 G:254 B:208]];
+            [array addObject:[[Color alloc]initWithR:253 G:224 B:239]];
+            [array addObject:[[Color alloc]initWithR:241 G:182 B:218]];
+            [array addObject:[[Color alloc]initWithR:241 G:119 B:174]];
+            [array addObject:[[Color alloc]initWithR:197 G:27 B:125]];
+            [listAggregationColors setValue:array forKey:@"ZC_Garden"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:0 G:118 B:110]];
+            [array addObject:[[Color alloc]initWithR:2 G:164 B:160]];
+            [array addObject:[[Color alloc]initWithR:255 G:217 B:68]];
+            [array addObject:[[Color alloc]initWithR:242 G:145 B:41]];
+            [array addObject:[[Color alloc]initWithR:169 G:26 B:134]];
+            [listAggregationColors setValue:array forKey:@"ZD_Classic"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:104 G:38 B:102]];
+            [array addObject:[[Color alloc]initWithR:255 G:206 B:0]];
+            [array addObject:[[Color alloc]initWithR:255 G:182 B:0]];
+            [array addObject:[[Color alloc]initWithR:231 G:62 B:81]];
+            [array addObject:[[Color alloc]initWithR:207 G:10 B:44]];
+            [listAggregationColors setValue:array forKey:@"ZE_Warm"];
+        }
+        {
+            NSMutableArray* array = [[NSMutableArray alloc] init];
+            [array addObject:[[Color alloc]initWithR:11 G:167 B:218]];
+            [array addObject:[[Color alloc]initWithR:38 G:102 B:190]];
+            [array addObject:[[Color alloc]initWithR:77 G:86 B:191]];
+            [array addObject:[[Color alloc]initWithR:117 G:50 B:166]];
+            [array addObject:[[Color alloc]initWithR:229 G:115 B:202]];
+            [array addObject:[[Color alloc]initWithR:237 G:88 B:117]];
+            [array addObject:[[Color alloc]initWithR:242 G:84 B:98]];
+            [array addObject:[[Color alloc]initWithR:245 G:122 B:81]];
+            [listAggregationColors setValue:array forKey:@"ZF_Dreamlike"];
         }
     }
-    return [colorGraphDic objectForKey:colorType];
+    return [listAggregationColors objectForKey:colorType];
 }
 
 +(NSString*)datasetTypeToString:(DatasetType)datasetType{
@@ -2853,6 +2959,33 @@ NSMutableDictionary* colorGraphDic = nil;
     return false;
 }
 
+/**
+ * 创建热力图
+ * @param dataset
+ * @param KernelRadius
+ * @param FuzzyDegree
+ * @param Intensity
+ * @param colors
+ * @return
+ */
++(NSDictionary*)createLayerHeatMap:(Dataset*)dataset radius:(int)KernelRadius fuzzyDegree:(double)FuzzyDegree intensity:(double)Intensity colors:(NSArray *)colors {
+    if (dataset != nil && colors != nil) {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory]addMapHistory];
+        Layers* layers = mapControl.map.layers;
+        
+        LayerHeatmap* layerHeatmap = [layers addHeatmap:dataset radius:KernelRadius maxColor:[[Color alloc]initWithR:255 G:0 B:0] minColor:[[Color alloc]initWithR:0 G:0 B:255]];//.addHeatmap(dataset, KernelRadius, new Color(255, 0, 0), new Color(0, 0, 255));
+        layerHeatmap.colorset = [Colors makeGradient:colors.count gradientColorArray:colors]; // setColorset(Colors.makeGradient(colors.length, colors));
+        layerHeatmap.intensity = Intensity;
+        layerHeatmap.fuzzyDegree = FuzzyDegree;//setFuzzyDegree(FuzzyDegree);
+        
+        [mapControl.map refresh];
+        
+        return @{@"Result":@(1)};
+    }
+    
 
+    return nil;
+}
 
 @end
