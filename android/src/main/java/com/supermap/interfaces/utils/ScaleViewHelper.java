@@ -98,13 +98,20 @@ public class ScaleViewHelper {
         points.add(mapPos);
         points.add(mapPos2);
 
-        if(mMap.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE){
+        try{
+            //处理type不兼容
+            if(mMap.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE){
+                dx = Math.abs(points.getItem(0).getX() - points.getItem(1).getX());
+                dy = Math.abs(points.getItem(0).getY() - points.getItem(1).getY());
+            }else {
+                dx = Math.abs(points.getItem(0).getX() - points.getItem(1).getX())*111319.489;
+                dy = Math.abs(points.getItem(0).getY() - points.getItem(1).getY())*111319.489;
+            }
+        }catch (Exception e){
             dx = Math.abs(points.getItem(0).getX() - points.getItem(1).getX());
             dy = Math.abs(points.getItem(0).getY() - points.getItem(1).getY());
-        }else {
-            dx = Math.abs(points.getItem(0).getX() - points.getItem(1).getX())*111319.489;
-            dy = Math.abs(points.getItem(0).getY() - points.getItem(1).getY())*111319.489;
         }
+
         mScale = Math.sqrt(dx * dx + dy * dy);
 
         return 10/mScale;

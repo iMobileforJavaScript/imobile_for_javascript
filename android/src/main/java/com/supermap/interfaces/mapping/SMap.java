@@ -110,6 +110,36 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     String rootPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 
 
+    private ScaleViewHelper getScaleViewHelper() {
+        if (scaleViewHelper == null) {
+            scaleViewHelper = new ScaleViewHelper(context);
+        }
+        if (scaleViewHelper.mapParameterChangedListener == null) {
+            scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
+                public void scaleChanged(double newScale) {
+                    scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
+                    scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
+                    scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
+                    WritableMap map = Arguments.createMap();
+                    map.putDouble("width", scaleViewHelper.mScaleWidth);
+                    map.putString("title", scaleViewHelper.mScaleText);
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.SCALEVIEW_CHANGE, map);
+                }
+
+                public void boundsChanged(Point2D newMapCenter) {
+                }
+
+                public void angleChanged(double newAngle) {
+                }
+
+                public void sizeChanged(int width, int height) {
+                }
+            });
+        }
+        return scaleViewHelper;
+    }
+
     public Selection getSelection() {
         return selection;
     }
@@ -218,21 +248,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
 
-    private void showMarkerHelper(Point2D pt,int tag){
-        final  Point2D mapPt = pt;//new Point2D(11584575.605042318,3573118.555091877);
-        final  String tagStr = tag+"";
+    private void showMarkerHelper(Point2D pt, int tag) {
+        final Point2D mapPt = pt;//new Point2D(11584575.605042318,3573118.555091877);
+        final String tagStr = tag + "";
         getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
 //                    final  Point2D mapPt = new Point2D(11584575.605042318,3573118.555091877);
-                GeoPoint point = new GeoPoint(mapPt.getX(),mapPt.getY());
+                GeoPoint point = new GeoPoint(mapPt.getX(), mapPt.getY());
                 GeoStyle style = new GeoStyle();
                 style.setMarkerSymbolID(118081);
-                style.setMarkerSize(new Size2D(6,6));
-                style.setLineColor(new Color(255,0,0,255));
+                style.setMarkerSize(new Size2D(6, 6));
+                style.setLineColor(new Color(255, 0, 0, 255));
                 point.setStyle(style);
 
-                sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(point,tagStr);
+                sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(point, tagStr);
 
 //                sMap.smMapWC.getMapControl().getMap().getMapView().getContext();
 //                CallOut callout = new CallOut(sMap.smMapWC.getMapControl().getMap().getMapView().getContext());
@@ -240,25 +270,27 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //                sMap.smMapWC.getMapControl().getMap().getMapView().addCallout(callout,tagStr);
 //                sMap.smMapWC.getMapControl().getMap().getMapView().showCallOut();
                 sMap.smMapWC.getMapControl().getMap().setCenter(mapPt);
-                if(sMap.smMapWC.getMapControl().getMap().getScale() < 0.000011947150294723098)
+                if (sMap.smMapWC.getMapControl().getMap().getScale() < 0.000011947150294723098)
                     sMap.smMapWC.getMapControl().getMap().setScale(0.000011947150294723098);
                 sMap.smMapWC.getMapControl().getMap().refresh();
             }
         });
     }
+
     /**
      * 添加marker
+     *
      * @param longitude
      * @param latitude
      * @param promise
      */
     @ReactMethod
-    public void showMarker(double longitude, double latitude, int tag,Promise promise) {
+    public void showMarker(double longitude, double latitude, int tag, Promise promise) {
         try {
             sMap = getInstance();
             sMap.smMapWC.getMapControl().getMap().refresh();
 
-            Point2D pt = new Point2D(longitude,latitude);
+            Point2D pt = new Point2D(longitude, latitude);
             if (sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
                 Point2Ds point2Ds = new Point2Ds();
                 point2Ds.add(pt);
@@ -268,7 +300,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                 CoordSysTranslator.convert(point2Ds, prjCoordSys, sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
                 pt = point2Ds.getItem(0);
-                showMarkerHelper(pt,tag);
+                showMarkerHelper(pt, tag);
             }
 
             promise.resolve(true);
@@ -276,26 +308,29 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
-    private void deleteMarkerHelper(int tag){
-        final  String tagStr = tag+"";
+
+    private void deleteMarkerHelper(int tag) {
+        final String tagStr = tag + "";
         getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-              //  sMap.smMapWC.getMapControl().getMap().getMapView().removeCallOut(tagStr);
-               int n = sMap.smMapWC.getMapControl().getMap().getTrackingLayer().indexOf(tagStr);
-               if(n!=-1) {
-                   sMap.smMapWC.getMapControl().getMap().getTrackingLayer().remove(n);
-                   sMap.smMapWC.getMapControl().getMap().refresh();
-               }
+                //  sMap.smMapWC.getMapControl().getMap().getMapView().removeCallOut(tagStr);
+                int n = sMap.smMapWC.getMapControl().getMap().getTrackingLayer().indexOf(tagStr);
+                if (n != -1) {
+                    sMap.smMapWC.getMapControl().getMap().getTrackingLayer().remove(n);
+                    sMap.smMapWC.getMapControl().getMap().refresh();
+                }
             }
         });
     }
+
     /**
      * 移除marker
+     *
      * @param promise
      */
     @ReactMethod
-    public void deleteMarker(int tag ,Promise promise) {
+    public void deleteMarker(int tag, Promise promise) {
         try {
             deleteMarkerHelper(tag);
             promise.resolve(true);
@@ -316,10 +351,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = getInstance();
             sMap.smMapWC.getMapControl().getMap().refresh();
 
-            getCurrentActivity().runOnUiThread(new Runnable(){
+            getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
-                public void run(){
-                    ((MapWrapView)sMap.smMapWC.getMapControl().getMap().getMapView()).requestLayout();
+                public void run() {
+                    ((MapWrapView) sMap.smMapWC.getMapControl().getMap().getMapView()).requestLayout();
                 }
             });
 
@@ -350,27 +385,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     sMap.getSmMapWC().getMapControl().setMagnifierEnabled(true);
                     sMap.getSmMapWC().getMapControl().getMap().setAntialias(true);
                     sMap.getSmMapWC().getMapControl().getMap().refresh();
-
-                    if(scaleViewHelper == null){
-                        scaleViewHelper = new ScaleViewHelper(context);
-                        if(scaleViewHelper.mapParameterChangedListener == null){
-                            scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
-                                public void scaleChanged(double newScale) {
-                                    scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
-                                    scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
-                                    scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
-                                    WritableMap map = Arguments.createMap();
-                                    map.putDouble("width",scaleViewHelper.mScaleWidth);
-                                    map.putString("title",scaleViewHelper.mScaleText);
-                                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                            .emit(EventConst.SCALEVIEW_CHANGE, map);
-                                }
-                                public void boundsChanged(Point2D newMapCenter) {}
-                                public void angleChanged(double newAngle) {}
-                                public void sizeChanged(int width, int height) {}
-                            });
-                        }
-                    }
                 }
             }
 
@@ -382,17 +396,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 仅用于判断在线数据是否可请求到数据
+     *
      * @param data
      */
     @ReactMethod
-    public void isDatasourceOpen(ReadableMap data, Promise promise){
+    public void isDatasourceOpen(ReadableMap data, Promise promise) {
         try {
             sMap = getInstance();
             Map params = data.toHashMap();
             Datasource datasource = sMap.smMapWC.openDatasource(params);
-            if(datasource != null) {
+            if (datasource != null) {
                 promise.resolve(true);
-            }else {
+            } else {
                 promise.resolve(false);
             }
         } catch (Exception e) {
@@ -776,7 +791,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             Maps maps = sMap.smMapWC.getWorkspace().getMaps();
 
 
-
             Boolean isOpen = false;
 
             if (maps.getCount() > 0) {
@@ -789,27 +803,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(mapName);
 
                 if (isOpen) {
-                    if(scaleViewHelper == null){
-                        scaleViewHelper = new ScaleViewHelper(context);
-                        if(scaleViewHelper.mapParameterChangedListener == null){
-                            scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
-                                public void scaleChanged(double newScale) {
-                                    scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
-                                    scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
-                                    scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
-                                    WritableMap map = Arguments.createMap();
-                                    map.putDouble("width",scaleViewHelper.mScaleWidth);
-                                    map.putString("title",scaleViewHelper.mScaleText);
-                                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                            .emit(EventConst.SCALEVIEW_CHANGE, map);
-                                }
-                                public void boundsChanged(Point2D newMapCenter) {}
-                                public void angleChanged(double newAngle) {}
-                                public void sizeChanged(int width, int height) {}
-                            });
-                        }
-                    }
-
+//                    scaleViewHelper = sMap.getScaleViewHelper();
                     if (viewEntire) {
                         map.viewEntire();
                     }
@@ -858,26 +852,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(name);
 
                 if (isOpen) {
-                    if(scaleViewHelper == null){
-                        scaleViewHelper = new ScaleViewHelper(context);
-                        if(scaleViewHelper.mapParameterChangedListener == null){
-                            scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
-                                public void scaleChanged(double newScale) {
-                                    scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
-                                    scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
-                                    scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
-                                    WritableMap map = Arguments.createMap();
-                                    map.putDouble("width",scaleViewHelper.mScaleWidth);
-                                    map.putString("title",scaleViewHelper.mScaleText);
-                                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                            .emit(EventConst.SCALEVIEW_CHANGE, map);
-                                }
-                                public void boundsChanged(Point2D newMapCenter) {}
-                                public void angleChanged(double newAngle) {}
-                                public void sizeChanged(int width, int height) {}
-                            });
-                        }
-                    }
+                    scaleViewHelper = sMap.getScaleViewHelper();
 
                     if (viewEntire) {
                         map.viewEntire();
@@ -956,7 +931,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
 //            getCurrentActivity().runOnUiThread(new DisposeThread(promise));
             sMap = getInstance();
-            scaleViewHelper.removeScaleChangeListener();
             MapControl mapControl = sMap.smMapWC.getMapControl();
             Workspace workspace = sMap.smMapWC.getWorkspace();
             com.supermap.mapping.Map map = mapControl.getMap();
@@ -984,8 +958,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void closeMap(Promise promise) {
         try {
             sMap = getInstance();
-            if(scaleViewHelper != null){
-                if(scaleViewHelper.mapParameterChangedListener != null){
+            if (scaleViewHelper != null) {
+                if (scaleViewHelper.mapParameterChangedListener != null) {
                     scaleViewHelper.removeScaleChangeListener();
                 }
                 scaleViewHelper = null;
@@ -1568,7 +1542,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             if (point.hasKey("x") && point.hasKey("y")) {
                 Point2D point2D = new Point2D(point.getDouble("x"), point.getDouble("y"));
-                MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(point2D,false, promise);
+                MoveToCurrentThread moveToCurrentThread = new MoveToCurrentThread(point2D, false, promise);
                 moveToCurrentThread.run();
 //                promise.resolve(true);
             } else {
@@ -1585,6 +1559,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         private Promise promise;
         private Point2D point2D;
         private boolean showMarker = true;
+
         public MoveToCurrentThread(Promise promise) {
             this.promise = promise;
         }
@@ -1593,11 +1568,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             this.promise = promise;
             this.point2D = point2D;
         }
-        public MoveToCurrentThread(Point2D point2D,boolean showMarker, Promise promise) {
+
+        public MoveToCurrentThread(Point2D point2D, boolean showMarker, Promise promise) {
             this.promise = promise;
             this.point2D = point2D;
             this.showMarker = showMarker;
         }
+
         @Override
         public void run() {
             try {
@@ -1608,7 +1585,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 Point2D pt;
                 if (this.point2D == null) {
                     LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
-                    pt =  new Point2D(gpsDat.dLongitude,gpsDat.dLatitude);
+                    pt = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
 //                    pt = collector.getGPSPoint();
                 } else {
                     pt = this.point2D;
@@ -1659,12 +1636,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     if (defaultMapCenter != null) {
                         mapCenter = defaultMapCenter;
                     }
-                }else{
-                    if(this.showMarker) {
+                } else {
+                    if (this.showMarker) {
                         showMarkerHelper(mapCenter, curLocationTag);
                     }
                 }
-                if(mapCenter!=null) {
+                if (mapCenter != null) {
                     mapControl.getMap().setCenter(mapCenter);
                     isMove = true;
                     mapControl.getMap().refresh();
@@ -2430,8 +2407,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             List<String> list = sMap.smMapWC.importWorkspaceInfo(infoMap.toHashMap(), nModule, bPrivate);
             WritableArray mapsInfo = Arguments.createArray();
             if (list == null) {
-                 promise.resolve(mapsInfo);
-            }else {
+                promise.resolve(mapsInfo);
+            } else {
                 if (list.size() > 0) {
                     for (int i = 0; i < list.size(); i++) {
                         mapsInfo.pushString(list.get(i));
@@ -2868,17 +2845,17 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void newTaggingDataset(String name,String userpath, Promise promise) {
+    public void newTaggingDataset(String name, String userpath, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
+            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
 //            sMap.smMapWC.getWorkspace().getConnectionInfo().getServer();
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Label_"+userpath+"#");
+                info.setAlias("Label_" + userpath + "#");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Datasource/Label_"+userpath+"#.udb");
+                info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Label_" + userpath + "#.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
@@ -2935,16 +2912,16 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void removeTaggingDataset(String name,String userpath, Promise promise) {
+    public void removeTaggingDataset(String name, String userpath, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
+            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Label_"+userpath+"#");
+                info.setAlias("Label_" + userpath + "#");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Datasource/Label_"+userpath+"#.udb");
+                info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Label_" + userpath + "#.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
@@ -2971,27 +2948,27 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
+            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Label_"+userpath+"#");
+                info.setAlias("Label_" + userpath + "#");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Datasource/Label_"+userpath+"#.udb");
+                info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Label_" + userpath + "#.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
                     com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                    for(int i =0;i<datasets.getCount();i++) {
+                    for (int i = 0; i < datasets.getCount(); i++) {
                         Dataset ds = datasets.get(i);
-                        String addname = ds.getName()+"@Label_"+userpath+"#";
+                        String addname = ds.getName() + "@Label_" + userpath + "#";
                         boolean add = true;
                         Layers maplayers = map.getLayers();
-                        for(int j=0 ; j<maplayers.getCount();j++){
-                            if(maplayers.get(j).getCaption().equals(addname)){
+                        for (int j = 0; j < maplayers.getCount(); j++) {
+                            if (maplayers.get(j).getCaption().equals(addname)) {
                                 add = false;
                             }
                         }
-                        if(add) {
+                        if (add) {
                             Layer layer = map.getLayers().add(ds, true);
                             layer.setEditable(false);
                             layer.setVisible(false);
@@ -3002,17 +2979,17 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             } else {
                 Datasets datasets = opendatasource.getDatasets();
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                for(int i =0;i<datasets.getCount();i++) {
+                for (int i = 0; i < datasets.getCount(); i++) {
                     Dataset ds = datasets.get(i);
-                    String addname = ds.getName()+"@Label_"+userpath+"#";
+                    String addname = ds.getName() + "@Label_" + userpath + "#";
                     boolean add = true;
                     Layers maplayers = map.getLayers();
-                    for(int j=0 ; j<maplayers.getCount();j++){
-                        if(maplayers.get(j).getCaption().equals(addname)){
+                    for (int j = 0; j < maplayers.getCount(); j++) {
+                        if (maplayers.get(j).getCaption().equals(addname)) {
                             add = false;
                         }
                     }
-                    if(add) {
+                    if (add) {
                         Layer layer = map.getLayers().add(ds, true);
                         layer.setEditable(false);
                         layer.setVisible(false);
@@ -3027,6 +3004,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 获取默认标注
+     *
      * @param promise
      */
     @ReactMethod
@@ -3034,24 +3012,24 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
+            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
             if (opendatasource != null) {
                 String datasetname = "";
                 Datasets datasets = opendatasource.getDatasets();
                 Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
                 boolean isEditable = false;
-                for(int i = 0; i<layers.getCount(); i++){
-                    if(!isEditable) {
+                for (int i = 0; i < layers.getCount(); i++) {
+                    if (!isEditable) {
                         Layer layer = layers.get(i);
                         for (int j = 0; j < datasets.getCount(); j++) {
-                                Dataset dataset = datasets.get(j);
-                                if (layer.getDataset() == dataset) {
-                                    if (layer.isEditable()) {
-                                        isEditable = true;
-                                        datasetname = dataset.getName();
-                                        break;
-                                    }
+                            Dataset dataset = datasets.get(j);
+                            if (layer.getDataset() == dataset) {
+                                if (layer.isEditable()) {
+                                    isEditable = true;
+                                    datasetname = dataset.getName();
+                                    break;
                                 }
+                            }
                         }
                     }
                 }
@@ -3065,6 +3043,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 判断是否有标注图层
+     *
      * @param promise
      */
     @ReactMethod
@@ -3072,24 +3051,24 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
+            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
             if (opendatasource != null) {
                 Datasets datasets = opendatasource.getDatasets();
                 Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
                 boolean isEditable = false;
-                    for(int i = 0; i<layers.getCount(); i++){
-                        if(!isEditable) {
-                            Layer layer = layers.get(i);
-                            for (int j = 0; j < datasets.getCount(); j++) {
-                                Dataset dataset = datasets.get(j);
-                                if (layer.getDataset() == dataset) {
-                                    if (layer.isEditable()) {
-                                        isEditable = true;
-                                    }
+                for (int i = 0; i < layers.getCount(); i++) {
+                    if (!isEditable) {
+                        Layer layer = layers.get(i);
+                        for (int j = 0; j < datasets.getCount(); j++) {
+                            Dataset dataset = datasets.get(j);
+                            if (layer.getDataset() == dataset) {
+                                if (layer.isEditable()) {
+                                    isEditable = true;
                                 }
                             }
                         }
                     }
+                }
                 promise.resolve(isEditable);
             }
         } catch (Exception e) {
@@ -3103,11 +3082,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void getTaggingLayerCount(String userpath,Promise promise){
+    public void getTaggingLayerCount(String userpath, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
+            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
             if (opendatasource != null) {
                 Datasets datasets = opendatasource.getDatasets();
                 int count = datasets.getCount();
@@ -3120,6 +3099,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 获取当前标注
+     *
      * @param promise
      */
     @ReactMethod
@@ -3127,13 +3107,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                String datasetname = "";
-                Layer layer = map.getLayers().get(name);
-                layer.setVisible(true);
-                layer.setEditable(true);
-                map.refresh();
-                datasetname = layer.getDataset().getName();
-                promise.resolve(datasetname);
+            String datasetname = "";
+            Layer layer = map.getLayers().get(name);
+            layer.setVisible(true);
+            layer.setEditable(true);
+            map.refresh();
+            datasetname = layer.getDataset().getName();
+            promise.resolve(datasetname);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -3150,12 +3130,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
+            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Label_"+userpath+"#");
+                info.setAlias("Label_" + userpath + "#");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Datasource/Label_"+userpath+"#.udb");
+                info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Label_" + userpath + "#.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
@@ -3163,11 +3143,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     WritableArray arr = Arguments.createArray();
                     Layers layers = map.getLayers();
 
-                    for(int i = 0 ; i < datasets.getCount() ; i++){
+                    for (int i = 0; i < datasets.getCount(); i++) {
                         Dataset ds = datasets.get(i);
-                        for (int j=0;j<layers.getCount();j++){
+                        for (int j = 0; j < layers.getCount(); j++) {
                             Layer layer = layers.get(j);
-                            if(layer.getDataset()==ds){
+                            if (layer.getDataset() == ds) {
                                 WritableMap writeMap = SMLayer.getLayerInfo(layer, "");
                                 arr.pushMap(writeMap);
                             }
@@ -3181,11 +3161,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 WritableArray arr = Arguments.createArray();
                 Layers layers = map.getLayers();
 
-                for(int i = 0 ; i < datasets.getCount() ; i++){
+                for (int i = 0; i < datasets.getCount(); i++) {
                     Dataset ds = datasets.get(i);
-                    for (int j=0;j<layers.getCount();j++){
+                    for (int j = 0; j < layers.getCount(); j++) {
                         Layer layer = layers.get(j);
-                        if(layer.getDataset()==ds){
+                        if (layer.getDataset() == ds) {
                             WritableMap writeMap = SMLayer.getLayerInfo(layer, "");
                             arr.pushMap(writeMap);
                         }
@@ -3204,16 +3184,16 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void addRecordset(String datasetName, String filedInfoName, String value,String userpath, Promise promise) {
+    public void addRecordset(String datasetName, String filedInfoName, String value, String userpath, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
+            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Label_"+userpath+"#");
+                info.setAlias("Label_" + userpath + "#");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Datasource/Label_"+userpath+"#.udb");
+                info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Label_" + userpath + "#.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
@@ -3275,14 +3255,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = SMap.getInstance();
             Layer layer = SMLayer.findLayerByPath(name);
 //            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
-            Rectangle2D bounds =  layer.getDataset().getBounds();
-            if(bounds.getWidth()<=0 || bounds.getHeight()<=0){
-                bounds.inflate(20,20);
+            Rectangle2D bounds = layer.getDataset().getBounds();
+            if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) {
+                bounds.inflate(20, 20);
             }
             if (layer.getDataset().getPrjCoordSys().getType() != sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getType()) {
                 Point2Ds point2Ds = new Point2Ds();
-                point2Ds.add(new Point2D(bounds.getLeft(),bounds.getTop()));
-                point2Ds.add(new Point2D(bounds.getRight(),bounds.getBottom()));
+                point2Ds.add(new Point2D(bounds.getLeft(), bounds.getTop()));
+                point2Ds.add(new Point2D(bounds.getRight(), bounds.getBottom()));
                 PrjCoordSys prjCoordSys = new PrjCoordSys();
                 prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
                 CoordSysTransParameter parameter = new CoordSysTransParameter();
@@ -3291,11 +3271,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 Point2D pt1 = point2Ds.getItem(0);
                 Point2D pt2 = point2Ds.getItem(1);
 
-                bounds = new Rectangle2D(pt1.getX(),pt2.getY(),pt2.getX(),pt1.getY());
+                bounds = new Rectangle2D(pt1.getX(), pt2.getY(), pt2.getX(), pt1.getY());
             }
 
             sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
-            sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale()*0.8,200);
+            sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.8, 200);
             sMap.getSmMapWC().getMapControl().getMap().refresh();
 
             promise.resolve(true);
@@ -3346,12 +3326,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void addTextRecordset(String dataname, String name,String userpath, int x, int y, Promise promise) {
+    public void addTextRecordset(String dataname, String name, String userpath, int x, int y, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Point2D p = sMap.smMapWC.getMapControl().getMap().pixelToMap(new Point(x, y));
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
+            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
             Datasets datasets = opendatasource.getDatasets();
             DatasetVector dataset = (DatasetVector) datasets.get(dataname);
             dataset.setReadOnly(false);
@@ -3368,9 +3348,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             recordset.close();
             geoText.dispose();
             recordset.dispose();
-            Recordset recordset1 = dataset.query(id,CursorType.DYNAMIC);
+            Recordset recordset1 = dataset.query(id, CursorType.DYNAMIC);
             sMap.smMapWC.getMapControl().getEditHistory().batchBegin();
-            sMap.smMapWC.getMapControl().getEditHistory().addHistoryType(EditHistoryType.ADDNEW,recordset1,true);
+            sMap.smMapWC.getMapControl().getEditHistory().addHistoryType(EditHistoryType.ADDNEW, recordset1, true);
             sMap.smMapWC.getMapControl().getEditHistory().batchEnd();
             recordset1.close();
             recordset1.dispose();
@@ -3442,12 +3422,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void setTaggingGrid(String name,String userpath, Promise promise) {
+    public void setTaggingGrid(String name, String userpath, Promise promise) {
         try {
             sMap = SMap.getInstance();
             final MapControl mapControl = sMap.smMapWC.getMapControl();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_"+userpath+"#");
+            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
             final DatasetVector dataset = (DatasetVector) opendatasource.getDatasets().get(name);
             final GeoStyle geoStyle = new GeoStyle();
             geoStyle.setFillForeColor(this.getFillColor());
@@ -3456,18 +3436,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             geoStyle.setLineColor(new Color(80, 80, 80));
             geoStyle.setFillOpaqueRate(50);//加透明度更美观
             //geoStyle.setLineColor(new Color(0,206,209));
-            if(dataset!=null){
+            if (dataset != null) {
                 mapControl.addGeometryAddedListener(new GeometryAddedListener() {
                     @Override
                     public void geometryAdded(GeometryEvent event) {
                         int id[] = new int[1];
                         id[0] = event.getID();
                         Recordset recordset = dataset.query(id, CursorType.DYNAMIC);
-                        if(recordset!=null){
+                        if (recordset != null) {
                             recordset.moveFirst();
                             recordset.edit();
                             Geometry geometry = recordset.getGeometry();
-                            if(geometry!=null) {
+                            if (geometry != null) {
                                 geometry.setStyle(geoStyle);
                                 recordset.setGeometry(geometry);
                                 recordset.update();
@@ -3615,49 +3595,49 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void initPlotSymbolLibrary(ReadableArray plotSymbolPaths,boolean isFirst,String newName ,boolean isDefaultNew ,Promise promise) {
+    public void initPlotSymbolLibrary(ReadableArray plotSymbolPaths, boolean isFirst, String newName, boolean isDefaultNew, Promise promise) {
         try {
             sMap = SMap.getInstance();
             final MapControl mapControl = sMap.smMapWC.getMapControl();
 
-            Dataset dataset=null;
-            String userpath=null,name="PlotEdit_"+(isDefaultNew?newName:mapControl.getMap().getName());
-            if(plotSymbolPaths.size()>0) {
+            Dataset dataset = null;
+            String userpath = null, name = "PlotEdit_" + (isDefaultNew ? newName : mapControl.getMap().getName());
+            if (plotSymbolPaths.size() > 0) {
                 String[] strArr = plotSymbolPaths.getString(0).split("/");
                 for (int index = 0; index < strArr.length; index++) {
-                    if (strArr[index].equals("User") && (index + 1) <strArr.length) {
-                        userpath=strArr[index+1];
+                    if (strArr[index].equals("User") && (index + 1) < strArr.length) {
+                        userpath = strArr[index + 1];
                         break;
                     }
                 }
             }
 
             Workspace workspace = mapControl.getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Plotting_"+userpath+"#");
-            Datasource datasource=null;
+            Datasource opendatasource = workspace.getDatasources().get("Plotting_" + userpath + "#");
+            Datasource datasource = null;
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Plotting_"+userpath+"#");
+                info.setAlias("Plotting_" + userpath + "#");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/"+userpath+"/Data/Datasource/Plotting_"+userpath+"#.udb");
+                info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Plotting_" + userpath + "#.udb");
                 datasource = workspace.getDatasources().open(info);
-                if(datasource  ==null){
-                    datasource=workspace.getDatasources().create(info);
+                if (datasource == null) {
+                    datasource = workspace.getDatasources().create(info);
                 }
                 if (datasource == null) {
                     datasource = workspace.getDatasources().open(info);
                 }
                 info.dispose();
-            }else {
-                datasource=opendatasource;
+            } else {
+                datasource = opendatasource;
             }
 
             if (datasource != null) {
                 Datasets datasets = datasource.getDatasets();
-                dataset=datasets.get(name);
+                dataset = datasets.get(name);
                 DatasetVector datasetVector;
                 String datasetName;
-                if(dataset==null) {
+                if (dataset == null) {
                     datasetName = datasets.getAvailableDatasetName(name);
                     DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
                     datasetVectorInfo.setType(DatasetType.CAD);
@@ -3675,12 +3655,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     layer.setEditable(true);
                     datasetVectorInfo.dispose();
                     datasetVector.close();
-                }else {
+                } else {
                     Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
-                    Layer editLayer=layers.get(name+"@"+datasource.getAlias());
-                    if(editLayer!=null){
+                    Layer editLayer = layers.get(name + "@" + datasource.getAlias());
+                    if (editLayer != null) {
                         editLayer.setEditable(true);
-                    }else {
+                    } else {
 
                         Dataset ds = dataset;
                         com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
@@ -3693,15 +3673,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             WritableMap writeMap = Arguments.createMap();
             for (int i = 0; i < plotSymbolPaths.size(); i++) {
-                int libId= (int) mapControl.addPlotLibrary(plotSymbolPaths.getString(i));
-                String libName=mapControl.getPlotSymbolLibName((long)libId);
-                writeMap.putInt(libName,libId);
-                if(isFirst&&libName.equals("警用标号")){
-                    Point2Ds point2Ds=new Point2Ds();
+                int libId = (int) mapControl.addPlotLibrary(plotSymbolPaths.getString(i));
+                String libName = mapControl.getPlotSymbolLibName((long) libId);
+                writeMap.putInt(libName, libId);
+                if (isFirst && libName.equals("警用标号")) {
+                    Point2Ds point2Ds = new Point2Ds();
                     point2Ds.add(mapControl.getMap().getCenter());
-                    mapControl.addPlotObject(libId,20100,point2Ds);
+                    mapControl.addPlotObject(libId, 20100, point2Ds);
                     mapControl.cancel();
-                    Recordset recordset = ((DatasetVector)dataset).getRecordset(false, CursorType.DYNAMIC);
+                    Recordset recordset = ((DatasetVector) dataset).getRecordset(false, CursorType.DYNAMIC);
                     recordset.moveLast();
                     recordset.delete();
                     recordset.update();
@@ -3743,7 +3723,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void setPlotSymbol(int libID,int symbolCode, Promise promise) {
+    public void setPlotSymbol(int libID, int symbolCode, Promise promise) {
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
@@ -3758,24 +3738,25 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 添加cad图层
+     *
      * @param layerName
      * @param promise
      */
     @ReactMethod
-    public void  addCadLayer(String layerName,Promise promise){
+    public void addCadLayer(String layerName, Promise promise) {
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
-            Layer cadLayer=mapControl.getMap().getLayers().get(layerName);
-            if(cadLayer==null) {
+            Layer cadLayer = mapControl.getMap().getLayers().get(layerName);
+            if (cadLayer == null) {
                 DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
                 datasetVectorInfo.setType(DatasetType.CAD);
                 datasetVectorInfo.setName(layerName);
                 DatasetVector datasetVector = (DatasetVector) sMap.smMapWC.getWorkspace().getDatasources().get(0).getDatasets().get(layerName);
-                if(datasetVector==null){
+                if (datasetVector == null) {
                     datasetVector = sMap.smMapWC.getWorkspace().getDatasources().get(0).getDatasets().create(datasetVectorInfo);
                 }
-                cadLayer=mapControl.getMap().getLayers().add(datasetVector, true);
+                cadLayer = mapControl.getMap().getLayers().add(datasetVector, true);
             }
             cadLayer.setEditable(true);
             promise.resolve(true);
@@ -3786,43 +3767,47 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 导入标绘模板库
+     *
      * @param fromPath
      */
     @ReactMethod
-    public static void importPlotLibData(String fromPath, Promise promise){
-        try{
+    public static void importPlotLibData(String fromPath, Promise promise) {
+        try {
             promise.resolve(importPlotLibDataMethod(fromPath));
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.resolve(false);
         }
     }
+
     /**
      * 导入标绘模板库
+     *
      * @param fromPath
      */
-    public static boolean importPlotLibDataMethod(String fromPath){
-        String toPath=homeDirectory+"/iTablet/User/"+SMap.getInstance().smMapWC.getUserName()+"/Data"+"/Plotting/";
-        boolean result=copyFiles(fromPath,toPath,"plot","Symbol","SymbolIcon");
+    public static boolean importPlotLibDataMethod(String fromPath) {
+        String toPath = homeDirectory + "/iTablet/User/" + SMap.getInstance().smMapWC.getUserName() + "/Data" + "/Plotting/";
+        boolean result = copyFiles(fromPath, toPath, "plot", "Symbol", "SymbolIcon");
         return result;
     }
 
     /**
      * 根据标绘库id获取标绘库名称
+     *
      * @param libId
      */
     @ReactMethod
-    public static void getPlotSymbolLibNameById(int libId, Promise promise){
-        try{
+    public static void getPlotSymbolLibNameById(int libId, Promise promise) {
+        try {
 
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
-            String libName=mapControl.getPlotSymbolLibName((long)libId);
+            String libName = mapControl.getPlotSymbolLibName((long) libId);
             promise.resolve(libName);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
-    
+
 
 /************************************** 地图编辑历史操作 BEGIN****************************************/
 
@@ -3978,19 +3963,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 获取图例的宽度和title
+     *
      * @param promise
      */
     @ReactMethod
-    public void getScaleData(Promise promise){
+    public void getScaleData(Promise promise) {
         try {
             scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
             scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
             scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
             WritableMap map = Arguments.createMap();
-            map.putDouble("width",scaleViewHelper.mScaleWidth);
-            map.putString("title",scaleViewHelper.mScaleText);
+            map.putDouble("width", scaleViewHelper.mScaleWidth);
+            map.putString("title", scaleViewHelper.mScaleText);
             promise.resolve(map);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
@@ -4005,7 +3991,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             double angle = sMap.smMapWC.getMapControl().getMap().getAngle();
-            angle = new BigDecimal(angle).setScale(1,RoundingMode.UP).doubleValue();
+            angle = new BigDecimal(angle).setScale(1, RoundingMode.UP).doubleValue();
             promise.resolve(angle);
         } catch (Exception e) {
             promise.reject(e);
@@ -4014,20 +4000,22 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 设置地图旋转角度
+     *
      * @param angle
      * @param promise
      */
     @ReactMethod
-    public void setMapAngle(double angle, Promise promise){
+    public void setMapAngle(double angle, Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().setAngle(angle);
             sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
+
     /**
      * 获取地图颜色模式
      *
@@ -4052,11 +4040,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void setMapColorMode(int mode, Promise promise){
+    public void setMapColorMode(int mode, Promise promise) {
         try {
-            sMap =SMap.getInstance();
+            sMap = SMap.getInstance();
             MapColorMode colorMode = MapColorMode.DEFAULT;
-            switch (mode){
+            switch (mode) {
                 case 0:
                     colorMode = MapColorMode.DEFAULT;
                     break;
@@ -4076,18 +4064,19 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap.smMapWC.getMapControl().getMap().setColorMode(colorMode);
             sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.resolve(e);
         }
     }
 
     /**
      * 获取地图背景色
+     *
      * @param promise
      */
     @ReactMethod
-    public void getMapBackgroundColor(Promise promise){
-        try{
+    public void getMapBackgroundColor(Promise promise) {
+        try {
             sMap = SMap.getInstance();
             GeoStyle backgroundStyle = sMap.smMapWC.getMapControl().getMap().getBackgroundStyle();
             Color color = backgroundStyle.getFillForeColor();
@@ -4097,21 +4086,23 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             r = r.length() == 1 ? "0" + r : r;
             g = g.length() == 1 ? "0" + g : g;
             b = b.length() == 1 ? "0" + b : b;
-            String colorString = "#"+r+g+b;
+            String colorString = "#" + r + g + b;
             promise.resolve(colorString);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
+
     /**
      * 设置地图背景色
+     *
      * @param r
      * @param g
      * @param b
      * @param promise
      */
     @ReactMethod
-    public void setMapBackgroundColor(int r, int g, int b,Promise promise){
+    public void setMapBackgroundColor(int r, int g, int b, Promise promise) {
         try {
             sMap = SMap.getInstance();
             GeoStyle backgroundStyle = sMap.smMapWC.getMapControl().getMap().getBackgroundStyle();
@@ -4128,7 +4119,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * 获取是否固定符号角度
      */
     @ReactMethod
-    public void getMarkerFixedAngle(Promise promise){
+    public void getMarkerFixedAngle(Promise promise) {
         try {
             sMap = SMap.getInstance();
             Boolean b = sMap.smMapWC.getMapControl().getMap().getIsMarkerFixedAngle();
@@ -4137,13 +4128,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
     /**
      * 设置是否固定符号角度
+     *
      * @param b
      * @param promise
      */
     @ReactMethod
-    public void setMarkerFixedAngle(Boolean b,Promise promise){
+    public void setMarkerFixedAngle(Boolean b, Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().setIsMarkerFixedAngle(b);
@@ -4152,12 +4145,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
     /**
      * 获取是否固定文本角度
+     *
      * @param promise
      */
     @ReactMethod
-    public void getTextFixedAngle(Promise promise){
+    public void getTextFixedAngle(Promise promise) {
         try {
             sMap = SMap.getInstance();
             Boolean b = sMap.smMapWC.getMapControl().getMap().getIsTextFixedAngle();
@@ -4166,12 +4161,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
     /**
      * 获取是否固定文本方向
+     *
      * @param promise
      */
     @ReactMethod
-    public void getFixedTextOrientation(Promise promise){
+    public void getFixedTextOrientation(Promise promise) {
         try {
             sMap = SMap.getInstance();
             Boolean b = sMap.smMapWC.getMapControl().getMap().getIsFixedTextOrientation();
@@ -4180,13 +4177,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
     /**
      * 设置是否固定文本角度
+     *
      * @param b
      * @param promise
      */
     @ReactMethod
-    public void setTextFixedAngle(Boolean b,Promise promise){
+    public void setTextFixedAngle(Boolean b, Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().setIsTextFixedAngle(b);
@@ -4198,11 +4197,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 设置是否固定文本方向
+     *
      * @param b
      * @param promise
      */
     @ReactMethod
-    public void setFixedTextOrientation(Boolean b, Promise promise){
+    public void setFixedTextOrientation(Boolean b, Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().setIsFixedTextOrientation(b);
@@ -4211,6 +4211,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
     /**
      * 获取地图中心点
      *
@@ -4238,10 +4239,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void setMapCenter(double x,double y,Promise promise) {
+    public void setMapCenter(double x, double y, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            Point2D center = new Point2D(x,y);
+            Point2D center = new Point2D(x, y);
             sMap.smMapWC.getMapControl().getMap().setCenter(center);
             promise.resolve(true);
         } catch (Exception e) {
@@ -4259,7 +4260,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             double scale = sMap.smMapWC.getMapControl().getMap().getScale();
-            String mscale = ""+1/scale;
+            String mscale = "" + 1 / scale;
             promise.resolve(mscale);
         } catch (Exception e) {
             promise.reject(e);
@@ -4273,7 +4274,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void setMapScale(double scale,Promise promise) {
+    public void setMapScale(double scale, Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().setScale(scale);
@@ -4285,10 +4286,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 获取当前窗口的四至范围 viewBounds
+     *
      * @param promise
      */
     @ReactMethod
-    public void getMapViewBounds(Promise promise){
+    public void getMapViewBounds(Promise promise) {
         try {
             sMap = SMap.getInstance();
             Rectangle2D rect = sMap.smMapWC.getMapControl().getMap().getViewBounds();
@@ -4297,10 +4299,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             double top = rect.getTop();
             double bottom = rect.getBottom();
             WritableMap map = Arguments.createMap();
-            map.putDouble("left",left);
-            map.putDouble("bottom",bottom);
-            map.putDouble("right",right);
-            map.putDouble("top",top);
+            map.putDouble("left", left);
+            map.putDouble("bottom", bottom);
+            map.putDouble("right", right);
+            map.putDouble("top", top);
             promise.resolve(map);
         } catch (Exception e) {
             promise.reject(e);
@@ -4309,6 +4311,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 设置当前窗口四至范围
+     *
      * @param left
      * @param bottom
      * @param right
@@ -4319,13 +4322,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void setMapViewBounds(double left, double bottom, double right, double top, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            Rectangle2D rect = new Rectangle2D(left,bottom,right,top);
+            Rectangle2D rect = new Rectangle2D(left, bottom, right, top);
             sMap.smMapWC.getMapControl().getMap().setViewBounds(rect);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
+
     /**
      * 获取地图坐标系
      *
@@ -4344,29 +4348,31 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 设置地图坐标系
+     *
      * @param xml
      * @param promise
      */
     @ReactMethod
-    public void setPrjCoordSys(String xml, Promise promise){
+    public void setPrjCoordSys(String xml, Promise promise) {
         try {
             sMap = SMap.getInstance();
             PrjCoordSys prjCoordSys = new PrjCoordSys();
             prjCoordSys.fromXML(xml);
             sMap.smMapWC.getMapControl().getMap().setPrjCoordSys(prjCoordSys);
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 从数据源复制坐标系
+     *
      * @param dataSourcePath
      * @param promise
      */
     @ReactMethod
-    public void copyPrjCoordSysFromDatasource(String dataSourcePath, int engineType, Promise promise){
+    public void copyPrjCoordSysFromDatasource(String dataSourcePath, int engineType, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = new Workspace();
@@ -4386,7 +4392,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             map.putString("prjCoordSysName", coordName);
 
             promise.resolve(map);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
 
@@ -4394,24 +4400,25 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 从数据集复制坐标系
+     *
      * @param datasourceName
      * @param datasetName
      * @param promise
      */
     @ReactMethod
-    public void copyPrjCoordSysFromDataset(String datasourceName, String datasetName, Promise promise){
+    public void copyPrjCoordSysFromDataset(String datasourceName, String datasetName, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
 
             Datasource datasource = datasources.get(datasourceName);
 
-            if(datasource != null){
+            if (datasource != null) {
                 Dataset dataset = datasource.getDatasets().get(datasetName);
-                if(dataset != null){
-                    if(dataset.getPrjCoordSys() != null){
+                if (dataset != null) {
+                    if (dataset.getPrjCoordSys() != null) {
                         sMap.smMapWC.getMapControl().getMap().setPrjCoordSys(dataset.getPrjCoordSys());
-                    }else{
+                    } else {
                         sMap.smMapWC.getMapControl().getMap().setPrjCoordSys(datasource.getPrjCoordSys());
                     }
                     String coordName = sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getName();
@@ -4420,45 +4427,46 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     map.putString("prjCoordSysName", coordName);
 
                     promise.resolve(map);
-                }else {
+                } else {
                     promise.resolve(false);
                 }
 
-            }else{
+            } else {
                 promise.resolve(false);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 从文件复制坐标系
+     *
      * @param filePath
      * @param fileType
      * @param promise
      */
     @ReactMethod
-    public void copyPrjCoordSysFromFile(String filePath, String fileType, Promise promise){
+    public void copyPrjCoordSysFromFile(String filePath, String fileType, Promise promise) {
         try {
             sMap = SMap.getInstance();
             PrjFileType prjFileType = fileType.equals("xml") ? PrjFileType.SUPERMAP : PrjFileType.ESRI;
             PrjCoordSys prjCoordSys = new PrjCoordSys();
-            Boolean isSuccess = prjCoordSys.fromFile(filePath,prjFileType);
+            Boolean isSuccess = prjCoordSys.fromFile(filePath, prjFileType);
 
             WritableMap map = Arguments.createMap();
 
-            if(isSuccess){
-               sMap.smMapWC.getMapControl().getMap().setPrjCoordSys(prjCoordSys);
+            if (isSuccess) {
+                sMap.smMapWC.getMapControl().getMap().setPrjCoordSys(prjCoordSys);
                 String coordName = sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getName();
                 map.putString("prjCoordSysName", coordName);
-            }else{
-                map.putString("error","ILLEGAL_COORDSYS");
+            } else {
+                map.putString("error", "ILLEGAL_COORDSYS");
             }
 
             promise.resolve(map);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
 
@@ -4466,45 +4474,48 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 获取动态投影是否已开启
+     *
      * @param promise
      */
     @ReactMethod
-    public void getMapDynamicProjection(Promise promise){
+    public void getMapDynamicProjection(Promise promise) {
         try {
             sMap = SMap.getInstance();
             Boolean isDynamicprojection = sMap.smMapWC.getMapControl().getMap().isDynamicProjection();
             promise.resolve(isDynamicprojection);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 设置是否开启动态投影
+     *
      * @param value
      * @param promise
      */
     @ReactMethod
-    public void setMapDynamicProjection(Boolean value, Promise promise){
+    public void setMapDynamicProjection(Boolean value, Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().setDynamicProjection(value);
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 获取当前投影转换方法
+     *
      * @param promise
      */
     @ReactMethod
-    public void getCoordSysTransMethod(Promise promise){
-        try{
+    public void getCoordSysTransMethod(Promise promise) {
+        try {
             sMap = SMap.getInstance();
             CoordSysTransMethod method = sMap.smMapWC.getMapControl().getMap().getDynamicPrjTransMethond();
-            CoordSysTransMethod []methods = new CoordSysTransMethod[6];
+            CoordSysTransMethod[] methods = new CoordSysTransMethod[6];
             int index = 0;
             String name = "";
             methods[0] = CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION;
@@ -4513,11 +4524,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             methods[3] = CoordSysTransMethod.MTH_POSITION_VECTOR;
             methods[4] = CoordSysTransMethod.MTH_COORDINATE_FRAME;
             methods[5] = CoordSysTransMethod.MTH_BURSA_WOLF;
-            for(int i = 0; i < methods.length; i++){
-                if(method == methods[i])
+            for (int i = 0; i < methods.length; i++) {
+                if (method == methods[i])
                     index = i;
             }
-            switch (index){
+            switch (index) {
                 case 0:
                     name = "Geocentric Transalation(3-para)";
                     break;
@@ -4538,22 +4549,23 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     break;
             }
             promise.resolve(name);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 设置当前投影转换方法和参数
+     *
      * @param params
      * @param promise
      */
     @ReactMethod
-    public void setCoordSysTransMethodAndParams(ReadableMap params, Promise promise){
+    public void setCoordSysTransMethodAndParams(ReadableMap params, Promise promise) {
         try {
             sMap = SMap.getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            String [] coorMethodArray = new String[6];
+            String[] coorMethodArray = new String[6];
             CoordSysTransMethod method = CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION;
             int index = 0;
             coorMethodArray[0] = "Geocentric Transalation(3-para)";
@@ -4562,8 +4574,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             coorMethodArray[3] = "Position Vector(7-para)";
             coorMethodArray[4] = "Coordinate Frame(7-para)";
             coorMethodArray[5] = "Bursa-wolf(7-para)";
-            for(int i = 0; i < coorMethodArray.length; i++){
-                if(params.getString("coordSysTransMethod").equals(coorMethodArray[i]))
+            for (int i = 0; i < coorMethodArray.length; i++) {
+                if (params.getString("coordSysTransMethod").equals(coorMethodArray[i]))
                     index = i;
             }
             switch (index) {
@@ -4595,10 +4607,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             map.getDynamicPrjTransParameter().setTranslateZ(params.getDouble("translateZ"));
 
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
+
     /**
      * 添加图例的事件监听
      *
@@ -4620,7 +4633,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void legendContentChanged(Vector<LegendItem> arrItems) {
         sMap = SMap.getInstance();
         WritableArray arr = Arguments.createArray();
-        for(int i = 0 ;i < arrItems.size(); i++){
+        for (int i = 0; i < arrItems.size(); i++) {
             WritableMap writeMap = Arguments.createMap();
             Bitmap bm = arrItems.get(i).getBitmap();
             String name = arrItems.get(i).getCaption();
@@ -4632,9 +4645,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 byte[] bitmapBytes = baos.toByteArray();
                 result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
             }
-            writeMap.putString("image",result);
-            writeMap.putString("title",name);
-            writeMap.putInt("type",type);
+            writeMap.putString("image", result);
+            writeMap.putString("title", name);
+            writeMap.putInt("type", type);
             arr.pushMap(writeMap);
         }
         ReadableArray array = sMap.getOtherLegendData(arr);
@@ -4644,17 +4657,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 获取分段图例数据
+     *
      * @return
      */
-    public ReadableArray getOtherLegendData(WritableArray array){
+    public ReadableArray getOtherLegendData(WritableArray array) {
         sMap = SMap.getInstance();
         Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
-        for(int i = 0; i < layers.getCount(); i++){
+        for (int i = 0; i < layers.getCount(); i++) {
             Layer layer = layers.get(i);
-            if (layer.getTheme() != null ){
-                if(layer.getTheme().getType() == ThemeType.RANGE){
-                    ThemeRange themeRange = (ThemeRange)layer.getTheme();
-                    for(int j = 0; j < themeRange.getCount(); j++){
+            if (layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.RANGE) {
+                    ThemeRange themeRange = (ThemeRange) layer.getTheme();
+                    for (int j = 0; j < themeRange.getCount(); j++) {
                         GeoStyle geoStyle = themeRange.getItem(j).getStyle();
                         Color color = geoStyle.getFillForeColor();
                         String caption = themeRange.getItem(j).getCaption();
@@ -4664,12 +4678,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         r = r.length() == 1 ? "0" + r : r;
                         g = g.length() == 1 ? "0" + g : g;
                         b = b.length() == 1 ? "0" + b : b;
-                        String colorString = "#"+r+g+b;
+                        String colorString = "#" + r + g + b;
                         System.out.print(colorString);
                         WritableMap writableMap = Arguments.createMap();
-                        writableMap.putString("color",colorString);
-                        writableMap.putString("title",caption);
-                        writableMap.putInt("type",3);
+                        writableMap.putString("color", colorString);
+                        writableMap.putString("title", caption);
+                        writableMap.putInt("type", 3);
                         array.pushMap(writableMap);
                     }
                 }
@@ -4677,17 +4691,19 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
         return array;
     }
+
     /**
      * 移除图例的事件监听
+     *
      * @param promise
      */
     @ReactMethod
-    public void removeLegendListener(Promise promise){
+    public void removeLegendListener(Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().getLegend().setContentChangeListener(null);
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }

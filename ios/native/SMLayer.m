@@ -8,6 +8,7 @@
 
 #import "SMLayer.h"
 #import "SuperMap/ThemeLabel.h"
+#import "SuperMap/LayerHeatmap.h"
 
 @implementation SMLayer
 
@@ -86,6 +87,7 @@
     
     NSString* mLayerGroupName = layer.parentGroup.name;
     
+    BOOL isHeatmap = [layer isKindOfClass:[LayerHeatmap class]];
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
     [dictionary setValue:layer.name forKey:@"name"];
     [dictionary setValue:layer.caption forKey:@"caption"];
@@ -95,6 +97,7 @@
     [dictionary setValue:[NSNumber numberWithBool:layer.selectable] forKey:@"isSelectable"];
     [dictionary setValue:[NSNumber numberWithBool:layer.isSnapable] forKey:@"isSnapable"];
     [dictionary setValue:mLayerGroupName forKey:@"groupName"];
+    [dictionary setValue:[NSNumber numberWithBool:isHeatmap] forKey:@"isHeatmap"];
     path = [path isEqualToString:@""] ? layer.name : [NSString stringWithFormat:@"%@/%@", path, layer.name];
     [dictionary setValue:path forKey:@"path"];
     [dictionary setValue:@(themeType) forKey:@"themeType"];
