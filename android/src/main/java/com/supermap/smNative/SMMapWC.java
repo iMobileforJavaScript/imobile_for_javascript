@@ -137,7 +137,7 @@ public class SMMapWC {
 
                 Workspace newWS = new Workspace();
                 WorkspaceConnectionInfo info = setWorkspaceConnectionInfo(data, null);
-                result = SMap.getInstance().getSmMapWC().getWorkspace().open(info);
+                result = newWS.open(info);
                 SMap.getInstance().getSmMapWC().setWorkspace(newWS);
 
                 info.dispose();
