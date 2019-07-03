@@ -3705,6 +3705,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     recordset.update();
                     recordset.dispose();
                     mapControl.getMap().refresh();
+                    mapControl.setAction(Action.PAN);
                 }
             }
 
