@@ -188,19 +188,21 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
         sMap = [SMap singletonInstance];
         BOOL result = [sMap.smMapWC openWorkspace:infoDic];
         if (result && sMap.smMapWC.mapControl) {
-            [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
-            if(sMap.smMapWC.mapControl.map.delegate == nil){
-                sMap.smMapWC.mapControl.map.delegate = self;
+            if (sMap.smMapWC.mapControl.map) {
+                [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
+                if(sMap.smMapWC.mapControl.map.delegate == nil){
+                    sMap.smMapWC.mapControl.map.delegate = self;
+                }
+                sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
+                sMap.smMapWC.mapControl.isMagnifierEnabled = YES;
+                sMap.smMapWC.mapControl.map.isAntialias = YES;
+                [sMap.smMapWC.mapControl.map refresh];
             }
 //            if(sMap.scaleViewHelper == nil){
 //
 //
 //            }
         }
-        sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
-        sMap.smMapWC.mapControl.isMagnifierEnabled = YES;
-        sMap.smMapWC.mapControl.map.isAntialias = YES;
-        [sMap.smMapWC.mapControl.map refresh];
         [self openGPS];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {

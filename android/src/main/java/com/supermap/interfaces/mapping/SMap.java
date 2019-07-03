@@ -342,35 +342,37 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             Map params = data.toHashMap();
             boolean result = sMap.smMapWC.openWorkspace(params);
             if (result) {
-                sMap.smMapWC.getMapControl().getMap().setWorkspace(sMap.smMapWC.getWorkspace());
+                if (sMap.getSmMapWC().getMapControl() != null && sMap.getSmMapWC().getMapControl().getMap() != null && !sMap.getSmMapWC().getMapControl().getMap().getName().equals("")) {
+//                    sMap.getSmMapWC().getMapControl().getMap().close();
+//                    sMap.getSmMapWC().getMapControl().getMap().setWorkspace(sMap.getSmMapWC().getWorkspace());
 
-                if(scaleViewHelper == null){
-                    scaleViewHelper = new ScaleViewHelper(context);
-                    if(scaleViewHelper.mapParameterChangedListener == null){
-                        scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
-                            public void scaleChanged(double newScale) {
-                                scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
-                                scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
-                                scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
-                                WritableMap map = Arguments.createMap();
-                                map.putDouble("width",scaleViewHelper.mScaleWidth);
-                                map.putString("title",scaleViewHelper.mScaleText);
-                                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                        .emit(EventConst.SCALEVIEW_CHANGE, map);
-                            }
-                            public void boundsChanged(Point2D newMapCenter) {}
-                            public void angleChanged(double newAngle) {}
-                            public void sizeChanged(int width, int height) {}
-                        });
+                    sMap.getSmMapWC().getMapControl().getMap().setVisibleScalesEnabled(false);
+                    sMap.getSmMapWC().getMapControl().setMagnifierEnabled(true);
+                    sMap.getSmMapWC().getMapControl().getMap().setAntialias(true);
+                    sMap.getSmMapWC().getMapControl().getMap().refresh();
+
+                    if(scaleViewHelper == null){
+                        scaleViewHelper = new ScaleViewHelper(context);
+                        if(scaleViewHelper.mapParameterChangedListener == null){
+                            scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
+                                public void scaleChanged(double newScale) {
+                                    scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
+                                    scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
+                                    scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
+                                    WritableMap map = Arguments.createMap();
+                                    map.putDouble("width",scaleViewHelper.mScaleWidth);
+                                    map.putString("title",scaleViewHelper.mScaleText);
+                                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                            .emit(EventConst.SCALEVIEW_CHANGE, map);
+                                }
+                                public void boundsChanged(Point2D newMapCenter) {}
+                                public void angleChanged(double newAngle) {}
+                                public void sizeChanged(int width, int height) {}
+                            });
+                        }
                     }
                 }
-
-
             }
-            sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
-            sMap.smMapWC.getMapControl().setMagnifierEnabled(true);
-            sMap.smMapWC.getMapControl().getMap().setAntialias(true);
-            sMap.smMapWC.getMapControl().getMap().refresh();
 
             promise.resolve(result);
         } catch (Exception e) {
