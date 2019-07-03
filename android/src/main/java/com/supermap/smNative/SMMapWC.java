@@ -138,7 +138,9 @@ public class SMMapWC {
                 result = SMap.getInstance().getSmMapWC().getWorkspace().open(info);
                 info.dispose();
 
-                SMap.getInstance().getSmMapWC().getMapControl().getMap().setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
+                if (SMap.getInstance().getSmMapWC().getMapControl() != null) {
+                    SMap.getInstance().getSmMapWC().getMapControl().getMap().setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
+                }
 
                 _workspace.dispose();
             }
