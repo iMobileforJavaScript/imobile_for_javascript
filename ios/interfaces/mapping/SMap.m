@@ -641,7 +641,6 @@ RCT_REMAP_METHOD(getScaleData, getScaleViewDataWithResolver:(RCTPromiseResolveBl
         sMap.scaleViewHelper.mScaleText = [sMap.scaleViewHelper getScaleText:sMap.scaleViewHelper.mScaleLevel];
         sMap.scaleViewHelper.mScaleWidth = [sMap.scaleViewHelper getScaleWidth:sMap.scaleViewHelper.mScaleLevel];
         double width = [[[NSNumber alloc]initWithFloat:sMap.scaleViewHelper.mScaleWidth] doubleValue];
-        width = width * 100 / 70;
         resolve(@{@"width":[NSNumber numberWithDouble:width],@"title":sMap.scaleViewHelper.mScaleText});
     } @catch (NSException *exception) {
         reject(@"getScaleData",exception.reason,nil);
