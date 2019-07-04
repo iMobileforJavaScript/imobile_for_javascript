@@ -803,7 +803,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(mapName);
 
                 if (isOpen) {
-//                    scaleViewHelper = sMap.getScaleViewHelper();
+                    scaleViewHelper = sMap.getScaleViewHelper();
                     if (viewEntire) {
                         map.viewEntire();
                     }
@@ -959,9 +959,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = getInstance();
             if (scaleViewHelper != null) {
-                if (scaleViewHelper.mapParameterChangedListener != null) {
-                    scaleViewHelper.removeScaleChangeListener();
-                }
                 scaleViewHelper = null;
             }
             MapControl mapControl = sMap.smMapWC.getMapControl();

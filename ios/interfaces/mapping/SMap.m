@@ -2870,7 +2870,7 @@ RCT_REMAP_METHOD(getDefaultTaggingDataset, getDefaultTaggingDatasetWithUserpath:
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
          NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
-        if(opendatasource == nil){
+        if(opendatasource != nil){
             NSString *datasetName = @"";
             Datasets *datasets = opendatasource.datasets;
             Layers *layers =sMap.smMapWC.mapControl.map.layers;
