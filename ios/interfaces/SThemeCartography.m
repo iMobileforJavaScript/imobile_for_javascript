@@ -4018,7 +4018,370 @@ RCT_REMAP_METHOD(saveMap, saveMapWithResolver:(RCTPromiseResolveBlock) resolve r
         }
     }
     @catch(NSException *exception){
-        reject(@"workspace", exception.reason, nil);
+        reject(@"saveMap", exception.reason, nil);
+    }
+}
+#pragma mark 热力图
+RCT_REMAP_METHOD(createHeatMap, createHeatMap:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    
+    @try{
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        int datasourceIndex = -1;
+        NSString* datasourceAlias = nil;
+        
+        NSString* datasetName = nil;//数据集名称
+        int KernelRadius = 20;//核半径
+        double FuzzyDegree = 0.1;//颜色渐变模糊度
+        double Intensity = 0.1;//最大颜色权重
+        NSArray* colors = nil;//颜色方案
+        
+        
+        if (dataDic[@"DatasetName"]){
+            datasetName = dataDic[@"DatasetName"];
+        }
+        if (dataDic[@"KernelRadius"]){
+            KernelRadius  = ((NSNumber*)dataDic[@"KernelRadius"]).intValue;
+        }
+        if (dataDic[@"FuzzyDegree"]){
+            FuzzyDegree  =((NSNumber*)dataDic[@"FuzzyDegree"]).doubleValue;
+        }
+        if (dataDic[@"Intensity"]){
+            Intensity  = ((NSNumber*)dataDic[@"Intensity"]).doubleValue;
+        }
+        NSString* type = @"BA_Rainbow";
+        if (dataDic[@"ColorType"]){
+            type = dataDic[@"ColorType"];
+        }
+        colors = [SMThemeCartography getAggregationColors:type];
+        
+        Dataset* dataset = [SMThemeCartography getDataset:datasetName data:dataDic];//getDataset(data, datasetName);
+        if (dataset == nil) {
+            if (dataDic[@"DatasourceIndex"]){
+                NSString* index = dataDic[@"DatasourceIndex"];
+                datasourceIndex = index.intValue;
+            }
+            if (dataDic[@"DatasourceAlias"]){
+                datasourceAlias = dataDic[@"DatasourceAlias"];
+            }
+            
+            if (datasourceAlias != nil) {
+                dataset = [SMThemeCartography getDataset:datasetName datasourceAlias:datasourceAlias];//. getDataset(datasourceAlias, datasetName);
+            }  else {
+                dataset = [SMThemeCartography getDataset:datasetName datasourceIndex:datasourceIndex];//.getDataset(datasourceIndex, datasetName);
+            }
+        }
+        NSDictionary* dict = [SMThemeCartography createLayerHeatMap:dataset radius:KernelRadius fuzzyDegree:FuzzyDegree intensity:Intensity colors:colors];
+       resolve(dict);
+//        promise.resolve(writableMap);
+    }
+    @catch(NSException *exception){
+        reject(@"createHeatMap", exception.reason, nil);
+    }
+}
+
+/**
+ * 获取热力图的核半径
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(getHeatMapRadius, getHeatMapRadius:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        NSString* layerName = nil;
+        int layerIndex = -1;
+        
+        if (dataDic[@"LayerName"]){
+            layerName = dataDic[@"LayerName"];
+        }
+        if (dataDic[@"LayerIndex"]){
+            NSString* index = dataDic[@"LayerIndex"];
+            layerIndex = index.intValue;
+        }
+        
+        Layer* layer = nil;
+        if (layerName != nil) {
+            layer = [SMThemeCartography getLayerByName:layerName];// getLayerByName(layerName);
+        } else {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex]; // etLayerByIndex(layerIndex);
+        }
+        
+        if (layer != nil && layer.theme == nil) {
+            LayerHeatmap* heatMap = (LayerHeatmap*) layer;
+            int kernelRadius = heatMap.kernelRadius;
+            
+            resolve(@(kernelRadius));
+        } else {
+            resolve([NSNumber numberWithBool:false]);
+        }
+    } @catch(NSException *exception){
+        reject(@"getHeatMapRadius", exception.reason, nil);
+    }
+}
+
+/**
+ * 设置热力图的核半径
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(setHeatMapRadius, setHeatMapRadius:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        NSString* layerName = nil;
+        int layerIndex = -1;
+        int radius = -1;
+        
+        if (dataDic[@"LayerName"]){
+            layerName = dataDic[@"LayerName"];
+        }
+        if (dataDic[@"LayerIndex"]){
+            NSString* index = dataDic[@"LayerIndex"];
+            layerIndex = index.intValue;
+        }
+        
+        if (dataDic[@"Radius"]){
+            NSString* index = dataDic[@"Radius"];
+            radius = index.intValue;
+        }
+        
+        Layer* layer = nil;
+        if (layerName != nil) {
+            layer = [SMThemeCartography getLayerByName:layerName];// getLayerByName(layerName);
+        } else {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex]; // etLayerByIndex(layerIndex);
+        }
+        
+        if (layer != nil && layer.theme == nil && radius != -1) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
+            LayerHeatmap* heatMap = (LayerHeatmap*) layer;
+            heatMap.kernelRadius = radius;
+            [mapControl.map refresh];
+            resolve([NSNumber numberWithBool:YES]);
+        } else {
+            resolve([NSNumber numberWithBool:false]);
+        }
+    } @catch(NSException *exception){
+        reject(@"getHeatMapRadius", exception.reason, nil);
+    }
+}
+
+
+/**
+ * 获取热力图的颜色渐变模糊度
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(getHeatMapFuzzyDegree, getHeatMapFuzzyDegree:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        NSString* layerName = nil;
+        int layerIndex = -1;
+        
+        if (dataDic[@"LayerName"]){
+            layerName = dataDic[@"LayerName"];
+        }
+        if (dataDic[@"LayerIndex"]){
+            NSString* index = dataDic[@"LayerIndex"];
+            layerIndex = index.intValue;
+        }
+        
+        Layer* layer = nil;
+        if (layerName != nil) {
+            layer = [SMThemeCartography getLayerByName:layerName];// getLayerByName(layerName);
+        } else {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex]; // etLayerByIndex(layerIndex);
+        }
+        
+        if (layer != nil && layer.theme == nil) {
+            LayerHeatmap* heatMap = (LayerHeatmap*) layer;
+            double fuzzyDegree = heatMap.fuzzyDegree;
+            
+            resolve(@(fuzzyDegree));
+        } else {
+            resolve([NSNumber numberWithBool:false]);
+        }
+    } @catch(NSException *exception){
+        reject(@"getHeatMapFuzzyDegree", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(setHeatMapColorScheme, setHeatMapColorScheme:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        NSString* layerName = nil;
+        int layerIndex = -1;
+        NSString* ColorScheme = nil;
+        
+        if (dataDic[@"LayerName"]){
+            layerName = dataDic[@"LayerName"];
+        }
+        if (dataDic[@"LayerIndex"]){
+            NSString* index = dataDic[@"LayerIndex"];
+            layerIndex = index.intValue;
+        }
+        
+        if (dataDic[@"HeatmapColorScheme"]){
+            ColorScheme = dataDic[@"HeatmapColorScheme"];
+        }
+        
+        Layer* layer = nil;
+        if (layerName != nil) {
+            layer = [SMThemeCartography getLayerByName:layerName];// getLayerByName(layerName);
+        } else {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex]; // etLayerByIndex(layerIndex);
+        }
+        
+        if (layer != nil && layer.theme == nil && ColorScheme != nil) {
+            
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
+            LayerHeatmap* heatMap = (LayerHeatmap*) layer;
+            NSArray* colors = [SMThemeCartography getAggregationColors:ColorScheme];
+            heatMap.colorset = [Colors makeGradient3:colors.count gradientColorArray:colors];
+            [mapControl.map refresh];
+        }
+        
+        
+    }@catch(NSException *exception){
+        reject(@"setHeatMapColorScheme", exception.reason, nil);
+    }
+}
+/**
+ * 设置热力图的颜色渐变模糊度(0-1)
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(setHeatMapFuzzyDegree, setHeatMapFuzzyDegree:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        NSString* layerName = nil;
+        int layerIndex = -1;
+        double fuzzyDegree = -1;
+        
+        if (dataDic[@"LayerName"]){
+            layerName = dataDic[@"LayerName"];
+        }
+        if (dataDic[@"LayerIndex"]){
+            NSString* index = dataDic[@"LayerIndex"];
+            layerIndex = index.intValue;
+        }
+        
+        if (dataDic[@"FuzzyDegree"]){
+            NSString* index = dataDic[@"FuzzyDegree"];
+            fuzzyDegree = index.doubleValue;
+        }
+        
+        Layer* layer = nil;
+        if (layerName != nil) {
+            layer = [SMThemeCartography getLayerByName:layerName];// getLayerByName(layerName);
+        } else {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex]; // etLayerByIndex(layerIndex);
+        }
+        
+        if (layer != nil && layer.theme == nil && fuzzyDegree != -1) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
+            LayerHeatmap* heatMap = (LayerHeatmap*) layer;
+            heatMap.fuzzyDegree = fuzzyDegree/10;
+            [mapControl.map refresh];
+            resolve([NSNumber numberWithBool:YES]);
+        } else {
+            resolve([NSNumber numberWithBool:false]);
+        }
+    } @catch(NSException *exception){
+        reject(@"getHeatMapRadius", exception.reason, nil);
+    }
+}
+
+
+/**
+ * 获取热力图的最大颜色权重
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(getHeatMapMaxColorWeight, getHeatMapMaxColorWeight:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        NSString* layerName = nil;
+        int layerIndex = -1;
+        
+        if (dataDic[@"LayerName"]){
+            layerName = dataDic[@"LayerName"];
+        }
+        if (dataDic[@"LayerIndex"]){
+            NSString* index = dataDic[@"LayerIndex"];
+            layerIndex = index.intValue;
+        }
+        
+        Layer* layer = nil;
+        if (layerName != nil) {
+            layer = [SMThemeCartography getLayerByName:layerName];// getLayerByName(layerName);
+        } else {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex]; // etLayerByIndex(layerIndex);
+        }
+        
+        if (layer != nil && layer.theme == nil) {
+            LayerHeatmap* heatMap = (LayerHeatmap*) layer;
+            double intensity = heatMap.intensity;
+            
+            resolve(@(intensity));
+        } else {
+            resolve([NSNumber numberWithBool:false]);
+        }
+    } @catch(NSException *exception){
+        reject(@"getHeatMapMaxColorWeight", exception.reason, nil);
+    }
+}
+
+/**
+ * 设置热力图的最大颜色权重(0-100)
+ *
+ * @param readableMap
+ * @param promise
+ */
+RCT_REMAP_METHOD(setHeatMapMaxColorWeight, setHeatMapMaxColorWeight:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        NSString* layerName = nil;
+        int layerIndex = -1;
+        double intensity = -1;
+        
+        if (dataDic[@"LayerName"]){
+            layerName = dataDic[@"LayerName"];
+        }
+        if (dataDic[@"MaxColorWeight"]){
+            NSString* index = dataDic[@"MaxColorWeight"];
+            intensity = index.intValue;
+        }
+        
+        if (dataDic[@"Radius"]){
+            NSString* index = dataDic[@"Radius"];
+            intensity = index.doubleValue;
+        }
+        
+        Layer* layer = nil;
+        if (layerName != nil) {
+            layer = [SMThemeCartography getLayerByName:layerName];// getLayerByName(layerName);
+        } else {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex]; // etLayerByIndex(layerIndex);
+        }
+        
+        if (layer != nil && layer.theme == nil && intensity != -1) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
+            LayerHeatmap* heatMap = (LayerHeatmap*) layer;
+            heatMap.intensity = intensity/100.0;
+            [mapControl.map refresh];
+            resolve([NSNumber numberWithBool:YES]);
+        } else {
+            resolve([NSNumber numberWithBool:false]);
+        }
+    } @catch(NSException *exception){
+        reject(@"setHeatMapMaxColorWeight", exception.reason, nil);
     }
 }
 

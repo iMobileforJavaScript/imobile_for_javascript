@@ -1,16 +1,20 @@
 package com.supermap.smNative;
 
+import android.content.Context;
 import android.graphics.Region;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.analyst.spatialanalyst.OverlayAnalyst;
 import com.supermap.analyst.spatialanalyst.OverlayAnalystParameter;
 import com.supermap.analyst.spatialanalyst.RasterClip;
+import com.supermap.containts.EventConst;
 import com.supermap.data.CoordSysTransMethod;
 import com.supermap.data.CoordSysTransParameter;
 import com.supermap.data.CoordSysTranslator;
@@ -50,11 +54,13 @@ import com.supermap.data.WorkspaceConnectionInfo;
 import com.supermap.data.WorkspaceType;
 import com.supermap.data.WorkspaceVersion;
 import com.supermap.interfaces.mapping.SMap;
+import com.supermap.interfaces.utils.ScaleViewHelper;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerGroup;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 import com.supermap.data.DatasetType;
+import com.supermap.mapping.MapParameterChangedListener;
 import com.supermap.mapping.PrjCoordSysTranslatorListener;
 
 import org.json.JSONArray;
@@ -128,17 +134,25 @@ public class SMMapWC {
 
             if (data != null && data.get("server") != null) {
                 Workspace _workspace = SMap.getInstance().getSmMapWC().getWorkspace();
-                if (_workspace != null && !_workspace.getCaption().equals("UntitledWorkspace")) {
-                    _workspace.close();
-                }
-                Workspace newWS = new Workspace();
-                SMap.getInstance().getSmMapWC().setWorkspace(newWS);
-                WorkspaceConnectionInfo info = setWorkspaceConnectionInfo(data, null);
 
-                result = SMap.getInstance().getSmMapWC().getWorkspace().open(info);
+                Workspace newWS = new Workspace();
+                WorkspaceConnectionInfo info = setWorkspaceConnectionInfo(data, null);
+                result = newWS.open(info);
+                SMap.getInstance().getSmMapWC().setWorkspace(newWS);
+
                 info.dispose();
 
-                SMap.getInstance().getSmMapWC().getMapControl().getMap().setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
+                if (SMap.getInstance().getSmMapWC().getMapControl() != null) {
+                    if (SMap.getInstance().getSmMapWC().getMapControl().getMap() != null && !SMap.getInstance().getSmMapWC().getMapControl().getMap().getName().equals("")) {
+                        SMap.getInstance().getSmMapWC().getMapControl().getMap().close();
+                        SMap.getInstance().getSmMapWC().getMapControl().getMap().setWorkspace(newWS);
+                    }
+                    if (_workspace != null && !_workspace.getCaption().equals("UntitledWorkspace")) {
+                        _workspace.close();
+                    }
+                }
+
+
 
                 _workspace.dispose();
             }

@@ -18,12 +18,12 @@ import com.supermap.data.Point2Ds;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Map;
+import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MapParameterChangedListener;
 import com.supermap.mapping.ScaleType;
 
 public class ScaleViewHelper {
-    public SMap sMap;
-    public Map mMap;
+    public MapControl mMapControl;
     public  static final double[] SCALES = new double[]{0.0000000021276595744680852,0.0000000042553191489361703,0.0000000085106382978723407,0.000000017021276595744681,0.000000034042553191489363,
     0.000000068085106382978725,0.00000013617021276595745,0.0000002723404255319149,0.0000005446808510638298,0.0000010893617021276596,
     0.0000021787234042553192,0.0000043574468085106384,0.0000087148936170212768,0.000017429787234042554,0.000034859574468085107,
@@ -37,32 +37,30 @@ public class ScaleViewHelper {
     public ReactApplicationContext mContext;
     public ScaleType mScaleType;
     public MapParameterChangedListener mapParameterChangedListener;
-    public ScaleViewHelper(ReactApplicationContext context){
+    public ScaleViewHelper(ReactApplicationContext context, MapControl mapControl){
         this.mScaleType = ScaleType.Global;
         this.mContext = context;
-        this.sMap = SMap.getInstance();
-        this.mMap = this.sMap.getSmMapWC().getMapControl().getMap();
+        this.mMapControl = mapControl;
     }
 
-    public ScaleViewHelper(ReactApplicationContext context, ScaleType scaleType){
+    public ScaleViewHelper(ReactApplicationContext context, MapControl mapControl, ScaleType scaleType){
         this.mScaleType = scaleType;
         this.mContext = context;
-        this.sMap = SMap.getInstance();
-        this.mMap = this.sMap.getSmMapWC().getMapControl().getMap();
+        this.mMapControl = mapControl;
     }
 
     public void addScaleChangeListener(MapParameterChangedListener mapParameterChangedListener){
         this.mapParameterChangedListener = mapParameterChangedListener;
-        sMap.getSmMapWC().getMapControl().setMapParamChangedListener(mapParameterChangedListener);
+        mMapControl.setMapParamChangedListener(mapParameterChangedListener);
     }
 
     public void removeScaleChangeListener(){
-        sMap.getSmMapWC().getMapControl().removeMapParamChangedListener(mapParameterChangedListener);
+        mMapControl.removeMapParamChangedListener(mapParameterChangedListener);
         this.mapParameterChangedListener = null;
     }
 
     public int getScaleLevel(){
-        double nScale = this.mMap.getScale();
+        double nScale = mMapControl.getMap().getScale();
         int nLevel = 0;
 
         for(int i = 0; i < SCALES.length-1; ++i) {
@@ -85,6 +83,7 @@ public class ScaleViewHelper {
         double mScale = 0.0D;
         double dx = 0.0D;
         double dy = 0.0D;
+        Map mMap = mMapControl.getMap();
         WindowManager windowManager = mContext.getCurrentActivity().getWindowManager();
         int width = windowManager.getDefaultDisplay().getWidth();
         int height = windowManager.getDefaultDisplay().getHeight();
@@ -98,13 +97,20 @@ public class ScaleViewHelper {
         points.add(mapPos);
         points.add(mapPos2);
 
-        if(mMap.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE){
+        try{
+            //处理type不兼容
+            if(mMap.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE){
+                dx = Math.abs(points.getItem(0).getX() - points.getItem(1).getX());
+                dy = Math.abs(points.getItem(0).getY() - points.getItem(1).getY());
+            }else {
+                dx = Math.abs(points.getItem(0).getX() - points.getItem(1).getX())*111319.489;
+                dy = Math.abs(points.getItem(0).getY() - points.getItem(1).getY())*111319.489;
+            }
+        }catch (Exception e){
             dx = Math.abs(points.getItem(0).getX() - points.getItem(1).getX());
             dy = Math.abs(points.getItem(0).getY() - points.getItem(1).getY());
-        }else {
-            dx = Math.abs(points.getItem(0).getX() - points.getItem(1).getX())*111319.489;
-            dy = Math.abs(points.getItem(0).getY() - points.getItem(1).getY())*111319.489;
         }
+
         mScale = Math.sqrt(dx * dx + dy * dy);
 
         return 10/mScale;

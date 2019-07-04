@@ -1024,7 +1024,7 @@ public class SMThemeCartography {
         try {
             MapControl mapControl = SMap.getSMWorkspace().getMapControl();
             Layers layers = mapControl.getMap().getLayers();
-            return layers.get(layerName);
+            return layers.find(layerName);
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             e.printStackTrace();

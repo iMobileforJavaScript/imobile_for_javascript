@@ -89,6 +89,7 @@ export default (function () {
       console.error(e)
     }
   }
+
   /**
    * 刷新地图
    * @returns {*}
@@ -1348,9 +1349,9 @@ export default (function () {
   /**
    * 初始化标绘符号库
    */
-  function initPlotSymbolLibrary(plotSymbolPaths) {
+  function initPlotSymbolLibrary(plotSymbolPaths,isFirst,newName,isDefaultNew) {
     try {
-      return SMap.initPlotSymbolLibrary(plotSymbolPaths)
+      return SMap.initPlotSymbolLibrary(plotSymbolPaths,isFirst,newName,isDefaultNew)
     } catch (e) {
       console.error(e)
     }

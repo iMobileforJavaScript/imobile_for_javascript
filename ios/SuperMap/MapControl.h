@@ -20,6 +20,7 @@
 @class DatasourceConnectionInfo;
 @class EditHistory;
 @class GeoStyle;
+@class Point2Ds;
 @protocol TouchableViewDelegate;
 @protocol MapEditDelegate;
 @protocol MapMeasureDelegate;
@@ -297,6 +298,15 @@
  */
 -(void) cancelAnimation;
 
+//通过标绘库id获取标绘库名称
+-(NSString*)getPlotSymbolLibName:(long)libID;
+/**
+ * 添加态势标绘符号
+ * @param libraryID    符号库ID
+ * @param symbolCode   符号Code
+ * @param Point2Ds point  坐标点
+ */
+-(void) addPlotObject:(int)libraryID symbolCode:(int)symbolCode point:(Point2Ds*)point;
 //加载符号库，若地图中使用了相关库，需要在打开地图前加载
 -(int)addPlotLibrary:(NSString*)libraryPath;
 //删除符号库

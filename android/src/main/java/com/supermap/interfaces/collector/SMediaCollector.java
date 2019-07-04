@@ -118,21 +118,21 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
         qp.setCursorType(CursorType.STATIC);
         Recordset recordset = dv.query(qp);
 
-        if (pt == null) {
-            pt = recordset.getGeometry().getInnerPoint();
-        }
-        if (map.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
-            Point2Ds points = new Point2Ds();
-            points.add(pt);
-            PrjCoordSys desPrjCoorSys = new PrjCoordSys();
-            desPrjCoorSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-            CoordSysTranslator.convert(points, desPrjCoorSys, map.getPrjCoordSys(),
-                    new CoordSysTransParameter(),
-                    CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
-
-            pt.setX(points.getItem(0).getX());
-            pt.setY(points.getItem(0).getY());
-        }
+//        if (pt == null) {
+              pt = recordset.getGeometry().getInnerPoint();
+//        }
+//        if (map.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+//            Point2Ds points = new Point2Ds();
+//            points.add(pt);
+//            PrjCoordSys desPrjCoorSys = new PrjCoordSys();
+//            desPrjCoorSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+//            CoordSysTranslator.convert(points, desPrjCoorSys, map.getPrjCoordSys(),
+//                    new CoordSysTransParameter(),
+//                    CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+//
+//            pt.setX(points.getItem(0).getX());
+//            pt.setY(points.getItem(0).getY());
+//        }
 
         WritableMap point = Arguments.createMap();
         point.putDouble("x", pt.getX());

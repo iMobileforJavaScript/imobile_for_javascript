@@ -22,6 +22,7 @@ createThemeUniqueMap = (params) => {
   }
 }
 
+
 /**
  * 设置单值专题图的默认风格
  *
@@ -855,6 +856,7 @@ getGridRangeCount = (params) => {
   }
 }
 
+
 /**
  * 热力图
  *
@@ -862,8 +864,25 @@ getGridRangeCount = (params) => {
  */
 createHeatMap = (params) => {
   try {
-    if (Platform.OS === 'android') {
+    // if (Platform.OS === 'android')
+     {
       return SThemeCartography.createHeatMap(params)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+
+/**
+ * @param params
+ * @returns {*}
+ */
+getHeatMapMaxColorWeight = (params) => {
+  try {
+    // if (Platform.OS === 'android')
+     {
+      return SThemeCartography.getHeatMapMaxColorWeight(params)
     }
   } catch (error) {
     console.error(error)
@@ -872,11 +891,66 @@ createHeatMap = (params) => {
 
 /**
  * @param params
+ */
+setHeatMapRadius = (params) => {
+  try {
+    // if (Platform.OS === 'android') 
+    {
+      return SThemeCartography.setHeatMapRadius(params)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+setHeatMapColorScheme = (params)=>{
+  // console.warn(params)
+  try {
+    // if (Platform.OS === 'android') 
+    {
+      return SThemeCartography.setHeatMapColorScheme(params)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
+ * @param params
+ */
+setHeatMapMaxColorWeight = (params) => {
+  try {
+    // if (Platform.OS === 'android') 
+    {
+      return SThemeCartography.setHeatMapMaxColorWeight(params)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+/**
+ * @param params
+ */
+setHeatMapFuzzyDegree = (params) => {
+  try {
+    // if (Platform.OS === 'android') 
+    {
+      return SThemeCartography.setHeatMapFuzzyDegree(params)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+
+/**
+ * @param params
  * @returns {*}
  */
 getHeatMapRadius = (params) => {
   try {
-    if (Platform.OS === 'android') {
+    // if (Platform.OS === 'android') 
+    {
       return SThemeCartography.getHeatMapRadius(params)
     }
   } catch (error) {
@@ -890,7 +964,8 @@ getHeatMapRadius = (params) => {
  */
 getHeatMapFuzzyDegree = (params) => {
   try {
-    if (Platform.OS === 'android') {
+    // if (Platform.OS === 'android') 
+    {
       return SThemeCartography.getHeatMapFuzzyDegree(params)
     }
   } catch (error) {
@@ -898,250 +973,6 @@ getHeatMapFuzzyDegree = (params) => {
   }
 }
 
-/**
- * @param params
- * @returns {*}
- */
-getHeatMapMaxColorWeight = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.getHeatMapMaxColorWeight(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- */
-setHeatMapRadius = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.setHeatMapRadius(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- */
-setHeatMapFuzzyDegree = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.setHeatMapFuzzyDegree(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- */
-setHeatMapMaxColorWeight = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.setHeatMapMaxColorWeight(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * 热力图
- *
- * @param params
- */
-createHeatMap = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.createHeatMap(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- * @returns {*}
- */
-getHeatMapRadius = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.getHeatMapRadius(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- * @returns {*}
- */
-getHeatMapFuzzyDegree = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.getHeatMapFuzzyDegree(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- * @returns {*}
- */
-getHeatMapMaxColorWeight = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.getHeatMapMaxColorWeight(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- */
-setHeatMapRadius = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.setHeatMapRadius(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- */
-setHeatMapFuzzyDegree = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.setHeatMapFuzzyDegree(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- */
-setHeatMapMaxColorWeight = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.setHeatMapMaxColorWeight(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * 热力图
- *
- * @param params
- */
-createHeatMap = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.createHeatMap(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- * @returns {*}
- */
-getHeatMapRadius = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.getHeatMapRadius(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- * @returns {*}
- */
-getHeatMapFuzzyDegree = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.getHeatMapFuzzyDegree(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- * @returns {*}
- */
-getHeatMapMaxColorWeight = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.getHeatMapMaxColorWeight(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- */
-setHeatMapRadius = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.setHeatMapRadius(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- */
-setHeatMapFuzzyDegree = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.setHeatMapFuzzyDegree(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-/**
- * @param params
- */
-setHeatMapMaxColorWeight = (params) => {
-  try {
-    if (Platform.OS === 'android') {
-      return SThemeCartography.setHeatMapMaxColorWeight(params)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
 
 export default {
   //单值
@@ -1224,6 +1055,7 @@ export default {
   setHeatMapRadius,
   setHeatMapFuzzyDegree,
   setHeatMapMaxColorWeight,
+  setHeatMapColorScheme,
   //其他
   getThemeExpressionByLayerName,
   getThemeExpressionByLayerIndex,

@@ -7,6 +7,7 @@
 //
 
 #import "SMap.h"
+#import "FileUtils.h"
 
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
@@ -188,19 +189,21 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
         sMap = [SMap singletonInstance];
         BOOL result = [sMap.smMapWC openWorkspace:infoDic];
         if (result && sMap.smMapWC.mapControl) {
-            [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
-            if(sMap.smMapWC.mapControl.map.delegate == nil){
-                sMap.smMapWC.mapControl.map.delegate = self;
+            if (sMap.smMapWC.mapControl.map) {
+                [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
+                if(sMap.smMapWC.mapControl.map.delegate == nil){
+                    sMap.smMapWC.mapControl.map.delegate = self;
+                }
+                sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
+                sMap.smMapWC.mapControl.isMagnifierEnabled = YES;
+                sMap.smMapWC.mapControl.map.isAntialias = YES;
+                [sMap.smMapWC.mapControl.map refresh];
             }
 //            if(sMap.scaleViewHelper == nil){
 //
 //
 //            }
         }
-        sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
-        sMap.smMapWC.mapControl.isMagnifierEnabled = YES;
-        sMap.smMapWC.mapControl.map.isAntialias = YES;
-        [sMap.smMapWC.mapControl.map refresh];
         [self openGPS];
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
@@ -638,7 +641,6 @@ RCT_REMAP_METHOD(getScaleData, getScaleViewDataWithResolver:(RCTPromiseResolveBl
         sMap.scaleViewHelper.mScaleText = [sMap.scaleViewHelper getScaleText:sMap.scaleViewHelper.mScaleLevel];
         sMap.scaleViewHelper.mScaleWidth = [sMap.scaleViewHelper getScaleWidth:sMap.scaleViewHelper.mScaleLevel];
         double width = [[[NSNumber alloc]initWithFloat:sMap.scaleViewHelper.mScaleWidth] doubleValue];
-        width = width * 100 / 70;
         resolve(@{@"width":[NSNumber numberWithDouble:width],@"title":sMap.scaleViewHelper.mScaleText});
     } @catch (NSException *exception) {
         reject(@"getScaleData",exception.reason,nil);
@@ -669,8 +671,34 @@ RCT_REMAP_METHOD(addLegendListener, addLegendListenerWithResolver:(RCTPromiseRes
         NSDictionary * temp = @{@"image":base64Str,@"title":arrItems[i][1],@"type":arrItems[i][2]};
         [legendSource addObject:temp];
     }
-    
+    [legendSource addObjectsFromArray:[sMap getOtherLegendData]];
     [self sendEventWithName:LEGEND_CONTENT_CHANGE body:legendSource];
+}
+
+-(NSArray *)getOtherLegendData{
+    NSMutableArray *otherLegendData = [[NSMutableArray alloc]init];
+    sMap = [SMap singletonInstance];
+    Layers *layers = sMap.smMapWC.mapControl.map.layers;
+    for (int i = 0; i < [layers getCount]; i++) {
+        Layer *layer = [layers getLayerAtIndex:i];
+        if(layer.theme != nil){
+            if(layer.theme.themeType == TT_Range){
+                ThemeRange *themeRange = (ThemeRange *)layer.theme;
+                for(int j = 0; j < [themeRange getCount]; j++){
+                    GeoStyle *geoStyle = [themeRange getItem:j].mStyle;
+                    Color *color = [geoStyle getFillForeColor];
+                    NSString *caption = [themeRange getItem:j].mCaption;
+                    NSString *R = [[NSString alloc]initWithFormat:@"%02x",color.red];
+                    NSString *G = [[NSString alloc]initWithFormat:@"%02x",color.green];
+                    NSString *B = [[NSString alloc]initWithFormat:@"%02x",color.blue];
+                    NSString *returnColor = [NSString stringWithFormat:@"%@%@%@%@",@"#",R,G,B];
+                    NSDictionary * temp = @{@"color":returnColor,@"title":caption,@"type":@3};
+                    [otherLegendData addObject:temp];
+                }
+            }
+        }
+    }
+    return otherLegendData;
 }
 
 #pragma mark 移除图例的事件监听
@@ -1174,6 +1202,7 @@ RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve re
     }
 }
 
+
 #pragma mark 设置当前图层全副
 /**
  * 设置当前图层全副
@@ -1184,16 +1213,15 @@ RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver
      @try{
          Map* map = sMap.smMapWC.mapControl.map;
          Layer* layer =  [SMLayer findLayerByPath:name];
-         Rectangle2D* bounds =  layer.dataset.bounds;
-         if(bounds.width<=0 || bounds.height<=0){
-             [bounds inflateX:20 Y:20];
-         }
-         if([map.layers getLayerWithName:name].dataset.prjCoordSys.type != map.prjCoordSys.type){
+         //sMap.smMapWC.mapControl.map.viewBounds
+         Rectangle2D* bounds = layer.dataset.bounds;
+         
+         if(layer.dataset.prjCoordSys.type != map.prjCoordSys.type){
              Point2Ds *points = [[Point2Ds alloc]init];
              [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
              [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
              PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-             [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+             [srcPrjCoorSys setType: layer.dataset.prjCoordSys.type];
              CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
              
              //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
@@ -1203,6 +1231,13 @@ RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver
              bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
          }
          
+         if(bounds.width <= 0 || bounds.height <= 0){
+             map.center = bounds.center;
+         } else {
+             sMap.smMapWC.mapControl.map.viewBounds = bounds;
+             [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.8 time:200];
+         }
+         resolve(@(1));
      } @catch (NSException *exception) {
          reject(@"workspace", exception.reason, nil);
      }
@@ -2265,16 +2300,113 @@ RCT_REMAP_METHOD(setDynamicProjection, setDynamicProjectionWithResolve:(RCTPromi
 }
 //addLayers, addLayers:(NSArray*)datasetNames dataSourceName:(NSString*)dataSourceName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject
 #pragma mark 初始化标绘符号库
-RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymbolPaths resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymbolPaths isFirst:(BOOL) isFirst newName:(NSString*)newName isDefaultNew:(BOOL)isDefaultNew resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    @try {
+        sMap = [SMap singletonInstance];
+        Workspace *workspace =sMap.smMapWC.mapControl.map.workspace;
+        
+        Dataset* dataset=nil;
+        NSString* userpath=nil;
+        NSString* Name=[@"PlotEdit_" stringByAppendingString:(isDefaultNew?newName:sMap.smMapWC.mapControl.map.name)];
+        NSArray *array = [plotSymbolPaths[0] componentsSeparatedByString:@"/"];
+        for (int i=0; i<array.count; i++) {
+            if([array[i] isEqualToString:@"User"]&&(i+1)<array.count){
+                userpath=array[i+1];
+                break;
+            }
+        }
+        
+        NSString *plotDatasourceName = [NSString  stringWithFormat:@"%@%@%@",@"Plotting_",userpath,@"#"];
+        Datasource *opendatasource = [workspace.datasources getAlias:plotDatasourceName];
+        Datasource *datasource = nil;
+        if(opendatasource == nil){
+            DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
+            info.alias = plotDatasourceName;
+            info.engineType = ET_UDB;
+            NSString *path = [NSString stringWithFormat: @"%@%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Datasource/",plotDatasourceName];
+            info.server = path;
+            datasource = [workspace.datasources open:info];
+            if(!datasource){
+                datasource=[workspace.datasources create:info];
+            }
+            if(!datasource){
+                datasource=[workspace.datasources open:info];
+            }
+            [info dispose];
+        }else{
+            datasource=opendatasource;
+        }
+        
+        if(datasource){
+            Datasets *datasets = datasource.datasets;
+            dataset = [datasets getWithName:Name];
+            NSString* datasetName;
+            if(!dataset){
+                datasetName = [datasets availableDatasetName: Name];
+                DatasetVectorInfo *datasetVectorInfo = [[DatasetVectorInfo alloc]init];
+                [datasetVectorInfo setDatasetType:CAD];
+                [datasetVectorInfo setEncodeType:NONE];
+                [datasetVectorInfo setName:datasetName];
+                DatasetVector *datasetVector = [datasets create:datasetVectorInfo];
+                //创建数据集时创建好字段
+                [SMap addFieldInfo:datasetVector Name:@"name" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
+                [SMap addFieldInfo:datasetVector Name:@"remark" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
+                [SMap addFieldInfo:datasetVector Name:@"address" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
+                
+                dataset = [datasets getWithName:datasetName];
+                Map *map = sMap.smMapWC.mapControl.map;
+                Layer *layer = [map.layers addDataset:dataset ToHead:YES];
+                [layer setEditable:YES];
+                [datasetVectorInfo dispose];
+                [datasetVector close];
+            }else{
+                Layers *layers =sMap.smMapWC.mapControl.map.layers;
+                Layer *editLayer = [layers getLayerWithName:[NSString stringWithFormat:@"%@@%@",Name,datasource.alias]];
+                if(editLayer){
+                    [editLayer setEditable:YES];
+                }else{
+                    Layer* layer=[layers addDataset:dataset ToHead:true];
+                    [layer setEditable:YES];
+                }
+            }
+        }
+    
+        NSMutableDictionary* libInfo = [[NSMutableDictionary alloc] init];
+        for (NSString* path in plotSymbolPaths) {
+            int libId=[sMap.smMapWC.mapControl addPlotLibrary:path];
+            NSString* libName=[sMap.smMapWC.mapControl getPlotSymbolLibName: libId];
+            [libInfo setObject:@(libId) forKey:libName];
+            
+            if(isFirst&&[libName isEqualToString:@"警用标号"]){
+                Point2Ds* point2Ds=[[Point2Ds alloc] init];
+                [point2Ds add:sMap.smMapWC.mapControl.map.center];
+                [sMap.smMapWC.mapControl addPlotObject:libId symbolCode:20100 point:point2Ds];
+                [sMap.smMapWC.mapControl cancel];
+                Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
+                [recordset moveLast];
+                [recordset delete];
+                [recordset update];
+                [recordset dispose];
+                [sMap.smMapWC.mapControl.map refresh];
+                [sMap.smMapWC.mapControl setAction:PAN];
+            }
+        }
+        resolve(libInfo);
+    } @catch (NSException *exception) {
+        reject(@"newTaggingDataset", exception.reason, nil);
+    }
+}
+
+#pragma mark 移除标绘库
+RCT_REMAP_METHOD(removePlotSymbolLibraryArr, removePlotSymbolLibraryArr:(NSArray*)plotSymbolIds resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
-        NSMutableArray* resultArr = [[NSMutableArray alloc] init];
-        for (NSString* path in plotSymbolPaths) {
-            int libId=[mapControl addPlotLibrary:path];
-            [resultArr addObject:@(libId)];
+        for (int i=0; i<[plotSymbolIds count]; i++) {
+            [mapControl removePlotLibrary:(int)plotSymbolIds[i]];
         }
-        resolve(resultArr);
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setDynamicProjection", exception.reason, nil);
     }
@@ -2292,6 +2424,28 @@ RCT_REMAP_METHOD(setPlotSymbol, setPlotSymbol:(int)libId symbolCode:(int)symbolC
         reject(@"setDynamicProjection", exception.reason, nil);
     }
 }
+
+#pragma mark 导入标绘模板库
+RCT_REMAP_METHOD(importPlotLibData, importPlotLibData:(NSString*)fromPath  resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+   
+        NSString* userpath=nil;
+        NSArray *array = [fromPath componentsSeparatedByString:@"/"];
+        for (int i=0; i<array.count; i++) {
+            if([array[i] isEqualToString:@"User"]&&(i+1)<array.count){
+                userpath=array[i+1];
+                break;
+            }
+        }
+        NSString *toPath = [NSString stringWithFormat: @"%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Plotting/"];
+        BOOL result=[FileUtils copyFiles:fromPath targetDictionary:toPath filterFileSuffix:@"plot" filterFileDicName:@"Symbol" otherFileDicName:@"SymbolIcon"];
+
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"setDynamicProjection", exception.reason, nil);
+    }
+}
+
 
 #pragma mark 添加cad图层
 RCT_REMAP_METHOD(addCadLayer, addCadLayer:(NSString*)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -2709,7 +2863,7 @@ RCT_REMAP_METHOD(getDefaultTaggingDataset, getDefaultTaggingDatasetWithUserpath:
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
          NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
-        if(opendatasource == nil){
+        if(opendatasource != nil){
             NSString *datasetName = @"";
             Datasets *datasets = opendatasource.datasets;
             Layers *layers =sMap.smMapWC.mapControl.map.layers;
@@ -2960,7 +3114,7 @@ RCT_REMAP_METHOD(getTaggingLayerCount, getTaggingLayerCountWithPath:(NSString *)
 RCT_REMAP_METHOD(setMinVisibleScale, setMinVisibleScaleWithName:(NSString *)name Number:(double)number Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
-        Layer *layer =[sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
+        Layer *layer = [SMLayer findLayerByPath:name];//[sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
         double scale = 1 / number;
         [layer setMinVisibleScale:scale];
         resolve(@(YES));
@@ -2968,6 +3122,20 @@ RCT_REMAP_METHOD(setMinVisibleScale, setMinVisibleScaleWithName:(NSString *)name
         reject(@"setMinVisibleScale",exception.reason,nil);
     }
 }
+
+#pragma mark 设置最大比例尺范围
+RCT_REMAP_METHOD(setMaxVisibleScale, setMaxVisibleScaleWithName:(NSString *)name Number:(double)number Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        Layer *layer = [SMLayer findLayerByPath:name];//[sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
+        double scale = 1 / number;
+        [layer setMaxVisibleScale:scale];
+        resolve(@(YES));
+    }@catch(NSException *exception){
+        reject(@"setMaxVisibleScale",exception.reason,nil);
+    }
+}
+
 #pragma mark 添加文字标注
 RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)dataname Name:(NSString *)name Path:(NSString *)userpath X:(int)x Y:(int)y Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
@@ -3067,6 +3235,39 @@ RCT_REMAP_METHOD(setTaggingGrid, setTaggingGridWithName:(NSString *)name UserPat
 
 #pragma mark 设置标注默认的结点，线，面颜色
 RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl *mapControl = sMap.smMapWC.mapControl;
+        [mapControl setStrokeColor: [[Color alloc] initWithValue:0x3999FF]];
+        [mapControl setStrokeWidth:1];
+        
+        GeoStyle *geoStyle_P = [[GeoStyle alloc] init];
+        
+        Workspace *workspace = mapControl.map.workspace;
+        Resources *m_resources = workspace.resources;
+        SymbolMarkerLibrary *symbol_m = [m_resources markerLibrary];
+        
+        if([symbol_m containID:332]){
+            [geoStyle_P setMarkerSymbolID:332];
+            [mapControl setNodeStyle:geoStyle_P];
+        }else if([symbol_m containID:313]){
+            [geoStyle_P setMarkerSymbolID:313];
+            [mapControl setNodeStyle:geoStyle_P];
+        }else if([symbol_m containID:321]){
+            [geoStyle_P setMarkerSymbolID:321];
+            [mapControl setNodeStyle:geoStyle_P];
+        }else {
+            [mapControl setNodeColor:[[Color alloc] initWithValue:0x3999FF]];
+            [mapControl setNodeSize:2.0];
+        }
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
+    }
+}
+
+#pragma mark 更新图例
+RCT_REMAP_METHOD(updateLegend, updateLegendWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         MapControl *mapControl = sMap.smMapWC.mapControl;

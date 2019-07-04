@@ -456,30 +456,20 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             int datasourceIndex = -1;
             String datasourceAlias = null;
             String datasetName = null;
-            String rangeExpression = null;//分段字段表达式
-            RangeMode rangeMode = null;//分段模式
-            double rangeParameter = -1;//分段参数
+            String uniqueExpression = null;//单值字段表达式
             ColorGradientType colorGradientType = null;
 
             if (data.containsKey("DatasetName")){
                 datasetName = data.get("DatasetName").toString();
             }
-            if (data.containsKey("RangeExpression")){
-                rangeExpression  = data.get("RangeExpression").toString();
-            }
-            if (data.containsKey("RangeMode")){
-                String mode = data.get("RangeMode").toString();
-                rangeMode  = SMThemeCartography.getRangeMode(mode);
-            }
-            if (data.containsKey("RangeParameter")){
-                String rangParam = data.get("RangeParameter").toString();
-                rangeParameter  = Double.parseDouble(rangParam);
+            if (data.containsKey("UniqueExpression")){
+                uniqueExpression  = data.get("UniqueExpression").toString();
             }
             if (data.containsKey("ColorGradientType")){
                 String type = data.get("ColorGradientType").toString();
                 colorGradientType = SMThemeCartography.getColorGradientType(type);
             } else {
-                colorGradientType = ColorGradientType.YELLOWGREEN;
+                colorGradientType = ColorGradientType.YELLOWBLUE;
             }
 
             Dataset dataset = SMThemeCartography.getDataset(data, datasetName);
@@ -501,26 +491,26 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             boolean result = false;
             JoinItems joinItems = null;
-            if (dataset != null && rangeExpression != null && rangeMode != null && rangeParameter != -1) {
-                ThemeLabel themeLabel = ThemeLabel.makeDefault((DatasetVector) dataset, rangeExpression, rangeMode, rangeParameter, colorGradientType,joinItems);
+            if (dataset != null && uniqueExpression != null) {
+                ThemeLabel themeLabel = ThemeLabel.makeDefault((DatasetVector) dataset, uniqueExpression,  colorGradientType,joinItems);
                 if (themeLabel != null) {
-                    themeLabel.setLabelExpression(rangeExpression);
+                    themeLabel.setLabelExpression(uniqueExpression);
                     themeLabel.setFlowEnabled(true);
                     if (data.containsKey("ColorScheme")) {
                         String colorScheme = data.get("ColorScheme").toString();
-                        Color[] rangeColors = SMThemeCartography.getRangeColors(colorScheme);
+                        Color[] colors = SMThemeCartography.getUniqueColors(colorScheme);
 
-                        if (rangeColors != null) {
-                            int rangeCount = themeLabel.getCount();
+                        if (colors != null) {
+                            int count = themeLabel.getUniqueItems().getCount();
                             Colors selectedColors;
-                            if(rangeCount>0){
-                                 selectedColors = Colors.makeGradient(rangeCount, rangeColors);
+                            if(count>0){
+                                 selectedColors = Colors.makeGradient(count, colors);
                             }else {
-                                 selectedColors = Colors.makeGradient(1, rangeColors);
+                                 selectedColors = Colors.makeGradient(1, colors);
                             }
 
-                            for (int i = 0; i < rangeCount; i++) {
-                                SMThemeCartography.setItemTextStyleColor(themeLabel.getItem(i).getStyle(), selectedColors.get(i));
+                            for (int i = 0; i < count; i++) {
+                                SMThemeCartography.setItemTextStyleColor(themeLabel.getUniqueItems().getItem(i).getStyle(), selectedColors.get(i));
                             }
                         }
                     }
@@ -538,6 +528,173 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 获取单值标签专题图的字段表达式
+     *
+     * @param layerName 图层名称
+     */
+    @ReactMethod
+    public void getUniqueLabelExpression(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    ThemeLabel theme= (ThemeLabel) layer.getTheme();
+                    String result = theme.getUniqueExpression();
+                    if (result!=null && !result.isEmpty()){
+                        promise.resolve(result);
+                    }else{
+                        promise.resolve(false);
+                    }
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+
+    }
+
+    /**
+     * 设置单值标签专题图字段单值字段
+     *
+     * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+     * @param promise
+     */
+    @ReactMethod
+    public void setUniqueLabelExpression(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+            String labelExpression = null;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("UniqueExpression")){
+                labelExpression = data.get("UniqueExpression").toString();
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && labelExpression != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
+                    ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
+                    themeLabel.setUniqueExpression(labelExpression);
+
+                    mapControl.getMap().refresh();
+
+                    promise.resolve(true);
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置单值标签专题图颜色方案
+     *
+     * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+     * @param promise
+     */
+    @ReactMethod
+    public void setUniqueLabelColorScheme(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Color[] colors = null;
+            if (data.containsKey("ColorScheme")) {
+                String colorScheme = data.get("ColorScheme").toString();
+                colors = SMThemeCartography.getUniqueColors(colorScheme);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && colors != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
+                    ThemeLabel theme = (ThemeLabel) layer.getTheme();
+                    ThemeLabelUniqueItems items = theme.getUniqueItems();
+                    int count = items.getCount();
+                    Colors selectedColors = Colors.makeGradient(count, colors);
+
+                    for (int i = 0; i < count; i++) {
+                        items.getItem(i).getStyle().setForeColor( selectedColors.get(i) );
+                    }
+                    mapControl.getMap().refresh();
+
+                    promise.resolve(true);
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
 
     /**
      * 新建分段标签图层
@@ -639,6 +796,173 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 获取分段标签专题图的字段表达式
+     *
+     * @param layerName 图层名称
+     */
+    @ReactMethod
+    public void getRangeLabelExpression(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    ThemeLabel theme= (ThemeLabel) layer.getTheme();
+                    String result = theme.getRangeExpression();
+                    if (result!=null && !result.isEmpty()){
+                        promise.resolve(result);
+                    }else{
+                        promise.resolve(false);
+                    }
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+
+    }
+
+    /**
+     * 设置分段标签专题图字段单值字段
+     *
+     * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+     * @param promise
+     */
+    @ReactMethod
+    public void setRangeLabelExpression(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+            String labelExpression = null;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("RangeExpression")){
+                labelExpression = data.get("RangeExpression").toString();
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && labelExpression != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
+                    ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
+                    themeLabel.setRangeExpression(labelExpression);
+
+                    mapControl.getMap().refresh();
+
+                    promise.resolve(true);
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置分段标签专题图颜色方案
+     *
+     * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+     * @param promise
+     */
+    @ReactMethod
+    public void setRangeLabelColorScheme(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+
+            Color[] colors = null;
+            if (data.containsKey("ColorScheme")) {
+                String colorScheme = data.get("ColorScheme").toString();
+                colors = SMThemeCartography.getRangeColors(colorScheme);
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && colors != null && layer.getTheme() != null) {
+                if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                    mapControl.getEditHistory().addMapHistory();
+
+                    ThemeLabel theme = (ThemeLabel) layer.getTheme();
+                    ThemeLabelRangeItems items = theme.getRangeItems();
+                    int count = items.getCount();
+                    Colors selectedColors = Colors.makeGradient(count, colors);
+
+                    for (int i = 0; i < count; i++) {
+                        items.getItem(i).getStyle().setForeColor( selectedColors.get(i) );
+                    }
+                    mapControl.getMap().refresh();
+
+                    promise.resolve(true);
+                }
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
 
     /**
      * 新建统一标签专题图
@@ -3558,6 +3882,56 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 //        }
 //    }
 
+
+
+
+    @ReactMethod
+    public void setHeatMapColorScheme(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String layerName = null;
+            int layerIndex = -1;
+            String ColorScheme = null;
+
+            if (data.containsKey("LayerName")){
+                layerName = data.get("LayerName").toString();
+            }
+            if (data.containsKey("LayerIndex")){
+                String index = data.get("LayerIndex").toString();
+                layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("HeatmapColorScheme")){
+                ColorScheme= data.get("HeatmapColorScheme").toString();
+
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && ColorScheme != null && layer.getTheme() == null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
+                LayerHeatmap heatmap = (LayerHeatmap) layer;
+                Color[] colors =  SMThemeCartography.getAggregationColors(ColorScheme);
+                heatmap.setColorset(Colors.makeGradient(colors.length, colors));
+                mapControl.getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
     /**
      * 获取热力图的核半径
      *
@@ -3797,7 +4171,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 设置热力图的最大颜色权重(0-1)
+     * 设置热力图的最大颜色权重(0-100)
      *
      * @param readableMap
      * @param promise
@@ -3835,7 +4209,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 mapControl.getEditHistory().addMapHistory();
 
                 LayerHeatmap heatmap = (LayerHeatmap) layer;
-                heatmap.setIntensity(intensity / 10);
+                heatmap.setIntensity(intensity / 100.0);
                 mapControl.getMap().refresh();
 
                 promise.resolve(true);

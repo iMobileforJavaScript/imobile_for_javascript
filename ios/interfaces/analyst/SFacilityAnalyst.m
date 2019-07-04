@@ -69,11 +69,7 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo facilityS
         
         if (layer) {
             ds = layer.dataset;
-            if (selection) {
-                [selection clear];
-            } else {
-                selection = [layer getSelection];
-            }
+            selection = [layer getSelection];
             
             facilityAnalyst = [self getFacilityAnalyst];
             

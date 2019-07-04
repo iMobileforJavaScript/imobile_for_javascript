@@ -23,6 +23,7 @@ android/src/.gradle/buildOutputCleanup/built.bin
 android/src/.gradle/buildOutputCleanup/cache.properties
 android/src/.gradle/buildOutputCleanup/cache.properties.lock
 android/build.gradle
-android/build.gradle
+android/.idea
+android/.gradle
 android/libs
 android/src/main/java/com/supermap/.gradle
