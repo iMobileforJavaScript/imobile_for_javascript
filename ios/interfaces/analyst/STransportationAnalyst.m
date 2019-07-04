@@ -177,11 +177,7 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo setting:(
         
         if (layer) {
             ds = layer.dataset;
-            if (selection) {
-                [selection clear];
-            } else {
-                selection = [layer getSelection];
-            }
+            selection = [layer getSelection];
             
             transportationAnalyst = [self getTransportationAnalyst];
             

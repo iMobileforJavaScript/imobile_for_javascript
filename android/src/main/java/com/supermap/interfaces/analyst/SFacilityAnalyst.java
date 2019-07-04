@@ -139,11 +139,11 @@ public class SFacilityAnalyst extends SNetworkAnalyst {
 
             if (layer != null) {
                 dataset = layer.getDataset();
-                if (selection != null) {
-                    selection.clear();
-                } else {
-                    selection = layer.getSelection();
-                }
+//                if (selection != null) {
+//                    selection.clear();
+//                } else {
+                selection = layer.getSelection();
+//                }
 
                 facilityAnalyst = getFacilityAnalyst();
 
