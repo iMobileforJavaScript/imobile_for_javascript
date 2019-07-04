@@ -3281,7 +3281,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
             Rectangle2D bounds = layer.getDataset().getBounds();
 
-            if (layer.getDataset().getPrjCoordSys().getType() != sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getType()) {
+            if ( !safeGetType(layer.getDataset().getPrjCoordSys(),sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getType()) ) {
                 Point2Ds point2Ds = new Point2Ds();
                 point2Ds.add(new Point2D(bounds.getLeft(), bounds.getTop()));
                 point2Ds.add(new Point2D(bounds.getRight(), bounds.getBottom()));

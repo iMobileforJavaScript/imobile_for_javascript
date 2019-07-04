@@ -4240,7 +4240,7 @@ RCT_REMAP_METHOD(setHeatMapColorScheme, setHeatMapColorScheme:(NSDictionary*) da
             
             LayerHeatmap* heatMap = (LayerHeatmap*) layer;
             NSArray* colors = [SMThemeCartography getAggregationColors:ColorScheme];
-            heatMap.colorset = [Colors makeGradient:colors.count gradientColorArray:colors];
+            heatMap.colorset = [Colors makeGradient3:colors.count gradientColorArray:colors];
             [mapControl.map refresh];
         }
         

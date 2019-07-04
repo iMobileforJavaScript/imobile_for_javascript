@@ -77,9 +77,9 @@ public class SMessageService extends ReactContextBaseJavaModule {
     public void connectService(String serverIP, int port,String hostName, String userName,String passwd ,String userID, Promise promise) {
         try {
             //假如有接收线程未停止，在这等待
-            while (!bStopRecieve) {
-                Thread.sleep(500);
-            }
+//            while (!bStopRecieve) {
+//                Thread.sleep(500);
+//            }
 
 //            if(g_AMQPManager != null){
 //                g_AMQPManager.suspend();
@@ -106,6 +106,10 @@ public class SMessageService extends ReactContextBaseJavaModule {
                 //构造AMQP发送端
                 g_AMQPSender = g_AMQPManager.newSender();
 
+                if(!bRes){
+                    g_AMQPManager = null;
+                    g_AMQPSender = null;
+                }
             }
 
             promise.resolve(bRes);
@@ -615,18 +619,10 @@ public class SMessageService extends ReactContextBaseJavaModule {
     @ReactMethod
     public void startReceiveMessage(String uuid, Promise promise) {
         try {
-            while (!bStopRecieve) {
-                Thread.sleep(500);
-            }
-
-            if(g_AMQPReceiver != null) {
-                g_AMQPReceiver.dispose();
-                g_AMQPReceiver = null;
-            }
-
             boolean bRes = false;
             final String sQueue = "Message_" + uuid;
             if(g_AMQPManager!=null && uuid!=null){
+                g_AMQPManager.declareQueue(sQueue);
                 g_AMQPReceiver = g_AMQPManager.newReceiver(sQueue);
             }
 
@@ -637,9 +633,8 @@ public class SMessageService extends ReactContextBaseJavaModule {
                 public void run(){
                     int n = 0;
                     while (true){
-                        if(isRecieving && g_AMQPReceiver != null && g_AMQPManager != null){
+                        if(isRecieving && g_AMQPReceiver != null){
                             bStopRecieve = false;
-                            g_AMQPManager.declareQueue(sQueue);
                             AMQPReturnMessage resMessage = g_AMQPReceiver.receiveMessage();
                             String sQueue = resMessage.getQueue();
                             String sMessage = resMessage.getMessage();

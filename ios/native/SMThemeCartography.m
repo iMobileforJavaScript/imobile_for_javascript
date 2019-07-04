@@ -2975,7 +2975,7 @@ NSMutableDictionary* listAggregationColors = nil;//聚合图颜色方案(热力�
         Layers* layers = mapControl.map.layers;
         
         LayerHeatmap* layerHeatmap = [layers addHeatmap:dataset radius:KernelRadius maxColor:[[Color alloc]initWithR:255 G:0 B:0] minColor:[[Color alloc]initWithR:0 G:0 B:255]];//.addHeatmap(dataset, KernelRadius, new Color(255, 0, 0), new Color(0, 0, 255));
-        layerHeatmap.colorset = [Colors makeGradient:colors.count gradientColorArray:colors]; // setColorset(Colors.makeGradient(colors.length, colors));
+        layerHeatmap.colorset = [Colors makeGradient3:colors.count gradientColorArray:colors]; // setColorset(Colors.makeGradient(colors.length, colors));
         layerHeatmap.intensity = Intensity;
         layerHeatmap.fuzzyDegree = FuzzyDegree;//setFuzzyDegree(FuzzyDegree);
         
