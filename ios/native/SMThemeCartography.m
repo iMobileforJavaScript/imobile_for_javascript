@@ -751,6 +751,57 @@ static NSArray* lastGridRangeColors = nil;
     }
     return type;
 }
+
++(NSString*)getFieldTypeStr:(FieldInfo*)info{
+    NSString* type =@"未知";
+    
+    switch (info.fieldType) {
+        case FT_BOOLEAN:
+            type = @"BOOLEAN";
+            break;
+        case FT_BYTE:
+            type = @"BYTE";
+            break;
+        case FT_INT16:
+            type = @"INT16";
+            break;
+        case FT_INT32:
+            type = @"INT32";
+            break;
+        case FT_INT64:
+            type = @"INT64";
+            break;
+        case FT_SINGLE:
+            type = @"SINGLE";
+            break;
+        case FT_DOUBLE:
+            type = @"DOUBLE";
+            break;
+        case FT_DATE:
+            type = @"DATE";
+            break;
+        case FT_DATETIME:
+            type = @"DATETIME";
+            break;
+        case FT_LONGBINARY:
+            type = @"LONGBINARY";
+            break;
+        case FT_TEXT:
+            type = @"TEXT";
+            break;
+        case FT_CHAR:
+            type = @"CHAR";
+            break;
+        case FT_WTEXT:
+            type = @"WTEXT";
+            break;
+        default:
+            break;
+    }
+    
+    return type;
+}
+
 +(BOOL)addGraphItem:(ThemeGraph*)themeGraph graphExpression:(NSString*)graphExpression colors:(Colors*)colors{
     BOOL isSuccess=NO;
     @try{
