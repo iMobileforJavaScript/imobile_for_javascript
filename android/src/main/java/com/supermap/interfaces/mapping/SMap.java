@@ -112,7 +112,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     private ScaleViewHelper getScaleViewHelper() {
         if (scaleViewHelper == null) {
-            scaleViewHelper = new ScaleViewHelper(context);
+            MapControl mapControl = SMap.getInstance().smMapWC.getMapControl();
+            scaleViewHelper = new ScaleViewHelper(context,mapControl);
         }
         if (scaleViewHelper.mapParameterChangedListener == null) {
             scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
@@ -224,6 +225,29 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
 
+    //判断坐标系Type是否相等，避免不支持的type转Enum抛异常
+    public boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSys coordSys2){
+        try{
+            if(coordSys1.getType() == coordSys2.getType()){
+                return true;
+            }
+            return false;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    //判断坐标系Type是否相等，避免不支持的type转Enum抛异常
+    public boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSysType prjCoordSysType){
+        try{
+            if(coordSys1.getType() == prjCoordSysType){
+                return true;
+            }
+            return false;
+        }catch (Exception e){
+            return false;
+        }
+    }
     /**
      * 获取许可文件状态
      *
@@ -291,7 +315,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap.smMapWC.getMapControl().getMap().refresh();
 
             Point2D pt = new Point2D(longitude, latitude);
-            if (sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+            if (!safeGetType(sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
                 Point2Ds point2Ds = new Point2Ds();
                 point2Ds.add(pt);
                 PrjCoordSys prjCoordSys = new PrjCoordSys();
@@ -803,7 +827,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(mapName);
 
                 if (isOpen) {
-                    scaleViewHelper = sMap.getScaleViewHelper();
+                    scaleViewHelper = getScaleViewHelper();
                     if (viewEntire) {
                         map.viewEntire();
                     }
@@ -852,7 +876,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(name);
 
                 if (isOpen) {
-                    scaleViewHelper = sMap.getScaleViewHelper();
+                    scaleViewHelper = getScaleViewHelper();
 
                     if (viewEntire) {
                         map.viewEntire();
@@ -959,6 +983,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = getInstance();
             if (scaleViewHelper != null) {
+                if(scaleViewHelper.mapParameterChangedListener != null){
+                    scaleViewHelper.mapParameterChangedListener = null;
+                }
                 scaleViewHelper = null;
             }
             MapControl mapControl = sMap.smMapWC.getMapControl();
@@ -1593,7 +1620,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     // Point2D point2D = new Point2D(pt);
 
                     if (pt.getX() <= 180 && pt.getX() >= -180 && pt.getY() >= -90 && pt.getY() <= 90) {
-                        if (mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+                        if (!safeGetType(mapControl.getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
                             Point2Ds point2Ds = new Point2Ds();
                             point2Ds.add(pt);
                             PrjCoordSys prjCoordSys = new PrjCoordSys();
@@ -1604,7 +1631,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                             pt = point2Ds.getItem(0);
                         }
                     } else {
-                        if (mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_SPHERE_MERCATOR) {
+                        if (!safeGetType(mapControl.getMap().getPrjCoordSys(),PrjCoordSysType.PCS_SPHERE_MERCATOR)) {
                             Point2Ds point2Ds = new Point2Ds();
                             point2Ds.add(pt);
                             PrjCoordSys prjCoordSys = new PrjCoordSys();
@@ -3256,7 +3283,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) {
                 bounds.inflate(20, 20);
             }
-            if (layer.getDataset().getPrjCoordSys().getType() != sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getType()) {
+            if (!safeGetType(layer.getDataset().getPrjCoordSys(),sMap.smMapWC.getMapControl().getMap().getPrjCoordSys())) {
                 Point2Ds point2Ds = new Point2Ds();
                 point2Ds.add(new Point2D(bounds.getLeft(), bounds.getTop()));
                 point2Ds.add(new Point2D(bounds.getRight(), bounds.getBottom()));
