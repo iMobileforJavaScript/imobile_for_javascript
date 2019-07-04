@@ -118,6 +118,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         if (scaleViewHelper.mapParameterChangedListener == null) {
             scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
                 public void scaleChanged(double newScale) {
+                    if(scaleViewHelper == null)
+                        return;
                     scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
                     scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
                     scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
@@ -481,7 +483,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     setting.getStyle().setLineColor(this.getLineColor());
                 }
             }
-
+            getScaleViewHelper();
             sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
             sMap.smMapWC.getMapControl().getMap().refresh();
 
@@ -512,6 +514,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 Layer layer = sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, toHead);
                 layer.setVisible(visable);
             }
+            getScaleViewHelper();
             sMap.smMapWC.getMapControl().getMap().refresh();
 
             promise.resolve(true);
@@ -827,7 +830,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(mapName);
 
                 if (isOpen) {
-                    scaleViewHelper = getScaleViewHelper();
+                    getScaleViewHelper();
                     if (viewEntire) {
                         map.viewEntire();
                     }
@@ -876,7 +879,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(name);
 
                 if (isOpen) {
-                    scaleViewHelper = getScaleViewHelper();
+                   getScaleViewHelper();
 
                     if (viewEntire) {
                         map.viewEntire();
@@ -984,7 +987,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = getInstance();
             if (scaleViewHelper != null) {
                 if(scaleViewHelper.mapParameterChangedListener != null){
-                    scaleViewHelper.mapParameterChangedListener = null;
+                    scaleViewHelper.removeScaleChangeListener();
+//                    scaleViewHelper.mapParameterChangedListener = null;
                 }
                 scaleViewHelper = null;
             }
@@ -3995,6 +3999,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void getScaleData(Promise promise) {
         try {
+            if(scaleViewHelper == null){
+                getScaleViewHelper();
+            }
+
             scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
             scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
             scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
