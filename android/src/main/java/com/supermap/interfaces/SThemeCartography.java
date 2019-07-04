@@ -530,9 +530,10 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 获取单值标签专题图的字段表达式
      *
-     * @param layerName 图层名称
+     * 获取单值标签专题图的字段表达式
+     * @param readableMap
+     * @param promise
      */
     @ReactMethod
     public void getUniqueLabelExpression(ReadableMap readableMap, Promise promise) {
@@ -580,8 +581,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
     /**
      * 设置单值标签专题图字段单值字段
-     *
-     * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+     * @param readableMap
      * @param promise
      */
     @ReactMethod
@@ -635,8 +635,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
     /**
      * 设置单值标签专题图颜色方案
-     *
-     * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+     * @param readableMap
      * @param promise
      */
     @ReactMethod
@@ -799,8 +798,8 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
     /**
      * 获取分段标签专题图的字段表达式
-     *
-     * @param layerName 图层名称
+     * @param readableMap
+     * @param promise
      */
     @ReactMethod
     public void getRangeLabelExpression(ReadableMap readableMap, Promise promise) {
@@ -848,8 +847,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
     /**
      * 设置分段标签专题图字段单值字段
-     *
-     * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+     * @param readableMap
      * @param promise
      */
     @ReactMethod
@@ -903,8 +901,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
     /**
      * 设置分段标签专题图颜色方案
-     *
-     * @param dataDic 单值专题图字段表达式 图层名称 图层索引
+     * @param readableMap
      * @param promise
      */
     @ReactMethod
@@ -4171,7 +4168,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 设置热力图的最大颜色权重(0-1)
+     * 设置热力图的最大颜色权重(0-100)
      *
      * @param readableMap
      * @param promise
@@ -4209,7 +4206,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 mapControl.getEditHistory().addMapHistory();
 
                 LayerHeatmap heatmap = (LayerHeatmap) layer;
-                heatmap.setIntensity(intensity / 10);
+                heatmap.setIntensity(intensity / 100.0);
                 mapControl.getMap().refresh();
 
                 promise.resolve(true);
@@ -4246,12 +4243,14 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 FieldInfo fieldInfo = fieldInfos.get(i);
                 String name = fieldInfo.getName();
                 String fieldType = SMThemeCartography.getFieldType(language,fieldInfo);//字段类型
+                String fieldTypeStr = fieldInfo.getType().toString();
                 WritableMap writeMap = Arguments.createMap();
                 writeMap.putString("expression", name);
                 writeMap.putBoolean("isSelected", false);
                 writeMap.putString("datasourceName", dataset.getDatasource().getAlias());
                 writeMap.putString("datasetName", dataset.getName());
                 writeMap.putString("fieldType", fieldType);
+                writeMap.putString("fieldTypeStr", fieldTypeStr);
                 if (name.equals("SmGeoPosition")) {
                     writeMap.putBoolean("isSystemField", true);//SmGeoPosition会被误判为非系统字段，暂做处理
                 } else  {
@@ -4339,9 +4338,11 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 FieldInfo fieldInfo = fieldInfos.get(i);
                 String name = fieldInfo.getName();
                 String fieldType = SMThemeCartography.getFieldType(language,fieldInfo);//字段类型
+                String fieldTypeStr = fieldInfo.getType().toString();
                 WritableMap writeMap = Arguments.createMap();
                 writeMap.putString("expression", name);
                 writeMap.putString("fieldType", fieldType);
+                writeMap.putString("fieldTypeStr", fieldTypeStr);
                 if (name.equals("SmGeoPosition")) {
                     writeMap.putBoolean("isSystemField", true);//SmGeoPosition会被误判为非系统字段，暂做处理
                 } else  {

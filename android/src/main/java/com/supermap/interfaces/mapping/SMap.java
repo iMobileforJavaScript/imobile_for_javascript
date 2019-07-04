@@ -112,7 +112,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     private ScaleViewHelper getScaleViewHelper() {
         if (scaleViewHelper == null) {
-            scaleViewHelper = new ScaleViewHelper(context);
+            MapControl mapControl = SMap.getInstance().smMapWC.getMapControl();
+            scaleViewHelper = new ScaleViewHelper(context,mapControl);
         }
         if (scaleViewHelper.mapParameterChangedListener == null) {
             scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
@@ -224,6 +225,29 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
 
+    //判断坐标系Type是否相等，避免不支持的type转Enum抛异常
+    public static boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSys coordSys2){
+        try{
+            if(coordSys1.getType() == coordSys2.getType()){
+                return true;
+            }
+            return false;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    //判断坐标系Type是否相等，避免不支持的type转Enum抛异常
+    public static boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSysType prjCoordSysType){
+        try{
+            if(coordSys1.getType() == prjCoordSysType){
+                return true;
+            }
+            return false;
+        }catch (Exception e){
+            return false;
+        }
+    }
     /**
      * 获取许可文件状态
      *
@@ -291,7 +315,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap.smMapWC.getMapControl().getMap().refresh();
 
             Point2D pt = new Point2D(longitude, latitude);
-            if (sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+            if (!safeGetType(sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
                 Point2Ds point2Ds = new Point2Ds();
                 point2Ds.add(pt);
                 PrjCoordSys prjCoordSys = new PrjCoordSys();
@@ -803,7 +827,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(mapName);
 
                 if (isOpen) {
-                    scaleViewHelper = sMap.getScaleViewHelper();
+                    scaleViewHelper = getScaleViewHelper();
                     if (viewEntire) {
                         map.viewEntire();
                     }
@@ -852,7 +876,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(name);
 
                 if (isOpen) {
-                    scaleViewHelper = sMap.getScaleViewHelper();
+                    scaleViewHelper = getScaleViewHelper();
 
                     if (viewEntire) {
                         map.viewEntire();
@@ -959,6 +983,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = getInstance();
             if (scaleViewHelper != null) {
+                if(scaleViewHelper.mapParameterChangedListener != null){
+                    scaleViewHelper.mapParameterChangedListener = null;
+                }
                 scaleViewHelper = null;
             }
             MapControl mapControl = sMap.smMapWC.getMapControl();
@@ -1593,7 +1620,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     // Point2D point2D = new Point2D(pt);
 
                     if (pt.getX() <= 180 && pt.getX() >= -180 && pt.getY() >= -90 && pt.getY() <= 90) {
-                        if (mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+                        if (!safeGetType(mapControl.getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
                             Point2Ds point2Ds = new Point2Ds();
                             point2Ds.add(pt);
                             PrjCoordSys prjCoordSys = new PrjCoordSys();
@@ -1604,7 +1631,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                             pt = point2Ds.getItem(0);
                         }
                     } else {
-                        if (mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_SPHERE_MERCATOR) {
+                        if (!safeGetType(mapControl.getMap().getPrjCoordSys(),PrjCoordSysType.PCS_SPHERE_MERCATOR)) {
                             Point2Ds point2Ds = new Point2Ds();
                             point2Ds.add(pt);
                             PrjCoordSys prjCoordSys = new PrjCoordSys();
@@ -3253,15 +3280,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             Layer layer = SMLayer.findLayerByPath(name);
 //            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
             Rectangle2D bounds = layer.getDataset().getBounds();
-            if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) {
-                bounds.inflate(20, 20);
-            }
-            if (layer.getDataset().getPrjCoordSys().getType() != sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getType()) {
+
+            if ( !safeGetType(layer.getDataset().getPrjCoordSys(),sMap.smMapWC.getMapControl().getMap().getPrjCoordSys()) ) {
                 Point2Ds point2Ds = new Point2Ds();
                 point2Ds.add(new Point2D(bounds.getLeft(), bounds.getTop()));
                 point2Ds.add(new Point2D(bounds.getRight(), bounds.getBottom()));
                 PrjCoordSys prjCoordSys = new PrjCoordSys();
-                prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+//                prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                prjCoordSys.setType(layer.getDataset().getPrjCoordSys().getType());
                 CoordSysTransParameter parameter = new CoordSysTransParameter();
 
                 CoordSysTranslator.convert(point2Ds, prjCoordSys, sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
@@ -3270,9 +3296,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                 bounds = new Rectangle2D(pt1.getX(), pt2.getY(), pt2.getX(), pt1.getY());
             }
+            if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) {
+                sMap.getSmMapWC().getMapControl().getMap().setCenter(bounds.getCenter());
+            } else {
+                sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
+                sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.8, 200);
+            }
 
-            sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
-            sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.8, 200);
             sMap.getSmMapWC().getMapControl().getMap().refresh();
 
             promise.resolve(true);
@@ -3462,6 +3492,65 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 设置MapControl 画笔样式
+     * @param style
+     * @param promise
+     */
+    @ReactMethod
+    public void setMapControlStyle(ReadableMap style, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            if (style.hasKey("nodeStyle")) {
+                String nodeStyleJson = style.getString("nodeStyle");
+                GeoStyle nodeStyle = new GeoStyle();
+                nodeStyle.fromJson(nodeStyleJson);
+                mapControl.setNodeStyle(nodeStyle);
+            }
+
+            if (style.hasKey("nodeColor")) {
+                int nodeColor = style.getInt("nodeColor");
+                mapControl.setNodeColor(nodeColor);
+            }
+
+            if (style.hasKey("nodeSize")) {
+                double nodeSize = style.getDouble("nodeSize");
+                mapControl.setNodeSize(nodeSize);
+            }
+
+            if (style.hasKey("strokeColor")) {
+                int strokeColor = style.getInt("strokeColor");
+                mapControl.setStrokeColor(strokeColor);
+            }
+
+            if (style.hasKey("strokeWidth")) {
+                int strokeWidth = style.getInt("strokeWidth");
+                mapControl.setStrokeWidth(strokeWidth);
+            }
+
+            if (style.hasKey("strokeFillColor")) {
+                int strokeFillColor = style.getInt("strokeFillColor");
+                mapControl.setStrokeFillColor(strokeFillColor);
+            }
+
+            if (style.hasKey("objectColor")) {
+                int objectColor = style.getInt("objectColor");
+                mapControl.setObjectColor(objectColor);
+            }
+
+            if (style.hasKey("objectWidth")) {
+                double objectWidth = style.getDouble("objectWidth");
+                mapControl.setObjectWidth(objectWidth);
+            }
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置标注默认的结点，线，面颜色
      *
      * @param promise
@@ -3584,11 +3673,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     /**
      * 初始化标绘符号库
      *
-     * @param plotSymbolPaths       标号路径列表
-     * @param isFirst       是否是第一次初始化，第一次初始化需要新建一个点标号再删掉
-     * @param newName       创建默认地图的地图名
-     * @param isDefaultNew  是否是创建默认地图，创建默认地图不能从mapControl获取地图名，地图名由参数newName传入
-     * 
+     * @param plotSymbolPaths 标号路径列表
+     * @param isFirst         是否是第一次初始化，第一次初始化需要新建一个点标号再删掉
+     * @param newName         创建默认地图的地图名
+     * @param isDefaultNew    是否是创建默认地图，创建默认地图不能从mapControl获取地图名，地图名由参数newName传入
      * @param promise
      */
     @ReactMethod

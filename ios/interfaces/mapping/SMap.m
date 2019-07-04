@@ -641,7 +641,6 @@ RCT_REMAP_METHOD(getScaleData, getScaleViewDataWithResolver:(RCTPromiseResolveBl
         sMap.scaleViewHelper.mScaleText = [sMap.scaleViewHelper getScaleText:sMap.scaleViewHelper.mScaleLevel];
         sMap.scaleViewHelper.mScaleWidth = [sMap.scaleViewHelper getScaleWidth:sMap.scaleViewHelper.mScaleLevel];
         double width = [[[NSNumber alloc]initWithFloat:sMap.scaleViewHelper.mScaleWidth] doubleValue];
-        width = width * 100 / 70;
         resolve(@{@"width":[NSNumber numberWithDouble:width],@"title":sMap.scaleViewHelper.mScaleText});
     } @catch (NSException *exception) {
         reject(@"getScaleData",exception.reason,nil);
@@ -1215,8 +1214,26 @@ RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver
          Map* map = sMap.smMapWC.mapControl.map;
          Layer* layer =  [SMLayer findLayerByPath:name];
          //sMap.smMapWC.mapControl.map.viewBounds
-         Rectangle2D* bounds = [self getLayerMapBounds:layer];
-         if(![bounds isEmpty]){
+         Rectangle2D* bounds = layer.dataset.bounds;
+         
+         if(layer.dataset.prjCoordSys.type != map.prjCoordSys.type){
+             Point2Ds *points = [[Point2Ds alloc]init];
+             [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
+             [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
+             PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+             [srcPrjCoorSys setType: layer.dataset.prjCoordSys.type];
+             CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+             
+             //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+             [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+             Point2D* pt1 = [points getItem:0];
+             Point2D* pt2 = [points getItem:1];
+             bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
+         }
+         
+         if(bounds.width <= 0 || bounds.height <= 0){
+             map.center = bounds.center;
+         } else {
              sMap.smMapWC.mapControl.map.viewBounds = bounds;
              [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.8 time:200];
          }
@@ -2255,30 +2272,6 @@ RCT_REMAP_METHOD(isOverlapDisplayed, isOverlapDisplayed:(RCTPromiseResolveBlock)
     }
 }
 
--(Rectangle2D*)getLayerMapBounds:(Layer*)layer{
-    Rectangle2D* bounds =  layer.dataset.bounds;
-    if(bounds.width<=0 || bounds.height<=0){
-        [bounds setEmpty];
-    }else{
-        Map* map = sMap.smMapWC.mapControl.map;
-        if(layer.dataset.prjCoordSys.type != map.prjCoordSys.type){
-            Point2Ds *points = [[Point2Ds alloc]init];
-            [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
-            [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
-            PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-            [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-            CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-            
-            //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-            [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-            Point2D* pt1 = [points getItem:0];
-            Point2D* pt2 = [points getItem:1];
-            bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
-        }
-    }
-    return bounds;
-}
-
 #pragma mark 显示全幅
 RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -3250,6 +3243,45 @@ RCT_REMAP_METHOD(setTaggingGrid, setTaggingGridWithName:(NSString *)name UserPat
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setTaggingGrid",exception.reason,nil);
+    }
+}
+
+#pragma mark 设置MapControl 画笔样式
+RCT_REMAP_METHOD(setMapControlStyle, setMapControlStyle:(NSDictionary *)style setLabelColorWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl *mapControl = sMap.smMapWC.mapControl;
+        
+        if ([style objectForKey:@"nodeStyle"]) {
+            NSString* nodeStyleJson = [style objectForKey:@"nodeStyle"];
+            GeoStyle* nodeStyle = [[GeoStyle alloc] init];
+            [nodeStyle fromJson:nodeStyleJson];
+            [mapControl setNodeStyle:nodeStyle];
+        }
+        if ([style objectForKey:@"nodeColor"]) {
+            NSNumber* strokeColor = [style objectForKey:@"nodeColor"];
+            [mapControl setNodeColor:[[Color alloc] initWithValue:strokeColor.intValue]];
+        }
+        if ([style objectForKey:@"nodeSize"]) {
+            NSNumber* nodeSize = [style objectForKey:@"nodeSize"];
+            [mapControl setNodeSize:nodeSize.doubleValue];
+        }
+        if ([style objectForKey:@"strokeColor"]) {
+            NSNumber* strokeColor = [style objectForKey:@"strokeColor"];
+            [mapControl setStrokeColor:[[Color alloc] initWithValue:strokeColor.intValue]];
+        }
+        if ([style objectForKey:@"strokeWidth"]) {
+            NSNumber* strokeWidth = [style objectForKey:@"strokeWidth"];
+            [mapControl setStrokeWidth:strokeWidth.intValue];
+        }
+        if ([style objectForKey:@"strokeFillColor"]) {
+            NSNumber* strokeFillColor = [style objectForKey:@"strokeFillColor"];
+            [mapControl setStrokeFillColor:[[Color alloc] initWithValue:strokeFillColor.intValue]];
+        }
+        
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
     }
 }
 

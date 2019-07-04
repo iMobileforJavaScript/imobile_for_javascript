@@ -751,6 +751,57 @@ static NSArray* lastGridRangeColors = nil;
     }
     return type;
 }
+
++(NSString*)getFieldTypeStr:(FieldInfo*)info{
+    NSString* type =@"未知";
+    
+    switch (info.fieldType) {
+        case FT_BOOLEAN:
+            type = @"BOOLEAN";
+            break;
+        case FT_BYTE:
+            type = @"BYTE";
+            break;
+        case FT_INT16:
+            type = @"INT16";
+            break;
+        case FT_INT32:
+            type = @"INT32";
+            break;
+        case FT_INT64:
+            type = @"INT64";
+            break;
+        case FT_SINGLE:
+            type = @"SINGLE";
+            break;
+        case FT_DOUBLE:
+            type = @"DOUBLE";
+            break;
+        case FT_DATE:
+            type = @"DATE";
+            break;
+        case FT_DATETIME:
+            type = @"DATETIME";
+            break;
+        case FT_LONGBINARY:
+            type = @"LONGBINARY";
+            break;
+        case FT_TEXT:
+            type = @"TEXT";
+            break;
+        case FT_CHAR:
+            type = @"CHAR";
+            break;
+        case FT_WTEXT:
+            type = @"WTEXT";
+            break;
+        default:
+            break;
+    }
+    
+    return type;
+}
+
 +(BOOL)addGraphItem:(ThemeGraph*)themeGraph graphExpression:(NSString*)graphExpression colors:(Colors*)colors{
     BOOL isSuccess=NO;
     @try{
@@ -2975,7 +3026,7 @@ NSMutableDictionary* listAggregationColors = nil;//聚合图颜色方案(热力�
         Layers* layers = mapControl.map.layers;
         
         LayerHeatmap* layerHeatmap = [layers addHeatmap:dataset radius:KernelRadius maxColor:[[Color alloc]initWithR:255 G:0 B:0] minColor:[[Color alloc]initWithR:0 G:0 B:255]];//.addHeatmap(dataset, KernelRadius, new Color(255, 0, 0), new Color(0, 0, 255));
-        layerHeatmap.colorset = [Colors makeGradient:colors.count gradientColorArray:colors]; // setColorset(Colors.makeGradient(colors.length, colors));
+        layerHeatmap.colorset = [Colors makeGradient3:colors.count gradientColorArray:colors]; // setColorset(Colors.makeGradient(colors.length, colors));
         layerHeatmap.intensity = Intensity;
         layerHeatmap.fuzzyDegree = FuzzyDegree;//setFuzzyDegree(FuzzyDegree);
         

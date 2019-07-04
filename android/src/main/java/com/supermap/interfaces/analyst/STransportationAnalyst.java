@@ -249,11 +249,11 @@ public class STransportationAnalyst extends SNetworkAnalyst {
 
             if (layer != null) {
                 dataset = layer.getDataset();
-                if (selection != null) {
-                    selection.clear();
-                } else {
-                    selection = layer.getSelection();
-                }
+//                if (selection != null && selection.) {
+//                    selection.clear();
+//                } else {
+                selection = layer.getSelection();
+//                }
 
                 transportationAnalyst = getTransportationAnalyst();
 

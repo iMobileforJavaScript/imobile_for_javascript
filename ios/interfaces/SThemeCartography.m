@@ -3676,6 +3676,7 @@ RCT_REMAP_METHOD(getThemeExpressionByLayerName, getThemeExpressionByLayerNameWit
             [info setValue:dataset.datasource.alias forKey:@"datasourceName"];
             [info setValue:dataset.name forKey:@"datasetName"];
             [info setValue:fieldType forKey:@"fieldType"];
+            [info setObject:[SMThemeCartography getFieldTypeStr:fieldinfo] forKey:(@"fieldTypeStr")];
             if ([strName isEqualToString:@"SmGeoPosition"]){
                 [info setObject:[NSNumber numberWithBool:true] forKey:(@"isSystemField")];
             }
@@ -3767,6 +3768,7 @@ RCT_REMAP_METHOD(getThemeExpressionByDatasetName, getThemeExpressionByDatasetNam
             NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
             [info setObject:(strName) forKey:(@"expression")];
             [info setObject:(fieldType) forKey:(@"fieldType")];
+            [info setObject:[SMThemeCartography getFieldTypeStr:fieldinfo] forKey:(@"fieldTypeStr")];
             if ([strName isEqualToString:@"SmGeoPosition"]){
                 [info setObject:[NSNumber numberWithBool:true] forKey:(@"isSystemField")];
             }
@@ -3817,6 +3819,7 @@ RCT_REMAP_METHOD(getThemeExpressByDatasetName, getThemeExpressByDatasetNameWithR
             NSMutableDictionary* info = [[NSMutableDictionary alloc] init];
             [info setObject:(strName) forKey:(@"expression")];
             [info setObject:(fieldType) forKey:(@"fieldType")];
+            [info setObject:[SMThemeCartography getFieldTypeStr:fieldinfo] forKey:(@"fieldTypeStr")];
             if ([strName isEqualToString:@"SmGeoPosition"]){
                 [info setObject:[NSNumber numberWithBool:true] forKey:(@"isSystemField")];
             }
@@ -4240,7 +4243,7 @@ RCT_REMAP_METHOD(setHeatMapColorScheme, setHeatMapColorScheme:(NSDictionary*) da
             
             LayerHeatmap* heatMap = (LayerHeatmap*) layer;
             NSArray* colors = [SMThemeCartography getAggregationColors:ColorScheme];
-            heatMap.colorset = [Colors makeGradient:colors.count gradientColorArray:colors];
+            heatMap.colorset = [Colors makeGradient3:colors.count gradientColorArray:colors];
             [mapControl.map refresh];
         }
         
@@ -4338,7 +4341,7 @@ RCT_REMAP_METHOD(getHeatMapMaxColorWeight, getHeatMapMaxColorWeight:(NSDictionar
 }
 
 /**
- * 设置热力图的最大颜色权重(0-1)
+ * 设置热力图的最大颜色权重(0-100)
  *
  * @param readableMap
  * @param promise
@@ -4374,7 +4377,7 @@ RCT_REMAP_METHOD(setHeatMapMaxColorWeight, setHeatMapMaxColorWeight:(NSDictionar
             [[mapControl getEditHistory] addMapHistory];
             
             LayerHeatmap* heatMap = (LayerHeatmap*) layer;
-            heatMap.intensity = intensity/10;
+            heatMap.intensity = intensity/100.0;
             [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
