@@ -4171,7 +4171,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 设置热力图的最大颜色权重(0-1)
+     * 设置热力图的最大颜色权重(0-100)
      *
      * @param readableMap
      * @param promise
@@ -4209,7 +4209,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 mapControl.getEditHistory().addMapHistory();
 
                 LayerHeatmap heatmap = (LayerHeatmap) layer;
-                heatmap.setIntensity(intensity / 10);
+                heatmap.setIntensity(intensity / 100.0);
                 mapControl.getMap().refresh();
 
                 promise.resolve(true);

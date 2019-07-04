@@ -4338,7 +4338,7 @@ RCT_REMAP_METHOD(getHeatMapMaxColorWeight, getHeatMapMaxColorWeight:(NSDictionar
 }
 
 /**
- * 设置热力图的最大颜色权重(0-1)
+ * 设置热力图的最大颜色权重(0-100)
  *
  * @param readableMap
  * @param promise
@@ -4374,7 +4374,7 @@ RCT_REMAP_METHOD(setHeatMapMaxColorWeight, setHeatMapMaxColorWeight:(NSDictionar
             [[mapControl getEditHistory] addMapHistory];
             
             LayerHeatmap* heatMap = (LayerHeatmap*) layer;
-            heatMap.intensity = intensity/10;
+            heatMap.intensity = intensity/100.0;
             [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
