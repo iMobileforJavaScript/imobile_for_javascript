@@ -226,7 +226,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
 
     //判断坐标系Type是否相等，避免不支持的type转Enum抛异常
-    public boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSys coordSys2){
+    public static boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSys coordSys2){
         try{
             if(coordSys1.getType() == coordSys2.getType()){
                 return true;
@@ -238,7 +238,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     //判断坐标系Type是否相等，避免不支持的type转Enum抛异常
-    public boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSysType prjCoordSysType){
+    public static boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSysType prjCoordSysType){
         try{
             if(coordSys1.getType() == prjCoordSysType){
                 return true;
@@ -3485,6 +3485,65 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     }
                 });
             }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置MapControl 画笔样式
+     * @param style
+     * @param promise
+     */
+    @ReactMethod
+    public void setMapControlStyle(ReadableMap style, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            if (style.hasKey("nodeStyle")) {
+                String nodeStyleJson = style.getString("nodeStyle");
+                GeoStyle nodeStyle = new GeoStyle();
+                nodeStyle.fromJson(nodeStyleJson);
+                mapControl.setNodeStyle(nodeStyle);
+            }
+
+            if (style.hasKey("nodeColor")) {
+                int nodeColor = style.getInt("nodeColor");
+                mapControl.setNodeColor(nodeColor);
+            }
+
+            if (style.hasKey("nodeSize")) {
+                double nodeSize = style.getDouble("nodeSize");
+                mapControl.setNodeSize(nodeSize);
+            }
+
+            if (style.hasKey("strokeColor")) {
+                int strokeColor = style.getInt("strokeColor");
+                mapControl.setStrokeColor(strokeColor);
+            }
+
+            if (style.hasKey("strokeWidth")) {
+                int strokeWidth = style.getInt("strokeWidth");
+                mapControl.setStrokeWidth(strokeWidth);
+            }
+
+            if (style.hasKey("strokeFillColor")) {
+                int strokeFillColor = style.getInt("strokeFillColor");
+                mapControl.setStrokeFillColor(strokeFillColor);
+            }
+
+            if (style.hasKey("objectColor")) {
+                int objectColor = style.getInt("objectColor");
+                mapControl.setObjectColor(objectColor);
+            }
+
+            if (style.hasKey("objectWidth")) {
+                double objectWidth = style.getDouble("objectWidth");
+                mapControl.setObjectWidth(objectWidth);
+            }
+
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

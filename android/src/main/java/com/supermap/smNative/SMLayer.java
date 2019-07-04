@@ -562,7 +562,7 @@ public class SMLayer {
         final Map map = mapControl.getMap();
 
         final Point2D pt = new Point2D(longitude, latitude);
-        if (map.getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
+        if (SMap.safeGetType(map.getPrjCoordSys(), PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
             PrjCoordSys Prj = map.getPrjCoordSys();
             Point2Ds points = new Point2Ds();
             points.add(pt);

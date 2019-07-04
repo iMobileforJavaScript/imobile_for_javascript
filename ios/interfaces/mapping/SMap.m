@@ -3233,6 +3233,45 @@ RCT_REMAP_METHOD(setTaggingGrid, setTaggingGridWithName:(NSString *)name UserPat
     }
 }
 
+#pragma mark 设置MapControl 画笔样式
+RCT_REMAP_METHOD(setMapControlStyle, setMapControlStyle:(NSDictionary *)style setLabelColorWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl *mapControl = sMap.smMapWC.mapControl;
+        
+        if ([style objectForKey:@"nodeStyle"]) {
+            NSString* nodeStyleJson = [style objectForKey:@"nodeStyle"];
+            GeoStyle* nodeStyle = [[GeoStyle alloc] init];
+            [nodeStyle fromJson:nodeStyleJson];
+            [mapControl setNodeStyle:nodeStyle];
+        }
+        if ([style objectForKey:@"nodeColor"]) {
+            NSNumber* strokeColor = [style objectForKey:@"nodeColor"];
+            [mapControl setNodeColor:[[Color alloc] initWithValue:strokeColor.intValue]];
+        }
+        if ([style objectForKey:@"nodeSize"]) {
+            NSNumber* nodeSize = [style objectForKey:@"nodeSize"];
+            [mapControl setNodeSize:nodeSize.doubleValue];
+        }
+        if ([style objectForKey:@"strokeColor"]) {
+            NSNumber* strokeColor = [style objectForKey:@"strokeColor"];
+            [mapControl setStrokeColor:[[Color alloc] initWithValue:strokeColor.intValue]];
+        }
+        if ([style objectForKey:@"strokeWidth"]) {
+            NSNumber* strokeWidth = [style objectForKey:@"strokeWidth"];
+            [mapControl setStrokeWidth:strokeWidth.intValue];
+        }
+        if ([style objectForKey:@"strokeFillColor"]) {
+            NSNumber* strokeFillColor = [style objectForKey:@"strokeFillColor"];
+            [mapControl setStrokeFillColor:[[Color alloc] initWithValue:strokeFillColor.intValue]];
+        }
+        
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
+    }
+}
+
 #pragma mark 设置标注默认的结点，线，面颜色
 RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {

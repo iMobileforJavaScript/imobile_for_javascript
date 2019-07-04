@@ -68,6 +68,9 @@
 -(void) clear;
 -(void) dispose;
 -(BOOL) insertAtIndex:(int)index color:(Color *)color;
+
+//color 带alpha
++(Colors *)makeGradient3:(int)count gradientColorArray:(NSArray *)gradientColorArray;
 +(Colors *)makeGradient:(int)count gradientColorArray:(NSArray *)gradientColorArray;
 +(Colors *)makeGradient2:(int)count colorGradientType:(ColorGradientType)colorGradientType reverse:(BOOL)reverse;
 -(BOOL) removeAtIndex:(int)index;
