@@ -3253,15 +3253,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             Layer layer = SMLayer.findLayerByPath(name);
 //            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
             Rectangle2D bounds = layer.getDataset().getBounds();
-            if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) {
-                bounds.inflate(20, 20);
-            }
+
             if (layer.getDataset().getPrjCoordSys().getType() != sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getType()) {
                 Point2Ds point2Ds = new Point2Ds();
                 point2Ds.add(new Point2D(bounds.getLeft(), bounds.getTop()));
                 point2Ds.add(new Point2D(bounds.getRight(), bounds.getBottom()));
                 PrjCoordSys prjCoordSys = new PrjCoordSys();
-                prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+//                prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                prjCoordSys.setType(layer.getDataset().getPrjCoordSys().getType());
                 CoordSysTransParameter parameter = new CoordSysTransParameter();
 
                 CoordSysTranslator.convert(point2Ds, prjCoordSys, sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
@@ -3270,9 +3269,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                 bounds = new Rectangle2D(pt1.getX(), pt2.getY(), pt2.getX(), pt1.getY());
             }
+            if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) {
+                sMap.getSmMapWC().getMapControl().getMap().setCenter(bounds.getCenter());
+            } else {
+                sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
+                sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.8, 200);
+            }
 
-            sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
-            sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.8, 200);
             sMap.getSmMapWC().getMapControl().getMap().refresh();
 
             promise.resolve(true);
@@ -3584,11 +3587,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     /**
      * 初始化标绘符号库
      *
-     * @param plotSymbolPaths       标号路径列表
-     * @param isFirst       是否是第一次初始化，第一次初始化需要新建一个点标号再删掉
-     * @param newName       创建默认地图的地图名
-     * @param isDefaultNew  是否是创建默认地图，创建默认地图不能从mapControl获取地图名，地图名由参数newName传入
-     * 
+     * @param plotSymbolPaths 标号路径列表
+     * @param isFirst         是否是第一次初始化，第一次初始化需要新建一个点标号再删掉
+     * @param newName         创建默认地图的地图名
+     * @param isDefaultNew    是否是创建默认地图，创建默认地图不能从mapControl获取地图名，地图名由参数newName传入
      * @param promise
      */
     @ReactMethod
