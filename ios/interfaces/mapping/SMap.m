@@ -195,7 +195,7 @@ RCT_REMAP_METHOD(openWorkspace, openWorkspaceByInfo:(NSDictionary*)infoDic resol
                     sMap.smMapWC.mapControl.map.delegate = self;
                 }
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
-                sMap.smMapWC.mapControl.isMagnifierEnabled = YES;
+                //sMap.smMapWC.mapControl.isMagnifierEnabled = YES;
                 sMap.smMapWC.mapControl.map.isAntialias = YES;
                 [sMap.smMapWC.mapControl.map refresh];
             }
@@ -365,6 +365,26 @@ RCT_REMAP_METHOD(getFixedTextOrientation, getFixedTextOrientationWithResolver:(R
         resolve(@(b));
     } @catch (NSException *exception) {
         reject(@"getMarkerFixedAngle",exception.reason,nil);
+    }
+}
+#pragma mark 获取放大镜是否开启
+RCT_REMAP_METHOD(isMagnifierEnabled, isMagnifierEnabledWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL b = sMap.smMapWC.mapControl.isMagnifierEnabled;
+        resolve(@(b));
+    } @catch (NSException *exception) {
+        reject(@"isMagnifierEnabled",exception.reason,nil);
+    }
+}
+#pragma mark 设置放大镜是否开启
+RCT_REMAP_METHOD(setIsMagnifierEnabled, setIsMagnifierEnabledWithValue:(BOOL)value Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.mapControl.isMagnifierEnabled = value;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setIsMagnifierEnabled",exception.reason,nil);
     }
 }
 
@@ -3319,38 +3339,38 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
     }
 }
 
-#pragma mark 更新图例
-RCT_REMAP_METHOD(updateLegend, updateLegendWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
-    @try {
-        sMap = [SMap singletonInstance];
-        MapControl *mapControl = sMap.smMapWC.mapControl;
-        [mapControl setStrokeColor: [[Color alloc] initWithValue:0x3999FF]];
-        [mapControl setStrokeWidth:1];
-        
-        GeoStyle *geoStyle_P = [[GeoStyle alloc] init];
-        
-        Workspace *workspace = mapControl.map.workspace;
-        Resources *m_resources = workspace.resources;
-        SymbolMarkerLibrary *symbol_m = [m_resources markerLibrary];
-        
-        if([symbol_m containID:332]){
-            [geoStyle_P setMarkerSymbolID:332];
-            [mapControl setNodeStyle:geoStyle_P];
-        }else if([symbol_m containID:313]){
-            [geoStyle_P setMarkerSymbolID:313];
-            [mapControl setNodeStyle:geoStyle_P];
-        }else if([symbol_m containID:321]){
-            [geoStyle_P setMarkerSymbolID:321];
-            [mapControl setNodeStyle:geoStyle_P];
-        }else {
-            [mapControl setNodeColor:[[Color alloc] initWithValue:0x3999FF]];
-            [mapControl setNodeSize:2.0];
-        }
-        resolve(@(YES));
-    } @catch (NSException *exception) {
-        reject(@"setLabelColor",exception.reason,nil);
-    }
-}
+//#pragma mark 更新图例
+//RCT_REMAP_METHOD(updateLegend, updateLegendWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        sMap = [SMap singletonInstance];
+//        MapControl *mapControl = sMap.smMapWC.mapControl;
+//        [mapControl setStrokeColor: [[Color alloc] initWithValue:0x3999FF]];
+//        [mapControl setStrokeWidth:1];
+//
+//        GeoStyle *geoStyle_P = [[GeoStyle alloc] init];
+//
+//        Workspace *workspace = mapControl.map.workspace;
+//        Resources *m_resources = workspace.resources;
+//        SymbolMarkerLibrary *symbol_m = [m_resources markerLibrary];
+//
+//        if([symbol_m containID:332]){
+//            [geoStyle_P setMarkerSymbolID:332];
+//            [mapControl setNodeStyle:geoStyle_P];
+//        }else if([symbol_m containID:313]){
+//            [geoStyle_P setMarkerSymbolID:313];
+//            [mapControl setNodeStyle:geoStyle_P];
+//        }else if([symbol_m containID:321]){
+//            [geoStyle_P setMarkerSymbolID:321];
+//            [mapControl setNodeStyle:geoStyle_P];
+//        }else {
+//            [mapControl setNodeColor:[[Color alloc] initWithValue:0x3999FF]];
+//            [mapControl setNodeSize:2.0];
+//        }
+//        resolve(@(YES));
+//    } @catch (NSException *exception) {
+//        reject(@"setLabelColor",exception.reason,nil);
+//    }
+//}
 
 #pragma mark /************************************************ 监听事件 ************************************************/
 #pragma mark 监听事件

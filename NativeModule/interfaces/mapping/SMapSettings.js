@@ -170,6 +170,31 @@ function setFixedTextOrientation(value) {
 }
 
 /**
+ * 获取当前地图放大镜是否已开启
+ * @returns {*}
+ */
+function isMagnifierEnabled() {
+  try {
+    return SMap.isMagnifierEnabled()
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 设置当前地图放大镜开启/关闭
+ * @param value
+ * @returns {*}
+ */
+function setIsMagnifierEnabled(value) {
+  try {
+    return SMap.setIsMagnifierEnabled(value)
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  *  获取当前地图中心点
  * @returns {*}
  */
@@ -372,6 +397,8 @@ export {
   setTextFixedAngle,
   getFixedTextOrientation,
   setFixedTextOrientation,
+  isMagnifierEnabled,
+  setIsMagnifierEnabled,
   getMapViewBounds,
   setMapViewBounds,
   getMapCenter,

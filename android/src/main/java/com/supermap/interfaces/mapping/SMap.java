@@ -408,7 +408,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //                    sMap.getSmMapWC().getMapControl().getMap().setWorkspace(sMap.getSmMapWC().getWorkspace());
 
                     sMap.getSmMapWC().getMapControl().getMap().setVisibleScalesEnabled(false);
-                    sMap.getSmMapWC().getMapControl().setMagnifierEnabled(true);
+                   // sMap.getSmMapWC().getMapControl().setMagnifierEnabled(true);
                     sMap.getSmMapWC().getMapControl().getMap().setAntialias(true);
                     sMap.getSmMapWC().getMapControl().getMap().refresh();
                 }
@@ -4318,6 +4318,37 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap.smMapWC.getMapControl().getMap().setIsFixedTextOrientation(b);
             promise.resolve(true);
         } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取放大镜是否开启
+     * @param promise
+     */
+    @ReactMethod
+    public void isMagnifierEnabled(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            boolean b = sMap.smMapWC.getMapControl().isMagnifierEnabled();
+            promise.resolve(b);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置放大镜是否开启
+     * @param b
+     * @param promise
+     */
+    @ReactMethod
+    public void setIsMagnifierEnabled(boolean b, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().setMagnifierEnabled(b);
+            promise.resolve(true);
+        }catch (Exception e){
             promise.reject(e);
         }
     }

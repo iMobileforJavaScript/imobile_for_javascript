@@ -1369,17 +1369,17 @@ export default (function () {
     }
   }
 
-  /**
-   * 更新图例
-   * @deprecated 用setMapControlStyle代替
-   */
-  function updateLegend() {
-    try {
-      return SMap.updateLegend()
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 更新图例
+  //  * @deprecated 用setMapControlStyle代替
+  //  */
+  // function updateLegend() {
+  //   try {
+  //     return SMap.updateLegend()
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
 
   /**
    * 初始化标绘符号库
@@ -1651,7 +1651,7 @@ export default (function () {
     removeMap,
     mapIsModified,
     isAnyMapOpened,
-    
+
     addMap,
     addLayers,
     setLayerFullView,
@@ -1676,7 +1676,7 @@ export default (function () {
     setTaggingGrid,
     setMapControlStyle,
     setLabelColor,
-    updateLegend,
+    //updateLegend,
 
     showMarker,
     deleteMarker,
