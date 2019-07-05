@@ -118,6 +118,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         if (scaleViewHelper.mapParameterChangedListener == null) {
             scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
                 public void scaleChanged(double newScale) {
+                    if(scaleViewHelper == null)
+                        return;
                     scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
                     scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
                     scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
@@ -481,7 +483,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     setting.getStyle().setLineColor(this.getLineColor());
                 }
             }
-
+            getScaleViewHelper();
             sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
             sMap.smMapWC.getMapControl().getMap().refresh();
 
@@ -512,6 +514,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 Layer layer = sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, toHead);
                 layer.setVisible(visable);
             }
+            getScaleViewHelper();
             sMap.smMapWC.getMapControl().getMap().refresh();
 
             promise.resolve(true);
@@ -827,7 +830,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(mapName);
 
                 if (isOpen) {
-                    scaleViewHelper = getScaleViewHelper();
+                    getScaleViewHelper();
                     if (viewEntire) {
                         map.viewEntire();
                     }
@@ -876,7 +879,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(name);
 
                 if (isOpen) {
-                    scaleViewHelper = getScaleViewHelper();
+                   getScaleViewHelper();
 
                     if (viewEntire) {
                         map.viewEntire();
@@ -984,7 +987,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = getInstance();
             if (scaleViewHelper != null) {
                 if(scaleViewHelper.mapParameterChangedListener != null){
-                    scaleViewHelper.mapParameterChangedListener = null;
+                    scaleViewHelper.removeScaleChangeListener();
+//                    scaleViewHelper.mapParameterChangedListener = null;
                 }
                 scaleViewHelper = null;
             }
@@ -3283,7 +3287,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
             Rectangle2D bounds = layer.getDataset().getBounds();
 
-            if ( !safeGetType(layer.getDataset().getPrjCoordSys(),sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getType()) ) {
+            if ( !safeGetType(layer.getDataset().getPrjCoordSys(),sMap.smMapWC.getMapControl().getMap().getPrjCoordSys()) ) {
                 Point2Ds point2Ds = new Point2Ds();
                 point2Ds.add(new Point2D(bounds.getLeft(), bounds.getTop()));
                 point2Ds.add(new Point2D(bounds.getRight(), bounds.getBottom()));
@@ -3688,6 +3692,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             final MapControl mapControl = sMap.smMapWC.getMapControl();
 
             Dataset dataset = null;
+            Layer cadLayer =null;
             String userpath = null, name = "PlotEdit_" + (isDefaultNew ? newName : mapControl.getMap().getName());
             if (plotSymbolPaths.size() > 0) {
                 String[] strArr = plotSymbolPaths.getString(0).split("/");
@@ -3719,43 +3724,56 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 datasource = opendatasource;
             }
 
-            if (datasource != null) {
-                Datasets datasets = datasource.getDatasets();
-                dataset = datasets.get(name);
-                DatasetVector datasetVector;
-                String datasetName;
-                if (dataset == null) {
-                    datasetName = datasets.getAvailableDatasetName(name);
-                    DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
-                    datasetVectorInfo.setType(DatasetType.CAD);
-                    datasetVectorInfo.setEncodeType(EncodeType.NONE);
-                    datasetVectorInfo.setName(datasetName);
-                    datasetVector = datasets.create(datasetVectorInfo);
-                    //创建数据集时创建好字段
-                    addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
-                    addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);
-                    addFieldInfo(datasetVector, "address", FieldType.TEXT, false, "", 255);
+            if (datasource == null) {
+                return;
+            }
+            Datasets datasets = datasource.getDatasets();
 
-                    dataset = datasets.get(datasetName);
-                    com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                    Layer layer = map.getLayers().add(dataset, true);
-                    layer.setEditable(true);
-                    datasetVectorInfo.dispose();
-                    datasetVector.close();
-                } else {
-                    Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
-                    Layer editLayer = layers.get(name + "@" + datasource.getAlias());
-                    if (editLayer != null) {
-                        editLayer.setEditable(true);
-                    } else {
-
-                        Dataset ds = dataset;
-                        com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                        Layer layer = map.getLayers().add(ds, true);
-                        layer.setEditable(true);
-                    }
+            for (int i=0;i<mapControl.getMap().getLayers().getCount();i++){
+                Layer tempLayer=mapControl.getMap().getLayers().get(i);
+                if(tempLayer.getName().startsWith("PlotEdit_")&&tempLayer.getDataset().getType()==DatasetType.CAD){
+                    dataset =tempLayer.getDataset();
+                    cadLayer=tempLayer;
+                    break;
                 }
             }
+//            dataset = datasets.get(name);
+            DatasetVector datasetVector;
+            String datasetName;
+            if (dataset == null) {
+                datasetName = datasets.getAvailableDatasetName(name);
+                DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+                datasetVectorInfo.setType(DatasetType.CAD);
+                datasetVectorInfo.setEncodeType(EncodeType.NONE);
+                datasetVectorInfo.setName(datasetName);
+                datasetVector = datasets.create(datasetVectorInfo);
+                //创建数据集时创建好字段
+                addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
+                addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);
+                addFieldInfo(datasetVector, "address", FieldType.TEXT, false, "", 255);
+
+                dataset = datasets.get(datasetName);
+                com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                Layer layer = map.getLayers().add(dataset, true);
+                layer.setEditable(true);
+                datasetVectorInfo.dispose();
+                datasetVector.close();
+            } else {
+                cadLayer.setEditable(true);
+//                Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
+////                Layer editLayer = layers.get(name + "@" + datasource.getAlias());
+//                Layer editLayer = layers.get(dataset.getName());
+//                if (editLayer != null) {
+//                    editLayer.setEditable(true);
+//                } else {
+//
+//                    Dataset ds = dataset;
+//                    com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+//                    Layer layer = map.getLayers().add(ds, true);
+//                    layer.setEditable(true);
+//                }
+            }
+
 
 
             WritableMap writeMap = Arguments.createMap();
@@ -3765,7 +3783,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 writeMap.putInt(libName, libId);
                 if (isFirst && libName.equals("警用标号")) {
                     Point2Ds point2Ds = new Point2Ds();
-                    point2Ds.add(mapControl.getMap().getCenter());
+                    Point2D point2D=new Point2D(mapControl.getMap().getViewBounds().getLeft()-100,mapControl.getMap().getViewBounds().getTop()-100);
+                    point2Ds.add(point2D);
                     mapControl.addPlotObject(libId, 20100, point2Ds);
                     mapControl.cancel();
                     Recordset recordset = ((DatasetVector) dataset).getRecordset(false, CursorType.DYNAMIC);
@@ -4056,6 +4075,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void getScaleData(Promise promise) {
         try {
+            if(scaleViewHelper == null){
+                getScaleViewHelper();
+            }
+
             scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
             scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
             scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
