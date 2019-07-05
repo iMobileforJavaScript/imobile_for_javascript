@@ -1257,6 +1257,7 @@ RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver
              sMap.smMapWC.mapControl.map.viewBounds = bounds;
              [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.8 time:200];
          }
+         [map refresh];
          resolve(@(1));
      } @catch (NSException *exception) {
          reject(@"workspace", exception.reason, nil);
