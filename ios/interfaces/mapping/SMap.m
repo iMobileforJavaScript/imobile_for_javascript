@@ -2717,7 +2717,7 @@ RCT_REMAP_METHOD(newTaggingDataset, newTaggingDatasetWithName:(NSString *)Name P
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace =sMap.smMapWC.mapControl.map.workspace;
-         NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
         if(opendatasource == nil){
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
@@ -2735,6 +2735,7 @@ RCT_REMAP_METHOD(newTaggingDataset, newTaggingDatasetWithName:(NSString *)Name P
                 [datasetVectorInfo setEncodeType:NONE];
                 [datasetVectorInfo setName:datasetName];
                 DatasetVector *datasetVector = [datasets create:datasetVectorInfo];
+                datasetVector.prjCoordSys = sMap.smMapWC.mapControl.map.prjCoordSys;
                 
                 //创建数据集时创建好字段
                 [SMap addFieldInfo:datasetVector Name:@"name" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
@@ -2761,7 +2762,7 @@ RCT_REMAP_METHOD(newTaggingDataset, newTaggingDatasetWithName:(NSString *)Name P
             [datasetVectorInfo setName:datasetName];
             
             DatasetVector *datasetVector = [datasets create:datasetVectorInfo];
-            
+            datasetVector.prjCoordSys = sMap.smMapWC.mapControl.map.prjCoordSys;
             //创建数据集时创建好字段
             [SMap addFieldInfo:datasetVector Name:@"name" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
             [SMap addFieldInfo:datasetVector Name:@"remark" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
@@ -2789,7 +2790,7 @@ RCT_REMAP_METHOD(removeTaggingDataset, removeTaggingDatasetWithName:(NSString *)
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace =sMap.smMapWC.mapControl.map.workspace;
-         NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
         Datasource *opendatasource =[workspace.datasources getAlias:labelName];
         if(opendatasource == nil){
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
@@ -2823,7 +2824,7 @@ RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithPath:(NSString *)user
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-         NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
         Datasource *opendatasource =[workspace.datasources getAlias:labelName];
         if(opendatasource == nil){
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
@@ -2894,7 +2895,7 @@ RCT_REMAP_METHOD(getDefaultTaggingDataset, getDefaultTaggingDatasetWithUserpath:
     @try{
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-         NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
         if(opendatasource != nil){
             NSString *datasetName = @"";
@@ -3060,7 +3061,7 @@ RCT_REMAP_METHOD(addRecordset, addRecordsetWithDatasetName:(NSString *)datasetNa
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-         NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
         
         if(opendatasource == nil){
