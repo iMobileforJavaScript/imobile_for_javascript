@@ -2889,6 +2889,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     datasetVectorInfo.setEncodeType(EncodeType.NONE);
                     datasetVectorInfo.setName(datasetName);
                     DatasetVector datasetVector = datasets.create(datasetVectorInfo);
+                    datasetVector.setPrjCoordSys(sMap.getSmMapWC().getMapControl().getMap().getPrjCoordSys());
                     //创建数据集时创建好字段
                     addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
                     addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);
@@ -2911,6 +2912,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 datasetVectorInfo.setEncodeType(EncodeType.NONE);
                 datasetVectorInfo.setName(datasetName);
                 DatasetVector datasetVector = datasets.create(datasetVectorInfo);
+                datasetVector.setPrjCoordSys(sMap.getSmMapWC().getMapControl().getMap().getPrjCoordSys());
                 //创建数据集时创建好字段
                 addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
                 addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);

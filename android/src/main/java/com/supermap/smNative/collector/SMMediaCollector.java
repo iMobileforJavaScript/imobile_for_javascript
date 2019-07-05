@@ -4,13 +4,19 @@ import android.content.Context;
 import android.view.View;
 
 import com.supermap.RNUtils.DateUtil;
+import com.supermap.data.CoordSysTransMethod;
+import com.supermap.data.CoordSysTransParameter;
+import com.supermap.data.CoordSysTranslator;
 import com.supermap.data.CursorType;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.FieldType;
 import com.supermap.data.Point2D;
+import com.supermap.data.Point2Ds;
+import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
+import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.components.InfoCallout;
@@ -204,6 +210,18 @@ public class SMMediaCollector {
     public static void addCalloutByMedia(Context context, SMMedia media, Recordset recordset, String layerName, View.OnTouchListener listener) {
         double x = recordset.getGeometry().getInnerPoint().getX();
         double y = recordset.getGeometry().getInnerPoint().getY();
+
+//        Point2D pt = new Point2D(x, y);
+//        if (!SMap.safeGetType(SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
+//            Point2Ds point2Ds = new Point2Ds();
+//            point2Ds.add(pt);
+//            PrjCoordSys prjCoordSys = new PrjCoordSys();
+//            prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+//            CoordSysTransParameter parameter = new CoordSysTransParameter();
+//
+//            CoordSysTranslator.convert(point2Ds, prjCoordSys, SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+//            pt = point2Ds.getItem(0);
+//        }
 
         String imgPath = sdcard + media.getPaths().get(0);
         InfoCallout callout = SMLayer.addCallOutWithLongitude(context, x, y, imgPath);
