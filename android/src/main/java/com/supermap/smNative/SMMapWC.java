@@ -8,6 +8,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.RNUtils.FileUtil;
@@ -1962,6 +1963,427 @@ public class SMMapWC {
             //模板
             if (dicAddition != null) {
                 String strTemplate = dicAddition.get("Template");
+                if (strTemplate != null) {
+                    jsonObject.put("Template", strTemplate);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String strExplorerJson = jsonObject.toString();
+        try {
+            Writer outWriter = new OutputStreamWriter(new FileOutputStream(desPathMapExp, true), encodingUTF8);
+            outWriter.write(strExplorerJson);
+            outWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        mapExport.close();
+
+        return strMapName;
+    }
+
+    //dicAddition带数组 传WriteableMap
+    public String saveMapName(String strMapAlians, Workspace srcWorkspace, String strModule, WritableMap dicAddition, boolean bNew, boolean bResourcesModified, boolean bPrivate) {
+
+        if (srcWorkspace == null || srcWorkspace.getMaps().indexOf(strMapAlians) == -1) {
+            return null;
+        }
+
+//        String strCustomer = getCustomerDirectory(true);
+//        String strModule = getModuleDirectory(nModule);
+//        if (strModule == null) {
+//            return null;
+//        }
+
+        String strUserName;
+        if (!bPrivate) {
+            strUserName = "Customer";
+        } else {
+            strUserName = getUserName();
+            if (strUserName == null) {
+                return null;
+            }
+        }
+
+
+        String strRootPath = getRootPath();
+        String strCustomer = strRootPath + "/" + strUserName + "/Data";
+
+        com.supermap.mapping.Map mapExport = new com.supermap.mapping.Map(srcWorkspace);
+        if (!mapExport.open(strMapAlians)) {
+            //打开失败
+            return null;
+        }
+
+        Layers layers = mapExport.getLayers();
+
+        ReadableArray removeLayerList = dicAddition.getArray("filterLayers");
+        for(int i = 0; i < removeLayerList.size(); i++){
+            layers.remove(removeLayerList.getString(i));
+        }
+
+        String desDirMap = strCustomer + "/Map";
+        if (strModule != null && !strModule.equals("")) {
+            desDirMap = desDirMap + "/" + strModule;
+        }
+        boolean isDir = false;
+        File fileDesDirMap = new File(desDirMap);
+        boolean isExist = fileDesDirMap.exists();
+        isDir = fileDesDirMap.isDirectory();
+        if (!isExist || !isDir) {
+            fileDesDirMap.mkdirs();
+        }
+
+        String strMapName = strMapAlians;
+        // map文件
+        String desPathMapXML = desDirMap + "/" + strMapName + ".xml";
+        String desPathMapExp;
+        if (!bNew) {
+            // 删文件
+            isDir = true;
+            File file = new File(desPathMapXML);
+            isExist = file.exists();
+            isDir = file.isDirectory();
+            if (isExist && !isDir) {
+                file.delete();
+            }
+            desPathMapExp = desDirMap + "/" + strMapName + ".exp";
+            File tempExpFile = new File(desPathMapExp);
+            isExist = tempExpFile.exists();
+            isDir = tempExpFile.isDirectory();
+            if (isExist && !isDir) {
+                tempExpFile.delete();
+            }
+
+        } else {
+            // 改名
+            desPathMapXML = formateNoneExistFileName(desPathMapXML, false);
+            String[] arrDesPathMapXML = desPathMapXML.split("/");
+            String desLastMap = arrDesPathMapXML[arrDesPathMapXML.length - 1];
+            // map文件名确定后其他文件（符号库）不需要判断，直接覆盖
+            strMapName = desLastMap.substring(0, desLastMap.length() - 4);
+            desPathMapExp = desDirMap + "/" + strMapName + ".exp";
+        }
+
+        // map xml
+        String strMapXML = mapExport.toXML();
+        try {
+            Writer outWriter = new OutputStreamWriter(new FileOutputStream(desPathMapXML, true), encodingUTF8);
+            outWriter.write(strMapXML);
+            outWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //bResourcesModified时存所有用到的符号id
+        Set<Integer> setMarkerIDs = new HashSet<>();
+        Set<Integer> setLineIDs = new HashSet<>();
+        Set<Integer> setFillIDs = new HashSet<>();
+
+        List<Dataset> arrDatasets = new ArrayList<>();
+        for (int i = 0; i < mapExport.getLayers().getCount(); i++) {
+            Layer layerTemp = mapExport.getLayers().get(i);
+            if (layerTemp.getDataset() == null) {
+
+                if (LayerGroup.class.isInstance(layerTemp)) {
+                    List<Dataset> arrTemp = allDatasetsOfLayerGroup((LayerGroup) layerTemp);
+                    arrDatasets.addAll(arrTemp);
+                }
+
+            } else {
+                arrDatasets.add(layerTemp.getDataset());
+            }
+        }
+
+        //    NSMutableArray *arrMarkerIDs = [[NSMutableArray alloc]init];
+        //    NSMutableArray *arrLineIDs = [[NSMutableArray alloc]init];
+        //    NSMutableArray *arrFillIDs = [[NSMutableArray alloc]init];
+        // datasources
+        List<Datasource> arrDatasources = new ArrayList<>();
+        for (int i = 0; i < arrDatasets.size(); i++) {
+            Dataset dataset = arrDatasets.get(i);
+            Datasource datasource = dataset.getDatasource();
+            if (!arrDatasources.contains(datasource)) {
+                arrDatasources.add(datasource);
+            }
+            //处理newSymbol
+            //cad
+            if (bResourcesModified && dataset.getType() == DatasetType.CAD) {
+                Recordset recordset = ((DatasetVector) dataset).getRecordset(false, CursorType.STATIC);
+                recordset.moveFirst();
+                while (!recordset.isEOF()) {
+                    Geometry geoTemp = recordset.getGeometry();
+                    recordset.moveNext();
+                    GeoStyle styleTemp = geoTemp.getStyle();
+                    int nMarkerID = styleTemp.getMarkerSymbolID();
+                    int nLineID = styleTemp.getLineSymbolID();
+                    int nFillID = styleTemp.getFillSymbolID();
+                    if (nMarkerID > 0) {
+                        setMarkerIDs.add(nMarkerID);
+                    }
+                    if (nLineID > 0) {
+                        setMarkerIDs.add(nLineID);
+                    }
+                    if (nFillID > 0) {
+                        setFillIDs.add(nFillID);
+                    }
+                }
+                recordset.close();
+            }
+
+        }
+
+        String desDatasourceDir = strCustomer + "/Datasource";
+        if (strModule != null && !strModule.equals("")) {
+            desDatasourceDir = desDatasourceDir + "/" + strModule;
+        }
+
+        List<Map<String, String>> arrExpDatasources = new ArrayList<>();
+        //[[NSFileManager defaultManager]createDirectoryAtPath:desDataDir withIntermediateDirectories:YES attributes:nil error:nil];
+        // 导出datasource  datasource名=文件名
+        for (int i = 0; i < arrDatasources.size(); i++) {
+            Datasource datasource = arrDatasources.get(i);
+            // 文件拷贝
+            DatasourceConnectionInfo srcInfo = datasource.getConnectionInfo();
+            String strSrcAlian = srcInfo.getAlias();
+            String strSrcServer = srcInfo.getServer();
+            EngineType engineType = srcInfo.getEngineType();
+
+            String strTargetServer = null;
+            if (engineType == EngineType.UDB || engineType == EngineType.IMAGEPLUGINS) {
+
+                // 源文件存在？
+                if (!isDatasourceFileExist(strSrcServer, engineType == EngineType.UDB)) {
+                    continue;
+                }
+
+                if (!bNew && strSrcServer.startsWith(desDatasourceDir)) {
+                    // 不需要拷贝的UDB
+                    strTargetServer = strSrcServer;
+                } else {
+
+                    String[] arrSrcServer = strSrcServer.split("/");
+                    String strFileName = arrSrcServer[arrSrcServer.length - 1];
+                    // 导入工作空间名
+                    strTargetServer = desDatasourceDir + "/" + strFileName;
+                    if (engineType == EngineType.UDB) {
+
+                        String strSrcDatasourcePath = strSrcServer.substring(0, strSrcServer.length() - 4);
+                        String strTargetDatasourcePath = strTargetServer.substring(0, strTargetServer.length() - 4);
+                        // 检查重复性
+                        boolean bDir = true;
+                        File targetServerFile = new File(strTargetServer);
+                        boolean bExist = targetServerFile.exists();
+                        bDir = targetServerFile.isDirectory();
+                        if (bExist && !bDir) {
+                            //存在同名文件
+                            //重名文件
+                            strTargetServer = formateNoneExistFileName(strTargetServer, false);
+                            strTargetDatasourcePath = strTargetServer.substring(0, strTargetServer.length() - 4);
+                        }//exist
+
+                        // 拷贝udb
+                        if (!copyFile(strSrcDatasourcePath + ".udb", strTargetDatasourcePath + ".udb")) {
+                            continue;
+                        }
+                        // 拷贝udd
+                        if (!copyFile(strSrcDatasourcePath + ".udd", strTargetDatasourcePath + ".udd")) {
+                            continue;
+                        }
+
+                    } else {
+
+                        boolean bDir = true;
+                        File targetServerFile = new File(strTargetServer);
+                        boolean bExist = targetServerFile.exists();
+                        bDir = targetServerFile.isDirectory();
+                        if (bExist && !bDir) {
+                            //存在同名文件
+                            //重名文件
+                            strTargetServer = formateNoneExistFileName(strTargetServer, false);
+                        }//exist
+
+
+                        // 拷贝
+                        if (!copyFile(strSrcServer, strTargetServer)) {
+                            continue;
+                        }
+                    }//bUDB
+
+                }
+                strTargetServer = strTargetServer.substring(strRootPath.length() + 1);
+
+            } else {
+                strTargetServer = strSrcServer;
+            }
+
+            Map<String, String> dicDatasource = new HashMap<>();
+            dicDatasource.put("Alians", strSrcAlian);
+            dicDatasource.put("Server", strTargetServer);
+            dicDatasource.put("Type", engineType.value() + "");
+            arrExpDatasources.add(dicDatasource);
+            //user password
+        }
+
+        String desResourceDir = strCustomer + "/Symbol";
+        if (strModule != null && !strModule.equals("")) {
+            desResourceDir = desResourceDir + "/" + strModule;
+        }
+
+        isDir = false;
+        File fileDesResourceDir = new File(desResourceDir);
+        isExist = fileDesResourceDir.exists();
+        isDir = fileDesResourceDir.isDirectory();
+        if (!isExist || !isDir) {
+            fileDesResourceDir.mkdirs();
+        }
+
+        String desResources = desResourceDir + "/" + strMapName;
+        if (bNew || bResourcesModified) {
+            // Marker
+            {
+                SymbolMarkerLibrary markerLibrary = new SymbolMarkerLibrary();
+                SymbolGroup desMarkerGroup = markerLibrary.getRootGroup();
+                SymbolGroup srcMarkerGroup = srcWorkspace.getResources().getMarkerLibrary().getRootGroup().getChildGroups().get(strMapAlians);
+                if (bNew && !bResourcesModified) {
+                    // 整个库都倒出
+                    srcMarkerGroup = srcWorkspace.getResources().getMarkerLibrary().getRootGroup();
+                }
+                if (srcMarkerGroup != null) {
+                    importSymbolsFrom(srcMarkerGroup, desMarkerGroup, true, false);
+                }
+                if (bResourcesModified) {
+                    List<Integer> arrMarkerFromXML = findIntValuesFromXML(strMapXML, "sml:MarkerStyle");
+                    setMarkerIDs.addAll(arrMarkerFromXML);
+                    Integer[] arrMarkerIDs = new Integer[setMarkerIDs.size()];
+                    setMarkerIDs.toArray(arrMarkerIDs);
+                    for (int i = 0; i < arrMarkerIDs.length; i++) {
+                        int nMarkerID = arrMarkerIDs[i].intValue();
+                        if (!markerLibrary.contains(nMarkerID)) {
+                            Symbol symbolTemp = srcWorkspace.getResources().getMarkerLibrary().findSymbol(nMarkerID);
+                            if (symbolTemp != null) {
+                                //[markerLibrary add:symbolTemp toGroup:desMarkerGroup];
+                                markerLibrary.add(symbolTemp);
+                            }
+                        }
+                    }
+                }
+                markerLibrary.saveAs(desResources + ".sym");
+                markerLibrary.dispose();
+            }
+            // Line
+            {
+                SymbolLineLibrary lineLibrary = new SymbolLineLibrary();
+                SymbolMarkerLibrary markerInlineLibrary = lineLibrary.getInlineMarkerLib();
+
+                SymbolGroup desLineGroup = lineLibrary.getRootGroup();
+                SymbolGroup srcLineGroup = srcWorkspace.getResources().getLineLibrary().getRootGroup().getChildGroups().get(strMapAlians);
+                if (bNew && !bResourcesModified) {
+                    srcLineGroup = srcWorkspace.getResources().getLineLibrary().getRootGroup();
+                }
+                if (srcLineGroup != null) {
+                    importSymbolsFrom(srcLineGroup, desLineGroup, true, false);
+                }
+                //SymbolGroup *desInlineGroup = [markerInlineLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
+                SymbolGroup desInlineGroup = markerInlineLibrary.getRootGroup();
+                SymbolGroup srcInlineGroup = srcWorkspace.getResources().getLineLibrary().getInlineMarkerLib().getRootGroup().getChildGroups().get(strMapAlians);
+                if (bNew && !bResourcesModified) {
+                    srcInlineGroup = srcWorkspace.getResources().getLineLibrary().getInlineMarkerLib().getRootGroup();
+                }
+                if (srcInlineGroup != null) {
+                    importSymbolsFrom(srcInlineGroup, desInlineGroup, true, false);
+                }
+                if (bResourcesModified) {
+                    List<Integer> arrLineFromXML = findIntValuesFromXML(strMapXML, "sml:LineStyle");
+                    setLineIDs.addAll(arrLineFromXML);
+                    Integer[] arrLineIDs = new Integer[setLineIDs.size()];
+                    setLineIDs.toArray(arrLineIDs);
+                    for (int i = 0; i < arrLineIDs.length; i++) {
+                        int nLineID = arrLineIDs[i].intValue();
+                        if (!lineLibrary.contains(nLineID)) {
+                            SymbolLine symbolTemp = (SymbolLine) srcWorkspace.getResources().getLineLibrary().findSymbol(nLineID);
+                            if (symbolTemp != null) {
+                                int[] arrInlineMarkerIds = symbolTemp.customizedPointSymbolIDs();
+                                for (int j = 0; j < arrInlineMarkerIds.length; j++) {
+                                    int nInlineMarker = arrInlineMarkerIds[j];
+                                    if (!markerInlineLibrary.contains(nInlineMarker)) {
+                                        Symbol symbolMarker = srcWorkspace.getResources().getLineLibrary().getInlineMarkerLib().findSymbol(nInlineMarker);
+                                        markerInlineLibrary.add(symbolMarker);
+                                    }
+                                }
+                                //[lineLibrary add:symbolTemp toGroup:desLineGroup];
+                                lineLibrary.add(symbolTemp);
+                            }
+                        }
+                    }
+                }
+                lineLibrary.saveAs(desResources + ".lsl");
+                lineLibrary.dispose();
+            }
+            // Fill
+            {
+                SymbolFillLibrary fillLibrary = new SymbolFillLibrary();
+                SymbolMarkerLibrary markerInfillLibrary = fillLibrary.getInfillMarkerLib();
+
+                SymbolGroup desFillGroup = fillLibrary.getRootGroup();
+                SymbolGroup srcFillGroup = srcWorkspace.getResources().getFillLibrary().getRootGroup().getChildGroups().get(strMapAlians);
+                if (bNew && !bResourcesModified) {
+                    srcFillGroup = srcWorkspace.getResources().getFillLibrary().getRootGroup();
+                }
+                if (srcFillGroup != null) {
+                    importSymbolsFrom(srcFillGroup, desFillGroup, true, false);
+                }
+                //SymbolGroup *desInfillGroup = [markerInfillLibrary.rootGroup.childSymbolGroups createGroupWith:strMapName];
+                SymbolGroup desInfillGroup = markerInfillLibrary.getRootGroup();
+                SymbolGroup srcInfillGroup = srcWorkspace.getResources().getFillLibrary().getInfillMarkerLib().getRootGroup().getChildGroups().get(strMapAlians);
+                if (bNew && !bResourcesModified) {
+                    srcInfillGroup = srcWorkspace.getResources().getFillLibrary().getInfillMarkerLib().getRootGroup();
+                }
+                if (srcInfillGroup != null) {
+                    importSymbolsFrom(srcInfillGroup, desInfillGroup, true, false);
+                }
+                if (bResourcesModified) {
+                    List<Integer> arrFillFromXML = findIntValuesFromXML(strMapXML, "sml:FillStyle");
+                    setFillIDs.addAll(arrFillFromXML);
+                    Integer[] arrFillIDs = new Integer[setFillIDs.size()];
+                    setFillIDs.toArray(arrFillIDs);
+                    for (int i = 0; i < arrFillIDs.length; i++) {
+                        int nFillID = arrFillIDs[i].intValue();
+                        if (!fillLibrary.contains(nFillID)) {
+                            SymbolFill symbolTemp = (SymbolFill) srcWorkspace.getResources().getFillLibrary().findSymbol(nFillID);
+                            if (symbolTemp != null) {
+                                int[] arrInfillMarkerIds = symbolTemp.customizedPointSymbolIDs();
+                                for (int j = 0; j < arrInfillMarkerIds.length; j++) {
+                                    int nInfillMarker = arrInfillMarkerIds[j];
+                                    if (!markerInfillLibrary.contains(nInfillMarker)) {
+                                        Symbol symbolMarker = srcWorkspace.getResources().getFillLibrary().getInfillMarkerLib().findSymbol(nInfillMarker);
+                                        markerInfillLibrary.add(symbolMarker);
+                                    }
+                                }
+                                fillLibrary.add(symbolTemp);
+                            }
+                        }
+                    }
+                }
+                fillLibrary.saveAs(desResources + ".bru");
+//                fillLibrary.dispose();
+            }
+
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("Resources", desResources.substring(strRootPath.length() + 1));
+            JSONArray jsonArray = new JSONArray();
+            for (Map<String, String> arrExpDatasource : arrExpDatasources) {
+                jsonArray.put(new JSONObject(arrExpDatasource));
+            }
+            jsonObject.put("Datasources", jsonArray);
+            //模板
+            if (dicAddition != null && dicAddition.hasKey("Tempplate")) {
+                String strTemplate = dicAddition.getString("Template");
                 if (strTemplate != null) {
                     jsonObject.put("Template", strTemplate);
                 }

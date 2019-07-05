@@ -2392,12 +2392,35 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             Map<String, String> additionInfo = new HashMap<>();
             ReadableMapKeySetIterator keys = addition.keySetIterator();
-            while (keys.hasNextKey()) {
-                String key = keys.nextKey();
-                additionInfo.put(key, addition.getString(key));
+            WritableMap writableMap = Arguments.createMap();
+            boolean needFilter = false;
+            if(addition.getArray("filterLayers") != null){
+                needFilter = true;
+                while (keys.hasNextKey()) {
+                    String key = keys.nextKey();
+                    if(key.equals("filterLayers")){
+                        WritableArray array = Arguments.createArray();
+                        for(int i = 0; i< addition.getArray(key).size(); i++){
+                            array.pushString(addition.getArray(key).getString(i));
+                        }
+                        writableMap.putArray(key, array);
+                    }else{
+                        writableMap.putString(key, addition.getString(key));
+                    }
+                }
+            }else{
+                while (keys.hasNextKey()) {
+                    String key = keys.nextKey();
+                    additionInfo.put(key, addition.getString(key));
+                }
             }
+
             if (mapSaved) {
-                mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, additionInfo, (isNew || bNew), bResourcesModified, bPrivate);
+                if(needFilter){
+                    mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, writableMap, (isNew || bNew), bResourcesModified, bPrivate);
+                }else{
+                    mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, additionInfo, (isNew || bNew), bResourcesModified, bPrivate);
+                }
             }
 
             Maps maps = sMap.getSmMapWC().getWorkspace().getMaps();

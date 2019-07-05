@@ -1486,7 +1486,14 @@
         //打开失败
         return nil;
     }
-    
+    //删除标注图层
+    Layers *layers = mapExport.layers;
+    if(dicAddition[@"filterLayers"]){
+        NSArray *removeLayerArray = [dicAddition valueForKey:@"filterLayers"];
+        for(int i = 0; i < [removeLayerArray count]; i++){
+            [layers removeWithName:removeLayerArray[i]];
+        }
+    }
     NSString* desDirMap =  [NSString stringWithFormat:@"%@/Map",strCustomer];
     if(strModule!=nil && ![strModule isEqualToString:@""]){
         desDirMap = [NSString stringWithFormat:@"%@/%@",desDirMap,strModule];

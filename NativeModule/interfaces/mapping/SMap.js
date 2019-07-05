@@ -926,7 +926,7 @@ export default (function () {
    * 导出(保存)工作空间中地图到模块
    * @param strMapAlians
    * @param nModule
-   * @param withAddition
+   * @param withAddition 需要删除标注图层 filterLayers 标注图层数组
    * @param isNew  若为false，则自动判断名字是否存在，若存在，保存并导出覆盖原来的xml；若不存在，则创建新的xml。
    *               若为true，创建新的xml地图文件
    * @param bResourcesModified  若为false，则导出所有的Resources；
