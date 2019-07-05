@@ -228,7 +228,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
 
     //判断坐标系Type是否相等，避免不支持的type转Enum抛异常
-    public boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSys coordSys2){
+    public static boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSys coordSys2){
         try{
             if(coordSys1.getType() == coordSys2.getType()){
                 return true;
@@ -240,7 +240,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     //判断坐标系Type是否相等，避免不支持的type转Enum抛异常
-    public boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSysType prjCoordSysType){
+    public static boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSysType prjCoordSysType){
         try{
             if(coordSys1.getType() == prjCoordSysType){
                 return true;
@@ -3285,7 +3285,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
             Rectangle2D bounds = layer.getDataset().getBounds();
 
-            if ( !safeGetType(layer.getDataset().getPrjCoordSys(),sMap.smMapWC.getMapControl().getMap().getPrjCoordSys().getType()) ) {
+            if ( !safeGetType(layer.getDataset().getPrjCoordSys(),sMap.smMapWC.getMapControl().getMap().getPrjCoordSys()) ) {
                 Point2Ds point2Ds = new Point2Ds();
                 point2Ds.add(new Point2D(bounds.getLeft(), bounds.getTop()));
                 point2Ds.add(new Point2D(bounds.getRight(), bounds.getBottom()));
@@ -3496,6 +3496,65 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 设置MapControl 画笔样式
+     * @param style
+     * @param promise
+     */
+    @ReactMethod
+    public void setMapControlStyle(ReadableMap style, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            if (style.hasKey("nodeStyle")) {
+                String nodeStyleJson = style.getString("nodeStyle");
+                GeoStyle nodeStyle = new GeoStyle();
+                nodeStyle.fromJson(nodeStyleJson);
+                mapControl.setNodeStyle(nodeStyle);
+            }
+
+            if (style.hasKey("nodeColor")) {
+                int nodeColor = style.getInt("nodeColor");
+                mapControl.setNodeColor(nodeColor);
+            }
+
+            if (style.hasKey("nodeSize")) {
+                double nodeSize = style.getDouble("nodeSize");
+                mapControl.setNodeSize(nodeSize);
+            }
+
+            if (style.hasKey("strokeColor")) {
+                int strokeColor = style.getInt("strokeColor");
+                mapControl.setStrokeColor(strokeColor);
+            }
+
+            if (style.hasKey("strokeWidth")) {
+                int strokeWidth = style.getInt("strokeWidth");
+                mapControl.setStrokeWidth(strokeWidth);
+            }
+
+            if (style.hasKey("strokeFillColor")) {
+                int strokeFillColor = style.getInt("strokeFillColor");
+                mapControl.setStrokeFillColor(strokeFillColor);
+            }
+
+            if (style.hasKey("objectColor")) {
+                int objectColor = style.getInt("objectColor");
+                mapControl.setObjectColor(objectColor);
+            }
+
+            if (style.hasKey("objectWidth")) {
+                double objectWidth = style.getDouble("objectWidth");
+                mapControl.setObjectWidth(objectWidth);
+            }
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置标注默认的结点，线，面颜色
      *
      * @param promise
@@ -3631,6 +3690,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             final MapControl mapControl = sMap.smMapWC.getMapControl();
 
             Dataset dataset = null;
+            Layer cadLayer =null;
             String userpath = null, name = "PlotEdit_" + (isDefaultNew ? newName : mapControl.getMap().getName());
             if (plotSymbolPaths.size() > 0) {
                 String[] strArr = plotSymbolPaths.getString(0).split("/");
@@ -3662,43 +3722,56 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 datasource = opendatasource;
             }
 
-            if (datasource != null) {
-                Datasets datasets = datasource.getDatasets();
-                dataset = datasets.get(name);
-                DatasetVector datasetVector;
-                String datasetName;
-                if (dataset == null) {
-                    datasetName = datasets.getAvailableDatasetName(name);
-                    DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
-                    datasetVectorInfo.setType(DatasetType.CAD);
-                    datasetVectorInfo.setEncodeType(EncodeType.NONE);
-                    datasetVectorInfo.setName(datasetName);
-                    datasetVector = datasets.create(datasetVectorInfo);
-                    //创建数据集时创建好字段
-                    addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
-                    addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);
-                    addFieldInfo(datasetVector, "address", FieldType.TEXT, false, "", 255);
+            if (datasource == null) {
+                return;
+            }
+            Datasets datasets = datasource.getDatasets();
 
-                    dataset = datasets.get(datasetName);
-                    com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                    Layer layer = map.getLayers().add(dataset, true);
-                    layer.setEditable(true);
-                    datasetVectorInfo.dispose();
-                    datasetVector.close();
-                } else {
-                    Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
-                    Layer editLayer = layers.get(name + "@" + datasource.getAlias());
-                    if (editLayer != null) {
-                        editLayer.setEditable(true);
-                    } else {
-
-                        Dataset ds = dataset;
-                        com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                        Layer layer = map.getLayers().add(ds, true);
-                        layer.setEditable(true);
-                    }
+            for (int i=0;i<mapControl.getMap().getLayers().getCount();i++){
+                Layer tempLayer=mapControl.getMap().getLayers().get(i);
+                if(tempLayer.getName().startsWith("PlotEdit_")&&tempLayer.getDataset().getType()==DatasetType.CAD){
+                    dataset =tempLayer.getDataset();
+                    cadLayer=tempLayer;
+                    break;
                 }
             }
+//            dataset = datasets.get(name);
+            DatasetVector datasetVector;
+            String datasetName;
+            if (dataset == null) {
+                datasetName = datasets.getAvailableDatasetName(name);
+                DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+                datasetVectorInfo.setType(DatasetType.CAD);
+                datasetVectorInfo.setEncodeType(EncodeType.NONE);
+                datasetVectorInfo.setName(datasetName);
+                datasetVector = datasets.create(datasetVectorInfo);
+                //创建数据集时创建好字段
+                addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
+                addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);
+                addFieldInfo(datasetVector, "address", FieldType.TEXT, false, "", 255);
+
+                dataset = datasets.get(datasetName);
+                com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+                Layer layer = map.getLayers().add(dataset, true);
+                layer.setEditable(true);
+                datasetVectorInfo.dispose();
+                datasetVector.close();
+            } else {
+                cadLayer.setEditable(true);
+//                Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
+////                Layer editLayer = layers.get(name + "@" + datasource.getAlias());
+//                Layer editLayer = layers.get(dataset.getName());
+//                if (editLayer != null) {
+//                    editLayer.setEditable(true);
+//                } else {
+//
+//                    Dataset ds = dataset;
+//                    com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+//                    Layer layer = map.getLayers().add(ds, true);
+//                    layer.setEditable(true);
+//                }
+            }
+
 
 
             WritableMap writeMap = Arguments.createMap();
@@ -3708,7 +3781,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 writeMap.putInt(libName, libId);
                 if (isFirst && libName.equals("警用标号")) {
                     Point2Ds point2Ds = new Point2Ds();
-                    point2Ds.add(mapControl.getMap().getCenter());
+                    Point2D point2D=new Point2D(mapControl.getMap().getViewBounds().getLeft()-100,mapControl.getMap().getViewBounds().getTop()-100);
+                    point2Ds.add(point2D);
                     mapControl.addPlotObject(libId, 20100, point2Ds);
                     mapControl.cancel();
                     Recordset recordset = ((DatasetVector) dataset).getRecordset(false, CursorType.DYNAMIC);

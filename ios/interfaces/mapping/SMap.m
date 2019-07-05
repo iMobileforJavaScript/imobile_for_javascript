@@ -2307,6 +2307,7 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
         Workspace *workspace =sMap.smMapWC.mapControl.map.workspace;
         
         Dataset* dataset=nil;
+        Layer* cadLayer=nil;
         NSString* userpath=nil;
         NSString* Name=[@"PlotEdit_" stringByAppendingString:(isDefaultNew?newName:sMap.smMapWC.mapControl.map.name)];
         NSArray *array = [plotSymbolPaths[0] componentsSeparatedByString:@"/"];
@@ -2337,39 +2338,50 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
         }else{
             datasource=opendatasource;
         }
+        if(!datasource){
+            return;
+        }
+        Datasets *datasets = datasource.datasets;
         
-        if(datasource){
-            Datasets *datasets = datasource.datasets;
-            dataset = [datasets getWithName:Name];
-            NSString* datasetName;
-            if(!dataset){
-                datasetName = [datasets availableDatasetName: Name];
-                DatasetVectorInfo *datasetVectorInfo = [[DatasetVectorInfo alloc]init];
-                [datasetVectorInfo setDatasetType:CAD];
-                [datasetVectorInfo setEncodeType:NONE];
-                [datasetVectorInfo setName:datasetName];
-                DatasetVector *datasetVector = [datasets create:datasetVectorInfo];
-                //创建数据集时创建好字段
-                [SMap addFieldInfo:datasetVector Name:@"name" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
-                [SMap addFieldInfo:datasetVector Name:@"remark" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
-                [SMap addFieldInfo:datasetVector Name:@"address" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
-                
-                dataset = [datasets getWithName:datasetName];
-                Map *map = sMap.smMapWC.mapControl.map;
-                Layer *layer = [map.layers addDataset:dataset ToHead:YES];
-                [layer setEditable:YES];
-                [datasetVectorInfo dispose];
-                [datasetVector close];
-            }else{
-                Layers *layers =sMap.smMapWC.mapControl.map.layers;
-                Layer *editLayer = [layers getLayerWithName:[NSString stringWithFormat:@"%@@%@",Name,datasource.alias]];
-                if(editLayer){
-                    [editLayer setEditable:YES];
-                }else{
-                    Layer* layer=[layers addDataset:dataset ToHead:true];
-                    [layer setEditable:YES];
-                }
+        for (int i=0; i<[sMap.smMapWC.mapControl.map.layers getCount]; i++) {
+            Layer* tempLayer=[sMap.smMapWC.mapControl.map.layers getLayerAtIndex:i];
+            if([tempLayer.name hasPrefix:@"PlotEdit_"]&&tempLayer.dataset.datasetType==CAD){
+                dataset=tempLayer.dataset;
+                cadLayer=tempLayer;
+                break;
             }
+        }
+        
+//        dataset = [datasets getWithName:Name];
+        NSString* datasetName;
+        if(!dataset){
+            datasetName = [datasets availableDatasetName: Name];
+            DatasetVectorInfo *datasetVectorInfo = [[DatasetVectorInfo alloc]init];
+            [datasetVectorInfo setDatasetType:CAD];
+            [datasetVectorInfo setEncodeType:NONE];
+            [datasetVectorInfo setName:datasetName];
+            DatasetVector *datasetVector = [datasets create:datasetVectorInfo];
+            //创建数据集时创建好字段
+            [SMap addFieldInfo:datasetVector Name:@"name" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
+            [SMap addFieldInfo:datasetVector Name:@"remark" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
+            [SMap addFieldInfo:datasetVector Name:@"address" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
+            
+            dataset = [datasets getWithName:datasetName];
+            Map *map = sMap.smMapWC.mapControl.map;
+            Layer *layer = [map.layers addDataset:dataset ToHead:YES];
+            [layer setEditable:YES];
+            [datasetVectorInfo dispose];
+            [datasetVector close];
+        }else{
+            [cadLayer setEditable:YES];
+//            Layers *layers =sMap.smMapWC.mapControl.map.layers;
+//            Layer *editLayer = [layers getLayerWithName:[NSString stringWithFormat:@"%@@%@",Name,datasource.alias]];
+//            if(editLayer){
+//                [editLayer setEditable:YES];
+//            }else{
+//                Layer* layer=[layers addDataset:dataset ToHead:true];
+//                [layer setEditable:YES];
+//            }
         }
     
         NSMutableDictionary* libInfo = [[NSMutableDictionary alloc] init];
@@ -2380,7 +2392,8 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
             
             if(isFirst&&[libName isEqualToString:@"警用标号"]){
                 Point2Ds* point2Ds=[[Point2Ds alloc] init];
-                [point2Ds add:sMap.smMapWC.mapControl.map.center];
+                Point2D* point2D=[[Point2D alloc] initWithX:sMap.smMapWC.mapControl.map.viewBounds.left Y:sMap.smMapWC.mapControl.map.viewBounds.top];
+                [point2Ds add:point2D];
                 [sMap.smMapWC.mapControl addPlotObject:libId symbolCode:20100 point:point2Ds];
                 [sMap.smMapWC.mapControl cancel];
                 Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
@@ -3230,6 +3243,45 @@ RCT_REMAP_METHOD(setTaggingGrid, setTaggingGridWithName:(NSString *)name UserPat
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setTaggingGrid",exception.reason,nil);
+    }
+}
+
+#pragma mark 设置MapControl 画笔样式
+RCT_REMAP_METHOD(setMapControlStyle, setMapControlStyle:(NSDictionary *)style setLabelColorWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl *mapControl = sMap.smMapWC.mapControl;
+        
+        if ([style objectForKey:@"nodeStyle"]) {
+            NSString* nodeStyleJson = [style objectForKey:@"nodeStyle"];
+            GeoStyle* nodeStyle = [[GeoStyle alloc] init];
+            [nodeStyle fromJson:nodeStyleJson];
+            [mapControl setNodeStyle:nodeStyle];
+        }
+        if ([style objectForKey:@"nodeColor"]) {
+            NSNumber* strokeColor = [style objectForKey:@"nodeColor"];
+            [mapControl setNodeColor:[[Color alloc] initWithValue:strokeColor.intValue]];
+        }
+        if ([style objectForKey:@"nodeSize"]) {
+            NSNumber* nodeSize = [style objectForKey:@"nodeSize"];
+            [mapControl setNodeSize:nodeSize.doubleValue];
+        }
+        if ([style objectForKey:@"strokeColor"]) {
+            NSNumber* strokeColor = [style objectForKey:@"strokeColor"];
+            [mapControl setStrokeColor:[[Color alloc] initWithValue:strokeColor.intValue]];
+        }
+        if ([style objectForKey:@"strokeWidth"]) {
+            NSNumber* strokeWidth = [style objectForKey:@"strokeWidth"];
+            [mapControl setStrokeWidth:strokeWidth.intValue];
+        }
+        if ([style objectForKey:@"strokeFillColor"]) {
+            NSNumber* strokeFillColor = [style objectForKey:@"strokeFillColor"];
+            [mapControl setStrokeFillColor:[[Color alloc] initWithValue:strokeFillColor.intValue]];
+        }
+        
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
     }
 }
 

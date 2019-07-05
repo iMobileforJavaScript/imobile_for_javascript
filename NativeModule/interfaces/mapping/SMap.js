@@ -1325,7 +1325,41 @@ export default (function () {
 
 
   /**
+   * 设置MapControl 画笔样式
+   */
+  function setMapControlStyle(style) {
+    try {
+      if (!style) return
+      if (style.strokeColor instanceof Array) {
+        style.strokeColor = (style.strokeColor[3] * 255) << 24 | style.strokeColor[0] << 16 | style.strokeColor[1] << 8 | style.strokeColor[2]
+      }
+      
+      function colorRgb2Hex (arr) {
+        if (Platform.OS === 'ios') {
+          return (arr[3] * 255) << 24 | arr[2] << 16 | arr[1] << 8 | arr[0]
+        }
+        return (arr[3] * 255) << 24 | arr[0] << 16 | arr[1] << 8 | arr[2]
+      }
+      if (style.nodeColor instanceof Array) {
+        style.nodeColor = colorRgb2Hex(style.nodeColor)
+      }
+      if (style.strokeFillColor instanceof Array) {
+        style.strokeFillColor = colorRgb2Hex(style.strokeFillColor)
+      }
+      if (style.objectColor instanceof Array) {
+        style.objectColor = colorRgb2Hex(style.objectColor)
+      }
+      return SMap.setMapControlStyle(style)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+
+  /**
    * 设置标注默认的结点，线，面颜色
+   *
+   * @deprecated 用setMapControlStyle代替
    */
   function setLabelColor() {
     try {
@@ -1337,6 +1371,7 @@ export default (function () {
 
   /**
    * 更新图例
+   * @deprecated 用setMapControlStyle代替
    */
   function updateLegend() {
     try {
@@ -1639,6 +1674,7 @@ export default (function () {
     getTaggingLayers,
     getTaggingLayerCount,
     setTaggingGrid,
+    setMapControlStyle,
     setLabelColor,
     updateLegend,
 
