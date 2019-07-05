@@ -143,10 +143,10 @@ public class SMMapWC {
                 info.dispose();
 
                 if (SMap.getInstance().getSmMapWC().getMapControl() != null) {
-                    if (SMap.getInstance().getSmMapWC().getMapControl().getMap() != null && !SMap.getInstance().getSmMapWC().getMapControl().getMap().getName().equals("")) {
-                        SMap.getInstance().getSmMapWC().getMapControl().getMap().close();
-                        SMap.getInstance().getSmMapWC().getMapControl().getMap().setWorkspace(newWS);
-                    }
+//                    if (SMap.getInstance().getSmMapWC().getMapControl().getMap() != null && !SMap.getInstance().getSmMapWC().getMapControl().getMap().getName().equals("")) {
+//                        SMap.getInstance().getSmMapWC().getMapControl().getMap().close();
+                    SMap.getInstance().getSmMapWC().getMapControl().getMap().setWorkspace(newWS);
+//                    }
                     if (_workspace != null && !_workspace.getCaption().equals("UntitledWorkspace")) {
                         _workspace.close();
                     }
