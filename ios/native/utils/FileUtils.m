@@ -53,7 +53,7 @@
 }
 
 + (BOOL)copyFiles:(NSString *)from targetDictionary:(NSString *)to filterFileSuffix:(NSString *)filterFileSuffix
-        filterFileDicName:(NSString*)filterFileDicName otherFileDicName:(NSString*)otherFileDicName{
+filterFileDicName:(NSString*)filterFileDicName otherFileDicName:(NSString*)otherFileDicName isOnly:(BOOL)isOnly{
     
     if (to == nil || [to isEqualToString:@""]) {
         return NO;
@@ -64,7 +64,14 @@
         return NO;
     }
     NSString* fromName=[fileManager displayNameAtPath:from];
-    NSString* toPath=[self formateNoneExistFileName:[NSString stringWithFormat:@"%@/%@",to ,fromName] isDir:idDicfromFile];
+    NSString* toPath=nil;
+    NSString* tempToPath=[NSString stringWithFormat:@"%@/%@",to ,fromName];
+    if(isOnly&&[fileManager fileExistsAtPath:tempToPath]){
+        [fileManager removeItemAtPath:tempToPath error:nil];
+        toPath=tempToPath;
+    }else{
+        toPath=[self formateNoneExistFileName:[NSString stringWithFormat:@"%@/%@",to ,fromName] isDir:idDicfromFile];
+    }
     NSString* filterFileDicPath=[NSString stringWithFormat:@"%@/%@",toPath ,filterFileDicName];
     NSString* otherFileDicPath=[NSString stringWithFormat:@"%@/%@",toPath ,otherFileDicName];
     if(![fileManager fileExistsAtPath:toPath]){

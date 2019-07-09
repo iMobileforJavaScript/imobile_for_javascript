@@ -2391,6 +2391,19 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
             [libInfo setObject:@(libId) forKey:libName];
             
             if(isFirst&&[libName isEqualToString:@"警用标号"]){
+                for (int i=0; i<[sMap.smMapWC.mapControl.map.layers getCount]; i++) {
+                    Layer* tempLayer=[sMap.smMapWC.mapControl.map.layers getLayerAtIndex:i];
+                    if(tempLayer.dataset.datasetType==CAD){
+                        if([tempLayer.name hasPrefix:@"PlotEdit_"]){
+                        dataset=tempLayer.dataset;
+                        cadLayer=tempLayer;
+                        [cadLayer setEditable:YES];
+//                        break;
+                        }else{
+                            [tempLayer setEditable:NO];
+                        }
+                    }
+                }
                 Point2Ds* point2Ds=[[Point2Ds alloc] init];
                 Point2D* point2D=[[Point2D alloc] initWithX:sMap.smMapWC.mapControl.map.viewBounds.left Y:sMap.smMapWC.mapControl.map.viewBounds.top];
                 [point2Ds add:point2D];
@@ -2451,7 +2464,7 @@ RCT_REMAP_METHOD(importPlotLibData, importPlotLibData:(NSString*)fromPath  resol
             }
         }
         NSString *toPath = [NSString stringWithFormat: @"%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Plotting/"];
-        BOOL result=[FileUtils copyFiles:fromPath targetDictionary:toPath filterFileSuffix:@"plot" filterFileDicName:@"Symbol" otherFileDicName:@"SymbolIcon"];
+        BOOL result=[FileUtils copyFiles:fromPath targetDictionary:toPath filterFileSuffix:@"plot" filterFileDicName:@"Symbol" otherFileDicName:@"SymbolIcon" isOnly:NO];
 
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {

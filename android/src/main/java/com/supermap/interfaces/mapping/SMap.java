@@ -3886,7 +3886,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      */
     public static boolean importPlotLibDataMethod(String fromPath) {
         String toPath = homeDirectory + "/iTablet/User/" + SMap.getInstance().smMapWC.getUserName() + "/Data" + "/Plotting/";
-        boolean result = copyFiles(fromPath, toPath, "plot", "Symbol", "SymbolIcon");
+        boolean result = copyFiles(fromPath, toPath, "plot", "Symbol", "SymbolIcon",false);
         return result;
     }
 

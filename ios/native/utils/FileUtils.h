@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 +(NSString*)getLastModifiedTime:(NSDate*) nsDate;
 +(NSDictionary *)readLocalFileWithPath:(NSString *)path;
 + (BOOL)copyFiles:(NSString *)from targetDictionary:(NSString *)to filterFileSuffix:(NSString *)filterFileSuffix
-filterFileDicName:(NSString*)filterFileDicName otherFileDicName:(NSString*)otherFileDicName;
+filterFileDicName:(NSString*)filterFileDicName otherFileDicName:(NSString*)otherFileDicName isOnly:(BOOL)isOnly;
 @end
 
 NS_ASSUME_NONNULL_END
