@@ -38,6 +38,8 @@
 @public
     NSMutableArray* nodes;
     NSMutableArray* barrierNodes;
+    Point2Ds* points;
+    Point2Ds* barrierPoints;
 }
 - (TransportationAnalyst *)getTransportationAnalyst;
 

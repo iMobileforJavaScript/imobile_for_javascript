@@ -45,7 +45,7 @@ RCT_EXPORT_MODULE();
     [[SMap singletonInstance].smMapWC.mapControl.map.trackingLayer clear];
 }
 
-- (int)selectPoint:(NSDictionary *)point layer:(Layer *)nodeLayer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag {
+- (int)selectNode:(NSDictionary *)point layer:(Layer *)nodeLayer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag {
     int ID = -1;
 //    if (!elementIDs) {
 //        elementIDs = [[NSMutableArray alloc] init];
@@ -81,8 +81,8 @@ RCT_EXPORT_MODULE();
     return ID;
 }
 
-- (Point2D *)selectByPoint:(NSDictionary *)point layer:(Layer *)nodeLayer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag {
-    Point2D* point2D = nil;
+- (Point2D *)selectPoint:(NSDictionary *)point layer:(Layer *)nodeLayer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag {
+//    int ID = -1;
     //    if (!elementIDs) {
     //        elementIDs = [[NSMutableArray alloc] init];
     //    }
@@ -91,11 +91,20 @@ RCT_EXPORT_MODULE();
     CGPoint p = CGPointMake(x, y);
     Selection* hitSelection = [nodeLayer hitTestEx:p With:20];
     
+    NSMutableDictionary* pDic = nil;
+    Point2D* p2D = nil;
+    
     if (hitSelection && hitSelection.getCount > 0) {
+        pDic = [[NSMutableDictionary alloc] init];
         Recordset* rs = hitSelection.toRecordset;
         GeoPoint* gPoint = (GeoPoint *)rs.geometry;
-        point2D = gPoint.getInnerPoint;
+//        ID = (int)rs.ID;
         //        [elementIDs addObject:@(ID)];
+        
+        p2D = [[Point2D alloc] initWithX:gPoint.getX Y:gPoint.getY];
+//        CGPoint cgp = [SMap.singletonInstance.smMapWC.mapControl.map mapToPixel:[[Point2D alloc] initWithX:gPoint.getX Y:gPoint.getY]];
+//        [pDic setObject:@(cgp.x) forKey:@"x"];
+//        [pDic setObject:@(cgp.y) forKey:@"y"];
         
         GeoStyle* style = geoStyle;
         if (!style) {
@@ -114,8 +123,44 @@ RCT_EXPORT_MODULE();
         [rs close];
         [rs dispose];
     }
-    return point2D;
+    return p2D;
 }
+
+//- (Point2D *)selectByPoint:(NSDictionary *)point layer:(Layer *)nodeLayer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag {
+//    Point2D* point2D = nil;
+//    //    if (!elementIDs) {
+//    //        elementIDs = [[NSMutableArray alloc] init];
+//    //    }
+//    double x = [(NSNumber *)[point objectForKey:@"x"] doubleValue];
+//    double y = [(NSNumber *)[point objectForKey:@"y"] doubleValue];
+//    CGPoint p = CGPointMake(x, y);
+//    Selection* hitSelection = [nodeLayer hitTestEx:p With:20];
+//    
+//    if (hitSelection && hitSelection.getCount > 0) {
+//        Recordset* rs = hitSelection.toRecordset;
+//        GeoPoint* gPoint = (GeoPoint *)rs.geometry;
+//        point2D = gPoint.getInnerPoint;
+//        //        [elementIDs addObject:@(ID)];
+//        
+//        GeoStyle* style = geoStyle;
+//        if (!style) {
+//            style = [[GeoStyle alloc] init];
+//            [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
+//            [style setLineColor:[[Color alloc] initWithR:255 G:105 B:0]];
+//            [style setMarkerSymbolID:3614];
+//        }
+//        [gPoint setStyle:style];
+//        
+//        TrackingLayer* trackingLayer = [SMap singletonInstance].smMapWC.mapControl.map.trackingLayer;
+//        [trackingLayer addGeometry:gPoint WithTag:tag];
+//        [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+//        
+//        [gPoint dispose];
+//        [rs close];
+//        [rs dispose];
+//    }
+//    return point2D;
+//}
 
 - (void)removeTagFromTrackingLayer:(NSString *)tag {
     TrackingLayer* trackingLayer = [SMap singletonInstance].smMapWC.mapControl.map.trackingLayer;
