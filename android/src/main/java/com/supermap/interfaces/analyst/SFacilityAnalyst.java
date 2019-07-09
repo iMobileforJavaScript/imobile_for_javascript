@@ -187,7 +187,7 @@ public class SFacilityAnalyst extends SNetworkAnalyst {
                 GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(255, 105, 0));
                 style.setMarkerSymbolID(3614);
 
-                startNodeID = this.selectPoint(point, nodeLayer, style, nodeTag);
+                startNodeID = this.selectNode(point, nodeLayer, style, nodeTag);
             }
             promise.resolve(startNodeID);
         } catch (Exception e) {
@@ -212,7 +212,7 @@ public class SFacilityAnalyst extends SNetworkAnalyst {
                 GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(105, 255, 0));
                 style.setMarkerSymbolID(3614);
 
-                endNodeID = this.selectPoint(point, nodeLayer, style, nodeTag);
+                endNodeID = this.selectNode(point, nodeLayer, style, nodeTag);
             }
             promise.resolve(endNodeID);
         } catch (Exception e) {
