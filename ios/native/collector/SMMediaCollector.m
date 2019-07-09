@@ -189,6 +189,19 @@ static SMMediaCollector* sMediaCollector = nil;
     double longitude = [rs.geometry getInnerPoint].x;
     double latitude =  [rs.geometry getInnerPoint].y;
     
+//    Point2D* pt = [[Point2D alloc]initWithX:longitude Y:latitude];
+//    if ([[SMap singletonInstance].smMapWC.mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+//        Point2Ds *points = [[Point2Ds alloc]init];
+//        [points add:pt];
+//        PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+//        [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+//        CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+//
+//        //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+//        [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[[SMap singletonInstance].smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+//        pt = [points getItem:0];
+//    }
+    
     NSString* imgPath = [NSString stringWithFormat:@"%@/%@", [NSHomeDirectory() stringByAppendingString:@"/Documents"], media.paths[0]];
     InfoCallout* callout = [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:imgPath];
     callout.mediaFileName = media.fileName;

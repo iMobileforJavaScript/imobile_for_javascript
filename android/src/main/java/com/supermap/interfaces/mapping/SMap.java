@@ -118,6 +118,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         if (scaleViewHelper.mapParameterChangedListener == null) {
             scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
                 public void scaleChanged(double newScale) {
+                    if(scaleViewHelper == null)
+                        return;
                     scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
                     scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
                     scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
@@ -406,7 +408,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //                    sMap.getSmMapWC().getMapControl().getMap().setWorkspace(sMap.getSmMapWC().getWorkspace());
 
                     sMap.getSmMapWC().getMapControl().getMap().setVisibleScalesEnabled(false);
-                    sMap.getSmMapWC().getMapControl().setMagnifierEnabled(true);
+                   // sMap.getSmMapWC().getMapControl().setMagnifierEnabled(true);
                     sMap.getSmMapWC().getMapControl().getMap().setAntialias(true);
                     sMap.getSmMapWC().getMapControl().getMap().refresh();
                 }
@@ -481,7 +483,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     setting.getStyle().setLineColor(this.getLineColor());
                 }
             }
-
+            getScaleViewHelper();
             sMap.smMapWC.getMapControl().getMap().setVisibleScalesEnabled(false);
             sMap.smMapWC.getMapControl().getMap().refresh();
 
@@ -512,6 +514,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 Layer layer = sMap.smMapWC.getMapControl().getMap().getLayers().add(ds, toHead);
                 layer.setVisible(visable);
             }
+            getScaleViewHelper();
             sMap.smMapWC.getMapControl().getMap().refresh();
 
             promise.resolve(true);
@@ -827,7 +830,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(mapName);
 
                 if (isOpen) {
-                    scaleViewHelper = getScaleViewHelper();
+                    getScaleViewHelper();
                     if (viewEntire) {
                         map.viewEntire();
                     }
@@ -876,7 +879,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(name);
 
                 if (isOpen) {
-                    scaleViewHelper = getScaleViewHelper();
+                   getScaleViewHelper();
 
                     if (viewEntire) {
                         map.viewEntire();
@@ -984,7 +987,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = getInstance();
             if (scaleViewHelper != null) {
                 if(scaleViewHelper.mapParameterChangedListener != null){
-                    scaleViewHelper.mapParameterChangedListener = null;
+                    scaleViewHelper.removeScaleChangeListener();
+//                    scaleViewHelper.mapParameterChangedListener = null;
                 }
                 scaleViewHelper = null;
             }
@@ -2388,12 +2392,35 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             Map<String, String> additionInfo = new HashMap<>();
             ReadableMapKeySetIterator keys = addition.keySetIterator();
-            while (keys.hasNextKey()) {
-                String key = keys.nextKey();
-                additionInfo.put(key, addition.getString(key));
+            WritableMap writableMap = Arguments.createMap();
+            boolean needFilter = false;
+            if(addition.getArray("filterLayers") != null){
+                needFilter = true;
+                while (keys.hasNextKey()) {
+                    String key = keys.nextKey();
+                    if(key.equals("filterLayers")){
+                        WritableArray array = Arguments.createArray();
+                        for(int i = 0; i< addition.getArray(key).size(); i++){
+                            array.pushString(addition.getArray(key).getString(i));
+                        }
+                        writableMap.putArray(key, array);
+                    }else{
+                        writableMap.putString(key, addition.getString(key));
+                    }
+                }
+            }else{
+                while (keys.hasNextKey()) {
+                    String key = keys.nextKey();
+                    additionInfo.put(key, addition.getString(key));
+                }
             }
+
             if (mapSaved) {
-                mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, additionInfo, (isNew || bNew), bResourcesModified, bPrivate);
+                if(needFilter){
+                    mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, writableMap, (isNew || bNew), bResourcesModified, bPrivate);
+                }else{
+                    mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, additionInfo, (isNew || bNew), bResourcesModified, bPrivate);
+                }
             }
 
             Maps maps = sMap.getSmMapWC().getWorkspace().getMaps();
@@ -2889,6 +2916,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     datasetVectorInfo.setEncodeType(EncodeType.NONE);
                     datasetVectorInfo.setName(datasetName);
                     DatasetVector datasetVector = datasets.create(datasetVectorInfo);
+                    datasetVector.setPrjCoordSys(sMap.getSmMapWC().getMapControl().getMap().getPrjCoordSys());
                     //创建数据集时创建好字段
                     addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
                     addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);
@@ -2911,6 +2939,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 datasetVectorInfo.setEncodeType(EncodeType.NONE);
                 datasetVectorInfo.setName(datasetName);
                 DatasetVector datasetVector = datasets.create(datasetVectorInfo);
+                datasetVector.setPrjCoordSys(sMap.getSmMapWC().getMapControl().getMap().getPrjCoordSys());
                 //创建数据集时创建好字段
                 addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
                 addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);
@@ -4069,6 +4098,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void getScaleData(Promise promise) {
         try {
+            if(scaleViewHelper == null){
+                getScaleViewHelper();
+            }
+
             scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
             scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
             scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
@@ -4308,6 +4341,37 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap.smMapWC.getMapControl().getMap().setIsFixedTextOrientation(b);
             promise.resolve(true);
         } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取放大镜是否开启
+     * @param promise
+     */
+    @ReactMethod
+    public void isMagnifierEnabled(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            boolean b = sMap.smMapWC.getMapControl().isMagnifierEnabled();
+            promise.resolve(b);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置放大镜是否开启
+     * @param b
+     * @param promise
+     */
+    @ReactMethod
+    public void setIsMagnifierEnabled(boolean b, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().setMagnifierEnabled(b);
+            promise.resolve(true);
+        }catch (Exception e){
             promise.reject(e);
         }
     }

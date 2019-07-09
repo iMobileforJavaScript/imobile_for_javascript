@@ -2,6 +2,9 @@ package com.supermap.smNative.collector;
 
 import android.graphics.Bitmap;
 
+import com.supermap.data.CoordSysTransMethod;
+import com.supermap.data.CoordSysTransParameter;
+import com.supermap.data.CoordSysTranslator;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetType;
@@ -13,9 +16,11 @@ import com.supermap.data.FieldInfos;
 import com.supermap.data.FieldType;
 import com.supermap.data.GeoPoint;
 import com.supermap.data.Point2D;
+import com.supermap.data.Point2Ds;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Recordset;
+import com.supermap.interfaces.mapping.SMap;
 import com.supermap.interfaces.utils.SMFileUtil;
 import com.supermap.plugin.LocationManagePlugin;
 
@@ -232,9 +237,20 @@ public class SMMedia {
         GeoPoint point = new GeoPoint();
 
         Recordset recordset = ((DatasetVector)this.dataset).getRecordset(false, CursorType.DYNAMIC);
+        Point2D pt = new Point2D(this.location);
+        if (!SMap.safeGetType(SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
+            Point2Ds point2Ds = new Point2Ds();
+            point2Ds.add(pt);
+            PrjCoordSys prjCoordSys = new PrjCoordSys();
+            prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+            CoordSysTransParameter parameter = new CoordSysTransParameter();
 
-        point.setX(this.location.getX());
-        point.setY(this.location.getY());
+            CoordSysTranslator.convert(point2Ds, prjCoordSys, SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+            pt = point2Ds.getItem(0);
+        }
+
+        point.setX(pt.getX());
+        point.setY(pt.getY());
         boolean result = recordset.addNew(point);
 
         recordset.edit();

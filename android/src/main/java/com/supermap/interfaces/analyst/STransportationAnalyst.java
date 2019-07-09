@@ -17,6 +17,9 @@ import com.supermap.analyst.networkanalyst.TransportationAnalystSetting;
 import com.supermap.analyst.networkanalyst.WeightFieldInfo;
 import com.supermap.analyst.networkanalyst.WeightFieldInfos;
 import com.supermap.data.Color;
+import com.supermap.data.CoordSysTransMethod;
+import com.supermap.data.CoordSysTransParameter;
+import com.supermap.data.CoordSysTranslator;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.Datasource;
@@ -24,7 +27,11 @@ import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.Datasources;
 import com.supermap.data.GeoLineM;
 import com.supermap.data.GeoStyle;
+import com.supermap.data.Point;
 import com.supermap.data.Point2D;
+import com.supermap.data.Point2Ds;
+import com.supermap.data.PrjCoordSys;
+import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Size2D;
 import com.supermap.data.Workspace;
 import com.supermap.interfaces.mapping.SMap;
@@ -50,6 +57,9 @@ public class STransportationAnalyst extends SNetworkAnalyst {
     private TransportationAnalyst transportationAnalyst = null;
     private ArrayList<Integer> nodes = null;
     private ArrayList<Integer> barrierNodes = null;
+
+    private Point2Ds points = null;
+    private Point2Ds barrierPoints = null;
 
     private GeoStyle getGeoStyle(Size2D size2D, Color color) {
         GeoStyle geoStyle = new GeoStyle();
@@ -95,7 +105,13 @@ public class STransportationAnalyst extends SNetworkAnalyst {
                 GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(255, 105, 0));
                 style.setMarkerSymbolID(3614);
 
-                startNodeID = this.selectPoint(point, nodeLayer, style, nodeTag);
+//                startNodeID = this.selectNode(point, nodeLayer, style, nodeTag);
+//
+//                double x = point.getDouble("x");
+//                double y = point.getDouble("y");
+//                Point p = new Point((int)x, (int)y);
+//                startPoint = SMap.getInstance().getSmMapWC().getMapControl().getMap().pixelToMap(p);
+                startPoint = this.selectPoint(point, nodeLayer, style, nodeTag);
             }
             promise.resolve(startNodeID);
         } catch (Exception e) {
@@ -120,7 +136,13 @@ public class STransportationAnalyst extends SNetworkAnalyst {
                 GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(105, 255, 0));
                 style.setMarkerSymbolID(3614);
 
-                endNodeID = this.selectPoint(point, nodeLayer, style, nodeTag);
+//                endNodeID = this.selectNode(point, nodeLayer, style, nodeTag);
+//
+//                double x = point.getDouble("x");
+//                double y = point.getDouble("y");
+//                Point p = new Point((int)x, (int)y);
+//                endPoint = SMap.getInstance().getSmMapWC().getMapControl().getMap().pixelToMap(p);
+                endPoint = this.selectPoint(point, nodeLayer, style, nodeTag);
             }
             promise.resolve(endNodeID);
         } catch (Exception e) {
@@ -142,10 +164,22 @@ public class STransportationAnalyst extends SNetworkAnalyst {
                 GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(255, 0, 0));
                 style.setMarkerSymbolID(3614);
 
-                node = this.selectPoint(point, nodeLayer, style, nodeTag);
+                node = this.selectNode(point, nodeLayer, style, nodeTag);
                 if (barrierNodes == null) {
                     barrierNodes = new ArrayList<>();
                 }
+
+                if (barrierPoints == null) {
+                    barrierPoints = new Point2Ds();
+                }
+//                double x = point.getDouble("x");
+//                double y = point.getDouble("y");
+//                Point p = new Point((int)x, (int)y);
+//                Point2D point2D = SMap.getInstance().getSmMapWC().getMapControl().getMap().pixelToMap(p);
+//                barrierPoints.add(point2D);
+                Point2D point2D = this.selectPoint(point, nodeLayer, style, nodeTag);
+                if (point2D != null) this.addBarrierPoints(point2D);
+
                 if (node > 0) {
                     barrierNodes.add(node);
                 }
@@ -170,10 +204,22 @@ public class STransportationAnalyst extends SNetworkAnalyst {
                 GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(255, 255, 0));
                 style.setMarkerSymbolID(3614);
 
-                node = this.selectPoint(point, nodeLayer, style, nodeTag);
+                node = this.selectNode(point, nodeLayer, style, nodeTag);
                 if (nodes == null) {
                     nodes = new ArrayList<>();
                 }
+
+                if (points == null) {
+                    points = new Point2Ds();
+                }
+//                double x = point.getDouble("x");
+//                double y = point.getDouble("y");
+//                Point p = new Point((int)x, (int)y);
+//                Point2D point2D = SMap.getInstance().getSmMapWC().getMapControl().getMap().pixelToMap(p);
+//                points.add(point2D);
+                Point2D point2D = this.selectPoint(point, nodeLayer, style, nodeTag);
+                if (point2D != null) this.addPoint(point2D);
+
                 if (node > 0) {
                     nodes.add(node);
                 }
@@ -198,6 +244,8 @@ public class STransportationAnalyst extends SNetworkAnalyst {
             endPoint = null;
             if (nodes != null) nodes.clear();
             if (barrierNodes != null) barrierNodes.clear();
+            if (points != null) points.clear();
+            if (barrierPoints != null) barrierPoints.clear();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -286,18 +334,36 @@ public class STransportationAnalyst extends SNetworkAnalyst {
             transportationAnalyst = getTransportationAnalyst();
             TransportationAnalystParameter paramter = SMAnalyst.getTransportationAnalystParameterByDictionary(params);
 
-            if (paramter.getNodes() != null && paramter.getNodes().length <= 0) {
-                ArrayList<Integer> mNodes = new ArrayList<>();
-                if (nodes != null && nodes.size() > 0) {
-                    mNodes.addAll(nodes);
+//            if (paramter.getNodes() != null && paramter.getNodes().length <= 0) {
+//                ArrayList<Integer> mNodes = new ArrayList<>();
+//                if (nodes != null && nodes.size() > 0) {
+//                    mNodes.addAll(nodes);
+//                }
+//                if (startNodeID > 0) mNodes.add(0, startNodeID);
+//                if (endNodeID > 0) mNodes.add(mNodes.size(), endNodeID);
+//                paramter.setNodes(DataUtil.arrayToIntArray(mNodes));
+//            }
+//
+//            if (barrierNodes != null && (paramter.getBarrierNodes() == null || paramter.getBarrierNodes().length <= 0)) {
+//                paramter.setBarrierNodes(DataUtil.arrayToIntArray(barrierNodes));
+//            }
+//
+//            if (barrierNodes != null && (paramter.getBarrierNodes() == null || paramter.getBarrierNodes().length <= 0)) {
+//                paramter.setBarrierNodes(DataUtil.arrayToIntArray(barrierNodes));
+//            }
+
+            if (paramter.getPoints() == null || paramter.getPoints().getCount() <= 0) {
+                if (points == null) {
+                    points = new Point2Ds();
                 }
-                if (startNodeID > 0) mNodes.add(0, startNodeID);
-                if (endNodeID > 0) mNodes.add(mNodes.size(), endNodeID);
-                paramter.setNodes(DataUtil.arrayToIntArray(mNodes));
+                Point2Ds ps = points;
+                if (startPoint != null) ps.insert(0, startPoint);
+                if (endPoint != null) ps.add(endPoint);
+                paramter.setPoints(ps);
             }
 
-            if (barrierNodes != null && (paramter.getBarrierNodes() == null || paramter.getBarrierNodes().length <= 0)) {
-                paramter.setBarrierNodes(DataUtil.arrayToIntArray(barrierNodes));
+            if (barrierPoints != null && (paramter.getBarrierPoints() == null || paramter.getBarrierPoints().getCount() <= 0)) {
+                paramter.setBarrierPoints(barrierPoints);
             }
 
             TransportationAnalystResult result = transportationAnalyst.findPath(paramter, hasLeastEdgeCount);
@@ -337,18 +403,32 @@ public class STransportationAnalyst extends SNetworkAnalyst {
             transportationAnalyst = getTransportationAnalyst();
             TransportationAnalystParameter paramter = SMAnalyst.getTransportationAnalystParameterByDictionary(params);
 
-            if (paramter.getNodes() != null && paramter.getNodes().length <= 0) {
-                ArrayList<Integer> mNodes = new ArrayList<>();
-                if (nodes != null && nodes.size() > 0) {
-                    mNodes.addAll(nodes);
+//            if (paramter.getNodes() != null && paramter.getNodes().length <= 0) {
+//                ArrayList<Integer> mNodes = new ArrayList<>();
+//                if (nodes != null && nodes.size() > 0) {
+//                    mNodes.addAll(nodes);
+//                }
+//                if (startNodeID > 0) mNodes.add(0, startNodeID);
+//                if (endNodeID > 0) mNodes.add(mNodes.size(), endNodeID);
+//                paramter.setNodes(DataUtil.arrayToIntArray(mNodes));
+//            }
+//
+//            if (barrierNodes != null && (paramter.getBarrierNodes() == null || paramter.getBarrierNodes().length <= 0)) {
+//                paramter.setBarrierNodes(DataUtil.arrayToIntArray(barrierNodes));
+//            }
+
+            if (paramter.getPoints() == null || paramter.getPoints().getCount() <= 0) {
+                if (points == null) {
+                    points = new Point2Ds();
                 }
-                if (startNodeID > 0) mNodes.add(0, startNodeID);
-                if (endNodeID > 0) mNodes.add(mNodes.size(), endNodeID);
-                paramter.setNodes(DataUtil.arrayToIntArray(mNodes));
+                Point2Ds ps = points;
+                if (startPoint != null) ps.insert(0, startPoint);
+                if (endPoint != null) ps.add(endPoint);
+                paramter.setPoints(ps);
             }
 
-            if (barrierNodes != null && (paramter.getBarrierNodes() == null || paramter.getBarrierNodes().length <= 0)) {
-                paramter.setBarrierNodes(DataUtil.arrayToIntArray(barrierNodes));
+            if (barrierPoints != null && (paramter.getBarrierPoints() == null || paramter.getBarrierPoints().getCount() <= 0)) {
+                paramter.setBarrierPoints(barrierPoints);
             }
 
             TransportationAnalystResult result = transportationAnalyst.findTSPPath(paramter, isEndNodeAssigned);
@@ -450,5 +530,61 @@ public class STransportationAnalyst extends SNetworkAnalyst {
         mapControl.getMap().setAntialias(true);
         result.dispose();
         return true;
+    }
+
+    public void addBarrierPoints(Point2D point) {
+        if (barrierPoints == null) barrierPoints = new Point2Ds();
+        boolean isExist = false;
+
+        for (int i = 0; i < barrierPoints.getCount(); i++) {
+            Point2D pt = barrierPoints.getItem(i);
+            if (pt.getX() == point.getX() && pt.getY() == point.getY()) {
+                isExist = true;
+                break;
+            }
+        }
+
+        if (!isExist) {
+            com.supermap.mapping.Map map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
+            if (SMap.safeGetType(map.getPrjCoordSys(), transportationAnalyst.getAnalystSetting().getNetworkDataset().getPrjCoordSys().getType())) {
+                Point2Ds point2Ds = new Point2Ds();
+                point2Ds.add(point);
+                PrjCoordSys prjCoordSys = new PrjCoordSys();
+                prjCoordSys.setType(transportationAnalyst.getAnalystSetting().getNetworkDataset().getPrjCoordSys().getType());
+                CoordSysTransParameter parameter = new CoordSysTransParameter();
+
+                CoordSysTranslator.convert(point2Ds, prjCoordSys, map.getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                point = point2Ds.getItem(0);
+            }
+            barrierPoints.add(point);
+        }
+    }
+
+    public void addPoint(Point2D point) {
+        if (barrierPoints == null) barrierPoints = new Point2Ds();
+        boolean isExist = false;
+
+        for (int i = 0; i < points.getCount(); i++) {
+            Point2D pt = points.getItem(i);
+            if (pt.getX() == point.getX() && pt.getY() == point.getY()) {
+                isExist = true;
+                break;
+            }
+        }
+
+        if (!isExist) {
+            com.supermap.mapping.Map map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
+            if (SMap.safeGetType(map.getPrjCoordSys(), transportationAnalyst.getAnalystSetting().getNetworkDataset().getPrjCoordSys().getType())) {
+                Point2Ds point2Ds = new Point2Ds();
+                point2Ds.add(point);
+                PrjCoordSys prjCoordSys = new PrjCoordSys();
+                prjCoordSys.setType(transportationAnalyst.getAnalystSetting().getNetworkDataset().getPrjCoordSys().getType());
+                CoordSysTransParameter parameter = new CoordSysTransParameter();
+
+                CoordSysTranslator.convert(point2Ds, prjCoordSys, map.getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                point = point2Ds.getItem(0);
+            }
+            points.add(point);
+        }
     }
 }

@@ -39,7 +39,12 @@ RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point resolver:(RC
             [style setLineColor:[[Color alloc] initWithR:255 G:105 B:0]];
             [style setMarkerSymbolID:3614];
             
-            startNodeID = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+//            startNodeID = [self selectNode:point layer:nodeLayer geoStyle:style tag:nodeTag];
+            startPoint = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+//            double x = [(NSNumber *)[dic objectForKey:@"x"] doubleValue];
+//            double y = [(NSNumber *)[dic objectForKey:@"y"] doubleValue];
+//            CGPoint p = CGPointMake(x, y);
+//            startPoint = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:p];
         }
         
         resolve(@(startNodeID));
@@ -62,7 +67,12 @@ RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point resolver:(RCTPro
             [style setLineColor:[[Color alloc] initWithR:105 G:255 B:0]];
             [style setMarkerSymbolID:3614];
             
-            endNodeID = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+//            endNodeID = [self selectNode:point layer:nodeLayer geoStyle:style tag:nodeTag];
+            endPoint = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+//            double x = [(NSNumber *)[dic objectForKey:@"x"] doubleValue];
+//            double y = [(NSNumber *)[dic objectForKey:@"y"] doubleValue];
+//            CGPoint p = CGPointMake(x, y);
+//            endPoint = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:p];
         }
         
         resolve(@(endNodeID));
@@ -81,9 +91,12 @@ RCT_REMAP_METHOD(addBarrierNode, addBarrierNode:(NSDictionary *)point resolver:(
             [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
             [style setLineColor:[[Color alloc] initWithR:255 G:0 B:0]];
             [style setMarkerSymbolID:3614];
-            node = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+            node = [self selectNode:point layer:nodeLayer geoStyle:style tag:nodeTag];
             if (!barrierNodes) barrierNodes = [[NSMutableArray alloc] init];
             if (node > 0) [barrierNodes addObject:@(node)];
+            
+            Point2D* p2D = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+            if (p2D) [self addBarrierPoints:p2D];
         }
         
         resolve(@(node));
@@ -102,9 +115,12 @@ RCT_REMAP_METHOD(addNode, addNode:(NSDictionary *)point resolver:(RCTPromiseReso
             [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
             [style setLineColor:[[Color alloc] initWithR:255 G:255 B:0]];
             [style setMarkerSymbolID:3614];
-            node = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+            node = [self selectNode:point layer:nodeLayer geoStyle:style tag:nodeTag];
             if (!nodes) nodes = [[NSMutableArray alloc] init];
             if (node > 0) [nodes addObject:@(node)];
+            
+            Point2D* p2D = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+            if (p2D) [self addPoint:p2D];
         }
         
         resolve(@(node));
@@ -123,8 +139,10 @@ RCT_REMAP_METHOD(clear, clearWithResolver:(RCTPromiseResolveBlock)resolve reject
         endNodeID = -1;
         startPoint = nil;
         endPoint = nil;
-        [nodes removeAllObjects];
-        [barrierNodes removeAllObjects];
+        if (nodes) [nodes removeAllObjects];
+        if (barrierNodes) [barrierNodes removeAllObjects];
+        if (points) [points clear];
+        if (barrierPoints) [barrierPoints clear];
         [[SMap singletonInstance].smMapWC.mapControl.map.trackingLayer clear];
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -211,24 +229,40 @@ RCT_REMAP_METHOD(findPath,findPath:(NSDictionary*)params hasLeastEdgeCount:(BOOL
         if (!params) params = [[NSDictionary alloc] init];
         TransportationAnalystParameter* paramter = [SMAnalyst getTransportationAnalystParameterByDictionary:params];
         
-        if (paramter.nodes.count <= 0) {
-            NSMutableArray* mNodes;
-            if (nodes && nodes.count > 0) {
-                mNodes = [NSMutableArray arrayWithArray:nodes];
-            } else {
-                mNodes = [[NSMutableArray alloc] init];
-            }
-            if (startNodeID > 0) {
-                [mNodes insertObject:@(startNodeID) atIndex:0];
-            }
-            if (endNodeID > 0) {
-                [mNodes addObject:@(endNodeID)];
-            }
-            paramter.nodes = mNodes;
-        }
-        
+//        if (paramter.nodes.count <= 0) {
+//            NSMutableArray* mNodes;
+//            if (nodes && nodes.count > 0) {
+//                mNodes = [NSMutableArray arrayWithArray:nodes];
+//            } else {
+//                mNodes = [[NSMutableArray alloc] init];
+//            }
+//            if (startNodeID > 0) {
+//                [mNodes insertObject:@(startNodeID) atIndex:0];
+//            }
+//            if (endNodeID > 0) {
+//                [mNodes addObject:@(endNodeID)];
+//            }
+//            paramter.nodes = mNodes;
+//        }
+
         if (paramter.barrierNodes.count <= 0) {
             paramter.barrierNodes = barrierNodes;
+        }
+        
+        if (paramter.points.getCount <= 0) {
+            if (!points) points = [[Point2Ds alloc] init];
+            Point2Ds* ps = points;
+            if (startPoint) {
+                [ps insertIndex:0 Point2D:startPoint];
+            }
+            if (endPoint > 0) {
+                [ps add:endPoint];
+            }
+            paramter.points = ps;
+        }
+        
+        if (paramter.barrierPoints.getCount <= 0) {
+            paramter.barrierPoints = barrierPoints;
         }
         
         TransportationAnalystResult* result = [transportationAnalyst findPath:paramter hasLeastEdgeCount:hasLeastEdgeCount];
@@ -267,24 +301,40 @@ RCT_REMAP_METHOD(findTSPPath, findTSPPath:(NSDictionary*)params isEndNodeAssigne
         if (!params) params = [[NSDictionary alloc] init];
         TransportationAnalystParameter* paramter = [SMAnalyst getTransportationAnalystParameterByDictionary:params];
         
-        if (paramter.nodes.count <= 0) {
-            NSMutableArray* mNodes;
-            if (nodes && nodes.count > 0) {
-                mNodes = [NSMutableArray arrayWithArray:nodes];
-            } else {
-                mNodes = [[NSMutableArray alloc] init];
-            }
-            if (startNodeID > 0) {
-                [mNodes insertObject:@(startNodeID) atIndex:0];
-            }
-            if (endNodeID > 0) {
-                [mNodes addObject:@(endNodeID)];
-            }
-            paramter.nodes = mNodes;
-        }
-        
+//        if (paramter.nodes.count <= 0) {
+//            NSMutableArray* mNodes;
+//            if (nodes && nodes.count > 0) {
+//                mNodes = [NSMutableArray arrayWithArray:nodes];
+//            } else {
+//                mNodes = [[NSMutableArray alloc] init];
+//            }
+//            if (startNodeID > 0) {
+//                [mNodes insertObject:@(startNodeID) atIndex:0];
+//            }
+//            if (endNodeID > 0) {
+//                [mNodes addObject:@(endNodeID)];
+//            }
+//            paramter.nodes = mNodes;
+//        }
+
         if (paramter.barrierNodes.count <= 0) {
             paramter.barrierNodes = barrierNodes;
+        }
+        
+        if (paramter.points.getCount <= 0) {
+            if (!points) points = [[Point2Ds alloc] init];
+            Point2Ds* ps = points;
+            if (startPoint) {
+                [ps insertIndex:0 Point2D:startPoint];
+            }
+            if (endPoint > 0) {
+                [ps add:endPoint];
+            }
+            paramter.points = ps;
+        }
+        
+        if (paramter.barrierPoints.getCount <= 0) {
+            paramter.barrierPoints = barrierPoints;
         }
         
         TransportationAnalystResult* result = [transportationAnalyst findTSPPath:paramter isEndNodeAssigned:isEndNodeAssigned];
@@ -325,5 +375,60 @@ RCT_REMAP_METHOD(findTSPPath, findTSPPath:(NSDictionary*)params isEndNodeAssigne
         [trackingLayer addGeometry:line WithTag:@""];
     }
     [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+}
+
+- (void)addPoint:(Point2D *)point {
+    if (!points) points = [[Point2Ds alloc] init];
+    BOOL isExist = NO;
+    for (int i = 0; i < points.getCount; i++) {
+        Point2D* pt = [points getItem:i];
+        if (pt.x == point.x && pt.y == point.y) {
+            isExist = YES;
+            break;
+        }
+    }
+    if (!isExist) {
+        Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
+        if ([map.prjCoordSys type] != transportationAnalyst.analystSetting.networkDataset.prjCoordSys.type) {//若投影坐标不是经纬度坐标则进行转换
+            Point2Ds *points = [[Point2Ds alloc] init];
+            [points add:point];
+            PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+            [srcPrjCoorSys setType:[map.prjCoordSys type]];
+            CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+            
+            //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+            [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+            point = [points getItem:0];
+        }
+        [points add:point];
+    }
+}
+
+- (void)addBarrierPoints:(Point2D *)point {
+    if (!barrierPoints) barrierPoints = [[Point2Ds alloc] init];
+    BOOL isExist = NO;
+    for (int i = 0; i < barrierPoints.getCount; i++) {
+        Point2D* pt = [barrierPoints getItem:i];
+        if (pt.x == point.x && pt.y == point.y) {
+            isExist = YES;
+            break;
+        }
+    }
+    if (!isExist) {
+        Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
+        if ([map.prjCoordSys type] != transportationAnalyst.analystSetting.networkDataset.prjCoordSys.type) {//若投影坐标不是经纬度坐标则进行转换
+            Point2Ds *points = [[Point2Ds alloc] init];
+            [points add:point];
+            PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+            [srcPrjCoorSys setType:transportationAnalyst.analystSetting.networkDataset.prjCoordSys.type];
+            CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+            
+            //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+            [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+            point = [points getItem:0];
+        }
+        
+        [barrierPoints add:point];
+    }
 }
 @end
