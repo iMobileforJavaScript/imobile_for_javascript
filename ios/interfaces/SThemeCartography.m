@@ -236,24 +236,32 @@ RCT_REMAP_METHOD(modifyThemeUniqueMap, modifyThemeUniqueMapWithResolver:(NSDicti
                     NSMutableArray* mulArray = nil;
                     mulArray =  [SMThemeCartography getLastThemeColors:themeUniqueLayer];
                     if (mulArray != nil) {
-                        int rangeCount = [tu getCount];
-                        Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:mulArray];
-                        for (int i = 0; i < rangeCount; i++) {
-                            [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tu getItem:i].mStyle color:[selectedColors get:i]];
-                        }
+//                        int rangeCount = [tu getCount];
+//                        Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:mulArray];
+//                        for (int i = 0; i < rangeCount; i++) {
+//                            [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tu getItem:i].mStyle color:[selectedColors get:i]];
+//                        }
                         _lastColorUniqueArray = mulArray;
                     }
-                    else{
-                        if (_lastColorUniqueArray != nil) {
-                                int rangeCount = [tu getCount];
-                                Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:_lastColorUniqueArray];
-                                for (int i = 0; i < rangeCount; i++) {
-                                    [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tu getItem:i].mStyle color:[selectedColors get:i]];
-                            }
-                        }
-                    }
+//                    else{
+//                        if (_lastColorUniqueArray != nil) {
+//                                int rangeCount = [tu getCount];
+//                                Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:_lastColorUniqueArray];
+//                                for (int i = 0; i < rangeCount; i++) {
+//                                    [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tu getItem:i].mStyle color:[selectedColors get:i]];
+//                            }
+//                        }
+//                    }
                 }
                 [themeUniqueLayer.theme fromXML:[tu toXML]];
+                
+                ThemeUnique* themeUnique = (ThemeUnique*)themeUniqueLayer.theme;
+                int rangeCount = [themeUnique getCount];
+                Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:_lastColorUniqueArray];
+                for (int i = 0; i < rangeCount; i++) {
+                    [SMThemeCartography setGeoStyleColor:themeUniqueLayer.dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:[selectedColors get:i]];
+                }
+                
                 MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
                 [mapControl.map refresh];
             }
