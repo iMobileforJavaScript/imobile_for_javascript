@@ -47,7 +47,7 @@ RCT_EXPORT_MODULE();
 
 #pragma mark -- 连接服务
 RCT_REMAP_METHOD(connectService, ip:(NSString*)serverIP port:(int)port hostName:(NSString*)hostName userName:(NSString*)userName passwd:(NSString*)passwd userID:(NSString*)userID resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    
+    @try {
     //假如有接收线程未停止，在这等待
 //    while (!bStopRecieve) {
 //        [NSThread sleepForTimeInterval:0.5];
@@ -64,9 +64,7 @@ RCT_REMAP_METHOD(connectService, ip:(NSString*)serverIP port:(int)port hostName:
 //    g_AMQPSender = nil;
 //    g_AMQPManager = nil;
     
-    BOOL bRes = true;
-    @try {
-        NSLog(@"______ %@",userID);
+        BOOL bRes;
         if(g_AMQPManager==nil){
             //构造AMQPManager
             g_AMQPManager = [[AMQPManager alloc]init];
@@ -78,12 +76,15 @@ RCT_REMAP_METHOD(connectService, ip:(NSString*)serverIP port:(int)port hostName:
             bRes = [g_AMQPManager declareExchange:sGroupExchange Type:Direct];
             //构造AMQP发送端
             g_AMQPSender = [g_AMQPManager newSender];
-            
-            if(!bRes){
-                g_AMQPManager = nil;
-                g_AMQPSender = nil;
-            }
+        } else {
+            bRes = true;
         }
+        
+        if(!bRes){
+            g_AMQPManager = nil;
+            g_AMQPSender = nil;
+        }
+        
         NSNumber* number =[NSNumber numberWithBool:bRes];
         resolve(number);
     } @catch (NSException *exception) {

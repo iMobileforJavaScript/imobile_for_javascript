@@ -292,6 +292,42 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 根据图层名获取对应xml
+     *
+     * @param layerName
+     * @param promise
+     */
+    @ReactMethod
+    public void getLayerAsXML(String layerName, Promise promise) {
+        try {
+            Layer layer = SMLayer.findLayerWithName(layerName);
+
+            promise.resolve(layer.toXML());
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 将xml图层插入到当前地图
+     *
+     * @param index
+     * @param xml
+     * @param promise
+     */
+    @ReactMethod
+    public void insertXMLLayer(int index, String xml, Promise promise){
+        try{
+            SMap sMap = SMap.getInstance();
+            sMap.getSmMapWC().getMapControl().getMap().getLayers().insert(index, xml);
+
+            promise.resolve(true);
+        }
+        catch(Exception e) {
+            promise.reject(e);
+        }
+    }
 
     /**
      * 根据图层路径，找到对应的图层并修改指定recordset中的FieldInfo
