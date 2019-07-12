@@ -90,6 +90,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 
 import static com.supermap.interfaces.utils.SMFileUtil.copyFiles;
@@ -3757,10 +3759,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 if(tempLayer.getName().startsWith("PlotEdit_")&&tempLayer.getDataset().getType()==DatasetType.CAD){
                     dataset =tempLayer.getDataset();
                     cadLayer=tempLayer;
-                    break;
+                }else {
+                    tempLayer.setEditable(false);
                 }
             }
-//            dataset = datasets.get(name);
             DatasetVector datasetVector;
             String datasetName;
             if (dataset == null) {
@@ -3856,6 +3858,16 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            for (int i=0;i<mapControl.getMap().getLayers().getCount();i++){
+                Layer tempLayer=mapControl.getMap().getLayers().get(i);
+                if(tempLayer.getName().startsWith("PlotEdit_")&&tempLayer.getDataset().getType()==DatasetType.CAD){
+                    tempLayer.setEditable(true);
+                }else {
+                    tempLayer.setEditable(false);
+                }
+            }
+
             mapControl.setPlotSymbol(libID, symbolCode);
             mapControl.setAction(Action.CREATEPLOT);
 

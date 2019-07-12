@@ -2369,7 +2369,9 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
             if([tempLayer.name hasPrefix:@"PlotEdit_"]&&tempLayer.dataset.datasetType==CAD){
                 dataset=tempLayer.dataset;
                 cadLayer=tempLayer;
-                break;
+//                break;
+            }else{
+                [tempLayer setEditable:NO];
             }
         }
         
@@ -2412,19 +2414,6 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
             [libInfo setObject:@(libId) forKey:libName];
             
             if(isFirst&&[libName isEqualToString:@"警用标号"]){
-                for (int i=0; i<[sMap.smMapWC.mapControl.map.layers getCount]; i++) {
-                    Layer* tempLayer=[sMap.smMapWC.mapControl.map.layers getLayerAtIndex:i];
-                    if(tempLayer.dataset.datasetType==CAD){
-                        if([tempLayer.name hasPrefix:@"PlotEdit_"]){
-                        dataset=tempLayer.dataset;
-                        cadLayer=tempLayer;
-                        [cadLayer setEditable:YES];
-//                        break;
-                        }else{
-                            [tempLayer setEditable:NO];
-                        }
-                    }
-                }
                 Point2Ds* point2Ds=[[Point2Ds alloc] init];
                 Point2D* point2D=[[Point2D alloc] initWithX:sMap.smMapWC.mapControl.map.viewBounds.left Y:sMap.smMapWC.mapControl.map.viewBounds.top];
                 [point2Ds add:point2D];
@@ -2464,6 +2453,16 @@ RCT_REMAP_METHOD(setPlotSymbol, setPlotSymbol:(int)libId symbolCode:(int)symbolC
     @try {
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        for (int i=0; i<[sMap.smMapWC.mapControl.map.layers getCount]; i++) {
+            Layer* tempLayer=[sMap.smMapWC.mapControl.map.layers getLayerAtIndex:i];
+            if([tempLayer.name hasPrefix:@"PlotEdit_"]&&tempLayer.dataset.datasetType==CAD){
+                [tempLayer setEditable:YES];
+            }else{
+                [tempLayer setEditable:NO];
+            }
+        }
+        
         [mapControl setAction:CREATE_PLOT];
         [mapControl setPlotSymbol:libId symbolCode:symbolCode];
         resolve(@(YES));
@@ -3555,6 +3554,8 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
 }
 
 -(void)geometrySelected:(int)geometryID Layer:(Layer*)layer{
+    if(!layer)
+        return;
     NSNumber* nsId = [NSNumber numberWithInt:geometryID];
     //    NSInteger nsLayer = (NSInteger)layer;
     NSMutableDictionary *layerInfo = [[NSMutableDictionary alloc] init];
