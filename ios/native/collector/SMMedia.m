@@ -227,8 +227,47 @@
     
     NSMutableArray* paths = [[NSMutableArray alloc] initWithArray:filePaths];
     NSString* appHomePath = [NSString stringWithFormat:@"%@/%@", NSHomeDirectory(), @"Documents"];
+    NSString* dicPath = [NSString stringWithFormat:@"%@", toDictionary];
     
     for (int i = 0; i < paths.count; i++) {
+
+////        NSString* filePath = paths[i];
+//        ALAssetsLibrary *lib = [[ALAssetsLibrary alloc] init];
+//        [lib assetForURL:[NSURL URLWithString:paths[i]] resultBlock:^(ALAsset *asset) {
+//            NSArray* arr1 = [paths[i] componentsSeparatedByString:@"?"];
+//            NSArray* arr2 = [arr1[1] componentsSeparatedByString:@"&"];
+//            NSString* name = [arr2[0] componentsSeparatedByString:@"="][1];
+//            NSString* ext = [arr2[1] componentsSeparatedByString:@"="][1];
+//
+//            NSString* filePath = [NSString stringWithFormat:@"%@%@.%@", toDictionary, name, ext];
+//
+//            NSData* imageData = nil;
+//            NSString* extention = [filePath pathExtension];
+//            ALAssetRepresentation *assetRep = [asset defaultRepresentation];
+//            if ([extention.lowercaseString isEqualToString:@"png"] || [extention.lowercaseString isEqualToString:@"jpg"] || [extention.lowercaseString isEqualToString:@"jpeg"]) {
+//                CGImageRef imgRef = [assetRep fullResolutionImage];
+//                UIImage *img = [UIImage imageWithCGImage:imgRef
+//                                                   scale:assetRep.scale
+//                                             orientation:(UIImageOrientation)assetRep.orientation];
+//                if ([extention.lowercaseString isEqualToString:@"png"]) {
+//                    imageData = UIImagePNGRepresentation(img);
+//                } else {
+//                    imageData = UIImageJPEGRepresentation(img, 0);
+//                }
+//            } else if ([extention.lowercaseString isEqualToString:@"mov"]) {
+//                [assetRep metadata];
+//            }
+//            if (imageData == nil || [imageData length] <= 0) {
+//                return NO;
+//            }
+//            paths[i] = filePath;
+//            //在这里使用asset来获取图片
+//
+//            BOOL isSaveSuccess = [self saveToDocument:img withFilePath:filePath];
+//            NSLog(@"11111");
+//        } failureBlock:^(NSError *error) {
+//
+//        }];
         NSString* filePath = [NSString stringWithFormat:@"%@%@", toDictionary, [paths[i] lastPathComponent]];
         if(
            [fileManager fileExistsAtPath:paths[i]] &&
@@ -291,6 +330,20 @@
     }
     _paths = paths;
     return YES;
+}
+
+-(BOOL)saveToDocument:(NSData *)imageData withFilePath:(NSString *)filePath {
+    if (imageData == nil || filePath == nil || [filePath isEqualToString:@""]) {
+        return NO;
+    }
+    @try {
+        NSData* imageData = nil;
+        
+        [imageData writeToFile:filePath atomically:YES];
+        return YES;
+    } @catch (NSException *exception) {
+        NSLog(@"保存图片失败");
+    }
 }
 
 @end

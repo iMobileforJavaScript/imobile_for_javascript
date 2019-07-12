@@ -25,6 +25,8 @@
 #import "SMLayer.h"
 #import "FileUtils.h"
 #import "NativeUtil.h"
+#import <AssetsLibrary/AssetsLibrary.h>
+#import <Photos/Photos.h>
 
 @interface SMMedia : NSObject
 

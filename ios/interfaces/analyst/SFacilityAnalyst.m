@@ -48,12 +48,9 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo facilityS
                 if (!layer) {
                     layer = [layers addDataset:ds ToHead:YES];
                     layer.selectable = NO;
-                }
-                
-                Dataset* nodeDataset = ((DatasetVector *)ds).childDataset;
-                if (nodeDataset) {
-                    nodeLayer = [SMLayer findLayerByDatasetName:nodeDataset.name];
-                    if (!nodeLayer) {
+                    
+                    Dataset* nodeDataset = ((DatasetVector *)ds).childDataset;
+                    if (nodeDataset) {
                         nodeLayer = [layers addDataset:nodeDataset ToHead:YES];
                         nodeLayer.selectable = YES;
                         nodeLayer.visible = YES;
