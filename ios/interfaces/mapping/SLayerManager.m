@@ -159,6 +159,28 @@ RCT_REMAP_METHOD(addLayerByIndex, addLayerByIndex:(int)datasourceIndex datasetIn
     }
 }
 
+#pragma mark 根据图层名获取对应xml
+RCT_REMAP_METHOD(getLayerAsXML, getLayerAsXML: (NSString *) layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [SMLayer findLayerWithName:layerName];
+        
+        resolve(layer.toXML);
+    } @catch (NSException *exception) {
+        reject(@"LayerManager", exception.reason, nil);
+    }
+}
+
+#pragma mark 将xml图层插入到当前地图
+RCT_REMAP_METHOD(insertXMLLayer, insertXMLLayer:(int)index xml:(NSString *)xml resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        SMap* sMap = [SMap singletonInstance];
+        [sMap.smMapWC.mapControl.map.layers insertLayer:index withXML:xml];
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"LayerManager", exception.reason, nil);
+    }
+}
+
 #pragma mark - 根据图层路径，找到对应的图层并修改指定recordset中的FieldInfo
 RCT_REMAP_METHOD(setLayerFieldInfo, setLayerFieldByLayerPath:(NSString *)layerPath fieldInfos:(NSArray *)fieldInfos params:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
