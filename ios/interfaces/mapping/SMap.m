@@ -3555,6 +3555,8 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
 }
 
 -(void)geometrySelected:(int)geometryID Layer:(Layer*)layer{
+    if(!layer)
+        return;
     NSNumber* nsId = [NSNumber numberWithInt:geometryID];
     //    NSInteger nsLayer = (NSInteger)layer;
     NSMutableDictionary *layerInfo = [[NSMutableDictionary alloc] init];
