@@ -277,12 +277,9 @@ public class STransportationAnalyst extends SNetworkAnalyst {
                     if (layer == null) {
                         layer = layers.add(dataset, true);
                         layer.setSelectable(false);
-                    }
 
-                    Dataset nodeDataset = ((DatasetVector)dataset).getChildDataset();
-                    if (nodeDataset != null) {
-                        nodeLayer = SMLayer.findLayerByDatasetName(nodeDataset.getName());
-                        if (nodeLayer == null) {
+                        Dataset nodeDataset = ((DatasetVector)dataset).getChildDataset();
+                        if (nodeDataset != null) {
                             nodeLayer = layers.add(nodeDataset, true);
                             nodeLayer.setSelectable(true);
                             nodeLayer.setVisible(true);
