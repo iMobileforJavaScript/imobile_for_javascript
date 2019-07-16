@@ -91,9 +91,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
 //            g_AMQPSender = null;
 //            g_AMQPReceiver = null;
 
-
-
-            boolean bRes = true;
+            boolean bRes;
             if (g_AMQPManager==null){
 
                 g_AMQPManager = new AMQPManager();
@@ -106,10 +104,13 @@ public class SMessageService extends ReactContextBaseJavaModule {
                 //构造AMQP发送端
                 g_AMQPSender = g_AMQPManager.newSender();
 
-                if(!bRes){
-                    g_AMQPManager = null;
-                    g_AMQPSender = null;
-                }
+            } else {
+                bRes = true;
+            }
+
+            if(!bRes){
+                g_AMQPManager = null;
+                g_AMQPSender = null;
             }
 
             promise.resolve(bRes);

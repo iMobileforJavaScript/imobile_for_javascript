@@ -2369,7 +2369,9 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
             if([tempLayer.name hasPrefix:@"PlotEdit_"]&&tempLayer.dataset.datasetType==CAD){
                 dataset=tempLayer.dataset;
                 cadLayer=tempLayer;
-                break;
+//                break;
+            }else{
+                [tempLayer setEditable:NO];
             }
         }
         
@@ -2451,6 +2453,16 @@ RCT_REMAP_METHOD(setPlotSymbol, setPlotSymbol:(int)libId symbolCode:(int)symbolC
     @try {
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        for (int i=0; i<[sMap.smMapWC.mapControl.map.layers getCount]; i++) {
+            Layer* tempLayer=[sMap.smMapWC.mapControl.map.layers getLayerAtIndex:i];
+            if([tempLayer.name hasPrefix:@"PlotEdit_"]&&tempLayer.dataset.datasetType==CAD){
+                [tempLayer setEditable:YES];
+            }else{
+                [tempLayer setEditable:NO];
+            }
+        }
+        
         [mapControl setAction:CREATE_PLOT];
         [mapControl setPlotSymbol:libId symbolCode:symbolCode];
         resolve(@(YES));
@@ -2472,7 +2484,7 @@ RCT_REMAP_METHOD(importPlotLibData, importPlotLibData:(NSString*)fromPath  resol
             }
         }
         NSString *toPath = [NSString stringWithFormat: @"%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Plotting/"];
-        BOOL result=[FileUtils copyFiles:fromPath targetDictionary:toPath filterFileSuffix:@"plot" filterFileDicName:@"Symbol" otherFileDicName:@"SymbolIcon"];
+        BOOL result=[FileUtils copyFiles:fromPath targetDictionary:toPath filterFileSuffix:@"plot" filterFileDicName:@"Symbol" otherFileDicName:@"SymbolIcon" isOnly:NO];
 
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
@@ -3542,6 +3554,8 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
 }
 
 -(void)geometrySelected:(int)geometryID Layer:(Layer*)layer{
+    if(!layer)
+        return;
     NSNumber* nsId = [NSNumber numberWithInt:geometryID];
     //    NSInteger nsLayer = (NSInteger)layer;
     NSMutableDictionary *layerInfo = [[NSMutableDictionary alloc] init];

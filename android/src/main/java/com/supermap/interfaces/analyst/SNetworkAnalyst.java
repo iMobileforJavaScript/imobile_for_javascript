@@ -1,11 +1,13 @@
 package com.supermap.interfaces.analyst;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.supermap.analyst.networkanalyst.TransportationAnalyst;
 import com.supermap.analyst.networkanalyst.TransportationAnalystParameter;
 import com.supermap.analyst.networkanalyst.TransportationAnalystResult;
@@ -90,7 +92,7 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
         SMap.getInstance().getSmMapWC().getMapControl().getMap().getTrackingLayer().clear();
     }
 
-    public int selectPoint(ReadableMap point, Layer nodeLayer, GeoStyle geoStyle, String tag) {
+    public int selectNode(ReadableMap point, Layer nodeLayer, GeoStyle geoStyle, String tag) {
         int ID = -1;
 
         double x = point.getDouble("x");
@@ -121,18 +123,22 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
         return ID;
     }
 
-    public Point2D selectByPoint(ReadableMap point, Layer nodeLayer, GeoStyle geoStyle, String tag) {
+    public Point2D selectPoint(ReadableMap point, Layer nodeLayer, GeoStyle geoStyle, String tag) {
         Point2D point2D = null;
 
         double x = point.getDouble("x");
         double y = point.getDouble("y");
-        Point p = new Point(Integer.parseInt(x + ""), Integer.parseInt(y + ""));
+        Point p = new Point((int)x, (int)y);
 
         Selection hitSelection = nodeLayer.hitTestEx(p, 20);
         if (hitSelection != null && hitSelection.getCount() > 0) {
             Recordset rs = hitSelection.toRecordset();
             GeoPoint geoPoint = (GeoPoint)rs.getGeometry();
-            point2D = geoPoint.getInnerPoint();
+//            point2D = geoPoint.getInnerPoint();
+//            Point p2 = SMap.getInstance().getSmMapWC().getMapControl().getMap().mapToPixel(point2D);
+//            map.putInt("x", p2.getX());
+//            map.putInt("x", p2.getY());
+            point2D = new Point2D(geoPoint.getX(), geoPoint.getY());
 
             GeoStyle style = geoStyle;
             if (style == null) {

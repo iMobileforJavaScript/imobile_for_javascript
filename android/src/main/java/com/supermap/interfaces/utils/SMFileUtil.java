@@ -560,6 +560,10 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
     }
 
     public static ArrayList<String> copyFiles(ArrayList<String> fromPaths, String targetDictionary) {
+        return copyFiles(fromPaths, targetDictionary, false);
+    }
+
+    public static ArrayList<String> copyFiles(ArrayList<String> fromPaths, String targetDictionary, Boolean deleteOldFile) {
 
         try {
 //            boolean result = false;
@@ -580,7 +584,7 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
                 File toFile = new File(toPath);
 
                 if (fromFile.exists() && !toFile.exists()) {
-                    if (copyFile(fromPaths.get(i), toPath)) {
+                    if (copyFile(fromPaths.get(i), toPath) && deleteOldFile) {
                         fromFile.delete();
                     }
                     newPaths.add(toPath);
@@ -602,12 +606,21 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
      * @param filterFileSuffix  过滤文件后缀
      * @param filterFileDicName     过滤的文件存放的文件夹名称
      * @param otherFileDicName          其他文件存放的文件夹名称
+     * @param isOnly          是否唯一，如果唯一需要覆盖文件，如果不唯一则加后缀_1、_2、...
      * @return
      */
-    public static boolean copyFiles(String from, String to, final String filterFileSuffix, String filterFileDicName, String otherFileDicName){
+    public static boolean copyFiles(String from, String to, final String filterFileSuffix, String filterFileDicName, String otherFileDicName,boolean isOnly){
         File fromFile = new File(from);
         if (!fromFile.exists()) return false;
-        String toPath=formateNoneExistFileName(to+fromFile.getName(),fromFile.isDirectory());
+        String toPath;
+        String tempToPath=to+fromFile.getName();
+        File tempToFile=new File(tempToPath);
+        if(isOnly&&tempToFile.exists()&&tempToFile.isDirectory()){
+            tempToFile.delete();
+            toPath=tempToPath;
+        }else {
+            toPath=formateNoneExistFileName(to+fromFile.getName(),fromFile.isDirectory());
+        }
         String filterFileDicPath=toPath+"/"+filterFileDicName;
         String otherFileDicPath=toPath+"/"+otherFileDicName;
         File toFile = new File(toPath);

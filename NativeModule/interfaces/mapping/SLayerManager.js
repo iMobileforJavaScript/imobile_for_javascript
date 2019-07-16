@@ -201,6 +201,35 @@ function addLayer(datasourceNameOrIndex, datasetIndex = -1) {
 }
 
 /**
+ * 根据图层名获取对应xml
+ * @param layerName
+ * @returns {*}
+ */
+function getLayerAsXML(layerName){
+  try {
+    return LayerManager.getLayerAsXML(layerName)
+  }
+  catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 将xml图层插入到当前地图
+ * @param index
+ * @param xml
+ * @returns {*}
+ */
+function insertXMLLayer(index, xml){
+  try {
+    return LayerManager.insertXMLLayer(index, xml)
+  }
+  catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  * 根据图层路径，找到对应的图层并修改指定recordset中的FieldInfo
  * @param layerPath
  * @param fieldInfo
@@ -451,6 +480,8 @@ export {
   searchLayerAttribute,
   searchSelectionAttribute,
   addLayer,
+  getLayerAsXML,
+  insertXMLLayer,
   setLayerFieldInfo,
   setLayerFieldInfoByName,
   removeAllLayer,

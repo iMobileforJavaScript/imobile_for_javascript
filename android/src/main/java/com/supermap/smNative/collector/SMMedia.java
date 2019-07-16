@@ -1,6 +1,10 @@
 package com.supermap.smNative.collector;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 
 import com.supermap.data.CoordSysTransMethod;
 import com.supermap.data.CoordSysTransParameter;
@@ -161,7 +165,7 @@ public class SMMedia {
                 fieldInfo = new FieldInfo();
                 fieldInfo.setType(FieldType.TEXT);
                 fieldInfo.setName("MediaFilePaths");
-                fieldInfo.setMaxLength(600);
+                fieldInfo.setMaxLength(800);
                 fieldInfos.add(fieldInfo);
                 fieldInfo.dispose();
             }
@@ -261,10 +265,26 @@ public class SMMedia {
         recordset.dispose();
     }
 
-    public boolean saveMedia(ArrayList<String> filePaths, String toDictionary, boolean addNew) {
+    public boolean saveMedia(Context context, ArrayList<String> filePaths, String toDictionary, boolean addNew) {
         String sdcard = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 
-        ArrayList<String> pathArr = SMFileUtil.copyFiles(filePaths, toDictionary);
+        ArrayList<String> pathArr;
+        ArrayList<String> tempFilePaths = new ArrayList<>();
+        for (int i = 0; i < filePaths.size(); i++) {
+            if (filePaths.get(i).indexOf("content://") == 0) {
+                String  myImageUrl = filePaths.get(i);
+                Uri uri = Uri.parse(myImageUrl);
+                String[] proj = { MediaStore.Images.Media.DATA, MediaStore.Video.Media.DATA };
+                Cursor cursor = context.getContentResolver().query(uri, proj,null,null,null);
+                int actualMediaColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                cursor.moveToFirst();
+                String mediaPath = cursor.getString(actualMediaColumnIndex);
+                tempFilePaths.add(mediaPath);
+            } else {
+                tempFilePaths.add(filePaths.get(i));
+            }
+        }
+        pathArr = SMFileUtil.copyFiles(tempFilePaths, toDictionary);
 
         for (int i = 0; i < pathArr.size(); i++) {
             if (pathArr.get(i).indexOf(sdcard) == 0) {
@@ -276,7 +296,7 @@ public class SMMedia {
 
         if (pathArr != null && addNew) saveLocationDataToDataset();
 
-        return pathArr != null;
+        return pathArr != null && pathArr.size() > 0;
     }
 
     public boolean addMediaFiles(ArrayList<String> files) {

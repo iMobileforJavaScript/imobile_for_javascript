@@ -119,12 +119,9 @@ public class SFacilityAnalyst extends SNetworkAnalyst {
                     if (layer == null) {
                         layer = layers.add(dataset, true);
                         layer.setSelectable(false);
-                    }
 
-                    Dataset nodeDataset = ((DatasetVector)dataset).getChildDataset();
-                    if (nodeDataset != null) {
-                        nodeLayer = SMLayer.findLayerByDatasetName(nodeDataset.getName());
-                        if (nodeLayer == null) {
+                        Dataset nodeDataset = ((DatasetVector)dataset).getChildDataset();
+                        if (nodeDataset != null) {
                             nodeLayer = layers.add(nodeDataset, true);
                             nodeLayer.setSelectable(true);
                             nodeLayer.setVisible(true);
@@ -187,7 +184,7 @@ public class SFacilityAnalyst extends SNetworkAnalyst {
                 GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(255, 105, 0));
                 style.setMarkerSymbolID(3614);
 
-                startNodeID = this.selectPoint(point, nodeLayer, style, nodeTag);
+                startNodeID = this.selectNode(point, nodeLayer, style, nodeTag);
             }
             promise.resolve(startNodeID);
         } catch (Exception e) {
@@ -212,7 +209,7 @@ public class SFacilityAnalyst extends SNetworkAnalyst {
                 GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(105, 255, 0));
                 style.setMarkerSymbolID(3614);
 
-                endNodeID = this.selectPoint(point, nodeLayer, style, nodeTag);
+                endNodeID = this.selectNode(point, nodeLayer, style, nodeTag);
             }
             promise.resolve(endNodeID);
         } catch (Exception e) {

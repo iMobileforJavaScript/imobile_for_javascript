@@ -237,7 +237,8 @@ public class SMMediaCollector {
 
         String paths = "";
         for (int i = 0; i < callout.getMediaFilePaths().size(); i++) {
-            paths += callout.getMediaFilePaths().get(i);
+//            paths += callout.getMediaFilePaths().get(i);
+            paths += callout.getMediaFilePaths().get(i) + (i == callout.getMediaFilePaths().size() - 1 ? "" : ",");
         }
 
         recordset.edit();

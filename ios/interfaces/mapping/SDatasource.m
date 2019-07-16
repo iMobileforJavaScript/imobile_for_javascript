@@ -251,6 +251,53 @@ RCT_REMAP_METHOD(getDatasetsByDatasource, getDatasetsByDatasourceWithResolver:(N
     }
 }
 
+//指定数据集保存为文件
+RCT_REMAP_METHOD(getDatasetToGeoJson, getDatasetBydatasourceAlias:(NSString*)datasourceAlias dataset:(NSString *)datasetName to:(NSString *)path resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        BOOL fexist = [fileManager fileExistsAtPath:path];
+        if (!fexist) {
+            [fileManager createFileAtPath:path contents:nil attributes:nil];
+        }
+        const char * filePath = [path cStringUsingEncoding:NSUTF8StringEncoding];
+        FILE* file = fopen(filePath, "w");
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        DatasetVector* datasetVector = (DatasetVector*) [[datasources getAlias:datasourceAlias].datasets getWithName:datasetName];
+        
+        int re = [datasetVector toGeoJSONFile:file];
+        
+        resolve(@(re));
+    } @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+//指定文件导入数据集到当前工作空间
+RCT_REMAP_METHOD(importDatasetFromGeoJson, importTo:(NSString*)datasourceAlias dataset:(NSString *)datasetName from:(NSString *)path type:(int) type resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        const char * filePath = [path cStringUsingEncoding:NSUTF8StringEncoding];
+        FILE* file = fopen(filePath, "w");
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        Datasets* datasets = [datasources getAlias:datasourceAlias].datasets;
+        BOOL hasDataset = [datasets contain:datasetName];
+        DatasetVector* datasetVector;
+        if(hasDataset){
+            datasetVector = (DatasetVector*) [datasets getWithName:datasetName];
+        } else {
+            DatasetVectorInfo* datasetvectorInfo = [DatasetVectorInfo init];
+            datasetvectorInfo.datasetType = type;
+            datasetvectorInfo.name = datasetName;
+            datasetVector = [datasets create:datasetvectorInfo];
+            [datasetvectorInfo dispose];
+        }
+        
+        int re = [datasetVector fromGeoJSONFile:file];
+        
+        resolve(@(re));
+    } @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
 #pragma mark 根据名称移除UDB中数据集
 RCT_REMAP_METHOD(removeDatasetByName, removeDatasetByNameWithPath:(NSString *)path Name:(NSString *)name resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try {

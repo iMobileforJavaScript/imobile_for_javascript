@@ -77,7 +77,7 @@
             fieldInfo = [[FieldInfo alloc]init];
             fieldInfo.fieldType = FT_TEXT;
             fieldInfo.name = @"MediaFilePaths";
-            fieldInfo.maxLength = 600;
+            fieldInfo.maxLength = 800;
             [pDatasetVector.fieldInfos add:fieldInfo];
             [fieldInfo dispose];
         }
@@ -220,32 +220,184 @@
 
 -(BOOL)saveMedia:(NSArray *)filePaths toDictionary:(NSString *)toDictionary addNew:(BOOL)addNew {
     BOOL res = NO;
-    if (_paths.count < 0) return res;
-
+    if (filePaths.count < 0) return res;
     NSFileManager* fileManager = [NSFileManager defaultManager];
     NSError* error = nil;
     
-    NSMutableArray* paths = [[NSMutableArray alloc] initWithArray:filePaths];
     NSString* appHomePath = [NSString stringWithFormat:@"%@/%@", NSHomeDirectory(), @"Documents"];
+    NSMutableArray* paths = [[NSMutableArray alloc] initWithArray:filePaths];
     
-    for (int i = 0; i < paths.count; i++) {
-        NSString* filePath = [NSString stringWithFormat:@"%@%@", toDictionary, [paths[i] lastPathComponent]];
-        if(
-           [fileManager fileExistsAtPath:paths[i]] &&
-           ![fileManager fileExistsAtPath:filePath]
-           ) {
-            if ([fileManager copyItemAtPath:paths[i] toPath:filePath error:&error]) {
-                res = YES;
-                [fileManager removeItemAtPath:paths[i] error:&error];
-                paths[i] = [filePath stringByReplacingOccurrencesOfString:appHomePath withString:@""];
-            } else {
-                res = NO;
+    dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+    for (int i = 0; i < filePaths.count; i++) {
+        NSRange range = [[filePaths[i] lowercaseString] rangeOfString:@"assets-library://"];
+        if (range.location != NSNotFound && range.length != 0) {
+            ALAssetsLibrary *lib = [[ALAssetsLibrary alloc] init];
+            [lib assetForURL:[NSURL URLWithString:paths[i]] resultBlock:^(ALAsset *asset) {
+                NSArray* arr1 = [paths[i] componentsSeparatedByString:@"?"];
+                NSArray* arr2 = [arr1[1] componentsSeparatedByString:@"&"];
+                NSString* name = [arr2[0] componentsSeparatedByString:@"="][1];
+                NSString* ext = [arr2[1] componentsSeparatedByString:@"="][1].lowercaseString;
+                
+                NSString* filePath = [NSString stringWithFormat:@"%@%@.%@", toDictionary, name, ext];
+                
+                NSData* imageData = nil;
+                NSString* extention = [filePath pathExtension];
+                ALAssetRepresentation *assetRep = [asset defaultRepresentation];
+                if ([extention.lowercaseString isEqualToString:@"png"] || [extention.lowercaseString isEqualToString:@"jpg"] || [extention.lowercaseString isEqualToString:@"jpeg"]) {
+                    CGImageRef imgRef = [assetRep fullResolutionImage];
+                    UIImage *img = [UIImage imageWithCGImage:imgRef
+                                                       scale:assetRep.scale
+                                                 orientation:(UIImageOrientation)assetRep.orientation];
+                    if ([extention.lowercaseString isEqualToString:@"png"]) {
+                        imageData = UIImagePNGRepresentation(img);
+                    } else {
+                        imageData = UIImageJPEGRepresentation(img, 0);
+                    }
+                } else if (
+                           [extention.lowercaseString isEqualToString:@"mov"] ||
+                           [extention.lowercaseString isEqualToString:@"mp4"] ||
+                           [extention.lowercaseString isEqualToString:@"3gp"] ||
+                           [extention.lowercaseString isEqualToString:@"mpv"]
+                           ) {
+                    //                    [assetRep metadata];
+                    Byte *buffer = (Byte*)malloc((NSUInteger)assetRep.size);
+                    NSUInteger buffered = [assetRep getBytes:buffer fromOffset:0.0 length:(NSUInteger)assetRep.size error:nil];
+                    imageData = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+                }
+                if (imageData != nil && [imageData length] > 0) {
+                    if([self saveToDocument:imageData withFilePath:filePath]) {
+                        paths[i] = [filePath substringFromIndex:[filePath rangeOfString:@"/iTablet"].location];
+//                        _paths = paths;
+//                        if (addNew && !isAdded) [self saveLocationDataToDataset];
+//                        isAdded = YES;
+                    }
+                }
+                NSLog(@"11111");
+                dispatch_semaphore_signal(sem);
+            } failureBlock:^(NSError *error) {
+//                isAdded = NO;
+            }];
+            NSLog(@"00000");
+            dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+        } else {
+            NSString* filePath = [NSString stringWithFormat:@"%@%@", toDictionary, [paths[i] lastPathComponent]];
+            if(
+               [fileManager fileExistsAtPath:paths[i]] &&
+               ![fileManager fileExistsAtPath:filePath]
+               ) {
+                if ([fileManager copyItemAtPath:paths[i] toPath:filePath error:&error]) {
+                    res = YES;
+                    [fileManager removeItemAtPath:paths[i] error:&error];
+                    paths[i] = [filePath stringByReplacingOccurrencesOfString:appHomePath withString:@""];
+//                    _paths = paths;
+                } else {
+                    res = NO;
+                }
             }
         }
     }
+    NSLog(@"22222");
     _paths = paths;
-    
     if (res && addNew) [self saveLocationDataToDataset];
+//    NSRange range = [[paths[0] lowercaseString] rangeOfString:@"assets-library://"];
+//    if (range.location != NSNotFound && range.length != 0) {
+//        res = [self addMediasFromAlbum:paths toDictionary:toDictionary addNew:addNew];
+//    } else {
+//        res = [self addMediasFromDocument:paths toDictionary:toDictionary addNew:addNew];
+//    }
+    
+    return res;
+}
+
+-(BOOL)addMediasFromAlbum:(NSMutableArray *)paths toDictionary:(NSString *)toDictionary addNew:(BOOL)addNew {
+    __block BOOL isAdded = NO;
+    @try {
+        dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+        for (int i = 0; i < paths.count; i++) {
+            //        NSString* filePath = paths[i];
+            ALAssetsLibrary *lib = [[ALAssetsLibrary alloc] init];
+            [lib assetForURL:[NSURL URLWithString:paths[i]] resultBlock:^(ALAsset *asset) {
+                NSArray* arr1 = [paths[i] componentsSeparatedByString:@"?"];
+                NSArray* arr2 = [arr1[1] componentsSeparatedByString:@"&"];
+                NSString* name = [arr2[0] componentsSeparatedByString:@"="][1];
+                NSString* ext = [arr2[1] componentsSeparatedByString:@"="][1].lowercaseString;
+                
+                NSString* filePath = [NSString stringWithFormat:@"%@%@.%@", toDictionary, name, ext];
+                
+                NSData* imageData = nil;
+                NSString* extention = [filePath pathExtension];
+                ALAssetRepresentation *assetRep = [asset defaultRepresentation];
+                if ([extention.lowercaseString isEqualToString:@"png"] || [extention.lowercaseString isEqualToString:@"jpg"] || [extention.lowercaseString isEqualToString:@"jpeg"]) {
+                    CGImageRef imgRef = [assetRep fullResolutionImage];
+                    UIImage *img = [UIImage imageWithCGImage:imgRef
+                                                       scale:assetRep.scale
+                                                 orientation:(UIImageOrientation)assetRep.orientation];
+                    if ([extention.lowercaseString isEqualToString:@"png"]) {
+                        imageData = UIImagePNGRepresentation(img);
+                    } else {
+                        imageData = UIImageJPEGRepresentation(img, 0);
+                    }
+                } else if (
+                           [extention.lowercaseString isEqualToString:@"mov"] ||
+                           [extention.lowercaseString isEqualToString:@"mp4"] ||
+                           [extention.lowercaseString isEqualToString:@"3gp"] ||
+                           [extention.lowercaseString isEqualToString:@"mpv"]
+                           ) {
+//                    [assetRep metadata];
+                    Byte *buffer = (Byte*)malloc((NSUInteger)assetRep.size);
+                    NSUInteger buffered = [assetRep getBytes:buffer fromOffset:0.0 length:(NSUInteger)assetRep.size error:nil];
+                    imageData = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+                }
+                if (imageData != nil && [imageData length] > 0) {
+                    if([self saveToDocument:imageData withFilePath:filePath]) {
+                        paths[i] = [filePath substringFromIndex:[filePath rangeOfString:@"/iTablet"].location];
+                        _paths = paths;
+                        if (addNew && !isAdded) [self saveLocationDataToDataset];
+                        isAdded = YES;
+                    }
+                }
+                NSLog(@"11111");
+                dispatch_semaphore_signal(sem);
+            } failureBlock:^(NSError *error) {
+                isAdded = NO;
+            }];
+            dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+        }
+    } @catch (NSException *exception) {
+        isAdded = NO;
+    }
+    return isAdded;
+}
+
+-(BOOL)addMediasFromDocument:(NSMutableArray *)paths toDictionary:(NSString *)toDictionary addNew:(BOOL)addNew {
+    BOOL res = NO;
+    @try {
+        NSFileManager* fileManager = [NSFileManager defaultManager];
+        NSError* error = nil;
+        
+        NSString* appHomePath = [NSString stringWithFormat:@"%@/%@", NSHomeDirectory(), @"Documents"];
+        
+        for (int i = 0; i < paths.count; i++) {
+            //        NSString* filePath = paths[i];
+            NSString* filePath = [NSString stringWithFormat:@"%@%@", toDictionary, [paths[i] lastPathComponent]];
+            if(
+               [fileManager fileExistsAtPath:paths[i]] &&
+               ![fileManager fileExistsAtPath:filePath]
+               ) {
+                if ([fileManager copyItemAtPath:paths[i] toPath:filePath error:&error]) {
+                    res = YES;
+                    [fileManager removeItemAtPath:paths[i] error:&error];
+                    paths[i] = [filePath stringByReplacingOccurrencesOfString:appHomePath withString:@""];
+                } else {
+                    res = NO;
+                }
+            }
+        }
+        _paths = paths;
+        if (res && addNew) [self saveLocationDataToDataset];
+    } @catch (NSException *exception) {
+        res = NO;
+    }
     return res;
 }
 
@@ -291,6 +443,18 @@
     }
     _paths = paths;
     return YES;
+}
+
+-(BOOL)saveToDocument:(NSData *)imageData withFilePath:(NSString *)filePath {
+    if (imageData == nil || filePath == nil || [filePath isEqualToString:@""]) {
+        return NO;
+    }
+    @try {
+        [imageData writeToFile:filePath atomically:YES];
+        return YES;
+    } @catch (NSException *exception) {
+        NSLog(@"保存图片失败");
+    }
 }
 
 @end

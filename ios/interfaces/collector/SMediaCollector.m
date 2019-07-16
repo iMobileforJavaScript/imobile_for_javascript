@@ -95,6 +95,9 @@ RCT_REMAP_METHOD(saveMediaByLayer, saveMediaByLayer:(NSString *)layerName geoID:
 RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName geoID:(int)geoID toPath:(NSString *)toPath fieldInfos:(NSArray *)fieldInfos resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     Layer* layer = [SMLayer findLayerByDatasetName:datasetName];
+    if (!layer) {
+        layer = [SMLayer findLayerWithName:datasetName];
+    }
     
     @try {
         BOOL saveResult = [self saveMedia:layer geoID:geoID toPath:toPath fieldInfos:fieldInfos];

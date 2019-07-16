@@ -1,5 +1,6 @@
 package com.supermap.interfaces.collector;
 
+import android.net.Uri;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -203,7 +204,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                 ReadableArray sourcePaths = info.getArray("mediaPaths");
 
                 String mediaName = new Date().getTime() + "";
-                if (sourcePaths.size() > 0) {
+                if (sourcePaths.size() > 0 && sourcePaths.getString(0).lastIndexOf(".") > -1 && sourcePaths.getString(0).lastIndexOf("/") > -1) {
                     mediaName = sourcePaths.getString(0).substring(
                             sourcePaths.getString(0).lastIndexOf("/") + 1,
                             sourcePaths.getString(0).lastIndexOf(".")
@@ -223,7 +224,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                         for (int i = 0; i < sourcePaths.size(); i++) {
                             paths.add(sourcePaths.getString(i));
                         }
-                        result = media.saveMedia(paths, collector.getMediaPath(), true);
+                        result = media.saveMedia(this.getReactApplicationContext(), paths, collector.getMediaPath(), true);
 
                         addCallout(media, mediaLayer);
                     }
@@ -253,6 +254,9 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
     public void saveMediaByDataset(String datasetName, int geoID, String toPath, ReadableArray fieldInfos, Promise promise) {
         try {
             Layer layer = SMLayer.findLayerByDatasetName(datasetName);
+            if (layer == null) {
+                layer = SMLayer.findLayerWithName(datasetName);
+            }
 
             boolean saveResult = saveMedia(layer, geoID, toPath, fieldInfos);
 
@@ -280,7 +284,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                             fileArr.add(files.getString(j));
                         }
 
-                        media.saveMedia(fileArr, toPath, false);
+                        media.saveMedia(this.getReactApplicationContext(), fileArr, toPath, false);
                         ArrayList<String> paths = media.getPaths();
                         for (int j = 0; j < paths.size(); j++) {
                             mediaPaths += paths.get(j) + (j == paths.size() - 1 ? "" : ",");

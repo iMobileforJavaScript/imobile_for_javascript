@@ -48,12 +48,9 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo facilityS
                 if (!layer) {
                     layer = [layers addDataset:ds ToHead:YES];
                     layer.selectable = NO;
-                }
-                
-                Dataset* nodeDataset = ((DatasetVector *)ds).childDataset;
-                if (nodeDataset) {
-                    nodeLayer = [SMLayer findLayerByDatasetName:nodeDataset.name];
-                    if (!nodeLayer) {
+                    
+                    Dataset* nodeDataset = ((DatasetVector *)ds).childDataset;
+                    if (nodeDataset) {
                         nodeLayer = [layers addDataset:nodeDataset ToHead:YES];
                         nodeLayer.selectable = YES;
                         nodeLayer.visible = YES;
@@ -110,7 +107,7 @@ RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point resolver:(RC
             [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
             [style setLineColor:[[Color alloc] initWithR:255 G:105 B:0]];
             [style setMarkerSymbolID:3614];
-            startNodeID = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+            startNodeID = [self selectNode:point layer:nodeLayer geoStyle:style tag:nodeTag];
         }
         
         resolve(@(startNodeID));
@@ -131,7 +128,7 @@ RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point resolver:(RCTPro
             [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
             [style setLineColor:[[Color alloc] initWithR:105 G:255 B:0]];
             [style setMarkerSymbolID:3614];
-            endNodeID = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+            endNodeID = [self selectNode:point layer:nodeLayer geoStyle:style tag:nodeTag];
         }
         
         resolve(@(endNodeID));
