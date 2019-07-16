@@ -17,7 +17,9 @@
 #import "SuperMap/TerrainLayer.h"
 #import "SuperMap/Scene.h"
 #import "SuperMap/selection3D.h"
-
+#import "SuperMap/GeoBox.h"
+#import "SuperMap/Size2D.h"
+#import <math.h>
 @class SMSceneWC;
 @interface SScene : RCTEventEmitter<RCTBridgeModule,SceneControlTouchDelegate>
 @property (strong, nonatomic) SMSceneWC* smSceneWC;
