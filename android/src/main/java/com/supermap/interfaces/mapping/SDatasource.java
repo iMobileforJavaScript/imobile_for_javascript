@@ -13,6 +13,8 @@ import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
+import com.supermap.data.DatasetVectorInfo;
+import com.supermap.data.DatasetType;
 import com.supermap.data.Datasets;
 import com.supermap.data.Datasource;
 import com.supermap.data.DatasourceConnectionInfo;
@@ -230,6 +232,57 @@ public class SDatasource extends ReactContextBaseJavaModule {
             datasourceconnection.dispose();
             datasourceconnection2.dispose();
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getDatasetToGeoJson(String datasourceAlias, String datasetName, String path, Promise promise) {
+        try {
+            File file = new File(path);
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            DatasetVector datasetVector= (DatasetVector) datasources.get(datasourceAlias).getDatasets().get(datasetName);
+            int re = datasetVector.toGeoJSON(file);
+
+            promise.resolve(re);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void importDatasetFromGeoJson(String datasourceAlias, String datasetName, String path, int type, Promise promise) {
+        try {
+
+            DatasetType datasetType;
+            if(type == 5){
+                datasetType = DatasetType.REGION;
+            } else if (type == 3) {
+                datasetType = DatasetType.LINE;
+            } else {
+                datasetType = DatasetType.POINT;
+            }
+            File file = new File(path);
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
+            boolean hasDataset = datasets.contains(datasetName);
+            DatasetVector datasetVector = null;
+            if(hasDataset){
+                datasetVector= (DatasetVector) datasets.get(datasetName);
+            } else {
+                DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+                datasetVectorInfo.setType(datasetType);
+                datasetVectorInfo.setName(datasetName);
+                datasetVector = datasets.create(datasetVectorInfo);
+                datasetVectorInfo.dispose();
+            }
+
+            int re = datasetVector.fromGeoJSON(file);
+
+            promise.resolve(re);
         } catch (Exception e) {
             promise.reject(e);
         }
