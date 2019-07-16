@@ -159,6 +159,23 @@ function getDatasetsByExternalDatasource(info){
   }
 }
 
+function getDatasetToGeoJson(datasourceAlias, datasetName, path){
+  try {
+    return SDatasource.getDatasetToGeoJson(datasourceAlias, datasetName, path)
+  } catch (error) {
+    console.error(e)
+  }
+}
+
+function importDatasetFromGeoJson(datasourceAlias, datasetName, path, DatasetType){
+  try {
+    return SDatasource.importDatasetFromGeoJson(datasourceAlias, datasetName, path, DatasetType)
+  } catch (error) {
+    console.error(e)
+  }
+}
+
+
 export {
   createDatasource,
   createDatasourceOfLabel,
@@ -171,4 +188,6 @@ export {
   getDatasources,
   getDatasetsByDatasource,
   getDatasetsByExternalDatasource,
+  getDatasetToGeoJson,
+  importDatasetFromGeoJson,
 }
