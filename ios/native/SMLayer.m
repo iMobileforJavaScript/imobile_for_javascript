@@ -411,7 +411,7 @@
         }
     }
     [recordset edit];
-    
+    BOOL result = NO;
     for (int i = 0; i < fieldInfos.count; i++) {
         NSDictionary* info = fieldInfos[i];
         
@@ -427,39 +427,40 @@
                 if ([value isEqual:@"YES"] || [value isEqual:@"true"]) {
                     boolValue = YES;
                 }
-                [recordset setBOOLWithName:name BOOLValue:boolValue];
+                result = [recordset setBOOLWithName:name BOOLValue:boolValue];
                 break;
             }
             case FT_BYTE:
-                [recordset setByteWithName:name ByteValue: (Byte)[[(NSString *)value dataUsingEncoding: NSUTF8StringEncoding] bytes]];
+                result = [recordset setByteWithName:name ByteValue: (Byte)[[(NSString *)value dataUsingEncoding: NSUTF8StringEncoding] bytes]];
                 break;
             case FT_INT16: {
                 short shortValue = (short)((NSNumber *)value).intValue;
-                [recordset setInt16WithName:name shortValue:shortValue];
+                result = [recordset setInt16WithName:name shortValue:shortValue];
                 break;
             }
             case FT_INT32:
-                [recordset setInt32WithName:name value:((NSNumber *)value).intValue];
+                result = [recordset setInt32WithName:name value:((NSNumber *)value).intValue];
                 break;
             case FT_INT64:
-                [recordset setInt64WithName:name value:((NSNumber *)value).intValue];
+                result = [recordset setInt64WithName:name value:((NSNumber *)value).intValue];
                 break;
             case FT_SINGLE:
-                [recordset setSingleWithName:name value:((NSNumber *)value).floatValue];
+                result = [recordset setSingleWithName:name value:((NSNumber *)value).floatValue];
                 break;
             case FT_DOUBLE:
-                [recordset setDoubleWithName:name DoubleValue:((NSNumber *)value).doubleValue];
+                result = [recordset setDoubleWithName:name DoubleValue:((NSNumber *)value).doubleValue];
                 break;
             case FT_DATE:
                 break;
             case FT_TEXT:
-                [recordset setStringWithName:name StringValue:(NSString *)value];
+                result = [recordset setStringWithName:name StringValue:(NSString *)value];
                 break;
             case FT_LONGBINARY:
             default:
-                [recordset setFieldValueWithString:name Obj:value];
+                result = [recordset setFieldValueWithString:name Obj:value];
                 break;
         }
+        if (!result) break;
     }
     
     [recordset update];
@@ -478,7 +479,7 @@
         default:
             break;
     }
-    return YES;
+    return result;
 }
 
 + (InfoCallout *)addCallOutWithLongitude:(double)longitude latitude:(double)latitude image:(NSString *)imagePath {
