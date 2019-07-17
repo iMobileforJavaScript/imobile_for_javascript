@@ -3583,7 +3583,12 @@ public class SMMapWC {
         if (openMapName(srcMapName, desMap.getWorkspace(), dic)) {
 
             desMap.addLayersFromMap(srcMapName, true);
-            desMap.getWorkspace().getMaps().remove(srcMapName);
+            try{
+                desMap.getWorkspace().getMaps().remove(srcMapName);
+            }catch (Exception e) {
+               return true;
+            }
+
             bResult = true;
 
         }

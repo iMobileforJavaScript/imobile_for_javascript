@@ -2437,9 +2437,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 if (isOpen && maps.indexOf(oldName) >= 0) {
                     maps.remove(oldName);
                 }
-                map.refresh();
             }
 
+            map.refresh();
             promise.resolve(mapName);
         } catch (Exception e) {
             promise.reject(e);

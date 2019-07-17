@@ -19,8 +19,8 @@
 @class DynamicView,SnapSetting;
 @class DatasourceConnectionInfo;
 @class EditHistory;
-@class GeoStyle;
-@class Point2Ds;
+@class GeoStyle,AnimationGO;
+@class Point2Ds,GeoGraphicObject;
 @protocol TouchableViewDelegate;
 @protocol MapEditDelegate;
 @protocol MapMeasureDelegate;
@@ -199,7 +199,7 @@
  */
 -(void) removeCalloutAtIndex:(int)index;
 
--(void) removeCalloutWithTag:(NSString *)tag;
+-(void) removeCalloutWithTag:(NSString*)tag;
 /**@brief 从Mapcontrol上移除calloutArr内的callout。
  @param callout数组
  */
@@ -315,6 +315,10 @@
 -(void)setPlotSymbol:(int)libraryID symbolCode:(long)symbolCode;
 
 -(EditHistory*)getEditHistory;
+
+
+-(void)setGeoGraphicObjectAnimation:(Geometry*)geometry  Anima:(AnimationGO*)animationGO layer:(NSString*)layerName;
+-(void)setAnimation;
 
 @end
 
