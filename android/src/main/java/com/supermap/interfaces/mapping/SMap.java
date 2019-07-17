@@ -2396,7 +2396,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             ReadableMapKeySetIterator keys = addition.keySetIterator();
             WritableMap writableMap = Arguments.createMap();
             boolean needFilter = false;
-            if(addition.getArray("filterLayers") != null){
+            if(addition.hasKey("filterLayers")){
                 needFilter = true;
                 while (keys.hasNextKey()) {
                     String key = keys.nextKey();
