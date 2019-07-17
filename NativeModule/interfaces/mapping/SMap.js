@@ -1449,6 +1449,85 @@ export default (function () {
       console.error(e)
     }
   }
+
+  /**
+   * 初始化态势推演
+   */
+  function initAnimation(){
+    try{
+      return SMap.initAnimation()
+    } catch (e){
+      console.error(e)
+    }
+  }
+
+  /**
+   * 读取态势推演xml文件
+   */
+  function readAnimationXmlFile(filePath){
+    try{
+      return SMap.readAnimationXmlFile(filePath)
+    } catch (e){
+      console.error(e)
+    }
+  }
+
+  /**
+   * 播放态势推演动画
+   */
+  function animationPlay(){
+    try{
+      return SMap.animationPlay()
+    } catch (e){
+      console.error(e)
+    }
+  }
+
+  /**
+   * 暂停态势推演动画
+   */
+  function animationPause(){
+    try{
+      return SMap.animationPause()
+    } catch (e){
+      console.error(e)
+    }
+  }
+
+  /**
+   * 重置态势推演动画
+   */
+  function animationReset(){
+    try{
+      return SMap.animationReset()
+    } catch (e){
+      console.error(e)
+    }
+  }
+
+   /**
+   * 停止态势推演动画
+   */
+  function animationStop(){
+    try{
+      return SMap.animationStop()
+    } catch (e){
+      console.error(e)
+    }
+  }
+
+  /**
+   * 关闭态势推演动画
+   */
+  function animationClose(){
+    try{
+      return SMap.animationClose()
+    } catch (e){
+      console.error(e)
+    }
+  }
+  
+
   
 
   /************************************** 地图编辑历史操作 ****************************************/
@@ -1687,6 +1766,13 @@ export default (function () {
     importPlotLibData,
     removePlotSymbolLibraryArr,
     getPlotSymbolLibNameById,
+    initAnimation,
+    readAnimationXmlFile,
+    animationPlay,
+    animationPause,
+    animationReset,
+    animationStop,
+    animationClose,
     undo,
     redo,
     removeHistory,
