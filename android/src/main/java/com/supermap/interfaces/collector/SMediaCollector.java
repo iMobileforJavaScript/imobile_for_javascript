@@ -325,9 +325,33 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
         }
     }
 
+    private void addCallouts(ArrayList<SMMedia> medias, Layer layer) {
+        if (layer != null) {
+            Recordset rs = ((DatasetVector)layer.getDataset()).getRecordset(false, CursorType.DYNAMIC);
+            rs.moveLast();
+
+            for (int i = medias.size() - 1; i >= 0; i--) {
+                String mediaName = rs.getFieldValue("MediaFileName").toString();
+                SMMedia media = medias.get(i);
+
+                if (media.getFileName().equals("TourLine")) continue; // 线
+
+                while (!mediaName.equals(media.getFileName()) && !rs.isBOF()) {
+                    rs.movePrev();
+                    mediaName = rs.getFieldValue("MediaFileName").toString();
+                }
+
+                SMMediaCollector.addCalloutByMedia(getReactApplicationContext(), media, rs, layer.getName(), getCalloutListner());
+                rs.movePrev();
+            }
+
+            rs.dispose();
+        }
+    }
+
     private void addCalloutsByLayer(Layer layer) {
         if (layer != null) {
-            SMMediaCollector.addMediasByLayer(getReactApplicationContext(), layer, getCalloutListner());
+            SMMediaCollector.showMediasByLayer(getReactApplicationContext(), layer, getCalloutListner());
         }
     }
 
@@ -353,7 +377,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
         try {
             Layer layer = SMLayer.findLayerWithName(layerName);
             if (layer != null) {
-                SMMediaCollector.addMediasByLayer(getReactApplicationContext(), layer, getCalloutListner());
+                SMMediaCollector.showMediasByLayer(getReactApplicationContext(), layer, getCalloutListner());
                 promise.resolve(true);
             } else {
                 promise.reject(new Error("The layer is not exist"));
@@ -415,6 +439,76 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                 promise.resolve(data);
             } else {
                 promise.reject(new Error("Can not find this media"));
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void addTour(String layerName, ReadableArray files, Promise promise) {
+        try {
+            Layer layer = SMLayer.findLayerWithName(layerName);
+            if (layer == null) {
+                promise.reject(new Error("Layer can not be found"));
+            } else if (files.size() <= 0) {
+                promise.reject(new Error("Files can not be empty"));
+            } else {
+                SMMediaCollector collector = SMMediaCollector.getInstance();
+                int count = 0;
+                WritableMap result = Arguments.createMap();
+                WritableArray errorFiles = Arguments.createArray();
+
+                ArrayList<SMMedia> medias = new ArrayList<>();
+                for (int i = 0; i < files.size(); i++) {
+                    ReadableMap mediaData = files.getMap(i);
+                    String uri = mediaData.getString("uri");
+                    String mediaName;
+                    if (mediaData.hasKey("filename")) {
+                        mediaName = mediaData.getString("filename");
+                    } else {
+                        mediaName = uri.substring(uri.lastIndexOf("/") + 1);
+                    }
+
+                    SMMedia media;
+                    if (
+                        mediaData.hasKey("location") &&
+                        mediaData.getMap("location").hasKey("longitude") &&
+                        mediaData.getMap("location").hasKey("latitude")
+                    ) {
+                        ReadableMap location = mediaData.getMap("location");
+                        double longitute = location.getDouble("longitude");
+                        double latitude = location.getDouble("latitude");
+
+                        media = new SMMedia(mediaName, longitute, latitude);
+                    } else {
+                        media = new SMMedia(mediaName);
+                    }
+
+                    if (media.setMediaDataset(layer.getDataset().getDatasource(), layer.getDataset().getName())) {
+                        ArrayList<String> filePaths = new ArrayList<>();
+                        filePaths.add(uri);
+                        boolean saveResult = media.saveMedia(this.getReactApplicationContext(), filePaths, collector.getMediaPath(), true);
+                        if (saveResult) {
+                            medias.add(media);
+                            count++;
+                        } else {
+                            errorFiles.pushMap((WritableMap) mediaData);
+                        }
+                    } else {
+                        errorFiles.pushMap((WritableMap) mediaData);
+                    }
+                }
+
+                if (medias.size() > 0) {
+                    SMMediaCollector.addLineByMedias(medias, (DatasetVector)layer.getDataset());
+                    this.addCallouts(medias, layer);
+                }
+
+                boolean res = count == files.size();
+                result.putBoolean("result", res);
+                result.putArray("errorFiles", errorFiles);
+                promise.resolve(result);
             }
         } catch (Exception e) {
             promise.reject(e);

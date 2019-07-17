@@ -128,7 +128,7 @@ static SMMediaCollector* sMediaCollector = nil;
     return medias;
 }
 
-+ (void)addMediasByLayer:(Layer *)layer gesture:(UITapGestureRecognizer *)gesture {
++ (void)addMedias:(Layer *)layer gesture:(UITapGestureRecognizer *)gesture {
     DatasetVector* dsVector = (DatasetVector *)layer.dataset;
     Recordset* recordset;
     
@@ -184,26 +184,85 @@ static SMMediaCollector* sMediaCollector = nil;
     }
 }
 
++ (void)showMediasByLayer:(Layer *)layer gesture:(UITapGestureRecognizer *)gesture {
+    DatasetVector* dsVector = (DatasetVector *)layer.dataset;
+    Recordset* recordset;
+    
+    if ([SMMediaCollector hasMediaData:layer]) {
+        recordset = [dsVector recordset:NO cursorType:STATIC];
+        
+        [recordset moveFirst];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            int recordsetIndex = 0;
+            while (![recordset isEOF]) {
+                SMMedia* media = [[SMMedia alloc] init];
+                
+                media.datasourse = layer.dataset.datasource;
+                media.dataset = layer.dataset;
+                media.fileName = (NSString *)[recordset getFieldValueWithString:@"MediaFileName"];
+                
+                NSString* paths = (NSString *)[recordset getFieldValueWithString:@"MediaFilePaths"];
+                if (paths && paths.length > 0) {
+                    media.paths = [paths componentsSeparatedByString:@","];
+                    
+                    double x =  [recordset.geometry getInnerPoint].x;
+                    double y =  [recordset.geometry getInnerPoint].y;
+                    media.location = [[Point2D alloc] initWithX:x Y:y];
+                    
+                    NSString* imgPath = [NSString stringWithFormat:@"%@/%@", [NSHomeDirectory() stringByAppendingString:@"/Documents"], media.paths[0]];
+                    
+                    InfoCallout* callout = [SMLayer addCallOutWithLongitude:x latitude:y image:imgPath];
+                    callout.mediaFileName = media.fileName;
+                    callout.mediaFilePaths = media.paths;
+                    //            callout.type = media.mediaType;
+                    callout.layerName = layer.name;
+                    callout.httpAddress = @"";
+                    callout.description = @"";
+                    NSDate* date = [NSDate date];
+                    
+                    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+                    callout.modifiedDate = [dateFormatter stringFromDate:date];
+                    
+                    callout.geoID = ((NSNumber *)[recordset getFieldValueWithString:@"SmID"]).intValue;
+                    
+                    if (gesture) {
+                        [callout addGestureRecognizer:gesture];
+                    }
+                }
+                
+                if ([recordset moveNext]) {
+                    recordsetIndex++;
+                }
+            }
+            
+            [recordset dispose];
+        });
+    }
+}
+
 + (void)addCalloutByMedia:(SMMedia *)media recordset:(Recordset *)rs layerName:(NSString *)layerName segesturelector:(UITapGestureRecognizer *)gesture {
     
-    double longitude = [rs.geometry getInnerPoint].x;
-    double latitude =  [rs.geometry getInnerPoint].y;
+//    double longitude = [rs.geometry getInnerPoint].x;
+//    double latitude =  [rs.geometry getInnerPoint].y;
     
-//    Point2D* pt = [[Point2D alloc]initWithX:longitude Y:latitude];
-//    if ([[SMap singletonInstance].smMapWC.mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
-//        Point2Ds *points = [[Point2Ds alloc]init];
-//        [points add:pt];
-//        PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-//        [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-//        CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-//
-//        //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-//        [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[[SMap singletonInstance].smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-//        pt = [points getItem:0];
-//    }
+    Point2D* pt = [[Point2D alloc]initWithX:media.location.x Y:media.location.y];
+    if ([[SMap singletonInstance].smMapWC.mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+        Point2Ds *points = [[Point2Ds alloc]init];
+        [points add:pt];
+        PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+        [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+        CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+
+        //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+        [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[[SMap singletonInstance].smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+        pt = [points getItem:0];
+    }
     
     NSString* imgPath = [NSString stringWithFormat:@"%@/%@", [NSHomeDirectory() stringByAppendingString:@"/Documents"], media.paths[0]];
-    InfoCallout* callout = [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:imgPath];
+//    InfoCallout* callout = [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:imgPath];
+    InfoCallout* callout = [SMLayer addCallOutWithLongitude:pt.x latitude:pt.y image:imgPath];
     callout.mediaFileName = media.fileName;
     callout.mediaFilePaths = media.paths;
     //            callout.type = media.mediaType;
@@ -241,6 +300,44 @@ static SMMediaCollector* sMediaCollector = nil;
     if (gesture) {
         [callout addGestureRecognizer:gesture];
     }
+}
+
++ (void)addLineByMedias:(NSArray *)medias dataset:(DatasetVector *)dataset {
+    Point2Ds* mPoints = [[Point2Ds alloc] init];
+    for (SMMedia* media in medias) {
+        Point2D* pt = [[Point2D alloc] initWithX:media.location.x Y:media.location.y];
+        [mPoints add:pt];
+    }
+    if ([[SMap singletonInstance].smMapWC.mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+        PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+        [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+        CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+        
+        //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+        [CoordSysTranslator convert:mPoints PrjCoordSys:srcPrjCoorSys PrjCoordSys:[[SMap singletonInstance].smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+    }
+    
+    GeoLine* mLine = [[GeoLine alloc] initWithPoint2Ds:mPoints];
+    GeoStyle* style = [[GeoStyle alloc] init];
+    [style setMarkerSize:[[Size2D alloc] initWithWidth:2 Height:2]];
+    [style setLineColor:[[Color alloc] initWithR:70 G:128 B:223]];
+    [style setLineWidth:1];
+    [style setMarkerSymbolID:351];
+    [style setFillForeColor:[[Color alloc] initWithR:70 G:128 B:223]];
+    [mLine setStyle:style];
+    
+    Recordset* mRecordset = [dataset recordset:NO cursorType:DYNAMIC];
+    
+    [mRecordset addNew:mLine];
+    
+    [mRecordset moveLast];
+    if ([mRecordset edit]) {
+        [mRecordset setStringWithName:@"MediaFileName" StringValue:@"TourLine"];
+    }
+    
+    [mRecordset update];
+    
+    [mRecordset dispose];
 }
 
 @end

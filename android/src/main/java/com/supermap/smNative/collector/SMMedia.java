@@ -100,6 +100,13 @@ public class SMMedia {
         this.location = getCurrentLocation();
     }
 
+
+    public SMMedia(String fileName, double longitude, double latitude) {
+        this.fileName = fileName;
+
+        this.location = new Point2D(longitude, latitude);
+    }
+
     private Point2D getCurrentLocation() {
         LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
         Point2D pt =  new Point2D(gpsDat.dLongitude,gpsDat.dLatitude);
@@ -257,9 +264,8 @@ public class SMMedia {
         point.setY(pt.getY());
         boolean result = recordset.addNew(point);
 
-        recordset.edit();
         recordset.moveLast();
-        recordset.setString("MediaFileName", this.fileName);
+        if (recordset.edit()) recordset.setString("MediaFileName", this.fileName);
 
         recordset.update();
         recordset.dispose();

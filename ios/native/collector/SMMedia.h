@@ -47,7 +47,7 @@
  * 初始化，并设置储存多媒体文件的对象名称，和当前位置
  **/
 -(id)initWithName:(NSString *)name;
-//-(id)initWithPaths:(NSMutableArray *)paths;
+- (id)initWithName:(NSString *)name longitude:(double)longitude latitude:(double)latitude;
 
 /**
  * 设置数据源 和 数据集

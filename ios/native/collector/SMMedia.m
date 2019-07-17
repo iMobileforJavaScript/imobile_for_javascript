@@ -26,6 +26,15 @@
     return self;
 }
 
+- (id)initWithName:(NSString *)name longitude:(double)longitude latitude:(double)latitude  {
+    if (self = [super init]) {
+        _fileName = name;
+        
+        self.location = [[Point2D alloc] initWithX:longitude Y:latitude];
+    }
+    return self;
+}
+
 -(Point2D *)getCurrentLocation {
     GPSData* gpsData = [NativeUtil getGPSData];
     Point2D* pt = [[Point2D alloc] initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
@@ -193,9 +202,10 @@
     [mGeoPointTem setY:pt.y];
     [mRecordset addNew:mGeoPointTem];
     
-    [mRecordset edit];
     [mRecordset moveLast];
-    [mRecordset setStringWithName:@"MediaFileName" StringValue:_fileName];
+    if ([mRecordset edit]) {
+        [mRecordset setStringWithName:@"MediaFileName" StringValue:_fileName];
+    }
     
 //    if([_fileName hasSuffix:@".mp4"] || [_fileName hasSuffix:@".mov"])
 //        [ mRecordset setInt16WithName:@"MediaFileType" shortValue:3];
@@ -272,12 +282,11 @@
 //                        isAdded = YES;
                     }
                 }
-                NSLog(@"11111");
                 dispatch_semaphore_signal(sem);
             } failureBlock:^(NSError *error) {
 //                isAdded = NO;
             }];
-            NSLog(@"00000");
+            res = YES;
             dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
         } else {
             NSString* filePath = [NSString stringWithFormat:@"%@%@", toDictionary, [paths[i] lastPathComponent]];
@@ -296,7 +305,6 @@
             }
         }
     }
-    NSLog(@"22222");
     _paths = paths;
     if (res && addNew) [self saveLocationDataToDataset];
 //    NSRange range = [[paths[0] lowercaseString] rangeOfString:@"assets-library://"];

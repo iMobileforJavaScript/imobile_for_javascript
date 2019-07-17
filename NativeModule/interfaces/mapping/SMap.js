@@ -1213,14 +1213,17 @@ export default (function () {
       console.error(e)
     }
   }
-
+  
   /**
    * 新建标注数据集
-   * @returns {*|Promise.<void>}
+   * @param name
+   * @param userpath
+   * @param type    标注图层类型（tour，normal）
+   * @returns {*}
    */
-  function newTaggingDataset (name,userpath) {
+  function newTaggingDataset (name, userpath, editable = true, type = 'normal') {
     try {
-      return SMap.newTaggingDataset(name,userpath)
+      return SMap.newTaggingDataset(name, userpath, editable, type)
     } catch (e) {
       console.error(e)
     }
@@ -1269,6 +1272,19 @@ export default (function () {
   function isTaggingLayer (userpath) {
     try {
       return SMap.isTaggingLayer(userpath)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+
+  /**
+   * 判断是否有标注图层，并获取当前标注图层信息
+   * @returns {*|Promise.<void>}
+   */
+  function getCurrentTaggingLayer (userpath) {
+    try {
+      return SMap.getCurrentTaggingLayer(userpath)
     } catch (e) {
       console.error(e)
     }
@@ -1671,6 +1687,7 @@ export default (function () {
     getDefaultTaggingDataset,
     getCurrentTaggingDataset,
     isTaggingLayer,
+    getCurrentTaggingLayer,
     getTaggingLayers,
     getTaggingLayerCount,
     setTaggingGrid,

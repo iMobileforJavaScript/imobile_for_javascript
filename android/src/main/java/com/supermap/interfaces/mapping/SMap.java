@@ -2898,12 +2898,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void newTaggingDataset(String name, String userpath, Promise promise) {
+    public void newTaggingDataset(String name, String userpath, boolean editable, String type, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
             Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
 //            sMap.smMapWC.getWorkspace().getConnectionInfo().getServer();
+            String datasetName = "";
+            Layer layer = null;
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
                 info.setAlias("Label_" + userpath + "#");
@@ -2912,30 +2914,31 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
-                    String datasetName = datasets.getAvailableDatasetName(name);
+                    datasetName = datasets.getAvailableDatasetName(name);
                     DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
                     datasetVectorInfo.setType(DatasetType.CAD);
                     datasetVectorInfo.setEncodeType(EncodeType.NONE);
                     datasetVectorInfo.setName(datasetName);
                     DatasetVector datasetVector = datasets.create(datasetVectorInfo);
                     datasetVector.setPrjCoordSys(sMap.getSmMapWC().getMapControl().getMap().getPrjCoordSys());
+
                     //创建数据集时创建好字段
                     addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
                     addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);
                     addFieldInfo(datasetVector, "address", FieldType.TEXT, false, "", 255);
 
                     Dataset ds = datasets.get(datasetName);
+                    ds.setDescription("{\"type\":\"" + type + "\"}");
                     com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                    Layer layer = map.getLayers().add(ds, true);
-                    layer.setEditable(true);
+                    layer = map.getLayers().add(ds, true);
+                    layer.setEditable(editable);
                     datasetVectorInfo.dispose();
                     datasetVector.close();
                     info.dispose();
-                    promise.resolve(datasetName);
                 }
             } else {
                 Datasets datasets = opendatasource.getDatasets();
-                String datasetName = datasets.getAvailableDatasetName(name);
+                datasetName = datasets.getAvailableDatasetName(name);
                 DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
                 datasetVectorInfo.setType(DatasetType.CAD);
                 datasetVectorInfo.setEncodeType(EncodeType.NONE);
@@ -2948,14 +2951,17 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 addFieldInfo(datasetVector, "address", FieldType.TEXT, false, "", 255);
 
                 Dataset ds = datasets.get(datasetName);
+                ds.setDescription("{\"type\":\"" + type + "\"}");
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                Layer layer = map.getLayers().add(ds, true);
-                layer.setEditable(true);
+                layer = map.getLayers().add(ds, true);
+                layer.setEditable(editable);
                 datasetVectorInfo.dispose();
                 datasetVector.close();
-
-                promise.resolve(datasetName);
             }
+            WritableMap map = Arguments.createMap();
+            map.putString("datasetName", datasetName);
+            map.putString("layerName", layer != null ? layer.getName() : "");
+            promise.resolve(map);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -3119,13 +3125,70 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                             if (layer.getDataset() == dataset) {
                                 if (layer.isEditable()) {
                                     isEditable = true;
+                                    break;
                                 }
                             }
                         }
+                        if (isEditable) break;
                     }
                 }
                 promise.resolve(isEditable);
             }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 判断是否有标注图层，并获取当前标注图层信息
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getCurrentTaggingLayer(String userpath, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
+            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
+
+            WritableMap map = Arguments.createMap();
+
+            boolean isEditable = false;
+            if (opendatasource != null) {
+                Datasets datasets = opendatasource.getDatasets();
+                Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
+
+                Layer layer = null;
+                for (int i = 0; i < layers.getCount(); i++) {
+                    layer = layers.get(i);
+                    for (int j = 0; j < datasets.getCount(); j++) {
+                        Dataset dataset = datasets.get(j);
+                        if (layer.getDataset() == dataset) {
+                            if (layer.isEditable()) {
+                                isEditable = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (isEditable) break;
+                }
+                map.putBoolean("isTaggingLayer", isEditable);
+                if (isEditable) {
+                    WritableMap layerInfo = Arguments.createMap();
+                    layerInfo.putBoolean("isEditable", isEditable);
+                    layerInfo.putBoolean("isVisible", layer.isVisible());
+                    layerInfo.putString("name", layer.getName());
+                    layerInfo.putString("datasetName", layer.getDataset().getName());
+                    layerInfo.putString("description", layer.getDescription());
+                    layerInfo.putString("datasetDescription", layer.getDataset().getDescription());
+
+                    map.putMap("layerInfo", layerInfo);
+                }
+            } else {
+                map.putBoolean("isTaggingLayer", isEditable);
+            }
+            promise.resolve(map);
         } catch (Exception e) {
             promise.reject(e);
         }
