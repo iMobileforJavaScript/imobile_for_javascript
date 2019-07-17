@@ -1543,6 +1543,25 @@ public class SMMapWC {
                         }
                         arrTemp.add(strResName);
                     }
+
+                    //复制态势推演动画xml文件
+                    String plotXmlDicPath=strRootDir+"/plot";
+                    File plotXmlDicFile=new File(plotXmlDicPath);
+                    if(plotXmlDicFile.exists()&&plotXmlDicFile.isDirectory()){
+                        String animationDic=strCustomer+ "/Animation/"+strResName+"/";
+                        File animationDicFile=new File(animationDic);
+                        if(animationDicFile.exists()&&animationDicFile.isDirectory()){
+                            animationDicFile.delete();
+                        }
+                        animationDicFile.mkdirs();
+                        File[] files=plotXmlDicFile.listFiles();
+                        for (File file : files) {
+                            if(!file.isDirectory()) {
+                                String strAnimation = animationDic + file.getName();
+                                copyFile(file.getPath(), strAnimation);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -1550,6 +1569,7 @@ public class SMMapWC {
         if (arrTemp.size() > 0) {
             arrResult = arrTemp;
         }
+
 
         importWorkspace.close();
         importWorkspace.dispose();

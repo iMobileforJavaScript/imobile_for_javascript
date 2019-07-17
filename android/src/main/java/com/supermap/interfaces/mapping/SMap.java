@@ -66,6 +66,7 @@ import com.supermap.mapping.ThemeRange;
 import com.supermap.mapping.ThemeType;
 import com.supermap.mapping.ThemeUnique;
 import com.supermap.mapping.collector.Collector;
+import com.supermap.plot.AnimationManager;
 import com.supermap.plugin.LocationManagePlugin;
 import com.supermap.smNative.collector.SMCollector;
 import com.supermap.smNative.SMLayer;
@@ -3946,6 +3947,126 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.resolve(libName);
         } catch (Exception e) {
             promise.reject(e);
+        }
+    }
+    private static Timer m_timer = new Timer();
+    private static AnimationManager am;
+    /**
+     * 初始化态势推演
+     */
+    @ReactMethod
+    public static void initAnimation(Promise promise){
+        try {
+            am = AnimationManager.getInstance();
+            //开启定时器
+            m_timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    AnimationManager.getInstance().excute();
+                }
+            },0,100);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.resolve(false);
+        }
+
+    }
+
+    /**
+     * 读取态势推演xml文件
+     */
+    @ReactMethod
+    public static void readAnimationXmlFile(String filePath,Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            Layers layers=mapControl.getMap().getLayers();
+            int count=layers.getCount();
+            for (int i = 0; i < count; i++) {
+                if (layers.get(i).getDataset().getType()==DatasetType.CAD){
+                    layers.get(i).setEditable(true);
+                }
+            }
+
+            File file = new File(filePath);
+            mapControl.setAnimations();
+            am.getAnimationFromXML(file.getAbsolutePath());
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.resolve(false);
+        }
+    }
+
+    /**
+     * 播放态势推演动画
+     */
+    @ReactMethod
+    public static void animationPlay(Promise promise){
+        try {
+            am.play();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.resolve(false);
+        }
+    }
+
+    /**
+     * 暂停态势推演动画
+     */
+    @ReactMethod
+    public static void animationPause(Promise promise){
+        try {
+            am.pause();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.resolve(false);
+        }
+    }
+
+    /**
+     * 复位态势推演动画
+     */
+    @ReactMethod
+    public static void animationReset(Promise promise){
+        try {
+            am.reset();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.resolve(false);
+        }
+    }
+
+    /**
+     * 停止态势推演动画
+     */
+    @ReactMethod
+    public static void animationStop(Promise promise){
+        try {
+            AnimationManager.getInstance().stop();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.resolve(false);
+        }
+    }
+
+    /**
+     * 关闭态势推演
+     */
+    @ReactMethod
+    public static void animationClose(Promise promise){
+        try {
+            m_timer.cancel();
+            AnimationManager.getInstance().dispose();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.resolve(false);
         }
     }
 
