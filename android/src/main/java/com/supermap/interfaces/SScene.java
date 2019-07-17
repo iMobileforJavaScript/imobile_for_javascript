@@ -3,8 +3,10 @@ package com.supermap.interfaces;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.WindowManager;
 
 
 import com.facebook.react.bridge.Arguments;
@@ -20,9 +22,12 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
 import com.supermap.data.AltitudeMode;
+import com.supermap.data.GeoBox;
 import com.supermap.data.GeoPoint3D;
 import com.supermap.data.ImageFormatType;
+import com.supermap.data.Point2D;
 import com.supermap.data.Point3D;
+import com.supermap.data.Size2D;
 import com.supermap.data.Workspace;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.map3D.AnalysisHelper;
@@ -34,11 +39,15 @@ import com.supermap.map3D.toolKit.TouchUtil;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.realspace.Action3D;
+import com.supermap.realspace.BoxClipPart;
 import com.supermap.realspace.Camera;
 import com.supermap.realspace.Feature3D;
 import com.supermap.realspace.Feature3Ds;
+import com.supermap.realspace.GlobalImage;
 import com.supermap.realspace.Layer3D;
 import com.supermap.realspace.Layer3DType;
+import com.supermap.realspace.Layer3Ds;
+import com.supermap.realspace.PixelToGlobeMode;
 import com.supermap.realspace.Scene;
 import com.supermap.realspace.SceneControl;
 import com.supermap.realspace.TerrainLayer;
@@ -1958,7 +1967,248 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
 
+    /*************************           三维裁剪相关开始           ***************************/
 
+//    /**
+//     * cross裁剪
+//     * @param posMap 全double
+//     * {
+//     *  posX:"",    //中心点x坐标
+//     *  posY:"",    //中心点y坐标
+//     *  posZ:"",    //中心点z坐标
+//     *  width:"",   //平面宽
+//     *  height:"",  //平面高
+//     *  extrudeDistance:"" 拉伸高度
+//     *  rotX:"",    //x旋转值
+//     *  rotY:"",    //y旋转值
+//     *  rotZ:"",    //z旋转值
+//     * }
+//     */
+//    @ReactMethod
+//    public void clipSenceCross(ReadableMap posMap, Promise promise){
+//        try{
+//            sScene = SScene.getInstance();
+//            Layer3Ds layer3Ds = sScene.smSceneWc.getSceneControl().getScene().getLayers();
+//
+//            Point3D position = new Point3D();
+//            position.setX(posMap.getDouble("posX"));
+//             position.setY(posMap.getDouble("posY"));
+//            position.setZ(posMap.getDouble("posZ"));
+//
+//            Point2D dimension = new Point2D();
+//            dimension.setX(posMap.getDouble("width"));
+//            dimension.setY(posMap.getDouble("height"));
+//
+//            for(int i = 0; i < layer3Ds.getCount(); i++){
+//                Layer3D layer3D = layer3Ds.get(i);
+//                layer3D.setCustomClipCross(position,dimension,posMap.getDouble("rotX"),posMap.getDouble("rotY"),posMap.getDouble("rotZ"),posMap.getDouble("extrudeDistance"));
+//            }
+//            promise.resolve(true);
+//        }catch (Exception e){
+//            promise.reject(e);
+//        }
+//    }
+
+    /**
+     * box裁剪
+     * @param posMap 全double
+     * {
+     *   startX:"",    //起点x坐标
+     *   startY:"",    //起点y坐标
+     *   endX:"",   //终点x坐标
+     *   endY:"",  //终点y坐标
+     *   layers:[],  //参加裁剪的图层
+     *   clipInner:boolean 裁剪位置 true 裁剪内部 false 裁剪外部
+     *   ************************可选参数 携带了以下参数可以不用传起点 终点坐标***************
+     *   width:"", //底面长
+     *   length:"", //底面宽
+     *   height:"", //高度
+     *   x:"",  //中心点坐标
+     *   y:"",
+     *   z:"",
+     *   zRot:"", //z旋转
+     *   lineColor:""，//裁剪线颜色
+     *   ********************************************************************
+     * }
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void clipByBox(ReadableMap posMap , Promise promise){
+        try{
+            WritableMap returnMap = Arguments.createMap();
+            boolean useCook = false;
+            double zRot = 0;
+            if(posMap.hasKey("width")){
+                useCook = true;
+                zRot = posMap.getDouble("zRot");
+            }
+            sScene = SScene.getInstance();
+            Layer3Ds layer3Ds = sScene.smSceneWc.getSceneControl().getScene().getLayers();
+
+            Point3D centerPoint;
+            double width;
+            double length;
+            double height;
+            double x,y,z;
+            GeoBox box = new GeoBox();
+            Size2D size2D = new Size2D();
+
+            if(!useCook){
+                Point point = new Point();
+                Point point1 = new Point();
+
+                DisplayMetrics dm = new DisplayMetrics();
+                mReactContext.getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+                double density = dm.density;
+
+                point.set((int)(posMap.getInt("startX") * density),(int)(posMap.getInt("startY") * density));
+                point1.set((int)(posMap.getInt("endX") * density),(int)( posMap.getInt("endY") * density));
+
+
+                Point3D startPoint = sScene.smSceneWc.getSceneControl().getScene().pixelToGlobe(point,PixelToGlobeMode.TERRAINANDMODEL);
+                Point3D endPoint = sScene.smSceneWc.getSceneControl().getScene().pixelToGlobe(point1,PixelToGlobeMode.TERRAINANDMODEL);
+
+                x = (startPoint.getX() + endPoint.getX())/2;
+                y = (startPoint.getY() + endPoint.getY())/2;
+                z = (startPoint.getZ() + endPoint.getZ())/2;
+
+                //经纬度差值转距离 单位米
+                double R = 6371393;
+                width = Math.abs((endPoint.getX() - startPoint.getX()) * Math.PI * R * Math.cos((endPoint.getY() + startPoint.getY()) / 2 *Math.PI / 180) /180);
+                length = Math.abs((endPoint.getY() - startPoint.getY()) * Math.PI *R / 180);
+                height = Math.abs(point.y - point1.y)/ density;
+            }else{
+                x = posMap.getDouble("x");
+                y = posMap.getDouble("y");
+                z = posMap.getDouble("z");
+
+                width = posMap.getDouble("width");
+                length = posMap.getDouble("length");
+                height = posMap.getDouble("height");
+
+            }
+            centerPoint = new Point3D(x,y,z);
+
+            size2D.setWidth(width);
+            size2D.setHeight(length);
+
+            box.setPosition(centerPoint);
+            box.setBottomSize(size2D);
+            box.setHeight(height);
+
+            BoxClipPart part;
+            boolean clipInner = posMap.getBoolean("clipInner");
+            if(clipInner){
+                part = BoxClipPart.CLIP_INNER;
+            }else {
+                part = BoxClipPart.CLIP_OUTER;
+            }
+
+            boolean needFilter = true;
+            ReadableArray layers = posMap.getArray("layers");
+
+            if(layers.size() == 0){
+                needFilter = false;
+            }
+            if(needFilter){
+                ReadableMap map;
+                for(int i = 0; i < layer3Ds.getCount(); i++){
+                    Layer3D layer3D = layer3Ds.get(i);
+                    layer3D.clearCustomClipPlane();
+                    for (int j = 0; j < layers.size(); j++){
+                        map= layers.getMap(j);
+                        if(map.getString("name").equals(layer3D.getName())){
+                            layer3D.clipByBox(box,part);
+                        }
+                    }
+                }
+            }else{
+                for(int i = 0; i < layer3Ds.getCount(); i++){
+                    Layer3D layer3D = layer3Ds.get(i);
+                    layer3D.clearCustomClipPlane();
+                    layer3D.clipByBox(box,part);
+                }
+            }
+            sScene.smSceneWc.getSceneControl().getScene().refresh();
+            returnMap.putDouble("width",width);
+            returnMap.putDouble("height",height);
+            returnMap.putDouble("length",length);
+            returnMap.putDouble("zRot",zRot);
+            returnMap.putDouble("x",x);
+            returnMap.putDouble("y",y);
+            returnMap.putDouble("z",z);
+            returnMap.putBoolean("clipInner",clipInner);
+            promise.resolve(returnMap);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+//
+//    /**
+//     *    平面裁剪
+//     * @param pointMap 三个点坐标对象 全double
+//     * {
+//     *     x1:"",
+//     *     y1:"",
+//     *     z1:"",
+//     *     x2:"",
+//     *     y2:"",
+//     *     z2:"",
+//     *     x3:"",
+//     *     y3:"",
+//     *     z3:"",
+//     * }
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void clipSencePlane(ReadableMap pointMap, Promise promise){
+//        try{
+//            sScene = SScene.getInstance();
+//            Layer3Ds layer3Ds = sScene.smSceneWc.getSceneControl().getScene().getLayers();
+//
+//
+//            Point3D p1 = new Point3D();
+//            Point3D p2 = new Point3D();
+//            Point3D p3 = new Point3D();
+//
+//            p1.setX(pointMap.getDouble("x1"));
+//            p1.setY(pointMap.getDouble("y1"));
+//            p1.setZ(pointMap.getDouble("z1"));
+//            p2.setX(pointMap.getDouble("x2"));
+//            p2.setY(pointMap.getDouble("y2"));
+//            p2.setZ(pointMap.getDouble("z2"));
+//            p3.setX(pointMap.getDouble("x3"));
+//            p3.setY(pointMap.getDouble("y3"));
+//            p3.setZ(pointMap.getDouble("z3"));
+//
+//            for(int i = 0; i < layer3Ds.getCount(); i++){
+//                Layer3D layer3D = layer3Ds.get(i);
+//                layer3D.setCustomClipPlane(p1,p2,p3);
+//            }
+//
+//            promise.resolve(true);
+//        }catch (Exception e){
+//            promise.reject(e);
+//        }
+//
+//    }
+
+    @ReactMethod
+    public void clipSenceClear(Promise promise){
+        try{
+            sScene = SScene.getInstance();
+            Layer3Ds layer3Ds = sScene.smSceneWc.getSceneControl().getScene().getLayers();
+            for(int i = 0; i < layer3Ds.getCount(); i++){
+                Layer3D layer3D = layer3Ds.get(i);
+                layer3D.clearCustomClipPlane();
+            }
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+    /*************************           三维裁剪相关结束           ***************************/
 
     /**
      * 关闭工作空间及地图控件

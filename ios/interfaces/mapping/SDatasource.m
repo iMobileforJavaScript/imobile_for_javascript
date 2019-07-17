@@ -284,7 +284,7 @@ RCT_REMAP_METHOD(importDatasetFromGeoJson, importTo:(NSString*)datasourceAlias d
         if(hasDataset){
             datasetVector = (DatasetVector*) [datasets getWithName:datasetName];
         } else {
-            DatasetVectorInfo* datasetvectorInfo = [DatasetVectorInfo init];
+            DatasetVectorInfo* datasetvectorInfo = [[DatasetVectorInfo alloc] init];
             datasetvectorInfo.datasetType = type;
             datasetvectorInfo.name = datasetName;
             datasetVector = [datasets create:datasetvectorInfo];

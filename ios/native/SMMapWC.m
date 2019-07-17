@@ -790,6 +790,7 @@
             }
             
             
+            
             [importWorkspace close];
             bSucc = YES;
         }
@@ -1427,6 +1428,28 @@
                         [arrTemp addObject:strResName];
                     }
 
+                }
+                
+                //复制态势推演动画xml文件
+                NSString* plotXmlDicPath=[strRootDir stringByAppendingString:@"plot"];
+                BOOL bDir = NO;
+                BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:plotXmlDicPath isDirectory:&bDir];
+                if(bExist&&bDir){
+                    NSString* animationDic=[strCustomer stringByAppendingFormat:@"/Animation/%@",strResName];
+                    BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:animationDic isDirectory:&bDir];
+                    if(bExist){
+                        [[NSFileManager defaultManager] removeItemAtPath:animationDic error:nil];
+                    }
+                    [[NSFileManager defaultManager] createDirectoryAtPath:animationDic withIntermediateDirectories:YES attributes:nil error:nil];
+                    NSArray *fileArr = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:plotXmlDicPath error:nil];
+                    for (int index=0; index<fileArr.count; index++) {
+                        NSString *subFilePath = [plotXmlDicPath stringByAppendingPathComponent:[fileArr objectAtIndex:index]];
+                        bExist = [[NSFileManager defaultManager] fileExistsAtPath:subFilePath isDirectory:&bDir];
+                        if(bExist&&!bDir){
+                            NSString* strAnimation=[animationDic stringByAppendingFormat:@"%@",[fileArr objectAtIndex:index]];
+                            [[NSFileManager defaultManager] copyItemAtPath:subFilePath toPath:strAnimation error:nil];
+                        }
+                    }
                 }
             }
             if(arrTemp.count>0){
@@ -2464,7 +2487,11 @@
     //if([self openMapName:srcMapName toWorkspace:desMap.workspace ofModule:srcModule isPrivate:bSrcPrivate]){
     if([self openMapName:srcMapName toWorkspace:desMap.workspace withParam:dic]){
         [desMap addLayersFromMap:srcMapName withDynamicProjection:YES];
-        [desMap.workspace.maps removeMapName:srcMapName];
+        @try{
+            [desMap.workspace.maps removeMapName:srcMapName];
+        }@catch (NSException *exception) {
+           return true;
+        }
         bResult = true;
     }
 //    [desMap.workspace.resources.markerLibrary clear];

@@ -1933,5 +1933,149 @@ RCT_REMAP_METHOD(removeByName, removeByName:(NSString*)name resolve:(RCTPromiseR
         reject(@"SScene", exception.reason, nil);
     }
 }
+#pragma mark ----------------------------     三维裁剪相关开始     ------------------------------
 
+#pragma mark box裁剪
+// posDic参数
+//  {
+//   startX:"",    //起点x坐标
+//   startY:"",    //起点y坐标
+//   endX:"",   //终点x坐标
+//   endY:"",  //终点y坐标
+//   layers:[],  //参加裁剪的图层 为空全部裁剪
+//   clipInner:boolean 裁剪位置 true 裁剪内部 false 裁剪外部
+//   ************************可选参数 携带了以下参数可以不用传起点 终点坐标***************
+//   width:"", //底面长
+//   length:"", //底面宽
+//   height:"", //高度
+//   x:"",  //中心点坐标
+//   y:"",
+//   z:"",
+//   zRot:"", //z旋转
+//   lineColor:""，//裁剪线颜色
+//   ********************************************************************
+// }
+RCT_REMAP_METHOD(clipByBox, clipByBoxWithDic:(NSDictionary *)posDic resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSDictionary *returnDic = [[NSDictionary alloc] init];
+        BOOL useCookie = NO;
+        double zRot = 0;
+        if([posDic valueForKey:@"width"]){
+            useCookie = YES;
+            zRot = [[posDic valueForKey:@"zRot"] doubleValue];
+        }
+        sScene = [SScene singletonInstance];
+        Layer3Ds *layer3ds = sScene.smSceneWC.sceneControl.scene.layers;
+        
+        Point3D centerPoint;
+        double width,length,height,x,y,z;
+        Size2D *size2d = [[Size2D alloc]init];
+        GeoBox *box = [[GeoBox alloc]init];
+        
+        if(!useCookie){
+            CGPoint p1 = {.x=[[posDic valueForKey:@"startX"]doubleValue],.y=[[posDic valueForKey:@"startY"]doubleValue]};
+            
+            CGPoint p2 = {.x=[[posDic valueForKey:@"endX"]doubleValue],.y=[[posDic valueForKey:@"endY"]doubleValue]};
+            
+            Point3D startPoint = [sScene.smSceneWC.sceneControl.scene pixelToGlobeWith:p1 andPixelToGlobeMode:TerrainAndModel];
+            Point3D endPoint = [sScene.smSceneWC.sceneControl.scene pixelToGlobeWith:p2 andPixelToGlobeMode:TerrainAndModel];
+            
+            [[LableHelper3D sharedInstance] addGeoText:startPoint test:@"start"];
+            [[LableHelper3D sharedInstance] addGeoText:endPoint test:@"end"];
+            x = (startPoint.x + endPoint.x) / 2;
+            y = (startPoint.y + endPoint.y) / 2;
+            z = (startPoint.z + endPoint.z) / 2;
+        
+            //经纬度差值转距离 单位 米
+            double R = 6371393;
+            double PI = 3.141592653589793;
+            double dpi = 1;
+            width = fabs((endPoint.x - startPoint.x) * PI * R * cos((endPoint.y + startPoint.y) / 2 * PI / 180) /180);
+            length = fabs((endPoint.y - startPoint.y) * PI *R / 180);
+            height = fabs(p1.y - p2.y) / dpi;
+      
+        }else{
+            x = [[posDic valueForKey:@"x"]doubleValue];
+            y = [[posDic valueForKey:@"y"]doubleValue];
+            z = [[posDic valueForKey:@"z"]doubleValue];
+            width = [[posDic valueForKey:@"width"]doubleValue];
+            length = [[posDic valueForKey:@"length"]doubleValue];
+            height = [[posDic valueForKey:@"height"]doubleValue];
+        }
+        
+        centerPoint.x = x;
+        centerPoint.x = x;
+        centerPoint.x = x;
+        
+        [size2d setWidth:width];
+        [size2d setHeight:height];
+        
+        [box setPosition:centerPoint];
+        [box setBottomSize:size2d];
+        [box setHeight:height];
+        BoxClipPart part;
+        BOOL clipInner = [[posDic valueForKey:@"clipInner"] boolValue];
+        if(clipInner){
+            part = BoxClipPartInner;
+        }else{
+            part = BoxClipPartOuter;
+        }
+        
+        BOOL needFilter = YES;
+        NSArray *layers = [posDic valueForKey:@"layers"];
+        
+        if([layers count] == 0){
+            needFilter = false;
+        }
+        
+        if(needFilter){
+            NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+            for(int i = 0; i < layer3ds.count; i++){
+                Layer3D *layer3d = [layer3ds getLayerWithIndex:i];
+                [layer3d clearCustomClipPlane];
+                for(int j = 0; j < [layers count]; j++){
+                    dic = layers[j];
+                    if([dic valueForKey:@"name"] == layer3d.name){
+                        [layer3d clipByBox:box part:part];
+                    }
+                }
+            }
+        }else{
+            for(int i = 0; i < layer3ds.count; i++){
+                Layer3D *layer3d = [layer3ds getLayerWithIndex:i];
+                [layer3d clearCustomClipPlane];
+                [layer3d clipByBox:box part:part];
+            }
+        }
+        [sScene.smSceneWC.sceneControl.scene refresh];
+        
+        returnDic = @{
+                      @"width":[[NSNumber alloc]initWithDouble:width],
+                      @"height":[[NSNumber alloc]initWithDouble:height],
+                      @"length":[[NSNumber alloc]initWithDouble:length],
+                      @"zRot":[[NSNumber alloc]initWithDouble:zRot],
+                      @"x":[[NSNumber alloc]initWithDouble:x],
+                      @"y":[[NSNumber alloc]initWithDouble:y],
+                      @"z":[[NSNumber alloc]initWithDouble:z],
+                      @"clipInner":@(clipInner),
+                      };
+        resolve(returnDic);
+    } @catch (NSException *exception) {
+        reject(@"clipByBox()",exception.reason,nil);
+    }
+}
+RCT_REMAP_METHOD(clipSenceClear, clipByBoxWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        Layer3Ds *layer3ds = sScene.smSceneWC.sceneControl.scene.layers;
+        for(int i = 0; i < layer3ds.count; i++){
+            Layer3D *layer3D = [layer3ds getLayerWithIndex:i];
+            [layer3D clearCustomClipPlane];
+        }
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"clipSenceClear()",exception.reason,nil);
+    }
+}
+#pragma mark ----------------------------     三维裁剪相关结束    ------------------------------
 @end

@@ -52,6 +52,7 @@ export default (function () {
         }
     }
 
+
     function getTerrainLayerList() {
         try {
             return SScene.getTerrainLayerList()
@@ -808,6 +809,38 @@ export default (function () {
         }
     }
 
+  /**
+   * box裁剪
+   * @param obj = {
+   *   startX:int
+   *   startX:int
+   *   endX:int
+   *   endY:int
+   *   clipInner:Bool
+   *   layers:[]
+   * }
+   * @returns {*}
+   */
+    function clipByBox(obj){
+      try {
+        return  SScene.clipByBox(obj)
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+  /**
+   * 清除裁剪
+   * @returns {*}
+   */
+  function clipSenceClear(){
+      try {
+        return  SScene.clipSenceClear()
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -922,6 +955,8 @@ export default (function () {
         removeTerrainCacheLayer,
         removeImageCacheLayer,
         changeBaseLayer,
+        clipByBox,
+        clipSenceClear,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp

@@ -60,6 +60,9 @@
 @property (strong, nonatomic) Selection* selection;
 @property (strong, nonatomic) ScaleViewHelper* scaleViewHelper;
 
+///定时器
+@property (nonatomic,strong) dispatch_source_t timer;
+
 + (instancetype)singletonInstance;
 + (void)setInstance:(MapControl *)mapControl;
 
