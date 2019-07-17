@@ -2692,6 +2692,7 @@ RCT_REMAP_METHOD(clipMap, clipMapWithPoints:(NSArray *)points layersInfo:(NSArra
                 } else if (mapName == nil) {
                     mapName = @"";
                 }
+                [sMap.smMapWC.mapControl.map refresh];
                 resolve(@{
                           @"mapName": mapName,
                           @"result": [NSNumber numberWithBool:result],
