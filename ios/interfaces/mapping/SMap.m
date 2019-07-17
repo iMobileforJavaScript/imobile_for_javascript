@@ -2076,9 +2076,9 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
             if (isOpen && [sMap.smMapWC.workspace.maps indexOf:oldName] >= 0) {
                 [sMap.smMapWC.workspace.maps removeMapName:oldName];
             }
-            [map refresh];
         }
         
+         [map refresh];
         resolve(mapName);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);

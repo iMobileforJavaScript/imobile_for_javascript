@@ -560,6 +560,10 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
     }
 
     public static ArrayList<String> copyFiles(ArrayList<String> fromPaths, String targetDictionary) {
+        return copyFiles(fromPaths, targetDictionary, false);
+    }
+
+    public static ArrayList<String> copyFiles(ArrayList<String> fromPaths, String targetDictionary, Boolean deleteOldFile) {
 
         try {
 //            boolean result = false;
@@ -580,7 +584,7 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
                 File toFile = new File(toPath);
 
                 if (fromFile.exists() && !toFile.exists()) {
-                    if (copyFile(fromPaths.get(i), toPath)) {
+                    if (copyFile(fromPaths.get(i), toPath) && deleteOldFile) {
                         fromFile.delete();
                     }
                     newPaths.add(toPath);

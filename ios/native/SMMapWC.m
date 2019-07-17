@@ -2487,7 +2487,11 @@
     //if([self openMapName:srcMapName toWorkspace:desMap.workspace ofModule:srcModule isPrivate:bSrcPrivate]){
     if([self openMapName:srcMapName toWorkspace:desMap.workspace withParam:dic]){
         [desMap addLayersFromMap:srcMapName withDynamicProjection:YES];
-        [desMap.workspace.maps removeMapName:srcMapName];
+        @try{
+            [desMap.workspace.maps removeMapName:srcMapName];
+        }@catch (NSException *exception) {
+           return true;
+        }
         bResult = true;
     }
 //    [desMap.workspace.resources.markerLibrary clear];

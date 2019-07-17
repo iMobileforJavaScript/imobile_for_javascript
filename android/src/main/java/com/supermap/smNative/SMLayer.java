@@ -490,6 +490,7 @@ public class SMLayer {
 
         recordset.edit();
 
+        boolean result = false;
         for (int i = 0; i < fieldInfos.size(); i++) {
             ReadableMap info = fieldInfos.getMap(i);
             String name = info.getString("name");
@@ -502,19 +503,19 @@ public class SMLayer {
                 case Number:{
                     if (type == FieldType.INT16) {
                         String value = info.getString("value");
-                        recordset.setInt16(name, Short.parseShort(value));
+                        result = recordset.setInt16(name, Short.parseShort(value));
                     } else if (type == FieldType.INT32) {
                         int value = info.getInt("value");
-                        recordset.setInt32(name, value);
+                        result = recordset.setInt32(name, value);
                     } else if (type == FieldType.INT64) {
                         int value = info.getInt("value");
-                        recordset.setInt64(name, value);
+                        result = recordset.setInt64(name, value);
                     } else if (type == FieldType.SINGLE) {
                         int value = info.getInt("value");
-                        recordset.setSingle(name, value);
+                        result = recordset.setSingle(name, value);
                     } else if (type == FieldType.DOUBLE) {
                         Double value = info.getDouble("value");
-                        recordset.setDouble(name, value);
+                        result = recordset.setDouble(name, value);
                     }
                     break;
                 }
@@ -522,17 +523,19 @@ public class SMLayer {
                     if (type == FieldType.TEXT || type == FieldType.WTEXT
                             || type == FieldType.LONGBINARY || type == FieldType.BYTE) {
                         String value1 = info.getString("value");
-                        recordset.setFieldValue(name, value1);
+                        result = recordset.setFieldValue(name, value1);
                     }
                     break;
                 }
                 case Boolean: {
                     if (type == FieldType.BOOLEAN) {
                         boolean boolValue = info.getBoolean("value");
-                        recordset.setBoolean(name, boolValue);
+                        result = recordset.setBoolean(name, boolValue);
                     }
                 }
             }
+
+            if (!result) break;
         }
 
         recordset.update();
@@ -551,7 +554,7 @@ public class SMLayer {
             default:
                 break;
         }
-        return true;
+        return result;
     }
 
     public static InfoCallout addCallOutWithLongitude(final Context context, double longitude, double latitude, final String imagePath) {
