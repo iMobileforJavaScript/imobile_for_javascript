@@ -2634,18 +2634,35 @@ RCT_REMAP_METHOD(setSelectionStyle, setSelectionStyleWithLayerPath:(NSString *)p
     }
 }
 
+-(void)clearLayerSelection:(LayerGroup*)layerGroup{
+    for (int i = 0; i < layerGroup.getCount; i++) {
+        Layer* layer = [layerGroup getLayer:i];
+        if([layer isKindOfClass:[LayerGroup class]]){
+            [self clearLayerSelection:layer];
+        }else{
+            Selection* selection = [layer getSelection];
+            [selection clear];
+            [selection dispose];
+        }
+    }
+}
 #pragma mark 清除Selection
 RCT_REMAP_METHOD(clearSelection, clearSelectionWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         Layers* layers = sMap.smMapWC.mapControl.map.layers;
         for (int i = 0; i < layers.getCount; i++) {
-            Selection* selection = [[layers getLayerAtIndex:i] getSelection];
-            [selection clear];
-            [selection dispose];
             
-            [sMap.smMapWC.mapControl.map refresh];
+            Layer* layer = [layers getLayerAtIndex:i];
+            if([layer isKindOfClass:[LayerGroup class]]){
+                [self clearLayerSelection:layer];
+            }else{
+                Selection* selection = [layer getSelection];
+                [selection clear];
+                [selection dispose];
+            }
         }
+        [sMap.smMapWC.mapControl.map refresh];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
