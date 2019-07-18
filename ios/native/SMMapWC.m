@@ -1431,7 +1431,7 @@
                 }
                 
                 //复制态势推演动画xml文件
-                NSString* plotXmlDicPath=[strRootDir stringByAppendingString:@"plot"];
+                NSString* plotXmlDicPath=[strRootDir stringByAppendingString:@"/plot"];
                 BOOL bDir = NO;
                 BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:plotXmlDicPath isDirectory:&bDir];
                 if(bExist&&bDir){
@@ -1446,7 +1446,7 @@
                         NSString *subFilePath = [plotXmlDicPath stringByAppendingPathComponent:[fileArr objectAtIndex:index]];
                         bExist = [[NSFileManager defaultManager] fileExistsAtPath:subFilePath isDirectory:&bDir];
                         if(bExist&&!bDir){
-                            NSString* strAnimation=[animationDic stringByAppendingFormat:@"%@",[fileArr objectAtIndex:index]];
+                            NSString* strAnimation=[animationDic stringByAppendingFormat:@"/%@",[fileArr objectAtIndex:index]];
                             [[NSFileManager defaultManager] copyItemAtPath:subFilePath toPath:strAnimation error:nil];
                         }
                     }
