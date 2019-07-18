@@ -70,8 +70,11 @@ RCT_REMAP_METHOD(login, loginByUserName:(NSString *)userName password:(NSString 
                 NSNumber* number =[NSNumber numberWithBool:YES];
                 resolve(number);
             } else {
-                NSNumber* number =[NSNumber numberWithBool:NO];
-                resolve(number);
+                if(error.userInfo[@"NSLocalizedDescription"] !=nil){
+                    resolve(error.userInfo[@"NSLocalizedDescription"]);
+                } else {
+                    resolve(error.userInfo[@"NSUnderlyingError"]);
+                }
             }
         }];
     } @catch (NSException *exception) {
