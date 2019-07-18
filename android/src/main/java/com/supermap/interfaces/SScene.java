@@ -2108,7 +2108,7 @@ public class SScene extends ReactContextBaseJavaModule {
             boolean needFilter = true;
             ReadableArray layers = posMap.getArray("layers");
 
-            if(layers.size() == 0){
+            if(layers.size() == 0 && !posMap.getBoolean("isCliped")){
                 needFilter = false;
             }
             if(needFilter){
