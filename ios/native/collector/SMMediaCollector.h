@@ -17,7 +17,7 @@
 #import "SuperMap/DatasetVectorInfo.h"
 #import "SuperMap/PrjCoordSys.h"
 #import "SuperMap/GeoPoint.h"
-#import "SuperMap/GeoPoint.h"
+#import "SuperMap/GeoLine.h"
 #import "SuperMap/Recordset.h"
 #import "SMap.h"
 #import "SMLayer.h"
@@ -41,9 +41,11 @@ NS_ASSUME_NONNULL_BEGIN
  **/
 + (NSArray *)findMediasByLayer:(Layer *)layer;
 
-+ (void)addMediasByLayer:(Layer *)layer gesture:(UITapGestureRecognizer *)gesture;
++ (void)showMediasByLayer:(Layer *)layer gesture:(UITapGestureRecognizer *)gesture;
 
 + (void)addCalloutByMedia:(SMMedia *)media recordset:(Recordset *)rs layerName:(NSString *)layerName segesturelector:(UITapGestureRecognizer *)gesture;
+
++ (void)addLineByMedias:(NSArray *)medias dataset:(DatasetVector *)dataset;
 @end
 
 NS_ASSUME_NONNULL_END

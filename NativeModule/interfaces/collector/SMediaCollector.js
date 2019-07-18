@@ -299,6 +299,17 @@ function getMediaInfo (layerName = '', geoID = -1) {
   return Collector.getMediaInfo(layerName, geoID)
 }
 
+/**
+ * 添加多媒体旅行轨迹
+ * @param layerName
+ * @param files
+ * @returns {*}
+ */
+function addTour (layerName = '', files = []) {
+  if (!layerName || files.length <= 0) return
+  return Collector.addTour(layerName, files)
+}
+
 export default {
   initMediaCollector,
   // captureImage,
@@ -309,6 +320,7 @@ export default {
   removeListener,
   
   addMedia,
+  addTour,
   // addMediaFiles,
   // deleteMediaFiles,
   saveMediaByLayer,

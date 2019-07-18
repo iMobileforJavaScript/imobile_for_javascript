@@ -174,7 +174,7 @@ RCT_REMAP_METHOD(showMedia, showMediaWithLayerName:(NSString *)layerName resolve
             
             [tapGesture setNumberOfTapsRequired:1];
             
-            [SMMediaCollector addMediasByLayer:layer gesture:tapGesture];
+            [SMMediaCollector showMediasByLayer:layer gesture:tapGesture];
             resolve(@(YES));
         } else {
             reject(@"SMediaCollector", @"The layer is not exist", nil);
@@ -369,6 +369,64 @@ RCT_REMAP_METHOD(getMediaInfo, getMediaInfo:(NSString*)layerName geoID:(int)geoI
     }
 }
 
+#pragma mark 添加多媒体旅行轨迹
+RCT_REMAP_METHOD(addTour, addTour:(NSString *)layerName files:(NSArray *)files resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Layer* layer = [SMLayer findLayerWithName:layerName];
+        if (layer == nil) {
+            reject(@"SMediaCollector", @"Layer can not be found", nil);
+        } else if (files.count <= 0) {
+            reject(@"SMediaCollector", @"Files can not be empty", nil);
+        } else {
+            SMMediaCollector* collector = [SMMediaCollector singletonInstance];
+            int count = 0;
+            NSMutableDictionary* result = [[NSMutableDictionary alloc] init];
+            NSMutableArray* errorFiles = [[NSMutableArray alloc] init]; // 存放添加失败的m多媒体文件
+            
+            NSMutableArray* medias = [[NSMutableArray alloc] init];
+            for (int i = 0; i < files.count; i++) {
+                NSDictionary* mediaData = files[i];
+                NSString* mediaName = [mediaData objectForKey:@"filename"];
+                NSString* uri = [mediaData objectForKey:@"uri"];
+                
+                NSDictionary* location = [mediaData objectForKey:@"location"];
+                SMMedia* media;
+                if (location && [location objectForKey:@"longitude"] != nil && [location objectForKey:@"latitude"] != nil) {
+                    double longitude = [(NSNumber *)[location objectForKey:@"longitude"] doubleValue];
+                    double latitude = [(NSNumber *)[location objectForKey:@"latitude"] doubleValue];
+                    
+                    media = [[SMMedia alloc] initWithName:mediaName longitude:longitude latitude:latitude];
+                } else {
+                    media = [[SMMedia alloc] initWithName:mediaName];
+                }
+                
+                if ([media setMediaDataset:layer.dataset.datasource datasetName:layer.dataset.name]) {
+                    NSArray* filePaths = [[NSArray alloc] initWithObjects:uri, nil];
+                    BOOL saveResult = [media saveMedia:filePaths toDictionary:collector.mediaPath addNew:YES];
+                    if (saveResult) {
+                        [medias addObject:media];
+                        count++;
+                    } else {
+                        [errorFiles addObject:mediaData];
+                    }
+                } else {
+                     [errorFiles addObject:mediaData];
+                }
+            }
+            if (medias.count > 0) {
+                [SMMediaCollector addLineByMedias:medias dataset:(DatasetVector *)layer.dataset];
+                [self addCallouts:medias layer:layer];
+            }
+            BOOL res = count == files.count ? YES : NO;
+            [result setObject:@(res) forKey:@"result"];
+            [result setObject:errorFiles forKey:@"errorFiles"];
+            resolve(result);
+        }
+    } @catch (NSException *exception) {
+        reject(@"SMediaCollector", exception.reason, nil);
+    }
+}
+
 /************************************分割线*****************************************/
 
 + (MDataCollector *)initMediaCollector:(NSString*)datasourceName dataset:(NSString*)datasetName {
@@ -474,6 +532,34 @@ RCT_REMAP_METHOD(getMediaInfo, getMediaInfo:(NSString*)layerName geoID:(int)geoI
     }
 }
 
+- (void)addCallouts:(NSArray *)medias layer:(Layer *)layer {
+    if (layer) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            Recordset* rs = [((DatasetVector *)layer.dataset) recordset:NO cursorType:DYNAMIC];
+            for (int i = medias.count - 1; i >= 0; i--) {
+                SMMedia* media = medias[i];
+                [rs moveLast];
+                NSString* mediaName = (NSString *)[rs getFieldValueWithString:@"MediaFileName"];
+                if ([media.fileName isEqualToString:@"TourLine"]) continue; // 线
+                
+                while(![mediaName isEqualToString:media.fileName] && ![rs isBOF]) {
+                    [rs movePrev];
+                    mediaName = (NSString *)[rs getFieldValueWithString:@"MediaFileName"];
+                }
+                
+                SEL selector = @selector(callOutAction:);
+                UITapGestureRecognizer * tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:selector];
+                [tapGesture setNumberOfTapsRequired:1];
+                
+                [SMMediaCollector addCalloutByMedia:media recordset:rs layerName:layer.name segesturelector:tapGesture];
+                [rs movePrev];
+            }
+            
+            [rs dispose];
+        });
+    }
+}
+
 - (void)addCalloutsByLayer:(Layer *)layer {
     if (layer) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -481,7 +567,7 @@ RCT_REMAP_METHOD(getMediaInfo, getMediaInfo:(NSString*)layerName geoID:(int)geoI
             UITapGestureRecognizer * tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:selector];
             [tapGesture setNumberOfTapsRequired:1];
             
-            [SMMediaCollector addMediasByLayer:layer gesture:tapGesture];
+            [SMMediaCollector showMediasByLayer:layer gesture:tapGesture];
         });
     }
 }

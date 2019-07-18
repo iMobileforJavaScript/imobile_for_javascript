@@ -2432,7 +2432,7 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
         }
         resolve(libInfo);
     } @catch (NSException *exception) {
-        reject(@"newTaggingDataset", exception.reason, nil);
+        reject(@"initPlotSymbolLibrary", exception.reason, nil);
     }
 }
 
@@ -2788,6 +2788,7 @@ RCT_REMAP_METHOD(clipMap, clipMapWithPoints:(NSArray *)points layersInfo:(NSArra
                 } else if (mapName == nil) {
                     mapName = @"";
                 }
+                [sMap.smMapWC.mapControl.map refresh];
                 resolve(@{
                           @"mapName": mapName,
                           @"result": [NSNumber numberWithBool:result],
@@ -2822,12 +2823,14 @@ RCT_REMAP_METHOD(clipMap, clipMapWithPoints:(NSArray *)points layersInfo:(NSArra
 }
 
 #pragma mark 新建标注数据集
-RCT_REMAP_METHOD(newTaggingDataset, newTaggingDatasetWithName:(NSString *)Name Path:(NSString *)userpath resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(newTaggingDataset, newTaggingDatasetWithName:(NSString *)Name path:(NSString *)userpath editable:(BOOL)editable type:(NSString *)type resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace =sMap.smMapWC.mapControl.map.workspace;
         NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
+        NSString *datasetName = @"";
+        Layer *layer;
         if(opendatasource == nil){
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
             info.alias = labelName;
@@ -2838,7 +2841,7 @@ RCT_REMAP_METHOD(newTaggingDataset, newTaggingDatasetWithName:(NSString *)Name P
             
             if(datasource != nil && [datasource.description isEqualToString: @"Label"]){
                 Datasets *datasets = datasource.datasets;
-                NSString *datasetName = [datasets availableDatasetName: Name];
+                datasetName = [datasets availableDatasetName: Name];
                 DatasetVectorInfo *datasetVectorInfo = [[DatasetVectorInfo alloc]init];
                 [datasetVectorInfo setDatasetType:CAD];
                 [datasetVectorInfo setEncodeType:NONE];
@@ -2853,18 +2856,18 @@ RCT_REMAP_METHOD(newTaggingDataset, newTaggingDatasetWithName:(NSString *)Name P
                 
                 
                 Dataset *ds = [datasets getWithName:datasetName];
+                ds.description = [NSString stringWithFormat:@"{\"type\":\"%@\"}", type];
                 Map *map = sMap.smMapWC.mapControl.map;
-                Layer *layer = [map.layers addDataset:ds ToHead:YES];
+                layer = [map.layers addDataset:ds ToHead:YES];
                 
-                [layer setEditable:YES];
+                [layer setEditable:editable];
                 [datasetVectorInfo dispose];
                 [datasetVector close];
                 [info dispose];
-                resolve(datasetName);
             }
         }else{
             Datasets *datasets = opendatasource.datasets;
-            NSString *datasetName = [datasets availableDatasetName:Name];
+            datasetName = [datasets availableDatasetName:Name];
             DatasetVectorInfo *datasetVectorInfo = [[DatasetVectorInfo alloc] init];
             [datasetVectorInfo setDatasetType:CAD];
             [datasetVectorInfo setEncodeType:NONE];
@@ -2878,15 +2881,18 @@ RCT_REMAP_METHOD(newTaggingDataset, newTaggingDatasetWithName:(NSString *)Name P
             [SMap addFieldInfo:datasetVector Name:@"address" FieldType:FT_TEXT Required:NO Value:@"" Maxlength:255];
             
             Dataset *ds = [datasets getWithName:datasetName];
+            ds.description = [NSString stringWithFormat:@"{\"type\":\"%@\"}", type];
             Map *map =sMap.smMapWC.mapControl.map;
-            Layer *layer = [map.layers addDataset:ds ToHead:YES];
+            layer = [map.layers addDataset:ds ToHead:YES];
             
-            [layer setEditable:YES];
+            [layer setEditable:editable];
             [datasetVectorInfo dispose];
             [datasetVector close];
-            
-            resolve(datasetName);
         }
+        resolve(@{
+                  @"datasetName": datasetName,
+                  @"layerName": layer ? layer.name : @"",
+                  });
     } @catch (NSException *exception) {
         reject(@"newTaggingDataset", exception.reason, nil);
     }
@@ -3052,9 +3058,11 @@ RCT_REMAP_METHOD(isTaggingLayer, isTaggingLayerWithPath:(NSString *)userpath res
                         if(layer.dataset == dataset){
                             if(layer.editable){
                                 isEditable = YES;
+                                break;
                             }
                         }
                     }
+                    if (isEditable) break;
                 }
             }
             resolve(@(isEditable));
@@ -3062,7 +3070,6 @@ RCT_REMAP_METHOD(isTaggingLayer, isTaggingLayerWithPath:(NSString *)userpath res
     } @catch (NSException *exception) {
         reject(@"Tagging",@"isTaggingLayer() Failed.",nil);
     }
-    
 }
 
 #pragma mark 获取当前标注
@@ -3080,7 +3087,58 @@ RCT_REMAP_METHOD(getCurrentTaggingDataset, getCurrentTaggingDatasetWithName:(NSS
     } @catch (NSException *exception) {
         reject(@"getCurrentTaggingDataset",exception.reason,nil);
     }
-    
+}
+
+#pragma mark 判断是否有标注图层，并获取当前标注图层信息
+RCT_REMAP_METHOD(getCurrentTaggingLayer, getCurrentTaggingLayerWithPath:(NSString *)userpath resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
+        NSString *udbName = [NSString stringWithFormat: @"%@%@%@",@"Label_",userpath,@"#"];
+        Datasource *opendatasource = [workspace.datasources getAlias:udbName];
+        
+        NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+        BOOL isEditable = NO;
+        if(opendatasource != nil){
+            Datasets *datasets = opendatasource.datasets;
+            Layers *layers = sMap.smMapWC.mapControl.map.layers;
+            
+            Layer *layer = nil;
+            for(int i = 0, count = [layers getCount]; i < count; i++){
+                if(!isEditable){
+                    layer = [layers getLayerAtIndex:i];
+                    for(int j = 0,dCount = datasets.count; j < dCount; j++){
+                        Dataset *dataset = [datasets get:j];
+                        if(layer.dataset == dataset){
+                            if(layer.editable){
+                                isEditable = YES;
+                                break;
+                            }
+                        }
+                    }
+                    if (isEditable) break;
+                }
+            }
+            [dic setObject:@(isEditable) forKey:@"isTaggingLayer"];
+            
+            if (isEditable) {
+                NSMutableDictionary* layerInfo = [[NSMutableDictionary alloc] init];
+                [layerInfo setObject:@(isEditable) forKey:@"isEditable"];
+                [layerInfo setObject:@(layer.visible) forKey:@"isVisible"];
+                [layerInfo setObject:layer.name forKey:@"name"];
+                [layerInfo setObject:layer.dataset.name forKey:@"datasetName"];
+                [layerInfo setObject:layer.dataset.description forKey:@"datasetDescription"];
+                [layerInfo setObject:layer.description forKey:@"description"];
+                
+                [dic setObject:layerInfo forKey:@"layerInfo"];
+            }
+        } else {
+            [dic setObject:@(isEditable) forKey:@"isTaggingLayer"];
+        }
+        resolve(dic);
+    } @catch (NSException *exception) {
+        reject(@"Tagging",@"getCurrentTaggingLayer() Failed.",nil);
+    }
 }
 
 #pragma mark 获取标注图层
