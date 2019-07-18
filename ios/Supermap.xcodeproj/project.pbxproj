@@ -21,6 +21,7 @@
 		0A27E0552281249700227B8C /* SMediaCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A27E0532281249600227B8C /* SMediaCollector.m */; };
 		0A27E31B2284293900227B8C /* MediaUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A27E31A2284293900227B8C /* MediaUtil.m */; };
 		0A27E3812288FFF600227B8C /* InfoCallout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A27E3802288FFF600227B8C /* InfoCallout.m */; };
+		0A2858D822E06305001048A8 /* LocationTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A2858D722E06305001048A8 /* LocationTransfer.m */; };
 		0A2F59F0229BB7AD00C42441 /* FileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F59EF229BB7AD00C42441 /* FileUtils.m */; };
 		0A332DEA211D623E00F56F26 /* JSAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CD7211D623D00F56F26 /* JSAction.m */; };
 		0A332DEB211D623E00F56F26 /* JSAdoptMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A332CD9211D623D00F56F26 /* JSAdoptMapView.m */; };
@@ -249,6 +250,8 @@
 		0A27E31A2284293900227B8C /* MediaUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MediaUtil.m; sourceTree = "<group>"; };
 		0A27E37F2288FFF600227B8C /* InfoCallout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InfoCallout.h; sourceTree = "<group>"; };
 		0A27E3802288FFF600227B8C /* InfoCallout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InfoCallout.m; sourceTree = "<group>"; };
+		0A2858D622E06305001048A8 /* LocationTransfer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LocationTransfer.h; sourceTree = "<group>"; };
+		0A2858D722E06305001048A8 /* LocationTransfer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocationTransfer.m; sourceTree = "<group>"; };
 		0A2F59EE229BB7AD00C42441 /* FileUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileUtils.h; sourceTree = "<group>"; };
 		0A2F59EF229BB7AD00C42441 /* FileUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FileUtils.m; sourceTree = "<group>"; };
 		0A332CD6211D623D00F56F26 /* JSAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSAction.h; sourceTree = "<group>"; };
@@ -668,6 +671,8 @@
 				0A332DDD211D623E00F56F26 /* NativeUtil.m */,
 				0A2F59EE229BB7AD00C42441 /* FileUtils.h */,
 				0A2F59EF229BB7AD00C42441 /* FileUtils.m */,
+				0A2858D622E06305001048A8 /* LocationTransfer.h */,
+				0A2858D722E06305001048A8 /* LocationTransfer.m */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -1371,6 +1376,7 @@
 				0A332E17211D623E00F56F26 /* JSGeoLineM.m in Sources */,
 				0A332E32211D623E00F56F26 /* JSNavigation2.m in Sources */,
 				D83F3C42218BDA97001C56BE /* SMMapWC.m in Sources */,
+				0A2858D822E06305001048A8 /* LocationTransfer.m in Sources */,
 				0A7196AC228C0873009C2C50 /* SMMedia.m in Sources */,
 				0A332E02211D623E00F56F26 /* JSCoordSysTransMethod.m in Sources */,
 				0A332E41211D623E00F56F26 /* JSProjectionType.m in Sources */,

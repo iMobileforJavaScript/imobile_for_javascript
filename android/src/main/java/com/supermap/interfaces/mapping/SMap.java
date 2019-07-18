@@ -51,6 +51,7 @@ import com.supermap.mapping.GeometrySelectedListener;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
+import com.supermap.mapping.LayerGroup;
 import com.supermap.mapping.Legend;
 import com.supermap.mapping.LegendContentChangeListener;
 import com.supermap.mapping.LegendItem;
@@ -1033,6 +1034,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    private void clearLayerSelection(LayerGroup layerGroup){
+        for (int i = 0; i < layerGroup.getCount(); i++) {
+            Layer layer = layerGroup.get(i);
+            if(layer instanceof LayerGroup){
+                clearLayerSelection((LayerGroup)layer);
+            }else{
+                Selection selection = layer.getSelection();
+                if (selection != null) {
+                    selection.clear();
+                    selection.dispose();
+                }
+            }
+        }
+    }
     /**
      * 清除Selection
      *
@@ -1046,13 +1061,19 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             Layers layers = mapControl.getMap().getLayers();
             for (int i = 0; i < layers.getCount(); i++) {
-                Selection selection = layers.get(i).getSelection();
-                if (selection != null) {
-                    selection.clear();
-                }
 
-                mapControl.getMap().refresh();
+                Layer layer = layers.get(i);
+                if(layer instanceof LayerGroup){
+                    clearLayerSelection((LayerGroup)layer);
+                }else{
+                    Selection selection = layer.getSelection();
+                    if (selection != null) {
+                        selection.clear();
+                        selection.dispose();
+                    }
+                }
             }
+            mapControl.getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -2851,7 +2872,35 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             com.supermap.mapping.Map map = sMap.getSmMapWC().getMapControl().getMap();
-            map.viewEntire();
+
+            Layer layerWeb = null;
+            int nLayerCount = map.getLayers().getCount();
+            if (nLayerCount>1){
+                Layer layerTemp = map.getLayers().get(nLayerCount-1);
+                if (layerTemp.isVisible() && layerTemp.getDataset()!=null && layerTemp.getDataset().getDatasource()!=null){
+                    EngineType engineType = layerTemp.getDataset().getDatasource().getConnectionInfo().getEngineType();
+                    if(engineType==EngineType.OGC ||
+                            engineType==EngineType.SuperMapCloud ||
+                            engineType==EngineType.GoogleMaps ||
+                            engineType==EngineType.Rest ||
+                            engineType==EngineType.BaiDu ||
+                            engineType==EngineType.BingMaps ||
+                            engineType==EngineType.OpenStreetMaps
+                            ) {
+                        layerWeb = layerTemp;
+                    }
+                }
+            }
+
+            if (layerWeb!=null){
+                layerWeb.setVisible(false);
+                map.viewEntire();
+                layerWeb.setVisible(true);
+            }else{
+                map.viewEntire();
+            }
+
+
             map.refresh();
 
             promise.resolve(true);

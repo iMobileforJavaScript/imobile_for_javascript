@@ -2300,7 +2300,40 @@ RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resol
     @try {
         sMap = [SMap singletonInstance];
         Map* map = sMap.smMapWC.mapControl.map;
-        [map viewEntire];
+        
+        Layer *layerWeb = nil;
+        if(map.layers.getCount>1){
+            Layer *layerTemp = [map.layers getLayerAtIndex:map.layers.getCount-1];
+            if (layerTemp.dataset!=nil && layerTemp.dataset.datasource!=nil ) {
+                EngineType engineType = layerTemp.dataset.datasource.datasourceConnectionInfo.engineType;
+                switch (engineType) {
+                    case ET_OGC:
+                    case ET_SuperMapCloud:
+                    case ET_GOOGLEMAPS:
+                    case ET_REST:
+                    case ET_BAIDU:
+                    case ET_OPENSTREEMAPS:
+                    case ET_BingMaps:
+                    {
+                        layerWeb = layerTemp;
+                    }
+                        break;
+                        
+                    default:
+                        break;
+                }
+            }
+        }
+        
+        if (layerWeb!=nil) {
+            [layerWeb setVisible:false];
+            [map viewEntire];
+            [layerWeb setVisible:true];
+        }
+        else{
+            [map viewEntire];
+        }
+        
         [map refresh];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
@@ -2657,18 +2690,35 @@ RCT_REMAP_METHOD(setSelectionStyle, setSelectionStyleWithLayerPath:(NSString *)p
     }
 }
 
+-(void)clearLayerSelection:(LayerGroup*)layerGroup{
+    for (int i = 0; i < layerGroup.getCount; i++) {
+        Layer* layer = [layerGroup getLayer:i];
+        if([layer isKindOfClass:[LayerGroup class]]){
+            [self clearLayerSelection:layer];
+        }else{
+            Selection* selection = [layer getSelection];
+            [selection clear];
+            [selection dispose];
+        }
+    }
+}
 #pragma mark 清除Selection
 RCT_REMAP_METHOD(clearSelection, clearSelectionWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         Layers* layers = sMap.smMapWC.mapControl.map.layers;
         for (int i = 0; i < layers.getCount; i++) {
-            Selection* selection = [[layers getLayerAtIndex:i] getSelection];
-            [selection clear];
-            [selection dispose];
             
-            [sMap.smMapWC.mapControl.map refresh];
+            Layer* layer = [layers getLayerAtIndex:i];
+            if([layer isKindOfClass:[LayerGroup class]]){
+                [self clearLayerSelection:layer];
+            }else{
+                Selection* selection = [layer getSelection];
+                [selection clear];
+                [selection dispose];
+            }
         }
+        [sMap.smMapWC.mapControl.map refresh];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);

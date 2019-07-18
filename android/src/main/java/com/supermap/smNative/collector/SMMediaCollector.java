@@ -2,8 +2,13 @@ package com.supermap.smNative.collector;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.supermap.RNUtils.DateUtil;
+import com.supermap.RNUtils.LocationTransfer;
+import com.supermap.RNUtils.MediaUtil;
+import com.supermap.component.MapWrapView;
 import com.supermap.data.Color;
 import com.supermap.data.CoordSysTransMethod;
 import com.supermap.data.CoordSysTransParameter;
@@ -23,6 +28,8 @@ import com.supermap.data.Recordset;
 import com.supermap.data.Size2D;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
+import com.supermap.mapping.Map;
+import com.supermap.mapping.MapControl;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.components.InfoCallout;
 
@@ -217,59 +224,162 @@ public class SMMediaCollector {
             DatasetVector datasetVector = (DatasetVector)layer.getDataset();
             Recordset recordset = datasetVector.getRecordset(false, CursorType.STATIC);
             recordset.moveFirst();
+            ArrayList<InfoCallout> callouts = new ArrayList<>();
             while (!recordset.isEOF()) {
+                String paths = (String)recordset.getFieldValue("MediaFilePaths");
+                String fileName = (String)recordset.getFieldValue("MediaFileName");
+                if (paths == null && fileName.equals("TourLine")) {
+                    recordset.moveNext();
+                    continue;
+                }
                 SMMedia media = new SMMedia();
 
                 media.setDatasourse(layer.getDataset().getDatasource());
                 media.setDataset(layer.getDataset());
-                media.setFileName((String)recordset.getFieldValue("MediaFileName"));
-
-                String paths = (String)recordset.getFieldValue("MediaFilePaths");
-                ArrayList<String> pathArr = new ArrayList<>(Arrays.asList(paths.split(",")));
+                media.setFileName(fileName);
+                ArrayList<String> pathArr;
+                if (paths != null) {
+                    pathArr = new ArrayList<>(Arrays.asList(paths.split(",")));
+                } else {
+                    pathArr = new ArrayList<>();
+                }
                 media.setPaths(pathArr);
 
                 double x = recordset.getGeometry().getInnerPoint().getX();
                 double y = recordset.getGeometry().getInnerPoint().getY();
                 media.setLocation(new Point2D(x, y));
 
-                String imgPath = sdcard + media.getPaths().get(0);
-                InfoCallout callout = SMLayer.addCallOutWithLongitude(context, x, y, imgPath);
-                callout.setMediaFileName(media.getFileName());
-                callout.setMediaFilePaths(media.getPaths());
-                callout.setLayerName(layer.getName());
-                callout.setHttpAddress("");
-                callout.setDescription("");
+                InfoCallout callout = getCalloutByMedia(context, media, recordset, layer.getName(), listener);
 
-                Date date = new Date();
-                callout.setModifiedDate(DateUtil.formatDateToString(date, "yyyy-MM-dd HH:mm:ss"));
-                callout.setGeoID(Integer.parseInt(recordset.getFieldValue("SmID").toString()));
-
-                if (listener != null) {
-                    callout.setOnTouchListener(listener);
-                }
-
+                callouts.add(callout);
                 recordset.moveNext();
             }
+
+            addCallouts(callouts);
 
             recordset.dispose();
         }
     }
 
-    public static void addCalloutByMedia(Context context, SMMedia media, Recordset recordset, String layerName, View.OnTouchListener listener) {
-//        double x = recordset.getGeometry().getInnerPoint().getX();
-//        double y = recordset.getGeometry().getInnerPoint().getY();
+    public static InfoCallout getCalloutByMedia(Context context, SMMedia media, Recordset recordset, String layerName, View.OnTouchListener listener) {
+        int imgSize = 60;
 
         Point2D pt = new Point2D(media.getLocation().getX(), media.getLocation().getY());
-        if (!SMap.safeGetType(SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
-            Point2Ds point2Ds = new Point2Ds();
-            point2Ds.add(pt);
-            PrjCoordSys prjCoordSys = new PrjCoordSys();
-            prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-            CoordSysTransParameter parameter = new CoordSysTransParameter();
 
-            CoordSysTranslator.convert(point2Ds, prjCoordSys, SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
-            pt = point2Ds.getItem(0);
+        final InfoCallout callout = new InfoCallout(context);
+
+        String imagePath = sdcard + media.getPaths().get(0);
+        String extension = imagePath.substring(imagePath.lastIndexOf(".") + 1);
+
+        final ImageView img = new ImageView(context);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(imgSize, imgSize);
+        img.setLayoutParams(layoutParams);
+        img.setMinimumHeight(imgSize);
+        img.setMinimumWidth(imgSize);
+
+        if (extension.equals("mp4")) {
+            img.setImageBitmap(MediaUtil.getScreenShotImageFromVideoPath(imagePath, imgSize, imgSize));
+        } else {
+            img.setImageBitmap(MediaUtil.getLocalBitmap(imagePath, imgSize, imgSize));
         }
+        callout.setContentView(img);
+        callout.setLocation(pt.getX(), pt.getY());
+
+        callout.setMediaFileName(media.getFileName());
+        callout.setMediaFilePaths(media.getPaths());
+        callout.setLayerName(layerName);
+        callout.setHttpAddress("");
+        callout.setDescription("");
+
+
+        Date date = new Date();
+        callout.setModifiedDate(DateUtil.formatDateToString(date, "yyyy-MM-dd HH:mm:ss"));
+        callout.setGeoID(Integer.parseInt(recordset.getFieldValue("SmID").toString()));
+
+        if (listener != null) {
+            callout.setOnTouchListener(listener);
+        }
+
+        return callout;
+    }
+
+    public static InfoCallout createCalloutByMedia(Context context, SMMedia media, Recordset recordset, String layerName, View.OnTouchListener listener) {
+        int imgSize = 60;
+
+        Point2D pt = new Point2D(media.getLocation().getX(), media.getLocation().getY());
+
+        final InfoCallout callout = new InfoCallout(context);
+
+        String imagePath = sdcard + media.getPaths().get(0);
+        String extension = imagePath.substring(imagePath.lastIndexOf(".") + 1);
+
+        final ImageView img = new ImageView(context);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(imgSize, imgSize);
+        img.setLayoutParams(layoutParams);
+        img.setMinimumHeight(imgSize);
+        img.setMinimumWidth(imgSize);
+
+        if (extension.equals("mp4")) {
+            img.setImageBitmap(MediaUtil.getScreenShotImageFromVideoPath(imagePath, imgSize, imgSize));
+        } else {
+            img.setImageBitmap(MediaUtil.getLocalBitmap(imagePath, imgSize, imgSize));
+        }
+        callout.setContentView(img);
+        callout.setLocation(pt.getX(), pt.getY());
+
+        callout.setMediaFileName(media.getFileName());
+        callout.setMediaFilePaths(media.getPaths());
+        callout.setLayerName(layerName);
+        callout.setHttpAddress("");
+        callout.setDescription("");
+
+        Date date = new Date();
+        callout.setModifiedDate(DateUtil.formatDateToString(date, "yyyy-MM-dd HH:mm:ss"));
+        callout.setGeoID(Integer.parseInt(recordset.getFieldValue("SmID").toString()));
+
+        String paths = "";
+        for (int i = 0; i < callout.getMediaFilePaths().size(); i++) {
+            paths += callout.getMediaFilePaths().get(i) + (i == callout.getMediaFilePaths().size() - 1 ? "" : ",");
+        }
+
+        recordset.edit();
+        recordset.setFieldValue("ModifiedDate", callout.getModifiedDate());
+        recordset.setFieldValue("MediaFilePaths", paths);
+        recordset.setFieldValue("Description", callout.getDescription());
+        recordset.setFieldValue("HttpAddress", callout.getHttpAddress());
+        recordset.update();
+
+        if (listener != null) {
+            callout.setOnTouchListener(listener);
+        }
+
+        return callout;
+    }
+
+    public static void addCallouts(final ArrayList<InfoCallout> callouts) {
+        final SMap sMap = SMap.getInstance();
+        sMap.getActivity().runOnUiThread(new Runnable(){
+            @Override
+            public void run(){
+                Map map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
+                MapWrapView mapWrapView = (MapWrapView)map.getMapView();
+                for (int i = 0; i < callouts.size(); i++) {
+                    InfoCallout callout = callouts.get(i);
+                    mapWrapView.addCallout(callout, callout.getID());
+                }
+                map.setCenter(new Point2D(callouts.get(0).getLocationX(), callouts.get(0).getLocationY()));
+                if (map.getScale() < 0.000011947150294723098) {
+                    map.setScale(0.000011947150294723098);
+                }
+                map.refresh();
+
+                mapWrapView.showCallOut();
+            }
+        });
+    }
+
+    public static InfoCallout addCalloutByMedia(Context context, SMMedia media, Recordset recordset, String layerName, View.OnTouchListener listener) {
+        Point2D pt = new Point2D(media.getLocation().getX(), media.getLocation().getY());
 
         String imgPath = sdcard + media.getPaths().get(0);
         InfoCallout callout = SMLayer.addCallOutWithLongitude(context, pt.getX(), pt.getY(), imgPath);
@@ -285,7 +395,6 @@ public class SMMediaCollector {
 
         String paths = "";
         for (int i = 0; i < callout.getMediaFilePaths().size(); i++) {
-//            paths += callout.getMediaFilePaths().get(i);
             paths += callout.getMediaFilePaths().get(i) + (i == callout.getMediaFilePaths().size() - 1 ? "" : ",");
         }
 
@@ -299,6 +408,7 @@ public class SMMediaCollector {
         if (listener != null) {
             callout.setOnTouchListener(listener);
         }
+        return callout;
     }
 
     public static void addLineByMedias(ArrayList<SMMedia> medias, DatasetVector dataset) {
@@ -306,14 +416,6 @@ public class SMMediaCollector {
         for (int i = 0; i < medias.size(); i++) {
             Point2D pt = new Point2D(medias.get(i).getLocation().getX(), medias.get(i).getLocation().getY());
             mPoints.add(pt);
-        }
-
-        if (!SMap.safeGetType(SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
-            PrjCoordSys prjCoordSys = new PrjCoordSys();
-            prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-            CoordSysTransParameter parameter = new CoordSysTransParameter();
-
-            CoordSysTranslator.convert(mPoints, prjCoordSys, SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
         }
 
         GeoLine mLine = new GeoLine(mPoints);

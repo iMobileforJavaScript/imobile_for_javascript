@@ -524,10 +524,8 @@
     UIImageView* image = [[UIImageView alloc]initWithImage:img];
 //        UIImageView* image = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"SuperMap.bundle/Contents/Resources/Resource/node.png"]];
     image.frame = CGRectMake(0, 0, 50, 50);
-    // UIImage* img = ;
     [callout addSubview:image];
     [callout showAt:pt Tag:callout.layerName];
-    //[sMap.smMapWC.mapControl panTo:pt time:200];
     sMap.smMapWC.mapControl.map.center = pt;
     if (sMap.smMapWC.mapControl.map.scale < 0.000011947150294723098) {
         sMap.smMapWC.mapControl.map.scale = 0.000011947150294723098;
@@ -535,7 +533,6 @@
     [sMap.smMapWC.mapControl.map refresh];
     
     return callout;
-//    });
 }
 
 @end

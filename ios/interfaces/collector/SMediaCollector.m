@@ -395,7 +395,7 @@ RCT_REMAP_METHOD(addTour, addTour:(NSString *)layerName files:(NSArray *)files r
                     double longitude = [(NSNumber *)[location objectForKey:@"longitude"] doubleValue];
                     double latitude = [(NSNumber *)[location objectForKey:@"latitude"] doubleValue];
                     
-                    media = [[SMMedia alloc] initWithName:mediaName longitude:longitude latitude:latitude];
+                    media = [[SMMedia alloc] initWithName:mediaName point:[[Point2D alloc] initWithX:longitude Y:latitude]];
                 } else {
                     media = [[SMMedia alloc] initWithName:mediaName];
                 }

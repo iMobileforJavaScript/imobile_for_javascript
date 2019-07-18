@@ -26,7 +26,7 @@
     return self;
 }
 
-- (id)initWithName:(NSString *)name longitude:(double)longitude latitude:(double)latitude  {
+- (id)initWithName:(NSString *)name longitude:(double)longitude latitude:(double)latitude {
     if (self = [super init]) {
         _fileName = name;
         
@@ -35,9 +35,18 @@
     return self;
 }
 
+- (id)initWithName:(NSString *)name point:(Point2D *)point {
+    if (self = [super init]) {
+        _fileName = name;
+        
+        self.location = [LocationTransfer latitudeAndLongitudeToMapCoordByPoint:point];
+    }
+    return self;
+}
+
 -(Point2D *)getCurrentLocation {
     GPSData* gpsData = [NativeUtil getGPSData];
-    Point2D* pt = [[Point2D alloc] initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
+    Point2D* pt = [LocationTransfer latitudeAndLongitudeToMapCoordByPoint:[[Point2D alloc] initWithX:gpsData.dLongitude Y:gpsData.dLatitude]];
     return pt;
 }
 
@@ -186,17 +195,17 @@
     Recordset* mRecordset = [(DatasetVector*)_dataset recordset:NO cursorType:DYNAMIC];
     
     Point2D* pt = [[Point2D alloc]initWithX:_location.x Y:_location.y];
-    if ([[SMap singletonInstance].smMapWC.mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
-        Point2Ds *points = [[Point2Ds alloc]init];
-        [points add:pt];
-        PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-        [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-        CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-
-        //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-        [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[[SMap singletonInstance].smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-        pt = [points getItem:0];
-    }
+//    if ([[SMap singletonInstance].smMapWC.mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+//        Point2Ds *points = [[Point2Ds alloc]init];
+//        [points add:pt];
+//        PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+//        [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+//        CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+//
+//        //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+//        [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[[SMap singletonInstance].smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+//        pt = [points getItem:0];
+//    }
     
     [mGeoPointTem setX:pt.x];
     [mGeoPointTem setY:pt.y];
