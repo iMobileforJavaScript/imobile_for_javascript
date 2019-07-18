@@ -3601,8 +3601,8 @@ public class SMMapWC {
         dic.putBoolean("IsReplaceSymbol",false);
 
         if (openMapName(srcMapName, desMap.getWorkspace(), dic)) {
+            desMap.addLayersFromMap(srcMapName, true);
             try{
-                desMap.addLayersFromMap(srcMapName, true);
                 desMap.getWorkspace().getMaps().remove(srcMapName);
             }catch (Exception e) {
                return true;
