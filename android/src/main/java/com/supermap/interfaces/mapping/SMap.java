@@ -2872,7 +2872,35 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             com.supermap.mapping.Map map = sMap.getSmMapWC().getMapControl().getMap();
-            map.viewEntire();
+
+            Layer layerWeb = null;
+            int nLayerCount = map.getLayers().getCount();
+            if (nLayerCount>1){
+                Layer layerTemp = map.getLayers().get(nLayerCount-1);
+                if (layerTemp.isVisible() && layerTemp.getDataset()!=null && layerTemp.getDataset().getDatasource()!=null){
+                    EngineType engineType = layerTemp.getDataset().getDatasource().getConnectionInfo().getEngineType();
+                    if(engineType==EngineType.OGC ||
+                            engineType==EngineType.SuperMapCloud ||
+                            engineType==EngineType.GoogleMaps ||
+                            engineType==EngineType.Rest ||
+                            engineType==EngineType.BaiDu ||
+                            engineType==EngineType.BingMaps ||
+                            engineType==EngineType.OpenStreetMaps
+                            ) {
+                        layerWeb = layerTemp;
+                    }
+                }
+            }
+
+            if (layerWeb!=null){
+                layerWeb.setVisible(false);
+                map.viewEntire();
+                layerWeb.setVisible(true);
+            }else{
+                map.viewEntire();
+            }
+
+
             map.refresh();
 
             promise.resolve(true);
