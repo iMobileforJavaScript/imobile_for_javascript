@@ -2300,7 +2300,40 @@ RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resol
     @try {
         sMap = [SMap singletonInstance];
         Map* map = sMap.smMapWC.mapControl.map;
-        [map viewEntire];
+        
+        Layer *layerWeb = nil;
+        if(map.layers.getCount>1){
+            Layer *layerTemp = [map.layers getLayerAtIndex:map.layers.getCount-1];
+            if (layerTemp.dataset!=nil && layerTemp.dataset.datasource!=nil ) {
+                EngineType engineType = layerTemp.dataset.datasource.datasourceConnectionInfo.engineType;
+                switch (engineType) {
+                    case ET_OGC:
+                    case ET_SuperMapCloud:
+                    case ET_GOOGLEMAPS:
+                    case ET_REST:
+                    case ET_BAIDU:
+                    case ET_OPENSTREEMAPS:
+                    case ET_BingMaps:
+                    {
+                        layerWeb = layerTemp;
+                    }
+                        break;
+                        
+                    default:
+                        break;
+                }
+            }
+        }
+        
+        if (layerWeb!=nil) {
+            [layerWeb setVisible:false];
+            [map viewEntire];
+            [layerWeb setVisible:true];
+        }
+        else{
+            [map viewEntire];
+        }
+        
         [map refresh];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
@@ -2446,7 +2479,7 @@ RCT_REMAP_METHOD(removePlotSymbolLibraryArr, removePlotSymbolLibraryArr:(NSArray
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
-        reject(@"setDynamicProjection", exception.reason, nil);
+        reject(@"removePlotSymbolLibraryArr", exception.reason, nil);
     }
 }
 
@@ -2469,7 +2502,7 @@ RCT_REMAP_METHOD(setPlotSymbol, setPlotSymbol:(int)libId symbolCode:(int)symbolC
         [mapControl setPlotSymbol:libId symbolCode:symbolCode];
         resolve(@(YES));
     } @catch (NSException *exception) {
-        reject(@"setDynamicProjection", exception.reason, nil);
+        reject(@"setPlotSymbol", exception.reason, nil);
     }
 }
 
@@ -2490,7 +2523,7 @@ RCT_REMAP_METHOD(importPlotLibData, importPlotLibData:(NSString*)fromPath  resol
 
         resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
-        reject(@"setDynamicProjection", exception.reason, nil);
+        reject(@"importPlotLibData", exception.reason, nil);
     }
 }
 
@@ -2516,35 +2549,60 @@ RCT_REMAP_METHOD(addCadLayer, addCadLayer:(NSString*)layerName resolver:(RCTProm
         
         resolve(@(YES));
     } @catch (NSException *exception) {
-        reject(@"setDynamicProjection", exception.reason, nil);
+        reject(@"addCadLayer", exception.reason, nil);
     }
 }
 
 #pragma mark 态势推演定时器
 RCT_REMAP_METHOD(initAnimation,initAnimation:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    //获取全局队列
-    dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    
-    //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
-    dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, global);
-    
-    self.timer = timer;
-    
-    //设置触发的间隔时间
-    dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
-    
-    //设置定时器的触发事件
-    dispatch_source_set_event_handler(timer, ^{
-        [[AnimationManager getInstance] excute];
-        
-    });
-    
-    dispatch_resume(timer);
+    @try {
+        //    //获取全局队列
+        //    dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        //
+        //    //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
+        //    dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, global);
+        //
+        //    self.timer = timer;
+        //
+        //    //设置触发的间隔时间
+        //    dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
+        //
+        //    //设置定时器的触发事件
+        //    dispatch_source_set_event_handler(timer, ^{
+        //        [[AnimationManager getInstance] excute];
+        //
+        //    });
+        //
+        //    dispatch_resume(timer);
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"addCadLayer", exception.reason, nil);
+    }
 }
 
 #pragma mark 读取态势推演xml文件
 RCT_REMAP_METHOD(readAnimationXmlFile,readAnimationXmlFile:(NSString*) filePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+        
+        //获取全局队列
+        dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        
+        //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
+        dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, global);
+        
+        self.timer = timer;
+        
+        //设置触发的间隔时间
+        dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
+        
+        //设置定时器的触发事件
+        dispatch_source_set_event_handler(timer, ^{
+            [[AnimationManager getInstance] excute];
+            
+        });
+        
+        dispatch_resume(timer);
+        
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
         [mapControl setAnimation];
@@ -2560,6 +2618,7 @@ RCT_REMAP_METHOD(animationPlay,animationPlay:(RCTPromiseResolveBlock)resolve rej
     @try {
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
+        [mapControl.map refresh];
         [[AnimationManager getInstance] play];
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -2570,8 +2629,6 @@ RCT_REMAP_METHOD(animationPlay,animationPlay:(RCTPromiseResolveBlock)resolve rej
 #pragma mark 暂停态势推演动画
 RCT_REMAP_METHOD(animationPause,animationPause:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        sMap = [SMap singletonInstance];
-        MapControl* mapControl=sMap.smMapWC.mapControl;
         [[AnimationManager getInstance] pause];
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -2582,8 +2639,6 @@ RCT_REMAP_METHOD(animationPause,animationPause:(RCTPromiseResolveBlock)resolve r
 #pragma mark 复位态势推演动画
 RCT_REMAP_METHOD(animationReset,animationReset:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        sMap = [SMap singletonInstance];
-        MapControl* mapControl=sMap.smMapWC.mapControl;
         [[AnimationManager getInstance] reset];
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -2594,8 +2649,6 @@ RCT_REMAP_METHOD(animationReset,animationReset:(RCTPromiseResolveBlock)resolve r
 #pragma mark 停止态势推演动画
 RCT_REMAP_METHOD(animationStop,animationStop:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        sMap = [SMap singletonInstance];
-        MapControl* mapControl=sMap.smMapWC.mapControl;
         [[AnimationManager getInstance] stop];
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -2606,8 +2659,11 @@ RCT_REMAP_METHOD(animationStop,animationStop:(RCTPromiseResolveBlock)resolve rej
 #pragma mark 关闭态势推演动画
 RCT_REMAP_METHOD(animationClose,animationClose:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-//       [self.timer ]
-//        [[AnimationManager getInstance] dispose];
+        [[AnimationManager getInstance] reset];
+        if(_timer){
+            dispatch_source_cancel(_timer);
+            _timer = nil;
+        }
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setDynamicProjection", exception.reason, nil);
@@ -2634,18 +2690,35 @@ RCT_REMAP_METHOD(setSelectionStyle, setSelectionStyleWithLayerPath:(NSString *)p
     }
 }
 
+-(void)clearLayerSelection:(LayerGroup*)layerGroup{
+    for (int i = 0; i < layerGroup.getCount; i++) {
+        Layer* layer = [layerGroup getLayer:i];
+        if([layer isKindOfClass:[LayerGroup class]]){
+            [self clearLayerSelection:layer];
+        }else{
+            Selection* selection = [layer getSelection];
+            [selection clear];
+            [selection dispose];
+        }
+    }
+}
 #pragma mark 清除Selection
 RCT_REMAP_METHOD(clearSelection, clearSelectionWithResolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         Layers* layers = sMap.smMapWC.mapControl.map.layers;
         for (int i = 0; i < layers.getCount; i++) {
-            Selection* selection = [[layers getLayerAtIndex:i] getSelection];
-            [selection clear];
-            [selection dispose];
             
-            [sMap.smMapWC.mapControl.map refresh];
+            Layer* layer = [layers getLayerAtIndex:i];
+            if([layer isKindOfClass:[LayerGroup class]]){
+                [self clearLayerSelection:layer];
+            }else{
+                Selection* selection = [layer getSelection];
+                [selection clear];
+                [selection dispose];
+            }
         }
+        [sMap.smMapWC.mapControl.map refresh];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);

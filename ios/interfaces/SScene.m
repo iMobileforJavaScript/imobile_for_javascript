@@ -2024,7 +2024,7 @@ RCT_REMAP_METHOD(clipByBox, clipByBoxWithDic:(NSDictionary *)posDic resolve:(RCT
         BOOL needFilter = YES;
         NSArray *layers = [posDic valueForKey:@"layers"];
         
-        if([layers count] == 0){
+        if([layers count] == 0 && ![posDic valueForKey:@"isCliped"]){
             needFilter = false;
         }
         
