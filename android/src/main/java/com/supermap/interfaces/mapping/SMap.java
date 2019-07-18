@@ -4013,7 +4013,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
-    private static Timer m_timer = new Timer();
+    private static Timer m_timer;
     private static AnimationManager am;
     /**
      * 初始化态势推演
@@ -4022,13 +4022,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public static void initAnimation(Promise promise){
         try {
             am = AnimationManager.getInstance();
-            //开启定时器
-            m_timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    AnimationManager.getInstance().excute();
-                }
-            },0,100);
+//            //开启定时器
+//            m_timer.schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    AnimationManager.getInstance().excute();
+//                }
+//            },0,100);
             promise.resolve(true);
         } catch (Exception e) {
             promise.resolve(false);
@@ -4045,6 +4045,16 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
 
+            if(m_timer==null){
+                m_timer= new Timer();
+            }
+            //开启定时器
+            m_timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    AnimationManager.getInstance().excute();
+                }
+            },0,100);
             Layers layers=mapControl.getMap().getLayers();
             int count=layers.getCount();
             for (int i = 0; i < count; i++) {
@@ -4069,6 +4079,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public static void animationPlay(Promise promise){
         try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getMap().refresh();
             am.play();
 
             promise.resolve(true);
@@ -4125,7 +4138,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public static void animationClose(Promise promise){
         try {
+            AnimationManager.getInstance().reset();
             m_timer.cancel();
+            m_timer=null;
             AnimationManager.getInstance().dispose();
 
             promise.resolve(true);

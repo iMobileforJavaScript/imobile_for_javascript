@@ -105,6 +105,8 @@ filterFileDicName:(NSString*)filterFileDicName otherFileDicName:(NSString*)other
             }
         }
         if(count==0){
+            [fileManager createDirectoryAtPath:otherFileDicPath withIntermediateDirectories:YES attributes:nil error:nil];
+            [fileManager removeItemAtPath:otherFileDicPath error:nil];
             [self copyFile:filePath targetPath:otherFileDicPath];
         }else{
             NSArray *childArr = [fileManager contentsOfDirectoryAtPath:filePath error:nil];
