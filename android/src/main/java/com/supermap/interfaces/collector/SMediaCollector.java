@@ -146,7 +146,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
 
         String mediaFilePaths = recordset.getString("MediaFilePaths");
         WritableArray paths = Arguments.createArray();
-        String[] pathArr = mediaFilePaths.split(",");
+        String[] pathArr = mediaFilePaths != null ? mediaFilePaths.split(",") : new String[0];
         for (String path : pathArr) {
 //                                if (path.indexOf("file://") != 0) {
 //                                    path = "file://" + path;
@@ -330,6 +330,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
             Recordset rs = ((DatasetVector)layer.getDataset()).getRecordset(false, CursorType.DYNAMIC);
             rs.moveLast();
 
+            ArrayList<InfoCallout> callouts = new ArrayList<>();
             for (int i = medias.size() - 1; i >= 0; i--) {
                 String mediaName = rs.getFieldValue("MediaFileName").toString();
                 SMMedia media = medias.get(i);
@@ -341,10 +342,11 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                     mediaName = rs.getFieldValue("MediaFileName").toString();
                 }
 
-                SMMediaCollector.addCalloutByMedia(getReactApplicationContext(), media, rs, layer.getName(), getCalloutListner());
+                InfoCallout callout = SMMediaCollector.createCalloutByMedia(getReactApplicationContext(), media, rs, layer.getName(), getCalloutListner());
+                callouts.add(callout);
                 rs.movePrev();
             }
-
+            SMMediaCollector.addCallouts(callouts);
             rs.dispose();
         }
     }
@@ -480,7 +482,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                         double longitute = location.getDouble("longitude");
                         double latitude = location.getDouble("latitude");
 
-                        media = new SMMedia(mediaName, longitute, latitude);
+                        media = new SMMedia(mediaName, new Point2D(longitute, latitude));
                     } else {
                         media = new SMMedia(mediaName);
                     }

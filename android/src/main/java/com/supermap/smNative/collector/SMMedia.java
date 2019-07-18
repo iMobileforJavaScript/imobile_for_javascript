@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import com.supermap.RNUtils.LocationTransfer;
 import com.supermap.data.CoordSysTransMethod;
 import com.supermap.data.CoordSysTransParameter;
 import com.supermap.data.CoordSysTranslator;
@@ -48,7 +49,7 @@ public class SMMedia {
     private ArrayList<String> paths;
     private String fileName;
 //    private Bitmap data;
-    private Point2D location;
+    private Point2D location; // 地图坐标
 
     public Datasource getDatasourse() {
         return datasourse;
@@ -100,16 +101,26 @@ public class SMMedia {
         this.location = getCurrentLocation();
     }
 
-
     public SMMedia(String fileName, double longitude, double latitude) {
         this.fileName = fileName;
 
-        this.location = new Point2D(longitude, latitude);
+        this.location = LocationTransfer.latitudeAndLongitudeToMapCoord(new Point2D(longitude, latitude));
+    }
+
+    /**
+     * @param fileName
+     * @param point2D 经纬度坐标
+     */
+    public SMMedia(String fileName, Point2D point2D) {
+        this.fileName = fileName;
+
+        this.location = LocationTransfer.latitudeAndLongitudeToMapCoord(point2D);
     }
 
     private Point2D getCurrentLocation() {
         LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
-        Point2D pt =  new Point2D(gpsDat.dLongitude,gpsDat.dLatitude);
+//        Point2D pt = new Point2D(gpsDat.dLongitude,gpsDat.dLatitude);
+        Point2D pt = LocationTransfer.latitudeAndLongitudeToMapCoord(new Point2D(gpsDat.dLongitude,gpsDat.dLatitude));
 
         return pt;
     }
@@ -249,16 +260,16 @@ public class SMMedia {
 
         Recordset recordset = ((DatasetVector)this.dataset).getRecordset(false, CursorType.DYNAMIC);
         Point2D pt = new Point2D(this.location);
-        if (!SMap.safeGetType(SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
-            Point2Ds point2Ds = new Point2Ds();
-            point2Ds.add(pt);
-            PrjCoordSys prjCoordSys = new PrjCoordSys();
-            prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-            CoordSysTransParameter parameter = new CoordSysTransParameter();
-
-            CoordSysTranslator.convert(point2Ds, prjCoordSys, SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
-            pt = point2Ds.getItem(0);
-        }
+//        if (!SMap.safeGetType(SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
+//            Point2Ds point2Ds = new Point2Ds();
+//            point2Ds.add(pt);
+//            PrjCoordSys prjCoordSys = new PrjCoordSys();
+//            prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+//            CoordSysTransParameter parameter = new CoordSysTransParameter();
+//
+//            CoordSysTranslator.convert(point2Ds, prjCoordSys, SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+//            pt = point2Ds.getItem(0);
+//        }
 
         point.setX(pt.getX());
         point.setY(pt.getY());

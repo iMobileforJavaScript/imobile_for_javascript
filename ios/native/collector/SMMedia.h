@@ -25,6 +25,7 @@
 #import "SMLayer.h"
 #import "FileUtils.h"
 #import "NativeUtil.h"
+#import "LocationTransfer.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <Photos/Photos.h>
 
@@ -42,13 +43,13 @@
 /**
  * 初始化，获取当前位置
  **/
--(id)init;
+- (id)init;
 /**
  * 初始化，并设置储存多媒体文件的对象名称，和当前位置
  **/
--(id)initWithName:(NSString *)name;
+- (id)initWithName:(NSString *)name;
 - (id)initWithName:(NSString *)name longitude:(double)longitude latitude:(double)latitude;
-
+- (id)initWithName:(NSString *)name point:(Point2D *)point;
 /**
  * 设置数据源 和 数据集
  **/
