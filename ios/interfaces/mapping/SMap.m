@@ -2300,7 +2300,40 @@ RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resol
     @try {
         sMap = [SMap singletonInstance];
         Map* map = sMap.smMapWC.mapControl.map;
-        [map viewEntire];
+        
+        Layer *layerWeb = nil;
+        if(map.layers.getCount>1){
+            Layer *layerTemp = [map.layers getLayerAtIndex:map.layers.getCount-1];
+            if (layerTemp.dataset!=nil && layerTemp.dataset.datasource!=nil ) {
+                EngineType engineType = layerTemp.dataset.datasource.datasourceConnectionInfo.engineType;
+                switch (engineType) {
+                    case ET_OGC:
+                    case ET_SuperMapCloud:
+                    case ET_GOOGLEMAPS:
+                    case ET_REST:
+                    case ET_BAIDU:
+                    case ET_OPENSTREEMAPS:
+                    case ET_BingMaps:
+                    {
+                        layerWeb = layerTemp;
+                    }
+                        break;
+                        
+                    default:
+                        break;
+                }
+            }
+        }
+        
+        if (layerWeb!=nil) {
+            [layerWeb setVisible:false];
+            [map viewEntire];
+            [layerWeb setVisible:true];
+        }
+        else{
+            [map viewEntire];
+        }
+        
         [map refresh];
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
