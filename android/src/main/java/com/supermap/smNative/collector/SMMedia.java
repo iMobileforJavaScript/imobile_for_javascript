@@ -256,10 +256,11 @@ public class SMMedia {
     }
 
     public void saveLocationDataToDataset() {
-        GeoPoint point = new GeoPoint();
+        try {
+            GeoPoint point = new GeoPoint();
 
-        Recordset recordset = ((DatasetVector)this.dataset).getRecordset(false, CursorType.DYNAMIC);
-        Point2D pt = new Point2D(this.location);
+            Recordset recordset = ((DatasetVector)this.dataset).getRecordset(false, CursorType.DYNAMIC);
+            Point2D pt = new Point2D(this.location);
 //        if (!SMap.safeGetType(SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
 //            Point2Ds point2Ds = new Point2Ds();
 //            point2Ds.add(pt);
@@ -271,15 +272,18 @@ public class SMMedia {
 //            pt = point2Ds.getItem(0);
 //        }
 
-        point.setX(pt.getX());
-        point.setY(pt.getY());
-        boolean result = recordset.addNew(point);
+            point.setX(pt.getX());
+            point.setY(pt.getY());
+            boolean result = recordset.addNew(point);
 
-        recordset.moveLast();
-        if (recordset.edit()) recordset.setString("MediaFileName", this.fileName);
+            recordset.moveLast();
+            if (recordset.edit()) recordset.setString("MediaFileName", this.fileName);
 
-        recordset.update();
-        recordset.dispose();
+            recordset.update();
+            recordset.dispose();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean saveMedia(Context context, ArrayList<String> filePaths, String toDictionary, boolean addNew) {
