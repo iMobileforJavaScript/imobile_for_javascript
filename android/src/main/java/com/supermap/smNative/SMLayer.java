@@ -502,8 +502,8 @@ public class SMLayer {
             switch (valueType) {
                 case Number:{
                     if (type == FieldType.INT16) {
-                        String value = info.getString("value");
-                        result = recordset.setInt16(name, Short.parseShort(value));
+                        int value = info.getInt("value");
+                        result = recordset.setInt16(name, Short.parseShort(value + ""));
                     } else if (type == FieldType.INT32) {
                         int value = info.getInt("value");
                         result = recordset.setInt32(name, value);
