@@ -3843,16 +3843,31 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 }
             }
 
+            String plotDatasourceName="Plotting_" + userpath + "#";
+            plotDatasourceName.replace(".","");
             Workspace workspace = mapControl.getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Plotting_" + userpath + "#");
+            Datasource opendatasource = workspace.getDatasources().get(plotDatasourceName);
             Datasource datasource = null;
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
                 info.setAlias("Plotting_" + userpath + "#");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Plotting_" + userpath + "#.udb");
+
+
                 datasource = workspace.getDatasources().open(info);
                 if (datasource == null) {
+//                    String server=rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Plotting_" + userpath + "#.udb";
+                    String server=rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/"+plotDatasourceName+".udb";
+                    String serverUDD=rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/"+plotDatasourceName+".udd";
+                    info.setServer(server);
+                    File file=new File(server);
+                    if(file.exists()){
+                        file.delete();
+                    }
+                    File fileUdd=new File(serverUDD);
+                    if(fileUdd.exists()){
+                        fileUdd.delete();
+                    }
                     datasource = workspace.getDatasources().create(info);
                 }
                 if (datasource == null) {
@@ -3864,6 +3879,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
 
             if (datasource == null) {
+                promise.resolve(null);
                 return;
             }
             Datasets datasets = datasource.getDatasets();
@@ -3926,13 +3942,25 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     point2Ds.add(point2D);
                     mapControl.addPlotObject(libId, 20100, point2Ds);
                     mapControl.cancel();
-                    Recordset recordset = ((DatasetVector) dataset).getRecordset(false, CursorType.DYNAMIC);
-                    recordset.moveLast();
-                    recordset.delete();
-                    recordset.update();
-                    recordset.dispose();
-                    mapControl.getMap().refresh();
-                    mapControl.setAction(Action.PAN);
+                    final Dataset finalDataset = dataset;
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            super.run();
+                            try {
+                                Thread.sleep(100);
+                                Recordset recordset = ((DatasetVector) finalDataset).getRecordset(false, CursorType.DYNAMIC);
+                                recordset.moveLast();
+                                recordset.delete();
+                                recordset.update();
+                                recordset.dispose();
+                                mapControl.getMap().refresh();
+                                mapControl.setAction(Action.PAN);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }.start();
                 }
             }
 
