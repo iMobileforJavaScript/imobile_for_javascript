@@ -29,9 +29,9 @@ RCT_EXPORT_MODULE();
 RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         NSString* nodeTag = @"startNode";
-        if (startNodeID > 0) {
+        if (startPoint) {
             [self removeTagFromTrackingLayer:nodeTag];
-            startNodeID = -1;
+            startPoint = nil;
         }
         if (nodeLayer) {
             GeoStyle* style = [[GeoStyle alloc] init];
@@ -57,9 +57,9 @@ RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point resolver:(RC
 RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         NSString* nodeTag = @"endNode";
-        if (endNodeID > 0) {
+        if (endPoint) {
             [self removeTagFromTrackingLayer:nodeTag];
-            endNodeID = -1;
+            endPoint = nil;
         }
         if (nodeLayer) {
             GeoStyle* style = [[GeoStyle alloc] init];

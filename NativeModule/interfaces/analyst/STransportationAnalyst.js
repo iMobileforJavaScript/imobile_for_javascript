@@ -82,7 +82,7 @@ async function clear () {
  * @param hasLeastEdgeCount 是否是最少弧段
  * @returns {Promise}
  */
-async function findPath (params = {}, hasLeastEdgeCount = true) {
+async function findPath (params = {}, hasLeastEdgeCount = false) {
   return Analyst.findPath(params, hasLeastEdgeCount)
 }
 
