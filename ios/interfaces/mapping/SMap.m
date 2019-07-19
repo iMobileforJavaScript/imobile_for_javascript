@@ -2375,6 +2375,7 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
         }
         
         NSString *plotDatasourceName = [NSString  stringWithFormat:@"%@%@%@",@"Plotting_",userpath,@"#"];
+        plotDatasourceName = [plotDatasourceName stringByReplacingOccurrencesOfString:@"." withString:@""];
         Datasource *opendatasource = [workspace.datasources getAlias:plotDatasourceName];
         Datasource *datasource = nil;
         if(opendatasource == nil){
@@ -2383,10 +2384,19 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
             info.engineType = ET_UDB;
             NSString *path = [NSString stringWithFormat: @"%@%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Datasource/",plotDatasourceName];
             info.server = path;
-            datasource = [workspace.datasources open:info];
-            if(!datasource){
+            if([[NSFileManager defaultManager] fileExistsAtPath:[path stringByAppendingString:@".udb"] ]){
+                 datasource = [workspace.datasources open:info];
+                if(!datasource){
+                    [[NSFileManager defaultManager] removeItemAtPath:[path stringByAppendingString:@".udb"] error:nil];
+                    [[NSFileManager defaultManager] removeItemAtPath:[path stringByAppendingString:@".udd"] error:nil];
+                    datasource=[workspace.datasources create:info];
+                    
+                   
+                }
+            }else{
                 datasource=[workspace.datasources create:info];
             }
+            
             if(!datasource){
                 datasource=[workspace.datasources open:info];
             }
@@ -2395,6 +2405,7 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
             datasource=opendatasource;
         }
         if(!datasource){
+            resolve(nil);
             return;
         }
         Datasets *datasets = datasource.datasets;
@@ -2454,21 +2465,34 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
                 [point2Ds add:point2D];
                 [sMap.smMapWC.mapControl addPlotObject:libId symbolCode:20100 point:point2Ds];
                 [sMap.smMapWC.mapControl cancel];
-                Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
-                [recordset moveLast];
-                [recordset delete];
-                [recordset update];
-                [recordset dispose];
+//                Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
+//                [recordset moveLast];
+////                [recordset delete];
+//                [recordset update];
+//                [recordset dispose];
                 [sMap.smMapWC.mapControl.map refresh];
                 [sMap.smMapWC.mapControl setAction:PAN];
             }
         }
+        if(isFirst){
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self delay:dataset];
+            });
+        }
+       
         resolve(libInfo);
     } @catch (NSException *exception) {
         reject(@"initPlotSymbolLibrary", exception.reason, nil);
     }
 }
 
+-(void)delay:(DatasetVector*)dataset {
+    Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
+    [recordset moveLast];
+    [recordset delete];
+    [recordset update];
+    [recordset dispose];
+}
 #pragma mark 移除标绘库
 RCT_REMAP_METHOD(removePlotSymbolLibraryArr, removePlotSymbolLibraryArr:(NSArray*)plotSymbolIds resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {

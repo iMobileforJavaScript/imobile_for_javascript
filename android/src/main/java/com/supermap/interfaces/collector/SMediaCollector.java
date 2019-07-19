@@ -226,7 +226,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                         }
                         result = media.saveMedia(this.getReactApplicationContext(), paths, collector.getMediaPath(), true);
 
-                        addCallout(media, mediaLayer);
+                        if (result) addCallout(media, mediaLayer);
                     }
                 }
                 promise.resolve(result);
@@ -319,8 +319,10 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
             Recordset rs = ((DatasetVector)layer.getDataset()).getRecordset(false, CursorType.DYNAMIC);
             rs.moveLast();
 
-            SMMediaCollector.addCalloutByMedia(getReactApplicationContext(), media, rs, layer.getName(), getCalloutListner());
-
+            InfoCallout callout = SMMediaCollector.createCalloutByMedia(getReactApplicationContext(), media, rs, layer.getName(), getCalloutListner());
+            ArrayList<InfoCallout> callouts = new ArrayList<>();
+            callouts.add(callout);
+            SMMediaCollector.addCallouts(callouts);
             rs.dispose();
         }
     }
