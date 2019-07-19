@@ -2375,6 +2375,7 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
         }
         
         NSString *plotDatasourceName = [NSString  stringWithFormat:@"%@%@%@",@"Plotting_",userpath,@"#"];
+        plotDatasourceName = [plotDatasourceName stringByReplacingOccurrencesOfString:@"." withString:@""];
         Datasource *opendatasource = [workspace.datasources getAlias:plotDatasourceName];
         Datasource *datasource = nil;
         if(opendatasource == nil){
@@ -2464,11 +2465,11 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
                 [point2Ds add:point2D];
                 [sMap.smMapWC.mapControl addPlotObject:libId symbolCode:20100 point:point2Ds];
                 [sMap.smMapWC.mapControl cancel];
-                Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
-                [recordset moveLast];
-//                [recordset delete];
-                [recordset update];
-                [recordset dispose];
+//                Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
+//                [recordset moveLast];
+////                [recordset delete];
+//                [recordset update];
+//                [recordset dispose];
                 [sMap.smMapWC.mapControl.map refresh];
                 [sMap.smMapWC.mapControl setAction:PAN];
             }
@@ -2478,6 +2479,7 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
                 [self delay:dataset];
             });
         }
+       
         resolve(libInfo);
     } @catch (NSException *exception) {
         reject(@"initPlotSymbolLibrary", exception.reason, nil);
