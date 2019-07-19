@@ -768,7 +768,13 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                     ids[k] = _ids.getInt(k);
                 }
 
-                Recordset recordset = ((DatasetVector)layer.getDataset()).query(ids, CursorType.STATIC);
+                DatasetVector dv = (DatasetVector)layer.getDataset();
+                String[] pathParams = layerPath.split("/");
+                if (pathParams[pathParams.length - 1].contains("_Node") && dv.getChildDataset() != null) {
+                    dv = dv.getChildDataset();
+                }
+
+                Recordset recordset = dv.query(ids, CursorType.STATIC);
 
                 while(!recordset.isEOF()) {
                     GeoStyle geoStyle = null;

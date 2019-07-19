@@ -548,7 +548,13 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
             NSArray* ids = [item objectForKey:@"ids"];
             Layer* layer = [SMLayer findLayerByPath:layerPath];
             
-            Recordset* recordset = [((DatasetVector *)layer.dataset) queryWithID:ids Type:STATIC];
+            DatasetVector* dv = (DatasetVector *)layer.dataset;
+            NSArray* pathParams = [layerPath componentsSeparatedByString:@"/"];
+            if ([pathParams[pathParams.count - 1] containsString:@"_Node"] && dv.childDataset) {
+                dv = ((DatasetVector *)layer.dataset).childDataset;
+            }
+            
+            Recordset* recordset = [dv queryWithID:ids Type:STATIC];
             
             [recordset moveFirst];
             
