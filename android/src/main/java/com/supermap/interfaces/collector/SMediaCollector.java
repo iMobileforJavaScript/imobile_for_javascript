@@ -319,8 +319,10 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
             Recordset rs = ((DatasetVector)layer.getDataset()).getRecordset(false, CursorType.DYNAMIC);
             rs.moveLast();
 
-            SMMediaCollector.addCalloutByMedia(getReactApplicationContext(), media, rs, layer.getName(), getCalloutListner());
-
+            InfoCallout callout = SMMediaCollector.addCalloutByMedia(getReactApplicationContext(), media, rs, layer.getName(), getCalloutListner());
+            ArrayList<InfoCallout> callouts = new ArrayList<>();
+            callouts.add(callout);
+            SMMediaCollector.addCallouts(callouts);
             rs.dispose();
         }
     }
