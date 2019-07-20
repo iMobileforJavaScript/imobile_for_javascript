@@ -1330,13 +1330,33 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                     String resultName = args[0];
                     if (resultName != null && !resultName.equals("")) {
-                        Map<String, String> additionMap = new HashMap<>();
-                        ReadableMapKeySetIterator keySetIterator = addition.keySetIterator();
-                        while (keySetIterator.hasNextKey()) {
-                            String key = keySetIterator.nextKey();
-                            additionMap.put(key, addition.getString(key));
+                        if(addition.hasKey("filterLayers")){
+                            WritableMap additionMap = Arguments.createMap();
+                            ReadableMapKeySetIterator keySetIterator = addition.keySetIterator();
+                            while (keySetIterator.hasNextKey()) {
+                                String key = keySetIterator.nextKey();
+                                if(key.equals("filterLayers")){
+                                    ReadableArray filterLayers = addition.getArray(key);
+                                    WritableArray arr = Arguments.createArray();
+                                    for(int i = 0; i < filterLayers.size(); i++){
+                                        arr.pushString(filterLayers.getString(i));
+                                    }
+                                    additionMap.putArray(key, arr);
+                                }else{
+                                    additionMap.putString(key, addition.getString(key));
+                                }
+                            }
+                            resultName = sMap.smMapWC.saveMapName(resultName, sMap.smMapWC.getWorkspace(), nModule, additionMap, true, true, isPrivate);
+                        }else{
+                            Map<String, String> additionMap = new HashMap<>();
+                            ReadableMapKeySetIterator keySetIterator = addition.keySetIterator();
+                            while (keySetIterator.hasNextKey()) {
+                                String key = keySetIterator.nextKey();
+                                additionMap.put(key, addition.getString(key));
+                            }
+                            resultName = sMap.smMapWC.saveMapName(resultName, sMap.smMapWC.getWorkspace(), nModule, additionMap, true, true, isPrivate);
                         }
-                        resultName = sMap.smMapWC.saveMapName(resultName, sMap.smMapWC.getWorkspace(), nModule, additionMap, true, true, isPrivate);
+
                     }
                     sMap.smMapWC.getMapControl().getMap().refresh();
                     writeMap.putString("mapName", resultName);
