@@ -506,16 +506,16 @@ public class SMLayer {
                         result = recordset.setInt16(name, Short.parseShort(value + ""));
                     } else if (type == FieldType.INT32) {
                         int value = info.getInt("value");
-                        result = recordset.setInt32(name, value);
+                        result = recordset.setInt32(name, Integer.parseInt(value + ""));
                     } else if (type == FieldType.INT64) {
                         int value = info.getInt("value");
-                        result = recordset.setInt64(name, value);
+                        result = recordset.setInt64(name, Long.parseLong(value + ""));
                     } else if (type == FieldType.SINGLE) {
                         int value = info.getInt("value");
-                        result = recordset.setSingle(name, value);
+                        result = recordset.setSingle(name, Float.parseFloat(value + ""));
                     } else if (type == FieldType.DOUBLE) {
                         Double value = info.getDouble("value");
-                        result = recordset.setDouble(name, value);
+                        result = recordset.setDouble(name, Double.parseDouble(value + ""));
                     }
                     break;
                 }
