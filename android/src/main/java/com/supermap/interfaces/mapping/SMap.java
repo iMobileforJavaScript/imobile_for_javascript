@@ -3956,32 +3956,32 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 int libId = (int) mapControl.addPlotLibrary(plotSymbolPaths.getString(i));
                 String libName = mapControl.getPlotSymbolLibName((long) libId);
                 writeMap.putInt(libName, libId);
-                if (isFirst && libName.equals("警用标号")) {
-                    Point2Ds point2Ds = new Point2Ds();
-                    Point2D point2D=new Point2D(mapControl.getMap().getViewBounds().getLeft()-100,mapControl.getMap().getViewBounds().getTop()-100);
-                    point2Ds.add(point2D);
-                    mapControl.addPlotObject(libId, 20100, point2Ds);
-                    mapControl.cancel();
-                    final Dataset finalDataset = dataset;
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            super.run();
-                            try {
-                                Thread.sleep(100);
-                                Recordset recordset = ((DatasetVector) finalDataset).getRecordset(false, CursorType.DYNAMIC);
-                                recordset.moveLast();
-                                recordset.delete();
-                                recordset.update();
-                                recordset.dispose();
-                                mapControl.getMap().refresh();
-                                mapControl.setAction(Action.PAN);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }.start();
-                }
+//                if (isFirst && libName.equals("警用标号")) {
+//                    Point2Ds point2Ds = new Point2Ds();
+//                    Point2D point2D=new Point2D(mapControl.getMap().getViewBounds().getLeft()-100,mapControl.getMap().getViewBounds().getTop()-100);
+//                    point2Ds.add(point2D);
+//                    mapControl.addPlotObject(libId, 20100, point2Ds);
+//                    mapControl.cancel();
+//                    final Dataset finalDataset = dataset;
+//                    new Thread() {
+//                        @Override
+//                        public void run() {
+//                            super.run();
+//                            try {
+//                                Thread.sleep(100);
+//                                Recordset recordset = ((DatasetVector) finalDataset).getRecordset(false, CursorType.DYNAMIC);
+//                                recordset.moveLast();
+//                                recordset.delete();
+//                                recordset.update();
+//                                recordset.dispose();
+//                                mapControl.getMap().refresh();
+//                                mapControl.setAction(Action.PAN);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }.start();
+//                }
             }
 
             promise.resolve(writeMap);
