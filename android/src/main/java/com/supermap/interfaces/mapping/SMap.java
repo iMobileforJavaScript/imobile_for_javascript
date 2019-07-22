@@ -3002,7 +3002,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     ds.setDescription("{\"type\":\"" + type + "\"}");
                     com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                     layer = map.getLayers().add(ds, true);
-                    layer.setEditable(editable);
+                    layer.setSnapable(editable);
+                    layer.setSnapable(false);
                     datasetVectorInfo.dispose();
                     datasetVector.close();
                     info.dispose();
@@ -3026,6 +3027,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                 layer = map.getLayers().add(ds, true);
                 layer.setEditable(editable);
+                layer.setSnapable(editable);
                 datasetVectorInfo.dispose();
                 datasetVector.close();
             }

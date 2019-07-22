@@ -2958,6 +2958,7 @@ RCT_REMAP_METHOD(newTaggingDataset, newTaggingDatasetWithName:(NSString *)Name p
                 layer = [map.layers addDataset:ds ToHead:YES];
                 
                 [layer setEditable:editable];
+                layer.isSnapable = NO;
                 [datasetVectorInfo dispose];
                 [datasetVector close];
                 [info dispose];
@@ -2983,6 +2984,7 @@ RCT_REMAP_METHOD(newTaggingDataset, newTaggingDatasetWithName:(NSString *)Name p
             layer = [map.layers addDataset:ds ToHead:YES];
             
             [layer setEditable:editable];
+            layer.isSnapable = NO;
             [datasetVectorInfo dispose];
             [datasetVector close];
         }
