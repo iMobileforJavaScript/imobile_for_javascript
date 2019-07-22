@@ -3450,8 +3450,8 @@ RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)data
         Recordset *recordset = [dataset recordset:NO cursorType:DYNAMIC];
         TextPart *textpart = [[TextPart alloc]init];
         TextStyle *textStyle = [[TextStyle alloc]init];
-        [textStyle setFontWidth:5];
-        [textStyle setFontHeight:6];
+        [textStyle setFontWidth:6];
+        [textStyle setFontHeight:8];
         [textStyle setForeColor:[[Color alloc]initWithR:0 G:0 B:0]];
         [textpart setAnchorPoint:p];
         [textpart setText:name];

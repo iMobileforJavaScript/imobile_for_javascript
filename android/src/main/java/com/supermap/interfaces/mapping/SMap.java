@@ -3908,9 +3908,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             for (int i=0;i<mapControl.getMap().getLayers().getCount();i++){
                 Layer tempLayer=mapControl.getMap().getLayers().get(i);
-                if(tempLayer.getName().startsWith("PlotEdit_")&&tempLayer.getDataset().getType()==DatasetType.CAD){
-                    dataset =tempLayer.getDataset();
-                    cadLayer=tempLayer;
+                if(tempLayer.getName().startsWith("PlotEdit_")&&tempLayer.getDataset()!=null){
+                    if(tempLayer.getDataset().getType()==DatasetType.CAD) {
+                        dataset = tempLayer.getDataset();
+                        cadLayer = tempLayer;
+                    }
                 }else {
                     tempLayer.setEditable(false);
                 }
@@ -4025,8 +4027,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             for (int i=0;i<mapControl.getMap().getLayers().getCount();i++){
                 Layer tempLayer=mapControl.getMap().getLayers().get(i);
-                if(tempLayer.getName().startsWith("PlotEdit_")&&tempLayer.getDataset().getType()==DatasetType.CAD){
-                    tempLayer.setEditable(true);
+                if(tempLayer.getName().startsWith("PlotEdit_")&&tempLayer.getDataset()!=null){
+                    if(tempLayer.getDataset().getType()==DatasetType.CAD) {
+                        tempLayer.setEditable(true);
+                    }
                 }else {
                     tempLayer.setEditable(false);
                 }
