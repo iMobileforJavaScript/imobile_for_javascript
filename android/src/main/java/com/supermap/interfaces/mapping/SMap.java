@@ -3863,21 +3863,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 }
             }
 
-            String plotDatasourceName="Plotting_" + userpath + "#";
+//            String plotDatasourceName="Plotting_" + userpath + "#";
+            String plotDatasourceName="Plotting_" + name + "#";
             plotDatasourceName.replace(".","");
             Workspace workspace = mapControl.getMap().getWorkspace();
             Datasource opendatasource = workspace.getDatasources().get(plotDatasourceName);
             Datasource datasource = null;
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Plotting_" + userpath + "#");
+                info.setAlias(plotDatasourceName);
                 info.setEngineType(EngineType.UDB);
-
+                String server=rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/"+plotDatasourceName+".udb";
+                info.setServer(server);
 
                 datasource = workspace.getDatasources().open(info);
                 if (datasource == null) {
-//                    String server=rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Plotting_" + userpath + "#.udb";
-                    String server=rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/"+plotDatasourceName+".udb";
                     String serverUDD=rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/"+plotDatasourceName+".udd";
                     info.setServer(server);
                     File file=new File(server);

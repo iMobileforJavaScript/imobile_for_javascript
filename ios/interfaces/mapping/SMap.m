@@ -2374,7 +2374,7 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
             }
         }
         
-        NSString *plotDatasourceName = [NSString  stringWithFormat:@"%@%@%@",@"Plotting_",userpath,@"#"];
+        NSString *plotDatasourceName = [NSString  stringWithFormat:@"%@%@%@",@"Plotting_",Name,@"#"];
         plotDatasourceName = [plotDatasourceName stringByReplacingOccurrencesOfString:@"." withString:@""];
         Datasource *opendatasource = [workspace.datasources getAlias:plotDatasourceName];
         Datasource *datasource = nil;
