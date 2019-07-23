@@ -3645,8 +3645,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                                 geometry.setStyle(geoStyle);
                                 recordset.setGeometry(geometry);
                                 recordset.update();
-                                recordset.dispose();
                             }
+                            recordset.dispose();
                         }
                         mapControl.removeGeometryAddedListener(this);
                     }

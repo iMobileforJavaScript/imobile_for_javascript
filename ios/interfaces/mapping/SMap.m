@@ -15,12 +15,6 @@ static SMap *sMap = nil;
 static NSMutableArray *fillColors;
 NSString * const LEGEND_CONTENT_CHANGE = @"com.supermap.RN.Map.Legend.legend_content_change";
 
-/*
- * 用于对象添加监听回调，完成后销毁
- */
-DatasetVector *dataset;
-GeoStyle *geoStyle;
-MapControl *mapControl;
 @interface SMap()
 {
    
@@ -3513,19 +3507,13 @@ RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)data
 RCT_REMAP_METHOD(setTaggingGrid, setTaggingGridWithName:(NSString *)name UserPath:(NSString *)userpath Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        mapControl = sMap.smMapWC.mapControl;
+//        g_mapControl = sMap.smMapWC.mapControl;
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
         NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
-        dataset = (DatasetVector *)[[opendatasource datasets] getWithName:name];
-        geoStyle = [[GeoStyle alloc]init];
-        [geoStyle setFillForeColor:[SMap getFillColor]];
-        [geoStyle setFillBackColor:[SMap getFillColor]];
-        [geoStyle setMarkerSize: [[Size2D alloc] initWithWidth:10 Height:10]];
-        [geoStyle setLineColor: [[Color alloc] initWithR:80 G:80 B:80]];
-        [geoStyle setFillOpaqueRate:50]; //透明度
+        DatasetVector* dataset = (DatasetVector *)[[opendatasource datasets] getWithName:name];
         if(dataset != nil){
-            mapControl.geometryAddedDelegate = self;
+            sMap.smMapWC.mapControl.geometryAddedDelegate = self;
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -3646,19 +3634,26 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
 -(void)aftergeometryAddedCallBack:(GeometryArgs*)geometryArgs{
     
     NSArray *ids =[[NSArray alloc]initWithObjects:[NSNumber numberWithInt:geometryArgs.id], nil];
+    DatasetVector* dataset = (DatasetVector *)geometryArgs.layer.dataset;
     Recordset *recordset = [dataset queryWithID:ids Type:DYNAMIC];
     if(recordset != nil){
         [recordset moveFirst];
         [recordset edit];
         Geometry *geometry = recordset.geometry;
         if(geometry != nil){
+            GeoStyle* geoStyle = [[GeoStyle alloc]init];
+            [geoStyle setFillForeColor:[SMap getFillColor]];
+            [geoStyle setFillBackColor:[SMap getFillColor]];
+            [geoStyle setMarkerSize: [[Size2D alloc] initWithWidth:10 Height:10]];
+            [geoStyle setLineColor: [[Color alloc] initWithR:80 G:80 B:80]];
+            [geoStyle setFillOpaqueRate:50]; //透明度
             [geometry setStyle:geoStyle];
             [recordset setGeometry:geometry];
             [recordset update];
-            [recordset dispose];
         }
     }
-    mapControl.geometryAddedDelegate = nil;
+    [recordset dispose];
+    SMap.singletonInstance.smMapWC.mapControl.geometryAddedDelegate = nil;
 }
 
 -(void) boundsChanged:(Point2D*) newMapCenter{
