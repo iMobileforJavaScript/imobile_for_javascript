@@ -21,7 +21,7 @@ public class InfoCallout extends CallOut {
     private String id;
     private String description;
     private String layerName;
-    private String mediaFileName;
+    private String mediaName;
     private ArrayList<String> mediaFilePaths;
 //    private String type;
     int geoID;
@@ -55,12 +55,12 @@ public class InfoCallout extends CallOut {
         }
     }
 
-    public String getMediaFileName() {
-        return mediaFileName;
+    public String getMediaName() {
+        return mediaName;
     }
 
-    public void setMediaFileName(String mediaFileName) {
-        this.mediaFileName = mediaFileName;
+    public void setMediaName(String mediaName) {
+        this.mediaName = mediaName;
     }
 
     public ArrayList<String> getMediaFilePaths() {

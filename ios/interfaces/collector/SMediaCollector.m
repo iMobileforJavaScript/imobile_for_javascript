@@ -481,7 +481,7 @@ RCT_REMAP_METHOD(addTour, addTour:(NSString *)layerName files:(NSArray *)files r
     
     
     NSString* modifiedDate = (NSString *)[recordset getFieldValueWithString:@"ModifiedDate"];
-    NSString* mediaFileName = (NSString *)[recordset getFieldValueWithString:@"MediaFileName"];
+    NSString* mediaName = (NSString *)[recordset getFieldValueWithString:@"MediaName"];
     
     NSString* mediaFilePaths = (NSString *)[recordset getFieldValueWithString:@"MediaFilePaths"];
     NSArray* paths = [mediaFilePaths componentsSeparatedByString:@","];
@@ -496,7 +496,7 @@ RCT_REMAP_METHOD(addTour, addTour:(NSString *)layerName files:(NSArray *)files r
              @"geoID": @(geoID),
              @"medium": @[],
              @"modifiedDate": modifiedDate ? modifiedDate : @"",
-             @"mediaFileName": mediaFileName ? mediaFileName : @"",
+             @"mediaName": mediaName ? mediaName : @"",
              @"mediaFilePaths": paths ? paths : @[],
              @"httpAddress": httpAddress ? httpAddress : @"",
              @"description": description ? description : @"",
@@ -539,12 +539,12 @@ RCT_REMAP_METHOD(addTour, addTour:(NSString *)layerName files:(NSArray *)files r
             for (int i = medias.count - 1; i >= 0; i--) {
                 SMMedia* media = medias[i];
                 [rs moveLast];
-                NSString* mediaName = (NSString *)[rs getFieldValueWithString:@"MediaFileName"];
+                NSString* mediaName = (NSString *)[rs getFieldValueWithString:@"MediaName"];
                 if ([media.fileName isEqualToString:@"TourLine"]) continue; // 线
                 
                 while(![mediaName isEqualToString:media.fileName] && ![rs isBOF]) {
                     [rs movePrev];
-                    mediaName = (NSString *)[rs getFieldValueWithString:@"MediaFileName"];
+                    mediaName = (NSString *)[rs getFieldValueWithString:@"MediaName"];
                 }
                 
                 SEL selector = @selector(callOutAction:);
@@ -581,7 +581,7 @@ RCT_REMAP_METHOD(addTour, addTour:(NSString *)layerName files:(NSArray *)files r
 //
 //
 //    InfoCallout* callout = [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:media.paths[0]];
-//    callout.mediaFileName = media.fileName;
+//    callout.mediaName = media.fileName;
 //    callout.mediaFilePaths = media.paths;
 //    //            callout.type = media.mediaType;
 //    callout.layerName = layer.name;
@@ -625,7 +625,7 @@ RCT_REMAP_METHOD(addTour, addTour:(NSString *)layerName files:(NSArray *)files r
 //}
 
 
--(void)onCaptureMediaFile:(BOOL)isSuccess fileName:(NSString*)mediaFileName type:(int)type {
+-(void)onCaptureMediaFile:(BOOL)isSuccess fileName:(NSString*)mediaName type:(int)type {
 //    NSString* typeStr = @"";
 //    switch (type) {
 //        case 1:
@@ -641,7 +641,7 @@ RCT_REMAP_METHOD(addTour, addTour:(NSString *)layerName files:(NSArray *)files r
 //        default:
 //            break;
 //    }
-//    NSString* mediaFilePath = [NSString stringWithFormat:@"%@/%@", mDataCollector.localFilePath, mediaFileName];
+//    NSString* mediaFilePath = [NSString stringWithFormat:@"%@/%@", mDataCollector.localFilePath, mediaName];
 //    if (mediaLayer) {
 //        Recordset* rs = [((DatasetVector *)mediaLayer.dataset) recordset:NO cursorType:DYNAMIC];
 //        [rs moveLast];
@@ -656,7 +656,7 @@ RCT_REMAP_METHOD(addTour, addTour:(NSString *)layerName files:(NSArray *)files r
 //
 //        SEL selector = @selector(callOutAction:);
 //        InfoCallout* callout = [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:imagePath];
-//        callout.mediaFileName = mediaFileName;
+//        callout.mediaName = mediaName;
 //        callout.mediaFilePaths = [[NSMutableArray alloc] initWithObjects:mediaFilePath, nil];
 ////        callout.type = typeStr;
 //        callout.layerName = mediaLayer.name;
@@ -679,7 +679,7 @@ RCT_REMAP_METHOD(addTour, addTour:(NSString *)layerName files:(NSArray *)files r
 //    }
 //    [self sendEventWithName:MEDIA_CAPTURE
 //                       body:@{@"result":@(isSuccess),
-//                              @"mediaFileName":mediaFileName,
+//                              @"mediaName":mediaName,
 //                              @"mediaFilePaths":[[NSMutableArray alloc] initWithObjects:mediaFilePath, nil],
 //                              @"type":typeStr,
 //                              }];

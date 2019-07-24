@@ -136,7 +136,7 @@ public class SMMedia {
             pDatasetVector = (DatasetVector)datasource.getDatasets().get(index);
             if (pDatasetVector.getType() != DatasetType.POINT && pDatasetVector.getType() != DatasetType.CAD) return false;
             FieldInfos fieldInfos = pDatasetVector.getFieldInfos();
-//            int tag1 = fieldInfos.indexOf("MediaFileName");
+//            int tag1 = fieldInfos.indexOf("MediaName");
 //            int tag2 = fieldInfos.indexOf("MediaFileType");
 //            int tag3 = fieldInfos.indexOf("ModifiedDate");
 //            int tag4 = fieldInfos.indexOf("MediaFilePaths");
@@ -151,10 +151,10 @@ public class SMMedia {
 //            if(fieldInfos.get(tag5).getType()!= FieldType.TEXT) return false;
 //            if(fieldInfos.get(tag6).getType()!= FieldType.TEXT) return false;
 
-            if (fieldInfos.indexOf("MediaFileName") == -1) {
+            if (fieldInfos.indexOf("MediaName") == -1) {
                 fieldInfo = new FieldInfo();
                 fieldInfo.setType(FieldType.TEXT);
-                fieldInfo.setName("MediaFileName");
+                fieldInfo.setName("MediaName");
                 fieldInfos.add(fieldInfo);
                 fieldInfo.dispose();
             }
@@ -213,7 +213,7 @@ public class SMMedia {
 
             fieldInfo = new FieldInfo();
             fieldInfo.setType(FieldType.TEXT);
-            fieldInfo.setName("MediaFileName");
+            fieldInfo.setName("MediaName");
             fieldInfos.add(fieldInfo);
             fieldInfo.dispose();
 
@@ -277,7 +277,7 @@ public class SMMedia {
             boolean result = recordset.addNew(point);
 
             recordset.moveLast();
-            if (recordset.edit()) recordset.setString("MediaFileName", this.fileName);
+            if (recordset.edit()) recordset.setString("MediaName", this.fileName);
 
             recordset.update();
             recordset.dispose();

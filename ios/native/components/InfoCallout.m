@@ -15,7 +15,7 @@
 @synthesize layerName;
 @synthesize geoID;
 @synthesize modifiedDate;
-@synthesize mediaFileName;
+@synthesize mediaName;
 @synthesize mediaFilePaths;
 //@synthesize type;
 @synthesize httpAddress;
