@@ -60,17 +60,17 @@
         pDatasetVector = (DatasetVector*)[datasource.datasets get:index];
 //        if(pDatasetVector.datasetType != POINT)
 //            return NO;
-//        int tag1 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"MediaFileName"];
+//        int tag1 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"MediaName"];
 ////        int tag2 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"MediaFileType"];
 //        int tag3 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"ModifiedDate"];
 //        int tag4 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"MediaFilePaths"];
 //        int tag5 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"Description"];
 //        int tag6 = (int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"HttpAddress"];
         
-        if ((int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"MediaFileName"] == -1) {
+        if ((int)[pDatasetVector.fieldInfos indexOfWithFieldName:@"MediaName"] == -1) {
             fieldInfo = [[FieldInfo alloc]init];
             fieldInfo.fieldType = FT_TEXT;
-            fieldInfo.name = @"MediaFileName";
+            fieldInfo.name = @"MediaName";
             [pDatasetVector.fieldInfos add:fieldInfo];
             [fieldInfo dispose];
         }
@@ -140,7 +140,7 @@
         
         fieldInfo = [[FieldInfo alloc]init];
         fieldInfo.fieldType = FT_TEXT;
-        fieldInfo.name = @"MediaFileName";
+        fieldInfo.name = @"MediaName";
         [pDatasetVector.fieldInfos add:fieldInfo];
         [fieldInfo dispose];
         
@@ -213,7 +213,7 @@
     
     [mRecordset moveLast];
     if ([mRecordset edit]) {
-        [mRecordset setStringWithName:@"MediaFileName" StringValue:_fileName];
+        [mRecordset setStringWithName:@"MediaName" StringValue:_fileName];
     }
     
 //    if([_fileName hasSuffix:@".mp4"] || [_fileName hasSuffix:@".mov"])
