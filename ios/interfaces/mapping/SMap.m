@@ -2453,26 +2453,26 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
             NSString* libName=[sMap.smMapWC.mapControl getPlotSymbolLibName: libId];
             [libInfo setObject:@(libId) forKey:libName];
             
-            if(isFirst&&[libName isEqualToString:@"警用标号"]){
-                Point2Ds* point2Ds=[[Point2Ds alloc] init];
-                Point2D* point2D=[[Point2D alloc] initWithX:sMap.smMapWC.mapControl.map.viewBounds.left Y:sMap.smMapWC.mapControl.map.viewBounds.top];
-                [point2Ds add:point2D];
-                [sMap.smMapWC.mapControl addPlotObject:libId symbolCode:20100 point:point2Ds];
-                [sMap.smMapWC.mapControl cancel];
-//                Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
-//                [recordset moveLast];
-////                [recordset delete];
-//                [recordset update];
-//                [recordset dispose];
-                [sMap.smMapWC.mapControl.map refresh];
-                [sMap.smMapWC.mapControl setAction:PAN];
-            }
+//            if(isFirst&&[libName isEqualToString:@"警用标号"]){
+//                Point2Ds* point2Ds=[[Point2Ds alloc] init];
+//                Point2D* point2D=[[Point2D alloc] initWithX:sMap.smMapWC.mapControl.map.viewBounds.left Y:sMap.smMapWC.mapControl.map.viewBounds.top];
+//                [point2Ds add:point2D];
+//                [sMap.smMapWC.mapControl addPlotObject:libId symbolCode:20100 point:point2Ds];
+//                [sMap.smMapWC.mapControl cancel];
+////                Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
+////                [recordset moveLast];
+//////                [recordset delete];
+////                [recordset update];
+////                [recordset dispose];
+//                [sMap.smMapWC.mapControl.map refresh];
+//                [sMap.smMapWC.mapControl setAction:PAN];
+//            }
         }
-        if(isFirst){
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self delay:dataset];
-            });
-        }
+//        if(isFirst){
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                [self delay:dataset];
+//            });
+//        }
        
         resolve(libInfo);
     } @catch (NSException *exception) {
@@ -2480,13 +2480,13 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
     }
 }
 
--(void)delay:(DatasetVector*)dataset {
-    Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
-    [recordset moveLast];
-    [recordset delete];
-    [recordset update];
-    [recordset dispose];
-}
+//-(void)delay:(DatasetVector*)dataset {
+//    Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
+//    [recordset moveLast];
+//    [recordset delete];
+//    [recordset update];
+//    [recordset dispose];
+//}
 #pragma mark 移除标绘库
 RCT_REMAP_METHOD(removePlotSymbolLibraryArr, removePlotSymbolLibraryArr:(NSArray*)plotSymbolIds resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
