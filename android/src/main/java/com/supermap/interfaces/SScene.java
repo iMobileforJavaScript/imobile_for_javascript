@@ -2023,9 +2023,9 @@ public class SScene extends ReactContextBaseJavaModule {
      *   width:"", //底面长
      *   length:"", //底面宽
      *   height:"", //高度
-     *   x:"",  //中心点坐标
-     *   y:"",
-     *   z:"",
+     *   X:"",  //中心点坐标
+     *   Y:"",
+     *   Z:"",
      *   zRot:"", //z旋转
      *   lineColor:""，//裁剪线颜色
      *   ********************************************************************
@@ -2079,9 +2079,9 @@ public class SScene extends ReactContextBaseJavaModule {
                 length = Math.abs((endPoint.getY() - startPoint.getY()) * Math.PI *R / 180);
                 height = Math.abs(point.y - point1.y)/ density;
             }else{
-                x = posMap.getDouble("x");
-                y = posMap.getDouble("y");
-                z = posMap.getDouble("z");
+                x = posMap.getDouble("X");
+                y = posMap.getDouble("Y");
+                z = posMap.getDouble("Z");
 
                 width = posMap.getDouble("width");
                 length = posMap.getDouble("length");
@@ -2135,9 +2135,9 @@ public class SScene extends ReactContextBaseJavaModule {
             returnMap.putDouble("height",height);
             returnMap.putDouble("length",length);
             returnMap.putDouble("zRot",zRot);
-            returnMap.putDouble("x",x);
-            returnMap.putDouble("y",y);
-            returnMap.putDouble("z",z);
+            returnMap.putDouble("X",x);
+            returnMap.putDouble("Y",y);
+            returnMap.putDouble("Z",z);
             returnMap.putBoolean("clipInner",clipInner);
             promise.resolve(returnMap);
         }catch (Exception e){

@@ -77,7 +77,7 @@ public class SMMediaCollector {
     public static boolean hasMediaData(Layer layer) {
         DatasetVector dsVector = (DatasetVector)layer.getDataset();
 
-        int tag1 = dsVector.getFieldInfos().indexOf("MediaFileName");
+        int tag1 = dsVector.getFieldInfos().indexOf("MediaName");
         int tag2 = dsVector.getFieldInfos().indexOf("ModifiedDate");
         int tag3 = dsVector.getFieldInfos().indexOf("MediaFilePaths");
         int tag4 = dsVector.getFieldInfos().indexOf("Description");
@@ -119,7 +119,7 @@ public class SMMediaCollector {
 
         smMedia.setDatasourse(layer.getDataset().getDatasource());
         smMedia.setDataset(layer.getDataset());
-        smMedia.setFileName((String)recordset.getFieldValue("MediaFileName"));
+        smMedia.setFileName((String)recordset.getFieldValue("MediaName"));
 
         String paths = (String)recordset.getFieldValue("MediaFilePaths");
         ArrayList<String> pathArr = new ArrayList<>();
@@ -156,7 +156,7 @@ public class SMMediaCollector {
 
             media.setDatasourse(layer.getDataset().getDatasource());
             media.setDataset(layer.getDataset());
-            media.setFileName((String)recordset.getFieldValue("MediaFileName"));
+            media.setFileName((String)recordset.getFieldValue("MediaName"));
 
             String paths = (String)recordset.getFieldValue("MediaFilePaths");
             ArrayList<String> pathArr = (ArrayList<String>)Arrays.asList(paths.split(","));
@@ -186,7 +186,7 @@ public class SMMediaCollector {
 
                 media.setDatasourse(layer.getDataset().getDatasource());
                 media.setDataset(layer.getDataset());
-                media.setFileName((String)recordset.getFieldValue("MediaFileName"));
+                media.setFileName((String)recordset.getFieldValue("MediaName"));
 
                 String paths = (String)recordset.getFieldValue("MediaFilePaths");
                 ArrayList<String> pathArr = new ArrayList<>(Arrays.asList(paths.split(",")));
@@ -198,7 +198,7 @@ public class SMMediaCollector {
 
                 String imgPath = sdcard + media.getPaths().get(0);
                 InfoCallout callout = SMLayer.addCallOutWithLongitude(context, x, y, imgPath);
-                callout.setMediaFileName(media.getFileName());
+                callout.setMediaName(media.getFileName());
                 callout.setMediaFilePaths(media.getPaths());
                 callout.setLayerName(layer.getName());
                 callout.setHttpAddress("");
@@ -227,7 +227,7 @@ public class SMMediaCollector {
             ArrayList<InfoCallout> callouts = new ArrayList<>();
             while (!recordset.isEOF()) {
                 String paths = (String)recordset.getFieldValue("MediaFilePaths");
-                String fileName = (String)recordset.getFieldValue("MediaFileName");
+                String fileName = (String)recordset.getFieldValue("MediaName");
                 if (paths == null && fileName.equals("TourLine")) {
                     recordset.moveNext();
                     continue;
@@ -285,7 +285,7 @@ public class SMMediaCollector {
         callout.setContentView(img);
         callout.setLocation(pt.getX(), pt.getY());
 
-        callout.setMediaFileName(media.getFileName());
+        callout.setMediaName(media.getFileName());
         callout.setMediaFilePaths(media.getPaths());
         callout.setLayerName(layerName);
         callout.setHttpAddress("");
@@ -327,7 +327,7 @@ public class SMMediaCollector {
         callout.setContentView(img);
         callout.setLocation(pt.getX(), pt.getY());
 
-        callout.setMediaFileName(media.getFileName());
+        callout.setMediaName(media.getFileName());
         callout.setMediaFilePaths(media.getPaths());
         callout.setLayerName(layerName);
         callout.setHttpAddress("");
@@ -383,7 +383,7 @@ public class SMMediaCollector {
 
         String imgPath = sdcard + media.getPaths().get(0);
         InfoCallout callout = SMLayer.addCallOutWithLongitude(context, pt.getX(), pt.getY(), imgPath);
-        callout.setMediaFileName(media.getFileName());
+        callout.setMediaName(media.getFileName());
         callout.setMediaFilePaths(media.getPaths());
         callout.setLayerName(layerName);
         callout.setHttpAddress("");
@@ -432,7 +432,7 @@ public class SMMediaCollector {
         mRecordset.addNew(mLine);
         mRecordset.moveLast();
         if (mRecordset.edit()) {
-            mRecordset.setString("MediaFileName", "TourLine");
+            mRecordset.setString("MediaName", "TourLine");
         }
 
         mRecordset.update();

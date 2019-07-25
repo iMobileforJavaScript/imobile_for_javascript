@@ -1995,9 +1995,9 @@ RCT_REMAP_METHOD(clipByBox, clipByBoxWithDic:(NSDictionary *)posDic resolve:(RCT
             height = fabs(p1.y - p2.y) / dpi;
       
         }else{
-            x = [[posDic valueForKey:@"x"]doubleValue];
-            y = [[posDic valueForKey:@"y"]doubleValue];
-            z = [[posDic valueForKey:@"z"]doubleValue];
+            x = [[posDic valueForKey:@"X"]doubleValue];
+            y = [[posDic valueForKey:@"Y"]doubleValue];
+            z = [[posDic valueForKey:@"Z"]doubleValue];
             width = [[posDic valueForKey:@"width"]doubleValue];
             length = [[posDic valueForKey:@"length"]doubleValue];
             height = [[posDic valueForKey:@"height"]doubleValue];
@@ -2054,9 +2054,9 @@ RCT_REMAP_METHOD(clipByBox, clipByBoxWithDic:(NSDictionary *)posDic resolve:(RCT
                       @"height":[[NSNumber alloc]initWithDouble:height],
                       @"length":[[NSNumber alloc]initWithDouble:length],
                       @"zRot":[[NSNumber alloc]initWithDouble:zRot],
-                      @"x":[[NSNumber alloc]initWithDouble:x],
-                      @"y":[[NSNumber alloc]initWithDouble:y],
-                      @"z":[[NSNumber alloc]initWithDouble:z],
+                      @"X":[[NSNumber alloc]initWithDouble:x],
+                      @"Y":[[NSNumber alloc]initWithDouble:y],
+                      @"Z":[[NSNumber alloc]initWithDouble:z],
                       @"clipInner":@(clipInner),
                       };
         resolve(returnDic);

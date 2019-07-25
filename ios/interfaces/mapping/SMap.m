@@ -15,12 +15,6 @@ static SMap *sMap = nil;
 static NSMutableArray *fillColors;
 NSString * const LEGEND_CONTENT_CHANGE = @"com.supermap.RN.Map.Legend.legend_content_change";
 
-/*
- * 用于对象添加监听回调，完成后销毁
- */
-DatasetVector *dataset;
-GeoStyle *geoStyle;
-MapControl *mapControl;
 @interface SMap()
 {
    
@@ -2459,26 +2453,26 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
             NSString* libName=[sMap.smMapWC.mapControl getPlotSymbolLibName: libId];
             [libInfo setObject:@(libId) forKey:libName];
             
-            if(isFirst&&[libName isEqualToString:@"警用标号"]){
-                Point2Ds* point2Ds=[[Point2Ds alloc] init];
-                Point2D* point2D=[[Point2D alloc] initWithX:sMap.smMapWC.mapControl.map.viewBounds.left Y:sMap.smMapWC.mapControl.map.viewBounds.top];
-                [point2Ds add:point2D];
-                [sMap.smMapWC.mapControl addPlotObject:libId symbolCode:20100 point:point2Ds];
-                [sMap.smMapWC.mapControl cancel];
-//                Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
-//                [recordset moveLast];
-////                [recordset delete];
-//                [recordset update];
-//                [recordset dispose];
-                [sMap.smMapWC.mapControl.map refresh];
-                [sMap.smMapWC.mapControl setAction:PAN];
-            }
+//            if(isFirst&&[libName isEqualToString:@"警用标号"]){
+//                Point2Ds* point2Ds=[[Point2Ds alloc] init];
+//                Point2D* point2D=[[Point2D alloc] initWithX:sMap.smMapWC.mapControl.map.viewBounds.left Y:sMap.smMapWC.mapControl.map.viewBounds.top];
+//                [point2Ds add:point2D];
+//                [sMap.smMapWC.mapControl addPlotObject:libId symbolCode:20100 point:point2Ds];
+//                [sMap.smMapWC.mapControl cancel];
+////                Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
+////                [recordset moveLast];
+//////                [recordset delete];
+////                [recordset update];
+////                [recordset dispose];
+//                [sMap.smMapWC.mapControl.map refresh];
+//                [sMap.smMapWC.mapControl setAction:PAN];
+//            }
         }
-        if(isFirst){
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self delay:dataset];
-            });
-        }
+//        if(isFirst){
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                [self delay:dataset];
+//            });
+//        }
        
         resolve(libInfo);
     } @catch (NSException *exception) {
@@ -2486,13 +2480,13 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
     }
 }
 
--(void)delay:(DatasetVector*)dataset {
-    Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
-    [recordset moveLast];
-    [recordset delete];
-    [recordset update];
-    [recordset dispose];
-}
+//-(void)delay:(DatasetVector*)dataset {
+//    Recordset *recordset = [(DatasetVector*)dataset recordset:NO cursorType:DYNAMIC];
+//    [recordset moveLast];
+//    [recordset delete];
+//    [recordset update];
+//    [recordset dispose];
+//}
 #pragma mark 移除标绘库
 RCT_REMAP_METHOD(removePlotSymbolLibraryArr, removePlotSymbolLibraryArr:(NSArray*)plotSymbolIds resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -3513,19 +3507,13 @@ RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)data
 RCT_REMAP_METHOD(setTaggingGrid, setTaggingGridWithName:(NSString *)name UserPath:(NSString *)userpath Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        mapControl = sMap.smMapWC.mapControl;
+//        g_mapControl = sMap.smMapWC.mapControl;
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
         NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
-        dataset = (DatasetVector *)[[opendatasource datasets] getWithName:name];
-        geoStyle = [[GeoStyle alloc]init];
-        [geoStyle setFillForeColor:[SMap getFillColor]];
-        [geoStyle setFillBackColor:[SMap getFillColor]];
-        [geoStyle setMarkerSize: [[Size2D alloc] initWithWidth:10 Height:10]];
-        [geoStyle setLineColor: [[Color alloc] initWithR:80 G:80 B:80]];
-        [geoStyle setFillOpaqueRate:50]; //透明度
+        DatasetVector* dataset = (DatasetVector *)[[opendatasource datasets] getWithName:name];
         if(dataset != nil){
-            mapControl.geometryAddedDelegate = self;
+            sMap.smMapWC.mapControl.geometryAddedDelegate = self;
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -3646,19 +3634,26 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
 -(void)aftergeometryAddedCallBack:(GeometryArgs*)geometryArgs{
     
     NSArray *ids =[[NSArray alloc]initWithObjects:[NSNumber numberWithInt:geometryArgs.id], nil];
+    DatasetVector* dataset = (DatasetVector *)geometryArgs.layer.dataset;
     Recordset *recordset = [dataset queryWithID:ids Type:DYNAMIC];
     if(recordset != nil){
         [recordset moveFirst];
         [recordset edit];
         Geometry *geometry = recordset.geometry;
         if(geometry != nil){
+            GeoStyle* geoStyle = [[GeoStyle alloc]init];
+            [geoStyle setFillForeColor:[SMap getFillColor]];
+            [geoStyle setFillBackColor:[SMap getFillColor]];
+            [geoStyle setMarkerSize: [[Size2D alloc] initWithWidth:10 Height:10]];
+            [geoStyle setLineColor: [[Color alloc] initWithR:80 G:80 B:80]];
+            [geoStyle setFillOpaqueRate:50]; //透明度
             [geometry setStyle:geoStyle];
             [recordset setGeometry:geometry];
             [recordset update];
-            [recordset dispose];
         }
     }
-    mapControl.geometryAddedDelegate = nil;
+    [recordset dispose];
+    SMap.singletonInstance.smMapWC.mapControl.geometryAddedDelegate = nil;
 }
 
 -(void) boundsChanged:(Point2D*) newMapCenter{
