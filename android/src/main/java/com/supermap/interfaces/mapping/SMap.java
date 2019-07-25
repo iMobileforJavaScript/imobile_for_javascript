@@ -77,6 +77,9 @@ import com.supermap.data.Color;
 
 import org.apache.http.cookie.SM;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -95,6 +98,10 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import static com.supermap.interfaces.utils.SMFileUtil.copyFiles;
 import static com.supermap.RNUtils.FileUtil.homeDirectory;
@@ -4165,10 +4172,34 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     layers.get(i).setEditable(true);
                 }
             }
-
-            File file = new File(filePath);
+            
             mapControl.setAnimations();
-            am.getAnimationFromXML(file.getAbsolutePath());
+            am.getAnimationFromXML(filePath);
+
+
+//            开始推演时定位到推演图层，获取的推演图层范围有错误
+//            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//            try{
+//                DocumentBuilder db = dbf.newDocumentBuilder();
+//                Document document = db.parse("file:///"+filePath);
+//                NodeList booklist = document.getElementsByTagName("LAYERNAME");
+//                if(booklist.getLength()>0){
+//                    Element element= (Element) booklist.item(0);
+//                    if(element.getChildNodes().getLength()>0) {
+//                        String layerName=element.getChildNodes().item(0).getNodeValue();
+//                        Layer layer=mapControl.getMap().getLayers().get(layerName);
+//                        if(layer!=null) {
+//                            mapControl.getMap().setViewBounds(layer.getDataset().getBounds());
+//                            mapControl.getMap().refresh();
+//                        }
+//                    }
+//                }
+//            }catch (ParserConfigurationException e){
+//                e.printStackTrace();
+//            }catch (IOException e){
+//                e.printStackTrace();
+//            }
+
 
             promise.resolve(true);
         } catch (Exception e) {
