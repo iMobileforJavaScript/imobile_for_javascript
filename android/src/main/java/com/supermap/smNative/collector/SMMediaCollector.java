@@ -228,7 +228,7 @@ public class SMMediaCollector {
             while (!recordset.isEOF()) {
                 String paths = (String)recordset.getFieldValue("MediaFilePaths");
                 String fileName = (String)recordset.getFieldValue("MediaName");
-                if (paths == null && fileName.equals("TourLine")) {
+                if (paths == null && (fileName == null || fileName.equals("TourLine"))) {
                     recordset.moveNext();
                     continue;
                 }
