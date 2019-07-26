@@ -77,6 +77,9 @@ import com.supermap.data.Color;
 
 import org.apache.http.cookie.SM;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -95,6 +98,10 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import static com.supermap.interfaces.utils.SMFileUtil.copyFiles;
 import static com.supermap.RNUtils.FileUtil.homeDirectory;
@@ -3610,6 +3617,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    private  GeometryAddedListener delegate = null;
     /**
      * 设置标注面随机色
      *
@@ -3619,39 +3627,41 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void setTaggingGrid(String name, String userpath, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            final MapControl mapControl = sMap.smMapWC.getMapControl();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
-            final DatasetVector dataset = (DatasetVector) opendatasource.getDatasets().get(name);
-            final GeoStyle geoStyle = new GeoStyle();
-            geoStyle.setFillForeColor(this.getFillColor());
-            geoStyle.setFillBackColor(this.getFillColor());
-            geoStyle.setMarkerSize(new Size2D(10, 10));
-            geoStyle.setLineColor(new Color(80, 80, 80));
-            geoStyle.setFillOpaqueRate(50);//加透明度更美观
-            //geoStyle.setLineColor(new Color(0,206,209));
-            if (dataset != null) {
-                mapControl.addGeometryAddedListener(new GeometryAddedListener() {
+            if(delegate == null){
+                delegate = new GeometryAddedListener() {
                     @Override
                     public void geometryAdded(GeometryEvent event) {
                         int id[] = new int[1];
                         id[0] = event.getID();
+                        DatasetVector dataset = (DatasetVector) event.getLayer().getDataset();
                         Recordset recordset = dataset.query(id, CursorType.DYNAMIC);
                         if (recordset != null) {
                             recordset.moveFirst();
                             recordset.edit();
                             Geometry geometry = recordset.getGeometry();
                             if (geometry != null) {
+
+                                GeoStyle geoStyle = new GeoStyle();
+                                geoStyle.setFillForeColor(SMap.getFillColor());
+                                geoStyle.setFillBackColor(SMap.getFillColor());
+                                geoStyle.setMarkerSize(new Size2D(10, 10));
+                                geoStyle.setLineColor(new Color(80, 80, 80));
+                                geoStyle.setFillOpaqueRate(50);//加透明度更美观
                                 geometry.setStyle(geoStyle);
                                 recordset.setGeometry(geometry);
                                 recordset.update();
                             }
                             recordset.dispose();
                         }
-                        mapControl.removeGeometryAddedListener(this);
+                        sMap.smMapWC.getMapControl().removeGeometryAddedListener(delegate);
+                        delegate = null;
                     }
-                });
+                };
             }
+            mapControl.addGeometryAddedListener(delegate);
+
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -3960,32 +3970,32 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 int libId = (int) mapControl.addPlotLibrary(plotSymbolPaths.getString(i));
                 String libName = mapControl.getPlotSymbolLibName((long) libId);
                 writeMap.putInt(libName, libId);
-                if (isFirst && libName.equals("警用标号")) {
-                    Point2Ds point2Ds = new Point2Ds();
-                    Point2D point2D=new Point2D(mapControl.getMap().getViewBounds().getLeft()-100,mapControl.getMap().getViewBounds().getTop()-100);
-                    point2Ds.add(point2D);
-                    mapControl.addPlotObject(libId, 20100, point2Ds);
-                    mapControl.cancel();
-                    final Dataset finalDataset = dataset;
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            super.run();
-                            try {
-                                Thread.sleep(100);
-                                Recordset recordset = ((DatasetVector) finalDataset).getRecordset(false, CursorType.DYNAMIC);
-                                recordset.moveLast();
-                                recordset.delete();
-                                recordset.update();
-                                recordset.dispose();
-                                mapControl.getMap().refresh();
-                                mapControl.setAction(Action.PAN);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }.start();
-                }
+//                if (isFirst && libName.equals("警用标号")) {
+//                    Point2Ds point2Ds = new Point2Ds();
+//                    Point2D point2D=new Point2D(mapControl.getMap().getViewBounds().getLeft()-100,mapControl.getMap().getViewBounds().getTop()-100);
+//                    point2Ds.add(point2D);
+//                    mapControl.addPlotObject(libId, 20100, point2Ds);
+//                    mapControl.cancel();
+//                    final Dataset finalDataset = dataset;
+//                    new Thread() {
+//                        @Override
+//                        public void run() {
+//                            super.run();
+//                            try {
+//                                Thread.sleep(100);
+//                                Recordset recordset = ((DatasetVector) finalDataset).getRecordset(false, CursorType.DYNAMIC);
+//                                recordset.moveLast();
+//                                recordset.delete();
+//                                recordset.update();
+//                                recordset.dispose();
+//                                mapControl.getMap().refresh();
+//                                mapControl.setAction(Action.PAN);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }.start();
+//                }
             }
 
             promise.resolve(writeMap);
@@ -4165,10 +4175,34 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     layers.get(i).setEditable(true);
                 }
             }
-
-            File file = new File(filePath);
+            
             mapControl.setAnimations();
-            am.getAnimationFromXML(file.getAbsolutePath());
+            am.getAnimationFromXML(filePath);
+
+
+//            开始推演时定位到推演图层，获取的推演图层范围有错误
+//            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//            try{
+//                DocumentBuilder db = dbf.newDocumentBuilder();
+//                Document document = db.parse("file:///"+filePath);
+//                NodeList booklist = document.getElementsByTagName("LAYERNAME");
+//                if(booklist.getLength()>0){
+//                    Element element= (Element) booklist.item(0);
+//                    if(element.getChildNodes().getLength()>0) {
+//                        String layerName=element.getChildNodes().item(0).getNodeValue();
+//                        Layer layer=mapControl.getMap().getLayers().get(layerName);
+//                        if(layer!=null) {
+//                            mapControl.getMap().setViewBounds(layer.getDataset().getBounds());
+//                            mapControl.getMap().refresh();
+//                        }
+//                    }
+//                }
+//            }catch (ParserConfigurationException e){
+//                e.printStackTrace();
+//            }catch (IOException e){
+//                e.printStackTrace();
+//            }
+
 
             promise.resolve(true);
         } catch (Exception e) {
