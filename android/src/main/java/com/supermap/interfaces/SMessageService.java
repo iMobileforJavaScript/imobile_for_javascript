@@ -705,14 +705,26 @@ public class SMessageService extends ReactContextBaseJavaModule {
      * 停止消息接收
      */
     @ReactMethod
-    public void stopReceiveMessage( Promise promise) {
+    public void stopReceiveMessage(final Promise promise) {
         try {
-            boolean bRes = false;
             isRecieving = false;
-            while (!bStopRecieve) {
-                Thread.sleep(500);
-            }
-            promise.resolve(bRes);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Looper.prepare();
+                    while (true) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if(bStopRecieve){
+                            promise.resolve(true);
+                            break;
+                        }
+                    }
+                }
+            }).start();
         } catch (Exception e) {
             promise.reject(e);
         }
