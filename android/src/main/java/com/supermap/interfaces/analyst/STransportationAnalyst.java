@@ -97,9 +97,9 @@ public class STransportationAnalyst extends SNetworkAnalyst {
     public void setStartPoint(ReadableMap point, Promise promise) {
         try {
             String nodeTag = "startNode";
-            if (startNodeID > 0) {
+            if (startPoint != null) {
                 this.removeTagFromTrackingLayer(nodeTag);
-                startNodeID = -1;
+                startPoint = null;
             }
             if (nodeLayer != null) {
                 GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(255, 105, 0));
@@ -128,9 +128,9 @@ public class STransportationAnalyst extends SNetworkAnalyst {
     public void setEndPoint(ReadableMap point, Promise promise) {
         try {
             String nodeTag = "endNode";
-            if (endNodeID > 0) {
+            if (endPoint != null) {
                 this.removeTagFromTrackingLayer(nodeTag);
-                endNodeID = -1;
+                endPoint = null;
             }
             if (nodeLayer != null) {
                 GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(105, 255, 0));

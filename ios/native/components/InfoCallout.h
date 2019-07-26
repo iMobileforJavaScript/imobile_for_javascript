@@ -14,7 +14,7 @@
 @property (strong, nonatomic) NSString* ID;
 @property (strong, nonatomic) NSString* description;
 @property (strong, nonatomic) NSString* layerName;
-@property (strong, nonatomic) NSString* mediaFileName;
+@property (strong, nonatomic) NSString* mediaName;
 @property (strong, nonatomic) NSArray* mediaFilePaths;
 //@property (strong, nonatomic) NSString* type;
 @property (assign, nonatomic) int geoID;

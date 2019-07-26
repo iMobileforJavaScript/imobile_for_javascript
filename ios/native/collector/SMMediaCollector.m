@@ -25,7 +25,7 @@ static SMMediaCollector* sMediaCollector = nil;
 
 + (BOOL)hasMediaData:(Layer *)layer {
     DatasetVector* dsVector = (DatasetVector *)layer.dataset;
-    int tag1 = (int)[dsVector.fieldInfos indexOfWithFieldName:@"MediaFileName"];
+    int tag1 = (int)[dsVector.fieldInfos indexOfWithFieldName:@"MediaName"];
     //        int tag2 = (int)[dsVector.fieldInfos indexOfWithFieldName:@"MediaFileType"];
     int tag3 = (int)[dsVector.fieldInfos indexOfWithFieldName:@"ModifiedDate"];
     int tag4 = (int)[dsVector.fieldInfos indexOfWithFieldName:@"MediaFilePaths"];
@@ -70,7 +70,7 @@ static SMMediaCollector* sMediaCollector = nil;
     
     media.datasourse = layer.dataset.datasource;
     media.dataset = layer.dataset;
-    media.fileName = (NSString *)[recordset getFieldValueWithString:@"MediaFileName"];
+    media.fileName = (NSString *)[recordset getFieldValueWithString:@"MediaName"];
     
     NSString* paths = (NSString *)[recordset getFieldValueWithString:@"MediaFilePaths"];
     media.paths = [paths componentsSeparatedByString:@","];
@@ -109,7 +109,7 @@ static SMMediaCollector* sMediaCollector = nil;
         
         media.datasourse = layer.dataset.datasource;
         media.dataset = layer.dataset;
-        media.fileName = (NSString *)[recordset getFieldValueWithString:@"MediaFileName"];
+        media.fileName = (NSString *)[recordset getFieldValueWithString:@"MediaName"];
         
         NSString* paths = (NSString *)[recordset getFieldValueWithString:@"MediaFilePaths"];
         media.paths = [paths componentsSeparatedByString:@","];
@@ -144,7 +144,7 @@ static SMMediaCollector* sMediaCollector = nil;
                 
                 media.datasourse = layer.dataset.datasource;
                 media.dataset = layer.dataset;
-                media.fileName = (NSString *)[recordset getFieldValueWithString:@"MediaFileName"];
+                media.fileName = (NSString *)[recordset getFieldValueWithString:@"MediaName"];
                 
                 NSString* paths = (NSString *)[recordset getFieldValueWithString:@"MediaFilePaths"];
                 media.paths = [paths componentsSeparatedByString:@","];
@@ -156,7 +156,7 @@ static SMMediaCollector* sMediaCollector = nil;
                 NSString* imgPath = [NSString stringWithFormat:@"%@/%@", [NSHomeDirectory() stringByAppendingString:@"/Documents"], media.paths[0]];
                 
                 InfoCallout* callout = [SMLayer addCallOutWithLongitude:x latitude:y image:imgPath];
-                callout.mediaFileName = media.fileName;
+                callout.mediaName = media.fileName;
                 callout.mediaFilePaths = media.paths;
                 //            callout.type = media.mediaType;
                 callout.layerName = layer.name;
@@ -202,7 +202,7 @@ static SMMediaCollector* sMediaCollector = nil;
                 
                 media.datasourse = layer.dataset.datasource;
                 media.dataset = layer.dataset;
-                media.fileName = (NSString *)[recordset getFieldValueWithString:@"MediaFileName"];
+                media.fileName = (NSString *)[recordset getFieldValueWithString:@"MediaName"];
                 
                 NSString* paths = (NSString *)[recordset getFieldValueWithString:@"MediaFilePaths"];
                 if (paths && paths.length > 0) {
@@ -259,7 +259,7 @@ static SMMediaCollector* sMediaCollector = nil;
     image.frame = CGRectMake(0, 0, 50, 50);
     [callout addSubview:image];
     
-    callout.mediaFileName = media.fileName;
+    callout.mediaName = media.fileName;
     callout.mediaFilePaths = media.paths;
     callout.layerName = layerName;
     callout.httpAddress = @"";
@@ -303,7 +303,7 @@ static SMMediaCollector* sMediaCollector = nil;
     image.frame = CGRectMake(0, 0, 50, 50);
     [callout addSubview:image];
     
-    callout.mediaFileName = media.fileName;
+    callout.mediaName = media.fileName;
     callout.mediaFilePaths = media.paths;
     callout.layerName = layerName;
     callout.httpAddress = @"";
@@ -363,7 +363,7 @@ static SMMediaCollector* sMediaCollector = nil;
     NSString* imgPath = [NSString stringWithFormat:@"%@/%@", [NSHomeDirectory() stringByAppendingString:@"/Documents"], media.paths[0]];
 //    InfoCallout* callout = [SMLayer addCallOutWithLongitude:longitude latitude:latitude image:imgPath];
     InfoCallout* callout = [SMLayer addCallOutWithLongitude:pt.x latitude:pt.y image:imgPath];
-    callout.mediaFileName = media.fileName;
+    callout.mediaName = media.fileName;
     callout.mediaFilePaths = media.paths;
     //            callout.type = media.mediaType;
     callout.layerName = layerName;
@@ -432,7 +432,7 @@ static SMMediaCollector* sMediaCollector = nil;
     
     [mRecordset moveLast];
     if ([mRecordset edit]) {
-        [mRecordset setStringWithName:@"MediaFileName" StringValue:@"TourLine"];
+        [mRecordset setStringWithName:@"MediaName" StringValue:@"TourLine"];
     }
     
     [mRecordset update];

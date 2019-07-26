@@ -160,9 +160,9 @@ RCT_REMAP_METHOD(addLayerByIndex, addLayerByIndex:(int)datasourceIndex datasetIn
 }
 
 #pragma mark 根据图层名获取对应xml
-RCT_REMAP_METHOD(getLayerAsXML, getLayerAsXML: (NSString *) layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getLayerAsXML, getLayerAsXML:(NSString *)layerPath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        Layer* layer = [SMLayer findLayerWithName:layerName];
+        Layer* layer = [SMLayer findLayerByPath:layerPath];
         
         resolve(layer.toXML);
     } @catch (NSException *exception) {
@@ -548,7 +548,13 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
             NSArray* ids = [item objectForKey:@"ids"];
             Layer* layer = [SMLayer findLayerByPath:layerPath];
             
-            Recordset* recordset = [((DatasetVector *)layer.dataset) queryWithID:ids Type:STATIC];
+            DatasetVector* dv = (DatasetVector *)layer.dataset;
+            NSArray* pathParams = [layerPath componentsSeparatedByString:@"/"];
+            if ([pathParams[pathParams.count - 1] containsString:@"_Node"] && dv.childDataset) {
+                dv = ((DatasetVector *)layer.dataset).childDataset;
+            }
+            
+            Recordset* recordset = [dv queryWithID:ids Type:STATIC];
             
             [recordset moveFirst];
             

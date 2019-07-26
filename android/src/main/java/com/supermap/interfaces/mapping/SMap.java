@@ -77,6 +77,9 @@ import com.supermap.data.Color;
 
 import org.apache.http.cookie.SM;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -95,6 +98,10 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import static com.supermap.interfaces.utils.SMFileUtil.copyFiles;
 import static com.supermap.RNUtils.FileUtil.homeDirectory;
@@ -1069,7 +1076,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     Selection selection = layer.getSelection();
                     if (selection != null) {
                         selection.clear();
-                        selection.dispose();
+//                        selection.dispose();
                     }
                 }
             }
@@ -1330,13 +1337,33 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                     String resultName = args[0];
                     if (resultName != null && !resultName.equals("")) {
-                        Map<String, String> additionMap = new HashMap<>();
-                        ReadableMapKeySetIterator keySetIterator = addition.keySetIterator();
-                        while (keySetIterator.hasNextKey()) {
-                            String key = keySetIterator.nextKey();
-                            additionMap.put(key, addition.getString(key));
+                        if(addition.hasKey("filterLayers")){
+                            WritableMap additionMap = Arguments.createMap();
+                            ReadableMapKeySetIterator keySetIterator = addition.keySetIterator();
+                            while (keySetIterator.hasNextKey()) {
+                                String key = keySetIterator.nextKey();
+                                if(key.equals("filterLayers")){
+                                    ReadableArray filterLayers = addition.getArray(key);
+                                    WritableArray arr = Arguments.createArray();
+                                    for(int i = 0; i < filterLayers.size(); i++){
+                                        arr.pushString(filterLayers.getString(i));
+                                    }
+                                    additionMap.putArray(key, arr);
+                                }else{
+                                    additionMap.putString(key, addition.getString(key));
+                                }
+                            }
+                            resultName = sMap.smMapWC.saveMapName(resultName, sMap.smMapWC.getWorkspace(), nModule, additionMap, true, true, isPrivate);
+                        }else{
+                            Map<String, String> additionMap = new HashMap<>();
+                            ReadableMapKeySetIterator keySetIterator = addition.keySetIterator();
+                            while (keySetIterator.hasNextKey()) {
+                                String key = keySetIterator.nextKey();
+                                additionMap.put(key, addition.getString(key));
+                            }
+                            resultName = sMap.smMapWC.saveMapName(resultName, sMap.smMapWC.getWorkspace(), nModule, additionMap, true, true, isPrivate);
                         }
-                        resultName = sMap.smMapWC.saveMapName(resultName, sMap.smMapWC.getWorkspace(), nModule, additionMap, true, true, isPrivate);
+
                     }
                     sMap.smMapWC.getMapControl().getMap().refresh();
                     writeMap.putString("mapName", resultName);
@@ -2982,7 +3009,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     ds.setDescription("{\"type\":\"" + type + "\"}");
                     com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                     layer = map.getLayers().add(ds, true);
-                    layer.setEditable(editable);
+                    layer.setSnapable(editable);
+                    layer.setSnapable(false);
                     datasetVectorInfo.dispose();
                     datasetVector.close();
                     info.dispose();
@@ -3006,6 +3034,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
                 layer = map.getLayers().add(ds, true);
                 layer.setEditable(editable);
+                layer.setSnapable(editable);
                 datasetVectorInfo.dispose();
                 datasetVector.close();
             }
@@ -3588,6 +3617,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    private  GeometryAddedListener delegate = null;
     /**
      * 设置标注面随机色
      *
@@ -3597,39 +3627,41 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void setTaggingGrid(String name, String userpath, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            final MapControl mapControl = sMap.smMapWC.getMapControl();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
-            final DatasetVector dataset = (DatasetVector) opendatasource.getDatasets().get(name);
-            final GeoStyle geoStyle = new GeoStyle();
-            geoStyle.setFillForeColor(this.getFillColor());
-            geoStyle.setFillBackColor(this.getFillColor());
-            geoStyle.setMarkerSize(new Size2D(10, 10));
-            geoStyle.setLineColor(new Color(80, 80, 80));
-            geoStyle.setFillOpaqueRate(50);//加透明度更美观
-            //geoStyle.setLineColor(new Color(0,206,209));
-            if (dataset != null) {
-                mapControl.addGeometryAddedListener(new GeometryAddedListener() {
+            if(delegate == null){
+                delegate = new GeometryAddedListener() {
                     @Override
                     public void geometryAdded(GeometryEvent event) {
                         int id[] = new int[1];
                         id[0] = event.getID();
+                        DatasetVector dataset = (DatasetVector) event.getLayer().getDataset();
                         Recordset recordset = dataset.query(id, CursorType.DYNAMIC);
                         if (recordset != null) {
                             recordset.moveFirst();
                             recordset.edit();
                             Geometry geometry = recordset.getGeometry();
                             if (geometry != null) {
+
+                                GeoStyle geoStyle = new GeoStyle();
+                                geoStyle.setFillForeColor(SMap.getFillColor());
+                                geoStyle.setFillBackColor(SMap.getFillColor());
+                                geoStyle.setMarkerSize(new Size2D(10, 10));
+                                geoStyle.setLineColor(new Color(80, 80, 80));
+                                geoStyle.setFillOpaqueRate(50);//加透明度更美观
                                 geometry.setStyle(geoStyle);
                                 recordset.setGeometry(geometry);
                                 recordset.update();
-                                recordset.dispose();
                             }
+                            recordset.dispose();
                         }
-                        mapControl.removeGeometryAddedListener(this);
+                        sMap.smMapWC.getMapControl().removeGeometryAddedListener(delegate);
+                        delegate = null;
                     }
-                });
+                };
             }
+            mapControl.addGeometryAddedListener(delegate);
+
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -3843,16 +3875,31 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 }
             }
 
+//            String plotDatasourceName="Plotting_" + userpath + "#";
+            String plotDatasourceName="Plotting_" + name + "#";
+            plotDatasourceName.replace(".","");
             Workspace workspace = mapControl.getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Plotting_" + userpath + "#");
+            Datasource opendatasource = workspace.getDatasources().get(plotDatasourceName);
             Datasource datasource = null;
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Plotting_" + userpath + "#");
+                info.setAlias(plotDatasourceName);
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Plotting_" + userpath + "#.udb");
+                String server=rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/"+plotDatasourceName+".udb";
+                info.setServer(server);
+
                 datasource = workspace.getDatasources().open(info);
                 if (datasource == null) {
+                    String serverUDD=rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/"+plotDatasourceName+".udd";
+                    info.setServer(server);
+                    File file=new File(server);
+                    if(file.exists()){
+                        file.delete();
+                    }
+                    File fileUdd=new File(serverUDD);
+                    if(fileUdd.exists()){
+                        fileUdd.delete();
+                    }
                     datasource = workspace.getDatasources().create(info);
                 }
                 if (datasource == null) {
@@ -3864,15 +3911,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
 
             if (datasource == null) {
+                promise.resolve(null);
                 return;
             }
             Datasets datasets = datasource.getDatasets();
 
             for (int i=0;i<mapControl.getMap().getLayers().getCount();i++){
                 Layer tempLayer=mapControl.getMap().getLayers().get(i);
-                if(tempLayer.getName().startsWith("PlotEdit_")&&tempLayer.getDataset().getType()==DatasetType.CAD){
-                    dataset =tempLayer.getDataset();
-                    cadLayer=tempLayer;
+                if(tempLayer.getName().startsWith("PlotEdit_")&&tempLayer.getDataset()!=null){
+                    if(tempLayer.getDataset().getType()==DatasetType.CAD) {
+                        dataset = tempLayer.getDataset();
+                        cadLayer = tempLayer;
+                    }
                 }else {
                     tempLayer.setEditable(false);
                 }
@@ -3920,20 +3970,32 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 int libId = (int) mapControl.addPlotLibrary(plotSymbolPaths.getString(i));
                 String libName = mapControl.getPlotSymbolLibName((long) libId);
                 writeMap.putInt(libName, libId);
-                if (isFirst && libName.equals("警用标号")) {
-                    Point2Ds point2Ds = new Point2Ds();
-                    Point2D point2D=new Point2D(mapControl.getMap().getViewBounds().getLeft()-100,mapControl.getMap().getViewBounds().getTop()-100);
-                    point2Ds.add(point2D);
-                    mapControl.addPlotObject(libId, 20100, point2Ds);
-                    mapControl.cancel();
-                    Recordset recordset = ((DatasetVector) dataset).getRecordset(false, CursorType.DYNAMIC);
-                    recordset.moveLast();
-                    recordset.delete();
-                    recordset.update();
-                    recordset.dispose();
-                    mapControl.getMap().refresh();
-                    mapControl.setAction(Action.PAN);
-                }
+//                if (isFirst && libName.equals("警用标号")) {
+//                    Point2Ds point2Ds = new Point2Ds();
+//                    Point2D point2D=new Point2D(mapControl.getMap().getViewBounds().getLeft()-100,mapControl.getMap().getViewBounds().getTop()-100);
+//                    point2Ds.add(point2D);
+//                    mapControl.addPlotObject(libId, 20100, point2Ds);
+//                    mapControl.cancel();
+//                    final Dataset finalDataset = dataset;
+//                    new Thread() {
+//                        @Override
+//                        public void run() {
+//                            super.run();
+//                            try {
+//                                Thread.sleep(100);
+//                                Recordset recordset = ((DatasetVector) finalDataset).getRecordset(false, CursorType.DYNAMIC);
+//                                recordset.moveLast();
+//                                recordset.delete();
+//                                recordset.update();
+//                                recordset.dispose();
+//                                mapControl.getMap().refresh();
+//                                mapControl.setAction(Action.PAN);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }.start();
+//                }
             }
 
             promise.resolve(writeMap);
@@ -3975,8 +4037,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             for (int i=0;i<mapControl.getMap().getLayers().getCount();i++){
                 Layer tempLayer=mapControl.getMap().getLayers().get(i);
-                if(tempLayer.getName().startsWith("PlotEdit_")&&tempLayer.getDataset().getType()==DatasetType.CAD){
-                    tempLayer.setEditable(true);
+                if(tempLayer.getName().startsWith("PlotEdit_")&&tempLayer.getDataset()!=null){
+                    if(tempLayer.getDataset().getType()==DatasetType.CAD) {
+                        tempLayer.setEditable(true);
+                    }
                 }else {
                     tempLayer.setEditable(false);
                 }
@@ -4111,10 +4175,34 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     layers.get(i).setEditable(true);
                 }
             }
-
-            File file = new File(filePath);
+            
             mapControl.setAnimations();
-            am.getAnimationFromXML(file.getAbsolutePath());
+            am.getAnimationFromXML(filePath);
+
+
+//            开始推演时定位到推演图层，获取的推演图层范围有错误
+//            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//            try{
+//                DocumentBuilder db = dbf.newDocumentBuilder();
+//                Document document = db.parse("file:///"+filePath);
+//                NodeList booklist = document.getElementsByTagName("LAYERNAME");
+//                if(booklist.getLength()>0){
+//                    Element element= (Element) booklist.item(0);
+//                    if(element.getChildNodes().getLength()>0) {
+//                        String layerName=element.getChildNodes().item(0).getNodeValue();
+//                        Layer layer=mapControl.getMap().getLayers().get(layerName);
+//                        if(layer!=null) {
+//                            mapControl.getMap().setViewBounds(layer.getDataset().getBounds());
+//                            mapControl.getMap().refresh();
+//                        }
+//                    }
+//                }
+//            }catch (ParserConfigurationException e){
+//                e.printStackTrace();
+//            }catch (IOException e){
+//                e.printStackTrace();
+//            }
+
 
             promise.resolve(true);
         } catch (Exception e) {

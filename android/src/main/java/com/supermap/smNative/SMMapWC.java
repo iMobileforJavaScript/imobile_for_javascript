@@ -1716,17 +1716,19 @@ public class SMMapWC {
                     Geometry geoTemp = recordset.getGeometry();
                     recordset.moveNext();
                     GeoStyle styleTemp = geoTemp.getStyle();
-                    int nMarkerID = styleTemp.getMarkerSymbolID();
-                    int nLineID = styleTemp.getLineSymbolID();
-                    int nFillID = styleTemp.getFillSymbolID();
-                    if (nMarkerID > 0) {
-                        setMarkerIDs.add(nMarkerID);
-                    }
-                    if (nLineID > 0) {
-                        setMarkerIDs.add(nLineID);
-                    }
-                    if (nFillID > 0) {
-                        setFillIDs.add(nFillID);
+                    if(styleTemp != null){
+                        int nMarkerID = styleTemp.getMarkerSymbolID();
+                        int nLineID = styleTemp.getLineSymbolID();
+                        int nFillID = styleTemp.getFillSymbolID();
+                        if (nMarkerID > 0) {
+                            setMarkerIDs.add(nMarkerID);
+                        }
+                        if (nLineID > 0) {
+                            setMarkerIDs.add(nLineID);
+                        }
+                        if (nFillID > 0) {
+                            setFillIDs.add(nFillID);
+                        }
                     }
                 }
                 recordset.close();
@@ -2137,17 +2139,19 @@ public class SMMapWC {
                     Geometry geoTemp = recordset.getGeometry();
                     recordset.moveNext();
                     GeoStyle styleTemp = geoTemp.getStyle();
-                    int nMarkerID = styleTemp.getMarkerSymbolID();
-                    int nLineID = styleTemp.getLineSymbolID();
-                    int nFillID = styleTemp.getFillSymbolID();
-                    if (nMarkerID > 0) {
-                        setMarkerIDs.add(nMarkerID);
-                    }
-                    if (nLineID > 0) {
-                        setMarkerIDs.add(nLineID);
-                    }
-                    if (nFillID > 0) {
-                        setFillIDs.add(nFillID);
+                    if(styleTemp != null){
+                        int nMarkerID = styleTemp.getMarkerSymbolID();
+                        int nLineID = styleTemp.getLineSymbolID();
+                        int nFillID = styleTemp.getFillSymbolID();
+                        if (nMarkerID > 0) {
+                            setMarkerIDs.add(nMarkerID);
+                        }
+                        if (nLineID > 0) {
+                            setMarkerIDs.add(nLineID);
+                        }
+                        if (nFillID > 0) {
+                            setFillIDs.add(nFillID);
+                        }
                     }
                 }
                 recordset.close();
