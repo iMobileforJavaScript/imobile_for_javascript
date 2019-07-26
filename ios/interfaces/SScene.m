@@ -1979,9 +1979,14 @@ RCT_REMAP_METHOD(clipByBox, clipByBoxWithDic:(NSDictionary *)posDic resolve:(RCT
                 
                 CGPoint p2 = {.x=[[posDic valueForKey:@"endX"]doubleValue],.y=[[posDic valueForKey:@"endY"]doubleValue]};
                 
+                CGFloat scale = [UIScreen mainScreen].scale;
+                CGPoint pointStart = CGPointMake( p1.x * scale-56/2, p1.y * scale);//  修正底层添加的点和实际不一致
+                CGPoint pointEnd = CGPointMake( p2.x * scale-56/2, p2.y * scale);//  修正底层添加的点和实际不一致
                 
-                Point3D startPoint = [sScene.smSceneWC.sceneControl.scene pixelToGlobeWith:p1 andPixelToGlobeMode:TerrainAndModel];
-                Point3D endPoint = [sScene.smSceneWC.sceneControl.scene pixelToGlobeWith:p2 andPixelToGlobeMode:TerrainAndModel];
+//                Point3D pnt3D = [mSceneControl.scene pixelToGlobeWith:point andPixelToGlobeMode:TerrainAndModel];
+
+                Point3D startPoint = [sScene.smSceneWC.sceneControl.scene pixelToGlobeWith:pointStart andPixelToGlobeMode:TerrainAndModel];
+                Point3D endPoint = [sScene.smSceneWC.sceneControl.scene pixelToGlobeWith:pointEnd andPixelToGlobeMode:TerrainAndModel];
                 
                 [[LableHelper3D sharedInstance] addGeoText:startPoint test:@"start"];
                 [[LableHelper3D sharedInstance] addGeoText:endPoint test:@"end"];
