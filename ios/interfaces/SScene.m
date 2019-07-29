@@ -2012,8 +2012,8 @@ RCT_REMAP_METHOD(clipByBox, clipByBoxWithDic:(NSDictionary *)posDic resolve:(RCT
             }
             
             centerPoint.x = x;
-            centerPoint.x = x;
-            centerPoint.x = x;
+            centerPoint.y = y;
+            centerPoint.z = z;
             
             [size2d setWidth:width];
             [size2d setHeight:height];
@@ -2088,6 +2088,7 @@ RCT_REMAP_METHOD(clipSenceClear, clipByBoxWithResolve:(RCTPromiseResolveBlock)re
             Layer3D *layer3D = [layer3ds getLayerWithIndex:i];
             [layer3D clearCustomClipPlane];
         }
+        [sScene.smSceneWC.sceneControl.scene refresh];
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"clipSenceClear()",exception.reason,nil);
