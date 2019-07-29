@@ -160,9 +160,9 @@ RCT_REMAP_METHOD(addLayerByIndex, addLayerByIndex:(int)datasourceIndex datasetIn
 }
 
 #pragma mark 根据图层名获取对应xml
-RCT_REMAP_METHOD(getLayerAsXML, getLayerAsXML: (NSString *) layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getLayerAsXML, getLayerAsXML:(NSString *)layerPath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        Layer* layer = [SMLayer findLayerWithName:layerName];
+        Layer* layer = [SMLayer findLayerByPath:layerPath];
         
         resolve(layer.toXML);
     } @catch (NSException *exception) {

@@ -6,6 +6,8 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.supermap.component.SMSymbolTable;
+import com.supermap.interfaces.ai.AIDetectViewManager;
+import com.supermap.interfaces.ai.SAIDetectView;
 import com.supermap.interfaces.analyst.SAnalyst;
 import com.supermap.interfaces.analyst.SFacilityAnalyst;
 import com.supermap.interfaces.analyst.STransportationAnalyst;
@@ -42,6 +44,7 @@ public class SupermapFullPackage implements ReactPackage {
                 new MapViewManager(),
                 new LayerListViewManager(),new ScaleViewManager(),new CallOutManager()
                 ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView()
+                ,new AIDetectViewManager()
         );
     }
 
@@ -205,6 +208,9 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new SAnalyst(reactContext));
         modules.add(new SFacilityAnalyst(reactContext));
         modules.add(new STransportationAnalyst(reactContext));
+
+        //AI识别
+        modules.add(new SAIDetectView(reactContext));
         return modules;
     }
 }

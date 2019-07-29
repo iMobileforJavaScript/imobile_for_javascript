@@ -24,7 +24,7 @@ public class RCTArrowRenderView extends SimpleViewManager<ArrowRenderGLSurfaceVi
 
     public static final String REACT_CLASS="RCTArrowRenderView";
 
-    ThemedReactContext m_ThemedReactContext;
+    private ThemedReactContext m_ThemedReactContext;
 
     private DynamicArrowRender render;//AR动态导航渲染
 

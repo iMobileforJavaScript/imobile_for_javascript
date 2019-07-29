@@ -140,7 +140,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
         point.putDouble("y", pt.getY());
 
         String modifiedDate = recordset.getString("ModifiedDate");
-        String mediaFileName = recordset.getString("MediaFileName");
+        String mediaName = recordset.getString("MediaName");
         String httpAddress = recordset.getString("HttpAddress");
         String description = recordset.getString("Description");
 
@@ -163,7 +163,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
         data.putInt("geoID", geoID);
         data.putArray("medium", medium);
         data.putString("modifiedDate", modifiedDate);
-        data.putString("mediaFileName", mediaFileName);
+        data.putString("mediaName", mediaName);
         data.putArray("mediaFilePaths", paths);
         data.putString("httpAddress", httpAddress);
         data.putString("description", description);
@@ -334,14 +334,14 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
 
             ArrayList<InfoCallout> callouts = new ArrayList<>();
             for (int i = medias.size() - 1; i >= 0; i--) {
-                String mediaName = rs.getFieldValue("MediaFileName").toString();
+                String mediaName = rs.getFieldValue("MediaName").toString();
                 SMMedia media = medias.get(i);
 
                 if (media.getFileName().equals("TourLine")) continue; // 线
 
                 while (!mediaName.equals(media.getFileName()) && !rs.isBOF()) {
                     rs.movePrev();
-                    mediaName = rs.getFieldValue("MediaFileName").toString();
+                    mediaName = rs.getFieldValue("MediaName").toString();
                 }
 
                 InfoCallout callout = SMMediaCollector.createCalloutByMedia(getReactApplicationContext(), media, rs, layer.getName(), getCalloutListner());

@@ -295,13 +295,13 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     /**
      * 根据图层名获取对应xml
      *
-     * @param layerName
+     * @param layerPath
      * @param promise
      */
     @ReactMethod
-    public void getLayerAsXML(String layerName, Promise promise) {
+    public void getLayerAsXML(String layerPath, Promise promise) {
         try {
-            Layer layer = SMLayer.findLayerWithName(layerName);
+            Layer layer = SMLayer.findLayerByPath(layerPath);
 
             promise.resolve(layer.toXML());
         } catch (Exception e) {
