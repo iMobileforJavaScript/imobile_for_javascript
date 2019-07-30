@@ -569,13 +569,10 @@ RCT_REMAP_METHOD(thiessenAnalyst, thiessenAnalystWithSourceData:(NSDictionary *)
             }
         }
 
-        Dataset* datasetRes = nil;
-        if (region) {
-            datasetRes = [ProximityAnalyst createThiessenPolygonByDataset:sourceDataset
-                                                           withDatasource:resultDatasource
-                                                                    named:resName
-                                                                     clip:region];
-        }
+        Dataset* datasetRes = [ProximityAnalyst createThiessenPolygonByDataset:sourceDataset
+                                                       withDatasource:resultDatasource
+                                                                named:resName
+                                                                 clip:region];
         
         BOOL result = NO;
         if (datasetRes) {

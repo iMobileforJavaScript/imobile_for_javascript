@@ -824,10 +824,7 @@ public class SAnalyst extends ReactContextBaseJavaModule {
                 }
             }
 
-            Dataset datasetRes = null;
-            if (region != null) {
-                datasetRes = ProximityAnalyst.createThiessenPolygon(sourceDataset, resultDatasource, resName, region);
-            }
+            Dataset datasetRes = ProximityAnalyst.createThiessenPolygon(sourceDataset, resultDatasource, resName, region);
 
             boolean result = false;
             if (datasetRes != null) {
