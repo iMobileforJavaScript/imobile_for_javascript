@@ -322,6 +322,17 @@ export default (function () {
   }
 
   /**
+   * 获取MapControl的action
+   */
+  function getAction () {
+    try {
+      return SMap.getAction()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 地图放大缩小
    */
   function zoom (scale = 2) {
@@ -1695,6 +1706,7 @@ export default (function () {
     closeMapControl,
     getMaps,
     setAction,
+    getAction,
     openMap,
     saveMap,
     saveAsMap,

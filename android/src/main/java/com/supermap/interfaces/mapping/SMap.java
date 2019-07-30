@@ -1133,6 +1133,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+
+    @ReactMethod
+    public void getAction(Promise promise) {
+        try {
+            sMap = getInstance();
+            Action action = sMap.smMapWC.getMapControl().getAction();
+            int actionType = action.value();
+
+            promise.resolve(actionType);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     @ReactMethod
     public void undo(Promise promise) {
         try {

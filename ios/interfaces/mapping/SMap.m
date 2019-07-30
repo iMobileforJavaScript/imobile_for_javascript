@@ -1382,6 +1382,17 @@ RCT_REMAP_METHOD(setAction, setActionByActionType:(int)actionType resolver:(RCTP
     }
 }
 
+#pragma mark 获取MapControl的Action
+RCT_REMAP_METHOD(getAction, getActionByActionTypeWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Action type = sMap.smMapWC.mapControl.action;
+        resolve(@(type));
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
 #pragma mark /************************************** 设置绘制对象时画笔样式 START****************************************/
 #pragma mark 设置MapControl的Action
 RCT_REMAP_METHOD(setStrokeColor, setStrokeColor:(int)strokeColor resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
