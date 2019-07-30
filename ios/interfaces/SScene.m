@@ -2012,8 +2012,8 @@ RCT_REMAP_METHOD(clipByBox, clipByBoxWithDic:(NSDictionary *)posDic resolve:(RCT
             }
             
             centerPoint.x = x;
-            centerPoint.x = x;
-            centerPoint.x = x;
+            centerPoint.y = y;
+            centerPoint.z = z;
             
             [size2d setWidth:width];
             [size2d setHeight:height];
@@ -2032,8 +2032,8 @@ RCT_REMAP_METHOD(clipByBox, clipByBoxWithDic:(NSDictionary *)posDic resolve:(RCT
             BOOL needFilter = YES;
             NSArray *layers = [posDic valueForKey:@"layers"];
             
-            if([layers count] == 0 && ![posDic valueForKey:@"isCliped"]){
-                needFilter = false;
+            if([layers count] == 0 && !((NSNumber*)[posDic valueForKey:@"isCliped"]).boolValue){
+                needFilter = NO;
             }
             
             if(needFilter){
@@ -2043,7 +2043,7 @@ RCT_REMAP_METHOD(clipByBox, clipByBoxWithDic:(NSDictionary *)posDic resolve:(RCT
                     [layer3d clearCustomClipPlane];
                     for(int j = 0; j < [layers count]; j++){
                         dic = layers[j];
-                        if([dic valueForKey:@"name"] == layer3d.name){
+                        if([[dic valueForKey:@"name"]isEqualToString:layer3d.name]){
                             [layer3d clipByBox:box part:part];
                         }
                     }
@@ -2088,6 +2088,7 @@ RCT_REMAP_METHOD(clipSenceClear, clipByBoxWithResolve:(RCTPromiseResolveBlock)re
             Layer3D *layer3D = [layer3ds getLayerWithIndex:i];
             [layer3D clearCustomClipPlane];
         }
+        [sScene.smSceneWC.sceneControl.scene refresh];
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"clipSenceClear()",exception.reason,nil);

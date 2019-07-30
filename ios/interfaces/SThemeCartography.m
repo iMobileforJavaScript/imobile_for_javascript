@@ -3280,7 +3280,7 @@ RCT_REMAP_METHOD(modifyDotDensityThemeMap, modifyDotDensityThemeMapWithResolver:
             symbolID = [strValue intValue];
         }
         
-        if (layer != nil && layer.theme != nil && layer.theme.themeType!=TT_DotDensity) {
+        if (layer != nil && layer.theme != nil && layer.theme.themeType==TT_DotDensity) {
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [[mapControl getEditHistory] addMapHistory];
             

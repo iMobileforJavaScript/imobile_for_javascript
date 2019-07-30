@@ -2203,6 +2203,7 @@ public class SScene extends ReactContextBaseJavaModule {
                 Layer3D layer3D = layer3Ds.get(i);
                 layer3D.clearCustomClipPlane();
             }
+            sScene.smSceneWc.getSceneControl().getScene().refresh();
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
