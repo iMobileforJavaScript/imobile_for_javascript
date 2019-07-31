@@ -722,6 +722,7 @@ RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTProm
     @try {
         sMap = [SMap singletonInstance];
         sMap.smMapWC.mapControl.map.legend.contentChangeDelegate = nil;
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"removeLegendListener",exception.reason,nil);
     }
