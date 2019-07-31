@@ -2194,6 +2194,8 @@ RCT_REMAP_METHOD(importSymbolLibrary, importSymbolLibraryWithPath:(NSString *)pa
 RCT_REMAP_METHOD(addMap, addMap:(NSString *)srcMapName withParams:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
+        
+        [[sMap.smMapWC.mapControl getEditHistory] addMapHistory];
         BOOL result = [sMap.smMapWC addLayersFromMap:srcMapName toMap:sMap.smMapWC.mapControl.map withParam:params];
         
         resolve([NSNumber numberWithBool:result]);
@@ -3409,6 +3411,8 @@ RCT_REMAP_METHOD(getTaggingLayerCount, getTaggingLayerCountWithPath:(NSString *)
             Datasets *datasets = datasource.datasets;
             NSNumber *count = [NSNumber numberWithInteger:datasets.count];
             resolve(count);
+        } else {
+            resolve(0);
         }
     } @catch (NSException *exception) {
         reject(@"getTaggingLayerCount",exception.reason,nil);
