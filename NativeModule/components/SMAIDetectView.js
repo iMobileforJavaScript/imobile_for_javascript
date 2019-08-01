@@ -7,29 +7,59 @@ import {
 } from 'react-native'
 import PropTypes from 'prop-types'
 import { scaleSize } from "../../../../src/utils";
+import { SAIDetectView } from 'imobile_for_reactnative'
 
 class SMAIDetectView extends React.Component {
+
   constructor() {
     super()
   }
 
   state = {
     viewId: 0,
+    visible: true,
   }
 
   static propTypes = {
+    visible: PropTypes.bool,
+    onArObjectClick: PropTypes.func,
     ...ViewPropTypes,
+  };
+
+  static defaultProps = {
+    visible: true,
+  }
+
+  componentDidMount() {
+  }
+
+  _onArObjectClick = ({nativeEvent}) => {
+    this.props.onArObjectClick && this.props.onArObjectClick(nativeEvent)
+  }
+
+  setVisible = (visible) => {
+    if (this.state.visible === visible) return
+    this.setState({
+      visible: visible,
+    })
   }
 
   render() {
     var props = { ...this.props };
-    props.returnId = true;
+
+    if (!this.state.visible) {
+      return null
+    }
 
     return (
-      <View style={styles.views}>
+      <View
+        style={styles.views}
+      >
         <RCTAIDetectView
+          ref={ref => this.RCTAIDetectView = ref}
           {...props}
           style={styles.view}
+          onArObjectClick={this._onArObjectClick}
         />
       </View>
     );
@@ -39,16 +69,18 @@ class SMAIDetectView extends React.Component {
 var styles = StyleSheet.create({
   views: {
     flex: 1,
-    position: 'absolute',
-    height: '100%',
-    width: '100%',
+    alignSelf: 'stretch',
     backgroundColor: 'transparent',
-    zIndex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    flexDirection: 'column',
   },
   view: {
-    height: '100%',
-    width: '100%',
+    flex: 1,
+    alignSelf: 'stretch',
   },
+
 });
 
 var RCTAIDetectView = requireNativeComponent('RCTAIDetectView', SMAIDetectView)

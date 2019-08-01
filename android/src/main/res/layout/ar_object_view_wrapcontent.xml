@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:background="@drawable/shape_bg_speech_dialog"
+                android:layout_height="wrap_content">
+
+    <ImageView
+            android:id="@+id/ai_ar_content"
+            android:layout_width="40dp"
+            android:layout_margin="5dp"
+            android:layout_centerVertical="true"
+            android:layout_height="40dp"
+            android:adjustViewBounds="true"
+            android:visibility="visible"/>
+
+    <RelativeLayout android:layout_width="wrap_content"
+                    android:background="@drawable/shape_bg_poiinfo"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:layout_marginLeft="2dp"
+                    android:layout_toRightOf="@id/ai_ar_content"
+                    android:layout_height="wrap_content">
+
+        <TextView android:layout_width="wrap_content"
+                  android:id="@+id/tv_name"
+                  android:text="类别："
+                  android:textSize="16sp"
+                  android:padding="5dp"
+                  android:textColor="#ffffff"
+                  android:layout_height="wrap_content"/>
+
+        <TextView android:layout_width="wrap_content"
+                  android:id="@+id/info"
+                  android:textSize="16sp"
+                  android:padding="5dp"
+                  android:textColor="#ffffff"
+                  android:layout_toRightOf="@id/tv_name"
+                  android:layout_height="wrap_content"/>
+
+        <TextView android:layout_width="wrap_content"
+                  android:id="@+id/tv_address"
+                  android:layout_below="@id/tv_name"
+                  android:text="地址："
+                  android:textSize="16sp"
+                  android:padding="5dp"
+                  android:textColor="#ffffff"
+                  android:layout_height="wrap_content"/>
+
+        <TextView android:layout_width="wrap_content"
+                  android:id="@+id/address"
+                  android:textSize="16sp"
+                  android:padding="5dp"
+                  android:textColor="#ffffff"
+                  android:layout_toRightOf="@id/tv_address"
+                  android:layout_below="@id/info"
+                  android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
