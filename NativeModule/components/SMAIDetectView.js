@@ -7,7 +7,6 @@ import {
 } from 'react-native'
 import PropTypes from 'prop-types'
 import { scaleSize } from "../../../../src/utils";
-import { SAIDetectView } from 'imobile_for_reactnative'
 
 class SMAIDetectView extends React.Component {
 
@@ -28,9 +27,6 @@ class SMAIDetectView extends React.Component {
 
   static defaultProps = {
     visible: true,
-  }
-
-  componentDidMount() {
   }
 
   _onArObjectClick = ({nativeEvent}) => {

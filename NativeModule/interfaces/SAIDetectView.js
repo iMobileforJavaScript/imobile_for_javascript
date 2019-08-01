@@ -1,7 +1,7 @@
 /*********************************************************************************
  Copyright © SuperMap. All rights reserved.
  Author: tronzzb
- Description: AI识别
+ Description: AI识别控制类
  **********************************************************************************/
 import {
   NativeModules,
