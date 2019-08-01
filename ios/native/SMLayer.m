@@ -55,7 +55,7 @@
     } else {
         layer = [self findLayerByPath:path];
     }
-    if (layer.dataset == nil) {
+    if ([layer isKindOfClass:[LayerGroup class]]) {
         layerGroup = (LayerGroup *)layer;
     } else {
         return arr;
@@ -81,7 +81,7 @@
     }
     
     NSString* datasetName = @"";
-    if (layer.dataset != nil) {
+    if (layer.dataset != nil && ![layer isKindOfClass:[LayerGroup class]]) {
         datasetName = layer.dataset.name;
     }
     
@@ -102,10 +102,16 @@
     [dictionary setValue:path forKey:@"path"];
     [dictionary setValue:@(themeType) forKey:@"themeType"];
     
-    if (layer.dataset != nil) {
-        [dictionary setValue:[NSNumber numberWithInteger:layer.dataset.datasetType] forKey:@"type"];
+    if (![layer isKindOfClass:[LayerGroup class]]) {
+        NSNumber* dsType = @(-1);
+        NSString* datasourceAlias = @"";
+        if (layer.dataset != nil) {
+            dsType = [NSNumber numberWithInteger:layer.dataset.datasetType];
+            datasourceAlias = layer.dataset.datasource.datasourceConnectionInfo.alias;
+        }
+        [dictionary setValue:dsType forKey:@"type"];
         [dictionary setValue:datasetName forKey:@"datasetName"];
-        [dictionary setValue:layer.dataset.datasource.datasourceConnectionInfo.alias forKey:@"datasourceAlias"];
+        [dictionary setValue:datasourceAlias forKey:@"datasourceAlias"];
     } else {
         [dictionary setValue:@"layerGroup" forKey:@"type"];
     }
