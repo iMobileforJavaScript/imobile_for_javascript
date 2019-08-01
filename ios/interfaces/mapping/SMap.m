@@ -722,6 +722,7 @@ RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTProm
     @try {
         sMap = [SMap singletonInstance];
         sMap.smMapWC.mapControl.map.legend.contentChangeDelegate = nil;
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"removeLegendListener",exception.reason,nil);
     }
@@ -1377,6 +1378,17 @@ RCT_REMAP_METHOD(setAction, setActionByActionType:(int)actionType resolver:(RCTP
         sMap = [SMap singletonInstance];
         sMap.smMapWC.mapControl.action = actionType;
         resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取MapControl的Action
+RCT_REMAP_METHOD(getAction, getActionByActionTypeWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Action type = sMap.smMapWC.mapControl.action;
+        resolve(@(type));
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
@@ -2183,6 +2195,8 @@ RCT_REMAP_METHOD(importSymbolLibrary, importSymbolLibraryWithPath:(NSString *)pa
 RCT_REMAP_METHOD(addMap, addMap:(NSString *)srcMapName withParams:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
+        
+        [[sMap.smMapWC.mapControl getEditHistory] addMapHistory];
         BOOL result = [sMap.smMapWC addLayersFromMap:srcMapName toMap:sMap.smMapWC.mapControl.map withParam:params];
         
         resolve([NSNumber numberWithBool:result]);
@@ -3398,6 +3412,8 @@ RCT_REMAP_METHOD(getTaggingLayerCount, getTaggingLayerCountWithPath:(NSString *)
             Datasets *datasets = datasource.datasets;
             NSNumber *count = [NSNumber numberWithInteger:datasets.count];
             resolve(count);
+        } else {
+            resolve(0);
         }
     } @catch (NSException *exception) {
         reject(@"getTaggingLayerCount",exception.reason,nil);

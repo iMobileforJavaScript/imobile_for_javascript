@@ -322,6 +322,17 @@ export default (function () {
   }
 
   /**
+   * 获取MapControl的action
+   */
+  function getAction () {
+    try {
+      return SMap.getAction()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 地图放大缩小
    */
   function zoom (scale = 2) {
@@ -1624,6 +1635,30 @@ export default (function () {
       console.error(e)
     }
   }
+  
+  /**
+   * 获取地图操作记录数量
+   * @returns {*}
+   */
+  function getMapHistoryCount () {
+    try {
+      return SMap.getMapHistoryCount()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 获取当前地图操作记录index
+   * @returns {*}
+   */
+  function getMapHistoryCurrentIndex () {
+    try {
+      return SMap.getMapHistoryCurrentIndex()
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
    * 添加数据集属性字段
@@ -1695,6 +1730,7 @@ export default (function () {
     closeMapControl,
     getMaps,
     setAction,
+    getAction,
     openMap,
     saveMap,
     saveAsMap,
@@ -1795,6 +1831,8 @@ export default (function () {
     removeHistory,
     clearHistory,
     addMapHistory,
+    getMapHistoryCount,
+    getMapHistoryCurrentIndex,
     
     addRecordset,
     setMinVisibleScale,

@@ -100,7 +100,7 @@ public class SMLayer {
             layer = findLayerByPath(path);
         }
 
-        if (layer.getDataset() == null) {
+        if (layer.getClass().isInstance(LayerGroup.class)) {
             layerGroup = (LayerGroup) layer;
         } else {
             return arr;
@@ -128,7 +128,7 @@ public class SMLayer {
     public static WritableMap getLayerInfo(Layer layer, String path) {
         Dataset dataset = layer.getDataset();
         int intType = -1;
-        if (dataset != null) { // 没有数据集的Layer是LayerGroup
+        if (!layer.getClass().isInstance(LayerGroup.class) && dataset != null) { // 判断是否是Layer是LayerGroup
             intType = dataset.getType().value();
         }
         Theme theme = layer.getTheme();
@@ -171,10 +171,16 @@ public class SMLayer {
         wMap.putString("path", path);
         wMap.putBoolean("isHeatmap", isHeatmap);
 
-        if (dataset != null && intType >= 0) { // 没有数据集的Layer是LayerGroup
+        if (!layer.getClass().isInstance(LayerGroup.class)) { // 判断是否是Layer是LayerGroup
             wMap.putInt("type", intType);
-            wMap.putString("datasetName", dataset.getName());
-            wMap.putString("datasourceAlias", dataset.getDatasource().getConnectionInfo().getAlias());
+            String datasetName = "";
+            String datasourceAlias = "";
+            if (intType >= 0) {
+                datasetName = dataset.getName();
+                datasourceAlias = dataset.getDatasource().getConnectionInfo().getAlias();
+            }
+            wMap.putString("datasetName", datasetName);
+            wMap.putString("datasourceAlias", datasourceAlias);
         } else {
             wMap.putString("type", "layerGroup");
         }

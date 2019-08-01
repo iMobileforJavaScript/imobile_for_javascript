@@ -1133,6 +1133,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+
+    @ReactMethod
+    public void getAction(Promise promise) {
+        try {
+            sMap = getInstance();
+            Action action = sMap.smMapWC.getMapControl().getAction();
+            int actionType = action.value();
+
+            promise.resolve(actionType);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     @ReactMethod
     public void undo(Promise promise) {
         try {
@@ -2685,6 +2699,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+
+            sMap.smMapWC.getMapControl().getEditHistory().addMapHistory();
             boolean result = sMap.smMapWC.addLayersFromMap(srcMapName, map, mapParam);
 
             promise.resolve(result);
@@ -3289,6 +3305,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 Datasets datasets = opendatasource.getDatasets();
                 int count = datasets.getCount();
                 promise.resolve(count);
+            } else {
+                promise.resolve(0);
             }
         } catch (Exception e) {
             promise.reject(e);
@@ -5211,7 +5229,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void removeLegendListener(Promise promise) {
+    public void getTaggingLayerCount(Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().getLegend().setContentChangeListener(null);

@@ -954,7 +954,6 @@ export default (function () {
         addImageCacheLayer,
         removeTerrainCacheLayer,
         removeImageCacheLayer,
-        changeBaseLayer,
         clipByBox,
         clipSenceClear,
     }
