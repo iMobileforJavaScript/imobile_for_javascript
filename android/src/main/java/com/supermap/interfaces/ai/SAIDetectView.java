@@ -2,38 +2,58 @@ package com.supermap.interfaces.ai;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.Log;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.facebook.react.bridge.*;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.supermap.ai.AIRecognition;
+import com.supermap.ai.AISize;
 import com.supermap.ai.AIdetectView;
 import com.supermap.ai.AidetectViewInfo;
+import com.supermap.ar.*;
+import com.supermap.rnsupermap.R;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.text.DecimalFormat;
+import java.util.*;
 
+/**
+ * AI识别控制类
+ */
 public class SAIDetectView extends ReactContextBaseJavaModule {
 
     public static final String REACT_CLASS = "SAIDetectView";
 
     private static Context mContext = null;
-    private static CustomAIDetectView mAIDetectView = null;
-    private static AidetectViewInfo aidetectViewInfo;
+    private static AIdetectView mAIDetectView = null;
+    private static AidetectViewInfo mAidetectViewInfo;
+    private static World mWorld;
 
-    private static Vector<String> strToUseAll = new Vector<>(); //模型文件中所有可用的模型
-    private static Date startDate = null;//开始识别
-    private static boolean mIsPOIMode = true; //投射模式
+    private Vector<String> mStrToUseAll = new Vector<>(); //模型文件中所有可用的模型
+    private Date mStartDate = null;//开始识别
+    private Vector<String> mStrToUse = new Vector<>(); //初始化默认设置的模型
+    private int mDetectInterval = 3000;//识别时间间隔,默认3000毫秒
 
-    static Vector<String> strToUse = new Vector<>(); //初始化默认设置的模型
+    private static ArView mArView = null;//绑定的AR显示类
+    private static boolean mIsPOIMode = true; //AR-POI投射模式
+
+    private static ArObject mCurrentArObject = null;
+
+    private static ReactApplicationContext mReactContext = null;
+    private static CustomRelativeLayout mCustomRelativeLayout = null;
 
     public SAIDetectView(ReactApplicationContext reactContext) {
         super(reactContext);
+        mReactContext = reactContext;
         mContext = reactContext.getApplicationContext();
     }
 
@@ -42,112 +62,511 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         return REACT_CLASS;
     }
 
-    public static void setInstall(CustomAIDetectView aiDetectView) {
+    public static void setInstance(AIdetectView aiDetectView) {
         mAIDetectView = aiDetectView;
-        prepareAidetectViewInfo();
-        initAI();
+        mAidetectViewInfo = new AidetectViewInfo();
+        mAidetectViewInfo.assetManager = mContext.getAssets();
+        prepareAiDetectViewInfo("detect.tflite", "file:///android_asset/labelmap.txt");
+
+        mAIDetectView.init();
+    }
+
+    public static void setArView(ArView arView) {
+        mArView = arView;
+//        mArView.setBackgroundColor(Color.parseColor("#2000ff00"));
+
+        mArView.setDistanceFactor(0.6f);
+        //创建AR场景
+        mWorld = CustomWorldHelper.generateMyObjects(mContext);
+        mArView.setWorld(mWorld);
+        //mArView.setPOIOverlapEnable(true); //POI避让
+        mArView.setOnClickArObjectListener(arObjectListener);
+    }
+
+    private static OnClickArObjectListener arObjectListener = new OnClickArObjectListener() {
+        @Override
+        public void onClickArObject(ArrayList<ArObject> arrayList) {
+//          if (!mAIDetectView.isDetect()) {
+//            return;
+//          }
+            //POI对象点击
+            mCurrentArObject = arrayList.get(0);
+            Log.e(REACT_CLASS, "onClickArObject: " + mCurrentArObject.getName());
+
+//            mAIDetectView.pauseDetect(true);//停止识别
+//            mAIDetectView.stopCountTrackedObjs();
+            mIsPOIMode = false;
+
+            //移除其他的Arobject
+            List<ArObjectList> arObjectLists = mWorld.getArObjectLists();
+            for (int i = 0; i < arObjectLists .size(); i++) {
+                ArObjectList arObjects = arObjectLists.get(i);
+                for (int j = 0; j < arObjects.size(); j++) {
+                    ArObject arObject = arObjects.get(j);
+                    if (mCurrentArObject.getId() != arObject.getId()) {
+                        mWorld.remove(arObject);
+                    }
+                }
+            }
+
+            //向JS传递ArObject的点击事件
+            WritableMap info = Arguments.createMap();
+            info.putInt("id", ((int) mCurrentArObject.getId()));
+            info.putString("name", mCurrentArObject.getName());
+            info.putString("info", mCurrentArObject.getInfo());
+            mReactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
+                    mCustomRelativeLayout.getId(),
+                    "onArObjectClick",
+                    info
+            );
+        }
+    };
+
+    public static void setViewManager(CustomRelativeLayout relativeLayout) {
+        mCustomRelativeLayout = relativeLayout;
     }
 
     @ReactMethod
     public void initAIDetect(Promise promise){
         try{
             Log.e(REACT_CLASS, "----------------SAIDetectView--initAIDetect--------RN--------");
-            mAIDetectView.init();
+            Activity currentActivity = getCurrentActivity();
+            if (currentActivity != null) {
+                currentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mAIDetectView == null) {
+                            return;
+                        }
+                        mAIDetectView.setBackgroundColor(Color.parseColor("#2D2D2F"));
+                        mAIDetectView.setDetectInfo(mAidetectViewInfo);//设置数据
 
-            mAIDetectView.setBackgroundColor(Color.parseColor("#708090"));
-            mAIDetectView.setDetectInfo(aidetectViewInfo);//设置数据
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TV));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.KEYBOARD));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CELLPHONE));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.PERSON));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOTORCYCLE));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TRUCK));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BICYCLE));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BOTTLE));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BUS));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CUP));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CAR));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TRAFFICLIGHT));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BOTTLE));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOUSE));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CAT));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.POTTEDPLANT));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CHAIR));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BIRD));
 
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TV));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.KEYBOARD));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CELLPHONE));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.PERSON));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOTORCYCLE));
+                        mAIDetectView.setDetectArrayToUse(mStrToUse);//设置初始模型
 
-            mAIDetectView.setDetectArrayToUse(strToUse);//设置初始模型
+                        mAIDetectView.setDetectedListener(mDetectListener);//设置Ai监听回调
 
-            mAIDetectView.setDetectedListener(mDetectListener);//设置Ai监听回调
+                        mAIDetectView.setDetectInterval(mDetectInterval);//设置识别时间间隔
 
-            mAIDetectView.setDetectInterval(3000);//设置识别时间间隔
+                        mAIDetectView.setisPolymerize(false);//是否聚合模式
 
-            mAIDetectView.setisPolymerize(false);//置是否聚合模式
+                        mAIDetectView.setPolymerizeThreshold(100, 100);//设置聚合模式网格宽高
 
-            mAIDetectView.setPolymerizeThreshold(100, 100);//设置聚合模式网格宽高
-
-//            mAIDetectView.startDetect();//开始识别
-//            mAIDetectView.startCountTrackedObjs();
-
+//                        mAIDetectView.startDetect();
+//                        mAIDetectView.startCountTrackedObjs();
+                    }
+                });
+            }
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
         }
     }
 
+    /**
+     * 开始识别
+     */
     @ReactMethod
     public void startDetect(Promise promise) {
         try {
             Log.e(REACT_CLASS, "----------------SAIDetectView--startDetect--------RN--------");
             Activity currentActivity = getCurrentActivity();
             if (currentActivity != null) {
-                mAIDetectView.startDetect();//开始识别
-                mAIDetectView.startCountTrackedObjs();
+                currentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mAIDetectView == null) {
+                            return;
+                        }
+                        mIsPOIMode = true;
+                        mAIDetectView.startDetect();//开始识别
+                        mAIDetectView.startCountTrackedObjs();
+
+                        mWorld.clearWorld();
+                        mArView.startRenderingAR();
+                    }
+                });
             }
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
 
-    private static void initAI(){
-        try{
-            Log.e(REACT_CLASS, "----------------SAIDetectView--initAIDetect--------JAVA--------");
-            mAIDetectView.init();
+    /**
+     * 暂停识别
+     */
+    @ReactMethod
+    public void pauseDetect(Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--pauseDetect--------RN--------");
+            Activity currentActivity = getCurrentActivity();
+            if (currentActivity != null) {
+                currentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mAIDetectView == null) {
+                            return;
+                        }
+                        mIsPOIMode = false;
+                        mAIDetectView.pauseDetect(true);
+                        mAIDetectView.stopCountTrackedObjs();
 
-            mAIDetectView.setBackgroundColor(Color.parseColor("#708090"));
-            prepareAidetectViewInfo();
-            mAIDetectView.setDetectInfo(aidetectViewInfo);//设置数据
-
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TV));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.KEYBOARD));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CELLPHONE));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.PERSON));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOTORCYCLE));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.LAPTOP));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CAR));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOUSE));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CHAIR));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.POTTEDPLANT));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CUP));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.PERSON));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BOTTLE));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BUS));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BOOK));
-            strToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TRUCK));
-
-            mAIDetectView.setDetectArrayToUse(strToUse);//设置初始模型
-
-            mAIDetectView.setDetectedListener(mDetectListener);//设置Ai监听回调
-
-            mAIDetectView.setDetectInterval(3000);//设置识别时间间隔
-
-            mAIDetectView.setisPolymerize(false);//置是否聚合模式
-
-            mAIDetectView.setPolymerizeThreshold(100, 100);//设置聚合模式网格宽高
-
-//            mAIDetectView.startDetect();//开始识别
-//            mAIDetectView.startCountTrackedObjs();
-
-        }catch (Exception e){
-            Log.e(REACT_CLASS, e.getMessage());
+                        mWorld.clearWorld();
+                        mArView.stopRenderingAR();
+                    }
+                });
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
         }
     }
 
+    /**
+     * 停止识别,回收资源
+     * @param promise
+     */
+    @ReactMethod
+    public void dispose(Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--dispose--------RN--------");
+            Activity currentActivity = getCurrentActivity();
+            if (currentActivity != null) {
+                currentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mAIDetectView == null) {
+                            return;
+                        }
+                        mAIDetectView.pauseDetect(true);
+                        mAIDetectView.stopCountTrackedObjs();
+                        mAIDetectView.dispose();
 
-    private static void prepareAidetectViewInfo() {
-        aidetectViewInfo = new AidetectViewInfo();
-        aidetectViewInfo.assetManager = mContext.getAssets();
-        aidetectViewInfo.modeFile = "detect.tflite";
-        aidetectViewInfo.lableFile = "file:///android_asset/labelmap.txt";
-        aidetectViewInfo.inputSize = 300;
-        aidetectViewInfo.isQUANTIZED = true;
+                        mWorld.clearWorld();
+                        mArView.stopRenderingAR();
+                    }
+                });
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置模型文件等信息
+     * @param modelName
+     * @param lableName
+     * @param promise
+     */
+    @ReactMethod
+    public void setDetectInfo(String modelName, String lableName, Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--setDetectInfo--------RN--------");
+            prepareAiDetectViewInfo(modelName, lableName);
+            mAIDetectView.setDetectInfo(mAidetectViewInfo);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置识别类型
+     * @param array
+     * @param promise
+     */
+    @ReactMethod
+    public void setDetectArrayToUse(ReadableArray array, Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--setDetectArrayToUse--------RN--------");
+            Vector<String> arrayToUse = new Vector<>();
+            for (int i = 0; i < array.size(); i++) {
+                String lableName = array.getString(i);
+                arrayToUse.add(lableName);
+            }
+            mAIDetectView.setDetectArrayToUse(arrayToUse);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 是否正在识别
+     * @param promise
+     */
+    @ReactMethod
+    public void isDetect(Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--isDetect--------RN--------");
+            boolean detect = mAIDetectView.isDetect();
+
+            promise.resolve(detect);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取当前设置的识别类型
+     * @param promise
+     */
+    @ReactMethod
+    public void getDetectArrayToUse(Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--getDetectArrayToUse--------RN--------");
+            Vector<String> detectArrayToUse = mAIDetectView.getDetectArrayToUse();
+
+            WritableArray array = Arguments.createArray();
+            for (int i = 0; i < detectArrayToUse.size(); i++) {
+                array.pushString(detectArrayToUse.get(i));
+            }
+
+            promise.resolve(array);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取所有可用的识别分类
+     * @param promise
+     */
+    @ReactMethod
+    public void getAllDetectArrayProvide(Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--getAllDetectArrayProvide--------RN--------");
+            Vector<String> detectArrayToUse = mAIDetectView.getAllDetectArrayProvide();
+
+            WritableArray array = Arguments.createArray();
+            for (int i = 0; i < detectArrayToUse.size(); i++) {
+                array.pushString(detectArrayToUse.get(i));
+            }
+
+            promise.resolve(array);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 清除识别对象
+     * @param promise
+     */
+    @ReactMethod
+    public void clearDetectObjects(Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--clearDetectObjects--------RN--------");
+            mAIDetectView.clearDetectObjects();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置是否聚合模式
+     * @param promise
+     */
+    @ReactMethod
+    public void setIsPolymerize(boolean value, Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--setisPolymerize--------RN--------");
+            mAIDetectView.setisPolymerize(value);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 返回是否聚合模式
+     * @param promise
+     */
+    @ReactMethod
+    public void isPolynerize(boolean value, Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--isPolynerize--------RN--------");
+            boolean polynerize = mAIDetectView.isPolynerize();
+
+            promise.resolve(polynerize);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置聚合模式阀值
+     * @param promise
+     */
+    @ReactMethod
+    public void setPolymerizeThreshold(int x, int y, Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--setPolymerizeThreshold--------RN--------");
+            mAIDetectView.setPolymerizeThreshold(x, y);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置聚合模式宽高
+     * @param promise
+     */
+    @ReactMethod
+    public void setPolySize(int width, int height, Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--setPolySize--------RN--------");
+            AISize aiSize = new AISize(width, height);
+            mAIDetectView.setPolySize(aiSize);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取当前跟踪计数结果
+     * @param promise
+     */
+    @ReactMethod
+    public void getTrackedCount(int width, int height, Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--getTrackedCount--------RN--------");
+            int trackedCount = mAIDetectView.getTrackedCount();
+
+            promise.resolve(trackedCount);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 重置跟踪计数结果
+     * @param promise
+     */
+    @ReactMethod
+    public void resetTrackedCount(Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--resetTrackedCount--------RN--------");
+            mAIDetectView.resetTrackedCount();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 开始跟踪计数
+     * @param promise
+     */
+    @ReactMethod
+    public void startCountTrackedObjs(Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--startCountTrackedObjs--------RN--------");
+            mAIDetectView.startCountTrackedObjs();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 停止跟踪计数
+     * @param promise
+     */
+    @ReactMethod
+    public void stopCountTrackedObjs(Promise promise) {
+        try {
+            Log.e(REACT_CLASS, "----------------SAIDetectView--stopCountTrackedObjs--------RN--------");
+            mAIDetectView.stopCountTrackedObjs();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 保存预览图片
+     * @param promise
+     */
+    @ReactMethod
+    public void savePreviewBitmap(final String pictureDirectory, final String fileName, Promise promise) {
+        try {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.e(REACT_CLASS, "----------------SAIDetectView--savePreviewBitmap--------RN--------");
+                    Bitmap previewBitmap = mAIDetectView.getPreviewBitmap();
+
+                    saveBitmapAsFile(pictureDirectory, fileName, previewBitmap);
+                }
+            }).start();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 保存截屏(预览图片+识别绘制框)
+     * @param promise
+     */
+    @ReactMethod
+    public void saveScreenCapture(final String pictureDirectory, final String fileName, Promise promise) {
+        try {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.e(REACT_CLASS, "----------------SAIDetectView--saveScreenCapture--------RN--------");
+                    Bitmap screenCapture = mAIDetectView.ScreenCapture();
+
+                    saveBitmapAsFile(pictureDirectory, fileName, screenCapture);
+                }
+            }).start();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    //*******************************************************************************************************//
+    private static void prepareAiDetectViewInfo(String modelName, String lableName) {
+        mAidetectViewInfo.modeFile = modelName;
+        mAidetectViewInfo.lableFile = lableName;
+        mAidetectViewInfo.inputSize = 300;
+        mAidetectViewInfo.isQUANTIZED = true;
     }
 
     //毫秒
@@ -158,11 +577,39 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         return c;
     }
 
-    private static AIdetectView.DetectListener mDetectListener = new AIdetectView.DetectListener() {
+    //保存bitmap为图片
+    private boolean saveBitmapAsFile(String folderPath, String name, Bitmap bitmap) {
+        if (!new File(folderPath).exists()) {
+            new File(folderPath).mkdirs();
+        }
+        if (bitmap == null || bitmap.isRecycled()) {
+            return false;
+        }
+        File saveFile = new File(folderPath, name + ".jpg");
+
+        boolean saved = false;
+        FileOutputStream os = null;
+        try {
+            Log.e("FileCache", "Saving File To Cache " + saveFile.getPath());
+            os = new FileOutputStream(saveFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+            os.flush();
+            os.close();
+            saved = true;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return saved;
+    }
+
+    private AIdetectView.DetectListener mDetectListener = new AIdetectView.DetectListener() {
         @Override
         public void onDectetComplete(Map<String, Integer> result) {
             //流量统计
-            Log.e("DetectListener", "-----------onDectetComplete-----------");
+            Log.e("DetectListener", "-----------onDectetComplete-----------: " + result.size());
 //            for (Map.Entry<String, Integer> entry : result.entrySet()) {
 //                Log.e("onDectetComplete:", entry.getKey() + "  value:" + entry.getValue());
 //            }
@@ -170,32 +617,168 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
         @Override
         public void onProcessDetectResult(List<AIRecognition> recognitions) {
-            Log.e("DetectListener", "-----------onProcessDetectResult-----------");
+//            Log.e("DetectListener", "-----------onProcessDetectResult-----------");
             if (!mAIDetectView.isDetect()) {
                 //停止识别状态
                 return;
             }
             //识别结果(3秒间隔)
             boolean isCreated = false;//重新识别
-            if (startDate == null) {
+            if (mStartDate == null) {
                 isCreated = true;
-            } else if (mIsPOIMode && calLastedTime(startDate) >= 3000) {
+            } else if (mIsPOIMode && calLastedTime(mStartDate) >= mDetectInterval) {
                 isCreated = true;
-            } else if (mIsPOIMode && calLastedTime(startDate) < 3000) {
+            } else if (mIsPOIMode && calLastedTime(mStartDate) < mDetectInterval) {
+                isCreated = false;
+            } else {
                 isCreated = false;
             }
 
             if (isCreated) {
                 //重新识别
-                Log.e("DetectListener", "onProcessDetectResult--重新识别");
-                startDate = new Date();
+                Log.e("DetectListener", "onProcessDetectResult--重新识别--: "  + recognitions.size());
+                mStartDate = new Date();
+                mWorld.clearWorld();
+
+                //创建POI对象
+                if (mArView != null) {
+                    generateArObject(recognitions);
+                }
             }
         }
 
         @Override
         public void onTrackedCountChanged(int i) {
-            Log.e("DetectListener", "-----------onTrackedCountChanged-----------");
+            Log.e("DetectListener", "-----------onTrackedCountChanged-----------:" + i);
         }
     };
+
+    private void generateArObject(List<AIRecognition> recognitions) {
+        for (int i = 0; i < recognitions.size(); i++) {
+            AIRecognition recognition = recognitions.get(i);
+            AIDetectModel2 modelType = AIDetectModel2.getModelType(recognition.title);
+            createScreenCoordPoi((int) (recognition.location.left + recognition.location.right) / 2,
+                    (int) (recognition.location.top + recognition.location.bottom) / 2, modelType, recognition.TrackedID);
+        }
+    }
+
+    private void createScreenCoordPoi(int x, int y, AIDetectModel2 type, int trackID) {
+        Point3D point = mArView.getIntersectionPoint(x, y);
+//        Point3D point = new Point3D((float)-0.53319705,(float)-2.9590833, (float)1.9519894);
+        if (point != null) {
+            GeoObject tempArObject = new GeoObject(System.currentTimeMillis());
+            tempArObject.setGeoPosition(mWorld.getLatitude() + point.y / 107817.51838439942D,
+                    mWorld.getLongitude() + point.x / 107817.51838439942D,
+                    mWorld.getAltitude() + point.z / 107817.51838439942D);
+
+            if (type != null) {
+                tempArObject.setName("" + System.currentTimeMillis() + "_" + type.toString());
+            } else {
+                tempArObject.setName("" + System.currentTimeMillis());
+            }
+            tempArObject.setInfo(AIDetectModel2.getChineseName(type));
+            DecimalFormat df = new DecimalFormat("0.00");
+            tempArObject.setDistanceFromUser(Double.parseDouble(df.format(20)));//添加距离信息
+            updateImagesByStaticView(tempArObject, type);
+
+            mWorld.addArObject(tempArObject);
+        }
+    }
+
+    private void updateImagesByStaticView(ArObject arObject, AIDetectModel2 type) {
+        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+        if (layoutInflater != null) {
+            View view = layoutInflater.inflate(R.layout.ar_object_view_wrapcontent, null);
+            ImageView imageView = view.findViewById(R.id.ai_ar_content);
+            TextView info = view.findViewById(R.id.info);
+            info.setText(AIDetectModel2.getChineseName(type));
+            TextView address = view.findViewById(R.id.address);
+
+            address.setText("未知定位,请检查网络或者GPS.");
+
+            Bitmap bitmap = getBitmapByType(type);
+            imageView.setImageBitmap(bitmap);
+
+            mArView.storeArObjectViewAndUri(view, arObject);
+        }
+    }
+
+    //create ARObject
+    private Bitmap getBitmapByType(AIDetectModel2 type) {
+        Bitmap bitmap = null;
+        switch (type) {
+            case PERSON:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.person_type);
+                break;
+            case BICYCLE:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bicycle_type);
+                break;
+            case CAR:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.car_type);
+                break;
+            case MOTORCYCLE:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.motorcycle_type);
+                break;
+            case BUS:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bus_type);
+                break;
+
+            case TRUCK:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.truck_type);
+                break;
+            case TRAFFICLIGHT:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.traffic_light_type);
+                break;
+            case FIREHYDRANT:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.fire_hydrant_type);
+                break;
+            case BIRD:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bird_type);
+                break;
+            case CAT:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.cat_type);
+                break;
+
+            case DOG:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.dog_type);
+                break;
+            case POTTEDPLANT:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.potted_plant_type);
+                break;
+            case TV:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.tv_type);
+                break;
+            case LAPTOP:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.laptop_type);
+                break;
+            case MOUSE:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.mouse_type);
+                break;
+
+            case KEYBOARD:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.keyboard_type);
+                break;
+            case CELLPHONE:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.cellphone_type);
+                break;
+            case BOOK:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.book_type);
+                break;
+
+            case CUP:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.cup_type);
+                break;
+            case CHAIR:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.chair_type);
+                break;
+            case BOTTLE:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bottles);
+                break;
+            default:
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.aitype);
+                break;
+        }
+        return bitmap;
+    }
 
 }

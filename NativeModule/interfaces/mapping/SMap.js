@@ -1635,6 +1635,30 @@ export default (function () {
       console.error(e)
     }
   }
+  
+  /**
+   * 获取地图操作记录数量
+   * @returns {*}
+   */
+  function getMapHistoryCount () {
+    try {
+      return SMap.getMapHistoryCount()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 获取当前地图操作记录index
+   * @returns {*}
+   */
+  function getMapHistoryCurrentIndex () {
+    try {
+      return SMap.getMapHistoryCurrentIndex()
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
    * 添加数据集属性字段
@@ -1872,6 +1896,8 @@ export default (function () {
     removeHistory,
     clearHistory,
     addMapHistory,
+    getMapHistoryCount,
+    getMapHistoryCurrentIndex,
     
     addRecordset,
     setMinVisibleScale,

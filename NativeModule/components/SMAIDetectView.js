@@ -3,33 +3,84 @@ import {
   requireNativeComponent,
   ViewPropTypes,
   StyleSheet,
-  View,
-} from 'react-native'
+  View, InteractionManager, Platform
+} from "react-native";
 import PropTypes from 'prop-types'
 import { scaleSize } from "../../../../src/utils";
+import { getLanguage } from "../../../../src/language";
+import {
+  SAIDetectView,
+} from 'imobile_for_reactnative'
 
 class SMAIDetectView extends React.Component {
+
   constructor() {
     super()
-  }
 
-  state = {
-    viewId: 0,
+    this.state = {
+      viewId: 0,
+      visible: false,
+    }
   }
 
   static propTypes = {
+    visible: PropTypes.bool,
+    onArObjectClick: PropTypes.func,
     ...ViewPropTypes,
+  };
+
+  static defaultProps = {
+    visible: false,
+  }
+
+  componentDidMount() {
+    this.setState({
+      visible: true,
+    })
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.state.visible) {
+      SAIDetectView.initAIDetect()
+      SAIDetectView.startDetect()
+    }
+  }
+
+  componentWillUnmount() {
+    // if (Platform.OS === 'android') {
+    //   this.props.removeBackAction({
+    //     key: this.props.navigation.state.routeName,
+    //   })
+    // }
+  }
+
+  _onArObjectClick = ({nativeEvent}) => {
+    this.props.onArObjectClick && this.props.onArObjectClick(nativeEvent)
+  }
+
+  setVisible = (visible) => {
+    if (this.state.visible === visible) return
+    this.setState({
+      visible: visible,
+    })
   }
 
   render() {
     var props = { ...this.props };
-    props.returnId = true;
+
+    if (!this.state.visible) {
+      return null
+    }
 
     return (
-      <View style={styles.views}>
+      <View
+        style={styles.container}
+      >
         <RCTAIDetectView
+          ref={ref => this.RCTAIDetectView = ref}
           {...props}
           style={styles.view}
+          onArObjectClick={this._onArObjectClick}
         />
       </View>
     );
@@ -39,15 +90,24 @@ class SMAIDetectView extends React.Component {
 var styles = StyleSheet.create({
   views: {
     flex: 1,
-    position: 'absolute',
-    height: '100%',
-    width: '100%',
+    alignSelf: 'stretch',
     backgroundColor: 'transparent',
-    zIndex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    flexDirection: 'column',
   },
   view: {
-    height: '100%',
-    width: '100%',
+    flex: 1,
+    alignSelf: 'stretch',
+  },
+  container: {
+    position: 'absolute',
+    top: 45,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    // backgroundColor: '#rgba(255, 255, 255, 0)',
   },
 });
 
