@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0015B98122F2C5E70084A880 /* POISearchHelper2D.m in Sources */ = {isa = PBXBuildFile; fileRef = 0015B98022F2C5E70084A880 /* POISearchHelper2D.m */; };
 		0049743B22A4BD9900267482 /* ScaleViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 0049743A22A4BD9900267482 /* ScaleViewHelper.m */; };
 		0053633D2293A546004A6C39 /* SOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0053633C2293A546004A6C39 /* SOrientation.m */; };
 		005693BA2191696C00AEC46E /* SOnlineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 005693B92191696C00AEC46E /* SOnlineService.m */; };
@@ -222,6 +223,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0015B97F22F2C5E70084A880 /* POISearchHelper2D.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = POISearchHelper2D.h; sourceTree = "<group>"; };
+		0015B98022F2C5E70084A880 /* POISearchHelper2D.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = POISearchHelper2D.m; sourceTree = "<group>"; };
 		0049743922A4BD9900267482 /* ScaleViewHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScaleViewHelper.h; sourceTree = "<group>"; };
 		0049743A22A4BD9900267482 /* ScaleViewHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScaleViewHelper.m; sourceTree = "<group>"; };
 		0053633B2293A546004A6C39 /* SOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SOrientation.h; sourceTree = "<group>"; };
@@ -778,6 +781,8 @@
 				0A27E31A2284293900227B8C /* MediaUtil.m */,
 				0049743922A4BD9900267482 /* ScaleViewHelper.h */,
 				0049743A22A4BD9900267482 /* ScaleViewHelper.m */,
+				0015B97F22F2C5E70084A880 /* POISearchHelper2D.h */,
+				0015B98022F2C5E70084A880 /* POISearchHelper2D.m */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -1420,6 +1425,7 @@
 				0A332E33211D623E00F56F26 /* JSObjManager.m in Sources */,
 				0A332E55211D623E00F56F26 /* JSSupplyCenter.m in Sources */,
 				D8DD422A2175830E009D80E9 /* JSSymbolLine.m in Sources */,
+				0015B98122F2C5E70084A880 /* POISearchHelper2D.m in Sources */,
 				0A51675321AD437D003C77BE /* SMSceneWC.m in Sources */,
 				0A332DF4211D623E00F56F26 /* JSBufferAnalystGeometry.m in Sources */,
 				0A332E43211D623E00F56F26 /* JSQueryService.m in Sources */,
