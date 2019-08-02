@@ -3,20 +3,24 @@ import {
   requireNativeComponent,
   ViewPropTypes,
   StyleSheet,
-  View,
-} from 'react-native'
+  View, InteractionManager, Platform
+} from "react-native";
 import PropTypes from 'prop-types'
 import { scaleSize } from "../../../../src/utils";
+import { getLanguage } from "../../../../src/language";
+import {
+  SAIDetectView,
+} from 'imobile_for_reactnative'
 
 class SMAIDetectView extends React.Component {
 
   constructor() {
     super()
-  }
 
-  state = {
-    viewId: 0,
-    visible: true,
+    this.state = {
+      viewId: 0,
+      visible: false,
+    }
   }
 
   static propTypes = {
@@ -26,7 +30,28 @@ class SMAIDetectView extends React.Component {
   };
 
   static defaultProps = {
-    visible: true,
+    visible: false,
+  }
+
+  componentDidMount() {
+    this.setState({
+      visible: true,
+    })
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.state.visible) {
+      SAIDetectView.initAIDetect()
+      SAIDetectView.startDetect()
+    }
+  }
+
+  componentWillUnmount() {
+    // if (Platform.OS === 'android') {
+    //   this.props.removeBackAction({
+    //     key: this.props.navigation.state.routeName,
+    //   })
+    // }
   }
 
   _onArObjectClick = ({nativeEvent}) => {
@@ -49,7 +74,7 @@ class SMAIDetectView extends React.Component {
 
     return (
       <View
-        style={styles.views}
+        style={styles.container}
       >
         <RCTAIDetectView
           ref={ref => this.RCTAIDetectView = ref}
@@ -76,7 +101,14 @@ var styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'stretch',
   },
-
+  container: {
+    position: 'absolute',
+    top: 45,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    // backgroundColor: '#rgba(255, 255, 255, 0)',
+  },
 });
 
 var RCTAIDetectView = requireNativeComponent('RCTAIDetectView', SMAIDetectView)

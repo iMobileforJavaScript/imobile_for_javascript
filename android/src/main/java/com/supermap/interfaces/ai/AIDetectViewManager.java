@@ -1,5 +1,6 @@
 package com.supermap.interfaces.ai;
 
+import android.graphics.Color;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import com.facebook.react.common.MapBuilder;
@@ -38,6 +39,7 @@ public class AIDetectViewManager extends SimpleViewManager<CustomRelativeLayout>
 
         mCustomRelativeLayout = new CustomRelativeLayout(reactContext);
         mCustomRelativeLayout.setLayoutParams(params);
+        mCustomRelativeLayout.setBackgroundColor(Color.parseColor("#2D2D2F"));
         SAIDetectView.setViewManager(mCustomRelativeLayout);
 
         mAIdetectView = new AIdetectView(reactContext);

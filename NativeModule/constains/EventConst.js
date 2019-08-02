@@ -33,6 +33,7 @@ export default {
   MAP_TOUCH_END: 'com.supermap.RN.Mapcontrol.touch_end_event',
   MAP_SCROLL: 'com.supermap.RN.Mapcontrol.scroll_event',
 
+  POINTSEARCH2D_KEYWORDS: "com.supermap.RN.MapControl.PointSearch2D_keyWords",
   MAP_LEGEND_CONTENT_CHANGE:'com.supermap.RN.Map.Legend.legend_content_change',
   MAP_SCALEVIEW_CHANGE:'com.supermap.RN.Map.ScaleView.scaleView_change',
   MAP_GEOMETRY_MULTI_SELECTED: 'com.supermap.RN.Mapcontrol.geometry_multi_selected',

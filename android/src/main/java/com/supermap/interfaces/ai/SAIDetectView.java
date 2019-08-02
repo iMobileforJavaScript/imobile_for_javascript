@@ -170,8 +170,8 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
                         mAIDetectView.setPolymerizeThreshold(100, 100);//设置聚合模式网格宽高
 
-                        //mAIDetectView.startDetect();
-                        //mAIDetectView.startCountTrackedObjs();
+//                        mAIDetectView.startDetect();
+//                        mAIDetectView.startCountTrackedObjs();
                     }
                 });
             }
@@ -223,6 +223,9 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
                 currentActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        if (mAIDetectView == null) {
+                            return;
+                        }
                         mIsPOIMode = false;
                         mAIDetectView.pauseDetect(true);
                         mAIDetectView.stopCountTrackedObjs();
@@ -251,6 +254,9 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
                 currentActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        if (mAIDetectView == null) {
+                            return;
+                        }
                         mAIDetectView.pauseDetect(true);
                         mAIDetectView.stopCountTrackedObjs();
                         mAIDetectView.dispose();
