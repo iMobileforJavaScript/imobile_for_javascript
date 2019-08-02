@@ -100,7 +100,7 @@ public class SMLayer {
             layer = findLayerByPath(path);
         }
 
-        if (layer.getClass().isInstance(LayerGroup.class)) {
+        if (layer.getClass() == LayerGroup.class) {
             layerGroup = (LayerGroup) layer;
         } else {
             return arr;
@@ -128,7 +128,7 @@ public class SMLayer {
     public static WritableMap getLayerInfo(Layer layer, String path) {
         Dataset dataset = layer.getDataset();
         int intType = -1;
-        if (!layer.getClass().isInstance(LayerGroup.class) && dataset != null) { // 判断是否是Layer是LayerGroup
+        if (layer.getClass() != LayerGroup.class && dataset != null) { // 判断是否是Layer是LayerGroup
             intType = dataset.getType().value();
         }
         Theme theme = layer.getTheme();
@@ -171,7 +171,7 @@ public class SMLayer {
         wMap.putString("path", path);
         wMap.putBoolean("isHeatmap", isHeatmap);
 
-        if (!layer.getClass().isInstance(LayerGroup.class)) { // 判断是否是Layer是LayerGroup
+        if (layer.getClass() != LayerGroup.class) { // 判断是否是Layer是LayerGroup
             wMap.putInt("type", intType);
             String datasetName = "";
             String datasourceAlias = "";
