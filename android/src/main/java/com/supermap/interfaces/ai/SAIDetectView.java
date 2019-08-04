@@ -6,9 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.facebook.react.bridge.*;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
@@ -39,9 +42,9 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     private static World mWorld;
 
     private Vector<String> mStrToUseAll = new Vector<>(); //模型文件中所有可用的模型
-    private Date mStartDate = null;//开始识别
-    private Vector<String> mStrToUse = new Vector<>(); //初始化默认设置的模型
-    private int mDetectInterval = 3000;//识别时间间隔,默认3000毫秒
+    private static Date mStartDate = null;//开始识别
+    private static Vector<String> mStrToUse = new Vector<>(); //初始化默认设置的模型
+    private static int mDetectInterval = 3000;//识别时间间隔,默认3000毫秒
 
     private static ArView mArView = null;//绑定的AR显示类
     private static boolean mIsPOIMode = true; //AR-POI投射模式
@@ -63,17 +66,55 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     }
 
     public static void setInstance(AIdetectView aiDetectView) {
+        Log.e(REACT_CLASS, "----------------SAIDetectView--setInstance--------RN--------");
+
         mAIDetectView = aiDetectView;
         mAidetectViewInfo = new AidetectViewInfo();
         mAidetectViewInfo.assetManager = mContext.getAssets();
         prepareAiDetectViewInfo("detect.tflite", "file:///android_asset/labelmap.txt");
 
         mAIDetectView.init();
+
+        mAIDetectView.setBackgroundColor(Color.parseColor("#2D2D2F"));
+        mAIDetectView.setDetectInfo(mAidetectViewInfo);//设置数据
+
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TV));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.KEYBOARD));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CELLPHONE));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.PERSON));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOTORCYCLE));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TRUCK));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BICYCLE));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BOTTLE));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BUS));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CUP));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CAR));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TRAFFICLIGHT));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BOTTLE));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOUSE));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CAT));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.POTTEDPLANT));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CHAIR));
+        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BIRD));
+
+        mAIDetectView.setDetectArrayToUse(mStrToUse);//设置初始模型
+
+        mAIDetectView.setDetectedListener(mDetectListener);//设置Ai监听回调
+
+        mAIDetectView.setDetectInterval(mDetectInterval);//设置识别时间间隔
+
+        mAIDetectView.setisPolymerize(false);//是否聚合模式
+
+        mAIDetectView.setPolymerizeThreshold(100, 100);//设置聚合模式网格宽高
+
+        mIsPOIMode = true;
+        mAIDetectView.startDetect();
+        mAIDetectView.startCountTrackedObjs();
     }
 
     public static void setArView(ArView arView) {
         mArView = arView;
-//        mArView.setBackgroundColor(Color.parseColor("#2000ff00"));
+//        mArView.setBackgroundColor(Color.parseColor("#2000fSMediaCollectorf00"));
 
         mArView.setDistanceFactor(0.6f);
         //创建AR场景
@@ -136,7 +177,12 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
                     @Override
                     public void run() {
                         if (mAIDetectView == null) {
-                            return;
+                            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT);
+                            mAIDetectView = new AIdetectView(mReactContext);
+                            mAIDetectView.setLayoutParams(params);
+                            mAIDetectView.init();
+                            mAIDetectView.setGravity(Gravity.CENTER);
                         }
                         mAIDetectView.setBackgroundColor(Color.parseColor("#2D2D2F"));
                         mAIDetectView.setDetectInfo(mAidetectViewInfo);//设置数据
@@ -321,6 +367,10 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     public void isDetect(Promise promise) {
         try {
             Log.e(REACT_CLASS, "----------------SAIDetectView--isDetect--------RN--------");
+            if (mAIDetectView == null) {
+                promise.resolve(false);
+                return;
+            }
             boolean detect = mAIDetectView.isDetect();
 
             promise.resolve(detect);
@@ -518,6 +568,26 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
     /**
      * 保存预览图片
+     * @param
+     */
+    public static void saveArPreviewBitmap(final String pictureDirectory, final String fileName) {
+        try {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.e(REACT_CLASS, "----------------SAIDetectView--savePreviewBitmap--------RN--------");
+                    Bitmap previewBitmap = mAIDetectView.getPreviewBitmap();
+
+                    saveBitmapAsFile(pictureDirectory, fileName, previewBitmap);
+                }
+            }).start();
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+        }
+    }
+
+    /**
+     * 保存预览图片
      * @param promise
      */
     @ReactMethod
@@ -578,7 +648,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     }
 
     //保存bitmap为图片
-    private boolean saveBitmapAsFile(String folderPath, String name, Bitmap bitmap) {
+    private static boolean saveBitmapAsFile(String folderPath, String name, Bitmap bitmap) {
         if (!new File(folderPath).exists()) {
             new File(folderPath).mkdirs();
         }
@@ -605,7 +675,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         return saved;
     }
 
-    private AIdetectView.DetectListener mDetectListener = new AIdetectView.DetectListener() {
+    private static AIdetectView.DetectListener mDetectListener = new AIdetectView.DetectListener() {
         @Override
         public void onDectetComplete(Map<String, Integer> result) {
             //流量统计
@@ -653,7 +723,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         }
     };
 
-    private void generateArObject(List<AIRecognition> recognitions) {
+    private static void generateArObject(List<AIRecognition> recognitions) {
         for (int i = 0; i < recognitions.size(); i++) {
             AIRecognition recognition = recognitions.get(i);
             AIDetectModel2 modelType = AIDetectModel2.getModelType(recognition.title);
@@ -662,7 +732,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         }
     }
 
-    private void createScreenCoordPoi(int x, int y, AIDetectModel2 type, int trackID) {
+    private static void createScreenCoordPoi(int x, int y, AIDetectModel2 type, int trackID) {
         Point3D point = mArView.getIntersectionPoint(x, y);
 //        Point3D point = new Point3D((float)-0.53319705,(float)-2.9590833, (float)1.9519894);
         if (point != null) {
@@ -685,7 +755,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         }
     }
 
-    private void updateImagesByStaticView(ArObject arObject, AIDetectModel2 type) {
+    private static void updateImagesByStaticView(ArObject arObject, AIDetectModel2 type) {
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         if (layoutInflater != null) {
             View view = layoutInflater.inflate(R.layout.ar_object_view_wrapcontent, null);
@@ -704,7 +774,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     }
 
     //create ARObject
-    private Bitmap getBitmapByType(AIDetectModel2 type) {
+    private static Bitmap getBitmapByType(AIDetectModel2 type) {
         Bitmap bitmap = null;
         switch (type) {
             case PERSON:
