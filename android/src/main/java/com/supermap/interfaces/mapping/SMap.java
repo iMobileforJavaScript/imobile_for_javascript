@@ -4195,8 +4195,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
             
             mapControl.setAnimations();
-//            AnimationManager.getInstance().stop();
-//            AnimationManager.getInstance().reset();
             AnimationManager.getInstance().deleteAll();
             AnimationManager.getInstance().getAnimationFromXML(filePath);
 
@@ -4300,8 +4298,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             m_timer=null;
             AnimationManager.getInstance().stop();
             AnimationManager.getInstance().reset();
-            AnimationManager.getInstance().deleteAnimationManager();
-
+            AnimationManager.getInstance().deleteAll();
             promise.resolve(true);
         } catch (Exception e) {
             promise.resolve(false);
