@@ -237,6 +237,49 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 把AI识别的结果添加到数据集中(图片直接保存在Media文件夹中)
+     * @param info
+     * @param addToMap
+     * @param promise
+     */
+    @ReactMethod
+    public void addArMedia(ReadableMap info, boolean addToMap, Promise promise) {
+        try {
+            boolean result = false;
+            SMMediaCollector collector = SMMediaCollector.getInstance();
+
+            if (collector == null || collector.getMediaPath().equals("")) {
+                promise.resolve(new Error("MediaCollector should be initialized"));
+            } else {
+                MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
+                String datasourceName = info.getString("datasourceName");
+                String datasetName = info.getString("datasetName");
+                String mediaName = info.getString("mediaName");
+
+                SMMedia media = new SMMedia(mediaName);
+
+                Datasource ds = mapControl.getMap().getWorkspace().getDatasources().get(datasourceName);
+                if (media.setMediaDataset(ds, datasetName)) {
+                    if (addToMap) {
+                        mediaLayer = SMLayer.findLayerByDatasetName(datasetName);
+
+                        if (mediaLayer == null) {
+                            mediaLayer = SMLayer.addLayerByName(datasourceName, datasetName);
+                        }
+                        result = media.saveArMedia(mediaName, collector.getMediaPath(), true);
+
+                        if (result) addCallout(media, mediaLayer);
+                    }
+                }
+                promise.resolve(result);
+            }
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     @ReactMethod
     public void saveMediaByLayer(String layerName, int geoID, String toPath, ReadableArray fieldInfos, Promise promise) {
         try {

@@ -50,6 +50,7 @@ RCT_EXPORT_MODULE();
              MAP_BOUNDS_CHANGED,
              LEGEND_CONTENT_CHANGE,
              MAP_SCALEVIEW_CHANGED,
+             POINTSEARCH2D_KEYWORDS,
              ];
 }
 
@@ -766,6 +767,50 @@ RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTProm
 //    }
 //}
 
+#pragma mark 初始化二维搜索
+RCT_REMAP_METHOD(initPointSearch, initPointSearchWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.poiSearchHelper2D = [POISearchHelper2D singletonInstance];
+        [sMap.poiSearchHelper2D initMapControl:sMap.smMapWC.mapControl];
+        sMap.poiSearchHelper2D.delegate =self;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"initPointSearch",exception.reason,nil);
+    }
+}
+#pragma mark 二维搜索
+RCT_REMAP_METHOD(pointSearch, pointSearchWithString:(NSString *)str resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [sMap.poiSearchHelper2D poiSearch:str];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"pointSearch",exception.reason,nil);
+    }
+}
+#pragma mark 定位到搜索结果某个点
+RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithIndex:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL isSuccess = [sMap.poiSearchHelper2D toLocationPoint:index];
+        resolve(@(isSuccess));
+    } @catch (NSException *exception) {
+        reject(@"toLocationPoint",exception.reason,nil);
+    }
+}
+-(void)locations:(NSArray *)locations{
+    NSMutableArray* arr = [[NSMutableArray alloc]initWithCapacity:1];
+    NSString* name;
+    NSDictionary* map;
+    int count = locations.count;
+    for (int i = 0; i < count; i++) {
+        OnlinePOIInfo * onlinePoiInfo=[locations objectAtIndex:i];
+        name = onlinePoiInfo.name;
+        map = @{@"pointName":name};
+        [arr addObject:map];
+    }
+    [self sendEventWithName:POINTSEARCH2D_KEYWORDS body:arr];
+}
 
 #pragma mark 关闭工作空间
 RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
