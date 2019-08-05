@@ -566,6 +566,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
                 @Override
                 public void run() {
                     try {
+                        boolean result = true;
                         HttpPost httpPost = new HttpPost("http://111.202.121.144:8124/download");
                         File path = new File(receivePath);
                         File file = new File(receivePath + "/" + fileName);
@@ -595,10 +596,11 @@ public class SMessageService extends ReactContextBaseJavaModule {
                             String entity = EntityUtils.toString(response.getEntity(), "UTF-8");
                             JSONObject jsonObject1 = new JSONObject(entity);
                             int dataLength = jsonObject1.getInt("dataLength");
-                            if (dataLength <= 0) {
+                            byte[] values = Base64.decode(jsonObject1.getString("value"), Base64.DEFAULT);
+                            if (values.length == 0) {
+                                result = false;
                                 break;
                             }
-                            byte[] values = Base64.decode(jsonObject1.getString("value"), Base64.DEFAULT);
                             randomAccessFile.seek(start);
                             randomAccessFile.write(values);
                             start += dataLength;
@@ -618,7 +620,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
                         }
                         randomAccessFile.close();
 
-                        promise.resolve(true);
+                        promise.resolve(result);
                     } catch (Exception e) {
                         promise.reject(e);
                     }

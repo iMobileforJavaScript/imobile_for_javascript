@@ -481,6 +481,7 @@ RCT_REMAP_METHOD(receiveFileWithThirdServer, fileName:(NSString*)fileName queueN
     @try {
         dispatch_queue_t urls_queue = dispatch_queue_create("receiveFile", NULL);
         dispatch_async(urls_queue, ^{
+            BOOL result = YES;
             BOOL isDir = NO;
             BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:receivePath isDirectory:&isDir];
             if (!isExist || !isDir) {
@@ -533,6 +534,10 @@ RCT_REMAP_METHOD(receiveFileWithThirdServer, fileName:(NSString*)fileName queueN
                     long dataLength=[[dic valueForKey:@"dataLength"] longValue];
                     NSString* dataStr=[dic objectForKey:@"value"];
                     NSData *data = [[NSData alloc]initWithBase64EncodedString:dataStr options:NSDataBase64DecodingIgnoreUnknownCharacters];
+                    if(data.length == 0) {
+                        result = NO;
+                        break;
+                    }
                     [fh writeData:data];
                     start+=dataLength;
                     
@@ -550,7 +555,7 @@ RCT_REMAP_METHOD(receiveFileWithThirdServer, fileName:(NSString*)fileName queueN
                 }
             }
             [fh closeFile];
-            resolve([NSNumber numberWithBool:true]);
+            resolve([NSNumber numberWithBool:result]);
         });
     } @catch (NSException *exception) {
         reject(@"SMessageService", exception.reason, nil);
