@@ -11,6 +11,7 @@ static POISearchHelper2D *poiSearchHelper2D = nil;
 @interface POISearchHelper2D()<OnlinePOIQueryCallback>{
     MapControl *m_mapControl;
     NSArray *m_searchResult;
+    NSString *tagName;
     Callout *m_callout;
 }
 
@@ -57,6 +58,7 @@ static POISearchHelper2D *poiSearchHelper2D = nil;
         m_callout = [[Callout alloc]initWithMapControl:m_mapControl BackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0] Alignment:CALLOUT_LEFTBOTTOM];
         m_callout.width = 200;
         m_callout.height = 40;
+        tagName = @"POISEARCH_2D_POINT";
     }
     dispatch_async(dispatch_get_main_queue(), ^{
         UIImage *image = [UIImage imageNamed:@"resources.bundle/icon_red.png"];
@@ -76,7 +78,7 @@ static POISearchHelper2D *poiSearchHelper2D = nil;
         
         [m_callout addSubview:imageView];
         [m_callout addSubview:label];
-        [m_callout showAt:mapPoint Tag:name];
+        [m_callout showAt:mapPoint Tag:tagName];
         
         if(m_mapControl.map.scale < 0.000011947150294723098)
             m_mapControl.map.scale = 0.000011947150294723098;

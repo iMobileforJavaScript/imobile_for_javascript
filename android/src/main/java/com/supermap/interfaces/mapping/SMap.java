@@ -4,6 +4,7 @@
 package com.supermap.interfaces.mapping;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -40,7 +41,9 @@ import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Resources;
 import com.supermap.data.Workspace;
+import com.supermap.interfaces.utils.POISearchHelper2D;
 import com.supermap.interfaces.utils.ScaleViewHelper;
+import com.supermap.map3D.toolKit.PoiGsonBean;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.ColorLegendItem;
 import com.supermap.mapping.EditHistoryType;
@@ -114,6 +117,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private GestureDetector mGestureDetector;
     private GeometrySelectedListener mGeometrySelectedListener;
     private ScaleViewHelper scaleViewHelper;
+    private POISearchHelper2D poiSearchHelper2D;
     private static final int curLocationTag = 118081;
     public static int fillNum;
     public static Color[] fillColors;
@@ -5240,4 +5244,61 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
     /************************************** 地图设置 END ****************************************/
 
+    /**
+     * 初始化二维POI搜索
+     * @param promise
+     */
+    @ReactMethod
+    public void initPointSearch(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            sMap.poiSearchHelper2D = POISearchHelper2D.getInstence();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            sMap.poiSearchHelper2D.initMapControl(mapControl,context);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 二维POI搜索
+     * @param keyword
+     * @param promise
+     */
+    @ReactMethod
+    public void pointSearch(String keyword, Promise promise){
+        try {
+            sMap.poiSearchHelper2D.poiSearch(keyword, new POISearchHelper2D.PoiSearchCallBack() {
+                @Override
+                public void poiSearchInfos(ArrayList<PoiGsonBean.PoiInfos> poiInfos) {
+                    WritableArray array = Arguments.createArray();
+                    int count = poiInfos.size();
+                    for(int i = 0; i < count; i++){
+                        WritableMap map = Arguments.createMap();
+                        PoiGsonBean.PoiInfos poiInfo = poiInfos.get(i);
+                        String name = poiInfo.getName();
+                        map.putString("pointName",name);
+                        array.pushMap(map);
+                    }
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.POINTSEARCH2D_KEYWORDS, array);
+                }
+            });
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void toLocationPoint(int index,Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            boolean isSuccess = sMap.poiSearchHelper2D.toLocationPoint(index);
+            promise.resolve(isSuccess);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 }
