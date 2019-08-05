@@ -3347,16 +3347,17 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
             Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
+            WritableArray arr = Arguments.createArray();
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
                 info.setAlias("Label_" + userpath + "#");
                 info.setEngineType(EngineType.UDB);
                 info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Label_" + userpath + "#.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
+
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
                     com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                    WritableArray arr = Arguments.createArray();
                     Layers layers = map.getLayers();
 
                     for (int i = 0; i < datasets.getCount(); i++) {
@@ -3369,12 +3370,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                             }
                         }
                     }
-                    promise.resolve(arr);
                 }
             } else {
                 Datasets datasets = opendatasource.getDatasets();
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                WritableArray arr = Arguments.createArray();
                 Layers layers = map.getLayers();
 
                 for (int i = 0; i < datasets.getCount(); i++) {
@@ -3387,8 +3386,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         }
                     }
                 }
-                promise.resolve(arr);
             }
+            promise.resolve(arr);
         } catch (Exception e) {
             promise.reject(e);
         }
