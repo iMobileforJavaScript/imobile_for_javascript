@@ -3351,16 +3351,17 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
             Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
+            WritableArray arr = Arguments.createArray();
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
                 info.setAlias("Label_" + userpath + "#");
                 info.setEngineType(EngineType.UDB);
                 info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Label_" + userpath + "#.udb");
                 Datasource datasource = workspace.getDatasources().open(info);
+
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
                     com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                    WritableArray arr = Arguments.createArray();
                     Layers layers = map.getLayers();
 
                     for (int i = 0; i < datasets.getCount(); i++) {
@@ -3373,12 +3374,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                             }
                         }
                     }
-                    promise.resolve(arr);
                 }
             } else {
                 Datasets datasets = opendatasource.getDatasets();
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                WritableArray arr = Arguments.createArray();
                 Layers layers = map.getLayers();
 
                 for (int i = 0; i < datasets.getCount(); i++) {
@@ -3391,8 +3390,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         }
                     }
                 }
-                promise.resolve(arr);
             }
+            promise.resolve(arr);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -4149,14 +4148,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
     private static Timer m_timer;
-    private static AnimationManager am;
+//    private static AnimationManager am;
     /**
      * 初始化态势推演
      */
     @ReactMethod
     public static void initAnimation(Promise promise){
         try {
-            am = AnimationManager.getInstance();
+//            am = AnimationManager.getInstance();
 //            //开启定时器
 //            m_timer.schedule(new TimerTask() {
 //                @Override
@@ -4199,7 +4198,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
             
             mapControl.setAnimations();
-            am.getAnimationFromXML(filePath);
+            AnimationManager.getInstance().deleteAll();
+            AnimationManager.getInstance().getAnimationFromXML(filePath);
 
 
 //            开始推演时定位到推演图层，获取的推演图层范围有错误
@@ -4241,7 +4241,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
             mapControl.getMap().refresh();
-            am.play();
+            AnimationManager.getInstance().play();
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -4255,7 +4255,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public static void animationPause(Promise promise){
         try {
-            am.pause();
+            AnimationManager.getInstance().pause();
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -4269,7 +4269,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public static void animationReset(Promise promise){
         try {
-            am.reset();
+            AnimationManager.getInstance().reset();
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -4297,11 +4297,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public static void animationClose(Promise promise){
         try {
-            AnimationManager.getInstance().reset();
             m_timer.cancel();
             m_timer=null;
-            AnimationManager.getInstance().dispose();
-
+            AnimationManager.getInstance().stop();
+            AnimationManager.getInstance().reset();
+            AnimationManager.getInstance().deleteAll();
             promise.resolve(true);
         } catch (Exception e) {
             promise.resolve(false);

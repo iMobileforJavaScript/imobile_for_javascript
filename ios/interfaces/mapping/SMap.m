@@ -2683,6 +2683,7 @@ RCT_REMAP_METHOD(readAnimationXmlFile,readAnimationXmlFile:(NSString*) filePath 
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
         [mapControl setAnimation];
+//        [[AnimationManager getInstance] deleteAll];
         [[AnimationManager getInstance] getAnimationFromXML:filePath];
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -2736,7 +2737,10 @@ RCT_REMAP_METHOD(animationStop,animationStop:(RCTPromiseResolveBlock)resolve rej
 #pragma mark 关闭态势推演动画
 RCT_REMAP_METHOD(animationClose,animationClose:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+        [[AnimationManager getInstance] stop];
         [[AnimationManager getInstance] reset];
+        [[AnimationManager getInstance] deleteAll];
+//        [[AnimationManager getInstance] deleteAnimationManager];
         if(_timer){
             dispatch_source_cancel(_timer);
             _timer = nil;

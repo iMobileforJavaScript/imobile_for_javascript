@@ -239,7 +239,7 @@
 
 -(BOOL)saveMedia:(NSArray *)filePaths toDictionary:(NSString *)toDictionary addNew:(BOOL)addNew {
     BOOL res = NO;
-    if (filePaths.count < 0) return res;
+//    if (filePaths.count < 0) return res;
     NSFileManager* fileManager = [NSFileManager defaultManager];
     NSError* error = nil;
     

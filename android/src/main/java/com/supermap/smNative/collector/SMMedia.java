@@ -185,6 +185,7 @@ public class SMMedia {
                 fieldInfo.setType(FieldType.TEXT);
                 fieldInfo.setName("MediaFilePaths");
                 fieldInfo.setMaxLength(800);
+                fieldInfo.setZeroLengthAllowed(true);
                 fieldInfos.add(fieldInfo);
                 fieldInfo.dispose();
             }
