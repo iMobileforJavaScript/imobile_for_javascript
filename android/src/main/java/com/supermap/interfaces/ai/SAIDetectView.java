@@ -15,10 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.facebook.react.bridge.*;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.supermap.ai.AIRecognition;
-import com.supermap.ai.AISize;
-import com.supermap.ai.AIdetectView;
-import com.supermap.ai.AidetectViewInfo;
+import com.supermap.ai.*;
 import com.supermap.ar.*;
 import com.supermap.rnsupermap.R;
 
@@ -44,7 +41,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     private Vector<String> mStrToUseAll = new Vector<>(); //模型文件中所有可用的模型
     private static Date mStartDate = null;//开始识别
     private static Vector<String> mStrToUse = new Vector<>(); //初始化默认设置的模型
-    private static int mDetectInterval = 3000;//识别时间间隔,默认3000毫秒
+    private static int mDetectInterval = 2000;//识别时间间隔,默认3000毫秒
 
     private static ArView mArView = null;//绑定的AR显示类
     private static boolean mIsPOIMode = true; //AR-POI投射模式
@@ -107,6 +104,12 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
         mAIDetectView.setPolymerizeThreshold(100, 100);//设置聚合模式网格宽高
 
+        //风格
+        AiDetectStyle aiDetectStyle = new AiDetectStyle();
+        aiDetectStyle.isDrawTitle = false;
+        aiDetectStyle.isDrawConfidence = false;
+        mAIDetectView.setAiDetectStyle(aiDetectStyle);
+
         mIsPOIMode = true;
         mAIDetectView.startDetect();
         mAIDetectView.startCountTrackedObjs();
@@ -136,7 +139,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
 //            mAIDetectView.pauseDetect(true);//停止识别
 //            mAIDetectView.stopCountTrackedObjs();
-            mIsPOIMode = false;
+//            mIsPOIMode = false;
 
             //移除其他的Arobject
             List<ArObjectList> arObjectLists = mWorld.getArObjectLists();
