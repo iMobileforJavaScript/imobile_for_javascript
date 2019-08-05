@@ -122,6 +122,7 @@ public class SMMediaCollector {
         smMedia.setFileName((String)recordset.getFieldValue("MediaName"));
 
         String paths = (String)recordset.getFieldValue("MediaFilePaths");
+        if (paths == null) paths = "";
         ArrayList<String> pathArr = new ArrayList<>();
         if (paths.indexOf(",") > 0) {
             pathArr = new ArrayList<>(Arrays.asList(paths.split(",")));

@@ -146,7 +146,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
 
         String mediaFilePaths = recordset.getString("MediaFilePaths");
         WritableArray paths = Arguments.createArray();
-        String[] pathArr = mediaFilePaths != null ? mediaFilePaths.split(",") : new String[0];
+        String[] pathArr = mediaFilePaths != null && !mediaFilePaths.equals("") ? mediaFilePaths.split(",") : new String[0];
         for (String path : pathArr) {
 //                                if (path.indexOf("file://") != 0) {
 //                                    path = "file://" + path;
@@ -266,10 +266,10 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
         }
     }
 
-    public boolean saveMedia(Layer layer, int geoID, String toPath, ReadableArray fieldInfos) {
+    public boolean saveMedia(final Layer layer, int geoID, String toPath, ReadableArray fieldInfos) {
         try {
             WritableArray infos = Arguments.createArray();
-            SMMedia media = SMMediaCollector.findMediaByLayer(layer, geoID);
+            final SMMedia media = SMMediaCollector.findMediaByLayer(layer, geoID);
 
             for (int i = 0; i < fieldInfos.size(); i++) {
                 WritableMap dic = Arguments.createMap();
@@ -278,7 +278,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                     String mediaPaths = "";
                     ReadableArray files = fieldInfos.getMap(i).getArray("value");
 
-                    if (files.size() > 0) {
+//                    if (files.size() > 0) {
                         ArrayList<String> fileArr = new ArrayList<>();
                         for (int j = 0; j < files.size(); j++) {
                             fileArr.add(files.getString(j));
@@ -289,7 +289,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                         for (int j = 0; j < paths.size(); j++) {
                             mediaPaths += paths.get(j) + (j == paths.size() - 1 ? "" : ",");
                         }
-                    }
+//                    }
 
                     dic.putString("value", mediaPaths);
                 } else {
@@ -299,13 +299,55 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                 infos.pushMap(dic);
             }
 
+            // 若多媒体没有名字，则自动赋值
+            if (media.getFileName() == null) {
+                String fileName = new Date().getTime() + "";
+                media.setFileName(fileName);
+                WritableMap dic = Arguments.createMap();
+                dic.putString("name", "MediaName");
+                dic.putString("value", fileName);
+                infos.pushMap(dic);
+            }
 
             boolean saveResult = false;
-            if (media.getPaths() != null) {
+            if (infos.size() > 0) {
                 WritableMap params = Arguments.createMap();
                 String filter = "SmID=" + geoID;
                 params.putString("filter", filter);
                 saveResult = SMLayer.setLayerFieldInfo(layer, infos, params);
+            }
+
+            if (saveResult) {
+                MapWrapView mapView = (MapWrapView)SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView();
+                List<CallOut> callouts = mapView.getCallouts();
+                boolean isExist = false;
+                if (callouts != null) {
+                    for (int i = 0; i < callouts.size(); i++) {
+                        final InfoCallout callout = (InfoCallout)callouts.get(i);
+                        final String firstMediaFile = media.getPaths().size() > 0 ?  media.getPaths().get(0) : "";
+                        String firstCalloutFile = callout.getMediaFilePaths().size() > 0 ?  callout.getMediaFilePaths().get(0) : "";
+                        // TODO 修改判断
+                        if (
+                                callout.getLayerName().equals(layer.getName()) &&
+                                        (media.getFileName() != null && callout.getMediaName() != null && callout.getMediaName().equals(media.getFileName())) &&
+                                        (!firstCalloutFile.equals(firstMediaFile) || firstMediaFile.equals(""))
+                                ) {
+                            isExist = true;
+                            SMap.getInstance().getActivity().runOnUiThread(new Runnable(){
+                                @Override
+                                public void run(){
+                                    MapWrapView mapView = (MapWrapView)SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView();
+
+                                    mapView.removeCallOut(callout.getID());
+                                    if (!firstMediaFile.equals("")) addCallout(media, layer);
+                                }
+                            });
+                        }
+                    }
+                }
+                if ((callouts == null || callouts.size() == 0 || !isExist) && media.getPaths().size() > 0) {
+                    addCallout(media, layer);
+                }
             }
 
             return saveResult;

@@ -119,7 +119,7 @@ RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName 
                 // MediaFilePaths 数组转成字符串
                 NSString* mediaPaths = @"";
                 NSArray* files = (NSArray *)[dic objectForKey:@"value"];
-                if ([files count]) {
+//                if ([files count]) {
                     [media saveMedia:files toDictionary:toPath addNew:NO];
 //                    copyPaths = [FileUtils copyFiles:files targetDictionary:toPath];
 //                    for (int i = 0; i < [copyPaths count]; i++) {
@@ -130,21 +130,57 @@ RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName 
                             mediaPaths = [NSString stringWithFormat:@"%@,%@", mediaPaths, media.paths[i]];
                         }
                     }
-                }
+//                }
                 [dic setValue:mediaPaths forKey:@"value"];
             }
             
             [infos addObject:dic];
         }
         
+        if (media.fileName == nil) {
+            media.fileName = [NSString stringWithFormat:@"%ld", (long)[[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000];
+            NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+            [dic setObject:@"MediaName" forKey:@"name"];
+            [dic setObject:media.fileName forKey:@"value"];
+            [infos addObject:dic];
+        }
+        
         BOOL saveResult = NO;
-        if (media.paths != nil) {
+        if (infos.count > 0) {
             NSMutableDictionary* params = [[NSMutableDictionary alloc] init];
             NSString* filter = [NSString stringWithFormat:@"SmID=%d", geoID];
             [params setObject:filter forKey:@"filter"];
             saveResult = [SMLayer setLayerFieldInfo:layer fieldInfos:infos params:params];
         }
         
+        if (saveResult) {
+            MapControl* mapControl = SMap.singletonInstance.smMapWC.mapControl;
+            BOOL isExist = NO;
+            
+            for (int i = 0; i < mapControl.callouts.count; i++) {
+                InfoCallout* callout = (InfoCallout *)mapControl.callouts[i];
+                NSString* firstMediaFile = @"";
+                NSString* firstCalloutFile = @"";
+                if (callout.mediaFilePaths.count > 0) {
+                    firstCalloutFile = callout.mediaFilePaths[0];
+                }
+                if (media.paths.count > 0) {
+                    firstMediaFile = media.paths[0];
+                }
+                if (
+                    callout && [callout.layerName isEqualToString:layer.name] &&
+                    (media.fileName != nil && callout.mediaName != nil && [callout.mediaName isEqualToString:media.fileName]) &&
+                    (![firstCalloutFile isEqualToString: firstMediaFile] || [firstMediaFile isEqualToString:@""])
+                    ) {
+                    isExist = YES;
+                    [mapControl removeCalloutAtIndex:i];
+                    if (![firstMediaFile isEqualToString:@""]) [self addCallout:media layer:layer];
+                }
+            }
+            if ((mapControl.callouts.count == 0 || !isExist) && media.paths.count > 0) {
+                [self addCallout:media layer:layer];
+            }
+        }
         
         return saveResult;
     } @catch (NSException *exception) {
@@ -484,7 +520,7 @@ RCT_REMAP_METHOD(addTour, addTour:(NSString *)layerName files:(NSArray *)files r
     NSString* mediaName = (NSString *)[recordset getFieldValueWithString:@"MediaName"];
     
     NSString* mediaFilePaths = (NSString *)[recordset getFieldValueWithString:@"MediaFilePaths"];
-    NSArray* paths = [mediaFilePaths componentsSeparatedByString:@","];
+    NSArray* paths = [mediaFilePaths isEqualToString:@""] ? @[] : [mediaFilePaths componentsSeparatedByString:@","];
     
     NSString* httpAddress = (NSString *)[recordset getFieldValueWithString:@"HttpAddress"];
     NSString* description = (NSString *)[recordset getFieldValueWithString:@"Description"];
