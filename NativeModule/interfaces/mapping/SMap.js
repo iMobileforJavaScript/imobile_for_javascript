@@ -1720,7 +1720,72 @@ export default (function () {
     }
   }
 
+  /**
+   * 初始化二维搜索功能
+   * @returns {*|void}
+   */
+  function initPointSearch(){
+    try {
+      return SMap.initPointSearch()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 二维搜索
+   * @param str
+   * @returns {*|void}
+   */
+  function pointSearch(str){
+    try {
+      return SMap.pointSearch(str)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 定位到某个点
+   * @param index
+   * @returns {*|void|Promise<void>}
+   */
+  function toLocationPoint(index) {
+    try {
+      return SMap.toLocationPoint(index)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  /**
+   * 二维 添加位置搜索事件监听
+   * @param handlers
+   */
+  function setPointSearchListener(handlers){
+    try {
+      if (Platform.OS === 'ios' && handlers) {
+        if (typeof handlers.callback === 'function') {
+          nativeEvt.addListener(EventConst.POINTSEARCH2D_KEYWORDS, function (e) {
+            handlers.callback(e)
+          })
+        }
+      } else if (Platform.OS === 'android' && handlers) {
+        if (typeof handlers.callback === "function") {
+          DeviceEventEmitter.addListener(EventConst.POINTSEARCH2D_KEYWORDS, function (e) {
+            handlers.callback(e);
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   let SMapExp = {
+    toLocationPoint,
+    setPointSearchListener,
+    pointSearch,
+    initPointSearch,
     getEnvironmentStatus,
     refreshMap,
     openWorkspace,

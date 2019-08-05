@@ -5233,7 +5233,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void getTaggingLayerCount(Promise promise) {
+    public void removeLegendListener(Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().getLegend().setContentChangeListener(null);

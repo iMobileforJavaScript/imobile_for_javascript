@@ -11,6 +11,7 @@ import { getLanguage } from "../../../../src/language";
 import {
   SAIDetectView,
 } from 'imobile_for_reactnative'
+import constants from "../../../../src/containers/workspace/constants"
 
 class SMAIDetectView extends React.Component {
 
@@ -34,24 +35,21 @@ class SMAIDetectView extends React.Component {
   }
 
   componentDidMount() {
+    GLOBAL.Type === constants.MAP_AR &&
     this.setState({
       visible: true,
     })
   }
 
   componentDidUpdate(prevProps) {
-    if (this.state.visible) {
-      SAIDetectView.initAIDetect()
-      SAIDetectView.startDetect()
-    }
+    // if (this.state.visible) {
+    //   SAIDetectView.initAIDetect()
+    //   SAIDetectView.startDetect()
+    // }
   }
 
   componentWillUnmount() {
-    // if (Platform.OS === 'android') {
-    //   this.props.removeBackAction({
-    //     key: this.props.navigation.state.routeName,
-    //   })
-    // }
+    GLOBAL.Type === constants.MAP_AR && this.state.visible && SAIDetectView.dispose()
   }
 
   _onArObjectClick = ({nativeEvent}) => {
@@ -62,6 +60,13 @@ class SMAIDetectView extends React.Component {
     if (this.state.visible === visible) return
     this.setState({
       visible: visible,
+    }, () => {
+      if (visible) {
+        // SAIDetectView.initAIDetect()
+        // SAIDetectView.startDetect()
+      } else {
+        SAIDetectView.dispose()
+      }
     })
   }
 
