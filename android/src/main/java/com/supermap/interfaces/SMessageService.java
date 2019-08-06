@@ -33,10 +33,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 
@@ -55,6 +53,8 @@ public class SMessageService extends ReactContextBaseJavaModule {
     static String sExchange = "message";
     //分发群消息的交换机
     static String sGroupExchange = "message.group";
+    //文件发送接收分片大小
+    private static int FILE_BLOCK_SIZE = 100 * 1024;
 
     ReactContext mReactContext;
 
@@ -260,8 +260,8 @@ public class SMessageService extends ReactContextBaseJavaModule {
                         //文件大小
                         long fileSize = file.length();
                         //2M为单位切割文件后的总个数
-                        long total = (long) (Math.ceil((double)fileSize / ((double) 1024 * 1024 * 2)));
-                        byte[] buffer=new byte[1024 * 1024 * 2];
+                        long total = (long) (Math.ceil((double)fileSize / ((double) FILE_BLOCK_SIZE)));
+                        byte[] buffer=new byte[FILE_BLOCK_SIZE];
 
                         //发送的文件的计数
                         long count = 0;
@@ -298,6 +298,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
 
 
                         int length;
+                        int prevPercentage = 0;
                         while( (length = inStream.read(buffer)) != -1)
                         {
                             bos.write(buffer,0,length);
@@ -314,12 +315,15 @@ public class SMessageService extends ReactContextBaseJavaModule {
                             fileSender.sendMessage(sExchange, jMessage.toString(), sRoutingKey);
 
                             int percentage = (int)((float) count / total * 100);
-                            WritableMap infoMap = Arguments.createMap();
-                            infoMap.putString("talkId", talkId);
-                            infoMap.putInt("msgId", msgId);
-                            infoMap.putInt("percentage", percentage );
-                            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                    .emit(EventConst.MESSAGE_SERVICE_SEND_FILE, infoMap);
+                            if(percentage != prevPercentage) {
+                                prevPercentage = percentage;
+                                WritableMap infoMap = Arguments.createMap();
+                                infoMap.putString("talkId", talkId);
+                                infoMap.putInt("msgId", msgId);
+                                infoMap.putInt("percentage", percentage );
+                                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                        .emit(EventConst.MESSAGE_SERVICE_SEND_FILE, infoMap);
+                            }
                         }
                         bos.close();
                         inStream.close();
@@ -366,8 +370,8 @@ public class SMessageService extends ReactContextBaseJavaModule {
                             //文件大小
                             long fileSize = file.length();
                             //2M为单位切割文件后的总个数
-                            long total = (long) (Math.ceil((double) fileSize / ((double) 1024 * 1024 * 2)));
-                            int blockSize = 1024 * 1024 * 2;
+                            long total = (long) (Math.ceil((double) fileSize / ((double) FILE_BLOCK_SIZE)));
+                            int blockSize = FILE_BLOCK_SIZE;
                             byte[] buffer = new byte[blockSize];
                             int length, count = 0;
                             String md5 = getFileMD5(file);
@@ -377,6 +381,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
                             JSONObject filePack = new JSONObject();
                             filePack.put("md5", md5);
                             filePack.put("userId", userId);
+                            int prevPercentage = 0;
                             for (int index = 0; (length = inStream.read(buffer)) != -1; index++, startPos += length) {
                                 bos.write(buffer, 0, length);
                                 byte[] bytes = bos.toByteArray();
@@ -394,12 +399,15 @@ public class SMessageService extends ReactContextBaseJavaModule {
                                 HttpResponse response = client.execute(httpPost);
                                 if (response.getStatusLine().getStatusCode() == 200) {
                                     int percentage = (int) ((float) count / total * 100);
-                                    WritableMap infoMap = Arguments.createMap();
-                                    infoMap.putString("talkId", talkId);
-                                    infoMap.putInt("msgId", msgId);
-                                    infoMap.putInt("percentage", percentage);
-                                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                            .emit(EventConst.MESSAGE_SERVICE_SEND_FILE, infoMap);
+                                    if(percentage != prevPercentage) {
+                                        prevPercentage = percentage;
+                                        WritableMap infoMap = Arguments.createMap();
+                                        infoMap.putString("talkId", talkId);
+                                        infoMap.putInt("msgId", msgId);
+                                        infoMap.putInt("percentage", percentage);
+                                        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                                .emit(EventConst.MESSAGE_SERVICE_SEND_FILE, infoMap);
+                                    }
                                 }
                             }
                             bos.close();
@@ -507,6 +515,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
                     g_AMQPManager.declareQueue(queueName);
                     AMQPReceiver fileReceiver = g_AMQPManager.newReceiver(queueName);
 
+                    int prevPercentage = 0;
                     while (fileReceiver != null) {
                         //接收消息
                         AMQPReturnMessage returnMsg = fileReceiver.receiveMessage();
@@ -520,12 +529,15 @@ public class SMessageService extends ReactContextBaseJavaModule {
                             long index = jsonReceived.getJSONObject("message").getJSONObject("message").getLong("index");
                             long length = jsonReceived.getJSONObject("message").getJSONObject("message").getLong("length");
                             int percentage = (int)((float) index / length * 100);
-                            WritableMap infoMap = Arguments.createMap();
-                            infoMap.putString("talkId", talkId);
-                            infoMap.putInt("msgId", msgId);
-                            infoMap.putInt("percentage", percentage );
-                            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                    .emit(EventConst.MESSAGE_SERVICE_RECEIVE_FILE, infoMap);
+                            if(percentage != prevPercentage) {
+                                prevPercentage = percentage;
+                                WritableMap infoMap = Arguments.createMap();
+                                infoMap.putString("talkId", talkId);
+                                infoMap.putInt("msgId", msgId);
+                                infoMap.putInt("percentage", percentage );
+                                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                        .emit(EventConst.MESSAGE_SERVICE_RECEIVE_FILE, infoMap);
+                            }
                             if(index == length)
                                 break;
                         }
@@ -554,6 +566,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
                 @Override
                 public void run() {
                     try {
+                        boolean result = true;
                         HttpPost httpPost = new HttpPost("http://111.202.121.144:8124/download");
                         File path = new File(receivePath);
                         File file = new File(receivePath + "/" + fileName);
@@ -565,8 +578,8 @@ public class SMessageService extends ReactContextBaseJavaModule {
                         } else if (file.exists()) {
                             file.delete();
                         }
-                        int blockSize = 1024 * 1024 * 2;
-                        long total = (long) (Math.ceil((double) fileSize / ((double) 1024 * 1024 * 2)));
+                        int blockSize = FILE_BLOCK_SIZE;
+                        long total = (long) (Math.ceil((double) fileSize / ((double) FILE_BLOCK_SIZE)));
                         HttpClient client = new DefaultHttpClient();
                         RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
                         JSONObject downloadPack = new JSONObject();
@@ -574,6 +587,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
                         downloadPack.put("md5", queueName);
                         downloadPack.put("dataLength", blockSize);
                         long start = 0;
+                        int prevPercentage = 0;
                         for (int index=1;index<=total;index++) {
                             downloadPack.put("startPos", start);
                             StringEntity stringEntity = new StringEntity(downloadPack.toString());
@@ -582,26 +596,31 @@ public class SMessageService extends ReactContextBaseJavaModule {
                             String entity = EntityUtils.toString(response.getEntity(), "UTF-8");
                             JSONObject jsonObject1 = new JSONObject(entity);
                             int dataLength = jsonObject1.getInt("dataLength");
-                            if (dataLength <= 0) {
+                            byte[] values = Base64.decode(jsonObject1.getString("value"), Base64.DEFAULT);
+                            if (values.length == 0) {
+                                result = false;
                                 break;
                             }
-                            byte[] values = Base64.decode(jsonObject1.getString("value"), Base64.DEFAULT);
                             randomAccessFile.seek(start);
                             randomAccessFile.write(values);
                             start += dataLength;
 
                             int percentage = (int)((float) index / total * 100);
-                            WritableMap infoMap = Arguments.createMap();
-                            infoMap.putString("talkId", talkId);
-                            infoMap.putInt("msgId", msgId);
-                            infoMap.putInt("percentage", percentage );
-                            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                    .emit(EventConst.MESSAGE_SERVICE_RECEIVE_FILE, infoMap);
+                            if(percentage != prevPercentage) {
+                                prevPercentage = percentage;
+                                WritableMap infoMap = Arguments.createMap();
+                                infoMap.putString("talkId", talkId);
+                                infoMap.putInt("msgId", msgId);
+                                infoMap.putInt("percentage", percentage );
+                                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                        .emit(EventConst.MESSAGE_SERVICE_RECEIVE_FILE, infoMap);
+                            }
+
 
                         }
                         randomAccessFile.close();
 
-                        promise.resolve(true);
+                        promise.resolve(result);
                     } catch (Exception e) {
                         promise.reject(e);
                     }
@@ -705,14 +724,26 @@ public class SMessageService extends ReactContextBaseJavaModule {
      * 停止消息接收
      */
     @ReactMethod
-    public void stopReceiveMessage( Promise promise) {
+    public void stopReceiveMessage(final Promise promise) {
         try {
-            boolean bRes = false;
             isRecieving = false;
-            while (!bStopRecieve) {
-                Thread.sleep(500);
-            }
-            promise.resolve(bRes);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Looper.prepare();
+                    while (true) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if(bStopRecieve){
+                            promise.resolve(true);
+                            break;
+                        }
+                    }
+                }
+            }).start();
         } catch (Exception e) {
             promise.reject(e);
         }

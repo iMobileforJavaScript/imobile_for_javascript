@@ -143,7 +143,7 @@
     @try{
         MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
         Layers *layers = mapControl.map.layers;
-        return [layers getLayerWithName:layerName];
+        return [layers findLayerWithName:layerName];
     }
     @catch(NSException *exception){
         @throw exception;

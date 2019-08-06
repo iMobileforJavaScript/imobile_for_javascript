@@ -122,6 +122,7 @@ public class SMMediaCollector {
         smMedia.setFileName((String)recordset.getFieldValue("MediaName"));
 
         String paths = (String)recordset.getFieldValue("MediaFilePaths");
+        if (paths == null) paths = "";
         ArrayList<String> pathArr = new ArrayList<>();
         if (paths.indexOf(",") > 0) {
             pathArr = new ArrayList<>(Arrays.asList(paths.split(",")));
@@ -228,7 +229,7 @@ public class SMMediaCollector {
             while (!recordset.isEOF()) {
                 String paths = (String)recordset.getFieldValue("MediaFilePaths");
                 String fileName = (String)recordset.getFieldValue("MediaName");
-                if (paths == null && fileName.equals("TourLine")) {
+                if (paths == null && (fileName == null || fileName.equals("TourLine"))) {
                     recordset.moveNext();
                     continue;
                 }

@@ -202,12 +202,12 @@ function addLayer(datasourceNameOrIndex, datasetIndex = -1) {
 
 /**
  * 根据图层名获取对应xml
- * @param layerName
+ * @param layerPath
  * @returns {*}
  */
-function getLayerAsXML(layerName){
+function getLayerAsXML(layerPath){
   try {
-    return LayerManager.getLayerAsXML(layerName)
+    return LayerManager.getLayerAsXML(layerPath)
   }
   catch (e) {
     console.error(e)

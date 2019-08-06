@@ -164,6 +164,11 @@ async function aggregatePointsOnline (serverData = {}, analysisData = {}, handle
   return Analyst.aggregatePointsOnline(serverData, analysisData)
 }
 
+/** 在线分析-泰森多边形 **/
+async function thiessenAnalyst (sourceData = {}, resultData = {}, option = {}) {
+  return Analyst.thiessenAnalyst(sourceData, resultData, option)
+}
+
 export default {
   // 缓冲分析
   createBuffer,
@@ -182,4 +187,7 @@ export default {
   getOnlineAnalysisData,
   densityOnline,
   aggregatePointsOnline,
+  
+  // 临近分析
+  thiessenAnalyst,
 }

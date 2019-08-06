@@ -38,6 +38,7 @@
 #import "SuperMap/DensityAnalystOnline.h"
 #import "SuperMap/AggreatePointsOnline.h"
 #import "SuperMap/Rectangle2D.h"
+#import "SuperMap/ProximityAnalyst.h"
 
 #import "Constants.h"
 #import "SScene.h"

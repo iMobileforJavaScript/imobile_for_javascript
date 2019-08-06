@@ -149,6 +149,7 @@ import SMInstrumentChartView from './NativeModule/components/SMInstrumentChartVi
 import SMWorkspaceManagerView from './NativeModule/components/SMWorkspaceManagerComponent.js';
 import SMSymbolTable from './NativeModule/components/SMSymbolTable';
 import SMDynamicArrowView from './NativeModule/components/SMDynamicArrowView.js';
+import SMAIDetectView from './NativeModule/components/SMAIDetectView.js';
 
 import EngineType from './NativeModule/EngineType'
 import ThemeLabelItem from './NativeModule/ThemeLabelItem'
@@ -187,7 +188,8 @@ import {
   SCartography,
   SThemeCartography,
   SOnlineService,
-  SMessageService
+  SMessageService,
+  SAIDetectView,
 } from './NativeModule/interfaces'
 let SMCollectorType = NativeModules.SCollectorType;
 
@@ -202,7 +204,11 @@ export {
   SMWorkspaceManagerView,
   SMRLegendView,
   SMDynamicArrowView,
+<<<<<<< HEAD
   SMArView,
+=======
+  SMAIDetectView,
+>>>>>>> 3f86d050401290612cf7d90cfc6c203e5964caa9
 
   Utility,
 
@@ -380,5 +386,6 @@ export {
   SOnlineService,
 
   /**消息服务*/
-  SMessageService
+  SMessageService,
+  SAIDetectView,
 };

@@ -193,6 +193,26 @@ function addMedia (info, addToMap = true) {
   return result
 }
 
+/**
+ *
+ * @param info
+ * {
+        datasourceName: 'Hunan',
+        datasetName: 'MediaDataset',
+        mediaName: 图片名称，非路径,
+        addToMap: true, // 是否添加图片到地图上
+      }
+ * @param addToMap
+ * @returns {*}
+ */
+function addArMedia (info, addToMap = true) {
+  if (info === undefined) return false
+  if (info.datasetName === undefined) datasetName = 'MediaDataset'
+  let result = Collector.addArMedia(info, addToMap)
+
+  return result
+}
+
 // /**
 //  * 添加多媒体文件
 //  * @param files       多媒体文件绝对路径数组
@@ -320,6 +340,7 @@ export default {
   removeListener,
   
   addMedia,
+  addArMedia,
   addTour,
   // addMediaFiles,
   // deleteMediaFiles,

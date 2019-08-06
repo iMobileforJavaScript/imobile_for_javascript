@@ -322,6 +322,17 @@ export default (function () {
   }
 
   /**
+   * 获取MapControl的action
+   */
+  function getAction () {
+    try {
+      return SMap.getAction()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 地图放大缩小
    */
   function zoom (scale = 2) {
@@ -1624,6 +1635,30 @@ export default (function () {
       console.error(e)
     }
   }
+  
+  /**
+   * 获取地图操作记录数量
+   * @returns {*}
+   */
+  function getMapHistoryCount () {
+    try {
+      return SMap.getMapHistoryCount()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 获取当前地图操作记录index
+   * @returns {*}
+   */
+  function getMapHistoryCurrentIndex () {
+    try {
+      return SMap.getMapHistoryCurrentIndex()
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
    * 添加数据集属性字段
@@ -1685,7 +1720,72 @@ export default (function () {
     }
   }
 
+  /**
+   * 初始化二维搜索功能
+   * @returns {*|void}
+   */
+  function initPointSearch(){
+    try {
+      return SMap.initPointSearch()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 二维搜索
+   * @param str
+   * @returns {*|void}
+   */
+  function pointSearch(str){
+    try {
+      return SMap.pointSearch(str)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 定位到某个点
+   * @param index
+   * @returns {*|void|Promise<void>}
+   */
+  function toLocationPoint(index) {
+    try {
+      return SMap.toLocationPoint(index)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  /**
+   * 二维 添加位置搜索事件监听
+   * @param handlers
+   */
+  function setPointSearchListener(handlers){
+    try {
+      if (Platform.OS === 'ios' && handlers) {
+        if (typeof handlers.callback === 'function') {
+          nativeEvt.addListener(EventConst.POINTSEARCH2D_KEYWORDS, function (e) {
+            handlers.callback(e)
+          })
+        }
+      } else if (Platform.OS === 'android' && handlers) {
+        if (typeof handlers.callback === "function") {
+          DeviceEventEmitter.addListener(EventConst.POINTSEARCH2D_KEYWORDS, function (e) {
+            handlers.callback(e);
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   let SMapExp = {
+    toLocationPoint,
+    setPointSearchListener,
+    pointSearch,
+    initPointSearch,
     getEnvironmentStatus,
     refreshMap,
     openWorkspace,
@@ -1695,6 +1795,7 @@ export default (function () {
     closeMapControl,
     getMaps,
     setAction,
+    getAction,
     openMap,
     saveMap,
     saveAsMap,
@@ -1795,6 +1896,8 @@ export default (function () {
     removeHistory,
     clearHistory,
     addMapHistory,
+    getMapHistoryCount,
+    getMapHistoryCurrentIndex,
     
     addRecordset,
     setMinVisibleScale,
