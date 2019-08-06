@@ -25,8 +25,10 @@ import com.supermap.analyst.networkanalyst.TransportationAnalystResult;
 import com.supermap.analyst.networkanalyst.TransportationAnalystSetting;
 import com.supermap.analyst.networkanalyst.WeightFieldInfo;
 import com.supermap.analyst.networkanalyst.WeightFieldInfos;
+import com.supermap.analyst.spatialanalyst.ProximityAnalyst;
 import com.supermap.containts.EventConst;
 import com.supermap.data.Color;
+import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetType;
 import com.supermap.data.DatasetVector;
@@ -38,6 +40,7 @@ import com.supermap.data.GeoLineM;
 import com.supermap.data.GeoRegion;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
+import com.supermap.data.GeometryType;
 import com.supermap.data.Point2D;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.QueryParameter;
@@ -53,6 +56,7 @@ import com.supermap.mapping.Action;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSetting;
 import com.supermap.mapping.LayerSettingVector;
+import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.TrackingLayer;
@@ -778,64 +782,56 @@ public class SAnalyst extends ReactContextBaseJavaModule {
         }
     }
 
+    /******************************************************************************邻近分析*****************************************************************************************/
+    @ReactMethod
+        public void thiessenAnalyst(ReadableMap sourceData, ReadableMap resultData, ReadableMap optionParameter, Promise promise) {
+        try {
+            MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
+            com.supermap.mapping.Map map = mapControl.getMap();
+            if (map.getWorkspace() == null) {
+                map.setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
+            }
+            DatasetVector sourceDataset = (DatasetVector)SMAnalyst.getDatasetByDictionary(sourceData);
 
+            String resName = "TSDBX";
+            if (resultData.hasKey("dataset")) {
+                resName = resultData.getString("dataset");
+            }
 
-//    class gestureListener extends GestureDetector.SimpleOnGestureListener {
-//
-//        @Override
-//        public void onLongPress(MotionEvent e) {
-//            switch (longPressAction) {
-//                case FACILITYANALYST:
-//                    Point pt = new Point((int) e.getX(), (int) e.getY());
-//                    SMap sMap = SMap.getInstance();
-//                    MapControl mapControl = sMap.getSmMapWC().getMapControl();
-//                    Selection selection = mapControl.getMap().getLayers().get(0).hitTestEx(pt, 20);
-//                    if (selection != null && selection.getCount() > 0) {
-//                        Recordset recordset = selection.toRecordset();
-//                        GeoPoint point = (GeoPoint) recordset.getGeometry();
-//                        m_elementIDs.add(recordset.getInt32("SMNODEID"));
-//                        System.out.println(recordset.getInt32("SMNODEID"));
-//                        GeoStyle geoStyle = getGeoStyle(new Size2D(10,
-//                                10), new Color(255, 105, 0));
-//                        geoStyle.setMarkerSymbolID(3614);
-//                        point.setStyle(geoStyle);
-//
-//                        int count = m_elementIDs.size();
-//                        TextPart textPart = new TextPart("要素" + count,
-//                                new Point2D(point.getX(), point.getY()));
-//                        GeoText geoText = new GeoText(textPart);
-//                        TextStyle textStyle = new TextStyle();
-//                        textStyle.setForeColor(new Color(0, 255, 0));
-//                        geoText.setTextStyle(textStyle);
-//
-//                        mapControl.getMap().getTrackingLayer().add(point, "");
-//                        mapControl.getMap().getTrackingLayer().add(geoText, "");
-//                        mapControl.getMap().refresh();
-//
-//                        point.dispose();
-//                        geoText.dispose();
-//                        recordset.close();
-//                        recordset.dispose();
-//                    }
-//                    break;
-//                case TRANSPORTANALYST:
-//                    break;
-//            }
-//        }
-//    }
-//
-//    enum LongPressAction {
-//        /**
-//         * 空操作
-//         */
-//        NULL,
-//        /**
-//         *设施网络分析
-//         */
-//        FACILITYANALYST,
-//        /**
-//         *交通网络分析
-//         */
-//        TRANSPORTANALYST
-//    }
+            Datasource resultDatasource = SMAnalyst.getDatasourceByDictionary(resultData, true);
+            resName = resultDatasource.getDatasets().getAvailableDatasetName(resName);
+
+            GeoRegion region = null;
+            if (optionParameter != null) {
+                if (optionParameter.hasKey("selectRegion")) {
+                    ReadableMap selectRegionInfo = optionParameter.getMap("selectRegion");
+                    Layer layer = SMLayer.findLayerByPath(selectRegionInfo.getString("layerPath"));
+                    int regionId = selectRegionInfo.getInt("geoId");
+                    QueryParameter queryParameter = new QueryParameter();
+                    queryParameter.setCursorType(CursorType.STATIC);
+                    queryParameter.setAttributeFilter("SmID=" + regionId);
+
+                    Recordset recordset = ((DatasetVector)layer.getDataset()).query(queryParameter);
+                    if (recordset != null && recordset.getGeometry() != null && recordset.getGeometry().getType() == GeometryType.GEOREGION) {
+                        region = (GeoRegion)recordset.getGeometry();
+                    }
+                } else if (optionParameter.hasKey("drawRegion") && mapControl.getCurrentGeometry() != null &&  mapControl.getCurrentGeometry().getType() == GeometryType.GEOREGION) {
+                    region = (GeoRegion)mapControl.getCurrentGeometry();
+                }
+            }
+
+            Dataset datasetRes = ProximityAnalyst.createThiessenPolygon(sourceDataset, resultDatasource, resName, region);
+
+            boolean result = false;
+            if (datasetRes != null) {
+                result = true;
+                map.getLayers().add(datasetRes, true);
+                map.refresh();
+            }
+            promise.resolve(result);
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 }

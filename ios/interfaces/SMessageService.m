@@ -35,6 +35,8 @@ static BOOL isRecieving = true;
 static NSString* sExchange = @"message";
 //分发群消息的交换机
 static NSString* sGroupExchange = @"message.group";
+//文件发送接收分片大小
+static int FILE_BLOCK_SIZE = 100 * 1024;
 
 @implementation SMessageService
 #pragma mark -- 定义宏，让该类暴露给RN层
@@ -189,7 +191,7 @@ RCT_REMAP_METHOD(sendFile, connectInfo:(NSString*)connectInfo message:(NSString*
             //文件大小
             unsigned long long fileSize = [[fileDic objectForKey:NSFileSize] longLongValue];
             //单个文件大小
-            unsigned int singleFileSize=1024 * 1024 * 2;
+            unsigned int singleFileSize= FILE_BLOCK_SIZE;
             //2M为单位切割文件后的总个数
             long total = (long)ceil((double)fileSize / ((double) singleFileSize));
 
@@ -230,8 +232,8 @@ RCT_REMAP_METHOD(sendFile, connectInfo:(NSString*)connectInfo message:(NSString*
             AMQPSender* fileSender=[mAMQPManager_File newSender];
 
             NSFileHandle* fh = [NSFileHandle fileHandleForReadingAtPath:filePath];
-
-
+            
+            int prevPercentage = 0;
             for(int index=1;index<=total;index++){
                 NSData* data;
                 if(index==total){
@@ -253,13 +255,17 @@ RCT_REMAP_METHOD(sendFile, connectInfo:(NSString*)connectInfo message:(NSString*
                 [fileSender sendMessage:sExchange routingKey:sRoutingKey  message:message_str];
 
                 int percentage=(index*100)/total;
-                NSMutableDictionary* infoDic = [[NSMutableDictionary alloc] init];
-
-                [infoDic setObject:talkId forKey:@"talkId"];
-                [infoDic setValue:@(msgId) forKey:@"msgId"];
-                [infoDic setValue:@(percentage) forKey:@"percentage"];
-
-                [self sendEventWithName:MESSAGE_SERVICE_SEND_FILE body:infoDic];
+                if(percentage != prevPercentage) {
+                    prevPercentage = percentage;
+                    NSMutableDictionary* infoDic = [[NSMutableDictionary alloc] init];
+                    
+                    [infoDic setObject:talkId forKey:@"talkId"];
+                    [infoDic setValue:@(msgId) forKey:@"msgId"];
+                    [infoDic setValue:@(percentage) forKey:@"percentage"];
+                    
+                    [self sendEventWithName:MESSAGE_SERVICE_SEND_FILE body:infoDic];
+                }
+                
             }
             [fh closeFile];
             [mAMQPManager_File disconnection];
@@ -293,7 +299,7 @@ RCT_REMAP_METHOD(sendFileWithThirdServer,  message:(NSString*)message file:(NSSt
             //文件大小
             unsigned long long fileSize = [[fileDic objectForKey:NSFileSize] longLongValue];
             //单个文件大小
-            unsigned int singleFileSize=1024 * 1024 * 2;
+            unsigned int singleFileSize= FILE_BLOCK_SIZE;
             //2M为单位切割文件后的总个数
             long total = (long)ceil((double)fileSize / ((double) singleFileSize));
             
@@ -312,6 +318,7 @@ RCT_REMAP_METHOD(sendFileWithThirdServer,  message:(NSString*)message file:(NSSt
             [sub_messageDic setObject:md5 forKey:@"md5"];
             [sub_messageDic setObject:[[messageDic valueForKey:@"user"] valueForKey:@"id"] forKey:@"userId"];
             
+            int prevPercentage = 0;
             for(int index=1;index<=total;index++){
                 NSData* data;
                 if(index!=total){
@@ -342,12 +349,15 @@ RCT_REMAP_METHOD(sendFileWithThirdServer,  message:(NSString*)message file:(NSSt
                 NSData * backData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
                 if(error == nil){
                     int percentage=(index*100)/total;
-                    NSMutableDictionary* infoDic = [[NSMutableDictionary alloc] init];
-                    [infoDic setObject:talkId forKey:@"talkId"];
-                    [infoDic setValue:@(msgId) forKey:@"msgId"];
-                    [infoDic setValue:@(percentage) forKey:@"percentage"];
-                    
-                    [self sendEventWithName:MESSAGE_SERVICE_SEND_FILE body:infoDic];
+                    if(percentage != prevPercentage) {
+                        prevPercentage = percentage;
+                        NSMutableDictionary* infoDic = [[NSMutableDictionary alloc] init];
+                        [infoDic setObject:talkId forKey:@"talkId"];
+                        [infoDic setValue:@(msgId) forKey:@"msgId"];
+                        [infoDic setValue:@(percentage) forKey:@"percentage"];
+                        
+                        [self sendEventWithName:MESSAGE_SERVICE_SEND_FILE body:infoDic];
+                    }
                     
                     if(index==total){
                         NSMutableDictionary* dic=[[NSMutableDictionary alloc] init];
@@ -420,7 +430,7 @@ RCT_REMAP_METHOD(receiveFile, fileName:(NSString*)fileName queueName:(NSString* 
 
             [g_AMQPManager declareQueue:queueName];
             AMQPReceiver* fileReceiver=[g_AMQPManager newReceiver:queueName];
-
+            int prevPercentage = 0;
             while (fileReceiver) {
                 NSString const *  name=queueName;
                 NSString* msg=nil;
@@ -439,12 +449,16 @@ RCT_REMAP_METHOD(receiveFile, fileName:(NSString*)fileName queueName:(NSString* 
                     int index =[[[[receivedDic objectForKey:@"message"] objectForKey:@"message"] objectForKey:@"index"] intValue];
                     long length =[[[[receivedDic objectForKey:@"message"] objectForKey:@"message"] objectForKey:@"length"] intValue];
                     int percentage = (int)((float) index / length * 100);
-                    NSMutableDictionary* infoMap = [[NSMutableDictionary alloc] init];
-                    [infoMap setObject:talkId forKey:@"talkId"];
-                    [infoMap setObject:@(msgId) forKey:@"msgId"];
-                    [infoMap setObject:@(percentage) forKey:@"percentage"];
-
-                    [self sendEventWithName:MESSAGE_SERVICE_RECEIVE_FILE body:infoMap];
+                    if(percentage != prevPercentage) {
+                        prevPercentage = percentage;
+                        NSMutableDictionary* infoMap = [[NSMutableDictionary alloc] init];
+                        [infoMap setObject:talkId forKey:@"talkId"];
+                        [infoMap setObject:@(msgId) forKey:@"msgId"];
+                        [infoMap setObject:@(percentage) forKey:@"percentage"];
+                        
+                        [self sendEventWithName:MESSAGE_SERVICE_RECEIVE_FILE body:infoMap];
+                    }
+                   
 
                     if(index == length){
                         break;
@@ -467,6 +481,7 @@ RCT_REMAP_METHOD(receiveFileWithThirdServer, fileName:(NSString*)fileName queueN
     @try {
         dispatch_queue_t urls_queue = dispatch_queue_create("receiveFile", NULL);
         dispatch_async(urls_queue, ^{
+            BOOL result = YES;
             BOOL isDir = NO;
             BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:receivePath isDirectory:&isDir];
             if (!isExist || !isDir) {
@@ -479,7 +494,7 @@ RCT_REMAP_METHOD(receiveFileWithThirdServer, fileName:(NSString*)fileName queueN
             
             NSFileHandle* fh = [NSFileHandle fileHandleForWritingAtPath:filePath];
             //单个文件大小
-            unsigned int singleFileSize=1024 * 1024 * 2;
+            unsigned int singleFileSize= FILE_BLOCK_SIZE;
             int count=(int)ceil((double)fileSize / ((double) singleFileSize));
             
             NSMutableDictionary *sub_messageDic=[[NSMutableDictionary alloc] init];
@@ -488,6 +503,7 @@ RCT_REMAP_METHOD(receiveFileWithThirdServer, fileName:(NSString*)fileName queueN
             [sub_messageDic setObject:userId forKey:@"userID"];
             
             static long  start=0;
+            int prevPercentage = 0;
             for(int index=1;index<=count;index++) {
                 [sub_messageDic setObject:@(start) forKey:@"startPos"];
                 NSURL *url =[NSURL URLWithString:@"http://111.202.121.144:8124/download"];
@@ -518,20 +534,28 @@ RCT_REMAP_METHOD(receiveFileWithThirdServer, fileName:(NSString*)fileName queueN
                     long dataLength=[[dic valueForKey:@"dataLength"] longValue];
                     NSString* dataStr=[dic objectForKey:@"value"];
                     NSData *data = [[NSData alloc]initWithBase64EncodedString:dataStr options:NSDataBase64DecodingIgnoreUnknownCharacters];
+                    if(data.length == 0) {
+                        result = NO;
+                        break;
+                    }
                     [fh writeData:data];
                     start+=dataLength;
                     
                     int percentage = (int)((float) index / count * 100);
-                    NSMutableDictionary* infoMap = [[NSMutableDictionary alloc] init];
-                    [infoMap setObject:talkId forKey:@"talkId"];
-                    [infoMap setObject:@(msgId) forKey:@"msgId"];
-                    [infoMap setObject:@(percentage) forKey:@"percentage"];
+                    if(percentage != prevPercentage) {
+                        prevPercentage = percentage;
+                        NSMutableDictionary* infoMap = [[NSMutableDictionary alloc] init];
+                        [infoMap setObject:talkId forKey:@"talkId"];
+                        [infoMap setObject:@(msgId) forKey:@"msgId"];
+                        [infoMap setObject:@(percentage) forKey:@"percentage"];
+                        
+                        [self sendEventWithName:MESSAGE_SERVICE_RECEIVE_FILE body:infoMap];
+                    }
                     
-                    [self sendEventWithName:MESSAGE_SERVICE_RECEIVE_FILE body:infoMap];
                 }
             }
             [fh closeFile];
-            resolve([NSNumber numberWithBool:true]);
+            resolve([NSNumber numberWithBool:result]);
         });
     } @catch (NSException *exception) {
         reject(@"SMessageService", exception.reason, nil);

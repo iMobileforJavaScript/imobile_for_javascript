@@ -526,6 +526,104 @@ RCT_REMAP_METHOD(aggregatePointsOnline, aggreagatePointsOnline:(NSDictionary *)s
                                                           }];
 }
 
+/********************************************************************************邻近分析**************************************************************************************/
+#pragma mark 邻近分析-泰森多边形
+RCT_REMAP_METHOD(thiessenAnalyst, thiessenAnalystWithSourceData:(NSDictionary *)sourceData resultData:(NSDictionary *)resultData optionParameter:(NSDictionary *)optionParameter resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        Map* map = mapControl.map;
+        if (map.workspace == nil) {
+            map.workspace = [SMap singletonInstance].smMapWC.workspace;
+        }
+        DatasetVector* sourceDataset = (DatasetVector *)[SMAnalyst getDatasetByDictionary:sourceData];
+        
+        NSString *resName = @"TSDBX";
+        if ([resultData objectForKey:@"dataset"] != nil) {
+           resName = [resultData objectForKey:@"dataset"];
+        }
+        
+        Datasource* resultDatasource = [SMAnalyst getDatasourceByDictionary:resultData createIfNotExist:YES];
+        resName = [resultDatasource.datasets availableDatasetName:resName];
+        
+        GeoRegion* region = nil;
+        if (optionParameter != nil) {
+            if ([optionParameter objectForKey:@"selectRegion"]) {
+                NSDictionary* selectRegionInfo = [optionParameter objectForKey:@"selectRegion"];
+                Layer* selectLayer = [SMLayer findLayerByPath:[selectRegionInfo objectForKey:@"layerPath"]];
+                int reginId = [(NSNumber *)[selectRegionInfo objectForKey:@"geoId"] intValue];
+                QueryParameter* qp = [[QueryParameter alloc] init];
+                Recordset* recordset;
+                qp.attriButeFilter = [NSString stringWithFormat:@"SmID=%d", reginId];
+                qp.cursorType = STATIC;
+                recordset = [(DatasetVector *)selectLayer.dataset query:qp];
+                
+                if (recordset && recordset.geometry && recordset.geometry.getType == GT_GEOREGION) {
+                    region = (GeoRegion *)recordset.geometry;
+                }
+            } else if ([optionParameter objectForKey:@"drawRegion"] && [mapControl getCurrentGeometry] && [mapControl getCurrentGeometry].getType == GT_GEOREGION) {
+                region = (GeoRegion *)[mapControl getCurrentGeometry];
+            }
+        }
+
+        Dataset* datasetRes = [ProximityAnalyst createThiessenPolygonByDataset:sourceDataset
+                                                       withDatasource:resultDatasource
+                                                                named:resName
+                                                                 clip:region];
+        
+        BOOL result = NO;
+        if (datasetRes) {
+            [map.layers addDataset:datasetRes ToHead:YES];
+            [map refresh];
+            result = YES;
+        }
+        
+        resolve(@(result));
+    } @catch (NSException *exception) {
+        reject(@"SAnalyst", exception.reason, nil);
+    }
+}
+
+#pragma mark 邻近分析-距离分析
+RCT_REMAP_METHOD(distanceAnalyst, distanceAnalystWithSourceData:(NSDictionary *)sourceData referenceData:(NSDictionary *)referenceData resultData:(NSDictionary *)resultData optionParameter:(NSDictionary *)optionParameter resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
+        if (map.workspace == nil) {
+            map.workspace = [SMap singletonInstance].smMapWC.workspace;
+        }
+        DatasetVector* sourceDataset = (DatasetVector *)[SMAnalyst getDatasetByDictionary:sourceData];
+        DatasetVector* referenceRecordset = (DatasetVector *)[SMAnalyst getDatasetByDictionary:referenceData];
+        
+        NSString *resName = @"TSDBX";
+        if ([resultData objectForKey:@"dataset"] != nil) {
+            resName = [resultData objectForKey:@"dataset"];
+        }
+        
+        Datasource* resultDatasource = [SMAnalyst getDatasourceByDictionary:resultData createIfNotExist:YES];
+        resName = [resultDatasource.datasets availableDatasetName:resName];
+        
+        double min = [(NSNumber *)[optionParameter objectForKey:@"minDistance"] doubleValue];
+        double max = [(NSNumber *)[optionParameter objectForKey:@"maxDistance"] doubleValue];
+        if ([optionParameter objectForKey:@"minDistance"] >= 0) {
+            
+        }
+        
+        BOOL result = [ProximityAnalyst computeMinDistanceOfRecordset:[sourceDataset recordset:NO cursorType:STATIC]
+                                                            reference:[referenceRecordset recordset:NO cursorType:STATIC]
+                                                                  min:min
+                                                                  max:max
+                                                       withDatasource:resultDatasource named:resName];
+//        if (datasetRes) {
+//            [map.layers addDataset:datasetRes ToHead:YES];
+//            [map refresh];
+//            result = YES;
+//        }
+        
+        resolve(@(result));
+    } @catch (NSException *exception) {
+        reject(@"SAnalyst", exception.reason, nil);
+    }
+}
+
 /********************************************************************************三维分析**************************************************************************************/
 
 /**

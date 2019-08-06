@@ -45,6 +45,8 @@ public class EventConst {
     public static final String MAP_GEOMETRY_MULTI_SELECTED = "com.supermap.RN.Mapcontrol.geometry_multi_selected";
     public static final String MAP_GEOMETRY_SELECTED = "com.supermap.RN.Mapcontrol.geometry_selected";
 
+    /** 二维POI搜索 **/
+    public static final String POINTSEARCH2D_KEYWORDS = "com.supermap.RN.MapControl.PointSearch2D_keyWords";
     /** 图例 **/
     public static final String LEGEND_CONTENT_CHANGE = "com.supermap.RN.Map.Legend.legend_content_change";
     /** 比例尺 **/

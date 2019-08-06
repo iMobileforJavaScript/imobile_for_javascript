@@ -50,6 +50,7 @@ RCT_EXPORT_MODULE();
              MAP_BOUNDS_CHANGED,
              LEGEND_CONTENT_CHANGE,
              MAP_SCALEVIEW_CHANGED,
+             POINTSEARCH2D_KEYWORDS,
              ];
 }
 
@@ -722,6 +723,7 @@ RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTProm
     @try {
         sMap = [SMap singletonInstance];
         sMap.smMapWC.mapControl.map.legend.contentChangeDelegate = nil;
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"removeLegendListener",exception.reason,nil);
     }
@@ -765,6 +767,50 @@ RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTProm
 //    }
 //}
 
+#pragma mark 初始化二维搜索
+RCT_REMAP_METHOD(initPointSearch, initPointSearchWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        sMap.poiSearchHelper2D = [POISearchHelper2D singletonInstance];
+        [sMap.poiSearchHelper2D initMapControl:sMap.smMapWC.mapControl];
+        sMap.poiSearchHelper2D.delegate =self;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"initPointSearch",exception.reason,nil);
+    }
+}
+#pragma mark 二维搜索
+RCT_REMAP_METHOD(pointSearch, pointSearchWithString:(NSString *)str resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [sMap.poiSearchHelper2D poiSearch:str];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"pointSearch",exception.reason,nil);
+    }
+}
+#pragma mark 定位到搜索结果某个点
+RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithIndex:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL isSuccess = [sMap.poiSearchHelper2D toLocationPoint:index];
+        resolve(@(isSuccess));
+    } @catch (NSException *exception) {
+        reject(@"toLocationPoint",exception.reason,nil);
+    }
+}
+-(void)locations:(NSArray *)locations{
+    NSMutableArray* arr = [[NSMutableArray alloc]initWithCapacity:1];
+    NSString* name;
+    NSDictionary* map;
+    int count = locations.count;
+    for (int i = 0; i < count; i++) {
+        OnlinePOIInfo * onlinePoiInfo=[locations objectAtIndex:i];
+        name = onlinePoiInfo.name;
+        map = @{@"pointName":name};
+        [arr addObject:map];
+    }
+    [self sendEventWithName:POINTSEARCH2D_KEYWORDS body:arr];
+}
 
 #pragma mark 关闭工作空间
 RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -1377,6 +1423,17 @@ RCT_REMAP_METHOD(setAction, setActionByActionType:(int)actionType resolver:(RCTP
         sMap = [SMap singletonInstance];
         sMap.smMapWC.mapControl.action = actionType;
         resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"MapControl", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取MapControl的Action
+RCT_REMAP_METHOD(getAction, getActionByActionTypeWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Action type = sMap.smMapWC.mapControl.action;
+        resolve(@(type));
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
@@ -2183,6 +2240,8 @@ RCT_REMAP_METHOD(importSymbolLibrary, importSymbolLibraryWithPath:(NSString *)pa
 RCT_REMAP_METHOD(addMap, addMap:(NSString *)srcMapName withParams:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
+        
+        [[sMap.smMapWC.mapControl getEditHistory] addMapHistory];
         BOOL result = [sMap.smMapWC addLayersFromMap:srcMapName toMap:sMap.smMapWC.mapControl.map withParam:params];
         
         resolve([NSNumber numberWithBool:result]);
@@ -2624,6 +2683,7 @@ RCT_REMAP_METHOD(readAnimationXmlFile,readAnimationXmlFile:(NSString*) filePath 
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
         [mapControl setAnimation];
+//        [[AnimationManager getInstance] deleteAll];
         [[AnimationManager getInstance] getAnimationFromXML:filePath];
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -2677,7 +2737,10 @@ RCT_REMAP_METHOD(animationStop,animationStop:(RCTPromiseResolveBlock)resolve rej
 #pragma mark 关闭态势推演动画
 RCT_REMAP_METHOD(animationClose,animationClose:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+        [[AnimationManager getInstance] stop];
         [[AnimationManager getInstance] reset];
+        [[AnimationManager getInstance] deleteAll];
+//        [[AnimationManager getInstance] deleteAnimationManager];
         if(_timer){
             dispatch_source_cancel(_timer);
             _timer = nil;
@@ -3398,6 +3461,8 @@ RCT_REMAP_METHOD(getTaggingLayerCount, getTaggingLayerCountWithPath:(NSString *)
             Datasets *datasets = datasource.datasets;
             NSNumber *count = [NSNumber numberWithInteger:datasets.count];
             resolve(count);
+        } else {
+            resolve(0);
         }
     } @catch (NSException *exception) {
         reject(@"getTaggingLayerCount",exception.reason,nil);

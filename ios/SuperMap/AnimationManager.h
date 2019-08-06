@@ -36,7 +36,9 @@
 -(void)reset;
 -(void)excute;
 
+-(void)deleteAnimationManager;
 -(AnimationGroup*)addAnimationGroup:(NSString*)strgroupname;
+-(void)deleteAll;
 -(int)getGroupCount;
 -(AnimationGroup*)getGroupByName:(NSString*)groupName;
 -(AnimationGroup*)getGroupByIndex:(int)ipos;
