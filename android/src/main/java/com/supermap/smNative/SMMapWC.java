@@ -3334,7 +3334,18 @@ public class SMMapWC {
                 String strLayerName = dicLayer.getString("LayerName");
                 Layer layerTemp = _srcMap.getLayers().find(strLayerName);
                 Dataset datasetTemp = layerTemp.getDataset();
-
+                EngineType engineType = datasetTemp.getDatasource().getConnectionInfo().getEngineType();
+                //底图过滤
+                if(engineType==EngineType.OGC ||
+                   engineType==EngineType.SuperMapCloud ||
+                   engineType==EngineType.GoogleMaps ||
+                   engineType==EngineType.Rest ||
+                   engineType==EngineType.BaiDu ||
+                   engineType==EngineType.BingMaps ||
+                   engineType==EngineType.OpenStreetMaps
+                   ) {
+                    continue;
+                }
                 if (datasetTemp == null) {
                     //1.datasetTemp==nil
                     // layerGroup或其他没有dataset的情况
