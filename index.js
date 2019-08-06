@@ -140,6 +140,7 @@ import SMLayerListView from './NativeModule/components/SMLayerListViewUI.js';
 import SMScaleView from './NativeModule/components/SMScaleViewUI.js';
 import SMSceneView from './NativeModule/components/SMSceneViewUI.js';
 import SMPlotView from './NativeModule/components/SMPlotViewUI.js';
+import SMArView from './NativeModule/ar/SMArView.js'
 // import SMSearchView from './NativeModule/components/SMSearchViewUI.js';
 import SMBarChartView from './NativeModule/components/SMBarChartViewUI.js';
 import SMLineChartView from './NativeModule/components/SMLineChartViewUI.js';
@@ -201,6 +202,7 @@ export {
   SMWorkspaceManagerView,
   SMRLegendView,
   SMDynamicArrowView,
+  SMArView,
 
   Utility,
 
