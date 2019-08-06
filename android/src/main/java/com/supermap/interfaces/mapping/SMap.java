@@ -3469,7 +3469,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void createBuffersetLayerFullView(String name, Promise promise) {
+    public void setLayerFullView(String name, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Layer layer = SMLayer.findLayerByPath(name);
