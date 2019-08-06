@@ -40,6 +40,7 @@ import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Resources;
 import com.supermap.data.Workspace;
+import com.supermap.interfaces.utils.SMFileUtil;
 import com.supermap.interfaces.utils.ScaleViewHelper;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.ColorLegendItem;
@@ -67,7 +68,11 @@ import com.supermap.mapping.ThemeRange;
 import com.supermap.mapping.ThemeType;
 import com.supermap.mapping.ThemeUnique;
 import com.supermap.mapping.collector.Collector;
+import com.supermap.plot.AnimationDefine;
+import com.supermap.plot.AnimationGO;
+import com.supermap.plot.AnimationGroup;
 import com.supermap.plot.AnimationManager;
+import com.supermap.plot.GeoGraphicObject;
 import com.supermap.plugin.LocationManagePlugin;
 import com.supermap.smNative.collector.SMCollector;
 import com.supermap.smNative.SMLayer;
@@ -4134,14 +4139,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public static void initAnimation(Promise promise){
         try {
+
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
             am = AnimationManager.getInstance();
-//            //开启定时器
-//            m_timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    AnimationManager.getInstance().excute();
-//                }
-//            },0,100);
+            //开启定时器
+            if(m_timer==null){
+                m_timer=new Timer();
+            }
+            m_timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    AnimationManager.getInstance().excute();
+                }
+            },0,100);
+            mapControl.setAnimations();
             promise.resolve(true);
         } catch (Exception e) {
             promise.resolve(false);
@@ -4177,7 +4189,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
             
             mapControl.setAnimations();
-            am.getAnimationFromXML(filePath);
+            AnimationManager.getInstance().getAnimationFromXML(filePath);
 
 
 //            开始推演时定位到推演图层，获取的推演图层范围有错误
@@ -4219,7 +4231,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
             mapControl.getMap().refresh();
-            am.play();
+            AnimationManager.getInstance().play();
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -4233,7 +4245,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public static void animationPause(Promise promise){
         try {
-            am.pause();
+            AnimationManager.getInstance().pause();
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -4247,7 +4259,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public static void animationReset(Promise promise){
         try {
-            am.reset();
+            AnimationManager.getInstance().reset();
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -4286,6 +4298,111 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     * 创建推演动画对象
+     */
+    @ReactMethod
+    public static void createAnimationGo(ReadableMap createInfo,Promise promise){
+
+            try {
+                if (!createInfo.hasKey("animationMode")) {
+                    promise.resolve(false);
+                    return;
+                }
+                sMap = SMap.getInstance();
+                MapControl mapControl = sMap.smMapWC.getMapControl();
+
+                String animationGroupName="Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
+                AnimationGroup animationGroup=AnimationManager.getInstance().getGroupByName(animationGroupName);
+                if(animationGroup==null){
+                    animationGroup=AnimationManager.getInstance().addAnimationGroup(animationGroupName);
+                }
+
+                int animationMode = createInfo.getInt("animationMode");
+                AnimationGO animationGO =  AnimationManager.getInstance().createAnimation(new AnimationDefine.AnimationType(animationMode, animationMode));
+
+                if (createInfo.hasKey("startTime")&&animationGroup.getAnimationCount()>0) {
+                    int startTime = createInfo.getInt("startTime");
+                    if (createInfo.hasKey("startMode")) {
+                        int startMode = createInfo.getInt("startMode");
+                        AnimationGO lastAnimationGo=animationGroup.getAnimationByIndex(animationGroup.getAnimationCount()-1);
+                        switch (startMode){
+                            case 1:         //上一动作播放之后
+                                double lastEndTime=lastAnimationGo.getStartTime()+lastAnimationGo.getDuration();
+                                startTime+=lastEndTime;
+                                break;
+                            case 2:         //点击开始
+                                break;
+                            case 3:         //上一动作同时播放
+                                double lastStartTime=lastAnimationGo.getStartTime();
+                                startTime+=lastStartTime;
+                                break;
+                        }
+                    }
+                    animationGO.setStartTime(startTime);
+                }
+                if (createInfo.hasKey("durationTime")) {
+                    int durationTime = createInfo.getInt("durationTime");
+                    animationGO.setDuration(durationTime);
+                }
+                if (createInfo.hasKey("startMode")) {
+                    int startMode = createInfo.getInt("startMode");
+
+                }
+//                int geoId=-1;
+//                if (createInfo.hasKey("geoId")) {
+//                    geoId = createInfo.getInt("geoId");
+//
+//                }
+//                String layerName;
+//                if (createInfo.hasKey("layerName")) {
+//                    layerName = createInfo.getString("layerName");
+//
+//                }
+                String animationGoName="动画_"+AnimationManager.getInstance().getGroupByName(animationGroupName).getAnimationCount();
+                if (createInfo.hasKey("layerName")&&createInfo.hasKey("geoId")) {
+                    String layerName=createInfo.getString("layerName");
+                    int geoId=createInfo.getInt("geoId");
+                    Layer layer=mapControl.getMap().getLayers().get(layerName);
+                    if(layer!=null){
+                        DatasetVector dataset = (DatasetVector) mapControl.getMap().getLayers().get(layerName).getDataset();
+                        Recordset recordset = dataset.query("SmID="+geoId, CursorType.STATIC);
+                        Geometry geometry=recordset.getGeometry();
+                        if(geometry!=null){
+                            animationGO.setName(animationGoName);
+                            animationGO.setGeometry((GeoGraphicObject) geometry, mapControl.getHandle(), layer.getName());
+                            animationGroup.addAnimation(animationGO);
+                        }
+                    }
+                }
+
+                promise.resolve(true);
+            }catch (Exception e) {
+                promise.resolve(false);
+            }
+    }
+
+    /**
+     * 保存推演动画
+     */
+    @ReactMethod
+    public static void animationSave(String savePath,Promise promise){
+        try {
+//        String path=sdcard+"/supermap/demos/plotdata/qdwj/强渡乌江_2.xml";
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            String mapName=mapControl.getMap().getName();
+            String tempPath=savePath+"/"+mapName+".xml";
+            String path=SMFileUtil.formateNoneExistFileName(tempPath,false);
+            boolean result=AnimationManager.getInstance().saveAnimationToXML(path);
+            AnimationManager.getInstance().reset();
+
+
+            promise.resolve(result);
+        }catch (Exception e) {
+            promise.resolve(false);
+        }
+    }
 
 /************************************** 地图编辑历史操作 BEGIN****************************************/
 
