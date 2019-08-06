@@ -4163,7 +4163,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
-            am = AnimationManager.getInstance();
+//            am = AnimationManager.getInstance();
             //开启定时器
             if(m_timer==null){
                 m_timer=new Timer();
@@ -4418,6 +4418,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             String path=SMFileUtil.formateNoneExistFileName(tempPath,false);
             boolean result=AnimationManager.getInstance().saveAnimationToXML(path);
             AnimationManager.getInstance().reset();
+            AnimationManager.getInstance().deleteAll();
 
 
             promise.resolve(result);
