@@ -541,13 +541,9 @@ RCT_REMAP_METHOD(thiessenAnalyst, thiessenAnalystWithSourceData:(NSDictionary *)
         if ([resultData objectForKey:@"dataset"] != nil) {
            resName = [resultData objectForKey:@"dataset"];
         }
-        NSString *temp = [NSString stringWithString:resName];
         
-        Datasource* resultDatasource = [SMAnalyst getDatasourceByDictionary:resultData];
-        int num = 1;
-        while ([resultDatasource.datasets contain:resName]) {
-            resName = [NSString stringWithFormat:@"%@_%d",temp,num++];
-        }
+        Datasource* resultDatasource = [SMAnalyst getDatasourceByDictionary:resultData createIfNotExist:YES];
+        resName = [resultDatasource.datasets availableDatasetName:resName];
         
         GeoRegion* region = nil;
         if (optionParameter != nil) {
@@ -601,13 +597,9 @@ RCT_REMAP_METHOD(distanceAnalyst, distanceAnalystWithSourceData:(NSDictionary *)
         if ([resultData objectForKey:@"dataset"] != nil) {
             resName = [resultData objectForKey:@"dataset"];
         }
-        NSString *temp = [NSString stringWithString:resName];
         
-        Datasource* resultDatasource = [SMAnalyst getDatasourceByDictionary:resultData];
-        int num = 1;
-        while ([resultDatasource.datasets contain:resName]) {
-            resName = [NSString stringWithFormat:@"%@_%d",temp,num++];
-        }
+        Datasource* resultDatasource = [SMAnalyst getDatasourceByDictionary:resultData createIfNotExist:YES];
+        resName = [resultDatasource.datasets availableDatasetName:resName];
         
         double min = [(NSNumber *)[optionParameter objectForKey:@"minDistance"] doubleValue];
         double max = [(NSNumber *)[optionParameter objectForKey:@"maxDistance"] doubleValue];
