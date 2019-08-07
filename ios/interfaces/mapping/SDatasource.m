@@ -265,7 +265,7 @@ RCT_REMAP_METHOD(getDatasetToGeoJson, getDatasetBydatasourceAlias:(NSString*)dat
         DatasetVector* datasetVector = (DatasetVector*) [[datasources getAlias:datasourceAlias].datasets getWithName:datasetName];
         
         int re = [datasetVector toGeoJSONFile:file];
-        
+        fclose(file);
         resolve(@(re));
     } @catch(NSException *exception){
         reject(@"workspace", exception.reason, nil);
@@ -290,7 +290,7 @@ RCT_REMAP_METHOD(importDatasetFromGeoJson, importTo:(NSString*)datasourceAlias d
             datasetVector = [datasets create:datasetvectorInfo];
             [datasetvectorInfo dispose];
         }
-        
+        fclose(file);
         int re = [datasetVector fromGeoJSONFile:file];
         
         resolve(@(re));
