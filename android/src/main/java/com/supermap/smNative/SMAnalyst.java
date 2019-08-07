@@ -328,11 +328,9 @@ public class SMAnalyst {
 
     public static void deleteDataset(ReadableMap resultData) {
         Datasource ds = SMAnalyst.getDatasourceByDictionary(resultData);
-        if (ds != null) {
-            int dsIndex = ds.getDatasets().indexOf(resultData.getString("dataset"));
-            if (dsIndex >= 0) {
-                ds.getDatasets().delete(dsIndex);
-            }
+        int dsIndex = ds.getDatasets().indexOf(resultData.getString("dataset"));
+        if (dsIndex >= 0) {
+            ds.getDatasets().delete(dsIndex);
         }
     }
 
