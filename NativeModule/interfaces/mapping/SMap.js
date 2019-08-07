@@ -1553,6 +1553,28 @@ export default (function () {
       console.error(e)
     }
   }
+
+  /**
+   * 创建态势推演动画
+   */
+  function createAnimationGo(createInfo){
+    try{
+      return SMap.createAnimationGo(createInfo)
+    } catch (e){
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 保存态势推演动画
+   */
+  function animationSave(savePath){
+    try{
+      return SMap.animationSave(savePath)
+    } catch (e){
+      console.error(e)
+    }
+  }
   
 
   
@@ -1917,6 +1939,8 @@ export default (function () {
     animationReset,
     animationStop,
     animationClose,
+    createAnimationGo,
+    animationSave,
     undo,
     redo,
     removeHistory,

@@ -19,6 +19,7 @@ import com.supermap.data.DatasetType;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.DatasetVectorInfo;
 import com.supermap.data.Datasource;
+import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.Datasources;
 import com.supermap.data.EncodeType;
 import com.supermap.data.GeoStyle;
@@ -26,6 +27,7 @@ import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
 import com.supermap.data.QueryParameter;
 import com.supermap.data.Size2D;
+import com.supermap.data.Workspace;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSettingVector;
@@ -55,6 +57,10 @@ public class SMAnalyst {
     }
 
     public static Datasource getDatasourceByDictionary(ReadableMap dic) {
+        return getDatasourceByDictionary(dic, false);
+    }
+
+    public static Datasource getDatasourceByDictionary(ReadableMap dic, boolean createNew) {
         Datasources datasources = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources();
         Datasource datasource = null;
 
@@ -62,6 +68,12 @@ public class SMAnalyst {
             if (dic.hasKey("datasource")) {
                 String alias = dic.getString("datasource");
                 datasource = datasources.get(alias);
+                if (datasource == null && createNew) {
+                    Workspace workspace = SMap.getSMWorkspace().getWorkspace();
+                    DatasourceConnectionInfo info = SMDatasource.convertDicToInfo(dic.toHashMap());
+
+                    datasource = workspace.getDatasources().open(info);
+                }
             }
         }
         return datasource;
@@ -93,6 +105,12 @@ public class SMAnalyst {
             if (dic.hasKey("datasource")) {
                 String alias = dic.getString("datasource");
                 datasource = datasources.get(alias);
+                if (datasource == null) {
+                    Workspace workspace = SMap.getSMWorkspace().getWorkspace();
+                    DatasourceConnectionInfo info = SMDatasource.convertDicToInfo(dic.toHashMap());
+
+                    datasource = workspace.getDatasources().open(info);
+                }
                 if (datasource != null && dic.hasKey("dataset")) {
                     String datasetName = dic.getString("dataset");
                     datasetName = datasource.getDatasets().getAvailableDatasetName(datasetName);
@@ -310,9 +328,11 @@ public class SMAnalyst {
 
     public static void deleteDataset(ReadableMap resultData) {
         Datasource ds = SMAnalyst.getDatasourceByDictionary(resultData);
-        int dsIndex = ds.getDatasets().indexOf(resultData.getString("dataset"));
-        if (dsIndex >= 0) {
-            ds.getDatasets().delete(dsIndex);
+        if (ds != null) {
+            int dsIndex = ds.getDatasets().indexOf(resultData.getString("dataset"));
+            if (dsIndex >= 0) {
+                ds.getDatasets().delete(dsIndex);
+            }
         }
     }
 

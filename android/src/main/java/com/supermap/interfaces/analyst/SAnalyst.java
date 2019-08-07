@@ -797,13 +797,9 @@ public class SAnalyst extends ReactContextBaseJavaModule {
             if (resultData.hasKey("dataset")) {
                 resName = resultData.getString("dataset");
             }
-            String temp = resName;
 
-            Datasource resultDatasource = SMAnalyst.getDatasourceByDictionary(resultData);
-            int num = 1;
-            while (resultDatasource.getDatasets().contains(resName)) {
-                resName = temp + num++;
-            }
+            Datasource resultDatasource = SMAnalyst.getDatasourceByDictionary(resultData, true);
+            resName = resultDatasource.getDatasets().getAvailableDatasetName(resName);
 
             GeoRegion region = null;
             if (optionParameter != null) {

@@ -19,14 +19,23 @@
     [map refresh];
     return layer;
 }
-
 + (Datasource *)getDatasourceByDictionary:(NSDictionary *)dic {
+    return [SMAnalyst getDatasourceByDictionary:dic createIfNotExist:NO];;
+}
+
++ (Datasource *)getDatasourceByDictionary:(NSDictionary *)dic createIfNotExist:(BOOL)isCreate {
     Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
     Datasource* datasource = nil;
     if (dic) {
         if ([dic objectForKey:@"datasource"]) {
             NSString* alias = [dic objectForKey:@"datasource"];
             datasource = [datasources getAlias:alias];
+            if (datasource == nil && isCreate) {
+                Workspace* workspace = [SMap singletonInstance].smMapWC.workspace;
+                DatasourceConnectionInfo* info = [SMDatasource convertDicToInfo:dic];
+                
+                datasource = [workspace.datasources open:info];
+            }
         }
     }
     return datasource;
@@ -57,6 +66,15 @@
             NSString* alias = [dic objectForKey:@"datasource"];
             datasource = [datasources getAlias:alias];
             NSString* datasetName =  [dic objectForKey:@"dataset"];
+            
+            // 如果datasource没有被打开
+            if (datasource == nil) {
+                Workspace* workspace = [SMap singletonInstance].smMapWC.workspace;
+                DatasourceConnectionInfo* info = [SMDatasource convertDicToInfo:dic];
+                
+                datasource = [workspace.datasources open:info];
+            }
+            
             if (datasource && datasetName) {
                 datasetName = [datasource.datasets availableDatasetName:datasetName];
 //                if ([datasource.datasets getWithName:datasetName]) {
@@ -331,9 +349,11 @@
 
 + (void)deleteDataset:(NSDictionary *)dsInfo {
     Datasource* ds = [SMAnalyst getDatasourceByDictionary:dsInfo];
-    long resultDatasetIndex = [ds.datasets indexOf:[dsInfo objectForKey:@"dataset"]];
-    if (resultDatasetIndex >= 0) {
-        [ds.datasets delete:resultDatasetIndex];
+    if (ds) {
+        long resultDatasetIndex = [ds.datasets indexOf:[dsInfo objectForKey:@"dataset"]];
+        if (resultDatasetIndex >= 0) {
+            [ds.datasets delete:resultDatasetIndex];
+        }
     }
 }
 

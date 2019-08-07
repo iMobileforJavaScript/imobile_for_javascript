@@ -56,6 +56,7 @@
 #import "SOrientation.h"
 #import "ScaleViewHelper.h"
 #import "POISearchHelper2D.h"
+#import "SMMap.h"
 @interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate,AfterGeometryAddedDelegate,LegendContentDelegate,MapParameterChangedDelegate,PoiSearch2DDelegate>
 @property (strong, nonatomic) SMMapWC* smMapWC;
 @property (strong, nonatomic) Selection* selection;

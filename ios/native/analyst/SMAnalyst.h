@@ -49,9 +49,11 @@
 #import "SMSceneWC.h"
 #import "AnalysisHelper3D.h"
 #import "SMLayer.h"
+#import "SMDatasource.h"
 
 @interface SMAnalyst : NSObject
 + (Datasource *)getDatasourceByDictionary:(NSDictionary *)dic;
++ (Datasource *)getDatasourceByDictionary:(NSDictionary *)dic createIfNotExist:(BOOL)isCreate;
 + (GeoStyle *)getGeoStyleByDictionary:(NSDictionary *)geoStyleDic;
 + (BufferAnalystParameter *)getBufferAnalystParameterByDictionary:(NSDictionary *)parameter;
 + (Dataset *)getDatasetByDictionary:(NSDictionary *)dic;

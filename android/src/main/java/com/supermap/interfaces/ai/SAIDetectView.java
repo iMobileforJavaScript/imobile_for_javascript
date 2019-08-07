@@ -45,6 +45,8 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
     private static ArView mArView = null;//绑定的AR显示类
     private static boolean mIsPOIMode = true; //AR-POI投射模式
+    private static boolean mIsPOIOverlap = false; //POI避让
+    private static AiDetectStyle mAiDetectStyle = null;
 
     private static ArObject mCurrentArObject = null;
 
@@ -63,7 +65,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     }
 
     public static void setInstance(AIdetectView aiDetectView) {
-        Log.e(REACT_CLASS, "----------------SAIDetectView--setInstance--------RN--------");
+        Log.d(REACT_CLASS, "----------------SAIDetectView--setInstance--------RN--------");
 
         mAIDetectView = aiDetectView;
         mAidetectViewInfo = new AidetectViewInfo();
@@ -75,24 +77,23 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         mAIDetectView.setBackgroundColor(Color.parseColor("#2D2D2F"));
         mAIDetectView.setDetectInfo(mAidetectViewInfo);//设置数据
 
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TV));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.KEYBOARD));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CELLPHONE));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.PERSON));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOTORCYCLE));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TRUCK));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BICYCLE));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BOTTLE));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BUS));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CUP));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CAR));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TRAFFICLIGHT));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BOTTLE));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOUSE));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CAT));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.POTTEDPLANT));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CHAIR));
-        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BIRD));
+        if (mStrToUse.isEmpty()) {
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.PERSON));
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BICYCLE));
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CAR));
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOTORCYCLE));
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BUS));
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TRUCK));
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CUP));
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CHAIR));
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.POTTEDPLANT));
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.LAPTOP));
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOUSE));
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TV));
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.KEYBOARD));
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CELLPHONE));
+            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BOTTLE));
+        }
 
         mAIDetectView.setDetectArrayToUse(mStrToUse);//设置初始模型
 
@@ -105,17 +106,19 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         mAIDetectView.setPolymerizeThreshold(100, 100);//设置聚合模式网格宽高
 
         //风格
-        AiDetectStyle aiDetectStyle = new AiDetectStyle();
-        aiDetectStyle.isDrawTitle = false;
-        aiDetectStyle.isDrawConfidence = false;
-        mAIDetectView.setAiDetectStyle(aiDetectStyle);
+        if (mAiDetectStyle == null) {
+            mAiDetectStyle = new AiDetectStyle();
+            mAiDetectStyle.isDrawTitle = false;
+            mAiDetectStyle.isDrawConfidence = false;
+        }
+        mAIDetectView.setAiDetectStyle(mAiDetectStyle);
 
-        mIsPOIMode = true;
         mAIDetectView.startDetect();
         mAIDetectView.startCountTrackedObjs();
     }
 
     public static void setArView(ArView arView) {
+        Log.d(REACT_CLASS, "----------------SAIDetectView--setArView--------RN--------");
         mArView = arView;
 //        mArView.setBackgroundColor(Color.parseColor("#2000fSMediaCollectorf00"));
 
@@ -125,6 +128,12 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         mArView.setWorld(mWorld);
         //mArView.setPOIOverlapEnable(true); //POI避让
         mArView.setOnClickArObjectListener(arObjectListener);
+        if (mIsPOIMode) {
+            mArView.startRenderingAR();
+        } else {
+            mArView.stopRenderingAR();
+        }
+        mArView.setPOIOverlapEnable(mIsPOIOverlap);
     }
 
     private static OnClickArObjectListener arObjectListener = new OnClickArObjectListener() {
@@ -135,11 +144,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 //          }
             //POI对象点击
             mCurrentArObject = arrayList.get(0);
-            Log.e(REACT_CLASS, "onClickArObject: " + mCurrentArObject.getName());
-
-//            mAIDetectView.pauseDetect(true);//停止识别
-//            mAIDetectView.stopCountTrackedObjs();
-//            mIsPOIMode = false;
+            Log.d(REACT_CLASS, "onClickArObject: " + mCurrentArObject.getName());
 
             //移除其他的Arobject
             List<ArObjectList> arObjectLists = mWorld.getArObjectLists();
@@ -173,7 +178,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void initAIDetect(Promise promise){
         try{
-            Log.e(REACT_CLASS, "----------------SAIDetectView--initAIDetect--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--initAIDetect--------RN--------");
             Activity currentActivity = getCurrentActivity();
             if (currentActivity != null) {
                 currentActivity.runOnUiThread(new Runnable() {
@@ -190,24 +195,22 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
                         mAIDetectView.setBackgroundColor(Color.parseColor("#2D2D2F"));
                         mAIDetectView.setDetectInfo(mAidetectViewInfo);//设置数据
 
+                        mStrToUse.clear();
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.PERSON));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BICYCLE));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CAR));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOTORCYCLE));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BUS));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TRUCK));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CUP));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CHAIR));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.POTTEDPLANT));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.LAPTOP));
+                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOUSE));
                         mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TV));
                         mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.KEYBOARD));
                         mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CELLPHONE));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.PERSON));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOTORCYCLE));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TRUCK));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BICYCLE));
                         mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BOTTLE));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BUS));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CUP));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CAR));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TRAFFICLIGHT));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BOTTLE));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOUSE));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CAT));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.POTTEDPLANT));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CHAIR));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BIRD));
 
                         mAIDetectView.setDetectArrayToUse(mStrToUse);//设置初始模型
 
@@ -236,7 +239,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void startDetect(Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--startDetect--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--startDetect--------RN--------");
             Activity currentActivity = getCurrentActivity();
             if (currentActivity != null) {
                 currentActivity.runOnUiThread(new Runnable() {
@@ -245,7 +248,6 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
                         if (mAIDetectView == null) {
                             return;
                         }
-                        mIsPOIMode = true;
                         mAIDetectView.startDetect();//开始识别
                         mAIDetectView.startCountTrackedObjs();
 
@@ -266,7 +268,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void pauseDetect(Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--pauseDetect--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--pauseDetect--------RN--------");
             Activity currentActivity = getCurrentActivity();
             if (currentActivity != null) {
                 currentActivity.runOnUiThread(new Runnable() {
@@ -275,7 +277,6 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
                         if (mAIDetectView == null) {
                             return;
                         }
-                        mIsPOIMode = false;
                         mAIDetectView.pauseDetect(true);
                         mAIDetectView.stopCountTrackedObjs();
 
@@ -297,7 +298,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void dispose(Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--dispose--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--dispose--------RN--------");
             Activity currentActivity = getCurrentActivity();
             if (currentActivity != null) {
                 currentActivity.runOnUiThread(new Runnable() {
@@ -310,12 +311,38 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
                         mAIDetectView.stopCountTrackedObjs();
                         mAIDetectView.dispose();
 
+                        int childCount = mAIDetectView.getChildCount();
+                        Log.d(REACT_CLASS, "----------------SAIDetectView--dispose----------RN--------childCount: " + childCount);
+
                         mWorld.clearWorld();
                         mArView.stopRenderingAR();
                     }
                 });
             }
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 资源是否已经释放
+     * @param promise
+     */
+    @ReactMethod
+    public void isDisposed(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--dispose--------RN--------");
+            if (mAIDetectView == null) {
+                promise.resolve(true);
+                return;
+            }
+            boolean isDisposed = false;
+            int childCount = mAIDetectView.getChildCount();
+            if (childCount == 0) {
+                isDisposed = true;
+            }
+            promise.resolve(isDisposed);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -330,7 +357,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setDetectInfo(String modelName, String lableName, Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--setDetectInfo--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--setDetectInfo--------RN--------");
             prepareAiDetectViewInfo(modelName, lableName);
             mAIDetectView.setDetectInfo(mAidetectViewInfo);
 
@@ -348,7 +375,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setDetectArrayToUse(ReadableArray array, Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--setDetectArrayToUse--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--setDetectArrayToUse--------RN--------");
             Vector<String> arrayToUse = new Vector<>();
             for (int i = 0; i < array.size(); i++) {
                 String lableName = array.getString(i);
@@ -369,7 +396,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void isDetect(Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--isDetect--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--isDetect--------RN--------");
             if (mAIDetectView == null) {
                 promise.resolve(false);
                 return;
@@ -389,12 +416,17 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getDetectArrayToUse(Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--getDetectArrayToUse--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--getDetectArrayToUse--------RN--------");
             Vector<String> detectArrayToUse = mAIDetectView.getDetectArrayToUse();
 
-            WritableArray array = Arguments.createArray();
+            ArrayList<String> list = new ArrayList<>();
             for (int i = 0; i < detectArrayToUse.size(); i++) {
-                array.pushString(detectArrayToUse.get(i));
+                list.add(AIDetectModel2.getChineseName(detectArrayToUse.get(i)));
+            }
+
+            WritableArray array = Arguments.createArray();
+            for (int i = 0; i < list.size(); i++) {
+                array.pushString(list.get(i));
             }
 
             promise.resolve(array);
@@ -410,7 +442,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getAllDetectArrayProvide(Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--getAllDetectArrayProvide--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--getAllDetectArrayProvide--------RN--------");
             Vector<String> detectArrayToUse = mAIDetectView.getAllDetectArrayProvide();
 
             WritableArray array = Arguments.createArray();
@@ -431,7 +463,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void clearDetectObjects(Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--clearDetectObjects--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--clearDetectObjects--------RN--------");
             mAIDetectView.clearDetectObjects();
 
             promise.resolve(true);
@@ -447,7 +479,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setIsPolymerize(boolean value, Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--setisPolymerize--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--setisPolymerize--------RN--------");
             mAIDetectView.setisPolymerize(value);
 
             promise.resolve(true);
@@ -463,7 +495,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void isPolynerize(boolean value, Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--isPolynerize--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--isPolynerize--------RN--------");
             boolean polynerize = mAIDetectView.isPolynerize();
 
             promise.resolve(polynerize);
@@ -479,7 +511,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setPolymerizeThreshold(int x, int y, Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--setPolymerizeThreshold--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--setPolymerizeThreshold--------RN--------");
             mAIDetectView.setPolymerizeThreshold(x, y);
 
             promise.resolve(true);
@@ -495,7 +527,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setPolySize(int width, int height, Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--setPolySize--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--setPolySize--------RN--------");
             AISize aiSize = new AISize(width, height);
             mAIDetectView.setPolySize(aiSize);
 
@@ -512,7 +544,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getTrackedCount(int width, int height, Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--getTrackedCount--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--getTrackedCount--------RN--------");
             int trackedCount = mAIDetectView.getTrackedCount();
 
             promise.resolve(trackedCount);
@@ -528,7 +560,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void resetTrackedCount(Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--resetTrackedCount--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--resetTrackedCount--------RN--------");
             mAIDetectView.resetTrackedCount();
 
             promise.resolve(true);
@@ -544,7 +576,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void startCountTrackedObjs(Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--startCountTrackedObjs--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--startCountTrackedObjs--------RN--------");
             mAIDetectView.startCountTrackedObjs();
 
             promise.resolve(true);
@@ -560,7 +592,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void stopCountTrackedObjs(Promise promise) {
         try {
-            Log.e(REACT_CLASS, "----------------SAIDetectView--stopCountTrackedObjs--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--stopCountTrackedObjs--------RN--------");
             mAIDetectView.stopCountTrackedObjs();
 
             promise.resolve(true);
@@ -578,14 +610,14 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e(REACT_CLASS, "----------------SAIDetectView--savePreviewBitmap--------RN--------");
+                    Log.d(REACT_CLASS, "----------------SAIDetectView--savePreviewBitmap--------RN--------");
                     Bitmap previewBitmap = mAIDetectView.getPreviewBitmap();
 
                     saveBitmapAsFile(pictureDirectory, fileName, previewBitmap);
                 }
             }).start();
         } catch (Exception e) {
-            Log.e(REACT_CLASS, e.getMessage());
+            Log.d(REACT_CLASS, e.getMessage());
         }
     }
 
@@ -599,7 +631,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e(REACT_CLASS, "----------------SAIDetectView--savePreviewBitmap--------RN--------");
+                    Log.d(REACT_CLASS, "----------------SAIDetectView--savePreviewBitmap--------RN--------");
                     Bitmap previewBitmap = mAIDetectView.getPreviewBitmap();
 
                     saveBitmapAsFile(pictureDirectory, fileName, previewBitmap);
@@ -621,7 +653,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e(REACT_CLASS, "----------------SAIDetectView--saveScreenCapture--------RN--------");
+                    Log.d(REACT_CLASS, "----------------SAIDetectView--saveScreenCapture--------RN--------");
                     Bitmap screenCapture = mAIDetectView.ScreenCapture();
 
                     saveBitmapAsFile(pictureDirectory, fileName, screenCapture);
@@ -633,6 +665,214 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 投射模式
+     * @param promise
+     */
+    @ReactMethod
+    public void setProjectionModeEnable(final boolean value, Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--setProjectionModeEnable--------RN--------");
+            if (value) {
+                mArView.startRenderingAR();
+            } else {
+                mArView.stopRenderingAR();
+            }
+            mIsPOIMode = value;
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 投射模式
+     * @param promise
+     */
+    @ReactMethod
+    public void isProjectionModeEnable(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--isProjectionModeEnable--------RN--------");
+            promise.resolve(mIsPOIMode);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 避让模式
+     * @param promise
+     */
+    @ReactMethod
+    public void setPOIOverlapEnable(final boolean value, Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--setPOIOverlapEnable--------RN--------");
+
+            mArView.setPOIOverlapEnable(value);
+            mIsPOIOverlap = value;
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 投射模式
+     * @param promise
+     */
+    @ReactMethod
+    public void isPOIOverlapEnable(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--isPOIOverlapEnable--------RN--------");
+            promise.resolve(mIsPOIOverlap);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置单个识别类型是否可用
+     * @param promise
+     */
+    @ReactMethod
+    public void setDetectItemEnable(final String name, final boolean value, Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--setDetectItemEnable--------RN--------");
+            String englishName = AIDetectModel2.getEnglishName(name);
+
+            if (value) {
+                if (!mStrToUse.contains(englishName)) {
+                    mStrToUse.add(englishName);
+                }
+            } else {
+                if (mStrToUse.contains(englishName)) {
+                    mStrToUse.remove(englishName);
+                }
+            }
+            mAIDetectView.setDetectArrayToUse(mStrToUse);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置识别框是否绘制检测名称
+     * @param promise
+     */
+    @ReactMethod
+    public void setDrawTileEnable(final boolean value, Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--setDrawTileEnable--------RN--------");
+
+            mAiDetectStyle.isDrawTitle = value;
+            mAIDetectView.setAiDetectStyle(mAiDetectStyle);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置识别框是否绘制检测名称
+     * @param promise
+     */
+    @ReactMethod
+    public void isDrawTileEnable(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--isDrawTileEnable--------RN--------");
+
+            promise.resolve(mAiDetectStyle.isDrawTitle);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置识别框是否绘制可信度
+     * @param promise
+     */
+    @ReactMethod
+    public void setDrawConfidenceEnable(final boolean value, Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--setDrawConfidenceEnable--------RN--------");
+
+            mAiDetectStyle.isDrawConfidence = value;
+            mAIDetectView.setAiDetectStyle(mAiDetectStyle);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+      * 设置识别框是否绘制可信度
+     * @param promise
+     */
+    @ReactMethod
+    public void isDrawConfidenceEnable(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--isDrawConfidenceEnable--------RN--------");
+
+            promise.resolve(mAiDetectStyle.isDrawConfidence);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置识别框是否绘制统一颜色
+     * @param promise
+     */
+    @ReactMethod
+    public void setSameColorEnable(final boolean value, Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--setSameColorEnable--------RN--------");
+
+            mAiDetectStyle.isSameColor = value;
+            mAIDetectView.setAiDetectStyle(mAiDetectStyle);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置识别框的统一颜色
+     * @param promise
+     */
+    @ReactMethod
+    public void setSameColor(final String value, Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--setSameColor--------RN--------");
+
+            mAiDetectStyle.aiColor = Color.parseColor(value);
+            mAIDetectView.setAiDetectStyle(mAiDetectStyle);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置识别框的线宽
+     * @param promise
+     */
+    @ReactMethod
+    public void setStrokeWidth(final float value, Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--setStrokeWidth--------RN--------");
+
+            mAiDetectStyle.aiStrokeWidth = value;
+            mAIDetectView.setAiDetectStyle(mAiDetectStyle);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
     //*******************************************************************************************************//
     private static void prepareAiDetectViewInfo(String modelName, String lableName) {
@@ -663,7 +903,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         boolean saved = false;
         FileOutputStream os = null;
         try {
-            Log.e("FileCache", "Saving File To Cache " + saveFile.getPath());
+            Log.d("FileCache", "Saving File To Cache " + saveFile.getPath());
             os = new FileOutputStream(saveFile);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
             os.flush();
@@ -682,15 +922,15 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         @Override
         public void onDectetComplete(Map<String, Integer> result) {
             //流量统计
-            Log.e("DetectListener", "-----------onDectetComplete-----------: " + result.size());
+            Log.d("DetectListener", "-----------onDectetComplete-----------: " + result.size());
 //            for (Map.Entry<String, Integer> entry : result.entrySet()) {
-//                Log.e("onDectetComplete:", entry.getKey() + "  value:" + entry.getValue());
+//                Log.d("onDectetComplete:", entry.getKey() + "  value:" + entry.getValue());
 //            }
         }
 
         @Override
         public void onProcessDetectResult(List<AIRecognition> recognitions) {
-//            Log.e("DetectListener", "-----------onProcessDetectResult-----------");
+//            Log.d("DetectListener", "-----------onProcessDetectResult-----------");
             if (!mAIDetectView.isDetect()) {
                 //停止识别状态
                 return;
@@ -709,7 +949,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
             if (isCreated) {
                 //重新识别
-                Log.e("DetectListener", "onProcessDetectResult--重新识别--: "  + recognitions.size());
+                Log.d("DetectListener", "onProcessDetectResult--重新识别--: "  + recognitions.size());
                 mStartDate = new Date();
                 mWorld.clearWorld();
 
@@ -722,7 +962,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
         @Override
         public void onTrackedCountChanged(int i) {
-            Log.e("DetectListener", "-----------onTrackedCountChanged-----------:" + i);
+            Log.d("DetectListener", "-----------onTrackedCountChanged-----------:" + i);
         }
     };
 
