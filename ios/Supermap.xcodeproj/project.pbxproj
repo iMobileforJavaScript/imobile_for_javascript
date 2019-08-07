@@ -174,6 +174,7 @@
 		0A7196AC228C0873009C2C50 /* SMMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7196AB228C0873009C2C50 /* SMMedia.m */; };
 		0A84DED321BA403B007995FC /* SDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A84DED221BA403B007995FC /* SDatasource.m */; };
 		0A84DED621BA44C9007995FC /* SMDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A84DED521BA44C9007995FC /* SMDatasource.m */; };
+		0A92A4B322FA83E800FA8873 /* SMMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A92A4B222FA83E800FA8873 /* SMMap.m */; };
 		0AB00D5621A6C8F800C35E4B /* SMSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB00D5421A6C8F700C35E4B /* SMSymbol.m */; };
 		0AB00D5A21A6C93A00C35E4B /* SMLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB00D5821A6C90F00C35E4B /* SMLayer.m */; };
 		0AD551A122389E9E00D24453 /* SMessageService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD551A022389E9E00D24453 /* SMessageService.m */; };
@@ -545,6 +546,8 @@
 		0A84DED221BA403B007995FC /* SDatasource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SDatasource.m; sourceTree = "<group>"; };
 		0A84DED421BA44C9007995FC /* SMDatasource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMDatasource.h; sourceTree = "<group>"; };
 		0A84DED521BA44C9007995FC /* SMDatasource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMDatasource.m; sourceTree = "<group>"; };
+		0A92A4B122FA83E800FA8873 /* SMMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMap.h; sourceTree = "<group>"; };
+		0A92A4B222FA83E800FA8873 /* SMMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMMap.m; sourceTree = "<group>"; };
 		0AB00D5421A6C8F700C35E4B /* SMSymbol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSymbol.m; sourceTree = "<group>"; };
 		0AB00D5521A6C8F800C35E4B /* SMSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSymbol.h; sourceTree = "<group>"; };
 		0AB00D5721A6C90F00C35E4B /* SMLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMLayer.h; sourceTree = "<group>"; };
@@ -707,6 +710,15 @@
 			path = extern;
 			sourceTree = "<group>";
 		};
+		0A92A4AF22FA83CD00FA8873 /* mapping */ = {
+			isa = PBXGroup;
+			children = (
+				0A92A4B122FA83E800FA8873 /* SMMap.h */,
+				0A92A4B222FA83E800FA8873 /* SMMap.m */,
+			);
+			path = mapping;
+			sourceTree = "<group>";
+		};
 		0AB00D2B21A6C6B600C35E4B /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
@@ -843,6 +855,7 @@
 		D854D86A218310730075B5F8 /* native */ = {
 			isa = PBXGroup;
 			children = (
+				0A92A4AF22FA83CD00FA8873 /* mapping */,
 				0A0EDC9B22C3522E003990A6 /* analyst */,
 				0A2F59EA229B912C00C42441 /* utils */,
 				0A7196A6228C0380009C2C50 /* collector */,
@@ -1367,6 +1380,7 @@
 				0A84DED321BA403B007995FC /* SDatasource.m in Sources */,
 				0A51674E21AD42AB003C77BE /* Utils3D.m in Sources */,
 				0A332DFC211D623E00F56F26 /* JSCollector.m in Sources */,
+				0A92A4B322FA83E800FA8873 /* SMMap.m in Sources */,
 				0A332E60211D623E00F56F26 /* JSThemeType.m in Sources */,
 				0A332DFE211D623E00F56F26 /* JSCollectorLine.m in Sources */,
 				0A332E29211D623E00F56F26 /* JSLineChartViewManager.m in Sources */,
