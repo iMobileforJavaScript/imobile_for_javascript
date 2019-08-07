@@ -265,7 +265,7 @@ RCT_REMAP_METHOD(getDatasetToGeoJson, getDatasetBydatasourceAlias:(NSString*)dat
         DatasetVector* datasetVector = (DatasetVector*) [[datasources getAlias:datasourceAlias].datasets getWithName:datasetName];
         
         int re = [datasetVector toGeoJSONFile:file];
-        fclose(file);
+        
         resolve(@(re));
     } @catch(NSException *exception){
         reject(@"workspace", exception.reason, nil);
@@ -276,7 +276,7 @@ RCT_REMAP_METHOD(getDatasetToGeoJson, getDatasetBydatasourceAlias:(NSString*)dat
 RCT_REMAP_METHOD(importDatasetFromGeoJson, importTo:(NSString*)datasourceAlias dataset:(NSString *)datasetName from:(NSString *)path type:(int) type resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try {
         const char * filePath = [path cStringUsingEncoding:NSUTF8StringEncoding];
-        FILE* file = fopen(filePath, "r");
+        FILE* file = fopen(filePath, "w");
         Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
         Datasets* datasets = [datasources getAlias:datasourceAlias].datasets;
         BOOL hasDataset = [datasets contain:datasetName];
@@ -292,7 +292,7 @@ RCT_REMAP_METHOD(importDatasetFromGeoJson, importTo:(NSString*)datasourceAlias d
         }
         
         int re = [datasetVector fromGeoJSONFile:file];
-        fclose(file);
+        
         resolve(@(re));
     } @catch(NSException *exception){
         reject(@"workspace", exception.reason, nil);

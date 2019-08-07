@@ -502,7 +502,7 @@ RCT_REMAP_METHOD(receiveFileWithThirdServer, fileName:(NSString*)fileName queueN
             [sub_messageDic setValue:@(singleFileSize) forKey:@"dataLength"];
             [sub_messageDic setObject:userId forKey:@"userID"];
             
-            long  start=0;
+            static long  start=0;
             int prevPercentage = 0;
             for(int index=1;index<=count;index++) {
                 [sub_messageDic setObject:@(start) forKey:@"startPos"];
