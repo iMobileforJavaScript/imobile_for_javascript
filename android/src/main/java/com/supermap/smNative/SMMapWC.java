@@ -1286,7 +1286,7 @@ public class SMMapWC {
         }
 
         String strUserName;
-        if (!bPrivate) {
+        if (!bPrivate && false) {
             strUserName = "Customer";
         } else {
             strUserName = getUserName();
