@@ -788,6 +788,28 @@ RCT_REMAP_METHOD(pointSearch, pointSearchWithString:(NSString *)str resolver:(RC
         reject(@"pointSearch",exception.reason,nil);
     }
 }
+#pragma mark 获取当前定位经纬度
+RCT_REMAP_METHOD(getCurrentPosition, getCurrentPositionWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        GPSData *gpsData= [NativeUtil getGPSData];
+        resolve(@{
+                  @"x":[NSNumber numberWithDouble:gpsData.dLongitude],
+                  @"y":[NSNumber numberWithDouble:gpsData.dLatitude],
+                  });
+    }@catch(NSException *exception){
+        reject(@"getCurrentPosition",exception.reason,nil);
+    }
+}
+#pragma mark 移除POI搜索的callout
+RCT_REMAP_METHOD(removePOICallout, removePOICalloutWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        [sMap.poiSearchHelper2D clearPoint];
+        resolve(@(YES));
+    }@catch(NSException *exception){
+        reject(@"removePOICallout",exception.reason,nil);
+    }
+}
 #pragma mark 定位到搜索结果某个点
 RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithIndex:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -806,7 +828,11 @@ RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithIndex:(int)index resolver:(
     for (int i = 0; i < count; i++) {
         OnlinePOIInfo * onlinePoiInfo=[locations objectAtIndex:i];
         name = onlinePoiInfo.name;
-        map = @{@"pointName":name};
+        map = @{
+                @"pointName":name,
+                @"x":[NSNumber numberWithDouble:onlinePoiInfo.location.x],
+                @"y":[NSNumber numberWithDouble:onlinePoiInfo.location.y],
+                };
         [arr addObject:map];
     }
     [self sendEventWithName:POINTSEARCH2D_KEYWORDS body:arr];

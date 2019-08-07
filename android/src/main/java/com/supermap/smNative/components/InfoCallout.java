@@ -45,7 +45,11 @@ public class InfoCallout extends CallOut {
     }
 
     public String getLayerName() {
-        return layerName;
+        if(layerName != null){
+            return layerName;
+        }else {
+            return "";
+        }
     }
 
     public void setLayerName(String layerName) {

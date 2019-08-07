@@ -1,8 +1,6 @@
 package com.supermap.interfaces.utils;
 
-import android.graphics.Bitmap;
-import android.view.View;
-import android.view.ViewGroup;
+import android.graphics.Color;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,14 +16,14 @@ import com.supermap.data.PrjCoordSysType;
 import com.supermap.map3D.toolKit.HttpUtils;
 import com.supermap.map3D.toolKit.JsonPara;
 import com.supermap.map3D.toolKit.PoiGsonBean;
-import com.supermap.mapping.CallOut;
+import com.supermap.smNative.components.InfoCallout;
 import com.supermap.mapping.CalloutAlignment;
 import com.supermap.mapping.MapControl;
 import com.supermap.rnsupermap.R;
 
-import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+
 
 public class POISearchHelper2D {
 
@@ -34,15 +32,12 @@ public class POISearchHelper2D {
 
     private MapControl m_mapControl;
     private ArrayList<PoiGsonBean.PoiInfos> m_searchResult = new ArrayList<PoiGsonBean.PoiInfos>();
-    private CallOut m_callout;
+    private InfoCallout m_callout;
     private ReactApplicationContext m_context;
     private String tagName = "POISEARCH_2D_POINT";
 
     // POI本地搜索网址
     private String poiSearch = "http://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos";
-
-    private ArrayList<PoiGsonBean.Location> list = new ArrayList<PoiGsonBean.Location>();
-
 
 
     public static POISearchHelper2D getInstence() {
@@ -105,7 +100,7 @@ public class POISearchHelper2D {
         final String name = curPOI.getName();
 
         if(m_callout == null){
-            m_callout = new CallOut(m_context);
+            m_callout = new InfoCallout(m_context);
             m_callout.setStyle(CalloutAlignment.LEFT_BOTTOM);
             m_callout.setBackground(0,0);
             needDelete = false;
@@ -123,6 +118,7 @@ public class POISearchHelper2D {
                 TextView textView = new TextView(m_context);
                 textView.setHeight(60);
                 textView.setWidth(180);
+                textView.setShadowLayer(3,3,-3,Color.WHITE);
                 textView.setText(name);
 
                 LinearLayout linearLayout = new LinearLayout(m_context);
@@ -148,6 +144,14 @@ public class POISearchHelper2D {
             }
         });
         return true;
+    }
+    public void clearPoint(){
+        m_context.getCurrentActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                m_mapControl.getMap().getMapView().removeCallOut(tagName);
+            }
+        });
     }
     public interface PoiSearchCallBack{
         void poiSearchInfos(ArrayList<PoiGsonBean.PoiInfos> poiInfos);
