@@ -178,6 +178,7 @@
 		0AB00D5A21A6C93A00C35E4B /* SMLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB00D5821A6C90F00C35E4B /* SMLayer.m */; };
 		0AD551A122389E9E00D24453 /* SMessageService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD551A022389E9E00D24453 /* SMessageService.m */; };
 		0AF348682270018F004D6D09 /* SAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF348662270018F004D6D09 /* SAnalyst.m */; };
+		182832BB22F98190006586BF /* SIPortalService.m in Sources */ = {isa = PBXBuildFile; fileRef = 182832BA22F98190006586BF /* SIPortalService.m */; };
 		2AD00E8522461CC70087FC43 /* PoiSearchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD00E8322461CC70087FC43 /* PoiSearchHelper.m */; };
 		4A99EBEB21EDD9D000493EB1 /* SPUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A99EBEA21EDD9CF00493EB1 /* SPUtils.m */; };
 		4AA0C2ED21B1316C00614FE4 /* STranslate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AA0C2EB21B1316B00614FE4 /* STranslate.m */; };
@@ -564,6 +565,8 @@
 		0AF348662270018F004D6D09 /* SAnalyst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAnalyst.m; sourceTree = "<group>"; };
 		0AF348672270018F004D6D09 /* SAnalyst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAnalyst.h; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libSupermap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSupermap.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		182832B922F980AB006586BF /* SIPortalService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SIPortalService.h; sourceTree = "<group>"; };
+		182832BA22F98190006586BF /* SIPortalService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SIPortalService.m; sourceTree = "<group>"; };
 		2AD00E8322461CC70087FC43 /* PoiSearchHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PoiSearchHelper.m; sourceTree = "<group>"; };
 		2AD00E8422461CC70087FC43 /* PoiSearchHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PoiSearchHelper.h; sourceTree = "<group>"; };
 		4A99EBE921EDD9CF00493EB1 /* SPUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPUtils.h; sourceTree = "<group>"; };
@@ -645,6 +648,8 @@
 			children = (
 				005693B82191696C00AEC46E /* SOnlineService.h */,
 				005693B92191696C00AEC46E /* SOnlineService.m */,
+				182832B922F980AB006586BF /* SIPortalService.h */,
+				182832BA22F98190006586BF /* SIPortalService.m */,
 			);
 			path = iServer;
 			sourceTree = "<group>";
@@ -1389,6 +1394,7 @@
 				0AB00D5621A6C8F800C35E4B /* SMSymbol.m in Sources */,
 				0A22981222BB1762001B2356 /* SMParameter.m in Sources */,
 				0A51675621AF7EF7003C77BE /* MapTool.m in Sources */,
+				182832BB22F98190006586BF /* SIPortalService.m in Sources */,
 				0A332E39211D623E00F56F26 /* JSPieChartViewManager.m in Sources */,
 				0A332E2A211D623E00F56F26 /* JSLocationAnalystParameter.m in Sources */,
 				0A332E6F211D623E00F56F26 /* RCTConvert+BufferEndType.m in Sources */,
