@@ -171,10 +171,114 @@ stopCountTrackedObjs = () => {
   }
 }
 
-//
+//保存预览图
 savePreviewBitmap = () => {
   try {
     return SAIDetectView.savePreviewBitmap()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+//设置POI投射是否开启
+setProjectionModeEnable = (value) => {
+  try {
+    return SAIDetectView.setProjectionModeEnable(value)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+//设置POI是否避让
+setPOIOverlapEnable = (value) => {
+  try {
+    return SAIDetectView.setPOIOverlapEnable(value)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+//设置是否开启某个识别类型
+setDetectItemEnable = (name, value) => {
+  try {
+    return SAIDetectView.setDetectItemEnable(name, value)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+//是否绘制检测名称
+setDrawTileEnable = (value) => {
+  try {
+    return SAIDetectView.setDrawTileEnable(value)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+//是否绘制检测的可信度
+setDrawConfidenceEnable = (value) => {
+  try {
+    return SAIDetectView.setDrawConfidenceEnable(value)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+//是否统一颜色
+setSameColorEnable = (value) => {
+  try {
+    return SAIDetectView.setSameColorEnable(value)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+//设置统一的颜色值
+setSameColor = (value) => {
+  try {
+    return SAIDetectView.setSameColor(value)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+//设置识别框的宽度
+setStrokeWidth = (value) => {
+  try {
+    return SAIDetectView.setStrokeWidth(value)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+isProjectionModeEnable = () => {
+  try {
+    return SAIDetectView.isProjectionModeEnable()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+isPOIOverlapEnable = () => {
+  try {
+    return SAIDetectView.isPOIOverlapEnable()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+isDrawTileEnable = () => {
+  try {
+    return SAIDetectView.isDrawTileEnable()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+isDrawConfidenceEnable = () => {
+  try {
+    return SAIDetectView.isDrawConfidenceEnable()
   } catch (error) {
     console.error(error)
   }
@@ -200,4 +304,16 @@ export default {
   startCountTrackedObjs,
   stopCountTrackedObjs,
   savePreviewBitmap,
+  setProjectionModeEnable,
+  setPOIOverlapEnable,
+  setDetectItemEnable,
+  setDrawTileEnable,
+  setDrawConfidenceEnable,
+  setSameColorEnable,
+  setSameColor,
+  setStrokeWidth,
+  isProjectionModeEnable,
+  isPOIOverlapEnable,
+  isDrawTileEnable,
+  isDrawConfidenceEnable,
 }
