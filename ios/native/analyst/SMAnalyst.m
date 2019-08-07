@@ -349,9 +349,11 @@
 
 + (void)deleteDataset:(NSDictionary *)dsInfo {
     Datasource* ds = [SMAnalyst getDatasourceByDictionary:dsInfo];
-    long resultDatasetIndex = [ds.datasets indexOf:[dsInfo objectForKey:@"dataset"]];
-    if (resultDatasetIndex >= 0) {
-        [ds.datasets delete:resultDatasetIndex];
+    if (ds) {
+        long resultDatasetIndex = [ds.datasets indexOf:[dsInfo objectForKey:@"dataset"]];
+        if (resultDatasetIndex >= 0) {
+            [ds.datasets delete:resultDatasetIndex];
+        }
     }
 }
 
