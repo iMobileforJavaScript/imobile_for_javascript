@@ -1061,7 +1061,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 Selection selection = layer.getSelection();
                 if (selection != null) {
                     selection.clear();
-                    selection.dispose();
+//                    selection.dispose();
                 }
             }
         }
