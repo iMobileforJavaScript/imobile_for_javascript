@@ -3809,6 +3809,10 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 }
             }
 
+            if(dataset.getType()!=DatasetType.POINT){
+                promise.reject("TypeError");
+                return;
+            }
             WritableMap writableMap = SMThemeCartography.createLayerHeatMap(dataset, KernelRadius, FuzzyDegree,Intensity, colors);
             promise.resolve(writableMap);
         } catch (Exception e) {
