@@ -807,10 +807,10 @@ public class SOnlineService extends ReactContextBaseJavaModule{
            if(sessionId.isEmpty()){
                promise.resolve("undefined");
            }else{
-               int length = "JSESSIONID=".length();
-               String newSessionID = sessionId.substring(length);
-               Log.e("JESESSION",newSessionID + " ..."+sessionId);
-               promise.resolve(newSessionID);
+//               int length = "JSESSIONID=".length();
+//               String newSessionID = sessionId.substring(length);
+//               Log.e("JESESSION",newSessionID + " ..."+sessionId);
+               promise.resolve(sessionId);
            }
 
         }catch (Exception e){

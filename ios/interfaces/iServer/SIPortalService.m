@@ -71,6 +71,86 @@ RCT_REMAP_METHOD(getMyAccount, getMyAccountWithResolver:(RCTPromiseResolveBlock)
     _resolve([SIPortalService convertDicToString:result]);
 }
 
+#pragma mark ---------------------------- getMyDatas
+RCT_REMAP_METHOD(getMyDatas, getMyDatasAt:(int)currentPage pageSize:(int)pageSize initWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    _resolve = resolve;
+    NSMutableDictionary* searchParameter = [[NSMutableDictionary alloc]init];
+    [searchParameter setObject:[NSString stringWithFormat:@"%d",currentPage] forKey:@"currentPage"];
+    [searchParameter setObject:[NSString stringWithFormat:@"%d",pageSize] forKey:@"pageSize"];
+    [m_iportalService getMyDatas:searchParameter];
+}
+
+#pragma mark ---------------------------- getMyDatas回调
+-(void)myDatasResult:(NSDictionary *)result{
+    _resolve([SIPortalService convertDicToString:result]);
+}
+
+#pragma mark ---------------------------- getMyServices
+RCT_REMAP_METHOD(getMyServices, getMyServicesAt:(int)currentPage pageSize:(int)pageSize initWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    _resolve = resolve;
+    NSMutableDictionary* searchParameter = [[NSMutableDictionary alloc]init];
+    [searchParameter setObject:[NSString stringWithFormat:@"%d",currentPage] forKey:@"currentPage"];
+    [searchParameter setObject:[NSString stringWithFormat:@"%d",pageSize] forKey:@"pageSize"];
+    [m_iportalService getMyServices:searchParameter];
+}
+
+#pragma mark ---------------------------- getMyServices回调
+-(void)myServicesResult:(NSDictionary *)result{
+    _resolve([SIPortalService convertDicToString:result]);
+}
+
+#pragma mark ---------------------------- deleteMyData
+RCT_REMAP_METHOD(deleteMyData, deleteMyDataID:(NSString*)id initWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    _resolve = resolve;
+    [m_iportalService deleteMyContentItem:MY_DATA id:[id intValue]];
+}
+
+#pragma mark ---------------------------- deleteMyService
+RCT_REMAP_METHOD(deleteMyService, deleteMyServiceID:(NSString*)id initWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    _resolve = resolve;
+    [m_iportalService deleteMyContentItem:MY_SERVICE id:[id intValue]];
+}
+
+#pragma mark ---------------------------- deleteMyContentItem回调
+-(void)deleteMyContentItemResult:(BOOL)bSucceed{
+    _resolve([NSNumber numberWithBool:bSucceed]);
+}
+
+#pragma mark ---------------------------- publishService
+RCT_REMAP_METHOD(publishService, publishServiceID:(NSString*)id initWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    _resolve = resolve;
+    NSMutableDictionary* parameter = [[NSMutableDictionary alloc]init];
+    [parameter setObject:@"RESTMAP,RESTDATA" forKey:@"serviceType"];
+    [m_iportalService publishServices:[id intValue] parameter:parameter];
+}
+
+#pragma mark ---------------------------- publishService回调
+-(void)publishServiceResult:(BOOL)bSucceed{
+    _resolve([NSNumber numberWithBool:bSucceed]);
+}
+
+#pragma mark ---------------------------- setServicesShareConfig
+RCT_REMAP_METHOD(setServicesShareConfig, setServiceID:(NSString*)id public:(BOOL) public initWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    _resolve = resolve;
+    NSMutableArray *ids = [NSMutableArray array];
+    [ids addObject:[NSNumber numberWithInt:[id intValue]]];
+    NSMutableDictionary* parameter = [[NSMutableDictionary alloc]init];
+    NSString* paramString;
+    if(public){
+        [parameter setObject:@"USER" forKey:@"entityType"];
+        [parameter setObject:@"GUEST" forKey:@"entityName"];
+        [parameter setObject:@"READ" forKey:@"permissionType"];
+        paramString = [SIPortalService convertDicToString:parameter];
+    } else {
+        paramString = @"[]";
+    }
+    [m_iportalService setServicesShareConfig:ids parameter:paramString];
+}
+
+#pragma mark ---------------------------- setServicesShareConfig回调
+-(void)servicesShareConfigFinished:(BOOL)bSucceed{
+    _resolve([NSNumber numberWithBool:bSucceed]);
+}
 
 +(NSString*) convertDicToString:(NSDictionary*)dict{
     NSError *error;
