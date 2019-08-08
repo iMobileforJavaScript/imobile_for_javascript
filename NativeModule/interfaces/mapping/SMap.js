@@ -1768,7 +1768,7 @@ export default (function () {
   }
 
   /**
-   * 定位到某个点
+   * 定位到POI搜索结果某个点
    * @param index
    * @returns {*|void|Promise<void>}
    */
@@ -1776,6 +1776,30 @@ export default (function () {
     try {
       return SMap.toLocationPoint(index)
     } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取当前所在位置经纬度
+   * @returns {void|*|Promise<void>}
+   */
+  function getCurrentPosition() {
+    try {
+      return SMap.getCurrentPosition()
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移除二维搜索的Callout
+   * @returns {*|void}
+   */
+  function removePOICallout() {
+    try {
+      return SMap.removePOICallout()
+    }catch (e) {
       console.error(e)
     }
   }
@@ -1804,6 +1828,8 @@ export default (function () {
   }
 
   let SMapExp = {
+    removePOICallout,
+    getCurrentPosition,
     toLocationPoint,
     setPointSearchListener,
     pointSearch,
