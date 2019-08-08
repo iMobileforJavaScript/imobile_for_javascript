@@ -4392,6 +4392,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         Geometry geometry=recordset.getGeometry();
                         if(geometry!=null){
                             animationGO.setName(animationGoName);
+                            String name=mapControl.getMap().getName();
+                            if(name==null||name.equals("")){
+                                mapControl.getMap().save();
+                            }
                             animationGO.setGeometry((GeoGraphicObject) geometry, mapControl.getHandle(), layer.getName());
                             animationGroup.addAnimation(animationGO);
                         }
