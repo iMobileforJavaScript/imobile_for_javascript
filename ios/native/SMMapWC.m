@@ -1925,7 +1925,7 @@
     NSString *strModule = [dicParam objectForKey:@"Module"];
     
     NSString *strUserName;
-    if (!bPrivate) {
+    if (!bPrivate && false) {//游客数据不再读取
         strUserName = @"Customer";
     }else{
         strUserName = [self getUserName];

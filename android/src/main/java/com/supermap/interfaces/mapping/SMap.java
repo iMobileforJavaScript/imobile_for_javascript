@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -28,6 +29,7 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.supermap.component.MapWrapView;
 import com.supermap.containts.EventConst;
 import com.supermap.data.*;
@@ -3481,7 +3483,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
             Rectangle2D bounds = layer.getDataset().getBounds();
 
-            if ( !safeGetType(layer.getDataset().getPrjCoordSys(),sMap.smMapWC.getMapControl().getMap().getPrjCoordSys()) ) {
+            if (!safeGetType(layer.getDataset().getPrjCoordSys(),sMap.smMapWC.getMapControl().getMap().getPrjCoordSys())) {
                 Point2Ds point2Ds = new Point2Ds();
                 point2Ds.add(new Point2D(bounds.getLeft(), bounds.getTop()));
                 point2Ds.add(new Point2D(bounds.getRight(), bounds.getBottom()));
@@ -5401,6 +5403,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         PoiGsonBean.PoiInfos poiInfo = poiInfos.get(i);
                         String name = poiInfo.getName();
                         map.putString("pointName",name);
+                        map.putDouble("x",poiInfo.getLocation().getX());
+                        map.putDouble("y",poiInfo.getLocation().getY());
                         array.pushMap(map);
                     }
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -5413,12 +5417,49 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     * 在搜索结果的某个位置添加callout
+     * @param index
+     * @param promise
+     */
     @ReactMethod
     public void toLocationPoint(int index,Promise promise){
         try {
             sMap = SMap.getInstance();
             boolean isSuccess = sMap.poiSearchHelper2D.toLocationPoint(index);
             promise.resolve(isSuccess);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取当前定位的经纬度
+     * @param promise
+     */
+    @ReactMethod
+    public void getCurrentPosition(Promise promise){
+        try {
+            LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+            WritableMap map = Arguments.createMap();
+            map.putDouble("x",gpsDat.dLongitude);
+            map.putDouble("y",gpsDat.dLatitude);
+            promise.resolve(map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 移除POI搜索的callout
+     * @param promise
+     */
+    @ReactMethod
+    public void removePOICallout(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            sMap.poiSearchHelper2D.clearPoint();
+            promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
         }

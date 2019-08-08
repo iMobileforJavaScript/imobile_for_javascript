@@ -21,6 +21,7 @@ import com.supermap.interfaces.mapping.SMap;
 import com.supermap.interfaces.SScene;
 import com.supermap.interfaces.*;
 import com.supermap.interfaces.iServer.SOnlineService;
+import com.supermap.interfaces.iServer.SIPortalService;
 import com.supermap.component.SMRLegendView;
 import com.supermap.interfaces.utils.SMFileUtil;
 import com.supermap.rnsupermap.*;
@@ -205,6 +206,7 @@ public class SupermapFullPackage implements ReactPackage {
         * 在线模块功能
         */
         modules.add(new SOnlineService(reactContext));
+        modules.add(new SIPortalService(reactContext));
         modules.add(new SAnalyst(reactContext));
         modules.add(new SFacilityAnalyst(reactContext));
         modules.add(new STransportationAnalyst(reactContext));

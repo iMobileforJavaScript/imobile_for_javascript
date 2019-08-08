@@ -187,6 +187,7 @@ import {
   SCartography,
   SThemeCartography,
   SOnlineService,
+  SIPortalService,
   SMessageService,
   SAIDetectView,
 } from './NativeModule/interfaces'
@@ -379,6 +380,7 @@ export {
   SThemeCartography,
   /*在线模块*/
   SOnlineService,
+  SIPortalService,
 
   /**消息服务*/
   SMessageService,

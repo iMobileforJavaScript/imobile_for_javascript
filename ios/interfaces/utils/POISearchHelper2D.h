@@ -12,7 +12,7 @@
 #import "SuperMap/OnlinePOIQuery.h"
 #import "SuperMap/Point2D.h"
 #import "SuperMap/Map.h"
-#import "SuperMap/Callout.h"
+#import "InfoCallout.h"
 #import "SuperMap/Point2Ds.h"
 #import "SuperMap/CoordSysTranslator.h"
 #import "SuperMap/PrjCoordSys.h"
@@ -32,7 +32,7 @@
 
 -(BOOL)toLocationPoint:(int) index;
 
--(void)clearPoint:(MapControl*)control;
+-(void)clearPoint;
 /**
  * 接口
  */
