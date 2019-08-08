@@ -18,7 +18,9 @@ function logout () {
 }
 
 function getIPortalCookie() {
-    return IPortalServiceNative.getIPortalCookie()
+    if(Platform.OS === 'android') {
+        return IPortalServiceNative.getIPortalCookie()
+    }
 }
 
 function getMyAccount() {
@@ -86,6 +88,17 @@ function deleteMyService(id) {
     return IPortalServiceNative.deleteMyService(id)
 }
 
+function publishService(id) {
+    if(Platform.OS === 'ios') {
+    return IPortalServiceNative.publishService(id)
+    }
+}
+
+function setServicesShareConfig(id, isPublic) {
+    if(Platform.OS === 'ios') {
+    return IPortalServiceNative.setServicesShareConfig(id, isPublic)
+    }
+}
 export default {
     init,
     login,
@@ -96,6 +109,8 @@ export default {
     getMyServices,
     deleteMyData,
     deleteMyService,
+    publishService,
+    setServicesShareConfig,
     uploadData,
     downloadMyData,
     downloadMyDataByName,
