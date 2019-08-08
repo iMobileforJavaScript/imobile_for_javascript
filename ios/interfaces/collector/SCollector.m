@@ -136,7 +136,7 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
             }
         }
         
-        if (styleJson) {
+        if (styleJson && ![styleJson isEqualToString:@""]) {
             style = [[GeoStyle alloc] init];
             [style fromJson:styleJson];
             [style setMarkerSize:[[Size2D alloc]initWithWidth:8 Height:8 ]];

@@ -4083,8 +4083,12 @@ RCT_REMAP_METHOD(createHeatMap, createHeatMap:(NSDictionary*) dataDic resolve:(R
                 dataset = [SMThemeCartography getDataset:datasetName datasourceIndex:datasourceIndex];//.getDataset(datasourceIndex, datasetName);
             }
         }
+        if(dataset.datasetType != (DatasetType)POINT){
+            reject(@"createHeatMap", @"TypeError", nil);
+            return;
+        }
         NSDictionary* dict = [SMThemeCartography createLayerHeatMap:dataset radius:KernelRadius fuzzyDegree:FuzzyDegree intensity:Intensity colors:colors];
-       resolve(dict);
+        resolve(dict);
 //        promise.resolve(writableMap);
     }
     @catch(NSException *exception){
