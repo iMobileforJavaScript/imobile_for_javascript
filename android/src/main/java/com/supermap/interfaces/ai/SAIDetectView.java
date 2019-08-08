@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -292,6 +293,28 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 资源是否已经释放
+     * @param
+     */
+    private boolean isDisposed() {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--isDisposed--------JAVA--------");
+            if (mAIDetectView == null) {
+                return true;
+            }
+            boolean isDisposed = false;
+            int childCount = mAIDetectView.getChildCount();
+            if (childCount == 0) {
+                isDisposed = true;
+            }
+            return isDisposed;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * 停止识别,回收资源
      * @param promise
      */
@@ -304,7 +327,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
                 currentActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (mAIDetectView == null) {
+                        if (isDisposed()) {
                             return;
                         }
                         mAIDetectView.pauseDetect(true);
@@ -998,6 +1021,18 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         }
     }
 
+    private static String getCurrentTime() {
+        //得到long类型当前时间
+        long l = System.currentTimeMillis();
+        //new日期对
+        Date date = new Date(l);
+        //转换提日期输出格式
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_ms", Locale.CHINA);
+
+        return dateFormat.format(date);
+    }
+
     private static void updateImagesByStaticView(ArObject arObject, AIDetectModel2 type) {
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         if (layoutInflater != null) {
@@ -1007,7 +1042,8 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
             info.setText(AIDetectModel2.getChineseName(type));
             TextView address = view.findViewById(R.id.address);
 
-            address.setText("未知定位,请检查网络或者GPS.");
+//            address.setText("未知定位,请检查网络或者GPS.");
+            address.setText(getCurrentTime());
 
             Bitmap bitmap = getBitmapByType(type);
             imageView.setImageBitmap(bitmap);
