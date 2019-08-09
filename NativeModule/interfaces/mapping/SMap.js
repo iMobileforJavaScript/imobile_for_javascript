@@ -1557,9 +1557,9 @@ export default (function () {
   /**
    * 创建态势推演动画
    */
-  function createAnimationGo(createInfo){
+  function createAnimationGo(createInfo,newPlotMapName){
     try{
-      return SMap.createAnimationGo(createInfo)
+      return SMap.createAnimationGo(createInfo,newPlotMapName)
     } catch (e){
       console.error(e)
     }

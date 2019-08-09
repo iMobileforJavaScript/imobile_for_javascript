@@ -9,6 +9,8 @@
 #import "SMap.h"
 #import "FileUtils.h"
 #import "SuperMap/AnimationManager.h"
+#import "SuperMap/AnimationGroup.h"
+#import "SuperMap/AnimationGO.h"
 
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
@@ -2688,24 +2690,24 @@ RCT_REMAP_METHOD(addCadLayer, addCadLayer:(NSString*)layerName resolver:(RCTProm
 #pragma mark 态势推演定时器
 RCT_REMAP_METHOD(initAnimation,initAnimation:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        //    //获取全局队列
-        //    dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        //
-        //    //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
-        //    dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, global);
-        //
-        //    self.timer = timer;
-        //
-        //    //设置触发的间隔时间
-        //    dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
-        //
-        //    //设置定时器的触发事件
-        //    dispatch_source_set_event_handler(timer, ^{
-        //        [[AnimationManager getInstance] excute];
-        //
-        //    });
-        //
-        //    dispatch_resume(timer);
+            //获取全局队列
+            dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        
+            //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
+            dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, global);
+        
+            self.timer = timer;
+        
+            //设置触发的间隔时间
+            dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
+        
+            //设置定时器的触发事件
+            dispatch_source_set_event_handler(timer, ^{
+                [[AnimationManager getInstance] excute];
+        
+            });
+        
+            dispatch_resume(timer);
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"addCadLayer", exception.reason, nil);
@@ -2716,29 +2718,29 @@ RCT_REMAP_METHOD(initAnimation,initAnimation:(RCTPromiseResolveBlock)resolve rej
 RCT_REMAP_METHOD(readAnimationXmlFile,readAnimationXmlFile:(NSString*) filePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
-        //获取全局队列
-        dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        
-        //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
-        dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, global);
-        
-        self.timer = timer;
-        
-        //设置触发的间隔时间
-        dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
-        
-        //设置定时器的触发事件
-        dispatch_source_set_event_handler(timer, ^{
-            [[AnimationManager getInstance] excute];
-            
-        });
-        
-        dispatch_resume(timer);
+//        //获取全局队列
+//        dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+//
+//        //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
+//        dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, global);
+//
+//        self.timer = timer;
+//
+//        //设置触发的间隔时间
+//        dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
+//
+//        //设置定时器的触发事件
+//        dispatch_source_set_event_handler(timer, ^{
+//            [[AnimationManager getInstance] excute];
+//
+//        });
+//
+//        dispatch_resume(timer);
         
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
         [mapControl setAnimation];
-//        [[AnimationManager getInstance] deleteAll];
+        [[AnimationManager getInstance] deleteAll];
         [[AnimationManager getInstance] getAnimationFromXML:filePath];
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -2806,6 +2808,140 @@ RCT_REMAP_METHOD(animationClose,animationClose:(RCTPromiseResolveBlock)resolve r
     }
 }
 
+#pragma mark 创建推演动画对象
+RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo newPlotMapName:(NSString*)newPlotMapName  resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        if (![createInfo objectForKey:@"animationMode"]) {
+            resolve(@(NO));
+            return;
+        }
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        NSString* animationGroupName=@"Create_Animation_Instance_#";
+        int count=[AnimationManager.getInstance getGroupCount];
+        //组件缺陷，group的count等于0调用getGroupByName还是能返回一个对象
+//        AnimationGroup* animationGroup=[AnimationManager.getInstance getGroupByName:animationGroupName];
+        AnimationGroup* animationGroup;
+        if(count==0){
+            animationGroup=[AnimationManager.getInstance addAnimationGroup:animationGroupName];
+        }else{
+            animationGroup=[AnimationManager.getInstance getGroupByIndex:0];
+        }
+        
+        NSNumber* animationMode=[createInfo objectForKey:@"animationMode"];
+        AnimationType type;
+        switch (animationMode.integerValue) {
+            case 0:
+                type=WayAnimation;
+                break;
+            case 1:
+                type=BlinkAnimation;
+                break;
+            case 2:
+                type=AttribAnimation;
+                break;
+            case 3:
+                type=ShowAnimation;
+                break;
+            case 4:
+                type=RotateAnimation;
+                break;
+            case 5:
+                type=ScaleAnimation;
+                break;
+            case 6:
+                type=GrowAnimation;
+                break;
+        }
+        AnimationGO* animationGo=[AnimationManager.getInstance createAnimation:type];
+        
+        if([createInfo objectForKey:@"startTime"]&&[animationGroup getAnimationCount]>0){
+            NSNumber* startTimeNumber=[createInfo objectForKey:@"startTime"];
+            double startTime=[startTimeNumber doubleValue];
+            if([createInfo objectForKey:@"startMode"]){
+                NSNumber* startMode=[createInfo objectForKey:@"startMode"];
+                AnimationGO* lastAnimationGO=[animationGroup getAnimationByIndex:([animationGroup getAnimationCount]-1)];
+                switch ([startMode intValue]) {
+                    case 1:
+                        startTime+=lastAnimationGO.startTime+lastAnimationGO.duration;
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        startTime+=lastAnimationGO.startTime;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            [animationGo setStartTime:startTime];
+        }
+        if([createInfo objectForKey:@"durationTime"]){
+            NSNumber* durationTimeNumber=[createInfo objectForKey:@"durationTime"];
+            double durationTime=[durationTimeNumber doubleValue];
+            [animationGo setDuration:durationTime];
+        }
+        
+        NSString* mapName=mapControl.map.name;
+        if(!mapName||[mapName isEqualToString:@""]){
+            if(newPlotMapName&&![newPlotMapName isEqualToString:@""]){
+                mapName=newPlotMapName;
+            }else{
+                int layerCount=[mapControl.map.layers getCount];
+                if(layerCount>0){
+                    mapName=[mapControl.map.layers getLayerAtIndex:layerCount-1].name;
+                }
+            }
+            [mapControl.map save:mapName];
+        }
+        
+        NSString* animationGoName=[NSString stringWithFormat:@"动画_%d",[[AnimationManager.getInstance getGroupByName:animationGroupName] getAnimationCount]];
+        if([createInfo objectForKey:@"layerName"]&&[createInfo objectForKey:@"geoId"]){
+            NSString* layerName=[createInfo objectForKey:@"layerName"];
+            int geoId=[[createInfo objectForKey:@"geoId"] intValue];
+            Layer* layer=[mapControl.map.layers getLayerWithName:layerName];
+            if(layer){
+                DatasetVector* dataset=(DatasetVector*)[mapControl.map.layers getLayerWithName:layerName].dataset;
+                QueryParameter* queryParameter=[[QueryParameter alloc] init];
+                [queryParameter setQueryIDs:[[NSArray alloc]initWithObjects:@(geoId), nil]];
+                [queryParameter setQueryType:IDS];
+                Recordset* recordset=[dataset query:queryParameter];
+                Geometry* geometry=[recordset geometry];
+                if(geometry){
+                    [animationGo setName:animationGoName];
+                    [animationGo setGeomtry:geometry mapControl:mapControl layer:layer.name];
+                    [animationGroup addAnimation:animationGo];
+                }
+            }
+        }
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setDynamicProjection", exception.reason, nil);
+    }
+}
+
+#pragma mark 保存推演动画
+RCT_REMAP_METHOD(animationSave,animationSave:(NSString*) savePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        if(![[NSFileManager defaultManager] fileExistsAtPath:savePath]){
+            [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:YES attributes:nil error:nil];
+        }
+        NSString* mapName=mapControl.map.name;
+        NSString* tempPath=[NSString stringWithFormat:@"%@/%@.xml",savePath,mapName];
+        NSString* path=[FileUtils formateNoneExistFileName:tempPath isDir:false];
+        BOOL result=[AnimationManager.getInstance saveAnimationToXML:path];
+        [AnimationManager.getInstance reset];
+        [AnimationManager.getInstance deleteAll];
+        
+        resolve(@(result));
+    } @catch (NSException *exception) {
+        reject(@"animationSave", exception.reason, nil);
+    }
+}
 
 #pragma mark /************************************** 选择集操作 BEGIN****************************************/
 #pragma mark 设置Selection样式

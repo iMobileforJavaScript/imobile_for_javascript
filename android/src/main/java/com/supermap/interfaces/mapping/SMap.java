@@ -4326,7 +4326,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * 创建推演动画对象
      */
     @ReactMethod
-    public static void createAnimationGo(ReadableMap createInfo,Promise promise){
+    public static void createAnimationGo(ReadableMap createInfo,String newPlotMapName,Promise promise){
 
             try {
                 if (!createInfo.hasKey("animationMode")) {
@@ -4373,16 +4373,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     int startMode = createInfo.getInt("startMode");
 
                 }
-//                int geoId=-1;
-//                if (createInfo.hasKey("geoId")) {
-//                    geoId = createInfo.getInt("geoId");
-//
-//                }
-//                String layerName;
-//                if (createInfo.hasKey("layerName")) {
-//                    layerName = createInfo.getString("layerName");
-//
-//                }
+
+                String mapName=mapControl.getMap().getName();
+                if(mapName==null||mapName.equals("")){
+                    if(newPlotMapName!=null&&!newPlotMapName.equals("")){
+                        mapName=newPlotMapName;
+                    }else {
+                        int layerCount=mapControl.getMap().getLayers().getCount();
+                        if(layerCount>0){
+                            mapName=mapControl.getMap().getLayers().get(layerCount).getName();
+                        }
+                    }
+                    mapControl.getMap().save(mapName);
+                }
+
+
                 String animationGoName="动画_"+AnimationManager.getInstance().getGroupByName(animationGroupName).getAnimationCount();
                 if (createInfo.hasKey("layerName")&&createInfo.hasKey("geoId")) {
                     String layerName=createInfo.getString("layerName");
@@ -4394,10 +4399,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         Geometry geometry=recordset.getGeometry();
                         if(geometry!=null){
                             animationGO.setName(animationGoName);
-                            String name=mapControl.getMap().getName();
-                            if(name==null||name.equals("")){
-                                mapControl.getMap().save();
-                            }
+//                            String name=mapControl.getMap().getName();
+//                            if(name==null||name.equals("")){
+//                                mapControl.getMap().save();
+//                            }
                             animationGO.setGeometry((GeoGraphicObject) geometry, mapControl.getHandle(), layer.getName());
                             animationGroup.addAnimation(animationGO);
                         }
@@ -4419,6 +4424,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //        String path=sdcard+"/supermap/demos/plotdata/qdwj/强渡乌江_2.xml";
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
+            File file=new File(savePath);
+            if(!file.exists()){
+                file.mkdirs();
+            }
             String mapName=mapControl.getMap().getName();
             String tempPath=savePath+"/"+mapName+".xml";
             String path=SMFileUtil.formateNoneExistFileName(tempPath,false);
