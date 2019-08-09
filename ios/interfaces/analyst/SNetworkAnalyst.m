@@ -126,6 +126,24 @@ RCT_EXPORT_MODULE();
     return p2D;
 }
 
+- (int)setText:(NSString *)text point:(Point2D *)point textStyle:(TextStyle *)textStyle tag:(NSString *)tag {
+    NSString* mText = [NSString stringWithFormat:@" %@", text];
+    TextPart* textPart = [[TextPart alloc] initWithTextString:mText anchorPoint:point];
+    GeoText* geoText = [[GeoText alloc] initWithTextPart:textPart];
+    if (textStyle == nil) {
+        textStyle = [[TextStyle alloc]init];
+        [textStyle setFontWidth:6];
+        [textStyle setFontHeight:8];
+        [textStyle setForeColor:[[Color alloc]initWithR:0 G:0 B:0]];
+    }
+    [geoText setTextStyle:textStyle];
+    
+    TrackingLayer* trackingLayer = [SMap singletonInstance].smMapWC.mapControl.map.trackingLayer;
+    int index = [trackingLayer addGeometry:geoText WithTag:tag];
+    [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+    return index;
+}
+
 //- (Point2D *)selectByPoint:(NSDictionary *)point layer:(Layer *)nodeLayer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag {
 //    Point2D* point2D = nil;
 //    //    if (!elementIDs) {

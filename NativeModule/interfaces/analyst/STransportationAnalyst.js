@@ -38,37 +38,41 @@ async function load (datasourceInfo = {}, setting = {}) {
 /**
  * 设置障碍点
  * @param point
- * @returns {Promise.<Promise|Promise.<void>>}
+ * @param text
+ * @returns {Promise}
  */
-async function addBarrierNode (point) {
-  return Analyst.addBarrierNode(point)
+async function addBarrierNode (point, text = '') {
+  return Analyst.addBarrierNode(point, text)
 }
 
 /**
  * 设置站点
  * @param point
- * @returns {Promise.<Promise|Promise.<void>>}
+ * @param text
+ * @returns {Promise.<Promise|*>}
  */
-async function addNode (point) {
-  return Analyst.addNode(point)
+async function addNode (point, text = '') {
+  return Analyst.addNode(point, text)
 }
 
 /**
  * 设置起点
  * @param point
- * @returns {Promise.<Promise|Promise.<void>>}
+ * @param text
+ * @returns {Promise.<Promise|Promise.<void>|Promise.<Promise|Promise.<void>>>}
  */
-async function setStartPoint (point) {
-  return Analyst.setStartPoint(point)
+async function setStartPoint (point, text = '') {
+  return Analyst.setStartPoint(point, text)
 }
 
 /**
- * 设置起点
+ * 设置终点
  * @param point
- * @returns {Promise.<Promise|Promise.<void>>}
+ * @param text
+ * @returns {Promise.<Promise|Promise.<Promise|Promise.<void>>|void>}
  */
-async function setEndPoint (point) {
-  return Analyst.setEndPoint(point)
+async function setEndPoint (point, text = '') {
+  return Analyst.setEndPoint(point, text )
 }
 
 async function clear () {
