@@ -11,7 +11,9 @@ import com.supermap.interfaces.ai.SAIDetectView;
 import com.supermap.interfaces.analyst.SAnalyst;
 import com.supermap.interfaces.analyst.SFacilityAnalyst;
 import com.supermap.interfaces.analyst.STransportationAnalyst;
+import com.supermap.interfaces.ar.MeasureViewManager;
 import com.supermap.interfaces.ar.RCTArrowRenderView;
+import com.supermap.interfaces.ar.SMeasureView;
 import com.supermap.interfaces.collector.SCollector;
 import com.supermap.interfaces.collector.SCollectorType;
 import com.supermap.interfaces.collector.SMediaCollector;
@@ -45,7 +47,7 @@ public class SupermapFullPackage implements ReactPackage {
                 new MapViewManager(),
                 new LayerListViewManager(),new ScaleViewManager(),new CallOutManager()
                 ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView()
-                ,new AIDetectViewManager()
+                ,new AIDetectViewManager(), new MeasureViewManager()
         );
     }
 
@@ -213,6 +215,8 @@ public class SupermapFullPackage implements ReactPackage {
 
         //AI识别
         modules.add(new SAIDetectView(reactContext));
+        //AR高精采集
+        modules.add(new SMeasureView(reactContext));
         return modules;
     }
 }
