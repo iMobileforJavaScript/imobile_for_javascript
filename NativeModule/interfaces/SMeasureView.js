@@ -49,10 +49,19 @@ isSupportedARCore = () => {
   }
 }
 
+saveDataset = (datasourceName, datasetName) => {
+  try {
+    return SMeasureView.saveDataset(datasourceName, datasetName)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   addNewRecord,
   undoDraw,
   clearAll,
   setEnableSupport,
   isSupportedARCore,
+  saveDataset,
 }

@@ -8,6 +8,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.google.ar.core.ArCoreApk;
 import com.supermap.ar.highprecision.MeasureView;
+import com.supermap.data.Point2Ds;
+import com.supermap.track.HPTrack;
 
 public class SMeasureView extends ReactContextBaseJavaModule {
 
@@ -31,9 +33,6 @@ public class SMeasureView extends ReactContextBaseJavaModule {
         mMeasureView.enableSupport(true);
     }
 
-    /**
-     * 新增记录
-     */
     private boolean checkARCore() {
         try {
             Log.d(REACT_CLASS, "----------------SMeasureView--checkARCore--------JAVA--------");
@@ -47,12 +46,8 @@ public class SMeasureView extends ReactContextBaseJavaModule {
                     }
                 }, 200);
             }
-            if (availability.isSupported()) {
-                return true;
-            } else {
-                // Unsupported or unknown.
-                return false;
-            }
+            // Unsupported or unknown.
+            return availability.isSupported();
         } catch (Exception e) {
             return false;
         }
@@ -96,7 +91,7 @@ public class SMeasureView extends ReactContextBaseJavaModule {
         try {
             Log.d(REACT_CLASS, "----------------SMeasureView--undoDraw--------RN--------");
             if (mMeasureView != null) {
-                mMeasureView.withDraw();
+                mMeasureView.undo();
             }
             promise.resolve(true);
         } catch (Exception e) {
@@ -126,7 +121,7 @@ public class SMeasureView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setEnableSupport(boolean value, Promise promise) {
         try {
-            Log.d(REACT_CLASS, "----------------SAIDetectView--setEnableSupport--------RN--------");
+            Log.d(REACT_CLASS, "----------------SMeasureView--setEnableSupport--------RN--------");
             if (mMeasureView != null) {
                 mMeasureView.enableSupport(value);
             }
@@ -135,5 +130,23 @@ public class SMeasureView extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 保存数据
+     */
+    @ReactMethod
+    public void saveDataset(String datasourceName, String datasetName, Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SMeasureView--saveDataset--------RN--------");
+            if (mMeasureView != null) {
+//                Point2Ds totalPoints = mMeasureView.getTotalPoints();
+//                HPTrack hpTrack = new HPTrack();
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
 }
