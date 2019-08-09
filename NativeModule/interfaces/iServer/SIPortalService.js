@@ -2,7 +2,7 @@ import { NativeModules, Platform, NativeEventEmitter, DeviceEventEmitter} from '
 import { EventConst } from '../../constains'
 let IPortalServiceNative = NativeModules.SIPortalService;
 const callBackIOS = new NativeEventEmitter(IPortalServiceNative)
-
+let iPortalUrl = undefined
 function init() {
     if(Platform.OS === 'ios') {
         return IPortalServiceNative.init()
@@ -10,6 +10,7 @@ function init() {
 }
 
 function login (serverUrl, userName, password, remember) {
+    iPortalUrl = serverUrl
     return IPortalServiceNative.login(serverUrl, userName, password, remember)
 }
 
@@ -21,6 +22,10 @@ function getIPortalCookie() {
     if(Platform.OS === 'android') {
         return IPortalServiceNative.getIPortalCookie()
     }
+}
+
+function getIPortalUrl() {
+    return iPortalUrl
 }
 
 function getMyAccount() {
@@ -37,17 +42,19 @@ function deleteMyData(id) {
 
 let  uploadingFileListener
 function uploadData (path, fileName, cb) {
-  uploadingFileListener && uploadingFileListener.remove()
-  if (Platform.OS === 'ios') {
-    uploadingFileListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
-        cb(progress)
-    })
-  } else {
-    uploadingFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
-        cb(progress)
+  if(typeof cb === 'function') {
+    uploadingFileListener && uploadingFileListener.remove()
+    if (Platform.OS === 'ios') {
+      uploadingFileListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
+          cb(progress)
       })
+    } else {
+      uploadingFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
+          cb(progress)
+        })
+    }
   }
-  
+    
   return IPortalServiceNative.uploadData(path, fileName)
 }
 
@@ -104,6 +111,7 @@ export default {
     login,
     logout,
     getIPortalCookie,
+    getIPortalUrl,
     getMyAccount,
     getMyDatas,
     getMyServices,

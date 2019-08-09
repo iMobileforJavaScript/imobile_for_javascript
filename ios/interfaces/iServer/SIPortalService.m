@@ -17,6 +17,7 @@ static IPortalService* m_iportalService;
 @implementation SIPortalService
 static NSString* TAG =  @"SIPortalService";
 static RCTPromiseResolveBlock _resolve;
+static NSString* _uploadFilePath;
 
 #pragma mark -- 定义宏，让该类暴露给RN层
 RCT_EXPORT_MODULE();
@@ -150,6 +151,35 @@ RCT_REMAP_METHOD(setServicesShareConfig, setServiceID:(NSString*)id public:(BOOL
 #pragma mark ---------------------------- setServicesShareConfig回调
 -(void)servicesShareConfigFinished:(BOOL)bSucceed{
     _resolve([NSNumber numberWithBool:bSucceed]);
+}
+
+#pragma mark ---------------------------- uploadData
+RCT_REMAP_METHOD(uploadData, uploadFrom:(NSString*)filePath As:(NSString*)fileName initWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    _resolve = resolve;
+    _uploadFilePath = filePath;
+    NSString* tags = @"用户数据";
+    [m_iportalService getMyDataIDFor:fileName tag:tags type:DIT_WORKSPACE];
+}
+
+#pragma mark ----------------------------获取上传id回调
+-(void)myDataIDResult:(NSDictionary *)result{
+    NSNumber* id = [result objectForKey:@"childID"];
+    if(id != nil){
+        [m_iportalService uploadData:_uploadFilePath dataID:[id intValue] progressListener:self];
+    } else {
+        _resolve([NSNumber numberWithBool:NO]);
+    }
+}
+
+#pragma mark ---------------------------- 上传进度
+-(void)upLoadProgress:(float)newProgress{
+    float progress = newProgress * 100;
+    [self sendEventWithName:ONLINE_SERVICE_DOWNLOADING body:[NSNumber numberWithFloat:progress]];
+}
+
+#pragma mark ---------------------------- uploadData完成回调
+- (void)upLoadDataComplite:(NSDictionary *)result{
+    _resolve([NSNumber numberWithBool:YES]);
 }
 
 +(NSString*) convertDicToString:(NSDictionary*)dict{
