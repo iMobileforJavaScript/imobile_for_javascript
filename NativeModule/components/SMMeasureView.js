@@ -35,7 +35,6 @@ class SMMeasureView extends React.Component {
 
   componentDidMount() {
     GLOBAL.Type === constants.MAP_AR &&
-    SMeasureView.isSupportedARCore() &&
     this.setState({
       visible: true,
     })
