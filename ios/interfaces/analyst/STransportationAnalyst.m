@@ -26,11 +26,13 @@ RCT_EXPORT_MODULE();
 }
 
 #pragma mark - 设置起点
-RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point text:(NSString *)text resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         NSString* nodeTag = @"startNode";
+        NSString* textTag = @"startNodeText";
         if (startPoint) {
             [self removeTagFromTrackingLayer:nodeTag];
+            [self removeTagFromTrackingLayer:textTag];
             startPoint = nil;
         }
         if (nodeLayer) {
@@ -45,6 +47,11 @@ RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point resolver:(RC
 //            double y = [(NSNumber *)[dic objectForKey:@"y"] doubleValue];
 //            CGPoint p = CGPointMake(x, y);
 //            startPoint = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:p];
+            TextStyle* textStyle = [[TextStyle alloc]init];
+            [textStyle setFontWidth:6];
+            [textStyle setFontHeight:8];
+            [textStyle setForeColor:[[Color alloc] initWithR:255 G:105 B:0]];
+            [self setText:text point:startPoint textStyle:textStyle tag:textTag];
         }
         
         resolve(@(startNodeID));
@@ -54,11 +61,13 @@ RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point resolver:(RC
 }
 
 #pragma mark - 设置终点
-RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point text:(NSString *)text resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         NSString* nodeTag = @"endNode";
+        NSString* textTag = @"endNodeText";
         if (endPoint) {
             [self removeTagFromTrackingLayer:nodeTag];
+            [self removeTagFromTrackingLayer:textTag];
             endPoint = nil;
         }
         if (nodeLayer) {
@@ -73,6 +82,13 @@ RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point resolver:(RCTPro
 //            double y = [(NSNumber *)[dic objectForKey:@"y"] doubleValue];
 //            CGPoint p = CGPointMake(x, y);
 //            endPoint = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:p];
+            
+            TextStyle* textStyle = [[TextStyle alloc]init];
+            [textStyle setFontWidth:6];
+            [textStyle setFontHeight:8];
+            [textStyle setForeColor:[[Color alloc] initWithR:105 G:255 B:0]];
+            [self setText:text point:endPoint textStyle:textStyle tag:textTag];
+            
         }
         
         resolve(@(endNodeID));
@@ -82,7 +98,7 @@ RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point resolver:(RCTPro
 }
 
 #pragma mark - 添加障碍点
-RCT_REMAP_METHOD(addBarrierNode, addBarrierNode:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addBarrierNode, addBarrierNode:(NSDictionary *)point text:(NSString *)text resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         NSString* nodeTag = @"";
         int node = -1;
@@ -96,7 +112,15 @@ RCT_REMAP_METHOD(addBarrierNode, addBarrierNode:(NSDictionary *)point resolver:(
             if (node > 0) [barrierNodes addObject:@(node)];
             
             Point2D* p2D = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
-            if (p2D) [self addBarrierPoints:p2D];
+            if (p2D) {
+                [self addBarrierPoints:p2D];
+                
+                TextStyle* textStyle = [[TextStyle alloc]init];
+                [textStyle setFontWidth:6];
+                [textStyle setFontHeight:8];
+                [textStyle setForeColor:[[Color alloc] initWithR:255 G:0 B:0]];
+                [self setText:text point:p2D textStyle:textStyle tag:nodeTag];
+            }
         }
         
         resolve(@(node));
@@ -106,21 +130,29 @@ RCT_REMAP_METHOD(addBarrierNode, addBarrierNode:(NSDictionary *)point resolver:(
 }
 
 #pragma mark - 添加结点
-RCT_REMAP_METHOD(addNode, addNode:(NSDictionary *)point resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addNode, addNode:(NSDictionary *)point text:(NSString *)text resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         NSString* nodeTag = @"";
         int node = -1;
         if (nodeLayer) {
             GeoStyle* style = [[GeoStyle alloc] init];
             [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
-            [style setLineColor:[[Color alloc] initWithR:255 G:255 B:0]];
+            [style setLineColor:[[Color alloc] initWithR:212 G:161 B:70]];
             [style setMarkerSymbolID:3614];
             node = [self selectNode:point layer:nodeLayer geoStyle:style tag:nodeTag];
             if (!nodes) nodes = [[NSMutableArray alloc] init];
             if (node > 0) [nodes addObject:@(node)];
             
             Point2D* p2D = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
-            if (p2D) [self addPoint:p2D];
+            if (p2D) {
+                [self addPoint:p2D];
+                
+                TextStyle* textStyle = [[TextStyle alloc]init];
+                [textStyle setFontWidth:6];
+                [textStyle setFontHeight:8];
+                [textStyle setForeColor:[[Color alloc] initWithR:212 G:161 B:70]];
+                [self setText:text point:p2D textStyle:textStyle tag:nodeTag];
+            }
         }
         
         resolve(@(node));
