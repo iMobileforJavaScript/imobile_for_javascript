@@ -40,21 +40,34 @@ function deleteMyData(id) {
     return IPortalServiceNative.deleteMyData(id)
 }
 
-let  uploadingFileListener
+let  uploadingFileListener, uploadFileListener
 function uploadData (path, fileName, cb) {
-  if(typeof cb === 'function') {
-    uploadingFileListener && uploadingFileListener.remove()
-    if (Platform.OS === 'ios') {
-      uploadingFileListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
-          cb(progress)
-      })
-    } else {
-      uploadingFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
-          cb(progress)
+  uploadingFileListener && uploadingFileListener.remove()
+  uploadFileListener && uploadFileListener.remove()
+  if(Platform.OS === 'ios'){
+      if(typeof cb.onProgress === 'function' ) {
+        uploadingFileListener = callBackIOS.addListener(EventConst.IPORTAL_SERVICE_UPLOADING, function (progress) {
+            cb.onProgress(progress)
         })
-    }
+      }
+      if (typeof cb.onResult === 'function') {
+        uploadFileListener = callBackIOS.addListener(EventConst.IPORTAL_SERVICE_UPLOADED, function (value) {
+          cb.onResult(value)
+        })
+      }
+  } else {
+    if (typeof cb.onProgress === 'function') {
+        uploadingFileListener = DeviceEventEmitter.addListener(EventConst.IPORTAL_SERVICE_UPLOADING, function (progress) {
+          cb.onProgress(progress)
+        })
+      }
+      if (typeof cb.onResult === 'function') {
+        uploadFileListener = DeviceEventEmitter.addListener(EventConst.IPORTAL_SERVICE_UPLOADED, function (result) {
+          cb.onResult(result)
+        })
+      }
   }
-    
+      
   return IPortalServiceNative.uploadData(path, fileName)
 }
 
@@ -62,11 +75,11 @@ let downloadListener
 function downloadMyData(path, id, cb) {
     downloadListener && downloadListener.remove()
     if(Platform.OS === 'android') {
-        downloadListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (progress) {
+        downloadListener = DeviceEventEmitter.addListener(EventConst.IPORTAL_SERVICE_DOWNLOADING, function (progress) {
             cb(progress);
           })
     } else {
-        downloadListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (progress) {
+        downloadListener = callBackIOS.addListener(EventConst.IPORTAL_SERVICE_DOWNLOADING, function (progress) {
             cb(progress);
           })
     }
@@ -76,11 +89,11 @@ function downloadMyData(path, id, cb) {
 function downloadMyDataByName(path, name, cb) {
     downloadListener && downloadListener.remove()
     if(Platform.OS === 'android') {
-        downloadListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (progress) {
+        downloadListener = DeviceEventEmitter.addListener(EventConst.IPORTAL_SERVICE_DOWNLOADING, function (progress) {
             cb(progress);
           })
     } else {
-        downloadListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_DOWNLOADING, function (progress) {
+        downloadListener = callBackIOS.addListener(EventConst.IPORTAL_SERVICE_DOWNLOADING, function (progress) {
             cb(progress);
           })
     }
