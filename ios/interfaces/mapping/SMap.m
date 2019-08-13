@@ -2718,24 +2718,24 @@ RCT_REMAP_METHOD(initAnimation,initAnimation:(RCTPromiseResolveBlock)resolve rej
 RCT_REMAP_METHOD(readAnimationXmlFile,readAnimationXmlFile:(NSString*) filePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
-//        //获取全局队列
-//        dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-//
-//        //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
-//        dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, global);
-//
-//        self.timer = timer;
-//
-//        //设置触发的间隔时间
-//        dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
-//
-//        //设置定时器的触发事件
-//        dispatch_source_set_event_handler(timer, ^{
-//            [[AnimationManager getInstance] excute];
-//
-//        });
-//
-//        dispatch_resume(timer);
+        //获取全局队列
+        dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+
+        //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
+        dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, global);
+
+        self.timer = timer;
+
+        //设置触发的间隔时间
+        dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
+
+        //设置定时器的触发事件
+        dispatch_source_set_event_handler(timer, ^{
+            [[AnimationManager getInstance] excute];
+
+        });
+
+        dispatch_resume(timer);
         
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;

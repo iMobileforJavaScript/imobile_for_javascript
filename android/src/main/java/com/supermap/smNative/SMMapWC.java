@@ -955,6 +955,32 @@ public class SMMapWC {
                 workspaceDes.getMaps().add(mapName, strMapXML);
 
                 mapExport.close();
+
+
+                //导出推演动画xml文件
+//                if(desDir.indexOf("Data")>0){
+//                    String dataDir=desDir.substring(0,desDir.indexOf("Data",1)+"Data".length());
+//
+//                    String animationDir=dataDir+"/Animation/";
+//
+//                    String animationDirPath=animationDir+mapName;
+//                    File animationDirFile=new File(animationDirPath);
+//                    if(animationDirFile.exists()&&animationDirFile.isDirectory()){
+//                        String plotDirPath=desDir+"/plot/";
+//                        File plotDirFile=new File(plotDirPath);
+//                        if(plotDirFile.exists()&&plotDirFile.isDirectory()){
+//                            plotDirFile.delete();
+//                        }
+//                        plotDirFile.mkdirs();
+//                        File[] files=animationDirFile.listFiles();
+//                        for (File file : files) {
+//                            if(!file.isDirectory()) {
+//                                String strAnimation = plotDirPath + file.getName();
+//                                copyFile(file.getPath(), strAnimation);
+//                            }
+//                        }
+//                    }
+//                }
             }
         }
 
