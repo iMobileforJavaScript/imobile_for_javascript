@@ -498,50 +498,47 @@ public class SMLayer {
 
         boolean result = false;
         for (int i = 0; i < fieldInfos.size(); i++) {
-            ReadableMap info = fieldInfos.getMap(i);
-            String name = info.getString("name");
-            ReadableType valueType = info.getType("value");
+            try {
+                ReadableMap info = fieldInfos.getMap(i);
+                String name = info.getString("name");
 
-            FieldInfo fieldInfo = recordset.getFieldInfos().get(name);
-            FieldType type = fieldInfo.getType();
+                FieldInfo fieldInfo = recordset.getFieldInfos().get(name);
+                if(fieldInfo==null)
+                    continue;
+                FieldType type = fieldInfo.getType();
+                String value = info.getString("value");
+                if (type == FieldType.INT16) {
 
-            switch (valueType) {
-                case Number:{
-                    if (type == FieldType.INT16) {
-                        int value = info.getInt("value");
-                        result = recordset.setInt16(name, Short.parseShort(value + ""));
-                    } else if (type == FieldType.INT32) {
-                        int value = info.getInt("value");
-                        result = recordset.setInt32(name, Integer.parseInt(value + ""));
-                    } else if (type == FieldType.INT64) {
-                        int value = info.getInt("value");
-                        result = recordset.setInt64(name, Long.parseLong(value + ""));
-                    } else if (type == FieldType.SINGLE) {
-                        int value = info.getInt("value");
-                        result = recordset.setSingle(name, Float.parseFloat(value + ""));
-                    } else if (type == FieldType.DOUBLE) {
-                        Double value = info.getDouble("value");
-                        result = recordset.setDouble(name, Double.parseDouble(value + ""));
+                    result = recordset.setInt16(name, Short.parseShort(value + ""));
+                } else if (type == FieldType.INT32) {
+//                int value = info.getInt("value");
+                    result = recordset.setInt32(name, Integer.parseInt(value + ""));
+                } else if (type == FieldType.INT64) {
+//                int value = info.getInt("value");
+                    result = recordset.setInt64(name, Long.parseLong(value + ""));
+                } else if (type == FieldType.SINGLE) {
+//                int value = info.getInt("value");
+                    result = recordset.setSingle(name, Float.parseFloat(value + ""));
+                } else if (type == FieldType.DOUBLE) {
+//                Double value = info.getDouble("value");
+                    result = recordset.setDouble(name, Double.parseDouble(value + ""));
+                } else if (type == FieldType.TEXT || type == FieldType.WTEXT
+                        || type == FieldType.LONGBINARY || type == FieldType.BYTE) {
+//                String value1 = info.getString("value");
+                    result = recordset.setFieldValue(name, value);
+                }else if (type == FieldType.BOOLEAN) {
+//                boolean boolValue = info.getBoolean("value");
+                    boolean boolValue = false;
+                    if (value == "YES" || value  == "true") {
+                        boolValue = true;
                     }
-                    break;
+                    result = recordset.setBoolean(name, boolValue);
                 }
-                case String: {
-                    if (type == FieldType.TEXT || type == FieldType.WTEXT
-                            || type == FieldType.LONGBINARY || type == FieldType.BYTE) {
-                        String value1 = info.getString("value");
-                        result = recordset.setFieldValue(name, value1);
-                    }
-                    break;
-                }
-                case Boolean: {
-                    if (type == FieldType.BOOLEAN) {
-                        boolean boolValue = info.getBoolean("value");
-                        result = recordset.setBoolean(name, boolValue);
-                    }
-                }
+            } catch (Exception e) {
+               continue;
             }
 
-            if (!result) break;
+
         }
 
         recordset.update();

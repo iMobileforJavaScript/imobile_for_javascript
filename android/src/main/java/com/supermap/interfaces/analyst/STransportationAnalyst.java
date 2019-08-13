@@ -82,12 +82,12 @@ public class STransportationAnalyst extends SNetworkAnalyst {
         return REACT_CLASS;
     }
 
-    private TransportationAnalyst getTransportationAnalyst() {
-        if (transportationAnalyst == null) {
-            transportationAnalyst = new TransportationAnalyst();
-        }
-        return transportationAnalyst;
-    }
+//    private TransportationAnalyst getTransportationAnalyst() {
+//        if (transportationAnalyst == null) {
+//            transportationAnalyst = new TransportationAnalyst();
+//        }
+//        return transportationAnalyst;
+//    }
 
     /**
      * 设置起点
@@ -99,30 +99,35 @@ public class STransportationAnalyst extends SNetworkAnalyst {
         try {
             String nodeTag = "startNode";
             String textTag = "startNodeText";
-            if (startPoint != null) {
-                this.removeTagFromTrackingLayer(nodeTag);
-                this.removeTagFromTrackingLayer(textTag);
-                startPoint = null;
-            }
-            if (nodeLayer != null) {
-                GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(255, 105, 0));
-                style.setMarkerSymbolID(3614);
 
+            GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(255, 105, 0));
+            style.setMarkerSymbolID(3614);
+            Point2D tempPoint = this.selectPoint(point, nodeLayer, style, nodeTag);
+            if (tempPoint != null) {
+                if (startPoint != null) {
+                    this.removeTagFromTrackingLayer(nodeTag);
+                    this.removeTagFromTrackingLayer(textTag);
+                    startPoint = null;
+                }
+                if (nodeLayer != null) {
 //                startNodeID = this.selectNode(point, nodeLayer, style, nodeTag);
 //
 //                double x = point.getDouble("x");
 //                double y = point.getDouble("y");
 //                Point p = new Point((int)x, (int)y);
 //                startPoint = SMap.getInstance().getSmMapWC().getMapControl().getMap().pixelToMap(p);
-                startPoint = this.selectPoint(point, nodeLayer, style, nodeTag);
+                    startPoint = tempPoint;
 
-                TextStyle textStyle = new TextStyle();
+                    TextStyle textStyle = new TextStyle();
 //                textStyle.setFontWidth(6);
 //                textStyle.setFontHeight(8);
-                textStyle.setForeColor(new Color(255, 105, 0));
-                this.setText(text, startPoint, textStyle, textTag);
+                    textStyle.setForeColor(new Color(255, 105, 0));
+                    this.setText(text, startPoint, textStyle, textTag);
+                }
+                promise.resolve(startNodeID);
+            } else {
+                promise.resolve(-1);
             }
-            promise.resolve(startNodeID);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -138,30 +143,35 @@ public class STransportationAnalyst extends SNetworkAnalyst {
         try {
             String nodeTag = "endNode";
             String textTag = "endNodeText";
-            if (endPoint != null) {
-                this.removeTagFromTrackingLayer(nodeTag);
-                this.removeTagFromTrackingLayer(textTag);
-                endPoint = null;
-            }
-            if (nodeLayer != null) {
-                GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(105, 255, 0));
-                style.setMarkerSymbolID(3614);
 
+            GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(105, 255, 0));
+            style.setMarkerSymbolID(3614);
+            Point2D tempPoint = this.selectPoint(point, nodeLayer, style, nodeTag);
+            if (tempPoint != null) {
+                if (endPoint != null) {
+                    this.removeTagFromTrackingLayer(nodeTag);
+                    this.removeTagFromTrackingLayer(textTag);
+                    endPoint = null;
+                }
+                if (nodeLayer != null) {
 //                endNodeID = this.selectNode(point, nodeLayer, style, nodeTag);
 //
 //                double x = point.getDouble("x");
 //                double y = point.getDouble("y");
 //                Point p = new Point((int)x, (int)y);
 //                endPoint = SMap.getInstance().getSmMapWC().getMapControl().getMap().pixelToMap(p);
-                endPoint = this.selectPoint(point, nodeLayer, style, nodeTag);
+                    endPoint = tempPoint;
 
-                TextStyle textStyle = new TextStyle();
+                    TextStyle textStyle = new TextStyle();
 //                textStyle.setFontWidth(6);
 //                textStyle.setFontHeight(8);
-                textStyle.setForeColor(new Color(105, 255, 0));
-                this.setText(text, endPoint, textStyle, textTag);
+                    textStyle.setForeColor(new Color(105, 255, 0));
+                    this.setText(text, endPoint, textStyle, textTag);
+                }
+                promise.resolve(endNodeID);
+            } else {
+                promise.resolve(-1);
             }
-            promise.resolve(endNodeID);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -333,7 +343,11 @@ public class STransportationAnalyst extends SNetworkAnalyst {
                 selection = layer.getSelection();
 //                }
 
-                transportationAnalyst = getTransportationAnalyst();
+                if (transportationAnalyst != null) {
+                    transportationAnalyst.dispose();
+                    transportationAnalyst = null;
+                }
+                transportationAnalyst = new TransportationAnalyst();
 
                 setting = SMAnalyst.setTransportSetting(settingMap);
                 setting.setNetworkDataset((DatasetVector) dataset);
@@ -361,7 +375,7 @@ public class STransportationAnalyst extends SNetworkAnalyst {
     @ReactMethod
     public void findPath(ReadableMap params, boolean hasLeastEdgeCount, Promise promise) {
         try {
-            transportationAnalyst = getTransportationAnalyst();
+//            transportationAnalyst = getTransportationAnalyst();
             TransportationAnalystParameter paramter = SMAnalyst.getTransportationAnalystParameterByDictionary(params);
 
 //            if (paramter.getNodes() != null && paramter.getNodes().length <= 0) {
@@ -386,7 +400,7 @@ public class STransportationAnalyst extends SNetworkAnalyst {
                 if (points == null) {
                     points = new Point2Ds();
                 }
-                Point2Ds ps = points;
+                Point2Ds ps = new Point2Ds(points);
                 if (startPoint != null) ps.insert(0, startPoint);
                 if (endPoint != null) ps.add(endPoint);
                 paramter.setPoints(ps);
@@ -430,7 +444,7 @@ public class STransportationAnalyst extends SNetworkAnalyst {
     @ReactMethod
     public void findTSPPath(ReadableMap params, boolean isEndNodeAssigned, Promise promise) {
         try {
-            transportationAnalyst = getTransportationAnalyst();
+//            transportationAnalyst = getTransportationAnalyst();
             TransportationAnalystParameter paramter = SMAnalyst.getTransportationAnalystParameterByDictionary(params);
 
 //            if (paramter.getNodes() != null && paramter.getNodes().length <= 0) {
@@ -451,7 +465,7 @@ public class STransportationAnalyst extends SNetworkAnalyst {
                 if (points == null) {
                     points = new Point2Ds();
                 }
-                Point2Ds ps = points;
+                Point2Ds ps = new Point2Ds(points);
                 if (startPoint != null) ps.insert(0, startPoint);
                 if (endPoint != null) ps.add(endPoint);
                 paramter.setPoints(ps);

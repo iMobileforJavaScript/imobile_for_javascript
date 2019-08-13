@@ -22,6 +22,9 @@ public class EventConst {
 
     public static final String ONLINE_SERVICE_LOGIN = "com.supermap.RN.Mapcontrol.online_service_login";
     public static final String ONLINE_SERVICE_LOGOUT = "com.supermap.RN.Mapcontrol.online_service_logout";
+    public static final String IPORTAL_SERVICE_UPLOADING = "com.supermap.RN.iPortalService_uploading";
+    public static final String IPORTAL_SERVICE_UPLOADED = "com.supermap.RN.iPortalService_uploaded";
+    public static final String IPORTAL_SERVICE_DOWNLOADING = "com.supermap.RN.iPortalService_downloading";
 
     /** 消息服务 **/
     public static final String MESSAGE_SERVICE_RECEIVE = "com.supermap.RN.Mapcontrol.message_service_receive";

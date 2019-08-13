@@ -289,6 +289,7 @@ public class SIPortalService extends ReactContextBaseJavaModule {
                                         public void onResponse(Response response) {
                                             if (response.isSuccessful()) {
                                                 promise.resolve(true);
+                                                mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.IPORTAL_SERVICE_UPLOADED,true);
                                             } else {
                                                 promise.resolve(false);
                                             }
@@ -298,7 +299,7 @@ public class SIPortalService extends ReactContextBaseJavaModule {
                                         @Override
                                         public void transferred(long length, long size) {
                                             double value = (float)size / length * 100;
-                                            mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING,value);
+                                            mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.IPORTAL_SERVICE_UPLOADING,value);
                                         }
                                     });
                                 }
@@ -366,7 +367,7 @@ public class SIPortalService extends ReactContextBaseJavaModule {
                 @Override
                 public void update(long bytesRead, long contentLength, boolean done) {
                     double value = (float)bytesRead / contentLength * 100;
-                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_DOWNLOADING,value);
+                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.IPORTAL_SERVICE_DOWNLOADING,value);
                 }
             });
         } catch (Exception e){
