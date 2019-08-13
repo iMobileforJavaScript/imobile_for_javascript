@@ -30,31 +30,30 @@ RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point text:(NSStri
     @try {
         NSString* nodeTag = @"startNode";
         NSString* textTag = @"startNodeText";
-        if (startPoint) {
-            [self removeTagFromTrackingLayer:nodeTag];
-            [self removeTagFromTrackingLayer:textTag];
-            startPoint = nil;
-        }
-        if (nodeLayer) {
-            GeoStyle* style = [[GeoStyle alloc] init];
-            [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
-            [style setLineColor:[[Color alloc] initWithR:255 G:105 B:0]];
-            [style setMarkerSymbolID:3614];
+        GeoStyle* style = [[GeoStyle alloc] init];
+        [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
+        [style setLineColor:[[Color alloc] initWithR:255 G:105 B:0]];
+        [style setMarkerSymbolID:3614];
+        Point2D* tempPoint = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+        if (tempPoint) {
+            if (startPoint) {
+                [self removeTagFromTrackingLayer:nodeTag];
+                [self removeTagFromTrackingLayer:textTag];
+                startPoint = nil;
+            }
+            if (nodeLayer) {
+                startPoint = tempPoint;
+                TextStyle* textStyle = [[TextStyle alloc]init];
+                [textStyle setFontWidth:6];
+                [textStyle setFontHeight:8];
+                [textStyle setForeColor:[[Color alloc] initWithR:255 G:105 B:0]];
+                [self setText:text point:startPoint textStyle:textStyle tag:textTag];
+            }
             
-//            startNodeID = [self selectNode:point layer:nodeLayer geoStyle:style tag:nodeTag];
-            startPoint = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
-//            double x = [(NSNumber *)[dic objectForKey:@"x"] doubleValue];
-//            double y = [(NSNumber *)[dic objectForKey:@"y"] doubleValue];
-//            CGPoint p = CGPointMake(x, y);
-//            startPoint = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:p];
-            TextStyle* textStyle = [[TextStyle alloc]init];
-            [textStyle setFontWidth:6];
-            [textStyle setFontHeight:8];
-            [textStyle setForeColor:[[Color alloc] initWithR:255 G:105 B:0]];
-            [self setText:text point:startPoint textStyle:textStyle tag:textTag];
+            resolve(@(startNodeID));
+        } else {
+            resolve(@(-1));
         }
-        
-        resolve(@(startNodeID));
     } @catch (NSException *exception) {
         reject(@"SFacilityAnalyst", exception.reason, nil);
     }
@@ -65,33 +64,31 @@ RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point text:(NSString *
     @try {
         NSString* nodeTag = @"endNode";
         NSString* textTag = @"endNodeText";
-        if (endPoint) {
-            [self removeTagFromTrackingLayer:nodeTag];
-            [self removeTagFromTrackingLayer:textTag];
-            endPoint = nil;
+        GeoStyle* style = [[GeoStyle alloc] init];
+        [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
+        [style setLineColor:[[Color alloc] initWithR:105 G:255 B:0]];
+        [style setMarkerSymbolID:3614];
+        Point2D* tempPoint = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+        if (tempPoint) {
+            if (endPoint) {
+                [self removeTagFromTrackingLayer:nodeTag];
+                [self removeTagFromTrackingLayer:textTag];
+                endPoint = nil;
+            }
+            if (nodeLayer) {
+                endPoint = tempPoint;
+                TextStyle* textStyle = [[TextStyle alloc]init];
+                [textStyle setFontWidth:6];
+                [textStyle setFontHeight:8];
+                [textStyle setForeColor:[[Color alloc] initWithR:105 G:255 B:0]];
+                [self setText:text point:endPoint textStyle:textStyle tag:textTag];
+                
+            }
+            
+            resolve(@(endNodeID));
+        } else {
+            resolve(@(-1));
         }
-        if (nodeLayer) {
-            GeoStyle* style = [[GeoStyle alloc] init];
-            [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
-            [style setLineColor:[[Color alloc] initWithR:105 G:255 B:0]];
-            [style setMarkerSymbolID:3614];
-            
-//            endNodeID = [self selectNode:point layer:nodeLayer geoStyle:style tag:nodeTag];
-            endPoint = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
-//            double x = [(NSNumber *)[dic objectForKey:@"x"] doubleValue];
-//            double y = [(NSNumber *)[dic objectForKey:@"y"] doubleValue];
-//            CGPoint p = CGPointMake(x, y);
-//            endPoint = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:p];
-            
-            TextStyle* textStyle = [[TextStyle alloc]init];
-            [textStyle setFontWidth:6];
-            [textStyle setFontHeight:8];
-            [textStyle setForeColor:[[Color alloc] initWithR:105 G:255 B:0]];
-            [self setText:text point:endPoint textStyle:textStyle tag:textTag];
-            
-        }
-        
-        resolve(@(endNodeID));
     } @catch (NSException *exception) {
         reject(@"SFacilityAnalyst", exception.reason, nil);
     }
@@ -226,7 +223,11 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo setting:(
             ds = layer.dataset;
             selection = [layer getSelection];
             
-            transportationAnalyst = [self getTransportationAnalyst];
+            if (transportationAnalyst) {
+                [transportationAnalyst dispose];
+                transportationAnalyst = NULL;
+            }
+            transportationAnalyst = [[TransportationAnalyst alloc] init];
             
             setting = [SMAnalyst setTransportSetting:settingDic];
             setting.networkDataset = (DatasetVector *)ds;
@@ -254,7 +255,7 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo setting:(
 #pragma mark - 最佳路径分析
 RCT_REMAP_METHOD(findPath,findPath:(NSDictionary*)params hasLeastEdgeCount:(BOOL)hasLeastEdgeCount resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        transportationAnalyst = [self getTransportationAnalyst];
+//        transportationAnalyst = [self getTransportationAnalyst];
         if (!params) params = [[NSDictionary alloc] init];
         TransportationAnalystParameter* paramter = [SMAnalyst getTransportationAnalystParameterByDictionary:params];
         
@@ -280,7 +281,7 @@ RCT_REMAP_METHOD(findPath,findPath:(NSDictionary*)params hasLeastEdgeCount:(BOOL
         
         if (paramter.points.getCount <= 0) {
             if (!points) points = [[Point2Ds alloc] init];
-            Point2Ds* ps = points;
+            Point2Ds* ps = [[Point2Ds alloc] initWithPoint2Ds:points];
             if (startPoint) {
                 [ps insertIndex:0 Point2D:startPoint];
             }
@@ -326,7 +327,7 @@ RCT_REMAP_METHOD(findPath,findPath:(NSDictionary*)params hasLeastEdgeCount:(BOOL
 #pragma mark - 旅行商分析
 RCT_REMAP_METHOD(findTSPPath, findTSPPath:(NSDictionary*)params isEndNodeAssigned:(BOOL)isEndNodeAssigned resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        transportationAnalyst = [self getTransportationAnalyst];
+//        transportationAnalyst = [self getTransportationAnalyst];
         if (!params) params = [[NSDictionary alloc] init];
         TransportationAnalystParameter* paramter = [SMAnalyst getTransportationAnalystParameterByDictionary:params];
         
@@ -352,7 +353,7 @@ RCT_REMAP_METHOD(findTSPPath, findTSPPath:(NSDictionary*)params isEndNodeAssigne
         
         if (paramter.points.getCount <= 0) {
             if (!points) points = [[Point2Ds alloc] init];
-            Point2Ds* ps = points;
+            Point2Ds* ps = [[Point2Ds alloc] initWithPoint2Ds:points];
             if (startPoint) {
                 [ps insertIndex:0 Point2D:startPoint];
             }
