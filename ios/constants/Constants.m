@@ -27,6 +27,10 @@ NSString * const ONLINE_SERVICE_DOWNLOADING = @"com.supermap.RN.Mapcontrol.onlin
 NSString * const ONLINE_SERVICE_DOWNLOADED = @"com.supermap.RN.Mapcontrol.online_service_downloaded";
 NSString * const ONLINE_SERVICE_DOWNLOADFAILURE = @"com.supermap.RN.Mapcontrol.online_service_downloadfailure";
 
+//iportal
+NSString * const IPORTAL_SERVICE_UPLOADING = @"com.supermap.RN.iPortalService_uploading";
+NSString * const IPORTAL_SERVICE_UPLOADED = @"com.supermap.RN.iPortalService_uploaded";
+NSString * const IPORTAL_SERVICE_DOWNLOADING = @"com.supermap.RN.iPortalService_downloading";
 
 /** 消息服务 **/
 NSString * const MESSAGE_SERVICE_RECEIVE = @"com.supermap.RN.Mapcontrol.message_service_receive";

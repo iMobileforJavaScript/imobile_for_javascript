@@ -22,8 +22,8 @@ static NSString* _uploadFilePath;
 #pragma mark -- 定义宏，让该类暴露给RN层
 RCT_EXPORT_MODULE();
 - (NSArray<NSString *> *)supportedEvents{
-    return @[ONLINE_SERVICE_DOWNLOADING,
-             ONLINE_SERVICE_UPLOADING,
+    return @[IPORTAL_SERVICE_UPLOADING,
+             IPORTAL_SERVICE_UPLOADED,
              ];
 }
 
@@ -174,12 +174,13 @@ RCT_REMAP_METHOD(uploadData, uploadFrom:(NSString*)filePath As:(NSString*)fileNa
 #pragma mark ---------------------------- 上传进度
 -(void)upLoadProgress:(float)newProgress{
     float progress = newProgress * 100;
-    [self sendEventWithName:ONLINE_SERVICE_DOWNLOADING body:[NSNumber numberWithFloat:progress]];
+    [self sendEventWithName:IPORTAL_SERVICE_UPLOADING body:[NSNumber numberWithFloat:progress]];
 }
 
 #pragma mark ---------------------------- uploadData完成回调
 - (void)upLoadDataComplite:(NSDictionary *)result{
     _resolve([NSNumber numberWithBool:YES]);
+    [self sendEventWithName:IPORTAL_SERVICE_UPLOADED body:[NSNumber numberWithBool:YES]];
 }
 
 +(NSString*) convertDicToString:(NSDictionary*)dict{
