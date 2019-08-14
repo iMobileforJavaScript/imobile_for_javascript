@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "AnimationGO.h"
+
 @interface AnimationShow : AnimationGO
+
+@property(nonatomic)BOOL showState;
+@property(nonatomic)BOOL showEffect;
 
 @end

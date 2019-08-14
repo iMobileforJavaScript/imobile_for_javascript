@@ -1,40 +1,34 @@
 package com.supermap.interfaces.ar;
 
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.util.Log;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.*;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.ar.core.ArCoreApk;
+import com.supermap.RNUtils.LocationTransfer;
 import com.supermap.ar.highprecision.MeasureView;
-import com.supermap.data.CursorType;
-import com.supermap.data.Dataset;
-import com.supermap.data.DatasetType;
-import com.supermap.data.DatasetVector;
-import com.supermap.data.DatasetVectorInfo;
-import com.supermap.data.Datasets;
-import com.supermap.data.Datasource;
-import com.supermap.data.Datasources;
-import com.supermap.data.EncodeType;
-import com.supermap.data.FieldInfo;
-import com.supermap.data.FieldInfos;
-import com.supermap.data.FieldType;
-import com.supermap.data.GeoPoint;
-import com.supermap.data.Geometry;
-import com.supermap.data.Point2D;
-import com.supermap.data.Point2Ds;
-import com.supermap.data.Recordset;
-import com.supermap.data.Workspace;
+import com.supermap.ar.highprecision.OnLengthChangedListener;
+import com.supermap.data.*;
 import com.supermap.interfaces.mapping.SMap;
+import com.supermap.mapping.Layer;
 import com.supermap.mapping.MapControl;
+import com.supermap.plugin.LocationManagePlugin;
+import com.supermap.smNative.SMLayer;
+import com.supermap.smNative.collector.SMCollector;
 import com.supermap.track.HPTrack;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class SMeasureView extends ReactContextBaseJavaModule {
 
     public static final String REACT_CLASS = "SMeasureView";
 
     private static MeasureView mMeasureView = null;
+
+    private String mDatasourceAlias, mDatasetName = null;
 
     @Override
     public String getName() {
@@ -48,6 +42,13 @@ public class SMeasureView extends ReactContextBaseJavaModule {
     public static void setInstance(MeasureView measureView) {
         Log.d(REACT_CLASS, "----------------SMeasureView--setInstance--------RN--------");
         mMeasureView = measureView;
+
+        LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+        Point2D point2D = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
+        LocationTransfer.latitudeAndLongitudeToMapCoord(point2D);
+        Log.d(REACT_CLASS, "----------------SMeasureView--setInstance--------RN--------point2D:" +
+                "X: " +  point2D.getX() + ", Y: " + point2D.getY());
+        mMeasureView.setFixedPoint(point2D);
 
         mMeasureView.enableSupport(true);
     }
@@ -150,9 +151,24 @@ public class SMeasureView extends ReactContextBaseJavaModule {
         }
     }
 
+    //初始化
     @ReactMethod
-    public void initMeasureCollector(String path, Promise promise) {
+    public void initMeasureCollector(String datasourceAlias, String datasetName, Promise promise) {
         try {
+            Log.d(REACT_CLASS, "----------------SMeasureView--initMeasureCollector--------RN--------" +
+                    "datasourceAlias: " +  datasourceAlias + ", datasetName: " + datasetName );
+            mDatasourceAlias = datasourceAlias;
+            mDatasetName = datasetName;
+
+            createDataset(datasourceAlias, datasetName);
+
+            if (SMLayer.findLayerByDatasetName(datasetName) == null) {
+                Layer layer = SMLayer.addLayerByName(datasourceAlias, datasetName);
+                if (layer != null) {
+                    layer.setSelectable(true);
+                }
+            }
+
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -163,42 +179,101 @@ public class SMeasureView extends ReactContextBaseJavaModule {
      * 保存数据
      */
     @ReactMethod
-    public void saveDataset(String datasourceAlias, String datasetName, Promise promise) {
+    public void saveDataset(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------SMeasureView--saveDataset--------RN--------");
             if (mMeasureView != null) {
-                createDataset(datasourceAlias, datasetName);
-
                 DatasetVector datasetVector = null;
                 MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
                 Workspace workspace = mapControl.getMap().getWorkspace();
-                Datasource datasource = workspace.getDatasources().get(datasourceAlias);
-                datasetVector = (DatasetVector) datasource.getDatasets().get(datasetName);
+                Datasource datasource = workspace.getDatasources().get(mDatasourceAlias);
+                datasetVector = (DatasetVector) datasource.getDatasets().get(mDatasetName);
 
+                //风格
+                GeoStyle geoStyle = new GeoStyle();
+
+                Point2Ds fixedTotalPoints = mMeasureView.getFixedTotalPoints();
                 Point2Ds totalPoints = mMeasureView.getTotalPoints();
-                Recordset recordset = datasetVector.getRecordset(false, CursorType.STATIC);
+                Recordset recordset = datasetVector.getRecordset(false, CursorType.DYNAMIC);//动态指针
                 if (recordset != null) {
-                    for (int i = 0; i < totalPoints.getCount(); i++) {
-//                    POIInfo poiInfo = new POIInfo.Builder()
-//                            .ID(currentGeometryID)
-//                            .name(info)
-//                            .type(type)
-//                            .person("人员编号")
-//                            .time(getCurrentTime())
-//                            .address("酒仙桥北路甲IT电子产业园附近")
-//                            .picpath(picFolderPath)
-//                            .locationX(currentPoint2D.getX())
-//                            .locationY(currentPoint2D.getY())
-//                            .notes("")
-//                            .build();
-                        Point2D item = totalPoints.getItem(i);
-                        recordset.addNew(new GeoPoint(item.getX(), item.getY()));
+                    //移动指针到最后
+                    recordset.moveLast();
+                    recordset.edit();//可编辑
+
+                    GeoLine geoLine = new GeoLine();
+                    geoLine.addPart(fixedTotalPoints);
+                    geoStyle.setLineColor(new Color(70,128,223));
+                    geoStyle.setLineWidth(2);
+                    geoLine.setStyle(geoStyle);
+                    //移动指针到下一位
+                    recordset.moveNext();
+                    //新增线对象
+                    recordset.addNew(geoLine);
+
+                    FieldInfos fieldInfos = recordset.getFieldInfos();
+                    if (fieldInfos.indexOf("ModifiedDate") != -1) {
+                        String str = null;
+                        Object ob = recordset.getFieldValue("ModifiedDate");
+                        if (ob != null) {
+                            str = ob.toString();
+                        }
+                        if (!getCurrentTime().equals(str)) {
+                            recordset.setFieldValue("ModifiedDate", getCurrentTime());
+                        }
                     }
 
+                    for (int i = 0; i < fixedTotalPoints.getCount(); i++) {
+                        //移动指针到下一位
+                        recordset.moveNext();
+
+                        Point2D item = fixedTotalPoints.getItem(i);
+                        GeoPoint geoPoint = new GeoPoint(item.getX(), item.getY());
+                        geoStyle.setMarkerSize(new Size2D(12,12));
+                        geoStyle.setLineColor(new Color(255, 0, 0));
+                        geoPoint.setStyle(geoStyle);
+                        //新增点对象
+                        recordset.addNew(geoPoint);
+
+                        //修改属性
+                        double dlocation = 0;
+                        String str = null;
+                        Object ob = null;
+
+                        if (fieldInfos.indexOf("OriginalX") != -1) {
+                            ob = recordset.getFieldValue("OriginalX");
+                            if (ob != null) {
+                                dlocation = Double.parseDouble(ob.toString());
+                            }
+                            if (totalPoints.getItem(i).getX() != dlocation) {
+                                recordset.setFieldValue("OriginalX", totalPoints.getItem(i).getX());
+                            }
+                        }
+
+                        if (fieldInfos.indexOf("OriginalY") != -1) {
+                            ob = recordset.getFieldValue("OriginalY");
+                            if (ob != null) {
+                                dlocation = Double.parseDouble(ob.toString());
+                            }
+                            if (totalPoints.getItem(i).getY() != dlocation) {
+                                recordset.setFieldValue("OriginalY", totalPoints.getItem(i).getY());
+                            }
+                        }
+
+                        if (fieldInfos.indexOf("ModifiedDate") != -1) {
+                            ob = recordset.getFieldValue("ModifiedDate");
+                            if (ob != null) {
+                                str = ob.toString();
+                            }
+                            if (!getCurrentTime().equals(str)) {
+                                recordset.setFieldValue("ModifiedDate", getCurrentTime());
+                            }
+                        }
+                    }
+
+                    //保存更新,并释放资源
                     recordset.update();
                     recordset.close();
                     recordset.dispose();
-                    mMeasureView.cleanAll();
                 }
             }
             promise.resolve(true);
@@ -215,6 +290,7 @@ public class SMeasureView extends ReactContextBaseJavaModule {
 
         Datasets datasets = datasource.getDatasets();
         if (datasets.contains(datasetName)) {
+            checkPOIFieldInfos((DatasetVector)datasets.get(datasetName));
             return;
         }
 
@@ -225,16 +301,16 @@ public class SMeasureView extends ReactContextBaseJavaModule {
         DatasetVector datasetVector = datasets.create(datasetVectorInfo);
 
         //创建数据集时创建好字段
-        addFieldInfo(datasetVector, "NAME", FieldType.TEXT, false, "", 255);
-        addFieldInfo(datasetVector, "TYPE", FieldType.TEXT, false, "", 255);
-        addFieldInfo(datasetVector, "PERSON", FieldType.TEXT, false, "", 255);
-        addFieldInfo(datasetVector, "TIME", FieldType.TEXT, false, "", 255);
-        addFieldInfo(datasetVector, "ADDRESS", FieldType.TEXT, false, "", 255);
-        addFieldInfo(datasetVector, "PICPATH", FieldType.TEXT, false, "", 255);
-        addFieldInfo(datasetVector, "NOTES", FieldType.TEXT, false, "", 255);
+        addFieldInfo(datasetVector, "MediaFilePaths", FieldType.TEXT, false, "", 800);
+        addFieldInfo(datasetVector, "HttpAddress", FieldType.TEXT, false, "", 255);
+        addFieldInfo(datasetVector, "Description", FieldType.TEXT, false, "", 255);
+        addFieldInfo(datasetVector, "ModifiedDate", FieldType.TEXT, false, "", 255);
+        addFieldInfo(datasetVector, "MediaName", FieldType.TEXT, false, "", 255);
 
-        addFieldInfo(datasetVector, "LOCATIONX", FieldType.DOUBLE, false, "", 25);
-        addFieldInfo(datasetVector, "LOCATIONY", FieldType.DOUBLE, false, "", 25);
+        addFieldInfo(datasetVector, "OriginalX", FieldType.DOUBLE, false, "", 25);
+        addFieldInfo(datasetVector, "OriginalY", FieldType.DOUBLE, false, "", 25);
+
+        datasetVector.setPrjCoordSys(new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE));
 
         datasetVectorInfo.dispose();
         datasetVector.close();
@@ -257,6 +333,18 @@ public class SMeasureView extends ReactContextBaseJavaModule {
 
     // 修改数据集中指定ID的属性
     private void updatePOIInfo(String UDBName, String DatasetName, POIInfo info) {
+        //                    POIInfo poiInfo = new POIInfo.Builder()
+//                            .ID(currentGeometryID)
+//                            .name(info)
+//                            .type(type)
+//                            .person("人员编号")
+//                            .time(getCurrentTime())
+//                            .address("酒仙桥北路甲IT电子产业园附近")
+//                            .picpath(picFolderPath)
+//                            .locationX(currentPoint2D.getX())
+//                            .locationY(currentPoint2D.getY())
+//                            .notes("")
+//                            .build();
         DatasetVector datasetVector = null;
         MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
         if (UDBName != null && DatasetName != null) {
@@ -394,42 +482,44 @@ public class SMeasureView extends ReactContextBaseJavaModule {
     private void checkPOIFieldInfos(DatasetVector datasetVector) {
         FieldInfos fieldInfos = datasetVector.getFieldInfos();
 
-
-        if (fieldInfos.indexOf("NAME") == -1) {
-            addFieldInfo(datasetVector, "NAME", FieldType.TEXT, false, "", 255);
+        if (fieldInfos.indexOf("MediaFilePaths") == -1) {
+            addFieldInfo(datasetVector, "MediaFilePaths", FieldType.TEXT, false, "", 800);
         }
 
-        if (fieldInfos.indexOf("TYPE") == -1) {
-            addFieldInfo(datasetVector, "TYPE", FieldType.TEXT, false, "", 255);
+        if (fieldInfos.indexOf("HttpAddress") == -1) {
+            addFieldInfo(datasetVector, "HttpAddress", FieldType.TEXT, false, "", 255);
         }
 
-        if (fieldInfos.indexOf("PERSON") == -1) {
-            addFieldInfo(datasetVector, "PERSON", FieldType.TEXT, false, "", 255);
+        if (fieldInfos.indexOf("Description") == -1) {
+            addFieldInfo(datasetVector, "Description", FieldType.TEXT, false, "", 255);
         }
 
-        if (fieldInfos.indexOf("TIME") == -1) {
-            addFieldInfo(datasetVector, "TIME", FieldType.TEXT, false, "", 255);
+        if (fieldInfos.indexOf("ModifiedDate") == -1) {
+            addFieldInfo(datasetVector, "ModifiedDate", FieldType.TEXT, false, "", 255);
         }
 
-        if (fieldInfos.indexOf("ADDRESS") == -1) {
-            addFieldInfo(datasetVector, "ADDRESS", FieldType.TEXT, false, "", 255);
+        if (fieldInfos.indexOf("MediaName") == -1) {
+            addFieldInfo(datasetVector, "MediaName", FieldType.TEXT, false, "", 255);
         }
 
-        if (fieldInfos.indexOf("PICPATH") == -1) {
-            addFieldInfo(datasetVector, "PICPATH", FieldType.TEXT, false, "", 255);
+        if (fieldInfos.indexOf("OriginalX") == -1) {
+            addFieldInfo(datasetVector, "OriginalX", FieldType.DOUBLE, false, "", 25);
         }
-
-        if (fieldInfos.indexOf("NOTES") == -1) {
-            addFieldInfo(datasetVector, "NOTES", FieldType.TEXT, false, "", 255);
-        }
-
-        if (fieldInfos.indexOf("LOCATIONX") == -1) {
-            addFieldInfo(datasetVector, "LOCATIONX", FieldType.DOUBLE, false, "", 25);
-        }
-        if (fieldInfos.indexOf("LOCATIONY") == -1) {
-            addFieldInfo(datasetVector, "LOCATIONY", FieldType.DOUBLE, false, "", 25);
+        if (fieldInfos.indexOf("OriginalY") == -1) {
+            addFieldInfo(datasetVector, "OriginalY", FieldType.DOUBLE, false, "", 25);
         }
     }
 
+    private String getCurrentTime() {
+        //得到long类型当前时间
+        long l = System.currentTimeMillis();
+        //new日期对
+        Date date = new Date(l);
+        //转换提日期输出格式
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_ms", Locale.CHINA);
+
+        return dateFormat.format(date);
+    }
 
 }
