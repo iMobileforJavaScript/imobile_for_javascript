@@ -49,9 +49,17 @@ isSupportedARCore = () => {
   }
 }
 
-saveDataset = (datasourceName, datasetName) => {
+saveDataset = () => {
   try {
-    return SMeasureView.saveDataset(datasourceName, datasetName)
+    return SMeasureView.saveDataset()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+initMeasureCollector = (datasourceName, datasetName) => {
+  try {
+    return SMeasureView.initMeasureCollector(datasourceName, datasetName)
   } catch (error) {
     console.error(error)
   }
@@ -64,4 +72,5 @@ export default {
   setEnableSupport,
   isSupportedARCore,
   saveDataset,
+  initMeasureCollector,
 }

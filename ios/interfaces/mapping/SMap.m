@@ -11,6 +11,7 @@
 #import "SuperMap/AnimationManager.h"
 #import "SuperMap/AnimationGroup.h"
 #import "SuperMap/AnimationGO.h"
+#import "SuperMap/GeoGraphicObject.h"
 
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
@@ -2940,6 +2941,34 @@ RCT_REMAP_METHOD(animationSave,animationSave:(NSString*) savePath resolver:(RCTP
         resolve(@(result));
     } @catch (NSException *exception) {
         reject(@"animationSave", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取标号对象type
+RCT_REMAP_METHOD(getGeometryTypeById,getGeometryTypeById:(NSString*) layerName geoId:(int)geoId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        int type=-1;
+        Layer* layer=[mapControl.map.layers getLayerWithName:layerName];
+        if(layer){
+            DatasetVector* dataset=(DatasetVector*)[mapControl.map.layers getLayerWithName:layerName].dataset;
+            QueryParameter* queryParameter=[[QueryParameter alloc] init];
+            [queryParameter setQueryIDs:[[NSArray alloc]initWithObjects:@(geoId), nil]];
+            [queryParameter setQueryType:IDS];
+            Recordset* recordset=[dataset query:queryParameter];
+            Geometry* geometry=[recordset geometry];
+            if(geometry){
+                GeoGraphicObject* geoGraphicObject=(GeoGraphicObject*)geometry;
+                GeometryType geoType=[geometry getType];
+                type=geoType;
+            }
+        }
+        resolve(@(type));
+    } @catch (NSException *exception) {
+        reject(@"getGeometryTypeById", exception.reason, nil);
     }
 }
 

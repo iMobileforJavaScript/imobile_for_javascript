@@ -1576,7 +1576,16 @@ export default (function () {
     }
   }
   
-
+  /**
+   * 保存态势推演动画
+   */
+  function getGeometryTypeById(layerName,geoId){
+    try{
+      return SMap.getGeometryTypeById(layerName,geoId)
+    } catch (e){
+      console.error(e)
+    }
+  }
   
 
   /************************************** 地图编辑历史操作 ****************************************/
@@ -1941,6 +1950,7 @@ export default (function () {
     animationClose,
     createAnimationGo,
     animationSave,
+    getGeometryTypeById,
     undo,
     redo,
     removeHistory,
