@@ -465,4 +465,58 @@
     
     return info;
 }
+
++ (InterpolationParameter *)getInterpolationParameter:(NSDictionary *)data {
+    InterpolationParameter* parameter = nil;
+//    if ([data objectForKey:@"type"]) info.name = [data objectForKey:@"name"];
+    if ([data objectForKey:@"type"]) {
+        NSNumber* type = [data objectForKey:@"type"];
+        if (type.intValue == IAT_IDW) {
+            parameter = [[InterpolationIDWParameter alloc] init];
+        } else if (type.intValue == IAT_RBF) {
+            parameter = [[InterpolationRBFParameter alloc] init];
+        } else if (type.intValue == IAT_DENSITY) {
+            parameter = [[InterpolationDensityParameter alloc] init];
+        } else if (type.intValue == IAT_KRIGING || type.intValue == IAT_SimpleKRIGING || type.intValue == IAT_UniversalKRIGING) {
+            parameter = [[InterpolationKrigingParameter alloc] init];
+        }
+    }
+    if (parameter) {
+        if ([data objectForKey:@"resolution"]) {
+            NSNumber* resolution = [data objectForKey:@"resolution"];
+            parameter.resolution = resolution.doubleValue;
+        }
+        if ([data objectForKey:@"searchMode"]) {
+            NSNumber* searchMode = [data objectForKey:@"searchMode"];
+            parameter.searchMode = searchMode.intValue;
+        }
+        if ([data objectForKey:@"searchRadius"]) {
+            NSNumber* searchRadius = [data objectForKey:@"searchRadius"];
+            parameter.searchRadius = searchRadius.doubleValue;
+        }
+        if ([data objectForKey:@"expectedCount"]) {
+            NSNumber* expectedCount = [data objectForKey:@"expectedCount"];
+            parameter.expectedCount = expectedCount.intValue;
+        }
+        if ([data objectForKey:@"bounds"]) {
+            NSDictionary* bounds = [data objectForKey:@"bounds"];
+            NSNumber* left = [bounds objectForKey:@"left"];
+            NSNumber* bottom = [bounds objectForKey:@"bottom"];
+            NSNumber* right = [bounds objectForKey:@"right"];
+            NSNumber* top = [bounds objectForKey:@"top"];
+            Rectangle2D* rectangle = [[Rectangle2D alloc] initWith:left.doubleValue bottom:bottom.doubleValue right:right.doubleValue top:top.doubleValue];
+            parameter.bounds = rectangle;
+        }
+        if ([data objectForKey:@"maxPointCountForInterpolation"]) {
+            NSNumber* maxPointCountForInterpolation = [data objectForKey:@"maxPointCountForInterpolation"];
+            parameter.maxPointCountForInterpolation = maxPointCountForInterpolation.intValue;
+        }
+        if ([data objectForKey:@"maxPointCountInNode"]) {
+            NSNumber* maxPointCountInNode = [data objectForKey:@"maxPointCountInNode"];
+            parameter.maxPointCountInNode = maxPointCountInNode.intValue;
+        }
+    }
+    
+    return parameter;
+}
 @end

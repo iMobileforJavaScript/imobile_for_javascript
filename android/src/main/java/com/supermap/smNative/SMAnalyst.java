@@ -11,8 +11,15 @@ import com.supermap.analyst.networkanalyst.TransportationAnalystParameter;
 import com.supermap.analyst.networkanalyst.TransportationAnalystSetting;
 import com.supermap.analyst.networkanalyst.WeightFieldInfo;
 import com.supermap.analyst.networkanalyst.WeightFieldInfos;
+import com.supermap.analyst.spatialanalyst.InterpolationAlgorithmType;
+import com.supermap.analyst.spatialanalyst.InterpolationDensityParameter;
+import com.supermap.analyst.spatialanalyst.InterpolationIDWParameter;
+import com.supermap.analyst.spatialanalyst.InterpolationKrigingParameter;
+import com.supermap.analyst.spatialanalyst.InterpolationParameter;
+import com.supermap.analyst.spatialanalyst.InterpolationRBFParameter;
 import com.supermap.analyst.spatialanalyst.OverlayAnalyst;
 import com.supermap.analyst.spatialanalyst.OverlayAnalystParameter;
+import com.supermap.analyst.spatialanalyst.SearchMode;
 import com.supermap.data.Color;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetType;
@@ -22,10 +29,12 @@ import com.supermap.data.Datasource;
 import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.Datasources;
 import com.supermap.data.EncodeType;
+import com.supermap.data.Enum;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
 import com.supermap.data.QueryParameter;
+import com.supermap.data.Rectangle2D;
 import com.supermap.data.Size2D;
 import com.supermap.data.Workspace;
 import com.supermap.interfaces.mapping.SMap;
@@ -514,6 +523,66 @@ public class SMAnalyst {
         if (data.hasKey("isStopsReturn")) parameter.setStopIndexesReturn(data.getBoolean("isStopsReturn"));
         if (data.hasKey("turnWeightField")) parameter.setTurnWeightField(data.getString("turnWeightField"));
         if (data.hasKey("weightName")) parameter.setWeightName(data.getString("weightName"));
+
+        return parameter;
+    }
+
+    public static InterpolationParameter getInterpolationParameter(ReadableMap data) {
+        InterpolationParameter parameter = null;
+
+        if (data.hasKey("type")) {
+            int type = data.getInt("type");
+            if (type == InterpolationAlgorithmType.IDW.value()) {
+                parameter = new InterpolationIDWParameter();
+            } else if (type == InterpolationAlgorithmType.RBF.value()) {
+                parameter = new InterpolationRBFParameter();
+            } else if (type == InterpolationAlgorithmType.DENSITY.value()) {
+                parameter = new InterpolationDensityParameter();
+            } else if (
+                    type == InterpolationAlgorithmType.KRIGING.value() ||
+                    type == InterpolationAlgorithmType.SimpleKRIGING.value() ||
+                    type == InterpolationAlgorithmType.UniversalKRIGING.value()
+                    ) {
+                parameter = new InterpolationKrigingParameter();
+            }
+        }
+
+        if (parameter != null) {
+            if (data.hasKey("resolution")) {
+                double resolution = data.getDouble("resolution");
+                parameter.setResolution(resolution);
+            }
+            if (data.hasKey("searchMode")) {
+                int searchMode = data.getInt("searchMode");
+                SearchMode mode = (SearchMode)Enum.parse(SearchMode.class, searchMode);
+                parameter.setSearchMode(mode);
+            }
+            if (data.hasKey("searchRadius")) {
+                double searchRadius = data.getDouble("searchRadius");
+                parameter.setSearchRadius(searchRadius);
+            }
+            if (data.hasKey("expectedCount")) {
+                int expectedCount = data.getInt("expectedCount");
+                parameter.setExpectedCount(expectedCount);
+            }
+
+            if (data.hasKey("bounds")) {
+                ReadableMap bounds = data.getMap("bounds");
+                Rectangle2D rectangle2D = new Rectangle2D(
+                        bounds.getDouble("left"), bounds.getDouble("bottom"),
+                        bounds.getDouble("right"), bounds.getDouble("top"));
+                parameter.setBounds(rectangle2D);
+            }
+
+            if (data.hasKey("maxPointCountForInterpolation")) {
+                int maxPointCountForInterpolation = data.getInt("maxPointCountForInterpolation");
+                parameter.setMaxPointCountForInterpolation(maxPointCountForInterpolation);
+            }
+            if (data.hasKey("maxPointCountInNode")) {
+                int maxPointCountInNode = data.getInt("maxPointCountInNode");
+                parameter.setMaxPointCountInNode(maxPointCountInNode);
+            }
+        }
 
         return parameter;
     }

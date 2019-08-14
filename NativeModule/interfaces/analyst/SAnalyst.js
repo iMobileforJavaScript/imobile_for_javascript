@@ -169,6 +169,11 @@ async function thiessenAnalyst (sourceData = {}, resultData = {}, option = {}) {
   return Analyst.thiessenAnalyst(sourceData, resultData, option)
 }
 
+/*********************************************** 插值分析 *************************************************/
+async function interpolate (sourceData = {}, resultData = {}, paramter = {}, field = '', scale = 1, pixelFormat) {
+  return Analyst.interpolate(sourceData, resultData, paramter, field, scale, pixelFormat)
+}
+
 export default {
   // 缓冲分析
   createBuffer,
@@ -190,4 +195,7 @@ export default {
   
   // 临近分析
   thiessenAnalyst,
+  
+  // 插值分析
+  interpolate,
 }
