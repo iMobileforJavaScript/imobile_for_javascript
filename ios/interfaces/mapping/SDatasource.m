@@ -251,6 +251,29 @@ RCT_REMAP_METHOD(getDatasetsByDatasource, getDatasetsByDatasourceWithResolver:(N
     }
 }
 
+#pragma mark 新建数据集
+RCT_REMAP_METHOD(createDataset, createDatasetIn:(NSString*)datasourceAlias dataset:(NSString *)datasetName type:(int) type resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        Datasets* datasets = [datasources getAlias:datasourceAlias].datasets;
+        BOOL hasDataset = [datasets contain:datasetName];
+        DatasetVector* datasetVector;
+        if(hasDataset){
+            resolve([NSNumber numberWithBool:NO]);
+        } else {
+            DatasetVectorInfo* datasetvectorInfo = [[DatasetVectorInfo alloc] init];
+            datasetvectorInfo.datasetType = type;
+            datasetvectorInfo.name = datasetName;
+            datasetVector = [datasets create:datasetvectorInfo];
+            [datasetvectorInfo dispose];
+            resolve([NSNumber numberWithBool:YES]);
+        }
+    } @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+
 //指定数据集保存为文件
 RCT_REMAP_METHOD(getDatasetToGeoJson, getDatasetBydatasourceAlias:(NSString*)datasourceAlias dataset:(NSString *)datasetName to:(NSString *)path resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try {
