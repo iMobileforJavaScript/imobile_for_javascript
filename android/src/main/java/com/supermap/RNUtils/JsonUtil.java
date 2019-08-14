@@ -3,6 +3,8 @@ package com.supermap.RNUtils;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.data.Enum;
@@ -82,6 +84,45 @@ public class JsonUtil {
         return r;
     }
 
+    public static WritableArray getFieldInfos(Recordset recordset, ReadableMap filter) {
+        FieldInfos fieldInfos = recordset.getFieldInfos();
+        WritableArray fields = Arguments.createArray();
+
+        ReadableArray typeFilter = null;
+        if (filter != null && filter.hasKey("typeFilter")) {
+            typeFilter = filter.getArray("typeFilter");
+        }
+
+        for (int i = 0; i < fieldInfos.getCount(); i++) {
+            int type = fieldInfos.get(i).getType().value();
+            boolean isAdd = false;
+            if (typeFilter != null && typeFilter.size() > 0) {
+                for (int j = 0; j < typeFilter.size(); j ++) {
+                    if (type == typeFilter.getInt(j)) {
+                        isAdd = true;
+                        break;
+                    }
+                }
+            } else {
+                isAdd = true;
+            }
+
+            if (isAdd) {
+                WritableMap subMap = Arguments.createMap();
+                subMap.putString("caption", fieldInfos.get(i).getCaption());
+                subMap.putString("defaultValue", fieldInfos.get(i).getDefaultValue());
+                subMap.putInt("type", type);
+                subMap.putString("name", fieldInfos.get(i).getName());
+                subMap.putInt("maxLength", fieldInfos.get(i).getMaxLength());
+                subMap.putBoolean("isRequired", fieldInfos.get(i).isRequired());
+                subMap.putBoolean("isSystemField", fieldInfos.get(i).isSystemField());
+
+                fields.pushMap(subMap);
+            }
+        }
+        return fields;
+    }
+
     public static WritableMap recordsetToMap(Recordset recordset, int page, int size) {
         return recordsetToMap(recordset, page, size, null);
     }
@@ -97,19 +138,22 @@ public class JsonUtil {
     public static WritableMap recordsetToMap(Recordset recordset, int page, int size, String filterKey) {
         //获取字段信息
         FieldInfos fieldInfos = recordset.getFieldInfos();
-        Map<String, Map<String, Object>> fields = new HashMap<>();
-        for (int i = 0; i < fieldInfos.getCount(); i++) {
-            Map<String, Object> subMap = new HashMap<>();
-            subMap.put("caption", fieldInfos.get(i).getCaption());
-            subMap.put("defaultValue", fieldInfos.get(i).getDefaultValue());
-            subMap.put("type", fieldInfos.get(i).getType());
-            subMap.put("name", fieldInfos.get(i).getName());
-            subMap.put("maxLength", fieldInfos.get(i).getMaxLength());
-            subMap.put("isRequired", fieldInfos.get(i).isRequired());
-            subMap.put("isSystemField", fieldInfos.get(i).isSystemField());
+//        Map<String, Map<String, Object>> fields = new HashMap<>();
+//        for (int i = 0; i < fieldInfos.getCount(); i++) {
+//            Map<String, Object> subMap = new HashMap<>();
+//            subMap.put("caption", fieldInfos.get(i).getCaption());
+//            subMap.put("defaultValue", fieldInfos.get(i).getDefaultValue());
+//            subMap.put("type", fieldInfos.get(i).getType());
+//            subMap.put("name", fieldInfos.get(i).getName());
+//            subMap.put("maxLength", fieldInfos.get(i).getMaxLength());
+//            subMap.put("isRequired", fieldInfos.get(i).isRequired());
+//            subMap.put("isSystemField", fieldInfos.get(i).isSystemField());
+//
+//            fields.put(fieldInfos.get(i).getName(), subMap);
+//        }
 
-            fields.put(fieldInfos.get(i).getName(), subMap);
-        }
+        WritableArray fields = getFieldInfos(recordset, null);
+
         //JS数组，存放
         WritableArray recordArray = Arguments.createArray();
         WritableMap map = Arguments.createMap();
@@ -144,7 +188,7 @@ public class JsonUtil {
         return map;
     }
 
-    private static WritableArray parseRecordset(Recordset recordset, Map<String, Map<String, Object>> fields) {
+    private static WritableArray parseRecordset(Recordset recordset, WritableArray fields) {
         return parseRecordset(recordset, fields, null);
     }
 
@@ -155,22 +199,50 @@ public class JsonUtil {
      * @param fields    该记录中的所有属性
      * @return
      */
-    private static WritableArray parseRecordset(Recordset recordset, Map<String, Map<String, Object>> fields, String filterKey) {
+    private static WritableArray parseRecordset(Recordset recordset, WritableArray fields, String filterKey) {
 //        WritableMap map = Arguments.createMap();
         WritableArray array = Arguments.createArray();
         ArrayList<WritableMap> list = new ArrayList();
         
         boolean isMatching = false;
 
-        for (Map.Entry<String,  Map<String, Object>> field : fields.entrySet()) {
+//        for (Map.Entry<String,  Map<String, Object>> field : fields.entrySet()) {
+        for (int i = 0; i < fields.size(); i++) {
             WritableMap keyMap = Arguments.createMap();
             WritableMap itemWMap = Arguments.createMap();
-            String name = field.getKey();
-            Map<String, Object> fieldInfo = field.getValue();
+//            String name = field.getKey();
+//            Map<String, Object> fieldInfo = field.getValue();
 
-            for (Map.Entry<String, Object> item : fieldInfo.entrySet()) {
-                String key = item.getKey();
-                Object v = item.getValue();
+            ReadableMap field = fields.getMap(i);
+            String name = field.getString("name");
+            ReadableMapKeySetIterator iterator = field.keySetIterator();
+
+//            for (Map.Entry<String, Object> item : fieldInfo.entrySet()) {
+            while (iterator.hasNextKey()) {
+                String key = iterator.nextKey();
+                ReadableType readableType = field.getType(key);
+                Object v;
+                switch (readableType) {
+                    case Boolean:
+                        v = field.getBoolean(key);
+                        break;
+                    case String:
+                        v = field.getString(key);
+                        break;
+                    case Number:
+                        v = field.getDouble(key);
+                        break;
+//                    case Map:
+//                        v = field.getMap(key);
+//                        break;
+//                    case Array:
+//                        v = field.getArray(key);
+//                        break;
+                    case Null:
+                    default:
+                        v = "";
+                        break;
+                }
 
                 if (v == null) {
                     itemWMap.putString(key, "");
@@ -188,36 +260,37 @@ public class JsonUtil {
                         itemWMap.putBoolean(key, (Boolean) v);
                         break;
                     case "maxLength":
-                        itemWMap.putInt("maxLength", (int) v);
+                        itemWMap.putInt("maxLength", ((Double) v).intValue());
                         break;
                     case "type":
-                        FieldType type = (FieldType) v;
-                        itemWMap.putInt(key, type.value());
+//                        FieldType type = (FieldType) v;
+                        int type = ((Double) v).intValue();
+                        itemWMap.putInt(key, type);
 
                         Object fieldValue = recordset.getFieldValue(name);
 
                         if (fieldValue == null) {
                             keyMap.putString("value", "");
-                        } else if (type == FieldType.DOUBLE) {
+                        } else if (type == FieldType.DOUBLE.value()) {
                             Double d = (Double) fieldValue;
                             keyMap.putDouble("value", d);
-                        } else if (type == FieldType.SINGLE) {
+                        } else if (type == FieldType.SINGLE.value()) {
                             BigDecimal b = new BigDecimal(fieldValue.toString());
                             Double d = b.doubleValue();
                             keyMap.putDouble("value", d);
-                        } else if (type == FieldType.CHAR ||
-                                type == FieldType.TEXT ||
-                                type == FieldType.WTEXT ||
-                                type == FieldType.DATETIME
+                        } else if (type == FieldType.CHAR.value() ||
+                                type == FieldType.TEXT.value() ||
+                                type == FieldType.WTEXT.value() ||
+                                type == FieldType.DATETIME.value()
                                 ) {
                             keyMap.putString("value", fieldValue.toString());
-                        } else if (type == FieldType.INT16) {
+                        } else if (type == FieldType.INT16.value()) {
                             keyMap.putInt("value", ((Short) fieldValue).intValue());
-                        } else if (type == FieldType.INT32) {
+                        } else if (type == FieldType.INT32.value()) {
                             keyMap.putInt("value", (int) fieldValue);
-                        } else if (type == FieldType.INT64) {
+                        } else if (type == FieldType.INT64.value()) {
                             keyMap.putInt("value", ((Long) fieldValue).intValue());
-                        } else if (type == FieldType.LONGBINARY || type == FieldType.BYTE) {
+                        } else if (type == FieldType.LONGBINARY.value() || type == FieldType.BYTE.value()) {
                             keyMap.putString("value", fieldValue.toString());
                         } else {
                             keyMap.putBoolean("value", (Boolean) fieldValue);

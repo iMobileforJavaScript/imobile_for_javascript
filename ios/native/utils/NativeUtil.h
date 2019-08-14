@@ -15,6 +15,7 @@
 @interface NativeUtil : NSObject
 +(UIColor*)uiColorTransFromArr:(NSArray<NSNumber*>*)arr;
 +(Color*)smColorTransFromArr:(NSArray<NSNumber*>*)arr;
++(NSMutableArray *)getFieldInfos:(Recordset*)recordset filter:(NSDictionary *)filter;
 +(NSMutableDictionary *)recordsetToDictionary:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size;
 +(NSMutableDictionary *)recordsetToDictionary:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size filterKey:(NSString *)filterKey;
 +(NSMutableArray *)parseRecordset:(Recordset *)recordset fieldsDics:(NSMutableDictionary*)fieldsDics filterKey:(NSString *)filterKey;

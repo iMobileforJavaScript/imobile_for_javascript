@@ -167,6 +167,25 @@ function getDatasetToGeoJson(datasourceAlias, datasetName, path){
   }
 }
 
+/**
+ * 获取数据集字段信息
+ * @param data
+ * @param filter
+ * @param autoOpen
+ * @returns {*}
+ */
+function getFieldInfos(data, filter, autoOpen = true) {
+  try {
+    if (!data) {
+      console.warn('data is null')
+      return
+    }
+    return SDatasource.getFieldInfos(data, filter, autoOpen)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 function importDatasetFromGeoJson(datasourceAlias, datasetName, path, DatasetType){
   try {
     return SDatasource.importDatasetFromGeoJson(datasourceAlias, datasetName, path, DatasetType)
@@ -189,5 +208,6 @@ export {
   getDatasetsByDatasource,
   getDatasetsByExternalDatasource,
   getDatasetToGeoJson,
+  getFieldInfos,
   importDatasetFromGeoJson,
 }
