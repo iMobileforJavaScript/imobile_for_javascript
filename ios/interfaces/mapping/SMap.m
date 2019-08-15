@@ -12,6 +12,13 @@
 #import "SuperMap/AnimationGroup.h"
 #import "SuperMap/AnimationGO.h"
 #import "SuperMap/GeoGraphicObject.h"
+#import "SuperMap/AnimationBlink.h"
+#import "SuperMap/AnimationAttribute.h"
+#import "SuperMap/AnimationShow.h"
+#import "SuperMap/AnimationRotate.h"
+#import "SuperMap/AnimationScale.h"
+#import "SuperMap/AnimationGrow.h"
+#import "SuperMap/Point3D.h"
 
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
@@ -2857,6 +2864,46 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
         }
         AnimationGO* animationGo=[AnimationManager.getInstance createAnimation:type];
         
+        if(type==WayAnimation){
+            
+        }else if(type==BlinkAnimation){
+            AnimationBlink* animationBlink=(AnimationBlink*)animationGo;
+            [animationBlink setBlinkNumberofTimes:20];
+            [animationBlink setBlinkStyle:1];
+            [animationBlink setBlinkAnimationReplaceStyle:1];
+            [animationBlink setBlinkAnimationReplaceColor:[[Color alloc] initWithR:0 G:0 B:255]];
+            animationGo=(AnimationGO*)animationBlink;
+        }else if(type==AttribAnimation){
+            AnimationAttribute* animationAttribute=(AnimationAttribute*)animationGo;
+            [animationAttribute setStartLineColor:[[Color alloc] initWithR:255 G:0 B:0]];
+            [animationAttribute setEndLineColor:[[Color alloc] initWithR:0 G:0 B:255]];
+            [animationAttribute setLineColorAttr:YES];
+            [animationAttribute setStartLineWidth:0];
+            [animationAttribute setEndLineWidth:1];
+            [animationAttribute setLineWidthAttr:YES];
+            animationGo=(AnimationGO*)animationAttribute;
+        }else if(type==ShowAnimation){
+            AnimationShow* animationShow=(AnimationShow*)animationGo;
+            [animationShow setShowEffect:NO];
+            [animationShow setShowState:YES];
+            animationGo=(AnimationGO*)animationShow;
+        }else if(type==RotateAnimation){
+            Point3D startPnt = {0,0,0};
+            Point3D endPnt = {720,720,0};
+            AnimationRotate* animationRotate=(AnimationRotate*)animationGo;
+            [animationRotate setStartangle:startPnt];
+            [animationRotate setEndAngle:endPnt];
+            animationGo=(AnimationGO*)animationRotate;
+            
+        }else if(type==ScaleAnimation){
+            AnimationScale* animationScale=(AnimationScale*)animationGo;
+            [animationScale setStartScaleFactor:0];
+            [animationScale setEndScaleFactor:1];
+            animationGo=(AnimationGO*)animationScale;
+        }else if(type==GrowAnimation){
+            //默认是从0生成到1
+        }
+        
         if([createInfo objectForKey:@"startTime"]&&[animationGroup getAnimationCount]>0){
             NSNumber* startTimeNumber=[createInfo objectForKey:@"startTime"];
             double startTime=[startTimeNumber doubleValue];
@@ -2962,8 +3009,7 @@ RCT_REMAP_METHOD(getGeometryTypeById,getGeometryTypeById:(NSString*) layerName g
             Geometry* geometry=[recordset geometry];
             if(geometry){
                 GeoGraphicObject* geoGraphicObject=(GeoGraphicObject*)geometry;
-                GeometryType geoType=[geometry getType];
-                type=geoType;
+                type=[geoGraphicObject getSymbolType];
             }
         }
         resolve(@(type));

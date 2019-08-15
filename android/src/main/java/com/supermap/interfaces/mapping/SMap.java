@@ -4367,6 +4367,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         AnimationAttribute animationAttribute = (AnimationAttribute) animationGO;
                         animationAttribute.setStartLineColor(new com.supermap.data.Color(255,0,0,255));
                         animationAttribute.setEndLineColor(new com.supermap.data.Color(0,0,255,255));
+                        animationAttribute.setLineColorAttr(true);
                         animationGO=animationAttribute;
                         break;
                     case 3:
@@ -4378,7 +4379,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     case 4:
                         AnimationRotate animationRotate=(AnimationRotate)animationGO;
                         animationRotate.setStartAngle(new Point3D(0,0,0));
-                        animationRotate.setEndAngle(new Point3D(360,360,0));
+                        animationRotate.setEndAngle(new Point3D(720,720,0));
                         animationGO=animationRotate;
                         break;
                     case 5:
