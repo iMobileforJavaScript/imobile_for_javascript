@@ -30,10 +30,10 @@ RCT_EXPORT_MODULE();
 -(NSDictionary*)constantsToExport{
     return @{
              @"SearchMode": @{
-                     @"SearchMode_NONE":@(SearchMode_NONE),
-                     @"SearchMode_QUADTREE":@(SearchMode_QUADTREE),
-                     @"SearchMode_KDTREE_FIXED_RADIUS":@(SearchMode_KDTREE_FIXED_RADIUS),
-                     @"SearchMode_KDTREE_FIXED_COUNT":@(SearchMode_KDTREE_FIXED_COUNT),
+                     @"NONE":@(SearchMode_NONE),
+                     @"QUADTREE":@(SearchMode_QUADTREE),
+                     @"KDTREE_FIXED_RADIUS":@(SearchMode_KDTREE_FIXED_RADIUS),
+                     @"KDTREE_FIXED_COUNT":@(SearchMode_KDTREE_FIXED_COUNT),
                      },
              @"InterpolationAlgorithmType": @{
                      @"NONE":@(IAT_NONE),

@@ -7,6 +7,9 @@ import {
 import { EventConst } from '../../constains/index'
 let Analyst = NativeModules.SAnalyst
 const nativeEvt = new NativeEventEmitter(Analyst)
+const SearchMode = Analyst.SearchMode
+const InterpolationAlgorithmType = Analyst.InterpolationAlgorithmType
+const PixelFormat = Analyst.PixelFormat
 
 /*********************************************** 缓冲分析 *************************************************/
 
@@ -198,4 +201,9 @@ export default {
   
   // 插值分析
   interpolate,
+  
+  // 常量
+  SearchMode,
+  InterpolationAlgorithmType,
+  PixelFormat,
 }
