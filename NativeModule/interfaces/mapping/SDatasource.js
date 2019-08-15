@@ -105,6 +105,10 @@ function deleteDatasource(path = '') {
   }
 }
 
+function createDataset(datasourceAlias, datasetName, type) {
+  return SDatasource.createDataset(datasourceAlias, datasetName, type)
+}
+
 function removeDatasetByName(path,name){
   try {
     return SDatasource.removeDatasetByName(path,name)
@@ -202,6 +206,7 @@ export {
   renameDatasource,
   closeDatasource,
   deleteDatasource,
+  createDataset,
   removeDatasetByName,
   copyDataset,
   getDatasources,
