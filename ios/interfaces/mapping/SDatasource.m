@@ -272,6 +272,20 @@ RCT_REMAP_METHOD(createDataset, createDatasetIn:(NSString*)datasourceAlias datas
         reject(@"workspace", exception.reason, nil);
     }
 }
+
+#pragma mark 删除数据集
+RCT_REMAP_METHOD(deleteDataset, deleteDatasetIn:(NSString*)datasourceAlias dataset:(NSString *)datasetName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        Datasets* datasets = [datasources getAlias:datasourceAlias].datasets;
+        
+        int index = [datasets indexOf:datasetName];
+        BOOL result = [datasets delete:index];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
         
 /**
  * 获取指定数据源中的数据集

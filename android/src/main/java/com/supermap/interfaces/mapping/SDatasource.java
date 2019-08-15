@@ -246,6 +246,20 @@ public class SDatasource extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void deleteDataset(String datasourceAlias, String datasetName, Promise promise) {
+        try {
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
+
+            int index=datasets.indexOf(datasetName);
+            promise.resolve(datasets.delete(index));
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     /**
      * 从不同数据源中复制数据机
      * @param
