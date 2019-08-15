@@ -4368,6 +4368,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         animationAttribute.setStartLineColor(new com.supermap.data.Color(255,0,0,255));
                         animationAttribute.setEndLineColor(new com.supermap.data.Color(0,0,255,255));
                         animationAttribute.setLineColorAttr(true);
+                        animationAttribute.setStartLineWidth(0);
+                        animationAttribute.setEndLineWidth(1);
+                        animationAttribute.setLineWidthAttr(true);
                         animationGO=animationAttribute;
                         break;
                     case 3:
