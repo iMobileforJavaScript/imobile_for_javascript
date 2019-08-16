@@ -3645,33 +3645,34 @@ RCT_REMAP_METHOD(getTaggingLayers, getTaggingLayersWithUserpath:(NSString *)user
     [recordset dispose];
 }
 #pragma mark 添加数据集属性字段
-RCT_REMAP_METHOD(addRecordset, addRecordsetWithDatasetName:(NSString *)datasetName FieldInfoName:(NSString *)fieldInfoName Value:(NSString *)value Path:(NSString *)userpath Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addRecordset, addRecordsetWithDatasourceName:(NSString *)datasourceName DatasetName:(NSString *)datasetName FieldInfoName:(NSString *)fieldInfoName Value:(NSString *)value Path:(NSString *)userpath Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
-        Datasource *opendatasource = [workspace.datasources getAlias:labelName];
+        Datasource *opendatasource = [workspace.datasources getAlias:datasourceName];
         
         if(opendatasource == nil){
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
-            info.alias = labelName;
+            info.alias = datasourceName;
             info.engineType = ET_UDB;
-            NSString *path = [NSString stringWithFormat: @"%@%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Datasource/",labelName];
+            NSString *path = [NSString stringWithFormat: @"%@%@%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Datasource/",datasourceName,@".udb"];
             info.server = path;
             Datasource *datasource = [workspace.datasources open:info];
             
-            if(datasource != nil && [datasource.description isEqualToString:@"Label"]){
+            if(datasource != nil){
                 Datasets *datasets = datasource.datasets;
                 DatasetVector *dataset = (DatasetVector *)[datasets getWithName:datasetName];
                 [SMap modifyLastAttributeWithDatasets:dataset FieldInfoName:fieldInfoName Value:value];
             }
             [info dispose];
+            [sMap.smMapWC.mapControl.map refresh];
             resolve(@(YES));
         }else{
             Datasets *datasets = opendatasource.datasets;
             DatasetVector *dataset = (DatasetVector *)[datasets getWithName:datasetName];
             [SMap modifyLastAttributeWithDatasets:dataset FieldInfoName:fieldInfoName Value:value];
+            [sMap.smMapWC.mapControl.map refresh];
             resolve(@(YES));
         }
     } @catch (NSException *exception) {

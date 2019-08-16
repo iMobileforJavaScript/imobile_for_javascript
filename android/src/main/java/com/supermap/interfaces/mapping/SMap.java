@@ -3418,27 +3418,29 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void addRecordset(String datasetName, String filedInfoName, String value, String userpath, Promise promise) {
+    public void addRecordset(String datasourceName, String datasetName, String filedInfoName, String value, String userpath, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
+            Datasource opendatasource = workspace.getDatasources().get(datasourceName);
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Label_" + userpath + "#");
+                info.setAlias(datasourceName);
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Label_" + userpath + "#.udb");
+                info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/" + datasourceName + ".udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
                     DatasetVector dataset = (DatasetVector) datasets.get(datasetName);
                     modifyLastAttribute(dataset, filedInfoName, value);
                 }
+                sMap.smMapWC.getMapControl().getMap().refresh();
                 promise.resolve(true);
             } else {
                 Datasets datasets = opendatasource.getDatasets();
                 DatasetVector dataset = (DatasetVector) datasets.get(datasetName);
                 modifyLastAttribute(dataset, filedInfoName, value);
+                sMap.smMapWC.getMapControl().getMap().refresh();
                 promise.resolve(true);
             }
         } catch (Exception e) {
