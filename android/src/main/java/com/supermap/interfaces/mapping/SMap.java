@@ -85,6 +85,7 @@ import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 import com.supermap.data.Color;
 
+
 import org.apache.http.cookie.SM;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
@@ -247,6 +248,19 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public Activity getActivity() {
         return getCurrentActivity();
     }
+
+    public String getPackageName(){
+        return context.getPackageName();
+    }
+
+    public String getNativeLibraryDir(){
+        return context.getApplicationInfo().nativeLibraryDir;
+    }
+
+    public AssetManager getAssets(){
+        return context.getAssets();
+    }
+
 
 
     //判断坐标系Type是否相等，避免不支持的type转Enum抛异常
@@ -2923,6 +2937,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      */
     @ReactMethod
     public void viewEntire(Promise promise) {
+
         try {
             sMap = SMap.getInstance();
             com.supermap.mapping.Map map = sMap.getSmMapWC().getMapControl().getMap();
