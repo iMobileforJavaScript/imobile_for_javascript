@@ -70,4 +70,7 @@ public class EventConst {
     /** 分析 **/
     public static final String ONLINE_ANALYST_RESULT = "com.supermap.RN.online_analyst_result";
 
+    /** 导航路线 **/
+    public static final String NAVIGATION_WAYS = "com.supermap.RN.Navigation.online_navigation_ways";
+    public static final String NAVIGATION_LENGTH = "com.supermap.RN.Navigation.online_navigation_length";
 }

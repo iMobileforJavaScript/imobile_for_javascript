@@ -1,8 +1,5 @@
 package com.supermap.interfaces.utils;
 
-import android.graphics.Bitmap;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,7 +20,6 @@ import com.supermap.mapping.CalloutAlignment;
 import com.supermap.mapping.MapControl;
 import com.supermap.rnsupermap.R;
 
-import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
@@ -81,6 +77,12 @@ public class POISearchHelper2D {
                 poiSearchCallBack.poiSearchInfos(poiInfos);
             }
         });
+    }
+
+    public Point2D getSearchPoint(int index){
+        PoiGsonBean.PoiInfos curPOI = m_searchResult.get(index);
+        Point2D point = new Point2D(curPOI.getLocation().getX(),curPOI.getLocation().getY());
+        return point;
     }
 
     public boolean toLocationPoint(int index){

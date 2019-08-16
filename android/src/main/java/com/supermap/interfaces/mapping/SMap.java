@@ -70,6 +70,12 @@ import com.supermap.mapping.ThemeRange;
 import com.supermap.mapping.ThemeType;
 import com.supermap.mapping.ThemeUnique;
 import com.supermap.mapping.collector.Collector;
+import com.supermap.onlineservices.CoordinateType;
+import com.supermap.onlineservices.NavigationOnline;
+import com.supermap.onlineservices.NavigationOnlineData;
+import com.supermap.onlineservices.NavigationOnlineParameter;
+import com.supermap.onlineservices.PathInfo;
+import com.supermap.onlineservices.RouteType;
 import com.supermap.plot.AnimationManager;
 import com.supermap.plugin.LocationManagePlugin;
 import com.supermap.smNative.collector.SMCollector;
@@ -5301,4 +5307,144 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
+
+
+    /************************************** 导航模块 START ****************************************/
+    /**
+     * 清除导航路线
+     * @param promise
+     */
+    @ReactMethod
+    public void clearTarckingLayer(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getMap().getTrackingLayer().clear();
+            sMap.smMapWC.getMapControl().getMap().getMapView().removeAllCallOut();
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+
+
+    private void setNavigationOnline(NavigationOnlineData data) {
+        if (data == null) {
+            return;
+        }
+        sMap = SMap.getInstance();
+        sMap.smMapWC.getMapControl().getMap().getTrackingLayer().clear();
+//		从data中获取geoline
+        GeoLine geoLine = data.getRoute();
+        GeoStyle geoLineStyle = new GeoStyle();
+        Color color = new Color(255, 0, 0);
+        geoLineStyle.setLineColor(color);
+//		为geoLine设置风格
+        geoLine.setStyle(geoLineStyle);
+//		在跟踪图层上显示geoLine
+        sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(geoLine, "线路");
+        LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+        Point2D pt = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
+        if (!safeGetType(sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
+            Point2Ds point2Ds = new Point2Ds();
+            point2Ds.add(pt);
+            PrjCoordSys prjCoordSys = new PrjCoordSys();
+            prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+            CoordSysTransParameter parameter = new CoordSysTransParameter();
+
+            CoordSysTranslator.convert(point2Ds, prjCoordSys, sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+            pt = point2Ds.getItem(0);
+            showMarkerHelper(pt, curLocationTag);
+        }
+//		得到线路信息的集合
+        List<PathInfo> pathInfoList = data.getPathInfos();
+
+
+        WritableArray array = Arguments.createArray();
+        for(int i = 0; i <  pathInfoList.size(); i++){
+            WritableMap map = Arguments.createMap();
+            PathInfo pathInfo = pathInfoList.get(i);
+            String roadName = pathInfo.getRoadName();
+            int nextDirection = pathInfo.getNextDirection();
+            double roadLength = pathInfo.getLength();
+
+            map.putString("roadName",roadName);
+            map.putInt("nextDirection",nextDirection);
+            map.putDouble("roadLength",roadLength);
+            array.pushMap(map);
+        }
+
+        WritableMap map = Arguments.createMap();
+        map.putString("Length",data.getLength());
+
+        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(EventConst.NAVIGATION_WAYS, array);
+
+        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(EventConst.NAVIGATION_LENGTH, map);
+    }
+
+    @ReactMethod
+    public void routeAnalyst(int index,Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Point2D endPoint = sMap.poiSearchHelper2D.getSearchPoint(index);
+            LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+            Point2D startPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
+            NavigationOnline navigationOnline = new NavigationOnline();
+            navigationOnline.setKey("fvV2osxwuZWlY0wJb8FEb2i5");
+            navigationOnline.setNavigationOnlineCallback(new NavigationOnline.NavigationOnlineCallback() {
+                @Override
+                public void calculateSuccess(NavigationOnlineData data) {
+                    setNavigationOnline(data);
+                }
+                @Override
+                public void calculateFailed(String errorInfo) {
+                    Log.e("LocationMore", errorInfo);
+                }
+            });
+            NavigationOnlineParameter parameter = new NavigationOnlineParameter();
+            parameter.setStartPoint(startPoint);
+            parameter.setEndPoint(endPoint);
+            parameter.setCoordinateType(CoordinateType.NAVINFO_AMAP_MERCATOR);
+            parameter.setRouteType(RouteType.RE_COMMEND);
+            navigationOnline.routeAnalyst(parameter);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 打开二维导航工作空间及地图
+     * @param promise
+     */
+    @ReactMethod
+    public void open2DNavigationMap(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+
+            Workspace mWorkspace = SMap.getInstance().getSmMapWC().getWorkspace();
+
+//            WorkspaceConnectionInfo m_info = new WorkspaceConnectionInfo();
+//            m_info.setServer(android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString()+"/SuperMap/Demos/3DNaviDemo/室内外导航/beijing.smwu");
+//            m_info.setType(WorkspaceType.SMWU);
+//            mWorkspace.open(m_info);
+
+//            sMap.smMapWC.getMapControl().getMap().setWorkspace(mWorkspace);
+            String mapName = mWorkspace.getMaps().get(0);
+            sMap.smMapWC.getMapControl().getMap().open(mapName);
+            sMap.smMapWC.getMapControl().getMap().setFullScreenDrawModel(true);
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+
+    /************************************** 导航模块 END ****************************************/
+
 }

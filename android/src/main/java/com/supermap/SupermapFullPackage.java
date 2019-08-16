@@ -13,6 +13,7 @@ import com.supermap.interfaces.analyst.SFacilityAnalyst;
 import com.supermap.interfaces.analyst.STransportationAnalyst;
 import com.supermap.interfaces.ar.RCTARView;
 import com.supermap.interfaces.ar.RCTArrowRenderView;
+import com.supermap.interfaces.ar.RCTFloorListView;
 import com.supermap.interfaces.collector.SCollector;
 import com.supermap.interfaces.collector.SCollectorType;
 import com.supermap.interfaces.collector.SMediaCollector;
@@ -44,12 +45,8 @@ public class SupermapFullPackage implements ReactPackage {
         return Arrays.<ViewManager>asList(
                 new MapViewManager(),
                 new LayerListViewManager(),new ScaleViewManager(),new CallOutManager()
-<<<<<<< HEAD
-                ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView(),new RCTARView()
-=======
-                ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView()
+                ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView(),new RCTARView(),new RCTFloorListView()
                 ,new AIDetectViewManager()
->>>>>>> 3f86d050401290612cf7d90cfc6c203e5964caa9
         );
     }
 
