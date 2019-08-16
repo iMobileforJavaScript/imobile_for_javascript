@@ -105,15 +105,6 @@ public class SAnalyst extends ReactContextBaseJavaModule {
             constants.put("InterpolationAlgorithmType", subConstants);
         }
 
-        String[] searchModeNames = Enum.getNames(SearchMode.class);
-        for (int i = 0; i < searchModeNames.length; i++) {
-            Map<String, Object> subConstants = new HashMap<>();
-            int value = Enum.getValueByName(SearchMode.class, searchModeNames[i]);
-            subConstants.put(searchModeNames[i], value);
-
-            constants.put("SearchMode", subConstants);
-        }
-
         String[] PixelNames = Enum.getNames(PixelFormat.class);
         for (int i = 0; i < PixelNames.length; i++) {
             Map<String, Object> subConstants = new HashMap<>();
@@ -129,7 +120,7 @@ public class SAnalyst extends ReactContextBaseJavaModule {
             int value = Enum.getValueByName(VariogramMode.class, VariogramModes[i]);
             subConstants.put(VariogramModes[i], value);
 
-            constants.put("VariogramModes", subConstants);
+            constants.put("VariogramMode", subConstants);
         }
         return constants;
     }
