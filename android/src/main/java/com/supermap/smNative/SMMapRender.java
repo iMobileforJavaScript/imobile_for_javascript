@@ -757,6 +757,34 @@ public class SMMapRender {
         }
     }
 
+//    0:NONE
+//    1:ANTIALIAS
+//    2:NEAREST
+//    3:BILINEAR
+//    4:BICUBIC
+    private int compressMode = 2;
+    public void setCompressMode(int mode){
+        if (mode<0 || mode>4){
+            return;
+        }else{
+            compressMode=mode;
+        }
+    }
+    public int getCompressMode(){
+        return compressMode;
+    }
+
+    private int colorNumber = 50;
+    public void setColorNumber(int num){
+        if (num<50 || num>200){
+            return;
+        }else{
+            colorNumber = num;
+        }
+    }
+    public int getColorNumber(){
+        return colorNumber;
+    }
     private double waitTime = 1.5;// 等待时间
     public void setWaitTime(double nWaitSecounds){
         if (nWaitSecounds<0.1){
@@ -772,6 +800,8 @@ public class SMMapRender {
 
     public void matchPictureStyle( final String strImagePath ){
 
+        final int nColorNumber = colorNumber;
+        final int nCompressMode = compressMode;
         //如未初始化完成 等待下
 //        while (myhandler==null){
 //            try {
@@ -846,8 +876,8 @@ public class SMMapRender {
                         Bundle bundle = new Bundle();
                         bundle.putString("imgPath",strImagePath);
                         bundle.putString("mapPath",strMapPath);
-                        bundle.putInt("count",50);
-                        bundle.putInt("mode",2);
+                        bundle.putInt("count",nColorNumber);
+                        bundle.putInt("mode",nCompressMode);
                         msg.setData(bundle);
                         msg.sendToTarget();
                     }
