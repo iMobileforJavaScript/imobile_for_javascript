@@ -51,7 +51,7 @@ function createDatasourceOfLabel(info={}){
      "webExtendParam"
  * @returns {*|Promise.<void>|Promise.<datasource>}
  */
-function openDatasource(info = {}) {
+function openDatasource2(info = {}) {
   try {
     return SDatasource.openDatasource(info)
   } catch (e) {
@@ -103,6 +103,15 @@ function deleteDatasource(path = '') {
   } catch (e) {
     console.error(e)
   }
+}
+
+function createDataset(datasourceAlias, datasetName, type) {
+  return SDatasource.createDataset(datasourceAlias, datasetName, type)
+}
+
+//删除打开数据源中的数据集
+function deleteDataset(datasourceAlias, datasetName) {
+  return SDatasource.deleteDataset(datasourceAlias, datasetName)
 }
 
 function removeDatasetByName(path,name){
@@ -211,10 +220,12 @@ function getDatasetBounds(sourceData){
 export {
   createDatasource,
   createDatasourceOfLabel,
-  // openDatasource,
+  openDatasource2,
   renameDatasource,
   closeDatasource,
   deleteDatasource,
+  createDataset,
+  deleteDataset,
   removeDatasetByName,
   copyDataset,
   getDatasources,

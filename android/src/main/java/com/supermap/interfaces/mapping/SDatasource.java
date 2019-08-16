@@ -206,6 +206,63 @@ public class SDatasource extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 新建数据集
+     * @param datasourceAlias
+     * @param datasetName
+     * @param datasetName
+     * @param type
+     */
+    @ReactMethod
+    public void createDataset(String datasourceAlias, String datasetName, int type, Promise promise) {
+        try {
+            DatasetType datasetType;
+            if(type == 149) {
+                datasetType = DatasetType.CAD;
+            } else if(type == 7){
+                datasetType = DatasetType.TEXT;
+            } else if(type == 5){
+                datasetType = DatasetType.REGION;
+            } else if (type == 3) {
+                datasetType = DatasetType.LINE;
+            } else {
+                datasetType = DatasetType.POINT;
+            }
+
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
+            boolean hasDataset = datasets.contains(datasetName);
+            DatasetVector datasetVector = null;
+            if(hasDataset){
+                promise.resolve(false);
+            } else {
+                DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+                datasetVectorInfo.setType(datasetType);
+                datasetVectorInfo.setName(datasetName);
+                datasetVector = datasets.create(datasetVectorInfo);
+                datasetVectorInfo.dispose();
+                promise.resolve(true);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void deleteDataset(String datasourceAlias, String datasetName, Promise promise) {
+        try {
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
+
+            int index=datasets.indexOf(datasetName);
+            promise.resolve(datasets.delete(index));
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 从不同数据源中复制数据机
      * @param
      * @param promise

@@ -93,6 +93,7 @@ import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 import com.supermap.data.Color;
 
+
 import org.apache.http.cookie.SM;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
@@ -255,6 +256,19 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public Activity getActivity() {
         return getCurrentActivity();
     }
+
+    public String getPackageName(){
+        return context.getPackageName();
+    }
+
+    public String getNativeLibraryDir(){
+        return context.getApplicationInfo().nativeLibraryDir;
+    }
+
+    public AssetManager getAssets(){
+        return context.getAssets();
+    }
+
 
 
     //判断坐标系Type是否相等，避免不支持的type转Enum抛异常
@@ -2931,6 +2945,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      */
     @ReactMethod
     public void viewEntire(Promise promise) {
+
         try {
             sMap = SMap.getInstance();
             com.supermap.mapping.Map map = sMap.getSmMapWC().getMapControl().getMap();
@@ -4367,6 +4382,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         AnimationAttribute animationAttribute = (AnimationAttribute) animationGO;
                         animationAttribute.setStartLineColor(new com.supermap.data.Color(255,0,0,255));
                         animationAttribute.setEndLineColor(new com.supermap.data.Color(0,0,255,255));
+                        animationAttribute.setLineColorAttr(true);
+                        animationAttribute.setStartLineWidth(0);
+                        animationAttribute.setEndLineWidth(1);
+                        animationAttribute.setLineWidthAttr(true);
                         animationGO=animationAttribute;
                         break;
                     case 3:
@@ -4378,7 +4397,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     case 4:
                         AnimationRotate animationRotate=(AnimationRotate)animationGO;
                         animationRotate.setStartAngle(new Point3D(0,0,0));
-                        animationRotate.setEndAngle(new Point3D(360,360,0));
+                        animationRotate.setEndAngle(new Point3D(720,720,0));
                         animationGO=animationRotate;
                         break;
                     case 5:
