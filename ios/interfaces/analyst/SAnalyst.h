@@ -41,6 +41,7 @@
 #import "SuperMap/ProximityAnalyst.h"
 #import "SuperMap/InterpolationAnalyst.h"
 #import "SuperMap/InterpolationParameter.h"
+#import "SuperMap/InterpolationKrigingParameter.h"
 
 #import "Constants.h"
 #import "SScene.h"
