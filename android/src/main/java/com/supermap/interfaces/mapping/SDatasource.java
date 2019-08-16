@@ -24,9 +24,11 @@ import com.supermap.data.Datasources;
 import com.supermap.data.EncodeType;
 import com.supermap.data.EngineType;
 import com.supermap.data.Recordset;
+import com.supermap.data.Rectangle2D;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Map;
+import com.supermap.smNative.SMAnalyst;
 import com.supermap.smNative.SMDatasource;
 import com.supermap.smNative.SMLayer;
 
@@ -573,6 +575,33 @@ public class SDatasource extends ReactContextBaseJavaModule {
             workspaceTemp.close();
             workspaceTemp.dispose();
 
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取数据集范围
+     * @param sourceData 数据源和数据集信息
+     * @param promise
+     */
+    @ReactMethod
+    public void getDatasetBounds(ReadableMap sourceData, Promise promise) {
+        try {
+            DatasetVector sourceDataset = (DatasetVector)SMAnalyst.getDatasetByDictionary(sourceData);
+
+            WritableMap boundPoints = Arguments.createMap();
+            if (sourceDataset != null) {
+                Rectangle2D bounds = sourceDataset.computeBounds();
+                boundPoints.putDouble("left", bounds.getLeft());
+                boundPoints.putDouble("bottom", bounds.getBottom());
+                boundPoints.putDouble("right", bounds.getRight());
+                boundPoints.putDouble("top", bounds.getTop());
+                boundPoints.putDouble("width", bounds.getWidth());
+                boundPoints.putDouble("height", bounds.getHeight());
+            }
+
+            promise.resolve(boundPoints);
         } catch (Exception e) {
             promise.reject(e);
         }

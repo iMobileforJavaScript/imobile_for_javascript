@@ -30,10 +30,10 @@ RCT_EXPORT_MODULE();
 -(NSDictionary*)constantsToExport{
     return @{
              @"SearchMode": @{
-                     @"SearchMode_NONE":@(SearchMode_NONE),
-                     @"SearchMode_QUADTREE":@(SearchMode_QUADTREE),
-                     @"SearchMode_KDTREE_FIXED_RADIUS":@(SearchMode_KDTREE_FIXED_RADIUS),
-                     @"SearchMode_KDTREE_FIXED_COUNT":@(SearchMode_KDTREE_FIXED_COUNT),
+                     @"NONE":@(SearchMode_NONE),
+                     @"QUADTREE":@(SearchMode_QUADTREE),
+                     @"KDTREE_FIXED_RADIUS":@(SearchMode_KDTREE_FIXED_RADIUS),
+                     @"KDTREE_FIXED_COUNT":@(SearchMode_KDTREE_FIXED_COUNT),
                      },
              @"InterpolationAlgorithmType": @{
                      @"NONE":@(IAT_NONE),
@@ -54,6 +54,11 @@ RCT_EXPORT_MODULE();
                      @"UBIT32":@(UBIT32),
                      @"BIT64":@(BIT64),
                      @"SINGLE":@(SINGLE),
+                     },
+             @"VariogramMode": @{
+                     @"EXPONENTIAL":@(VM_EXPONENTIAL), // 球函数
+                     @"GAUSSIAN":@(VM_GAUSSIAN), // 高斯函数
+                     @"SPHERICAL":@(VM_SPHERICAL), // 指数函数
                      }
              };
 }
@@ -664,7 +669,7 @@ RCT_REMAP_METHOD(interpolate, interpolate:(NSDictionary *)sourceData resultData:
         if ([resultData objectForKey:@"dataset"] != nil) {
             resName = [resultData objectForKey:@"dataset"];
         }
-        Dataset* sourceDataset = [SMAnalyst createDatasetByDictionary:sourceData];
+        Dataset* sourceDataset = [SMAnalyst getDatasetByDictionary:sourceData];
         
         Datasource* resultDatasource = [SMAnalyst getDatasourceByDictionary:resultData createIfNotExist:YES];
         resName = [resultDatasource.datasets availableDatasetName:resName];

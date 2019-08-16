@@ -458,4 +458,29 @@ RCT_REMAP_METHOD(getDatasetsByExternalDatasource, getDatasetsByExternalDatasourc
         reject(@"workspace", exception.reason, nil);
     }
 }
+
+/**
+ * 获取数据集范围
+ *
+ * @param sourceData 数据源和数据集信息
+ * @param promise
+ */
+RCT_REMAP_METHOD(getDatasetBounds, getDatasetBounds:(NSDictionary*)sourceData resolver:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
+    @try{
+        DatasetVector* sourceDataset = (DatasetVector *)[SMAnalyst getDatasetByDictionary:sourceData];
+        
+        Rectangle2D* bounds = [sourceDataset computeBounds];
+        NSMutableDictionary* boundPoints = [[NSMutableDictionary alloc] initWithCapacity:4];
+        [boundPoints setObject:@(bounds.left) forKey:@"left"];
+        [boundPoints setObject:@(bounds.bottom) forKey:@"bottom"];
+        [boundPoints setObject:@(bounds.right) forKey:@"right"];
+        [boundPoints setObject:@(bounds.top) forKey:@"top"];
+        [boundPoints setObject:@(bounds.width) forKey:@"width"];
+        [boundPoints setObject:@(bounds.height) forKey:@"height"];
+        resolve(boundPoints);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
 @end
