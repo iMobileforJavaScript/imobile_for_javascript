@@ -286,6 +286,18 @@ RCT_REMAP_METHOD(deleteDataset, deleteDatasetIn:(NSString*)datasourceAlias datas
         reject(@"workspace", exception.reason, nil);
     }
 }
+
+RCT_REMAP_METHOD(isAvailableDatasetName, checkAvailaleIn:(NSString*)datasourceAlias WithName:(NSString *)datasetName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        Datasets* datasets = [datasources getAlias:datasourceAlias].datasets;
+        
+        BOOL result = [datasets isAvailableDatasetName:datasetName];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
         
 /**
  * 获取指定数据源中的数据集
