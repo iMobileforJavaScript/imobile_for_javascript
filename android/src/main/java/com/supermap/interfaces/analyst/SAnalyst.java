@@ -124,7 +124,7 @@ public class SAnalyst extends ReactContextBaseJavaModule {
         }
 
         String[] VariogramModes = Enum.getNames(VariogramMode.class);
-        for (int i = 0; i < PixelNames.length; i++) {
+        for (int i = 0; i < VariogramModes.length; i++) {
             Map<String, Object> subConstants = new HashMap<>();
             int value = Enum.getValueByName(VariogramMode.class, VariogramModes[i]);
             subConstants.put(VariogramModes[i], value);
