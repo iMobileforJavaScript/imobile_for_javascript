@@ -30,6 +30,9 @@
 #import "SuperMap/Size2D.h"
 #import "SuperMap/Color.h"
 #import "SuperMap/GeoPoint.h"
+#import "SuperMap/TextStyle.h"
+#import "SuperMap/TextPart.h"
+#import "SuperMap/GeoText.h"
 #import "SMap.h"
 #import "SMLayer.h"
 #import "SMDatasource.h"
@@ -52,6 +55,7 @@
 - (void)clear:(Selection *)selection;
 - (int)selectNode:(NSDictionary *)point layer:(Layer *)layer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag;
 - (Point2D *)selectPoint:(NSDictionary *)point layer:(Layer *)layer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag;
+- (int)setText:(NSString *)text point:(Point2D *)point textStyle:(TextStyle *)textStyle tag:(NSString *)tag;
 //- (Point2D *)selectByPoint:(NSDictionary *)point layer:(Layer *)nodeLayer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag;
 - (void)removeTagFromTrackingLayer:(NSString *)tag;
 @end

@@ -43,15 +43,23 @@
 #import "SuperMap/WeightFieldInfo.h"
 #import "SuperMap/WeightFieldInfos.h"
 #import "SuperMap/TransportationAnalystSetting.h"
+#import "SuperMap/InterpolationParameter.h"
+#import "SuperMap/InterpolationKrigingParameter.h"
+#import "SuperMap/InterpolationDensityParameter.h"
+#import "SuperMap/InterpolationIDWParameter.h"
+#import "SuperMap/InterpolationRBFParameter.h"
+#import "SuperMap/Rectangle2D.h"
 
 #import "Constants.h"
 #import "SScene.h"
 #import "SMSceneWC.h"
 #import "AnalysisHelper3D.h"
 #import "SMLayer.h"
+#import "SMDatasource.h"
 
 @interface SMAnalyst : NSObject
 + (Datasource *)getDatasourceByDictionary:(NSDictionary *)dic;
++ (Datasource *)getDatasourceByDictionary:(NSDictionary *)dic createIfNotExist:(BOOL)isCreate;
 + (GeoStyle *)getGeoStyleByDictionary:(NSDictionary *)geoStyleDic;
 + (BufferAnalystParameter *)getBufferAnalystParameterByDictionary:(NSDictionary *)parameter;
 + (Dataset *)getDatasetByDictionary:(NSDictionary *)dic;
@@ -65,4 +73,5 @@
 + (FacilityAnalystSetting *)setFacilitySetting:(NSDictionary *)data;
 + (TransportationAnalystSetting *)setTransportSetting:(NSDictionary *)data;
 + (WeightFieldInfo *)setWeightFieldInfo:(NSDictionary *)data;
++ (InterpolationParameter *)getInterpolationParameter:(NSDictionary *)data;
 @end

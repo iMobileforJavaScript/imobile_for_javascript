@@ -20,11 +20,14 @@ import com.supermap.data.Datasource;
 import com.supermap.data.GeoLineM;
 import com.supermap.data.GeoPoint;
 import com.supermap.data.GeoStyle;
+import com.supermap.data.GeoText;
 import com.supermap.data.Geometry;
 import com.supermap.data.Point;
 import com.supermap.data.Point2D;
 import com.supermap.data.Recordset;
 import com.supermap.data.Size2D;
+import com.supermap.data.TextPart;
+import com.supermap.data.TextStyle;
 import com.supermap.data.Workspace;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
@@ -156,6 +159,23 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
             rs.dispose();
         }
         return point2D;
+    }
+
+    public int setText(String text, Point2D point, TextStyle textStyle, String tag) {
+        TextPart textPart = new TextPart(" " + text, point);
+        GeoText geoText = new GeoText(textPart);
+        if (textStyle == null) {
+            textStyle = new TextStyle();
+            textStyle.setFontWidth(6);
+            textStyle.setFontHeight(8);
+            textStyle.setForeColor(new Color(0, 0, 0));
+        }
+        geoText.setTextStyle(textStyle);
+
+        TrackingLayer trackingLayer = SMap.getInstance().getSmMapWC().getMapControl().getMap().getTrackingLayer();
+        int index = trackingLayer.add(geoText, tag);
+        SMap.getInstance().getSmMapWC().getMapControl().getMap().refresh();
+        return index;
     }
 
     public void removeTagFromTrackingLayer(String tag) {

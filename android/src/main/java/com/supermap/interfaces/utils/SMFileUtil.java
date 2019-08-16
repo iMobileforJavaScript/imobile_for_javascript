@@ -686,7 +686,7 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
         return true;
     }
 
-    private static String formateNoneExistFileName(String strPath, boolean isDir) {
+    public static String formateNoneExistFileName(String strPath, boolean isDir) {
         String strName = strPath;
         String strSuffix = "";
         if (!isDir) {

@@ -3,9 +3,10 @@ import { SAnalyst, SFacilityAnalyst, STransportationAnalyst } from './analyst'
 import { SCollector, SMediaCollector } from './collector'
 import SCartography from './SCartography'
 import SThemeCartography from './SThemeCartography'
-import {SOnlineService} from './iServer'
+import { SOnlineService, SIPortalService } from './iServer'
 import SMessageService from './SMessageService'
 import SAIDetectView from './SAIDetectView'
+import SMeasureView from './SMeasureView'
 
 export {
   SMap,
@@ -22,7 +23,10 @@ export {
   SThemeCartography,
   /*在线模块功能*/
   SOnlineService,
+  SIPortalService,
   SMessageService,
   /*AI识别*/
   SAIDetectView,
+  /*AI高精采集*/
+  SMeasureView,
 }

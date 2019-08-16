@@ -362,6 +362,9 @@ public class SMMediaCollector {
         sMap.getActivity().runOnUiThread(new Runnable(){
             @Override
             public void run(){
+                if (callouts.size() == 0) {
+                    return;
+                }
                 Map map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
                 MapWrapView mapWrapView = (MapWrapView)map.getMapView();
                 for (int i = 0; i < callouts.size(); i++) {

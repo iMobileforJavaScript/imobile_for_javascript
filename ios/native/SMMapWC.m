@@ -937,6 +937,32 @@
             NSString* strMapXML = [mapExport toXML];
             [workspaceDes.maps add:mapName withXML:strMapXML];
             [mapExport close];
+            
+
+            //导出推演动画xml文件
+            NSString *workspaceStr = [[desDir componentsSeparatedByString:@"/"]lastObject];
+            NSString *tempDir = [desDir substringToIndex:desDir.length-workspaceStr.length-1];
+            NSString *tempStr = [[tempDir componentsSeparatedByString:@"/"]lastObject];
+            NSString *dataDir = [tempDir substringToIndex:tempDir.length-tempStr.length-1];
+            
+            NSString *animationDir=[NSString stringWithFormat:@"%@/Animation/",dataDir];
+            NSString* animationDirPath=[NSString stringWithFormat:@"%@%@",animationDir,mapName];
+            BOOL bDir = NO;
+            BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:animationDirPath isDirectory:&bDir];
+            if(bExist&&bDir){
+                NSString* plotDirPath=[NSString stringWithFormat:@"%@/plot",desDir];
+                bExist=[[NSFileManager defaultManager] fileExistsAtPath:plotDirPath isDirectory:&bDir];
+                if(bExist&&bDir){
+                    [[NSFileManager defaultManager] removeItemAtPath:plotDirPath error:nil];
+                }
+                [[NSFileManager defaultManager] createDirectoryAtPath:plotDirPath withIntermediateDirectories:YES attributes:nil error:nil];
+                NSArray *fileArr = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:animationDirPath error:nil];
+                for (int index=0; index<fileArr.count; index++) {
+                    NSString *subFilePath = [animationDirPath stringByAppendingPathComponent:[fileArr objectAtIndex:index]];
+                    NSString *plotFilePath = [plotDirPath stringByAppendingPathComponent:[fileArr objectAtIndex:index]];
+                     [[NSFileManager defaultManager] copyItemAtPath:subFilePath toPath:plotFilePath error:nil];
+                }
+            }
         }
     }
     
@@ -1925,7 +1951,7 @@
     NSString *strModule = [dicParam objectForKey:@"Module"];
     
     NSString *strUserName;
-    if (!bPrivate) {
+    if (!bPrivate && false) {//游客数据不再读取
         strUserName = @"Customer";
     }else{
         strUserName = [self getUserName];

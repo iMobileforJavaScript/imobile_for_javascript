@@ -1553,8 +1553,39 @@ export default (function () {
       console.error(e)
     }
   }
-  
 
+  /**
+   * 创建态势推演动画
+   */
+  function createAnimationGo(createInfo,newPlotMapName){
+    try{
+      return SMap.createAnimationGo(createInfo,newPlotMapName)
+    } catch (e){
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 保存态势推演动画
+   */
+  function animationSave(savePath){
+    try{
+      return SMap.animationSave(savePath)
+    } catch (e){
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 保存态势推演动画
+   */
+  function getGeometryTypeById(layerName,geoId){
+    try{
+      return SMap.getGeometryTypeById(layerName,geoId)
+    } catch (e){
+      console.error(e)
+    }
+  }
   
 
   /************************************** 地图编辑历史操作 ****************************************/
@@ -1746,7 +1777,7 @@ export default (function () {
   }
 
   /**
-   * 定位到某个点
+   * 定位到POI搜索结果某个点
    * @param index
    * @returns {*|void|Promise<void>}
    */
@@ -1754,6 +1785,30 @@ export default (function () {
     try {
       return SMap.toLocationPoint(index)
     } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取当前所在位置经纬度
+   * @returns {void|*|Promise<void>}
+   */
+  function getCurrentPosition() {
+    try {
+      return SMap.getCurrentPosition()
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移除二维搜索的Callout
+   * @returns {*|void}
+   */
+  function removePOICallout() {
+    try {
+      return SMap.removePOICallout()
+    }catch (e) {
       console.error(e)
     }
   }
@@ -1868,6 +1923,8 @@ export default (function () {
 
 
   let SMapExp = {
+    removePOICallout,
+    getCurrentPosition,
     toLocationPoint,
     setPointSearchListener,
     setOnlineNavigationListener,
@@ -1979,6 +2036,9 @@ export default (function () {
     animationReset,
     animationStop,
     animationClose,
+    createAnimationGo,
+    animationSave,
+    getGeometryTypeById,
     undo,
     redo,
     removeHistory,

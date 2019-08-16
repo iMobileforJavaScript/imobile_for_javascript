@@ -105,38 +105,62 @@
     }
 }
 
++(NSMutableArray *)getFieldInfos:(Recordset*)recordset filter:(NSDictionary *)filter {
+    FieldInfos* fieldInfos = [recordset fieldInfos];
+//    NSMutableDictionary* fieldsDics= [[NSMutableDictionary alloc] initWithCapacity:7];
+    NSMutableArray* fieldsArr = [[NSMutableArray alloc] init];
+    int count2 = (int)[fieldInfos count];
+    NSMutableArray* typeFilter;
+    if (filter && [filter objectForKey:@"typeFilter"]) {
+        typeFilter = [filter objectForKey:@"typeFilter"];
+    }
+    for(int i = 0;i < count2;i++){
+        FieldType type = [fieldInfos get:i].fieldType;
+        NSNumber* typeNum = @(type);
+        BOOL isAdd = NO;
+        if (typeFilter && typeFilter.count > 0) {
+            for (int j = 0; j < typeFilter.count; j++) {
+                if ([typeNum isEqualToNumber:typeFilter[j]]) {
+                    isAdd = YES;
+                    break;
+                }
+            }
+        } else {
+            isAdd = YES;
+        }
+        if (isAdd) {
+            NSMutableDictionary* fieldsDic = [[NSMutableDictionary alloc] initWithCapacity:7];
+            NSString* caption = [fieldInfos get:i].caption;
+            NSString* defaultValue = [fieldInfos get:i].defaultValue;
+            NSString* fieldName = [fieldInfos get:i].name;
+            NSInteger maxLength = [fieldInfos get:i].maxLength;
+            BOOL isRequired = [fieldInfos get:i].isRequired;
+            BOOL isSystemField = [fieldInfos get:i].isSystemField;
+            [fieldsDic setObject:caption forKey:@"caption"];
+            [fieldsDic setObject:defaultValue forKey:@"defaultValue"];
+            [fieldsDic setObject:@(type) forKey:@"type"];
+            [fieldsDic setObject:fieldName forKey:@"name"];
+            [fieldsDic setObject:@(maxLength) forKey:@"maxLength"];
+            [fieldsDic setObject:@(isRequired) forKey:@"isRequired"];
+            [fieldsDic setObject:@(isSystemField) forKey:@"isSystemField"];
+            
+//            [fieldsDics setObject:fieldsDic forKey:fieldName];
+            [fieldsArr addObject:fieldsDic];
+        }
+    }
+    return fieldsArr;
+}
+
 +(NSMutableDictionary *)recordsetToDictionary:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size {
     return [self recordsetToDictionary:recordset page:page size:size filterKey:nil];
 }
 
 +(NSMutableDictionary *)recordsetToDictionary:(Recordset*)recordset page:(NSInteger)page size:(NSInteger)size filterKey:(NSString *)filterKey {
-    FieldInfos* fieldInfos = [recordset fieldInfos];
-    
     NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
     NSMutableArray* recordArray = [[NSMutableArray alloc] init];
     
     // 获取recordset中fieldInfo的属性
-    NSMutableDictionary* fieldsDics= [[NSMutableDictionary alloc] initWithCapacity:7];
-    int count2 = (int)[fieldInfos count];
-    for(int i = 0;i < count2;i++){
-        NSMutableDictionary* fieldsDic = [[NSMutableDictionary alloc] initWithCapacity:7];
-        NSString* caption = [fieldInfos get:i].caption;
-        NSString* defaultValue = [fieldInfos get:i].defaultValue;
-        FieldType type = [fieldInfos get:i].fieldType;
-        NSString* fieldName = [fieldInfos get:i].name;
-        NSInteger maxLength = [fieldInfos get:i].maxLength;
-        BOOL isRequired = [fieldInfos get:i].isRequired;
-        BOOL isSystemField = [fieldInfos get:i].isSystemField;
-        [fieldsDic setObject:caption forKey:@"caption"];
-        [fieldsDic setObject:defaultValue forKey:@"defaultValue"];
-        [fieldsDic setObject:@(type) forKey:@"type"];
-        [fieldsDic setObject:fieldName forKey:@"name"];
-        [fieldsDic setObject:@(maxLength) forKey:@"maxLength"];
-        [fieldsDic setObject:@(isRequired) forKey:@"isRequired"];
-        [fieldsDic setObject:@(isSystemField) forKey:@"isSystemField"];
-        
-        [fieldsDics setObject:fieldsDic forKey:fieldName];
-    }
+    NSMutableArray* fieldsArr = [NativeUtil getFieldInfos:recordset filter:nil];
     
     // 计算分页，并移动到指定起始位置
     long currentIndex = page * size;
@@ -154,9 +178,9 @@
             NSMutableArray* arr;
             
             if (filterKey != nil && ![filterKey isEqualToString:@""]) {
-                arr = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics filterKey:filterKey];
+                arr = [NativeUtil parseRecordset:recordset fieldsArr:fieldsArr filterKey:filterKey];
             } else {
-                arr = [NativeUtil parseRecordset:recordset fieldsDics:fieldsDics];
+                arr = [NativeUtil parseRecordset:recordset fieldsArr:fieldsArr];
             }
             
             if (arr != nil) {
@@ -172,28 +196,30 @@
     return dic;
 }
 
-+(NSMutableArray *)parseRecordset:(Recordset *)recordset fieldsDics:(NSMutableDictionary*)fieldsDics {
-    NSMutableArray* arr = [self parseRecordset:recordset fieldsDics:fieldsDics filterKey:@""];
++(NSMutableArray *)parseRecordset:(Recordset *)recordset fieldsArr:(NSMutableArray*)fieldsArr {
+    NSMutableArray* arr = [self parseRecordset:recordset fieldsArr:fieldsArr filterKey:@""];
     return arr;
 }
 
-+(NSMutableArray *)parseRecordset:(Recordset *)recordset fieldsDics:(NSMutableDictionary*)fieldsDics filterKey:(NSString *)filterKey {
-    int fieldsDicsCount = (int)[fieldsDics count];
++(NSMutableArray *)parseRecordset:(Recordset *)recordset fieldsArr:(NSMutableArray*)fieldsArr filterKey:(NSString *)filterKey {
+//    int fieldsDicsCount = (int)[fieldsDics count];
     NSMutableArray* array =[[NSMutableArray alloc]init];
-    NSArray* keys = fieldsDics.allKeys;
-    NSArray* values = fieldsDics.allValues;
+//    NSArray* keys = fieldsDics.allKeys;
+//    NSArray* values = fieldsDics.allValues;
     
     BOOL isMatching = NO;
     
-    for(int i = 0;i < fieldsDicsCount;i++){
-        NSMutableDictionary* keyMap =[[NSMutableDictionary alloc]init];
+    for(int i = 0; i < fieldsArr.count; i++){
+        NSMutableDictionary* keyMap = [[NSMutableDictionary alloc]init];
         NSMutableDictionary* itemWMap =[[NSMutableDictionary alloc]init];
         
-        NSString* keyName =(NSString*)keys[i];
-        NSMutableDictionary* fieldsDic = (NSMutableDictionary*)values[i];
+//        NSString* keyName =(NSString*)keys[i];
+//        NSMutableDictionary* fieldsDic = (NSMutableDictionary*)values[i];
         
+        NSMutableDictionary* fieldsDic = fieldsArr[i];
         NSArray* keys2 = fieldsDic.allKeys;
         NSArray* values2 = fieldsDic.allValues;
+        NSString* keyName = [fieldsDic objectForKey:@"name"];
 
         int fieldsDicCount = (int)[keys2 count];
         for(int a = 0;a < fieldsDicCount;a++){

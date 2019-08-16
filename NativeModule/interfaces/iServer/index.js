@@ -1,2 +1,3 @@
 import SOnlineService from './SOnlineService';
-export {SOnlineService} ;
+import SIPortalService from './SIPortalService'
+export { SOnlineService, SIPortalService } ;

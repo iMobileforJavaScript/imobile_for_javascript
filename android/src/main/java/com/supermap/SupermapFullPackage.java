@@ -14,6 +14,8 @@ import com.supermap.interfaces.analyst.STransportationAnalyst;
 import com.supermap.interfaces.ar.RCTARView;
 import com.supermap.interfaces.ar.RCTArrowRenderView;
 import com.supermap.interfaces.ar.RCTFloorListView;
+import com.supermap.interfaces.ar.MeasureViewManager;
+import com.supermap.interfaces.ar.SMeasureView;
 import com.supermap.interfaces.collector.SCollector;
 import com.supermap.interfaces.collector.SCollectorType;
 import com.supermap.interfaces.collector.SMediaCollector;
@@ -23,6 +25,7 @@ import com.supermap.interfaces.mapping.SMap;
 import com.supermap.interfaces.SScene;
 import com.supermap.interfaces.*;
 import com.supermap.interfaces.iServer.SOnlineService;
+import com.supermap.interfaces.iServer.SIPortalService;
 import com.supermap.component.SMRLegendView;
 import com.supermap.interfaces.utils.SMFileUtil;
 import com.supermap.rnsupermap.*;
@@ -46,7 +49,7 @@ public class SupermapFullPackage implements ReactPackage {
                 new MapViewManager(),
                 new LayerListViewManager(),new ScaleViewManager(),new CallOutManager()
                 ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView(),new RCTARView(),new RCTFloorListView()
-                ,new AIDetectViewManager()
+                ,new AIDetectViewManager(), new MeasureViewManager()
         );
     }
 
@@ -207,12 +210,15 @@ public class SupermapFullPackage implements ReactPackage {
         * 在线模块功能
         */
         modules.add(new SOnlineService(reactContext));
+        modules.add(new SIPortalService(reactContext));
         modules.add(new SAnalyst(reactContext));
         modules.add(new SFacilityAnalyst(reactContext));
         modules.add(new STransportationAnalyst(reactContext));
 
         //AI识别
         modules.add(new SAIDetectView(reactContext));
+        //AR高精采集
+        modules.add(new SMeasureView(reactContext));
         return modules;
     }
 }

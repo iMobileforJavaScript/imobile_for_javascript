@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -28,6 +29,7 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.supermap.component.MapWrapView;
 import com.supermap.containts.EventConst;
 import com.supermap.data.*;
@@ -41,6 +43,7 @@ import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Resources;
 import com.supermap.data.Workspace;
+import com.supermap.interfaces.utils.SMFileUtil;
 import com.supermap.interfaces.utils.POISearchHelper2D;
 import com.supermap.interfaces.utils.ScaleViewHelper;
 import com.supermap.map3D.toolKit.PoiGsonBean;
@@ -76,13 +79,26 @@ import com.supermap.onlineservices.NavigationOnlineData;
 import com.supermap.onlineservices.NavigationOnlineParameter;
 import com.supermap.onlineservices.PathInfo;
 import com.supermap.onlineservices.RouteType;
+import com.supermap.plot.AnimationAttribute;
+import com.supermap.plot.AnimationBlink;
+import com.supermap.plot.AnimationDefine;
+import com.supermap.plot.AnimationGO;
+import com.supermap.plot.AnimationGroup;
+import com.supermap.plot.AnimationGrow;
 import com.supermap.plot.AnimationManager;
+import com.supermap.plot.AnimationRotate;
+import com.supermap.plot.AnimationScale;
+import com.supermap.plot.AnimationShow;
+import com.supermap.plot.AnimationWay;
+import com.supermap.plot.GeoGraphicObject;
+import com.supermap.plot.GraphicObjectType;
 import com.supermap.plugin.LocationManagePlugin;
 import com.supermap.smNative.collector.SMCollector;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 import com.supermap.data.Color;
+
 
 import org.apache.http.cookie.SM;
 import org.json.JSONObject;
@@ -246,6 +262,19 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public Activity getActivity() {
         return getCurrentActivity();
     }
+
+    public String getPackageName(){
+        return context.getPackageName();
+    }
+
+    public String getNativeLibraryDir(){
+        return context.getApplicationInfo().nativeLibraryDir;
+    }
+
+    public AssetManager getAssets(){
+        return context.getAssets();
+    }
+
 
 
     //判断坐标系Type是否相等，避免不支持的type转Enum抛异常
@@ -1060,7 +1089,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 Selection selection = layer.getSelection();
                 if (selection != null) {
                     selection.clear();
-                    selection.dispose();
+//                    selection.dispose();
                 }
             }
         }
@@ -2922,6 +2951,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      */
     @ReactMethod
     public void viewEntire(Promise promise) {
+
         try {
             sMap = SMap.getInstance();
             com.supermap.mapping.Map map = sMap.getSmMapWC().getMapControl().getMap();
@@ -3482,7 +3512,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
             Rectangle2D bounds = layer.getDataset().getBounds();
 
-            if ( !safeGetType(layer.getDataset().getPrjCoordSys(),sMap.smMapWC.getMapControl().getMap().getPrjCoordSys()) ) {
+            if (!safeGetType(layer.getDataset().getPrjCoordSys(),sMap.smMapWC.getMapControl().getMap().getPrjCoordSys())) {
                 Point2Ds point2Ds = new Point2Ds();
                 point2Ds.add(new Point2D(bounds.getLeft(), bounds.getTop()));
                 point2Ds.add(new Point2D(bounds.getRight(), bounds.getBottom()));
@@ -4161,14 +4191,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public static void initAnimation(Promise promise){
         try {
+
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
 //            am = AnimationManager.getInstance();
-//            //开启定时器
-//            m_timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    AnimationManager.getInstance().excute();
-//                }
-//            },0,100);
+            //开启定时器
+            if(m_timer==null){
+                m_timer=new Timer();
+            }
+            m_timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    AnimationManager.getInstance().excute();
+                }
+            },0,100);
+            mapControl.setAnimations();
             promise.resolve(true);
         } catch (Exception e) {
             promise.resolve(false);
@@ -4314,6 +4351,203 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     * 创建推演动画对象
+     */
+    @ReactMethod
+    public static void createAnimationGo(ReadableMap createInfo,String newPlotMapName,Promise promise){
+            //顺序：路径、闪烁、属性、显隐、旋转、比例、生长
+            try {
+                if (!createInfo.hasKey("animationMode")) {
+                    promise.resolve(false);
+                    return;
+                }
+                sMap = SMap.getInstance();
+                MapControl mapControl = sMap.smMapWC.getMapControl();
+
+                String animationGroupName="Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
+                AnimationGroup animationGroup=AnimationManager.getInstance().getGroupByName(animationGroupName);
+                if(animationGroup==null){
+                    animationGroup=AnimationManager.getInstance().addAnimationGroup(animationGroupName);
+                }
+
+                int animationMode = createInfo.getInt("animationMode");
+                AnimationGO animationGO =  AnimationManager.getInstance().createAnimation(new AnimationDefine.AnimationType(animationMode, animationMode));
+                switch (animationMode){
+                    case 0:
+                        break;
+                    case 1:
+                        AnimationBlink animationBlink= (AnimationBlink) animationGO;
+                        animationBlink.setBlinkNumberofTimes(20);
+                        animationBlink.setBlinkStyle(AnimationDefine.BlinkAnimationBlinkStyle.NumberBlink);
+                        animationBlink.setReplaceStyle(AnimationDefine.BlinkAnimationReplaceStyle.ColorReplace);
+                        animationBlink.setBlinkAnimationReplaceColor(new com.supermap.data.Color(0,0,255,255));
+                        animationGO=animationBlink;
+                        break;
+                    case 2:
+                        AnimationAttribute animationAttribute = (AnimationAttribute) animationGO;
+                        animationAttribute.setStartLineColor(new com.supermap.data.Color(255,0,0,255));
+                        animationAttribute.setEndLineColor(new com.supermap.data.Color(0,0,255,255));
+                        animationAttribute.setLineColorAttr(true);
+                        animationAttribute.setStartLineWidth(0);
+                        animationAttribute.setEndLineWidth(1);
+                        animationAttribute.setLineWidthAttr(true);
+                        animationGO=animationAttribute;
+                        break;
+                    case 3:
+                        AnimationShow animationShow = (AnimationShow)animationGO;
+                        animationShow.setShowEffect(0);
+                        animationShow.setShowState(true);
+                        animationGO=animationShow;
+                        break;
+                    case 4:
+                        AnimationRotate animationRotate=(AnimationRotate)animationGO;
+                        animationRotate.setStartAngle(new Point3D(0,0,0));
+                        animationRotate.setEndAngle(new Point3D(720,720,0));
+                        animationGO=animationRotate;
+                        break;
+                    case 5:
+                        AnimationScale animationScale=(AnimationScale)animationGO;
+                        animationScale.setStartScaleFactor(0);
+                        animationScale.setEndScaleFactor(1);
+                        animationGO=animationScale;
+                        break;
+                    case 6:
+                        AnimationGrow animationGrow=(AnimationGrow)animationGO;
+                        animationGrow.setStartLocation(0);
+                        animationGrow.setEndLocation(1);
+                        animationGO=animationGrow;
+                        break;
+                }
+                if (createInfo.hasKey("startTime")&&animationGroup.getAnimationCount()>0) {
+                    int startTime = createInfo.getInt("startTime");
+                    if (createInfo.hasKey("startMode")) {
+                        int startMode = createInfo.getInt("startMode");
+                        AnimationGO lastAnimationGo=animationGroup.getAnimationByIndex(animationGroup.getAnimationCount()-1);
+                        switch (startMode){
+                            case 1:         //上一动作播放之后
+                                double lastEndTime=lastAnimationGo.getStartTime()+lastAnimationGo.getDuration();
+                                startTime+=lastEndTime;
+                                break;
+                            case 2:         //点击开始
+                                break;
+                            case 3:         //上一动作同时播放
+                                double lastStartTime=lastAnimationGo.getStartTime();
+                                startTime+=lastStartTime;
+                                break;
+                        }
+                    }
+                    animationGO.setStartTime(startTime);
+                }else if(createInfo.hasKey("startTime")&&animationGroup.getAnimationCount()==0){
+                    int startTime = createInfo.getInt("startTime");
+                    animationGO.setStartTime(startTime);
+                }
+                if (createInfo.hasKey("durationTime")) {
+                    int durationTime = createInfo.getInt("durationTime");
+                    animationGO.setDuration(durationTime);
+                }
+                if (createInfo.hasKey("startMode")) {
+                    int startMode = createInfo.getInt("startMode");
+
+                }
+
+                String mapName=mapControl.getMap().getName();
+                if(mapName==null||mapName.equals("")){
+                    if(newPlotMapName!=null&&!newPlotMapName.equals("")){
+                        mapName=newPlotMapName;
+                    }else {
+                        int layerCount=mapControl.getMap().getLayers().getCount();
+                        if(layerCount>0){
+                            mapName=mapControl.getMap().getLayers().get(layerCount).getName();
+                        }
+                    }
+                    mapControl.getMap().save(mapName);
+                }
+
+
+                String animationGoName="动画_"+AnimationManager.getInstance().getGroupByName(animationGroupName).getAnimationCount();
+                if (createInfo.hasKey("layerName")&&createInfo.hasKey("geoId")) {
+                    String layerName=createInfo.getString("layerName");
+                    int geoId=createInfo.getInt("geoId");
+                    Layer layer=mapControl.getMap().getLayers().get(layerName);
+                    if(layer!=null){
+                        DatasetVector dataset = (DatasetVector) mapControl.getMap().getLayers().get(layerName).getDataset();
+                        Recordset recordset = dataset.query("SmID="+geoId, CursorType.STATIC);
+                        Geometry geometry=recordset.getGeometry();
+                        if(geometry!=null){
+                            animationGO.setName(animationGoName);
+//                            String name=mapControl.getMap().getName();
+//                            if(name==null||name.equals("")){
+//                                mapControl.getMap().save();
+//                            }
+                            animationGO.setGeometry((GeoGraphicObject) geometry, mapControl.getHandle(), layer.getName());
+                            animationGroup.addAnimation(animationGO);
+                        }
+                    }
+                }
+
+                promise.resolve(true);
+            }catch (Exception e) {
+                promise.resolve(false);
+            }
+    }
+
+    /**
+     * 保存推演动画
+     */
+    @ReactMethod
+    public static void animationSave(String savePath,Promise promise){
+        try {
+//        String path=sdcard+"/supermap/demos/plotdata/qdwj/强渡乌江_2.xml";
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            File file=new File(savePath);
+            if(!file.exists()){
+                file.mkdirs();
+            }
+            String mapName=mapControl.getMap().getName();
+            String tempPath=savePath+"/"+mapName+".xml";
+            String path=SMFileUtil.formateNoneExistFileName(tempPath,false);
+            boolean result=AnimationManager.getInstance().saveAnimationToXML(path);
+            AnimationManager.getInstance().reset();
+            AnimationManager.getInstance().deleteAll();
+
+
+            promise.resolve(result);
+        }catch (Exception e) {
+            promise.resolve(false);
+        }
+    }
+
+    /**
+     * 获取标绘对象type
+     */
+    @ReactMethod
+    public static void getGeometryTypeById(String layerName,int geoId,Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            int type=-1;
+            Layer layer=mapControl.getMap().getLayers().get(layerName);
+            if(layer!=null){
+                DatasetVector dataset = (DatasetVector) mapControl.getMap().getLayers().get(layerName).getDataset();
+                Recordset recordset = dataset.query("SmID="+geoId, CursorType.STATIC);
+                Geometry geometry=recordset.getGeometry();
+                Geometry geometry1=(GeoGraphicObject) geometry;
+                if(geometry!=null){
+                    GeoGraphicObject geoGraphicObject=(GeoGraphicObject) geometry;
+                    GraphicObjectType graphicObjectType= geoGraphicObject.getSymbolType();
+                    type=graphicObjectType.value();
+                }
+            }
+
+
+            promise.resolve(type);
+        }catch (Exception e) {
+            promise.resolve(-1);
+        }
+    }
 
 /************************************** 地图编辑历史操作 BEGIN****************************************/
 
@@ -5285,6 +5519,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         PoiGsonBean.PoiInfos poiInfo = poiInfos.get(i);
                         String name = poiInfo.getName();
                         map.putString("pointName",name);
+                        map.putDouble("x",poiInfo.getLocation().getX());
+                        map.putDouble("y",poiInfo.getLocation().getY());
                         array.pushMap(map);
                     }
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -5297,6 +5533,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     * 在搜索结果的某个位置添加callout
+     * @param index
+     * @param promise
+     */
     @ReactMethod
     public void toLocationPoint(int index,Promise promise){
         try {
@@ -5309,6 +5550,37 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
 
+    /**
+     * 获取当前定位的经纬度
+     * @param promise
+     */
+    @ReactMethod
+    public void getCurrentPosition(Promise promise){
+        try {
+            LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+            WritableMap map = Arguments.createMap();
+            map.putDouble("x",gpsDat.dLongitude);
+            map.putDouble("y",gpsDat.dLatitude);
+            promise.resolve(map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 移除POI搜索的callout
+     * @param promise
+     */
+    @ReactMethod
+    public void removePOICallout(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            sMap.poiSearchHelper2D.clearPoint();
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 
     /************************************** 导航模块 START ****************************************/
     /**
@@ -5416,6 +5688,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+
     /**
      * 打开二维导航工作空间及地图
      * @param promise
@@ -5437,7 +5710,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap.smMapWC.getMapControl().getMap().open(mapName);
             sMap.smMapWC.getMapControl().getMap().setFullScreenDrawModel(true);
             sMap.smMapWC.getMapControl().getMap().refresh();
-
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
@@ -5446,5 +5718,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
 
     /************************************** 导航模块 END ****************************************/
+
 
 }

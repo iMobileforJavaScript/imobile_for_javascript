@@ -9,6 +9,16 @@
 #import "SMap.h"
 #import "FileUtils.h"
 #import "SuperMap/AnimationManager.h"
+#import "SuperMap/AnimationGroup.h"
+#import "SuperMap/AnimationGO.h"
+#import "SuperMap/GeoGraphicObject.h"
+#import "SuperMap/AnimationBlink.h"
+#import "SuperMap/AnimationAttribute.h"
+#import "SuperMap/AnimationShow.h"
+#import "SuperMap/AnimationRotate.h"
+#import "SuperMap/AnimationScale.h"
+#import "SuperMap/AnimationGrow.h"
+#import "SuperMap/Point3D.h"
 
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
@@ -788,6 +798,28 @@ RCT_REMAP_METHOD(pointSearch, pointSearchWithString:(NSString *)str resolver:(RC
         reject(@"pointSearch",exception.reason,nil);
     }
 }
+#pragma mark 获取当前定位经纬度
+RCT_REMAP_METHOD(getCurrentPosition, getCurrentPositionWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        GPSData *gpsData= [NativeUtil getGPSData];
+        resolve(@{
+                  @"x":[NSNumber numberWithDouble:gpsData.dLongitude],
+                  @"y":[NSNumber numberWithDouble:gpsData.dLatitude],
+                  });
+    }@catch(NSException *exception){
+        reject(@"getCurrentPosition",exception.reason,nil);
+    }
+}
+#pragma mark 移除POI搜索的callout
+RCT_REMAP_METHOD(removePOICallout, removePOICalloutWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        [sMap.poiSearchHelper2D clearPoint];
+        resolve(@(YES));
+    }@catch(NSException *exception){
+        reject(@"removePOICallout",exception.reason,nil);
+    }
+}
 #pragma mark 定位到搜索结果某个点
 RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithIndex:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -806,7 +838,11 @@ RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithIndex:(int)index resolver:(
     for (int i = 0; i < count; i++) {
         OnlinePOIInfo * onlinePoiInfo=[locations objectAtIndex:i];
         name = onlinePoiInfo.name;
-        map = @{@"pointName":name};
+        map = @{
+                @"pointName":name,
+                @"x":[NSNumber numberWithDouble:onlinePoiInfo.location.x],
+                @"y":[NSNumber numberWithDouble:onlinePoiInfo.location.y],
+                };
         [arr addObject:map];
     }
     [self sendEventWithName:POINTSEARCH2D_KEYWORDS body:arr];
@@ -1271,34 +1307,63 @@ RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve re
  *
  * @param promise
  */
-RCT_REMAP_METHOD(setLayerFullView, name:(NSString*)name setLayerFullViewResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setLayerFullView, setLayerFullView:(NSString*)layerPath setLayerFullViewResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
      @try{
          Map* map = sMap.smMapWC.mapControl.map;
-         Layer* layer =  [SMLayer findLayerByPath:name];
+//         Layer* layer =  [SMLayer findLayerByPath:layerPath];
+         
+         NSArray* paths = [layerPath componentsSeparatedByString:@"/"];
+         Layer* layer =  [SMLayer findLayerByPath:paths[0]];
+         
+         Layers* layers = map.layers;
+         NSMutableArray* layerArr = [[NSMutableArray alloc] init];
+         for (int i = 0; i < [layers getCount]; i++) {
+             Layer* temp = [layers getLayerAtIndex:i];
+             if (temp.visible && ![temp.name isEqualToString:layer.name]) {
+                 temp.visible = NO;
+                 [layerArr addObject:temp];
+             }
+         }
+         
+         if ([layer isKindOfClass:[LayerGroup class]] && paths.count > 1) {
+             NSString* tempPath = paths[1];
+             for (int i = 2; i < paths.count; i++) {
+                 tempPath = [NSString stringWithFormat:@"%@/%@", tempPath, paths[i]];
+             }
+             NSArray* tempArr = [SMMap setLayersInvisibleByGroup:(LayerGroup *)layer except:tempPath];
+             layerArr = [[NSMutableArray alloc] initWithArray:[layerArr arrayByAddingObjectsFromArray:tempArr]];
+         }
+         
+         [map viewEntire];
+         for (int i = 0; i < layerArr.count; i++) {
+             Layer* temp = layerArr[i];
+             temp.visible = YES;
+         }
          //sMap.smMapWC.mapControl.map.viewBounds
-         Rectangle2D* bounds = layer.dataset.bounds;
+//         Rectangle2D* bounds = layer.dataset.bounds;
+//         if(layer.dataset.prjCoordSys.type != map.prjCoordSys.type){
+//             Point2Ds *points = [[Point2Ds alloc]init];
+//             [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
+//             [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
+//             PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+//             [srcPrjCoorSys setType: layer.dataset.prjCoordSys.type];
+//             CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+//
+//             //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+//             [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+//             Point2D* pt1 = [points getItem:0];
+//             Point2D* pt2 = [points getItem:1];
+//             bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
+//         }
+//
+//         if(bounds.width <= 0 || bounds.height <= 0){
+//             map.center = bounds.center;
+//         } else {
+//             sMap.smMapWC.mapControl.map.viewBounds = bounds;
+//             [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.8 time:200];
+//         }
          
-         if(layer.dataset.prjCoordSys.type != map.prjCoordSys.type){
-             Point2Ds *points = [[Point2Ds alloc]init];
-             [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
-             [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
-             PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-             [srcPrjCoorSys setType: layer.dataset.prjCoordSys.type];
-             CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-             
-             //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-             [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-             Point2D* pt1 = [points getItem:0];
-             Point2D* pt2 = [points getItem:1];
-             bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
-         }
          
-         if(bounds.width <= 0 || bounds.height <= 0){
-             map.center = bounds.center;
-         } else {
-             sMap.smMapWC.mapControl.map.viewBounds = bounds;
-             [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.8 time:200];
-         }
          [map refresh];
          resolve(@(1));
      } @catch (NSException *exception) {
@@ -2633,24 +2698,24 @@ RCT_REMAP_METHOD(addCadLayer, addCadLayer:(NSString*)layerName resolver:(RCTProm
 #pragma mark 态势推演定时器
 RCT_REMAP_METHOD(initAnimation,initAnimation:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        //    //获取全局队列
-        //    dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        //
-        //    //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
-        //    dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, global);
-        //
-        //    self.timer = timer;
-        //
-        //    //设置触发的间隔时间
-        //    dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
-        //
-        //    //设置定时器的触发事件
-        //    dispatch_source_set_event_handler(timer, ^{
-        //        [[AnimationManager getInstance] excute];
-        //
-        //    });
-        //
-        //    dispatch_resume(timer);
+            //获取全局队列
+            dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        
+            //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
+            dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, global);
+        
+            self.timer = timer;
+        
+            //设置触发的间隔时间
+            dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
+        
+            //设置定时器的触发事件
+            dispatch_source_set_event_handler(timer, ^{
+                [[AnimationManager getInstance] excute];
+        
+            });
+        
+            dispatch_resume(timer);
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"addCadLayer", exception.reason, nil);
@@ -2663,27 +2728,27 @@ RCT_REMAP_METHOD(readAnimationXmlFile,readAnimationXmlFile:(NSString*) filePath 
         
         //获取全局队列
         dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        
+
         //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
         dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, global);
-        
+
         self.timer = timer;
-        
+
         //设置触发的间隔时间
         dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
-        
+
         //设置定时器的触发事件
         dispatch_source_set_event_handler(timer, ^{
             [[AnimationManager getInstance] excute];
-            
+
         });
-        
+
         dispatch_resume(timer);
         
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
         [mapControl setAnimation];
-//        [[AnimationManager getInstance] deleteAll];
+        [[AnimationManager getInstance] deleteAll];
         [[AnimationManager getInstance] getAnimationFromXML:filePath];
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -2751,6 +2816,207 @@ RCT_REMAP_METHOD(animationClose,animationClose:(RCTPromiseResolveBlock)resolve r
     }
 }
 
+#pragma mark 创建推演动画对象
+RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo newPlotMapName:(NSString*)newPlotMapName  resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        if (![createInfo objectForKey:@"animationMode"]) {
+            resolve(@(NO));
+            return;
+        }
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        NSString* animationGroupName=@"Create_Animation_Instance_#";
+        int count=[AnimationManager.getInstance getGroupCount];
+        //组件缺陷，group的count等于0调用getGroupByName还是能返回一个对象
+//        AnimationGroup* animationGroup=[AnimationManager.getInstance getGroupByName:animationGroupName];
+        AnimationGroup* animationGroup;
+        if(count==0){
+            animationGroup=[AnimationManager.getInstance addAnimationGroup:animationGroupName];
+        }else{
+            animationGroup=[AnimationManager.getInstance getGroupByIndex:0];
+        }
+        
+        NSNumber* animationMode=[createInfo objectForKey:@"animationMode"];
+        AnimationType type;
+        switch (animationMode.integerValue) {
+            case 0:
+                type=WayAnimation;
+                break;
+            case 1:
+                type=BlinkAnimation;
+                break;
+            case 2:
+                type=AttribAnimation;
+                break;
+            case 3:
+                type=ShowAnimation;
+                break;
+            case 4:
+                type=RotateAnimation;
+                break;
+            case 5:
+                type=ScaleAnimation;
+                break;
+            case 6:
+                type=GrowAnimation;
+                break;
+        }
+        AnimationGO* animationGo=[AnimationManager.getInstance createAnimation:type];
+        
+        if(type==WayAnimation){
+            
+        }else if(type==BlinkAnimation){
+            AnimationBlink* animationBlink=(AnimationBlink*)animationGo;
+            [animationBlink setBlinkNumberofTimes:20];
+            [animationBlink setBlinkStyle:1];
+            [animationBlink setBlinkAnimationReplaceStyle:1];
+            [animationBlink setBlinkAnimationReplaceColor:[[Color alloc] initWithR:0 G:0 B:255]];
+            animationGo=(AnimationGO*)animationBlink;
+        }else if(type==AttribAnimation){
+            AnimationAttribute* animationAttribute=(AnimationAttribute*)animationGo;
+            [animationAttribute setStartLineColor:[[Color alloc] initWithR:255 G:0 B:0]];
+            [animationAttribute setEndLineColor:[[Color alloc] initWithR:0 G:0 B:255]];
+            [animationAttribute setLineColorAttr:YES];
+            [animationAttribute setStartLineWidth:0];
+            [animationAttribute setEndLineWidth:1];
+            [animationAttribute setLineWidthAttr:YES];
+            animationGo=(AnimationGO*)animationAttribute;
+        }else if(type==ShowAnimation){
+            AnimationShow* animationShow=(AnimationShow*)animationGo;
+            [animationShow setShowEffect:NO];
+            [animationShow setShowState:YES];
+            animationGo=(AnimationGO*)animationShow;
+        }else if(type==RotateAnimation){
+            Point3D startPnt = {0,0,0};
+            Point3D endPnt = {720,720,0};
+            AnimationRotate* animationRotate=(AnimationRotate*)animationGo;
+            [animationRotate setStartangle:startPnt];
+            [animationRotate setEndAngle:endPnt];
+            animationGo=(AnimationGO*)animationRotate;
+            
+        }else if(type==ScaleAnimation){
+            AnimationScale* animationScale=(AnimationScale*)animationGo;
+            [animationScale setStartScaleFactor:0];
+            [animationScale setEndScaleFactor:1];
+            animationGo=(AnimationGO*)animationScale;
+        }else if(type==GrowAnimation){
+            //默认是从0生成到1
+        }
+        
+        if([createInfo objectForKey:@"startTime"]&&[animationGroup getAnimationCount]>0){
+            NSNumber* startTimeNumber=[createInfo objectForKey:@"startTime"];
+            double startTime=[startTimeNumber doubleValue];
+            if([createInfo objectForKey:@"startMode"]){
+                NSNumber* startMode=[createInfo objectForKey:@"startMode"];
+                AnimationGO* lastAnimationGO=[animationGroup getAnimationByIndex:([animationGroup getAnimationCount]-1)];
+                switch ([startMode intValue]) {
+                    case 1:
+                        startTime+=lastAnimationGO.startTime+lastAnimationGO.duration;
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        startTime+=lastAnimationGO.startTime;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            [animationGo setStartTime:startTime];
+        }
+        if([createInfo objectForKey:@"durationTime"]){
+            NSNumber* durationTimeNumber=[createInfo objectForKey:@"durationTime"];
+            double durationTime=[durationTimeNumber doubleValue];
+            [animationGo setDuration:durationTime];
+        }
+        
+        NSString* mapName=mapControl.map.name;
+        if(!mapName||[mapName isEqualToString:@""]){
+            if(newPlotMapName&&![newPlotMapName isEqualToString:@""]){
+                mapName=newPlotMapName;
+            }else{
+                int layerCount=[mapControl.map.layers getCount];
+                if(layerCount>0){
+                    mapName=[mapControl.map.layers getLayerAtIndex:layerCount-1].name;
+                }
+            }
+            [mapControl.map save:mapName];
+        }
+        
+        NSString* animationGoName=[NSString stringWithFormat:@"动画_%d",[[AnimationManager.getInstance getGroupByName:animationGroupName] getAnimationCount]];
+        if([createInfo objectForKey:@"layerName"]&&[createInfo objectForKey:@"geoId"]){
+            NSString* layerName=[createInfo objectForKey:@"layerName"];
+            int geoId=[[createInfo objectForKey:@"geoId"] intValue];
+            Layer* layer=[mapControl.map.layers getLayerWithName:layerName];
+            if(layer){
+                DatasetVector* dataset=(DatasetVector*)[mapControl.map.layers getLayerWithName:layerName].dataset;
+                QueryParameter* queryParameter=[[QueryParameter alloc] init];
+                [queryParameter setQueryIDs:[[NSArray alloc]initWithObjects:@(geoId), nil]];
+                [queryParameter setQueryType:IDS];
+                Recordset* recordset=[dataset query:queryParameter];
+                Geometry* geometry=[recordset geometry];
+                if(geometry){
+                    [animationGo setName:animationGoName];
+                    [animationGo setGeomtry:geometry mapControl:mapControl layer:layer.name];
+                    [animationGroup addAnimation:animationGo];
+                }
+            }
+        }
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setDynamicProjection", exception.reason, nil);
+    }
+}
+
+#pragma mark 保存推演动画
+RCT_REMAP_METHOD(animationSave,animationSave:(NSString*) savePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        if(![[NSFileManager defaultManager] fileExistsAtPath:savePath]){
+            [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:YES attributes:nil error:nil];
+        }
+        NSString* mapName=mapControl.map.name;
+        NSString* tempPath=[NSString stringWithFormat:@"%@/%@.xml",savePath,mapName];
+        NSString* path=[FileUtils formateNoneExistFileName:tempPath isDir:false];
+        BOOL result=[AnimationManager.getInstance saveAnimationToXML:path];
+        [AnimationManager.getInstance reset];
+        [AnimationManager.getInstance deleteAll];
+        
+        resolve(@(result));
+    } @catch (NSException *exception) {
+        reject(@"animationSave", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取标号对象type
+RCT_REMAP_METHOD(getGeometryTypeById,getGeometryTypeById:(NSString*) layerName geoId:(int)geoId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        int type=-1;
+        Layer* layer=[mapControl.map.layers getLayerWithName:layerName];
+        if(layer){
+            DatasetVector* dataset=(DatasetVector*)[mapControl.map.layers getLayerWithName:layerName].dataset;
+            QueryParameter* queryParameter=[[QueryParameter alloc] init];
+            [queryParameter setQueryIDs:[[NSArray alloc]initWithObjects:@(geoId), nil]];
+            [queryParameter setQueryType:IDS];
+            Recordset* recordset=[dataset query:queryParameter];
+            Geometry* geometry=[recordset geometry];
+            if(geometry){
+                GeoGraphicObject* geoGraphicObject=(GeoGraphicObject*)geometry;
+                type=[geoGraphicObject getSymbolType];
+            }
+        }
+        resolve(@(type));
+    } @catch (NSException *exception) {
+        reject(@"getGeometryTypeById", exception.reason, nil);
+    }
+}
 
 #pragma mark /************************************** 选择集操作 BEGIN****************************************/
 #pragma mark 设置Selection样式

@@ -12,7 +12,7 @@ static POISearchHelper2D *poiSearchHelper2D = nil;
     MapControl *m_mapControl;
     NSArray *m_searchResult;
     NSString *tagName;
-    Callout *m_callout;
+    InfoCallout *m_callout;
 }
 
 @end
@@ -54,12 +54,14 @@ static POISearchHelper2D *poiSearchHelper2D = nil;
     Point2D *mapPoint = [points getItem:0];
     
     NSString *name = curPOI.name;
-    if(m_callout == nil){
-        m_callout = [[Callout alloc]initWithMapControl:m_mapControl BackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0] Alignment:CALLOUT_LEFTBOTTOM];
-        m_callout.width = 200;
-        m_callout.height = 40;
-        tagName = @"POISEARCH_2D_POINT";
-    }
+    
+    [self clearPoint];
+    
+    m_callout = [[InfoCallout alloc]initWithMapControl:m_mapControl BackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0] Alignment:CALLOUT_LEFTBOTTOM];
+    m_callout.width = 200;
+    m_callout.height = 40;
+    tagName = @"POISEARCH_2D_POINT";
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         UIImage *image = [UIImage imageNamed:@"resources.bundle/icon_red.png"];
         UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
@@ -72,7 +74,7 @@ static POISearchHelper2D *poiSearchHelper2D = nil;
         label.text = name;
         
         label.textColor = [UIColor grayColor];
-        label.layer.shadowColor = [UIColor blackColor].CGColor;
+        label.layer.shadowColor = [UIColor whiteColor].CGColor;
         label.layer.shadowOffset = CGSizeMake(0, 0);
         label.layer.shadowOpacity = 1;
         
@@ -88,8 +90,12 @@ static POISearchHelper2D *poiSearchHelper2D = nil;
     return YES;
 }
 
--(void)clearPoint:(MapControl*)control{
-    
+-(void)clearPoint{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [m_mapControl removeCalloutWithTag:tagName];
+        m_callout = nil;
+        [m_mapControl.map refresh];
+    });
 }
 
 -(void)querySuccess:(OnlinePOIQueryResult*)result{

@@ -19,14 +19,23 @@
     [map refresh];
     return layer;
 }
-
 + (Datasource *)getDatasourceByDictionary:(NSDictionary *)dic {
+    return [SMAnalyst getDatasourceByDictionary:dic createIfNotExist:NO];;
+}
+
++ (Datasource *)getDatasourceByDictionary:(NSDictionary *)dic createIfNotExist:(BOOL)isCreate {
     Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
     Datasource* datasource = nil;
     if (dic) {
         if ([dic objectForKey:@"datasource"]) {
             NSString* alias = [dic objectForKey:@"datasource"];
             datasource = [datasources getAlias:alias];
+            if (datasource == nil && isCreate) {
+                Workspace* workspace = [SMap singletonInstance].smMapWC.workspace;
+                DatasourceConnectionInfo* info = [SMDatasource convertDicToInfo:dic];
+                
+                datasource = [workspace.datasources open:info];
+            }
         }
     }
     return datasource;
@@ -57,6 +66,15 @@
             NSString* alias = [dic objectForKey:@"datasource"];
             datasource = [datasources getAlias:alias];
             NSString* datasetName =  [dic objectForKey:@"dataset"];
+            
+            // 如果datasource没有被打开
+            if (datasource == nil) {
+                Workspace* workspace = [SMap singletonInstance].smMapWC.workspace;
+                DatasourceConnectionInfo* info = [SMDatasource convertDicToInfo:dic];
+                
+                datasource = [workspace.datasources open:info];
+            }
+            
             if (datasource && datasetName) {
                 datasetName = [datasource.datasets availableDatasetName:datasetName];
 //                if ([datasource.datasets getWithName:datasetName]) {
@@ -331,9 +349,11 @@
 
 + (void)deleteDataset:(NSDictionary *)dsInfo {
     Datasource* ds = [SMAnalyst getDatasourceByDictionary:dsInfo];
-    long resultDatasetIndex = [ds.datasets indexOf:[dsInfo objectForKey:@"dataset"]];
-    if (resultDatasetIndex >= 0) {
-        [ds.datasets delete:resultDatasetIndex];
+    if (ds) {
+        long resultDatasetIndex = [ds.datasets indexOf:[dsInfo objectForKey:@"dataset"]];
+        if (resultDatasetIndex >= 0) {
+            [ds.datasets delete:resultDatasetIndex];
+        }
     }
 }
 
@@ -444,5 +464,109 @@
     if ([data objectForKey:@"tfWeightField"]) info.tfWeightField = [data objectForKey:@"tfWeightField"];
     
     return info;
+}
+
++ (InterpolationParameter *)getInterpolationParameter:(NSDictionary *)data {
+    if ([data objectForKey:@"type"]) {
+        NSNumber* type = [data objectForKey:@"type"];
+        if (type.intValue == IAT_IDW) {
+            InterpolationIDWParameter* parameter = [[InterpolationIDWParameter alloc] init];
+            if ([data objectForKey:@"power"]) {
+                NSNumber* power = [data objectForKey:@"power"];
+                parameter.power = power.intValue;
+            }
+            parameter = (InterpolationIDWParameter *)[SMAnalyst getCommonInterpolationParameter:parameter data:data];
+            return parameter;
+        } else if (type.intValue == IAT_RBF) {
+            InterpolationRBFParameter* parameter = [[InterpolationRBFParameter alloc] init];
+            if ([data objectForKey:@"tension"]) {
+                NSNumber* tension = [data objectForKey:@"tension"];
+                parameter.tension = tension.doubleValue;
+            }
+            if ([data objectForKey:@"smooth"]) {
+                NSNumber* smooth = [data objectForKey:@"smooth"];
+                parameter.smooth = smooth.doubleValue;
+            }
+            parameter = (InterpolationRBFParameter *)[SMAnalyst getCommonInterpolationParameter:parameter data:data];
+            return parameter;
+        } else if (type.intValue == IAT_DENSITY) {
+            InterpolationDensityParameter* parameter = [[InterpolationDensityParameter alloc] init];
+            parameter = (InterpolationDensityParameter *)[SMAnalyst getCommonInterpolationParameter:parameter data:data];
+            return parameter;
+        } else if (type.intValue == IAT_KRIGING || type.intValue == IAT_SimpleKRIGING || type.intValue == IAT_UniversalKRIGING) {
+            InterpolationKrigingParameter* parameter = [[InterpolationKrigingParameter alloc] init];
+            if ([data objectForKey:@"variogramMode"]) {
+                NSNumber* variogramMode = [data objectForKey:@"variogramMode"];
+                parameter.variogramMode = variogramMode.intValue;
+            }
+            if ([data objectForKey:@"range"]) {
+                NSNumber* range = [data objectForKey:@"range"];
+                parameter.range = range.doubleValue;
+            }
+            if ([data objectForKey:@"sill"]) {
+                NSNumber* sill = [data objectForKey:@"sill"];
+                parameter.sill = sill.doubleValue;
+            }
+            if ([data objectForKey:@"angle"]) {
+                NSNumber* angle = [data objectForKey:@"angle"];
+                parameter.angle = angle.doubleValue;
+            }
+            if ([data objectForKey:@"nugget"]) {
+                NSNumber* nugget = [data objectForKey:@"nugget"];
+                parameter.nugget = nugget.doubleValue;
+            }
+            if ([data objectForKey:@"mean"]) {
+                NSNumber* mean = [data objectForKey:@"mean"];
+                parameter.mean = mean.doubleValue;
+            }
+            if ([data objectForKey:@"exponent"]) {
+                NSNumber* exponent = [data objectForKey:@"exponent"];
+                parameter.exponent = exponent.intValue;
+            }
+            parameter = (InterpolationKrigingParameter *)[SMAnalyst getCommonInterpolationParameter:parameter data:data];
+            return parameter;
+        }
+    }
+    return nil;
+}
+
++ (InterpolationParameter *)getCommonInterpolationParameter:(InterpolationParameter *)parameter data:(NSDictionary *)data {
+    if (parameter) {
+        if ([data objectForKey:@"resolution"]) {
+            NSNumber* resolution = [data objectForKey:@"resolution"];
+            parameter.resolution = resolution.doubleValue;
+        }
+        if ([data objectForKey:@"searchMode"]) {
+            NSNumber* searchMode = [data objectForKey:@"searchMode"];
+            parameter.searchMode = searchMode.intValue;
+        }
+        if ([data objectForKey:@"searchRadius"]) {
+            NSNumber* searchRadius = [data objectForKey:@"searchRadius"];
+            parameter.searchRadius = searchRadius.doubleValue;
+        }
+        if ([data objectForKey:@"expectedCount"]) {
+            NSNumber* expectedCount = [data objectForKey:@"expectedCount"];
+            parameter.expectedCount = expectedCount.intValue;
+        }
+        if ([data objectForKey:@"bounds"]) {
+            NSDictionary* bounds = [data objectForKey:@"bounds"];
+            NSNumber* left = [bounds objectForKey:@"left"];
+            NSNumber* bottom = [bounds objectForKey:@"bottom"];
+            NSNumber* right = [bounds objectForKey:@"right"];
+            NSNumber* top = [bounds objectForKey:@"top"];
+            Rectangle2D* rectangle = [[Rectangle2D alloc] initWith:left.doubleValue bottom:bottom.doubleValue right:right.doubleValue top:top.doubleValue];
+            parameter.bounds = rectangle;
+        }
+        if ([data objectForKey:@"maxPointCountForInterpolation"]) {
+            NSNumber* maxPointCountForInterpolation = [data objectForKey:@"maxPointCountForInterpolation"];
+            parameter.maxPointCountForInterpolation = maxPointCountForInterpolation.intValue;
+        }
+        if ([data objectForKey:@"maxPointCountInNode"]) {
+            NSNumber* maxPointCountInNode = [data objectForKey:@"maxPointCountInNode"];
+            parameter.maxPointCountInNode = maxPointCountInNode.intValue;
+        }
+    }
+    
+    return parameter;
 }
 @end

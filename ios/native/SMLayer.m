@@ -419,54 +419,59 @@
     [recordset edit];
     BOOL result = NO;
     for (int i = 0; i < fieldInfos.count; i++) {
-        NSDictionary* info = fieldInfos[i];
-        
-        NSString* name = [info objectForKey:@"name"];
-        NSObject* value = [info objectForKey:@"value"];
-        FieldInfo* fieldInfo = [recordset.fieldInfos getName:name];
-        
-        if (!fieldInfo) continue;
-        
-        switch (fieldInfo.fieldType) {
-            case FT_BOOLEAN: {
-                BOOL boolValue = NO;
-                if ([value isEqual:@"YES"] || [value isEqual:@"true"]) {
-                    boolValue = YES;
+        @try{
+            NSDictionary* info = fieldInfos[i];
+            
+            NSString* name = [info objectForKey:@"name"];
+            NSObject* value = [info objectForKey:@"value"];
+            FieldInfo* fieldInfo = [recordset.fieldInfos getName:name];
+            
+            if (!fieldInfo) continue;
+            
+            switch (fieldInfo.fieldType) {
+                case FT_BOOLEAN: {
+                    BOOL boolValue = NO;
+                    if ([value isEqual:@"YES"] || [value isEqual:@"true"]) {
+                        boolValue = YES;
+                    }
+                    result = [recordset setBOOLWithName:name BOOLValue:boolValue];
+                    break;
                 }
-                result = [recordset setBOOLWithName:name BOOLValue:boolValue];
-                break;
+                case FT_BYTE:
+                    result = [recordset setByteWithName:name ByteValue: (Byte)[[(NSString *)value dataUsingEncoding: NSUTF8StringEncoding] bytes]];
+                    break;
+                case FT_INT16: {
+                    short shortValue = (short)((NSString *)value).intValue;
+                    result = [recordset setInt16WithName:name shortValue:shortValue];
+                    break;
+                }
+                case FT_INT32:
+                    result = [recordset setInt32WithName:name value:((NSString *)value).intValue];
+                    break;
+                case FT_INT64:
+                    result = [recordset setInt64WithName:name value:((NSString *)value).intValue];
+                    break;
+                case FT_SINGLE:
+                    result = [recordset setSingleWithName:name value:((NSString *)value).floatValue];
+                    break;
+                case FT_DOUBLE:
+                    result = [recordset setDoubleWithName:name DoubleValue:((NSString *)value).doubleValue];
+                    break;
+                case FT_DATE:
+                    break;
+                case FT_TEXT:
+                    result = [recordset setStringWithName:name StringValue:(NSString *)value];
+                    break;
+                case FT_LONGBINARY:
+                default:
+                    result = [recordset setFieldValueWithString:name Obj:value];
+                    break;
             }
-            case FT_BYTE:
-                result = [recordset setByteWithName:name ByteValue: (Byte)[[(NSString *)value dataUsingEncoding: NSUTF8StringEncoding] bytes]];
-                break;
-            case FT_INT16: {
-                short shortValue = (short)((NSNumber *)value).intValue;
-                result = [recordset setInt16WithName:name shortValue:shortValue];
-                break;
-            }
-            case FT_INT32:
-                result = [recordset setInt32WithName:name value:((NSNumber *)value).intValue];
-                break;
-            case FT_INT64:
-                result = [recordset setInt64WithName:name value:((NSNumber *)value).intValue];
-                break;
-            case FT_SINGLE:
-                result = [recordset setSingleWithName:name value:((NSNumber *)value).floatValue];
-                break;
-            case FT_DOUBLE:
-                result = [recordset setDoubleWithName:name DoubleValue:((NSNumber *)value).doubleValue];
-                break;
-            case FT_DATE:
-                break;
-            case FT_TEXT:
-                result = [recordset setStringWithName:name StringValue:(NSString *)value];
-                break;
-            case FT_LONGBINARY:
-            default:
-                result = [recordset setFieldValueWithString:name Obj:value];
-                break;
+        }@catch (NSException *exception) {
+            continue;
         }
-        if (!result) break;
+       
+//        if (!result) break;
     }
     
     [recordset update];
