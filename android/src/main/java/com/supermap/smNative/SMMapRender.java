@@ -845,7 +845,7 @@ public class SMMapRender {
                 new Thread(){
                     @Override
                     public void run(){
-                        String strDir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/SuperMap";
+                        String strDir = "/data/data/"+getPackageName()+"/Cache";//android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/SuperMap";
                         String strMapPath = strDir + "/temporary.jpg";
                         try {
                             //目录
