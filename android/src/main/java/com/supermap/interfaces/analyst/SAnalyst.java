@@ -19,14 +19,11 @@ import com.supermap.analyst.BufferRadiusUnit;
 import com.supermap.analyst.networkanalyst.FacilityAnalyst;
 import com.supermap.analyst.networkanalyst.TransportationAnalyst;
 import com.supermap.analyst.spatialanalyst.InterpolationAlgorithmType;
-import com.supermap.analyst.spatialanalyst.InterpolationDensityParameter;
-import com.supermap.analyst.spatialanalyst.InterpolationIDWParameter;
-import com.supermap.analyst.spatialanalyst.InterpolationKrigingParameter;
 import com.supermap.analyst.spatialanalyst.InterpolationParameter;
-import com.supermap.analyst.spatialanalyst.InterpolationRBFParameter;
 import com.supermap.analyst.spatialanalyst.Interpolator;
 import com.supermap.analyst.spatialanalyst.ProximityAnalyst;
 import com.supermap.analyst.spatialanalyst.SearchMode;
+import com.supermap.analyst.spatialanalyst.VariogramMode;
 import com.supermap.containts.EventConst;
 import com.supermap.data.Color;
 import com.supermap.data.CursorType;
@@ -124,6 +121,15 @@ public class SAnalyst extends ReactContextBaseJavaModule {
             subConstants.put(PixelNames[i], value);
 
             constants.put("PixelFormat", subConstants);
+        }
+
+        String[] VariogramModes = Enum.getNames(VariogramMode.class);
+        for (int i = 0; i < PixelNames.length; i++) {
+            Map<String, Object> subConstants = new HashMap<>();
+            int value = Enum.getValueByName(VariogramMode.class, VariogramModes[i]);
+            subConstants.put(VariogramModes[i], value);
+
+            constants.put("VariogramModes", subConstants);
         }
         return constants;
     }

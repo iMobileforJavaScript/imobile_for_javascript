@@ -10,6 +10,7 @@ const nativeEvt = new NativeEventEmitter(Analyst)
 const SearchMode = Analyst.SearchMode
 const InterpolationAlgorithmType = Analyst.InterpolationAlgorithmType
 const PixelFormat = Analyst.PixelFormat
+const VariogramMode = Analyst.VariogramMode
 
 /*********************************************** 缓冲分析 *************************************************/
 
@@ -173,7 +174,7 @@ async function thiessenAnalyst (sourceData = {}, resultData = {}, option = {}) {
 }
 
 /*********************************************** 插值分析 *************************************************/
-async function interpolate (sourceData = {}, resultData = {}, paramter = {}, field = '', scale = 1, pixelFormat) {
+function interpolate (sourceData = {}, resultData = {}, paramter = {}, field = '', scale = 1, pixelFormat) {
   return Analyst.interpolate(sourceData, resultData, paramter, field, scale, pixelFormat)
 }
 
@@ -206,4 +207,5 @@ export default {
   SearchMode,
   InterpolationAlgorithmType,
   PixelFormat,
+  VariogramMode,
 }

@@ -194,6 +194,19 @@ function importDatasetFromGeoJson(datasourceAlias, datasetName, path, DatasetTyp
   }
 }
 
+/**
+ * 获取数据集范围
+ * @param sourceData
+ * @returns {*}
+ */
+function getDatasetBounds(sourceData){
+  try {
+    return SDatasource.getDatasetBounds(sourceData)
+  } catch (error) {
+    console.error(e)
+  }
+}
+
 
 export {
   createDatasource,
@@ -210,4 +223,5 @@ export {
   getDatasetToGeoJson,
   getFieldInfos,
   importDatasetFromGeoJson,
+  getDatasetBounds,
 }
