@@ -25,6 +25,7 @@ import com.supermap.data.Point2Ds;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Recordset;
+import com.supermap.interfaces.ai.SAIClassifyView;
 import com.supermap.interfaces.ai.SAIDetectView;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.interfaces.utils.SMFileUtil;
@@ -329,6 +330,27 @@ public class SMMedia {
         pathArr.add(toDictionary + mediaName + ".jpg");
 
         SAIDetectView.saveArPreviewBitmap(toDictionary, mediaName); //保持AR预览图片
+
+        for (int i = 0; i < pathArr.size(); i++) {
+            if (pathArr.get(i).indexOf(sdcard) == 0) {
+                pathArr.set(i, pathArr.get(i).replace(sdcard, ""));
+            }
+        }
+
+        paths = pathArr;
+
+        if (pathArr != null && addNew) saveLocationDataToDataset();
+
+        return pathArr != null && pathArr.size() > 0;
+    }
+
+    public boolean saveAIClassifyMedia(String mediaName, String toDictionary, boolean addNew) {
+        String sdcard = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+
+        ArrayList<String> pathArr = new ArrayList<>();
+        pathArr.add(toDictionary + mediaName + ".jpg");
+
+        SAIClassifyView.saveClassifyBitmapAsFile(toDictionary, mediaName); //保持AI分类图片
 
         for (int i = 0; i < pathArr.size(); i++) {
             if (pathArr.get(i).indexOf(sdcard) == 0) {

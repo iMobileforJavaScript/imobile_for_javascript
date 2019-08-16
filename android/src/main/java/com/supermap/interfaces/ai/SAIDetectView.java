@@ -630,15 +630,10 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
      */
     public static void saveArPreviewBitmap(final String pictureDirectory, final String fileName) {
         try {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(REACT_CLASS, "----------------SAIDetectView--savePreviewBitmap--------RN--------");
-                    Bitmap previewBitmap = mAIDetectView.getPreviewBitmap();
+            Log.d(REACT_CLASS, "----------------SAIDetectView--savePreviewBitmap--------RN--------");
+            Bitmap previewBitmap = mAIDetectView.getPreviewBitmap();
 
-                    saveBitmapAsFile(pictureDirectory, fileName, previewBitmap);
-                }
-            }).start();
+            saveBitmapAsFile(pictureDirectory, fileName, previewBitmap);
         } catch (Exception e) {
             Log.d(REACT_CLASS, e.getMessage());
         }

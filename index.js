@@ -150,6 +150,7 @@ import SMSymbolTable from './NativeModule/components/SMSymbolTable';
 import SMDynamicArrowView from './NativeModule/components/SMDynamicArrowView.js';
 import SMAIDetectView from './NativeModule/components/SMAIDetectView.js';
 import SMMeasureView from './NativeModule/components/SMMeasureView.js';
+import SMAIClassifyView from './NativeModule/components/SMAIClassifyView.js';
 
 import EngineType from './NativeModule/EngineType'
 import ThemeLabelItem from './NativeModule/ThemeLabelItem'
@@ -192,6 +193,7 @@ import {
   SMessageService,
   SAIDetectView,
   SMeasureView,
+  SAIClassifyView,
 } from './NativeModule/interfaces'
 let SMCollectorType = NativeModules.SCollectorType;
 
@@ -208,6 +210,7 @@ export {
   SMDynamicArrowView,
   SMAIDetectView,
   SMMeasureView,
+  SMAIClassifyView,
 
   Utility,
 
@@ -390,4 +393,5 @@ export {
   /**视频地图模块(AR)**/
   SAIDetectView,
   SMeasureView,
+  SAIClassifyView,
 };

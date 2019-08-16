@@ -46,4 +46,7 @@ dependencies {
     implementation 'com.amap.api:location:latest.integration'
     implementation 'com.google.ar:core:1.7.0'
     implementation 'de.javagl:obj:0.2.1'
+    implementation ('com.wonderkiln:camerakit:0.13.1'){
+        exclude group: 'com.android.support'
+    }
 }
