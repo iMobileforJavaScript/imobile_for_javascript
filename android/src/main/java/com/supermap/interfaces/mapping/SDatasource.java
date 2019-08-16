@@ -11,6 +11,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.FileUtil;
+import com.supermap.RNUtils.JsonUtil;
+import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.DatasetVectorInfo;
@@ -21,6 +23,7 @@ import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.Datasources;
 import com.supermap.data.EncodeType;
 import com.supermap.data.EngineType;
+import com.supermap.data.Recordset;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Map;
@@ -201,6 +204,63 @@ public class SDatasource extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 新建数据集
+     * @param datasourceAlias
+     * @param datasetName
+     * @param datasetName
+     * @param type
+     */
+    @ReactMethod
+    public void createDataset(String datasourceAlias, String datasetName, int type, Promise promise) {
+        try {
+            DatasetType datasetType;
+            if(type == 149) {
+                datasetType = DatasetType.CAD;
+            } else if(type == 7){
+                datasetType = DatasetType.TEXT;
+            } else if(type == 5){
+                datasetType = DatasetType.REGION;
+            } else if (type == 3) {
+                datasetType = DatasetType.LINE;
+            } else {
+                datasetType = DatasetType.POINT;
+            }
+
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
+            boolean hasDataset = datasets.contains(datasetName);
+            DatasetVector datasetVector = null;
+            if(hasDataset){
+                promise.resolve(false);
+            } else {
+                DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+                datasetVectorInfo.setType(datasetType);
+                datasetVectorInfo.setName(datasetName);
+                datasetVector = datasets.create(datasetVectorInfo);
+                datasetVectorInfo.dispose();
+                promise.resolve(true);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void deleteDataset(String datasourceAlias, String datasetName, Promise promise) {
+        try {
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
+
+            int index=datasets.indexOf(datasetName);
+            promise.resolve(datasets.delete(index));
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 从不同数据源中复制数据机
      * @param
      * @param promise
@@ -349,6 +409,52 @@ public class SDatasource extends ReactContextBaseJavaModule {
             }
 
             promise.resolve(dsArr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取指定数据源中的数据集中的字段信息
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void getFieldInfos(ReadableMap infoMap, ReadableMap filter, boolean autoOpen, Promise promise) {
+        try {
+            HashMap<String, Object> data = infoMap.toHashMap();
+
+            String alias = null;
+
+            if (data.containsKey("Alias")) {
+                alias = data.get("Alias").toString();
+            } else if (data.containsKey("alias")) {
+                alias = data.get("alias").toString();
+            }
+            String datasetName = data.get("datasetName").toString();
+
+            Datasources datasources = SMap.getSMWorkspace().getWorkspace().getDatasources();
+
+            Datasource datasource = datasources.get(alias);
+            if (datasource == null && autoOpen) {
+                Workspace workspace = SMap.getSMWorkspace().getWorkspace();
+                DatasourceConnectionInfo info = SMDatasource.convertDicToInfo(data);
+
+                datasource = workspace.getDatasources().open(info);
+            } else if (datasource == null || datasource.getConnectionInfo().getEngineType() != EngineType.UDB) {
+                //除了UDB数据源都排除
+                promise.resolve(Arguments.createMap());
+                return;
+            }
+
+            Dataset dataset = datasource.getDatasets().get(datasetName);
+            WritableArray infos = Arguments.createArray();
+            if (dataset != null) {
+                Recordset recordset = ((DatasetVector)dataset).getRecordset(false, CursorType.STATIC);
+                infos = JsonUtil.getFieldInfos(recordset, filter);
+            }
+
+            promise.resolve(infos);
         } catch (Exception e) {
             promise.reject(e);
         }

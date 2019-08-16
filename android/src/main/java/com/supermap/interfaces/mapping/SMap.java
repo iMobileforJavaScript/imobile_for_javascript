@@ -73,11 +73,19 @@ import com.supermap.mapping.ThemeRange;
 import com.supermap.mapping.ThemeType;
 import com.supermap.mapping.ThemeUnique;
 import com.supermap.mapping.collector.Collector;
+import com.supermap.plot.AnimationAttribute;
+import com.supermap.plot.AnimationBlink;
 import com.supermap.plot.AnimationDefine;
 import com.supermap.plot.AnimationGO;
 import com.supermap.plot.AnimationGroup;
+import com.supermap.plot.AnimationGrow;
 import com.supermap.plot.AnimationManager;
+import com.supermap.plot.AnimationRotate;
+import com.supermap.plot.AnimationScale;
+import com.supermap.plot.AnimationShow;
+import com.supermap.plot.AnimationWay;
 import com.supermap.plot.GeoGraphicObject;
+import com.supermap.plot.GraphicObjectType;
 import com.supermap.plugin.LocationManagePlugin;
 import com.supermap.smNative.collector.SMCollector;
 import com.supermap.smNative.SMLayer;
@@ -4342,7 +4350,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      */
     @ReactMethod
     public static void createAnimationGo(ReadableMap createInfo,String newPlotMapName,Promise promise){
-
+            //顺序：路径、闪烁、属性、显隐、旋转、比例、生长
             try {
                 if (!createInfo.hasKey("animationMode")) {
                     promise.resolve(false);
@@ -4359,7 +4367,52 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                 int animationMode = createInfo.getInt("animationMode");
                 AnimationGO animationGO =  AnimationManager.getInstance().createAnimation(new AnimationDefine.AnimationType(animationMode, animationMode));
-
+                switch (animationMode){
+                    case 0:
+                        break;
+                    case 1:
+                        AnimationBlink animationBlink= (AnimationBlink) animationGO;
+                        animationBlink.setBlinkNumberofTimes(20);
+                        animationBlink.setBlinkStyle(AnimationDefine.BlinkAnimationBlinkStyle.NumberBlink);
+                        animationBlink.setReplaceStyle(AnimationDefine.BlinkAnimationReplaceStyle.ColorReplace);
+                        animationBlink.setBlinkAnimationReplaceColor(new com.supermap.data.Color(0,0,255,255));
+                        animationGO=animationBlink;
+                        break;
+                    case 2:
+                        AnimationAttribute animationAttribute = (AnimationAttribute) animationGO;
+                        animationAttribute.setStartLineColor(new com.supermap.data.Color(255,0,0,255));
+                        animationAttribute.setEndLineColor(new com.supermap.data.Color(0,0,255,255));
+                        animationAttribute.setLineColorAttr(true);
+                        animationAttribute.setStartLineWidth(0);
+                        animationAttribute.setEndLineWidth(1);
+                        animationAttribute.setLineWidthAttr(true);
+                        animationGO=animationAttribute;
+                        break;
+                    case 3:
+                        AnimationShow animationShow = (AnimationShow)animationGO;
+                        animationShow.setShowEffect(0);
+                        animationShow.setShowState(true);
+                        animationGO=animationShow;
+                        break;
+                    case 4:
+                        AnimationRotate animationRotate=(AnimationRotate)animationGO;
+                        animationRotate.setStartAngle(new Point3D(0,0,0));
+                        animationRotate.setEndAngle(new Point3D(720,720,0));
+                        animationGO=animationRotate;
+                        break;
+                    case 5:
+                        AnimationScale animationScale=(AnimationScale)animationGO;
+                        animationScale.setStartScaleFactor(0);
+                        animationScale.setEndScaleFactor(1);
+                        animationGO=animationScale;
+                        break;
+                    case 6:
+                        AnimationGrow animationGrow=(AnimationGrow)animationGO;
+                        animationGrow.setStartLocation(0);
+                        animationGrow.setEndLocation(1);
+                        animationGO=animationGrow;
+                        break;
+                }
                 if (createInfo.hasKey("startTime")&&animationGroup.getAnimationCount()>0) {
                     int startTime = createInfo.getInt("startTime");
                     if (createInfo.hasKey("startMode")) {
@@ -4378,6 +4431,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                                 break;
                         }
                     }
+                    animationGO.setStartTime(startTime);
+                }else if(createInfo.hasKey("startTime")&&animationGroup.getAnimationCount()==0){
+                    int startTime = createInfo.getInt("startTime");
                     animationGO.setStartTime(startTime);
                 }
                 if (createInfo.hasKey("durationTime")) {
@@ -4454,6 +4510,36 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.resolve(result);
         }catch (Exception e) {
             promise.resolve(false);
+        }
+    }
+
+    /**
+     * 获取标绘对象type
+     */
+    @ReactMethod
+    public static void getGeometryTypeById(String layerName,int geoId,Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            int type=-1;
+            Layer layer=mapControl.getMap().getLayers().get(layerName);
+            if(layer!=null){
+                DatasetVector dataset = (DatasetVector) mapControl.getMap().getLayers().get(layerName).getDataset();
+                Recordset recordset = dataset.query("SmID="+geoId, CursorType.STATIC);
+                Geometry geometry=recordset.getGeometry();
+                Geometry geometry1=(GeoGraphicObject) geometry;
+                if(geometry!=null){
+                    GeoGraphicObject geoGraphicObject=(GeoGraphicObject) geometry;
+                    GraphicObjectType graphicObjectType= geoGraphicObject.getSymbolType();
+                    type=graphicObjectType.value();
+                }
+            }
+
+
+            promise.resolve(type);
+        }catch (Exception e) {
+            promise.resolve(-1);
         }
     }
 

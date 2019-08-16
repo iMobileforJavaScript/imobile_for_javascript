@@ -8,6 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import "AnimationGO.h"
-@interface AnimationRotate : AnimationGO
+#import "Point3D.h"
 
+@interface AnimationRotate : AnimationGO
+/**
+ * 旋转方向 0);//顺时针 1);//逆时针
+ */
+@property(nonatomic)int rotateDirection;
+
+@property(nonatomic)Point3D startangle;
+@property(nonatomic)Point3D endAngle;
 @end
