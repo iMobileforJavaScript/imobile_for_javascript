@@ -97,40 +97,36 @@ public class SAnalyst extends ReactContextBaseJavaModule {
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
         String[] interpolationAlgorithmTypeNames = Enum.getNames(InterpolationAlgorithmType.class);
+        Map<String, Object> subConstants = new HashMap<>();
         for (int i = 0; i < interpolationAlgorithmTypeNames.length; i++) {
-            Map<String, Object> subConstants = new HashMap<>();
             int value = Enum.getValueByName(InterpolationAlgorithmType.class, interpolationAlgorithmTypeNames[i]);
             subConstants.put(interpolationAlgorithmTypeNames[i], value);
-
-            constants.put("InterpolationAlgorithmType", subConstants);
         }
+        constants.put("InterpolationAlgorithmType", subConstants);
 
         String[] searchModeNames = Enum.getNames(SearchMode.class);
+        Map<String, Object> subConstants1 = new HashMap<>();
         for (int i = 0; i < searchModeNames.length; i++) {
-            Map<String, Object> subConstants = new HashMap<>();
             int value = Enum.getValueByName(SearchMode.class, searchModeNames[i]);
-            subConstants.put(searchModeNames[i], value);
-
-            constants.put("SearchMode", subConstants);
+            subConstants1.put(searchModeNames[i], value);
         }
+        constants.put("SearchMode", subConstants1);
 
         String[] PixelNames = Enum.getNames(PixelFormat.class);
+        Map<String, Object> subConstants2 = new HashMap<>();
         for (int i = 0; i < PixelNames.length; i++) {
-            Map<String, Object> subConstants = new HashMap<>();
             int value = Enum.getValueByName(PixelFormat.class, PixelNames[i]);
-            subConstants.put(PixelNames[i], value);
-
-            constants.put("PixelFormat", subConstants);
+            subConstants2.put(PixelNames[i], value);
         }
+        constants.put("PixelFormat", subConstants2);
 
         String[] VariogramModes = Enum.getNames(VariogramMode.class);
+        Map<String, Object> subConstants3 = new HashMap<>();
         for (int i = 0; i < VariogramModes.length; i++) {
-            Map<String, Object> subConstants = new HashMap<>();
             int value = Enum.getValueByName(VariogramMode.class, VariogramModes[i]);
-            subConstants.put(VariogramModes[i], value);
-
-            constants.put("VariogramMode", subConstants);
+            subConstants3.put(VariogramModes[i], value);
         }
+        constants.put("VariogramMode", subConstants3);
         return constants;
     }
 
