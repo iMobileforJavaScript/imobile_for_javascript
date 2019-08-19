@@ -73,6 +73,12 @@ import com.supermap.mapping.ThemeRange;
 import com.supermap.mapping.ThemeType;
 import com.supermap.mapping.ThemeUnique;
 import com.supermap.mapping.collector.Collector;
+import com.supermap.onlineservices.CoordinateType;
+import com.supermap.onlineservices.NavigationOnline;
+import com.supermap.onlineservices.NavigationOnlineData;
+import com.supermap.onlineservices.NavigationOnlineParameter;
+import com.supermap.onlineservices.PathInfo;
+import com.supermap.onlineservices.RouteType;
 import com.supermap.plot.AnimationAttribute;
 import com.supermap.plot.AnimationBlink;
 import com.supermap.plot.AnimationDefine;
@@ -4371,6 +4377,23 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 AnimationGO animationGO =  AnimationManager.getInstance().createAnimation(new AnimationDefine.AnimationType(animationMode, animationMode));
                 switch (animationMode){
                     case 0:
+                        AnimationWay animationWay=(AnimationWay)animationGO;
+                        Point3Ds point3Ds=new Point3Ds();
+                        if(createInfo.hasKey("wayPoints")){
+                            ReadableArray array=createInfo.getArray("wayPoints");
+                            for (int i=0;i<array.size();i++){
+                                ReadableMap map=array.getMap(i);
+                                double x=map.getDouble("x");
+                                double y=map.getDouble("y");
+                                point3Ds.add(new Point3D(x,y,0));
+                            }
+                        }
+                        animationWay.addPathPts(point3Ds);
+                        animationWay.setTrackLineWidth(0.5);
+                        animationWay.setPathType(AnimationDefine.PathType.POLYLINE);
+                        animationWay.setTrackLineColor(new com.supermap.data.Color(255,0,0,255));
+                        animationWay.setPathTrackDir(true);
+                        animationGO=animationWay;
                         break;
                     case 1:
                         AnimationBlink animationBlink= (AnimationBlink) animationGO;
@@ -4542,6 +4565,91 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.resolve(type);
         }catch (Exception e) {
             promise.resolve(-1);
+        }
+    }
+
+    private Point2Ds point2Ds;
+    /**
+     * 添加路径动画点获取回退路径动画点
+     * @param point
+     * @param promise
+     */
+    @ReactMethod
+    public void addAnimationWayPoint(ReadableMap point, boolean isAdd,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            if(!isAdd){
+                if(point2Ds==null||point2Ds.getCount()==0){
+                    promise.resolve(false);
+                    return;
+                }else {
+                    point2Ds.remove(point2Ds.getCount()-1);
+                }
+            }else {
+                Point point1 = new Point((int) point.getDouble("x"), (int) point.getDouble("y"));
+                Point2D point2D = mapControl.getMap().pixelToMap(point1);
+                if (point2Ds == null) {
+                    point2Ds = new Point2Ds();
+                }
+                point2Ds.add(point2D);
+            }
+            GeoStyle style = new GeoStyle();
+            style.setMarkerSize(new Size2D(10, 10));
+            style.setLineColor(new Color(255, 105, 0));
+            style.setMarkerSymbolID(3614);
+            {
+                if(point2Ds.getCount()==1){
+                    mapControl.getMap().getTrackingLayer().clear();
+                    GeoPoint geoPoint=new GeoPoint(point2Ds.getItem(0));
+                    geoPoint.setStyle(style);
+                    mapControl.getMap().getTrackingLayer().add(geoPoint,"point");
+                }else if(point2Ds.getCount()>1){
+                    mapControl.getMap().getTrackingLayer().clear();
+                    GeoLine geoLine=new GeoLine(point2Ds);
+                    geoLine.setStyle(style);
+                    mapControl.getMap().getTrackingLayer().add(geoLine,"line");
+                }
+                mapControl.getMap().refresh();
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 结束添加路径动画
+     * @param isSave
+     * @param promise
+     */
+    @ReactMethod
+    public void endAnimationWayPoint(boolean isSave, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            if(!isSave){
+                mapControl.getMap().getTrackingLayer().clear();
+                point2Ds=null;
+                promise.resolve(true);
+                return;
+            }
+
+            WritableArray arr = Arguments.createArray();
+            if (point2Ds.getCount()>0) {
+                for (int i = 0; i < point2Ds.getCount(); i++) {
+                    WritableMap writeMap = Arguments.createMap();
+                    Point2D point2D=point2Ds.getItem(i);
+                    writeMap.putDouble("x",point2D.getX());
+                    writeMap.putDouble("y",point2D.getY());
+                    arr.pushMap(writeMap);
+                }
+            }
+            promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
         }
     }
 
@@ -5545,6 +5653,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+
     /**
      * 获取当前定位的经纬度
      * @param promise
@@ -5576,4 +5685,143 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
+    /************************************** 导航模块 START ****************************************/
+    /**
+     * 清除导航路线
+     * @param promise
+     */
+    @ReactMethod
+    public void clearTarckingLayer(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getMap().getTrackingLayer().clear();
+            sMap.smMapWC.getMapControl().getMap().getMapView().removeAllCallOut();
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+
+
+    private void setNavigationOnline(NavigationOnlineData data) {
+        if (data == null) {
+            return;
+        }
+        sMap = SMap.getInstance();
+        sMap.smMapWC.getMapControl().getMap().getTrackingLayer().clear();
+//		从data中获取geoline
+        GeoLine geoLine = data.getRoute();
+        GeoStyle geoLineStyle = new GeoStyle();
+        Color color = new Color(255, 0, 0);
+        geoLineStyle.setLineColor(color);
+//		为geoLine设置风格
+        geoLine.setStyle(geoLineStyle);
+//		在跟踪图层上显示geoLine
+        sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(geoLine, "线路");
+        LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+        Point2D pt = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
+        if (!safeGetType(sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
+            Point2Ds point2Ds = new Point2Ds();
+            point2Ds.add(pt);
+            PrjCoordSys prjCoordSys = new PrjCoordSys();
+            prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+            CoordSysTransParameter parameter = new CoordSysTransParameter();
+
+            CoordSysTranslator.convert(point2Ds, prjCoordSys, sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+            pt = point2Ds.getItem(0);
+            showMarkerHelper(pt, curLocationTag);
+        }
+//		得到线路信息的集合
+        List<PathInfo> pathInfoList = data.getPathInfos();
+
+
+        WritableArray array = Arguments.createArray();
+        for(int i = 0; i <  pathInfoList.size(); i++){
+            WritableMap map = Arguments.createMap();
+            PathInfo pathInfo = pathInfoList.get(i);
+            String roadName = pathInfo.getRoadName();
+            int nextDirection = pathInfo.getNextDirection();
+            double roadLength = pathInfo.getLength();
+
+            map.putString("roadName",roadName);
+            map.putInt("nextDirection",nextDirection);
+            map.putDouble("roadLength",roadLength);
+            array.pushMap(map);
+        }
+
+        WritableMap map = Arguments.createMap();
+        map.putString("Length",data.getLength());
+
+        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(EventConst.NAVIGATION_WAYS, array);
+
+        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(EventConst.NAVIGATION_LENGTH, map);
+    }
+
+    @ReactMethod
+    public void routeAnalyst(int index,Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Point2D endPoint = sMap.poiSearchHelper2D.getSearchPoint(index);
+            LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+            Point2D startPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
+            NavigationOnline navigationOnline = new NavigationOnline();
+            navigationOnline.setKey("fvV2osxwuZWlY0wJb8FEb2i5");
+            navigationOnline.setNavigationOnlineCallback(new NavigationOnline.NavigationOnlineCallback() {
+                @Override
+                public void calculateSuccess(NavigationOnlineData data) {
+                    setNavigationOnline(data);
+                }
+                @Override
+                public void calculateFailed(String errorInfo) {
+                    Log.e("LocationMore", errorInfo);
+                }
+            });
+            NavigationOnlineParameter parameter = new NavigationOnlineParameter();
+            parameter.setStartPoint(startPoint);
+            parameter.setEndPoint(endPoint);
+            parameter.setCoordinateType(CoordinateType.NAVINFO_AMAP_MERCATOR);
+            parameter.setRouteType(RouteType.RE_COMMEND);
+            navigationOnline.routeAnalyst(parameter);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 打开二维导航工作空间及地图
+     * @param promise
+     */
+    @ReactMethod
+    public void open2DNavigationMap(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+
+            Workspace mWorkspace = SMap.getInstance().getSmMapWC().getWorkspace();
+
+//            WorkspaceConnectionInfo m_info = new WorkspaceConnectionInfo();
+//            m_info.setServer(android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString()+"/SuperMap/Demos/3DNaviDemo/室内外导航/beijing.smwu");
+//            m_info.setType(WorkspaceType.SMWU);
+//            mWorkspace.open(m_info);
+
+//            sMap.smMapWC.getMapControl().getMap().setWorkspace(mWorkspace);
+            String mapName = mWorkspace.getMaps().get(0);
+            sMap.smMapWC.getMapControl().getMap().open(mapName);
+            sMap.smMapWC.getMapControl().getMap().setFullScreenDrawModel(true);
+            sMap.smMapWC.getMapControl().getMap().refresh();
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+
+    /************************************** 导航模块 END ****************************************/
+
+
 }

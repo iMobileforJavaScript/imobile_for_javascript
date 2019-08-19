@@ -29,6 +29,8 @@ import com.supermap.data.Point2D;
 import com.supermap.data.Point3D;
 import com.supermap.data.Size2D;
 import com.supermap.data.Workspace;
+import com.supermap.data.WorkspaceConnectionInfo;
+import com.supermap.data.WorkspaceType;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.map3D.AnalysisHelper;
 import com.supermap.map3D.FlyHelper;
@@ -2262,5 +2264,53 @@ public class SScene extends ReactContextBaseJavaModule {
             }
         }
     }
+
+
+    /************************************** 导航模块 START ****************************************/
+
+
+    Workspace mWorkspace;
+
+    /**
+     * 打开三维导航工作空间及地图
+     * @param promise
+     */
+    @ReactMethod
+    public void open3DNavigationMap(Promise promise){
+        try {
+            sScene = getInstance();
+
+            mWorkspace = new Workspace();
+
+            WorkspaceConnectionInfo m_info = new WorkspaceConnectionInfo();
+            m_info.setServer(android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/SuperMap/Demos/3DNaviDemo/凯德Mall/凯德Mall.sxwu");
+            m_info.setType(WorkspaceType.SXWU);
+            mWorkspace.open(m_info);
+
+            sScene.smSceneWc.getSceneControl().setNavigationControlVisible(true);
+
+            sScene.smSceneWc.getSceneControl().sceneControlInitedComplete(new SceneControl.SceneControlInitedCallBackListenner() {
+
+                @Override
+                public void onSuccess(String arg0) {
+                    // TODO Auto-generated method stub
+//                    mNavigation3D = sScene.smSceneWc.getSceneControl().getNavigation();
+
+                    Scene mScene = sScene.smSceneWc.getSceneControl().getScene();
+                    mScene.setWorkspace(mWorkspace);
+
+                    // 打开工作空间中地图的第2幅地图
+                    String mapName = mWorkspace.getScenes().get(0);
+                    mScene.open(mapName);
+                }
+            });
+
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /************************************** 导航模块 END ****************************************/
 
 }

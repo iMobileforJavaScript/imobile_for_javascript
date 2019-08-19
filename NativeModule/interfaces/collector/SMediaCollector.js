@@ -69,7 +69,7 @@ function removeListener () {
       calloutTapListener = null
     }
   } catch (e) {
-  
+
   }
 }
 
@@ -189,7 +189,7 @@ function addMedia (info, addToMap = true) {
   if (info === undefined) return false
   if (info.datasetName === undefined) datasetName = 'MediaDataset'
   let result = Collector.addMedia(info, addToMap)
-  
+
   return result
 }
 
@@ -209,6 +209,14 @@ function addArMedia (info, addToMap = true) {
   if (info === undefined) return false
   if (info.datasetName === undefined) datasetName = 'MediaDataset'
   let result = Collector.addArMedia(info, addToMap)
+
+  return result
+}
+
+function addAIClassifyMedia (info, addToMap = true) {
+  if (info === undefined) return false
+  if (info.datasetName === undefined) datasetName = 'MediaDataset'
+  let result = Collector.addAIClassifyMedia(info, addToMap)
 
   return result
 }
@@ -338,9 +346,10 @@ export default {
   // stopCaptureAudio,
   setCalloutTapListener,
   removeListener,
-  
+
   addMedia,
   addArMedia,
+  addAIClassifyMedia,
   addTour,
   // addMediaFiles,
   // deleteMediaFiles,
@@ -349,7 +358,7 @@ export default {
   removeMedias,
   showMedia,
   hideMedia,
-  
+
   getVideoInfo,
   getMediaInfo,
 }

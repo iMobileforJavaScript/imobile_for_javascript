@@ -10,7 +10,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.supermap.ar.highprecision.MeasureView;
 import com.supermap.ar.highprecision.OnLengthChangedListener;
 
 import java.text.DecimalFormat;
@@ -18,12 +17,12 @@ import java.text.DecimalFormat;
 /**
  * AR高精度采集
  */
-public class MeasureViewManager extends SimpleViewManager<MeasureView> {
+public class MeasureViewManager extends SimpleViewManager<CustomMeasureView> {
 
     public static final String REACT_CLASS = "RCTMeasureView";
 
     private ThemedReactContext mReactContext = null;
-    private MeasureView mMeasureView = null;
+    private CustomMeasureView mMeasureView = null;
     private DecimalFormat mDecimalFormat = new DecimalFormat("0.0000");
 
     @Override
@@ -32,13 +31,13 @@ public class MeasureViewManager extends SimpleViewManager<MeasureView> {
     }
 
     @Override
-    protected MeasureView createViewInstance(ThemedReactContext reactContext) {
+    protected CustomMeasureView createViewInstance(ThemedReactContext reactContext) {
         mReactContext = reactContext;
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
 
-        mMeasureView = new MeasureView(reactContext.getCurrentActivity());
+        mMeasureView = new CustomMeasureView(reactContext.getCurrentActivity());
         mMeasureView.setLayoutParams(params);
         SMeasureView.setInstance(mMeasureView);
 
@@ -65,7 +64,7 @@ public class MeasureViewManager extends SimpleViewManager<MeasureView> {
         }
     };
 
-    private static void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
+    private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(eventName, params);
     }

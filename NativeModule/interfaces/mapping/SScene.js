@@ -870,6 +870,15 @@ export default (function () {
         }
         return value
     }
+
+  function open3DNavigationMap() {
+    try {
+      return SScene.open3DNavigationMap()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
     let SSceneExp = {
         openWorkspace,
         closeWorkspace,
@@ -956,6 +965,7 @@ export default (function () {
         removeImageCacheLayer,
         clipByBox,
         clipSenceClear,
+      open3DNavigationMap,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp

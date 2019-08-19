@@ -44,7 +44,31 @@ dependencies {
     api 'com.android.support:recyclerview-v7:28.0.0'
     api 'com.facebook.react:react-native:+'
     implementation 'com.amap.api:location:latest.integration'
+    implementation files('libs/com.supermap.analyst_v1000.jar')
+    implementation files('libs/com.supermap.ar_v1000.jar')
+    implementation files('libs/com.supermap.data_v1000.jar')
+    implementation files('libs/com.supermap.mapping_v1000.jar')
+    implementation files('libs/com.supermap.mdatacollector_v1000.jar')
+    implementation files('libs/com.supermap.messagequeue_v1000.jar')
+    implementation files('libs/com.supermap.navigation_v1000.jar')
+    implementation files('libs/com.supermap.plot_v1000.jar')
+    implementation files('libs/com.supermap.realspace_v1000.jar')
+    implementation files('libs/com.supermap.services_v1000.jar')
+    implementation files('libs/com.supermap.track_v1000.jar')
+    implementation files('libs/com.supermap.ai_v1000.jar')
+    implementation files('libs/apache-ant-zip.jar')
+    implementation files('libs/chartengine.jar')
+    implementation files('libs/com.github.mikephil.charts.jar')
+    implementation files('libs/httpmime-4.1.1.jar')
+    implementation files('libs/jsoup-1.10.1.jar')
+    implementation files('libs/Msc.jar')
+    implementation files('libs/OpenGLTileExtent.jar')
+    implementation files('libs/pinyin4j-2.5.1.jar')
+    implementation files('libs/TencentMapLBSApi_v3.0.jar')
     implementation 'com.google.ar:core:1.7.0'
     implementation 'de.javagl:obj:0.2.1'
     implementation files('libs/starcore_android_r2.51.jar')
+    implementation ('com.wonderkiln:camerakit:0.13.1'){
+        exclude group: 'com.android.support'
+    }
 }
