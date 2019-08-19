@@ -1695,9 +1695,9 @@ export default (function () {
    * 添加数据集属性字段
    * @returns {*|Promise.<void>}
    */
-  function addRecordset (dataname, recname, name, userpath) {
+  function addRecordset (datasourcename, datasetname, recname, name, userpath) {
     try {
-      return SMap.addRecordset(dataname, recname, name, userpath)
+      return SMap.addRecordset(datasourcename, datasetname, recname, name, userpath)
     } catch (e) {
       console.error(e)
     }

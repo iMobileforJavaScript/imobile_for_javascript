@@ -214,6 +214,7 @@ public class SDatasource extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void createDataset(String datasourceAlias, String datasetName, int type, Promise promise) {
+        DatasetVectorInfo datasetVectorInfo = null;
         try {
             DatasetType datasetType;
             if(type == 149) {
@@ -232,18 +233,21 @@ public class SDatasource extends ReactContextBaseJavaModule {
             Datasources datasources = workspace.getDatasources();
             Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
             boolean hasDataset = datasets.contains(datasetName);
-            DatasetVector datasetVector = null;
+//            DatasetVector datasetVector = null;
             if(hasDataset){
                 promise.resolve(false);
             } else {
-                DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+                datasetVectorInfo = new DatasetVectorInfo();
                 datasetVectorInfo.setType(datasetType);
                 datasetVectorInfo.setName(datasetName);
-                datasetVector = datasets.create(datasetVectorInfo);
+                datasets.create(datasetVectorInfo);
                 datasetVectorInfo.dispose();
                 promise.resolve(true);
             }
         } catch (Exception e) {
+            if(datasetVectorInfo != null) {
+                datasetVectorInfo.dispose();
+            }
             promise.reject(e);
         }
     }
@@ -257,6 +261,18 @@ public class SDatasource extends ReactContextBaseJavaModule {
 
             int index=datasets.indexOf(datasetName);
             promise.resolve(datasets.delete(index));
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void isAvailableDatasetName(String datasourceAlias, String datasetName, Promise promise) {
+        try {
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
+            promise.resolve(datasets.isAvailableDatasetName(datasetName));
         } catch (Exception e) {
             promise.reject(e);
         }

@@ -114,6 +114,10 @@ function deleteDataset(datasourceAlias, datasetName) {
   return SDatasource.deleteDataset(datasourceAlias, datasetName)
 }
 
+function isAvailableDatasetName(datasourceAlias, datasetName) {
+  return SDatasource.isAvailableDatasetName(datasourceAlias, datasetName)
+}
+
 function removeDatasetByName(path,name){
   try {
     return SDatasource.removeDatasetByName(path,name)
@@ -226,6 +230,7 @@ export {
   deleteDatasource,
   createDataset,
   deleteDataset,
+  isAvailableDatasetName,
   removeDatasetByName,
   copyDataset,
   getDatasources,

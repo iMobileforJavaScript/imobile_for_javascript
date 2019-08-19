@@ -7,6 +7,7 @@ import { SOnlineService, SIPortalService } from './iServer'
 import SMessageService from './SMessageService'
 import SAIDetectView from './SAIDetectView'
 import SMeasureView from './SMeasureView'
+import SAIClassifyView from './SAIClassifyView'
 
 export {
   SMap,
@@ -29,4 +30,6 @@ export {
   SAIDetectView,
   /*AI高精采集*/
   SMeasureView,
+  /*AI分类*/
+  SAIClassifyView,
 }
