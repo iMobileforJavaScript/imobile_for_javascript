@@ -3763,16 +3763,17 @@ RCT_REMAP_METHOD(setMaxVisibleScale, setMaxVisibleScaleWithName:(NSString *)name
 }
 
 #pragma mark 添加文字标注
-RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)dataname Name:(NSString *)name Path:(NSString *)userpath X:(int)x Y:(int)y Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDatasourceName:(NSString *)datasourceName DatasetName:(NSString *)datasetName Name:(NSString *)name X:(int)x Y:(int)y Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         Point2D *p =[sMap.smMapWC.mapControl.map pixelTomap:CGPointMake(x, y)];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
-        Datasource *opendatasource = [workspace.datasources getAlias:labelName];
+        Datasource *opendatasource = [workspace.datasources getAlias:datasourceName];
         Datasets *datasets = opendatasource.datasets;
-        DatasetVector *dataset =(DatasetVector *)[datasets getWithName:dataname];
-        [dataset setReadOnly:NO];
+        DatasetVector *dataset =(DatasetVector *)[datasets getWithName:datasetName];
+        if(dataset != nil){
+            [dataset setReadOnly:NO];
+        }
         Recordset *recordset = [dataset recordset:NO cursorType:DYNAMIC];
         TextPart *textpart = [[TextPart alloc]init];
         TextStyle *textStyle = [[TextStyle alloc]init];
