@@ -4353,11 +4353,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    private Point2Ds point2Ds;
     /**
      * 创建推演动画对象
      */
     @ReactMethod
-    public static void createAnimationGo(ReadableMap createInfo,String newPlotMapName,Promise promise){
+    public  void createAnimationGo(ReadableMap createInfo,String newPlotMapName,Promise promise){
             //顺序：路径、闪烁、属性、显隐、旋转、比例、生长
             try {
                 if (!createInfo.hasKey("animationMode")) {
@@ -4394,6 +4395,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         animationWay.setTrackLineColor(new com.supermap.data.Color(255,0,0,255));
                         animationWay.setPathTrackDir(true);
                         animationGO=animationWay;
+
                         break;
                     case 1:
                         AnimationBlink animationBlink= (AnimationBlink) animationGO;
@@ -4438,6 +4440,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         animationGO=animationGrow;
                         break;
                 }
+                //清空创建路径动画时的数据
+                mapControl.getMap().getTrackingLayer().clear();
+                point2Ds=null;
+
                 if (createInfo.hasKey("startTime")&&animationGroup.getAnimationCount()>0) {
                     int startTime = createInfo.getInt("startTime");
                     if (createInfo.hasKey("startMode")) {
@@ -4568,7 +4574,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
-    private Point2Ds point2Ds;
+
     /**
      * 添加路径动画点获取回退路径动画点
      * @param point
@@ -4600,7 +4606,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             style.setLineColor(new Color(255, 105, 0));
             style.setMarkerSymbolID(3614);
             {
-                if(point2Ds.getCount()==1){
+                if(point2Ds.getCount()==0){
+                    mapControl.getMap().getTrackingLayer().clear();
+                }
+                else if(point2Ds.getCount()==1){
                     mapControl.getMap().getTrackingLayer().clear();
                     GeoPoint geoPoint=new GeoPoint(point2Ds.getItem(0));
                     geoPoint.setStyle(style);
