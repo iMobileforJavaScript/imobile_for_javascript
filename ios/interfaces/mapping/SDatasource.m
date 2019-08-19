@@ -205,7 +205,7 @@ RCT_REMAP_METHOD(getDatasources, getDatasourcesWithResolver:(RCTPromiseResolveBl
  * @param dataDic DatasourceConnectionInfo
  * @param promise
  */
-RCT_REMAP_METHOD(getDatasetsByDatasource, getDatasetsByDatasourceWithResolver:(NSDictionary*)dataDic autoOpen:(BOOL)autoOpen resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+RCT_REMAP_METHOD(getDatasetsByDatasource, getDatasetsByDatasource:(NSDictionary*)dataDic autoOpen:(BOOL)autoOpen resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         NSString* alias = @"";
         Workspace* workspace = [SMap singletonInstance].smMapWC.workspace;
@@ -221,7 +221,7 @@ RCT_REMAP_METHOD(getDatasetsByDatasource, getDatasetsByDatasourceWithResolver:(N
         if (datasource == nil && autoOpen) {
             DatasourceConnectionInfo* info = [SMDatasource convertDicToInfo:dataDic];
             datasource = [workspace.datasources open:info];
-        } else if (datasource == nil && !autoOpen || datasource.datasourceConnectionInfo.engineType!=ET_UDB) {
+        } else if ((datasource == nil && !autoOpen) || datasource.datasourceConnectionInfo.engineType!=ET_UDB) {
             resolve([[NSDictionary alloc]init]);
             return;
         }
@@ -250,6 +250,98 @@ RCT_REMAP_METHOD(getDatasetsByDatasource, getDatasetsByDatasourceWithResolver:(N
         reject(@"workspace", exception.reason, nil);
     }
 }
+
+#pragma mark 新建数据集
+RCT_REMAP_METHOD(createDataset, createDatasetIn:(NSString*)datasourceAlias dataset:(NSString *)datasetName type:(int) type resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        Datasets* datasets = [datasources getAlias:datasourceAlias].datasets;
+        BOOL hasDataset = [datasets contain:datasetName];
+        DatasetVector* datasetVector;
+        if(hasDataset){
+            resolve([NSNumber numberWithBool:NO]);
+        } else {
+            DatasetVectorInfo* datasetvectorInfo = [[DatasetVectorInfo alloc] init];
+            datasetvectorInfo.datasetType = type;
+            datasetvectorInfo.name = datasetName;
+            datasetVector = [datasets create:datasetvectorInfo];
+            [datasetvectorInfo dispose];
+            resolve([NSNumber numberWithBool:YES]);
+        }
+    } @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 删除数据集
+RCT_REMAP_METHOD(deleteDataset, deleteDatasetIn:(NSString*)datasourceAlias dataset:(NSString *)datasetName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        Datasets* datasets = [datasources getAlias:datasourceAlias].datasets;
+        
+        int index = [datasets indexOf:datasetName];
+        BOOL result = [datasets delete:index];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(isAvailableDatasetName, checkAvailaleIn:(NSString*)datasourceAlias WithName:(NSString *)datasetName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        Datasets* datasets = [datasources getAlias:datasourceAlias].datasets;
+        
+        BOOL result = [datasets isAvailableDatasetName:datasetName];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+        
+/**
+ * 获取指定数据源中的数据集
+ *
+ * @param dataDic DatasourceConnectionInfo
+ * @param promise
+ */
+RCT_REMAP_METHOD(getFieldInfos, getFieldInfos:(NSDictionary*)dataDic filter:(NSDictionary *)filter autoOpen:(BOOL)autoOpen resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        NSString* alias = @"";
+        Workspace* workspace = [SMap singletonInstance].smMapWC.workspace;
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"Alias"]) {
+            alias = [dataDic objectForKey:@"Alias"];
+        } else if ([array containsObject:@"alias"]) {
+            alias = [dataDic objectForKey:@"alias"];
+        }
+        NSString* datasetName = [dataDic objectForKey:@"datasetName"];
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        Datasource* datasource = nil;
+        datasource = [datasources getAlias:alias];
+        if (datasource == nil && autoOpen) {
+            DatasourceConnectionInfo* info = [SMDatasource convertDicToInfo:dataDic];
+            datasource = [workspace.datasources open:info];
+        } else if ((datasource == nil && !autoOpen) || datasource.datasourceConnectionInfo.engineType != ET_UDB) {
+            resolve([[NSDictionary alloc]init]);
+            return;
+        }
+        Dataset* dataset = [datasource.datasets getWithName:datasetName];
+        NSArray* infos;
+        if (dataset) {
+            Recordset* recordset = [(DatasetVector *)dataset recordset:NO cursorType:STATIC];
+            infos = [NativeUtil getFieldInfos:recordset filter:filter];
+        } else {
+            infos = [[NSArray alloc] init];
+        }
+        
+        resolve(infos);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
 
 //指定数据集保存为文件
 RCT_REMAP_METHOD(getDatasetToGeoJson, getDatasetBydatasourceAlias:(NSString*)datasourceAlias dataset:(NSString *)datasetName to:(NSString *)path resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
@@ -305,7 +397,6 @@ RCT_REMAP_METHOD(removeDatasetByName, removeDatasetByNameWithPath:(NSString *)pa
         NSString *udbName = [[path lastPathComponent] stringByDeletingPathExtension];
         Datasource *datasource = nil;
         Workspace *workspace = nil;
-        SMap *sMap = [SMap singletonInstance];
         DatasourceConnectionInfo *datasourceconnection = [[DatasourceConnectionInfo alloc]init];
         workspace = [[Workspace alloc]init];
         datasourceconnection.engineType =ET_UDB;
@@ -362,6 +453,31 @@ RCT_REMAP_METHOD(getDatasetsByExternalDatasource, getDatasetsByExternalDatasourc
         [info dispose];
         [workspaceTemp close];
         [workspaceTemp dispose];
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
+ * 获取数据集范围
+ *
+ * @param sourceData 数据源和数据集信息
+ * @param promise
+ */
+RCT_REMAP_METHOD(getDatasetBounds, getDatasetBounds:(NSDictionary*)sourceData resolver:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
+    @try{
+        DatasetVector* sourceDataset = (DatasetVector *)[SMAnalyst getDatasetByDictionary:sourceData];
+        
+        Rectangle2D* bounds = [sourceDataset computeBounds];
+        NSMutableDictionary* boundPoints = [[NSMutableDictionary alloc] initWithCapacity:4];
+        [boundPoints setObject:@(bounds.left) forKey:@"left"];
+        [boundPoints setObject:@(bounds.bottom) forKey:@"bottom"];
+        [boundPoints setObject:@(bounds.right) forKey:@"right"];
+        [boundPoints setObject:@(bounds.top) forKey:@"top"];
+        [boundPoints setObject:@(bounds.width) forKey:@"width"];
+        [boundPoints setObject:@(bounds.height) forKey:@"height"];
+        resolve(boundPoints);
     }
     @catch(NSException *exception){
         reject(@"workspace", exception.reason, nil);

@@ -43,6 +43,12 @@
 #import "SuperMap/WeightFieldInfo.h"
 #import "SuperMap/WeightFieldInfos.h"
 #import "SuperMap/TransportationAnalystSetting.h"
+#import "SuperMap/InterpolationParameter.h"
+#import "SuperMap/InterpolationKrigingParameter.h"
+#import "SuperMap/InterpolationDensityParameter.h"
+#import "SuperMap/InterpolationIDWParameter.h"
+#import "SuperMap/InterpolationRBFParameter.h"
+#import "SuperMap/Rectangle2D.h"
 
 #import "Constants.h"
 #import "SScene.h"
@@ -67,4 +73,5 @@
 + (FacilityAnalystSetting *)setFacilitySetting:(NSDictionary *)data;
 + (TransportationAnalystSetting *)setTransportSetting:(NSDictionary *)data;
 + (WeightFieldInfo *)setWeightFieldInfo:(NSDictionary *)data;
++ (InterpolationParameter *)getInterpolationParameter:(NSDictionary *)data;
 @end

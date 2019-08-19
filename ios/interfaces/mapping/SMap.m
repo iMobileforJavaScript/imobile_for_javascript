@@ -12,6 +12,13 @@
 #import "SuperMap/AnimationGroup.h"
 #import "SuperMap/AnimationGO.h"
 #import "SuperMap/GeoGraphicObject.h"
+#import "SuperMap/AnimationBlink.h"
+#import "SuperMap/AnimationAttribute.h"
+#import "SuperMap/AnimationShow.h"
+#import "SuperMap/AnimationRotate.h"
+#import "SuperMap/AnimationScale.h"
+#import "SuperMap/AnimationGrow.h"
+#import "SuperMap/Point3D.h"
 
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
@@ -2857,6 +2864,46 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
         }
         AnimationGO* animationGo=[AnimationManager.getInstance createAnimation:type];
         
+        if(type==WayAnimation){
+            
+        }else if(type==BlinkAnimation){
+            AnimationBlink* animationBlink=(AnimationBlink*)animationGo;
+            [animationBlink setBlinkNumberofTimes:20];
+            [animationBlink setBlinkStyle:1];
+            [animationBlink setBlinkAnimationReplaceStyle:1];
+            [animationBlink setBlinkAnimationReplaceColor:[[Color alloc] initWithR:0 G:0 B:255]];
+            animationGo=(AnimationGO*)animationBlink;
+        }else if(type==AttribAnimation){
+            AnimationAttribute* animationAttribute=(AnimationAttribute*)animationGo;
+            [animationAttribute setStartLineColor:[[Color alloc] initWithR:255 G:0 B:0]];
+            [animationAttribute setEndLineColor:[[Color alloc] initWithR:0 G:0 B:255]];
+            [animationAttribute setLineColorAttr:YES];
+            [animationAttribute setStartLineWidth:0];
+            [animationAttribute setEndLineWidth:1];
+            [animationAttribute setLineWidthAttr:YES];
+            animationGo=(AnimationGO*)animationAttribute;
+        }else if(type==ShowAnimation){
+            AnimationShow* animationShow=(AnimationShow*)animationGo;
+            [animationShow setShowEffect:NO];
+            [animationShow setShowState:YES];
+            animationGo=(AnimationGO*)animationShow;
+        }else if(type==RotateAnimation){
+            Point3D startPnt = {0,0,0};
+            Point3D endPnt = {720,720,0};
+            AnimationRotate* animationRotate=(AnimationRotate*)animationGo;
+            [animationRotate setStartangle:startPnt];
+            [animationRotate setEndAngle:endPnt];
+            animationGo=(AnimationGO*)animationRotate;
+            
+        }else if(type==ScaleAnimation){
+            AnimationScale* animationScale=(AnimationScale*)animationGo;
+            [animationScale setStartScaleFactor:0];
+            [animationScale setEndScaleFactor:1];
+            animationGo=(AnimationGO*)animationScale;
+        }else if(type==GrowAnimation){
+            //默认是从0生成到1
+        }
+        
         if([createInfo objectForKey:@"startTime"]&&[animationGroup getAnimationCount]>0){
             NSNumber* startTimeNumber=[createInfo objectForKey:@"startTime"];
             double startTime=[startTimeNumber doubleValue];
@@ -2962,8 +3009,7 @@ RCT_REMAP_METHOD(getGeometryTypeById,getGeometryTypeById:(NSString*) layerName g
             Geometry* geometry=[recordset geometry];
             if(geometry){
                 GeoGraphicObject* geoGraphicObject=(GeoGraphicObject*)geometry;
-                GeometryType geoType=[geometry getType];
-                type=geoType;
+                type=[geoGraphicObject getSymbolType];
             }
         }
         resolve(@(type));
@@ -3599,33 +3645,34 @@ RCT_REMAP_METHOD(getTaggingLayers, getTaggingLayersWithUserpath:(NSString *)user
     [recordset dispose];
 }
 #pragma mark 添加数据集属性字段
-RCT_REMAP_METHOD(addRecordset, addRecordsetWithDatasetName:(NSString *)datasetName FieldInfoName:(NSString *)fieldInfoName Value:(NSString *)value Path:(NSString *)userpath Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addRecordset, addRecordsetWithDatasourceName:(NSString *)datasourceName DatasetName:(NSString *)datasetName FieldInfoName:(NSString *)fieldInfoName Value:(NSString *)value Path:(NSString *)userpath Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
-        Datasource *opendatasource = [workspace.datasources getAlias:labelName];
+        Datasource *opendatasource = [workspace.datasources getAlias:datasourceName];
         
         if(opendatasource == nil){
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
-            info.alias = labelName;
+            info.alias = datasourceName;
             info.engineType = ET_UDB;
-            NSString *path = [NSString stringWithFormat: @"%@%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Datasource/",labelName];
+            NSString *path = [NSString stringWithFormat: @"%@%@%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Datasource/",datasourceName,@".udb"];
             info.server = path;
             Datasource *datasource = [workspace.datasources open:info];
             
-            if(datasource != nil && [datasource.description isEqualToString:@"Label"]){
+            if(datasource != nil){
                 Datasets *datasets = datasource.datasets;
                 DatasetVector *dataset = (DatasetVector *)[datasets getWithName:datasetName];
                 [SMap modifyLastAttributeWithDatasets:dataset FieldInfoName:fieldInfoName Value:value];
             }
             [info dispose];
+            [sMap.smMapWC.mapControl.map refresh];
             resolve(@(YES));
         }else{
             Datasets *datasets = opendatasource.datasets;
             DatasetVector *dataset = (DatasetVector *)[datasets getWithName:datasetName];
             [SMap modifyLastAttributeWithDatasets:dataset FieldInfoName:fieldInfoName Value:value];
+            [sMap.smMapWC.mapControl.map refresh];
             resolve(@(YES));
         }
     } @catch (NSException *exception) {

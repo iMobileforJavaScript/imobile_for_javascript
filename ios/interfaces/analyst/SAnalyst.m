@@ -26,6 +26,42 @@ RCT_EXPORT_MODULE();
              ONLINE_ANALYST_RESULT,
              ];
 }
+
+-(NSDictionary*)constantsToExport{
+    return @{
+             @"SearchMode": @{
+                     @"NONE":@(SearchMode_NONE),
+                     @"QUADTREE":@(SearchMode_QUADTREE),
+                     @"KDTREE_FIXED_RADIUS":@(SearchMode_KDTREE_FIXED_RADIUS),
+                     @"KDTREE_FIXED_COUNT":@(SearchMode_KDTREE_FIXED_COUNT),
+                     },
+             @"InterpolationAlgorithmType": @{
+                     @"NONE":@(IAT_NONE),
+                     @"IDW":@(IAT_IDW),
+                     @"SimpleKRIGING":@(IAT_SimpleKRIGING),
+                     @"KRIGING":@(IAT_KRIGING),
+                     @"UniversalKRIGING":@(IAT_UniversalKRIGING),
+                     @"RBF":@(IAT_RBF),
+                     @"DENSITY":@(IAT_DENSITY),
+                     },
+             @"PixelFormat": @{
+                     @"UBIT1":@(UBIT1),
+                     @"UBIT4":@(UBIT4),
+                     @"UBIT8":@(UBIT8),
+                     @"UBIT16":@(UBIT16),
+                     @"UBIT24":@(UBIT24),
+                     @"BIT32":@(BIT32),
+                     @"UBIT32":@(UBIT32),
+                     @"BIT64":@(BIT64),
+                     @"SINGLE":@(SINGLE),
+                     },
+             @"VariogramMode": @{
+                     @"EXPONENTIAL":@(VM_EXPONENTIAL), // 球函数
+                     @"GAUSSIAN":@(VM_GAUSSIAN), // 高斯函数
+                     @"SPHERICAL":@(VM_SPHERICAL), // 指数函数
+                     }
+             };
+}
 /******************************************************************************缓冲区分析*****************************************************************************************/
 RCT_REMAP_METHOD(analystBuffer, analystBufferByLayerPath:(NSString*)layerPath params:(NSDictionary*)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -617,6 +653,40 @@ RCT_REMAP_METHOD(distanceAnalyst, distanceAnalystWithSourceData:(NSDictionary *)
 //            [map refresh];
 //            result = YES;
 //        }
+        
+        resolve(@(result));
+    } @catch (NSException *exception) {
+        reject(@"SAnalyst", exception.reason, nil);
+    }
+}
+
+/********************************************************************************插值分析**************************************************************************************/
+
+RCT_REMAP_METHOD(interpolate, interpolate:(NSDictionary *)sourceData resultData:(NSDictionary *)resultData paramter:(NSDictionary *)paramter field:(NSString *)field scale:(double)scale pixelFormat:(int)pixelFormat resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
+        NSString *resName = @"Interpolation";
+        if ([resultData objectForKey:@"dataset"] != nil) {
+            resName = [resultData objectForKey:@"dataset"];
+        }
+        Dataset* sourceDataset = [SMAnalyst getDatasetByDictionary:sourceData];
+        
+        Datasource* resultDatasource = [SMAnalyst getDatasourceByDictionary:resultData createIfNotExist:YES];
+        resName = [resultDatasource.datasets availableDatasetName:resName];
+        
+        InterpolationParameter* params = [SMAnalyst getInterpolationParameter:paramter];
+        
+        DatasetGrid* gridDataset = nil;
+        if (params) {
+            gridDataset = [InterpolationAnalyst interpolate:params pointDataset:(DatasetVector *)sourceDataset zValueField:field zValueScale:scale targetDatasource:resultDatasource targetDataset:resName pixelFormat:pixelFormat];
+        }
+        
+        BOOL result = NO;
+        if (gridDataset) {
+            [map.layers addDataset:gridDataset ToHead:YES];
+            [map refresh];
+            result = YES;
+        }
         
         resolve(@(result));
     } @catch (NSException *exception) {

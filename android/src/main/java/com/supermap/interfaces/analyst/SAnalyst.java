@@ -17,59 +17,50 @@ import com.supermap.analyst.BufferAnalystParameter;
 import com.supermap.analyst.BufferEndType;
 import com.supermap.analyst.BufferRadiusUnit;
 import com.supermap.analyst.networkanalyst.FacilityAnalyst;
-import com.supermap.analyst.networkanalyst.FacilityAnalystResult;
-import com.supermap.analyst.networkanalyst.FacilityAnalystSetting;
 import com.supermap.analyst.networkanalyst.TransportationAnalyst;
-import com.supermap.analyst.networkanalyst.TransportationAnalystParameter;
-import com.supermap.analyst.networkanalyst.TransportationAnalystResult;
-import com.supermap.analyst.networkanalyst.TransportationAnalystSetting;
-import com.supermap.analyst.networkanalyst.WeightFieldInfo;
-import com.supermap.analyst.networkanalyst.WeightFieldInfos;
+import com.supermap.analyst.spatialanalyst.InterpolationAlgorithmType;
+import com.supermap.analyst.spatialanalyst.InterpolationParameter;
+import com.supermap.analyst.spatialanalyst.Interpolator;
 import com.supermap.analyst.spatialanalyst.ProximityAnalyst;
+import com.supermap.analyst.spatialanalyst.SearchMode;
+import com.supermap.analyst.spatialanalyst.VariogramMode;
 import com.supermap.containts.EventConst;
 import com.supermap.data.Color;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
-import com.supermap.data.DatasetType;
+import com.supermap.data.DatasetGrid;
 import com.supermap.data.DatasetVector;
-import com.supermap.data.DatasetVectorInfo;
 import com.supermap.data.Datasource;
-import com.supermap.data.EncodeType;
 import com.supermap.data.Enum;
-import com.supermap.data.GeoLineM;
 import com.supermap.data.GeoRegion;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
 import com.supermap.data.GeometryType;
-import com.supermap.data.Point2D;
+import com.supermap.data.PixelFormat;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
 import com.supermap.data.Rectangle2D;
 import com.supermap.data.Size2D;
-import com.supermap.data.Workspace;
 import com.supermap.distributeanalystservices.AggregatePointsOnline;
 import com.supermap.distributeanalystservices.DensityAnalystOnline;
 import com.supermap.distributeanalystservices.DistributeAnalystListener;
 import com.supermap.interfaces.mapping.SMap;
-import com.supermap.mapping.Action;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSetting;
 import com.supermap.mapping.LayerSettingVector;
-import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.TrackingLayer;
-import com.supermap.smNative.Network_tool;
 import com.supermap.smNative.SMAnalyst;
 import com.supermap.smNative.SMLayer;
-import com.supermap.smNative.SMParameter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class SAnalyst extends ReactContextBaseJavaModule {
@@ -99,6 +90,44 @@ public class SAnalyst extends ReactContextBaseJavaModule {
     @Override
     public String getName() {
         return REACT_CLASS;
+    }
+
+
+    @Override
+    public Map<String, Object> getConstants() {
+        final Map<String, Object> constants = new HashMap<>();
+        String[] interpolationAlgorithmTypeNames = Enum.getNames(InterpolationAlgorithmType.class);
+        Map<String, Object> subConstants = new HashMap<>();
+        for (int i = 0; i < interpolationAlgorithmTypeNames.length; i++) {
+            int value = Enum.getValueByName(InterpolationAlgorithmType.class, interpolationAlgorithmTypeNames[i]);
+            subConstants.put(interpolationAlgorithmTypeNames[i], value);
+        }
+        constants.put("InterpolationAlgorithmType", subConstants);
+
+        String[] searchModeNames = Enum.getNames(SearchMode.class);
+        Map<String, Object> subConstants1 = new HashMap<>();
+        for (int i = 0; i < searchModeNames.length; i++) {
+            int value = Enum.getValueByName(SearchMode.class, searchModeNames[i]);
+            subConstants1.put(searchModeNames[i], value);
+        }
+        constants.put("SearchMode", subConstants1);
+
+        String[] PixelNames = Enum.getNames(PixelFormat.class);
+        Map<String, Object> subConstants2 = new HashMap<>();
+        for (int i = 0; i < PixelNames.length; i++) {
+            int value = Enum.getValueByName(PixelFormat.class, PixelNames[i]);
+            subConstants2.put(PixelNames[i], value);
+        }
+        constants.put("PixelFormat", subConstants2);
+
+        String[] VariogramModes = Enum.getNames(VariogramMode.class);
+        Map<String, Object> subConstants3 = new HashMap<>();
+        for (int i = 0; i < VariogramModes.length; i++) {
+            int value = Enum.getValueByName(VariogramMode.class, VariogramModes[i]);
+            subConstants3.put(VariogramModes[i], value);
+        }
+        constants.put("VariogramMode", subConstants3);
+        return constants;
     }
 
     /******************************************************************************缓冲区分析*****************************************************************************************/
@@ -831,6 +860,45 @@ public class SAnalyst extends ReactContextBaseJavaModule {
             promise.resolve(result);
 
         } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /*****************************************************************************插值分析*****************************************************************************************/
+    @ReactMethod
+    public void interpolate(ReadableMap sourceData, ReadableMap resultData, ReadableMap paramter, String field, double scale, int pixelFormat, Promise promise) {
+        try {
+            com.supermap.mapping.Map map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
+            if (map.getWorkspace() == null || map.getWorkspace() != SMap.getInstance().getSmMapWC().getWorkspace()) {
+                map.setWorkspace(SMap.getInstance().getSmMapWC().getWorkspace());
+            }
+
+            Dataset sourceDataset = SMAnalyst.getDatasetByDictionary(sourceData);
+            Datasource resultDatasource = SMAnalyst.getDatasourceByDictionary(resultData);
+
+            String resName = "Interpolation";
+            if (resultData.hasKey("dataset")) {
+                resName = resultDatasource.getDatasets().getAvailableDatasetName(resName);
+            }
+
+            InterpolationParameter interpolationParameter = SMAnalyst.getInterpolationParameter(paramter);
+
+            DatasetGrid grid = null;
+            if (interpolationParameter != null) {
+                PixelFormat pixel = (PixelFormat)Enum.parse(PixelFormat.class, pixelFormat);
+                grid = Interpolator.interpolate(interpolationParameter, (DatasetVector)sourceDataset, field, scale, resultDatasource, resName, pixel);
+            }
+
+            boolean result = false;
+            if (grid != null) {
+                map.getLayers().add(grid, true);
+                map.refresh();
+                result = true;
+            }
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            SMAnalyst.deleteDataset(resultData);
             promise.reject(e);
         }
     }

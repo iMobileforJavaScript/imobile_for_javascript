@@ -10,4 +10,7 @@
 #import "AnimationGO.h"
 @interface AnimationScale : AnimationGO
 
+@property(nonatomic)double startScaleFactor;
+
+@property(nonatomic)double endScaleFactor;
 @end

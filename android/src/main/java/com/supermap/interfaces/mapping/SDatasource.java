@@ -11,6 +11,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.FileUtil;
+import com.supermap.RNUtils.JsonUtil;
+import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.DatasetVectorInfo;
@@ -21,9 +23,12 @@ import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.Datasources;
 import com.supermap.data.EncodeType;
 import com.supermap.data.EngineType;
+import com.supermap.data.Recordset;
+import com.supermap.data.Rectangle2D;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Map;
+import com.supermap.smNative.SMAnalyst;
 import com.supermap.smNative.SMDatasource;
 import com.supermap.smNative.SMLayer;
 
@@ -201,6 +206,79 @@ public class SDatasource extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 新建数据集
+     * @param datasourceAlias
+     * @param datasetName
+     * @param datasetName
+     * @param type
+     */
+    @ReactMethod
+    public void createDataset(String datasourceAlias, String datasetName, int type, Promise promise) {
+        DatasetVectorInfo datasetVectorInfo = null;
+        try {
+            DatasetType datasetType;
+            if(type == 149) {
+                datasetType = DatasetType.CAD;
+            } else if(type == 7){
+                datasetType = DatasetType.TEXT;
+            } else if(type == 5){
+                datasetType = DatasetType.REGION;
+            } else if (type == 3) {
+                datasetType = DatasetType.LINE;
+            } else {
+                datasetType = DatasetType.POINT;
+            }
+
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
+            boolean hasDataset = datasets.contains(datasetName);
+//            DatasetVector datasetVector = null;
+            if(hasDataset){
+                promise.resolve(false);
+            } else {
+                datasetVectorInfo = new DatasetVectorInfo();
+                datasetVectorInfo.setType(datasetType);
+                datasetVectorInfo.setName(datasetName);
+                datasets.create(datasetVectorInfo);
+                datasetVectorInfo.dispose();
+                promise.resolve(true);
+            }
+        } catch (Exception e) {
+            if(datasetVectorInfo != null) {
+                datasetVectorInfo.dispose();
+            }
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void deleteDataset(String datasourceAlias, String datasetName, Promise promise) {
+        try {
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
+
+            int index=datasets.indexOf(datasetName);
+            promise.resolve(datasets.delete(index));
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void isAvailableDatasetName(String datasourceAlias, String datasetName, Promise promise) {
+        try {
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
+            promise.resolve(datasets.isAvailableDatasetName(datasetName));
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 从不同数据源中复制数据机
      * @param
      * @param promise
@@ -355,6 +433,52 @@ public class SDatasource extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取指定数据源中的数据集中的字段信息
+     * @param
+     * @param promise
+     */
+    @ReactMethod
+    public void getFieldInfos(ReadableMap infoMap, ReadableMap filter, boolean autoOpen, Promise promise) {
+        try {
+            HashMap<String, Object> data = infoMap.toHashMap();
+
+            String alias = null;
+
+            if (data.containsKey("Alias")) {
+                alias = data.get("Alias").toString();
+            } else if (data.containsKey("alias")) {
+                alias = data.get("alias").toString();
+            }
+            String datasetName = data.get("datasetName").toString();
+
+            Datasources datasources = SMap.getSMWorkspace().getWorkspace().getDatasources();
+
+            Datasource datasource = datasources.get(alias);
+            if (datasource == null && autoOpen) {
+                Workspace workspace = SMap.getSMWorkspace().getWorkspace();
+                DatasourceConnectionInfo info = SMDatasource.convertDicToInfo(data);
+
+                datasource = workspace.getDatasources().open(info);
+            } else if (datasource == null || datasource.getConnectionInfo().getEngineType() != EngineType.UDB) {
+                //除了UDB数据源都排除
+                promise.resolve(Arguments.createMap());
+                return;
+            }
+
+            Dataset dataset = datasource.getDatasets().get(datasetName);
+            WritableArray infos = Arguments.createArray();
+            if (dataset != null) {
+                Recordset recordset = ((DatasetVector)dataset).getRecordset(false, CursorType.STATIC);
+                infos = JsonUtil.getFieldInfos(recordset, filter);
+            }
+
+            promise.resolve(infos);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 获取指定数据源中的数据集
      * @param
      * @param promise
@@ -451,6 +575,33 @@ public class SDatasource extends ReactContextBaseJavaModule {
             workspaceTemp.close();
             workspaceTemp.dispose();
 
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取数据集范围
+     * @param sourceData 数据源和数据集信息
+     * @param promise
+     */
+    @ReactMethod
+    public void getDatasetBounds(ReadableMap sourceData, Promise promise) {
+        try {
+            DatasetVector sourceDataset = (DatasetVector)SMAnalyst.getDatasetByDictionary(sourceData);
+
+            WritableMap boundPoints = Arguments.createMap();
+            if (sourceDataset != null) {
+                Rectangle2D bounds = sourceDataset.computeBounds();
+                boundPoints.putDouble("left", bounds.getLeft());
+                boundPoints.putDouble("bottom", bounds.getBottom());
+                boundPoints.putDouble("right", bounds.getRight());
+                boundPoints.putDouble("top", bounds.getTop());
+                boundPoints.putDouble("width", bounds.getWidth());
+                boundPoints.putDouble("height", bounds.getHeight());
+            }
+
+            promise.resolve(boundPoints);
         } catch (Exception e) {
             promise.reject(e);
         }

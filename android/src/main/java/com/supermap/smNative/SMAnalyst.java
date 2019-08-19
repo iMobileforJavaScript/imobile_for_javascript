@@ -11,8 +11,17 @@ import com.supermap.analyst.networkanalyst.TransportationAnalystParameter;
 import com.supermap.analyst.networkanalyst.TransportationAnalystSetting;
 import com.supermap.analyst.networkanalyst.WeightFieldInfo;
 import com.supermap.analyst.networkanalyst.WeightFieldInfos;
+import com.supermap.analyst.spatialanalyst.Exponent;
+import com.supermap.analyst.spatialanalyst.InterpolationAlgorithmType;
+import com.supermap.analyst.spatialanalyst.InterpolationDensityParameter;
+import com.supermap.analyst.spatialanalyst.InterpolationIDWParameter;
+import com.supermap.analyst.spatialanalyst.InterpolationKrigingParameter;
+import com.supermap.analyst.spatialanalyst.InterpolationParameter;
+import com.supermap.analyst.spatialanalyst.InterpolationRBFParameter;
 import com.supermap.analyst.spatialanalyst.OverlayAnalyst;
 import com.supermap.analyst.spatialanalyst.OverlayAnalystParameter;
+import com.supermap.analyst.spatialanalyst.SearchMode;
+import com.supermap.analyst.spatialanalyst.VariogramMode;
 import com.supermap.data.Color;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetType;
@@ -22,10 +31,12 @@ import com.supermap.data.Datasource;
 import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.Datasources;
 import com.supermap.data.EncodeType;
+import com.supermap.data.Enum;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
 import com.supermap.data.QueryParameter;
+import com.supermap.data.Rectangle2D;
 import com.supermap.data.Size2D;
 import com.supermap.data.Workspace;
 import com.supermap.interfaces.mapping.SMap;
@@ -516,5 +527,125 @@ public class SMAnalyst {
         if (data.hasKey("weightName")) parameter.setWeightName(data.getString("weightName"));
 
         return parameter;
+    }
+
+    public static InterpolationParameter getInterpolationParameter(ReadableMap data) {
+        try {
+            if (data.hasKey("type")) {
+                int type = data.getInt("type");
+                if (type == InterpolationAlgorithmType.IDW.value()) {
+                    InterpolationIDWParameter parameter = new InterpolationIDWParameter();
+                    if (data.hasKey("power")) {
+                        int power = data.getInt("power");
+                        parameter.setPower(power);
+                    }
+                    parameter = (InterpolationIDWParameter)getCommonInterpolationParameter(parameter, data);
+                    return parameter;
+                } else if (type == InterpolationAlgorithmType.RBF.value()) {
+                    InterpolationRBFParameter parameter = new InterpolationRBFParameter();
+                    if (data.hasKey("tension")) {
+                        double tension = data.getDouble("tension");
+                        parameter.setTension(tension);
+                    }
+                    if (data.hasKey("smooth")) {
+                        double smooth = data.getDouble("smooth");
+                        parameter.setSmooth(smooth);
+                    }
+                    parameter = (InterpolationRBFParameter)getCommonInterpolationParameter(parameter, data);
+                    return parameter;
+                } else if (type == InterpolationAlgorithmType.DENSITY.value()) {
+                    InterpolationDensityParameter parameter = new InterpolationDensityParameter();
+                    parameter = (InterpolationDensityParameter)getCommonInterpolationParameter(parameter, data);
+                    return parameter;
+                } else if (
+                        type == InterpolationAlgorithmType.KRIGING.value() ||
+                                type == InterpolationAlgorithmType.SimpleKRIGING.value() ||
+                                type == InterpolationAlgorithmType.UniversalKRIGING.value()
+                        ) {
+                    InterpolationKrigingParameter parameter = new InterpolationKrigingParameter();
+                    if (data.hasKey("variogramMode")) {
+                        int variogramMode = data.getInt("variogramMode");
+                        VariogramMode mode = (VariogramMode)Enum.parse(VariogramMode.class, variogramMode);
+                        parameter.setVariogramMode(mode);
+                    }
+                    if (data.hasKey("range")) {
+                        double range = data.getDouble("range");
+                        parameter.setRange(range);
+                    }
+                    if (data.hasKey("sill")) {
+                        double sill = data.getDouble("sill");
+                        parameter.setSill(sill);
+                    }
+                    if (data.hasKey("angle")) {
+                        double angle = data.getDouble("angle");
+                        parameter.setAngle(angle);
+                    }
+                    if (data.hasKey("nugget")) {
+                        double nugget = data.getDouble("nugget");
+                        parameter.setNugget(nugget);
+                    }
+                    if (data.hasKey("mean")) {
+                        double mean = data.getDouble("mean");
+                        parameter.setMean(mean);
+                    }
+                    if (data.hasKey("exponent")) {
+                        int exponent = data.getInt("exponent");
+                        Exponent mode = (Exponent)Enum.parse(Exponent.class, exponent);
+                        parameter.setExponent(mode);
+                    }
+                    parameter = (InterpolationKrigingParameter)getCommonInterpolationParameter(parameter, data);
+                    return parameter;
+                }
+            }
+
+            return null;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public static InterpolationParameter getCommonInterpolationParameter(InterpolationParameter parameter, ReadableMap data) {
+        try {
+            if (parameter != null) {
+                if (data.hasKey("resolution")) {
+                    double resolution = data.getDouble("resolution");
+                    parameter.setResolution(resolution);
+                }
+                if (data.hasKey("searchMode")) {
+                    int searchMode = data.getInt("searchMode");
+                    SearchMode mode = (SearchMode)Enum.parse(SearchMode.class, searchMode);
+                    parameter.setSearchMode(mode);
+                }
+                if (data.hasKey("searchRadius")) {
+                    double searchRadius = data.getDouble("searchRadius");
+                    parameter.setSearchRadius(searchRadius);
+                }
+                if (data.hasKey("expectedCount")) {
+                    int expectedCount = data.getInt("expectedCount");
+                    parameter.setExpectedCount(expectedCount);
+                }
+
+                if (data.hasKey("bounds")) {
+                    ReadableMap bounds = data.getMap("bounds");
+                    Rectangle2D rectangle2D = new Rectangle2D(
+                            bounds.getDouble("left"), bounds.getDouble("bottom"),
+                            bounds.getDouble("right"), bounds.getDouble("top"));
+                    parameter.setBounds(rectangle2D);
+                }
+
+                if (data.hasKey("maxPointCountForInterpolation")) {
+                    int maxPointCountForInterpolation = data.getInt("maxPointCountForInterpolation");
+                    parameter.setMaxPointCountForInterpolation(maxPointCountForInterpolation);
+                }
+                if (data.hasKey("maxPointCountInNode")) {
+                    int maxPointCountInNode = data.getInt("maxPointCountInNode");
+                    parameter.setMaxPointCountInNode(maxPointCountInNode);
+                }
+            }
+
+            return parameter;
+        } catch (Exception e) {
+            throw e;
+        }
     }
 }

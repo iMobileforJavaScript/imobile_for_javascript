@@ -93,6 +93,7 @@ import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 import com.supermap.data.Color;
 
+
 import org.apache.http.cookie.SM;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
@@ -255,6 +256,19 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public Activity getActivity() {
         return getCurrentActivity();
     }
+
+    public String getPackageName(){
+        return context.getPackageName();
+    }
+
+    public String getNativeLibraryDir(){
+        return context.getApplicationInfo().nativeLibraryDir;
+    }
+
+    public AssetManager getAssets(){
+        return context.getAssets();
+    }
+
 
 
     //判断坐标系Type是否相等，避免不支持的type转Enum抛异常
@@ -2931,6 +2945,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      */
     @ReactMethod
     public void viewEntire(Promise promise) {
+
         try {
             sMap = SMap.getInstance();
             com.supermap.mapping.Map map = sMap.getSmMapWC().getMapControl().getMap();
@@ -3418,27 +3433,29 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void addRecordset(String datasetName, String filedInfoName, String value, String userpath, Promise promise) {
+    public void addRecordset(String datasourceName, String datasetName, String filedInfoName, String value, String userpath, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
+            Datasource opendatasource = workspace.getDatasources().get(datasourceName);
             if (opendatasource == null) {
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-                info.setAlias("Label_" + userpath + "#");
+                info.setAlias(datasourceName);
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Label_" + userpath + "#.udb");
+                info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/" + datasourceName + ".udb");
                 Datasource datasource = workspace.getDatasources().open(info);
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
                     DatasetVector dataset = (DatasetVector) datasets.get(datasetName);
                     modifyLastAttribute(dataset, filedInfoName, value);
                 }
+                sMap.smMapWC.getMapControl().getMap().refresh();
                 promise.resolve(true);
             } else {
                 Datasets datasets = opendatasource.getDatasets();
                 DatasetVector dataset = (DatasetVector) datasets.get(datasetName);
                 modifyLastAttribute(dataset, filedInfoName, value);
+                sMap.smMapWC.getMapControl().getMap().refresh();
                 promise.resolve(true);
             }
         } catch (Exception e) {
@@ -4367,6 +4384,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         AnimationAttribute animationAttribute = (AnimationAttribute) animationGO;
                         animationAttribute.setStartLineColor(new com.supermap.data.Color(255,0,0,255));
                         animationAttribute.setEndLineColor(new com.supermap.data.Color(0,0,255,255));
+                        animationAttribute.setLineColorAttr(true);
+                        animationAttribute.setStartLineWidth(0);
+                        animationAttribute.setEndLineWidth(1);
+                        animationAttribute.setLineWidthAttr(true);
                         animationGO=animationAttribute;
                         break;
                     case 3:
@@ -4378,7 +4399,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     case 4:
                         AnimationRotate animationRotate=(AnimationRotate)animationGO;
                         animationRotate.setStartAngle(new Point3D(0,0,0));
-                        animationRotate.setEndAngle(new Point3D(360,360,0));
+                        animationRotate.setEndAngle(new Point3D(720,720,0));
                         animationGO=animationRotate;
                         break;
                     case 5:

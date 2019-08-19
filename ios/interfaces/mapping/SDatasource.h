@@ -13,7 +13,9 @@
 #import "SuperMap/Datasource.h"
 #import "SuperMap/Datasources.h"
 #import "SuperMap/DatasourceConnectionInfo.h"
+#import "SuperMap/Rectangle2D.h"
 #import "SMDatasource.h"
+#import "SMAnalyst.h"
 
 @interface SDatasource : NSObject<RCTBridgeModule>
 
