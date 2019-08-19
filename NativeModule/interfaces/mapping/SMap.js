@@ -1754,9 +1754,9 @@ export default (function () {
    * 添加文字标注
    * @returns {*|Promise.<void>}
    */
-  function addTextRecordset (value, name,userpath, x, y) {
+  function addTextRecordset (datasourceName, datasetName, value, x, y) {
     try {
-      return SMap.addTextRecordset(value, name,userpath, x, y)
+      return SMap.addTextRecordset(datasourceName, datasetName, value, x, y)
     } catch (e) {
       console.error(e)
     }

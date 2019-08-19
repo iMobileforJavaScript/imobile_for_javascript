@@ -3586,15 +3586,17 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void addTextRecordset(String dataname, String name, String userpath, int x, int y, Promise promise) {
+    public void addTextRecordset(String datasourceName, String datasetName, String name, int x, int y, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Point2D p = sMap.smMapWC.getMapControl().getMap().pixelToMap(new Point(x, y));
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
+            Datasource opendatasource = workspace.getDatasources().get(datasourceName);
             Datasets datasets = opendatasource.getDatasets();
-            DatasetVector dataset = (DatasetVector) datasets.get(dataname);
-            dataset.setReadOnly(false);
+            DatasetVector dataset = (DatasetVector) datasets.get(datasetName);
+            if(dataset != null){
+                dataset.setReadOnly(false);
+            }
             Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
             TextPart textPart = new TextPart();
             textPart.setAnchorPoint(p);
