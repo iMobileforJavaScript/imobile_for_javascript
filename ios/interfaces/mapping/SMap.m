@@ -2574,8 +2574,10 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
         NSMutableDictionary* libInfo = [[NSMutableDictionary alloc] init];
         for (NSString* path in plotSymbolPaths) {
             int libId=[sMap.smMapWC.mapControl addPlotLibrary:path];
-            NSString* libName=[sMap.smMapWC.mapControl getPlotSymbolLibName: libId];
-            [libInfo setObject:@(libId) forKey:libName];
+            if(-1 != libId){
+                NSString* libName=[sMap.smMapWC.mapControl getPlotSymbolLibName: libId];
+                [libInfo setObject:@(libId) forKey:libName];
+            }
             
 //            if(isFirst&&[libName isEqualToString:@"警用标号"]){
 //                Point2Ds* point2Ds=[[Point2Ds alloc] init];
