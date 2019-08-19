@@ -51,7 +51,7 @@ function createDatasourceOfLabel(info={}){
      "webExtendParam"
  * @returns {*|Promise.<void>|Promise.<datasource>}
  */
-function openDatasource(info = {}) {
+function openDatasource2(info = {}) {
   try {
     return SDatasource.openDatasource(info)
   } catch (e) {
@@ -107,6 +107,15 @@ function deleteDatasource(path = '') {
 
 function createDataset(datasourceAlias, datasetName, type) {
   return SDatasource.createDataset(datasourceAlias, datasetName, type)
+}
+
+//删除打开数据源中的数据集
+function deleteDataset(datasourceAlias, datasetName) {
+  return SDatasource.deleteDataset(datasourceAlias, datasetName)
+}
+
+function isAvailableDatasetName(datasourceAlias, datasetName) {
+  return SDatasource.isAvailableDatasetName(datasourceAlias, datasetName)
 }
 
 function removeDatasetByName(path,name){
@@ -198,15 +207,30 @@ function importDatasetFromGeoJson(datasourceAlias, datasetName, path, DatasetTyp
   }
 }
 
+/**
+ * 获取数据集范围
+ * @param sourceData
+ * @returns {*}
+ */
+function getDatasetBounds(sourceData){
+  try {
+    return SDatasource.getDatasetBounds(sourceData)
+  } catch (error) {
+    console.error(e)
+  }
+}
+
 
 export {
   createDatasource,
   createDatasourceOfLabel,
-  // openDatasource,
+  openDatasource2,
   renameDatasource,
   closeDatasource,
   deleteDatasource,
   createDataset,
+  deleteDataset,
+  isAvailableDatasetName,
   removeDatasetByName,
   copyDataset,
   getDatasources,
@@ -215,4 +239,5 @@ export {
   getDatasetToGeoJson,
   getFieldInfos,
   importDatasetFromGeoJson,
+  getDatasetBounds,
 }

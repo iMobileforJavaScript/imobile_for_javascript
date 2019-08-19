@@ -24,9 +24,11 @@ import com.supermap.data.Datasources;
 import com.supermap.data.EncodeType;
 import com.supermap.data.EngineType;
 import com.supermap.data.Recordset;
+import com.supermap.data.Rectangle2D;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.Map;
+import com.supermap.smNative.SMAnalyst;
 import com.supermap.smNative.SMDatasource;
 import com.supermap.smNative.SMLayer;
 
@@ -212,6 +214,7 @@ public class SDatasource extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void createDataset(String datasourceAlias, String datasetName, int type, Promise promise) {
+        DatasetVectorInfo datasetVectorInfo = null;
         try {
             DatasetType datasetType;
             if(type == 149) {
@@ -230,17 +233,46 @@ public class SDatasource extends ReactContextBaseJavaModule {
             Datasources datasources = workspace.getDatasources();
             Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
             boolean hasDataset = datasets.contains(datasetName);
-            DatasetVector datasetVector = null;
+//            DatasetVector datasetVector = null;
             if(hasDataset){
                 promise.resolve(false);
             } else {
-                DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+                datasetVectorInfo = new DatasetVectorInfo();
                 datasetVectorInfo.setType(datasetType);
                 datasetVectorInfo.setName(datasetName);
-                datasetVector = datasets.create(datasetVectorInfo);
+                datasets.create(datasetVectorInfo);
                 datasetVectorInfo.dispose();
                 promise.resolve(true);
             }
+        } catch (Exception e) {
+            if(datasetVectorInfo != null) {
+                datasetVectorInfo.dispose();
+            }
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void deleteDataset(String datasourceAlias, String datasetName, Promise promise) {
+        try {
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
+
+            int index=datasets.indexOf(datasetName);
+            promise.resolve(datasets.delete(index));
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void isAvailableDatasetName(String datasourceAlias, String datasetName, Promise promise) {
+        try {
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
+            promise.resolve(datasets.isAvailableDatasetName(datasetName));
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -543,6 +575,33 @@ public class SDatasource extends ReactContextBaseJavaModule {
             workspaceTemp.close();
             workspaceTemp.dispose();
 
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取数据集范围
+     * @param sourceData 数据源和数据集信息
+     * @param promise
+     */
+    @ReactMethod
+    public void getDatasetBounds(ReadableMap sourceData, Promise promise) {
+        try {
+            DatasetVector sourceDataset = (DatasetVector)SMAnalyst.getDatasetByDictionary(sourceData);
+
+            WritableMap boundPoints = Arguments.createMap();
+            if (sourceDataset != null) {
+                Rectangle2D bounds = sourceDataset.computeBounds();
+                boundPoints.putDouble("left", bounds.getLeft());
+                boundPoints.putDouble("bottom", bounds.getBottom());
+                boundPoints.putDouble("right", bounds.getRight());
+                boundPoints.putDouble("top", bounds.getTop());
+                boundPoints.putDouble("width", bounds.getWidth());
+                boundPoints.putDouble("height", bounds.getHeight());
+            }
+
+            promise.resolve(boundPoints);
         } catch (Exception e) {
             promise.reject(e);
         }

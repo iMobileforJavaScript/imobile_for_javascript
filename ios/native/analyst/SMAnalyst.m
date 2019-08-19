@@ -467,20 +467,70 @@
 }
 
 + (InterpolationParameter *)getInterpolationParameter:(NSDictionary *)data {
-    InterpolationParameter* parameter = nil;
-//    if ([data objectForKey:@"type"]) info.name = [data objectForKey:@"name"];
     if ([data objectForKey:@"type"]) {
         NSNumber* type = [data objectForKey:@"type"];
         if (type.intValue == IAT_IDW) {
-            parameter = [[InterpolationIDWParameter alloc] init];
+            InterpolationIDWParameter* parameter = [[InterpolationIDWParameter alloc] init];
+            if ([data objectForKey:@"power"]) {
+                NSNumber* power = [data objectForKey:@"power"];
+                parameter.power = power.intValue;
+            }
+            parameter = (InterpolationIDWParameter *)[SMAnalyst getCommonInterpolationParameter:parameter data:data];
+            return parameter;
         } else if (type.intValue == IAT_RBF) {
-            parameter = [[InterpolationRBFParameter alloc] init];
+            InterpolationRBFParameter* parameter = [[InterpolationRBFParameter alloc] init];
+            if ([data objectForKey:@"tension"]) {
+                NSNumber* tension = [data objectForKey:@"tension"];
+                parameter.tension = tension.doubleValue;
+            }
+            if ([data objectForKey:@"smooth"]) {
+                NSNumber* smooth = [data objectForKey:@"smooth"];
+                parameter.smooth = smooth.doubleValue;
+            }
+            parameter = (InterpolationRBFParameter *)[SMAnalyst getCommonInterpolationParameter:parameter data:data];
+            return parameter;
         } else if (type.intValue == IAT_DENSITY) {
-            parameter = [[InterpolationDensityParameter alloc] init];
+            InterpolationDensityParameter* parameter = [[InterpolationDensityParameter alloc] init];
+            parameter = (InterpolationDensityParameter *)[SMAnalyst getCommonInterpolationParameter:parameter data:data];
+            return parameter;
         } else if (type.intValue == IAT_KRIGING || type.intValue == IAT_SimpleKRIGING || type.intValue == IAT_UniversalKRIGING) {
-            parameter = [[InterpolationKrigingParameter alloc] init];
+            InterpolationKrigingParameter* parameter = [[InterpolationKrigingParameter alloc] init];
+            if ([data objectForKey:@"variogramMode"]) {
+                NSNumber* variogramMode = [data objectForKey:@"variogramMode"];
+                parameter.variogramMode = variogramMode.intValue;
+            }
+            if ([data objectForKey:@"range"]) {
+                NSNumber* range = [data objectForKey:@"range"];
+                parameter.range = range.doubleValue;
+            }
+            if ([data objectForKey:@"sill"]) {
+                NSNumber* sill = [data objectForKey:@"sill"];
+                parameter.sill = sill.doubleValue;
+            }
+            if ([data objectForKey:@"angle"]) {
+                NSNumber* angle = [data objectForKey:@"angle"];
+                parameter.angle = angle.doubleValue;
+            }
+            if ([data objectForKey:@"nugget"]) {
+                NSNumber* nugget = [data objectForKey:@"nugget"];
+                parameter.nugget = nugget.doubleValue;
+            }
+            if ([data objectForKey:@"mean"]) {
+                NSNumber* mean = [data objectForKey:@"mean"];
+                parameter.mean = mean.doubleValue;
+            }
+            if ([data objectForKey:@"exponent"]) {
+                NSNumber* exponent = [data objectForKey:@"exponent"];
+                parameter.exponent = exponent.intValue;
+            }
+            parameter = (InterpolationKrigingParameter *)[SMAnalyst getCommonInterpolationParameter:parameter data:data];
+            return parameter;
         }
     }
+    return nil;
+}
+
++ (InterpolationParameter *)getCommonInterpolationParameter:(InterpolationParameter *)parameter data:(NSDictionary *)data {
     if (parameter) {
         if ([data objectForKey:@"resolution"]) {
             NSNumber* resolution = [data objectForKey:@"resolution"];

@@ -272,6 +272,32 @@ RCT_REMAP_METHOD(createDataset, createDatasetIn:(NSString*)datasourceAlias datas
         reject(@"workspace", exception.reason, nil);
     }
 }
+
+#pragma mark 删除数据集
+RCT_REMAP_METHOD(deleteDataset, deleteDatasetIn:(NSString*)datasourceAlias dataset:(NSString *)datasetName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        Datasets* datasets = [datasources getAlias:datasourceAlias].datasets;
+        
+        int index = [datasets indexOf:datasetName];
+        BOOL result = [datasets delete:index];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(isAvailableDatasetName, checkAvailaleIn:(NSString*)datasourceAlias WithName:(NSString *)datasetName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        Datasets* datasets = [datasources getAlias:datasourceAlias].datasets;
+        
+        BOOL result = [datasets isAvailableDatasetName:datasetName];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
         
 /**
  * 获取指定数据源中的数据集
@@ -427,6 +453,31 @@ RCT_REMAP_METHOD(getDatasetsByExternalDatasource, getDatasetsByExternalDatasourc
         [info dispose];
         [workspaceTemp close];
         [workspaceTemp dispose];
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
+/**
+ * 获取数据集范围
+ *
+ * @param sourceData 数据源和数据集信息
+ * @param promise
+ */
+RCT_REMAP_METHOD(getDatasetBounds, getDatasetBounds:(NSDictionary*)sourceData resolver:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject){
+    @try{
+        DatasetVector* sourceDataset = (DatasetVector *)[SMAnalyst getDatasetByDictionary:sourceData];
+        
+        Rectangle2D* bounds = [sourceDataset computeBounds];
+        NSMutableDictionary* boundPoints = [[NSMutableDictionary alloc] initWithCapacity:4];
+        [boundPoints setObject:@(bounds.left) forKey:@"left"];
+        [boundPoints setObject:@(bounds.bottom) forKey:@"bottom"];
+        [boundPoints setObject:@(bounds.right) forKey:@"right"];
+        [boundPoints setObject:@(bounds.top) forKey:@"top"];
+        [boundPoints setObject:@(bounds.width) forKey:@"width"];
+        [boundPoints setObject:@(bounds.height) forKey:@"height"];
+        resolve(boundPoints);
     }
     @catch(NSException *exception){
         reject(@"workspace", exception.reason, nil);
