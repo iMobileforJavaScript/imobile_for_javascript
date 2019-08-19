@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccentDeep">#DC143C</color>
+    <color name="theme_button">#008577</color>
+    <color name="color_check_bg">#D81B60</color>
+    <color name="login_button">#FFFFFF</color>
+    <color name="download_button">#FFFFFF</color>
+    <color name="white">#FFFFFF</color>
+    <color name="colorFloatingActionButton">#FFFFFF</color>
+    <color name="rippleColor">#5F9EA0</color>
+    <color name="seashell">#FFF5EE</color><!--海贝色 -->
+    <color name="text_white">#f9f9f9</color>
+    <color name="bg_title_default">#F6F6F6</color>
+    <color name="deepgray">#50000000</color>
+    <color name="gray">#20000000</color>
+    <color name="bg_dialog_texttag">#00CD66</color>
+    <color name="bg_main_top">#36ae66</color>
+</resources>

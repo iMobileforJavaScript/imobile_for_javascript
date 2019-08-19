@@ -6,13 +6,17 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.supermap.component.SMSymbolTable;
+import com.supermap.interfaces.ai.AIClassifyViewManager;
 import com.supermap.interfaces.ai.AIDetectViewManager;
+import com.supermap.interfaces.ai.SAIClassifyView;
 import com.supermap.interfaces.ai.SAIDetectView;
 import com.supermap.interfaces.analyst.SAnalyst;
 import com.supermap.interfaces.analyst.SFacilityAnalyst;
 import com.supermap.interfaces.analyst.STransportationAnalyst;
-import com.supermap.interfaces.ar.MeasureViewManager;
+import com.supermap.interfaces.ar.RCTARView;
 import com.supermap.interfaces.ar.RCTArrowRenderView;
+import com.supermap.interfaces.ar.RCTFloorListView;
+import com.supermap.interfaces.ar.MeasureViewManager;
 import com.supermap.interfaces.ar.SMeasureView;
 import com.supermap.interfaces.collector.SCollector;
 import com.supermap.interfaces.collector.SCollectorType;
@@ -46,8 +50,8 @@ public class SupermapFullPackage implements ReactPackage {
         return Arrays.<ViewManager>asList(
                 new MapViewManager(),
                 new LayerListViewManager(),new ScaleViewManager(),new CallOutManager()
-                ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView()
-                ,new AIDetectViewManager(), new MeasureViewManager()
+                ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView(),new RCTARView(),new RCTFloorListView()
+                ,new AIDetectViewManager(), new MeasureViewManager(), new AIClassifyViewManager()
         );
     }
 
@@ -213,10 +217,12 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new SFacilityAnalyst(reactContext));
         modules.add(new STransportationAnalyst(reactContext));
 
-        //AI识别
+        //AI检测识别
         modules.add(new SAIDetectView(reactContext));
         //AR高精采集
         modules.add(new SMeasureView(reactContext));
+        //AI检测分类
+        modules.add(new SAIClassifyView(reactContext));
         return modules;
     }
 }

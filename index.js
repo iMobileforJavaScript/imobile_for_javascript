@@ -140,6 +140,8 @@ import SMLayerListView from './NativeModule/components/SMLayerListViewUI.js';
 import SMScaleView from './NativeModule/components/SMScaleViewUI.js';
 import SMSceneView from './NativeModule/components/SMSceneViewUI.js';
 import SMPlotView from './NativeModule/components/SMPlotViewUI.js';
+import SMArView from './NativeModule/ar/SMArView.js'
+import SMFloorListView from './NativeModule/ar/SMFloorListView.js'
 // import SMSearchView from './NativeModule/components/SMSearchViewUI.js';
 import SMBarChartView from './NativeModule/components/SMBarChartViewUI.js';
 import SMLineChartView from './NativeModule/components/SMLineChartViewUI.js';
@@ -150,6 +152,7 @@ import SMSymbolTable from './NativeModule/components/SMSymbolTable';
 import SMDynamicArrowView from './NativeModule/components/SMDynamicArrowView.js';
 import SMAIDetectView from './NativeModule/components/SMAIDetectView.js';
 import SMMeasureView from './NativeModule/components/SMMeasureView.js';
+import SMAIClassifyView from './NativeModule/components/SMAIClassifyView.js';
 
 import EngineType from './NativeModule/EngineType'
 import ThemeLabelItem from './NativeModule/ThemeLabelItem'
@@ -192,6 +195,7 @@ import {
   SMessageService,
   SAIDetectView,
   SMeasureView,
+  SAIClassifyView,
 } from './NativeModule/interfaces'
 let SMCollectorType = NativeModules.SCollectorType;
 
@@ -206,8 +210,11 @@ export {
   SMWorkspaceManagerView,
   SMRLegendView,
   SMDynamicArrowView,
+  SMArView,
+  SMFloorListView,
   SMAIDetectView,
   SMMeasureView,
+  SMAIClassifyView,
 
   Utility,
 
@@ -390,4 +397,5 @@ export {
   /**视频地图模块(AR)**/
   SAIDetectView,
   SMeasureView,
+  SAIClassifyView,
 };

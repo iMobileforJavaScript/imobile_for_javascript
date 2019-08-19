@@ -1859,11 +1859,99 @@ export default (function () {
     }
   }
 
+
+  /**
+   * 路径分析路线详情监听
+   * @param handlers
+   */
+  function setOnlineNavigationListener(handlers){
+    try {
+      if (Platform.OS === 'ios' && handlers) {
+        if (typeof handlers.callback === 'function') {
+
+        }
+      } else if (Platform.OS === 'android' && handlers) {
+        if (typeof handlers.callback === "function") {
+          DeviceEventEmitter.addListener(EventConst.NAVIGATION_WAYS, function (e) {
+            handlers.callback(e);
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  /**
+   * 路径分析路线详情监听
+   * @param handlers
+   */
+  function setOnlineNavigation2Listener(handlers){
+    try {
+      if (Platform.OS === 'ios' && handlers) {
+        if (typeof handlers.callback === 'function') {
+
+        }
+      } else if (Platform.OS === 'android' && handlers) {
+        if (typeof handlers.callback === "function") {
+          DeviceEventEmitter.addListener(EventConst.NAVIGATION_LENGTH, function (e) {
+            handlers.callback(e);
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
+
+  /**
+   * 路径分析
+   * @param index
+   * @returns {*|void|Promise<void>}
+   */
+  function routeAnalyst(index) {
+    try {
+      return SMap.routeAnalyst(index)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 清除导航路线
+   * @returns {*|void|Promise<void>}
+   */
+  function clearTarckingLayer() {
+    try {
+      return SMap.clearTarckingLayer()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 打开二维导航工作空间及地图
+   * @returns {*|void|Promise<void>}
+   */
+  function open2DNavigationMap() {
+    try {
+      return SMap.open2DNavigationMap()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+
+
   let SMapExp = {
     removePOICallout,
     getCurrentPosition,
     toLocationPoint,
     setPointSearchListener,
+    setOnlineNavigationListener,
+    setOnlineNavigation2Listener,
     pointSearch,
     initPointSearch,
     getEnvironmentStatus,
@@ -1992,6 +2080,10 @@ export default (function () {
     addLegendListener,
     removeLegendListener,
     addScaleChangeDelegate,
+
+    routeAnalyst,
+    clearTarckingLayer,
+    open2DNavigationMap,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)
 

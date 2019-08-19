@@ -55,5 +55,9 @@ export default {
   // SSCENE_REMOVE_ATTRIBUTE: "com.supermap.RN.SMSceneControl.Scene_removeAttribu
   
   /** 在线分析 **/
-  ONLINE_ANALYST_RESULT: 'com.supermap.RN.online_analyst_result'
+  ONLINE_ANALYST_RESULT: 'com.supermap.RN.online_analyst_result',
+
+  /** 导航路线 **/
+  NAVIGATION_WAYS :"com.supermap.RN.Navigation.online_navigation_ways",
+  NAVIGATION_LENGTH :"com.supermap.RN.Navigation.online_navigation_length",
 }
