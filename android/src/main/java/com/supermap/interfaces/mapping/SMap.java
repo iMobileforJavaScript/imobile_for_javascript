@@ -73,6 +73,9 @@ import com.supermap.mapping.ThemeRange;
 import com.supermap.mapping.ThemeType;
 import com.supermap.mapping.ThemeUnique;
 import com.supermap.mapping.collector.Collector;
+import com.supermap.navi.NaviInfo;
+import com.supermap.navi.NaviListener;
+import com.supermap.navi.Navigation2;
 import com.supermap.onlineservices.CoordinateType;
 import com.supermap.onlineservices.NavigationOnline;
 import com.supermap.onlineservices.NavigationOnlineData;
@@ -3586,15 +3589,17 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void addTextRecordset(String dataname, String name, String userpath, int x, int y, Promise promise) {
+    public void addTextRecordset(String datasourceName, String datasetName, String name, int x, int y, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Point2D p = sMap.smMapWC.getMapControl().getMap().pixelToMap(new Point(x, y));
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
+            Datasource opendatasource = workspace.getDatasources().get(datasourceName);
             Datasets datasets = opendatasource.getDatasets();
-            DatasetVector dataset = (DatasetVector) datasets.get(dataname);
-            dataset.setReadOnly(false);
+            DatasetVector dataset = (DatasetVector) datasets.get(datasetName);
+            if(dataset != null){
+                dataset.setReadOnly(false);
+            }
             Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
             TextPart textPart = new TextPart();
             textPart.setAnchorPoint(p);
@@ -4353,11 +4358,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    private Point2Ds point2Ds;
     /**
      * 创建推演动画对象
      */
     @ReactMethod
-    public static void createAnimationGo(ReadableMap createInfo,String newPlotMapName,Promise promise){
+    public  void createAnimationGo(ReadableMap createInfo,String newPlotMapName,Promise promise){
             //顺序：路径、闪烁、属性、显隐、旋转、比例、生长
             try {
                 if (!createInfo.hasKey("animationMode")) {
@@ -4393,7 +4399,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         animationWay.setPathType(AnimationDefine.PathType.POLYLINE);
                         animationWay.setTrackLineColor(new com.supermap.data.Color(255,0,0,255));
                         animationWay.setPathTrackDir(true);
+                        animationWay.showPathTrack(true);
                         animationGO=animationWay;
+
                         break;
                     case 1:
                         AnimationBlink animationBlink= (AnimationBlink) animationGO;
@@ -4438,6 +4446,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         animationGO=animationGrow;
                         break;
                 }
+                //清空创建路径动画时的数据
+                mapControl.getMap().getTrackingLayer().clear();
+                point2Ds=null;
+
                 if (createInfo.hasKey("startTime")&&animationGroup.getAnimationCount()>0) {
                     int startTime = createInfo.getInt("startTime");
                     if (createInfo.hasKey("startMode")) {
@@ -4515,7 +4527,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * 保存推演动画
      */
     @ReactMethod
-    public static void animationSave(String savePath,Promise promise){
+    public static void animationSave(String savePath,String fileName,Promise promise){
         try {
 //        String path=sdcard+"/supermap/demos/plotdata/qdwj/强渡乌江_2.xml";
             sMap = SMap.getInstance();
@@ -4524,8 +4536,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if(!file.exists()){
                 file.mkdirs();
             }
-            String mapName=mapControl.getMap().getName();
-            String tempPath=savePath+"/"+mapName+".xml";
+//            String mapName=mapControl.getMap().getName();
+            String tempPath=savePath+"/"+fileName+".xml";
             String path=SMFileUtil.formateNoneExistFileName(tempPath,false);
             boolean result=AnimationManager.getInstance().saveAnimationToXML(path);
             AnimationManager.getInstance().reset();
@@ -4568,7 +4580,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
-    private Point2Ds point2Ds;
+
     /**
      * 添加路径动画点获取回退路径动画点
      * @param point
@@ -4600,7 +4612,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             style.setLineColor(new Color(255, 105, 0));
             style.setMarkerSymbolID(3614);
             {
-                if(point2Ds.getCount()==1){
+                if(point2Ds.getCount()==0){
+                    mapControl.getMap().getTrackingLayer().clear();
+                }
+                else if(point2Ds.getCount()==1){
                     mapControl.getMap().getTrackingLayer().clear();
                     GeoPoint geoPoint=new GeoPoint(point2Ds.getItem(0));
                     geoPoint.setStyle(style);
@@ -5761,13 +5776,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 .emit(EventConst.NAVIGATION_LENGTH, map);
     }
 
+    Point2D endPoint,startPoint;
+
     @ReactMethod
     public void routeAnalyst(int index,Promise promise){
         try {
             sMap = SMap.getInstance();
-            Point2D endPoint = sMap.poiSearchHelper2D.getSearchPoint(index);
+            endPoint = sMap.poiSearchHelper2D.getSearchPoint(index);
             LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
-            Point2D startPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
+            startPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
             NavigationOnline navigationOnline = new NavigationOnline();
             navigationOnline.setKey("fvV2osxwuZWlY0wJb8FEb2i5");
             navigationOnline.setNavigationOnlineCallback(new NavigationOnline.NavigationOnlineCallback() {
@@ -5814,6 +5831,87 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap.smMapWC.getMapControl().getMap().open(mapName);
             sMap.smMapWC.getMapControl().getMap().setFullScreenDrawModel(true);
             sMap.smMapWC.getMapControl().getMap().refresh();
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 开启行业导航
+     * @param promise
+     */
+    @ReactMethod
+    public void startNavigation(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+
+            Workspace mWorkspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            String networkDatasetName = "RoadNetwork";         // 已有的网络数据集的名称
+
+            // 初始化行业导航对象
+            DatasetVector networkDataset = (DatasetVector) mWorkspace.getDatasources().get("beijing").getDatasets().get(networkDatasetName);
+            Navigation2 m_Navigation2 = sMap.getSmMapWC().getMapControl().getNavigation2();      // 获取行业导航控件，只能通过此方法初始化m_Navigation2
+            m_Navigation2.setPathVisible(true);                 // 设置分析所得路径可见
+            m_Navigation2.setNetworkDataset(networkDataset);    // 设置网络数据集
+            m_Navigation2.loadModel( android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/"+ "iTablet/User/Customer/DefaultData/Navigation2Data/netModel.snm");  // 加载网络模型
+            m_Navigation2.addNaviInfoListener(new NaviListener() {
+
+                @Override
+                public void onStopNavi() {
+                    // TODO Auto-generated method stub
+                    Log.e("+++++++++++++","-------------****************");
+                    WritableMap map = Arguments.createMap();
+                    map.putBoolean("finsh",true);
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.INDUSTRYNAVIAGTION, map);
+                }
+
+                @Override
+                public void onStartNavi() {
+                    // TODO Auto-generated method stub
+                    Log.e("+++++++++++++","-------------****************");
+                }
+
+                @Override
+                public void onNaviInfoUpdate(NaviInfo arg0) {
+                    // TODO Auto-generated method stub
+                    Log.e("+++++++++++++","-------------****************");
+                }
+
+                @Override
+                public void onAarrivedDestination() {
+                    // TODO Auto-generated method stub
+                    Log.e("+++++++++++++","-------------****************");
+                    WritableMap map = Arguments.createMap();
+                    map.putBoolean("finsh",true);
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.INDUSTRYNAVIAGTION, map);
+                }
+
+                @Override
+                public void onAdjustFailure() {
+                    // TODO Auto-generated method stub
+                    Log.e("+++++++++++++","-------------****************");
+                }
+
+                @Override
+                public void onPlayNaviMessage(String arg0) {
+                    // TODO Auto-generated method stub
+                    Log.e("+++++++++++++","-------------****************");
+                }
+            });
+
+            m_Navigation2.setStartPoint(116.505792, 39.985568);        // 设置起点
+            m_Navigation2.setDestinationPoint(116.4635753632,39.9653458698);     // 设置终点
+            m_Navigation2.setPathVisible(false);                                       // 设置路径可见
+            boolean isfind = m_Navigation2.routeAnalyst();
+            Log.e("++++++++++++",""+isfind);
+            if(isfind){
+                m_Navigation2.startGuide(1);
+            }
+
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
