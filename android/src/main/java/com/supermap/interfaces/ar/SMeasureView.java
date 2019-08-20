@@ -3,6 +3,7 @@ package com.supermap.interfaces.ar;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.ar.core.ArCoreApk;
@@ -51,6 +52,16 @@ public class SMeasureView extends ReactContextBaseJavaModule {
         mMeasureView.setFixedPoint(point2D);
 
         mMeasureView.enableSupport(true);
+
+        mMeasureView.setClickable(true);
+        measureView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mMeasureView != null) {
+                    mMeasureView.addNewRecord();
+                }
+            }
+        });
     }
 
     private boolean checkARCore() {
