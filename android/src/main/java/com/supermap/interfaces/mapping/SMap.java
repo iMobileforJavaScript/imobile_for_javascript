@@ -4396,6 +4396,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         animationWay.setPathType(AnimationDefine.PathType.POLYLINE);
                         animationWay.setTrackLineColor(new com.supermap.data.Color(255,0,0,255));
                         animationWay.setPathTrackDir(true);
+                        animationWay.showPathTrack(true);
                         animationGO=animationWay;
 
                         break;

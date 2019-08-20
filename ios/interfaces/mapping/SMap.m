@@ -2884,14 +2884,11 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
 //                    [animationWay insertPathPt:0 pt:point3D];
                 }
             }
-            [animationWay setTrackLineWidth:5.5];
-            [animationWay setPathType:1];
+            [animationWay setTrackLineWidth:0.5];
+            [animationWay setPathType:0];
             [animationWay setTrackLineColor:[[Color alloc] initWithR:255 G:0 B:0]];
             [animationWay setPathTrackDir:YES];
             animationWay.showPathTrack=YES;
-            Point3Ds* p=[animationWay getAllPathPt];
-            long count=p.count;
-            int count2=[animationWay getPathPtCount];
             animationGo=animationWay;
         }else if(type==BlinkAnimation){
             AnimationBlink* animationBlink=(AnimationBlink*)animationGo;
@@ -3063,7 +3060,9 @@ RCT_REMAP_METHOD(addAnimationWayPoint,addAnimationWayPoint:(NSDictionary*)point 
                 [animationWayPoint2Ds remove:[animationWayPoint2Ds getCount]-1];
             }
         }else{
-            CGPoint point1=CGPointMake((int)[point objectForKey:@"x"], (int)[point objectForKey:@"y"]);
+            int x=[[point objectForKey:@"x"] intValue];
+            int y=[[point objectForKey:@"y"] intValue];
+            CGPoint point1=CGPointMake(x, y);
             Point2D* point2D=[mapControl.map pixelTomap:point1];
             if(!animationWayPoint2Ds){
                 animationWayPoint2Ds=[[Point2Ds alloc] init];
