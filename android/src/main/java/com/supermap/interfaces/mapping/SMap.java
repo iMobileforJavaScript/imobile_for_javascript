@@ -3589,15 +3589,17 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void addTextRecordset(String dataname, String name, String userpath, int x, int y, Promise promise) {
+    public void addTextRecordset(String datasourceName, String datasetName, String name, int x, int y, Promise promise) {
         try {
             sMap = SMap.getInstance();
             Point2D p = sMap.smMapWC.getMapControl().getMap().pixelToMap(new Point(x, y));
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
+            Datasource opendatasource = workspace.getDatasources().get(datasourceName);
             Datasets datasets = opendatasource.getDatasets();
-            DatasetVector dataset = (DatasetVector) datasets.get(dataname);
-            dataset.setReadOnly(false);
+            DatasetVector dataset = (DatasetVector) datasets.get(datasetName);
+            if(dataset != null){
+                dataset.setReadOnly(false);
+            }
             Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
             TextPart textPart = new TextPart();
             textPart.setAnchorPoint(p);
@@ -4356,11 +4358,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    private Point2Ds point2Ds;
     /**
      * 创建推演动画对象
      */
     @ReactMethod
-    public static void createAnimationGo(ReadableMap createInfo,String newPlotMapName,Promise promise){
+    public  void createAnimationGo(ReadableMap createInfo,String newPlotMapName,Promise promise){
             //顺序：路径、闪烁、属性、显隐、旋转、比例、生长
             try {
                 if (!createInfo.hasKey("animationMode")) {
@@ -4380,6 +4383,25 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 AnimationGO animationGO =  AnimationManager.getInstance().createAnimation(new AnimationDefine.AnimationType(animationMode, animationMode));
                 switch (animationMode){
                     case 0:
+                        AnimationWay animationWay=(AnimationWay)animationGO;
+                        Point3Ds point3Ds=new Point3Ds();
+                        if(createInfo.hasKey("wayPoints")){
+                            ReadableArray array=createInfo.getArray("wayPoints");
+                            for (int i=0;i<array.size();i++){
+                                ReadableMap map=array.getMap(i);
+                                double x=map.getDouble("x");
+                                double y=map.getDouble("y");
+                                point3Ds.add(new Point3D(x,y,0));
+                            }
+                        }
+                        animationWay.addPathPts(point3Ds);
+                        animationWay.setTrackLineWidth(0.5);
+                        animationWay.setPathType(AnimationDefine.PathType.POLYLINE);
+                        animationWay.setTrackLineColor(new com.supermap.data.Color(255,0,0,255));
+                        animationWay.setPathTrackDir(true);
+                        animationWay.showPathTrack(true);
+                        animationGO=animationWay;
+
                         break;
                     case 1:
                         AnimationBlink animationBlink= (AnimationBlink) animationGO;
@@ -4424,6 +4446,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         animationGO=animationGrow;
                         break;
                 }
+                //清空创建路径动画时的数据
+                mapControl.getMap().getTrackingLayer().clear();
+                point2Ds=null;
+
                 if (createInfo.hasKey("startTime")&&animationGroup.getAnimationCount()>0) {
                     int startTime = createInfo.getInt("startTime");
                     if (createInfo.hasKey("startMode")) {
@@ -4551,6 +4577,94 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.resolve(type);
         }catch (Exception e) {
             promise.resolve(-1);
+        }
+    }
+
+
+    /**
+     * 添加路径动画点获取回退路径动画点
+     * @param point
+     * @param promise
+     */
+    @ReactMethod
+    public void addAnimationWayPoint(ReadableMap point, boolean isAdd,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            if(!isAdd){
+                if(point2Ds==null||point2Ds.getCount()==0){
+                    promise.resolve(false);
+                    return;
+                }else {
+                    point2Ds.remove(point2Ds.getCount()-1);
+                }
+            }else {
+                Point point1 = new Point((int) point.getDouble("x"), (int) point.getDouble("y"));
+                Point2D point2D = mapControl.getMap().pixelToMap(point1);
+                if (point2Ds == null) {
+                    point2Ds = new Point2Ds();
+                }
+                point2Ds.add(point2D);
+            }
+            GeoStyle style = new GeoStyle();
+            style.setMarkerSize(new Size2D(10, 10));
+            style.setLineColor(new Color(255, 105, 0));
+            style.setMarkerSymbolID(3614);
+            {
+                if(point2Ds.getCount()==0){
+                    mapControl.getMap().getTrackingLayer().clear();
+                }
+                else if(point2Ds.getCount()==1){
+                    mapControl.getMap().getTrackingLayer().clear();
+                    GeoPoint geoPoint=new GeoPoint(point2Ds.getItem(0));
+                    geoPoint.setStyle(style);
+                    mapControl.getMap().getTrackingLayer().add(geoPoint,"point");
+                }else if(point2Ds.getCount()>1){
+                    mapControl.getMap().getTrackingLayer().clear();
+                    GeoLine geoLine=new GeoLine(point2Ds);
+                    geoLine.setStyle(style);
+                    mapControl.getMap().getTrackingLayer().add(geoLine,"line");
+                }
+                mapControl.getMap().refresh();
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 结束添加路径动画
+     * @param isSave
+     * @param promise
+     */
+    @ReactMethod
+    public void endAnimationWayPoint(boolean isSave, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            if(!isSave){
+                mapControl.getMap().getTrackingLayer().clear();
+                point2Ds=null;
+                promise.resolve(true);
+                return;
+            }
+
+            WritableArray arr = Arguments.createArray();
+            if (point2Ds.getCount()>0) {
+                for (int i = 0; i < point2Ds.getCount(); i++) {
+                    WritableMap writeMap = Arguments.createMap();
+                    Point2D point2D=point2Ds.getItem(i);
+                    writeMap.putDouble("x",point2D.getX());
+                    writeMap.putDouble("y",point2D.getY());
+                    arr.pushMap(writeMap);
+                }
+            }
+            promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
         }
     }
 

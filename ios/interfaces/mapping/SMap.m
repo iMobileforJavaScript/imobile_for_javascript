@@ -18,11 +18,14 @@
 #import "SuperMap/AnimationRotate.h"
 #import "SuperMap/AnimationScale.h"
 #import "SuperMap/AnimationGrow.h"
+#import "SuperMap/AnimationWay.h"
 #import "SuperMap/Point3D.h"
+#import "SuperMap/GeoLine.h"
 
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
 static NSMutableArray *fillColors;
+static Point2Ds *animationWayPoint2Ds;
 NSString * const LEGEND_CONTENT_CHANGE = @"com.supermap.RN.Map.Legend.legend_content_change";
 
 @interface SMap()
@@ -2574,8 +2577,10 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
         NSMutableDictionary* libInfo = [[NSMutableDictionary alloc] init];
         for (NSString* path in plotSymbolPaths) {
             int libId=[sMap.smMapWC.mapControl addPlotLibrary:path];
-            NSString* libName=[sMap.smMapWC.mapControl getPlotSymbolLibName: libId];
-            [libInfo setObject:@(libId) forKey:libName];
+            if(-1 != libId){
+                NSString* libName=[sMap.smMapWC.mapControl getPlotSymbolLibName: libId];
+                [libInfo setObject:@(libId) forKey:libName];
+            }
             
 //            if(isFirst&&[libName isEqualToString:@"警用标号"]){
 //                Point2Ds* point2Ds=[[Point2Ds alloc] init];
@@ -2865,7 +2870,26 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
         AnimationGO* animationGo=[AnimationManager.getInstance createAnimation:type];
         
         if(type==WayAnimation){
-            
+            AnimationWay* animationWay=(AnimationWay*)animationGo;
+            Point3Ds* point3Ds=[[Point3Ds alloc] init];
+            if ([createInfo objectForKey:@"wayPoints"]) {
+                NSMutableArray* array=[createInfo objectForKey:@"wayPoints"];
+                for(int i=0;i<array.count;i++){
+                    NSDictionary* map=[array objectAtIndex:i];
+                    double x=[[map objectForKey:@"x"] doubleValue];
+                    double y=[[map objectForKey:@"y"] doubleValue];
+                    Point3D point3D = {x,y,0};
+                    [point3Ds addPoint3D:point3D];
+                    [animationWay addPathPt:point3D];
+//                    [animationWay insertPathPt:0 pt:point3D];
+                }
+            }
+            [animationWay setTrackLineWidth:0.5];
+            [animationWay setPathType:0];
+            [animationWay setTrackLineColor:[[Color alloc] initWithR:255 G:0 B:0]];
+            [animationWay setPathTrackDir:YES];
+            animationWay.showPathTrack=YES;
+            animationGo=animationWay;
         }else if(type==BlinkAnimation){
             AnimationBlink* animationBlink=(AnimationBlink*)animationGo;
             [animationBlink setBlinkNumberofTimes:20];
@@ -2903,6 +2927,9 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
         }else if(type==GrowAnimation){
             //默认是从0生成到1
         }
+        //清空创建路径动画时的数据
+        [mapControl.map.trackingLayer clear];
+        animationWayPoint2Ds=nil;
         
         if([createInfo objectForKey:@"startTime"]&&[animationGroup getAnimationCount]>0){
             NSNumber* startTimeNumber=[createInfo objectForKey:@"startTime"];
@@ -3015,6 +3042,87 @@ RCT_REMAP_METHOD(getGeometryTypeById,getGeometryTypeById:(NSString*) layerName g
         resolve(@(type));
     } @catch (NSException *exception) {
         reject(@"getGeometryTypeById", exception.reason, nil);
+    }
+}
+
+#pragma mark 添加路径动画点获取回退路径动画点
+RCT_REMAP_METHOD(addAnimationWayPoint,addAnimationWayPoint:(NSDictionary*)point isAdd:(BOOL)isAdd resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        if(!isAdd){
+            if(!animationWayPoint2Ds||[animationWayPoint2Ds getCount]==0){
+                resolve([NSNumber numberWithBool:NO]);
+                return;
+            }else{
+                [animationWayPoint2Ds remove:[animationWayPoint2Ds getCount]-1];
+            }
+        }else{
+            int x=[[point objectForKey:@"x"] intValue];
+            int y=[[point objectForKey:@"y"] intValue];
+            CGPoint point1=CGPointMake(x, y);
+            Point2D* point2D=[mapControl.map pixelTomap:point1];
+            if(!animationWayPoint2Ds){
+                animationWayPoint2Ds=[[Point2Ds alloc] init];
+            }
+            [animationWayPoint2Ds add:point2D];
+        }
+        GeoStyle* style=[[GeoStyle alloc] init];
+        [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
+        [style setLineColor:[[Color alloc] initWithR:225 G:105 B:0]];
+//        [style setMarkerID:@"3614"];
+        {
+            if([animationWayPoint2Ds getCount]==0){
+                [mapControl.map.trackingLayer clear];
+            }
+            else if([animationWayPoint2Ds getCount]==1){
+                [mapControl.map.trackingLayer clear];
+                GeoPoint* geoPoint=[[GeoPoint alloc] initWithPoint2D:[animationWayPoint2Ds getItem:0]];
+                [geoPoint setStyle:style];
+                [mapControl.map.trackingLayer addGeometry:geoPoint WithTag:@"point"];
+            }else if([animationWayPoint2Ds getCount]>1){
+                [mapControl.map.trackingLayer clear];
+                GeoLine* geoline=[[GeoLine alloc] initWithPoint2Ds:animationWayPoint2Ds];
+                [geoline setStyle:style];
+                [mapControl.map.trackingLayer addGeometry:geoline WithTag:@"line"];
+            }
+            [mapControl.map refresh];
+        }
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"addAnimationWayPoint", exception.reason, nil);
+    }
+}
+
+#pragma mark 结束添加路径动画
+RCT_REMAP_METHOD(endAnimationWayPoint,endAnimationWayPoint:(BOOL)isSave resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        if(!isSave){
+            [mapControl.map.trackingLayer clear];
+            animationWayPoint2Ds=nil;
+            resolve([NSNumber numberWithBool:YES]);
+            return;
+        }
+        NSMutableArray* arr=[[NSMutableArray alloc] init];
+        if([animationWayPoint2Ds getCount]>0){
+            for(int i=0;i<[animationWayPoint2Ds getCount];i++){
+                NSDictionary* map=@{
+                                    @"x":[NSNumber numberWithDouble:[animationWayPoint2Ds getItem:i].x],
+                                    @"y":[NSNumber numberWithDouble:[animationWayPoint2Ds getItem:i].y],
+                                    };
+                [arr addObject:map];
+            }
+        }
+        resolve(arr);
+    } @catch (NSException *exception) {
+        reject(@"addAnimationWayPoint", exception.reason, nil);
     }
 }
 
@@ -3763,16 +3871,17 @@ RCT_REMAP_METHOD(setMaxVisibleScale, setMaxVisibleScaleWithName:(NSString *)name
 }
 
 #pragma mark 添加文字标注
-RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)dataname Name:(NSString *)name Path:(NSString *)userpath X:(int)x Y:(int)y Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDatasourceName:(NSString *)datasourceName DatasetName:(NSString *)datasetName Name:(NSString *)name X:(int)x Y:(int)y Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         Point2D *p =[sMap.smMapWC.mapControl.map pixelTomap:CGPointMake(x, y)];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
-        Datasource *opendatasource = [workspace.datasources getAlias:labelName];
+        Datasource *opendatasource = [workspace.datasources getAlias:datasourceName];
         Datasets *datasets = opendatasource.datasets;
-        DatasetVector *dataset =(DatasetVector *)[datasets getWithName:dataname];
-        [dataset setReadOnly:NO];
+        DatasetVector *dataset =(DatasetVector *)[datasets getWithName:datasetName];
+        if(dataset != nil){
+            [dataset setReadOnly:NO];
+        }
         Recordset *recordset = [dataset recordset:NO cursorType:DYNAMIC];
         TextPart *textpart = [[TextPart alloc]init];
         TextStyle *textStyle = [[TextStyle alloc]init];

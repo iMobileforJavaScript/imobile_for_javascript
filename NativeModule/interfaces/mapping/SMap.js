@@ -1587,7 +1587,30 @@ export default (function () {
     }
   }
   
+  /**
+   * 添加路径动画点
+   * @param {点信息} point 
+   */
+  function addAnimationWayPoint(point,isAdd){
+    try{
+      return SMap.addAnimationWayPoint(point,isAdd)
+    } catch (e){
+      console.error(e)
+    }
+  }
+  
 
+  /**
+   * 添加路径动画点
+   * @param {点信息} point 
+   */
+  function endAnimationWayPoint(isSave){
+    try{
+      return SMap.endAnimationWayPoint(isSave)
+    } catch (e){
+      console.error(e)
+    }
+  }
   /************************************** 地图编辑历史操作 ****************************************/
   /**
    * 地图撤销
@@ -1731,9 +1754,9 @@ export default (function () {
    * 添加文字标注
    * @returns {*|Promise.<void>}
    */
-  function addTextRecordset (value, name,userpath, x, y) {
+  function addTextRecordset (datasourceName, datasetName, value, x, y) {
     try {
-      return SMap.addTextRecordset(value, name,userpath, x, y)
+      return SMap.addTextRecordset(datasourceName, datasetName, value, x, y)
     } catch (e) {
       console.error(e)
     }
@@ -2074,6 +2097,8 @@ export default (function () {
     createAnimationGo,
     animationSave,
     getGeometryTypeById,
+    addAnimationWayPoint,
+    endAnimationWayPoint,
     undo,
     redo,
     removeHistory,
