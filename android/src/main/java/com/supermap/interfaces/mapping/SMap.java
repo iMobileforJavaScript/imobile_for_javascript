@@ -4524,7 +4524,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * 保存推演动画
      */
     @ReactMethod
-    public static void animationSave(String savePath,Promise promise){
+    public static void animationSave(String savePath,String fileName,Promise promise){
         try {
 //        String path=sdcard+"/supermap/demos/plotdata/qdwj/强渡乌江_2.xml";
             sMap = SMap.getInstance();
@@ -4533,8 +4533,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if(!file.exists()){
                 file.mkdirs();
             }
-            String mapName=mapControl.getMap().getName();
-            String tempPath=savePath+"/"+mapName+".xml";
+//            String mapName=mapControl.getMap().getName();
+            String tempPath=savePath+"/"+fileName+".xml";
             String path=SMFileUtil.formateNoneExistFileName(tempPath,false);
             boolean result=AnimationManager.getInstance().saveAnimationToXML(path);
             AnimationManager.getInstance().reset();

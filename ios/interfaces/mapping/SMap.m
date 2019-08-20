@@ -2997,16 +2997,16 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
 }
 
 #pragma mark 保存推演动画
-RCT_REMAP_METHOD(animationSave,animationSave:(NSString*) savePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(animationSave,animationSave:(NSString*) savePath fileName:(NSString*)fileName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         sMap = [SMap singletonInstance];
-        MapControl* mapControl=sMap.smMapWC.mapControl;
+//        MapControl* mapControl=sMap.smMapWC.mapControl;
         if(![[NSFileManager defaultManager] fileExistsAtPath:savePath]){
             [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:YES attributes:nil error:nil];
         }
-        NSString* mapName=mapControl.map.name;
-        NSString* tempPath=[NSString stringWithFormat:@"%@/%@.xml",savePath,mapName];
+//        NSString* mapName=mapControl.map.name;
+        NSString* tempPath=[NSString stringWithFormat:@"%@/%@.xml",savePath,fileName];
         NSString* path=[FileUtils formateNoneExistFileName:tempPath isDir:false];
         BOOL result=[AnimationManager.getInstance saveAnimationToXML:path];
         [AnimationManager.getInstance reset];
