@@ -1904,6 +1904,28 @@ export default (function () {
     }
   }
 
+  /**
+   * 停止行业导航
+   * @param handlers
+   */
+  function setIndustryNavigationListener(handlers){
+    try {
+      if (Platform.OS === 'ios' && handlers) {
+        if (typeof handlers.callback === 'function') {
+
+        }
+      } else if (Platform.OS === 'android' && handlers) {
+        if (typeof handlers.callback === "function") {
+          DeviceEventEmitter.addListener(EventConst.INDUSTRYNAVIAGTION, function (e) {
+            handlers.callback(e);
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 
 
   /**
@@ -1943,6 +1965,18 @@ export default (function () {
     }
   }
 
+  /**
+   * 开启行业导航
+   * @returns {*|void|Promise<void>}
+   */
+  function startNavigation() {
+    try {
+      return SMap.startNavigation()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
 
 
   let SMapExp = {
@@ -1952,6 +1986,7 @@ export default (function () {
     setPointSearchListener,
     setOnlineNavigationListener,
     setOnlineNavigation2Listener,
+    setIndustryNavigationListener,
     pointSearch,
     initPointSearch,
     getEnvironmentStatus,
@@ -2084,6 +2119,7 @@ export default (function () {
     routeAnalyst,
     clearTarckingLayer,
     open2DNavigationMap,
+    startNavigation,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)
 
