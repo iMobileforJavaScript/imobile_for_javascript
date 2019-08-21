@@ -1568,9 +1568,9 @@ export default (function () {
   /**
    * 保存态势推演动画
    */
-  function animationSave(savePath){
+  function animationSave(savePath,fileName){
     try{
-      return SMap.animationSave(savePath)
+      return SMap.animationSave(savePath,fileName)
     } catch (e){
       console.error(e)
     }

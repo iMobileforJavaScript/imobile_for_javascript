@@ -3,6 +3,7 @@ package com.supermap.interfaces.ar;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.ar.core.ArCoreApk;
@@ -51,6 +52,16 @@ public class SMeasureView extends ReactContextBaseJavaModule {
         mMeasureView.setFixedPoint(point2D);
 
         mMeasureView.enableSupport(true);
+
+        mMeasureView.setClickable(true);
+        measureView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mMeasureView != null) {
+                    mMeasureView.addNewRecord();
+                }
+            }
+        });
     }
 
     private boolean checkARCore() {
@@ -200,15 +211,28 @@ public class SMeasureView extends ReactContextBaseJavaModule {
                     recordset.moveLast();
                     recordset.edit();//可编辑
 
-                    GeoLine geoLine = new GeoLine();
-                    geoLine.addPart(fixedTotalPoints);
-                    geoStyle.setLineColor(new Color(70,128,223));
-                    geoStyle.setLineWidth(2);
-                    geoLine.setStyle(geoStyle);
+//                    GeoLine geoLine = new GeoLine();
+//                    geoLine.addPart(fixedTotalPoints);
+//                    geoStyle.setLineColor(new Color(70,128,223));
+//                    geoStyle.setLineWidth(2);
+//                    geoLine.setStyle(geoStyle);
+//                    //移动指针到下一位
+//                    recordset.moveNext();
+//                    //新增线对象
+//                    recordset.addNew(geoLine);
+
+                    GeoRegion geoRegion = new GeoRegion();
+                    geoRegion.addPart(fixedTotalPoints);
+                    geoStyle.setLineColor(new Color(255,0,0));
+                    geoStyle.setLineWidth(1);
+                    geoStyle.setFillForeColor(new Color(255,160,122));
+                    geoStyle.setFillBackColor(new Color(255,160,122));
+                    geoStyle.setFillOpaqueRate(30);//加透明度更美观
+                    geoRegion.setStyle(geoStyle);
                     //移动指针到下一位
                     recordset.moveNext();
-                    //新增线对象
-                    recordset.addNew(geoLine);
+                    //新增面对象
+                    recordset.addNew(geoRegion);
 
                     FieldInfos fieldInfos = recordset.getFieldInfos();
                     if (fieldInfos.indexOf("ModifiedDate") != -1) {
@@ -228,7 +252,7 @@ public class SMeasureView extends ReactContextBaseJavaModule {
 
                         Point2D item = fixedTotalPoints.getItem(i);
                         GeoPoint geoPoint = new GeoPoint(item.getX(), item.getY());
-                        geoStyle.setMarkerSize(new Size2D(12,12));
+                        geoStyle.setMarkerSize(new Size2D(1,1));
                         geoStyle.setLineColor(new Color(255, 0, 0));
                         geoPoint.setStyle(geoStyle);
                         //新增点对象
