@@ -52,6 +52,33 @@
     return result;
 }
 
++(BOOL)copyDirFromPath:(NSString *)sourcePath toPath:(NSString *)toPath{
+    NSFileManager *fileManager = [[NSFileManager alloc] init];
+    NSArray* array = [fileManager contentsOfDirectoryAtPath:sourcePath error:nil];
+    for(int i = 0; i<[array count]; i++){
+        NSString *fullPath = [sourcePath stringByAppendingPathComponent:[array objectAtIndex:i]];
+        NSString *fullToPath = [toPath stringByAppendingPathComponent:[array objectAtIndex:i]];
+        //        NSLog(@"%@",fullPath);NSLog(@"%@",fullToPath);//判断是不是文件夹
+        BOOL isFolder = NO;//判断是不是存在路径 并且是不是文件夹
+        BOOL isExist = [fileManager fileExistsAtPath:fullPath isDirectory:&isFolder];
+        if (isExist){
+            //            NSLog(@"%@",err);
+            if (isFolder){
+                [FileUtils copyDirFromPath:fullPath toPath:fullToPath];
+                
+            }else{
+                NSError *err = nil;
+                [FileUtils createFileDirectories:fullToPath.stringByDeletingLastPathComponent];
+                [[NSFileManager defaultManager] copyItemAtPath:fullPath toPath:fullToPath error:&err];
+            }
+            
+        }
+        
+    }
+    
+    return YES;
+}
+
 + (BOOL)copyFiles:(NSString *)from targetDictionary:(NSString *)to filterFileSuffix:(NSString *)filterFileSuffix
 filterFileDicName:(NSString*)filterFileDicName otherFileDicName:(NSString*)otherFileDicName isOnly:(BOOL)isOnly{
     
