@@ -4423,7 +4423,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         break;
                     case 3:
                         AnimationShow animationShow = (AnimationShow)animationGO;
-                        animationShow.setShowEffect(0);
+                        animationShow.setShowEffect(1);
                         animationShow.setShowState(true);
                         animationGO=animationShow;
                         break;

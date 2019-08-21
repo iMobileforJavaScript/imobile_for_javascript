@@ -67,12 +67,17 @@ import com.supermap.mapping.PrjCoordSysTranslatorListener;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -87,6 +92,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 
 public class SMMapWC {
@@ -958,29 +973,29 @@ public class SMMapWC {
 
 
                 //导出推演动画xml文件
-//                if(desDir.indexOf("Data")>0){
-//                    String dataDir=desDir.substring(0,desDir.indexOf("Data",1)+"Data".length());
-//
-//                    String animationDir=dataDir+"/Animation/";
-//
-//                    String animationDirPath=animationDir+mapName;
-//                    File animationDirFile=new File(animationDirPath);
-//                    if(animationDirFile.exists()&&animationDirFile.isDirectory()){
-//                        String plotDirPath=desDir+"/plot/";
-//                        File plotDirFile=new File(plotDirPath);
-//                        if(plotDirFile.exists()&&plotDirFile.isDirectory()){
-//                            plotDirFile.delete();
-//                        }
-//                        plotDirFile.mkdirs();
-//                        File[] files=animationDirFile.listFiles();
-//                        for (File file : files) {
-//                            if(!file.isDirectory()) {
-//                                String strAnimation = plotDirPath + file.getName();
-//                                copyFile(file.getPath(), strAnimation);
-//                            }
-//                        }
-//                    }
-//                }
+                if(desDir.indexOf("Data")>0){
+                    String dataDir=desDir.substring(0,desDir.indexOf("Data",1)+"Data".length());
+
+                    String animationDir=dataDir+"/Animation/";
+
+                    String animationDirPath=animationDir+mapName;
+                    File animationDirFile=new File(animationDirPath);
+                    if(animationDirFile.exists()&&animationDirFile.isDirectory()){
+                        String plotDirPath=desDir+"/plot/";
+                        File plotDirFile=new File(plotDirPath);
+                        if(plotDirFile.exists()&&plotDirFile.isDirectory()){
+                            plotDirFile.delete();
+                        }
+                        plotDirFile.mkdirs();
+                        File[] files=animationDirFile.listFiles();
+                        for (File file : files) {
+                            if(!file.isDirectory()) {
+                                String strAnimation = plotDirPath + file.getName();
+                                copyFile(file.getPath(), strAnimation);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -1585,6 +1600,45 @@ public class SMMapWC {
                             if(!file.isDirectory()) {
                                 String strAnimation = animationDic + file.getName();
                                 copyFile(file.getPath(), strAnimation);
+                                {
+                                    boolean result=copyFile(file.getPath(), strAnimation);
+                                    if(result) {
+                                        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                                        //通过实例构建DocumentBuilder
+                                        DocumentBuilder db = null;
+                                        try {
+                                            db = dbf.newDocumentBuilder();
+                                            //创建Document    解析给定的文件
+                                            Document doc = db.parse(new FileInputStream(strAnimation));
+                                            NodeList nodeList=doc.getElementsByTagName("CONTROLNAME");
+                                            for (int index = 0; index < nodeList.getLength(); index++) {
+                                                Node node=nodeList.item(index);
+                                                node.getChildNodes().item(0).setNodeValue(strResName);
+                                            }
+
+                                            //创建工厂对象
+                                            TransformerFactory tfs = TransformerFactory.newInstance();
+                                            //创建Transformer对象
+                                            Transformer tf = tfs.newTransformer();
+                                            //将document输出到输出流中。
+                                            tf.transform(new DOMSource(doc),new StreamResult(strAnimation));
+
+                                        } catch (ParserConfigurationException e) {
+                                            e.printStackTrace();
+                                        } catch (FileNotFoundException e) {
+                                            e.printStackTrace();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        } catch (SAXException e) {
+                                            e.printStackTrace();
+                                        } catch (TransformerConfigurationException e) {
+                                            e.printStackTrace();
+                                        } catch (TransformerException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    }
+                                }
                             }
                         }
                     }
