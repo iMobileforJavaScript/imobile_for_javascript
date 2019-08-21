@@ -21,6 +21,7 @@ public class RCTFloorListView extends SimpleViewManager<MapFloorListView> {
         m_ThemedReactContext = reactContext;
         m_View = new MapFloorListView(reactContext.getCurrentActivity());
 
+        SMap.getInstance().getSmMapWC().setFloorListView(m_View);
 //        runOnUiThread(new Runnable() {
 //            @Override
 //            public void run() {

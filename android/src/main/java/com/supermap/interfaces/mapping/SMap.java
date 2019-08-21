@@ -76,6 +76,7 @@ import com.supermap.mapping.collector.Collector;
 import com.supermap.navi.NaviInfo;
 import com.supermap.navi.NaviListener;
 import com.supermap.navi.Navigation2;
+import com.supermap.navi.Navigation3;
 import com.supermap.onlineservices.CoordinateType;
 import com.supermap.onlineservices.NavigationOnline;
 import com.supermap.onlineservices.NavigationOnlineData;
@@ -153,12 +154,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private ScaleViewHelper getScaleViewHelper() {
         if (scaleViewHelper == null) {
             MapControl mapControl = SMap.getInstance().smMapWC.getMapControl();
-            scaleViewHelper = new ScaleViewHelper(context,mapControl);
+            scaleViewHelper = new ScaleViewHelper(context, mapControl);
         }
         if (scaleViewHelper.mapParameterChangedListener == null) {
             scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
                 public void scaleChanged(double newScale) {
-                    if(scaleViewHelper == null)
+                    if (scaleViewHelper == null)
                         return;
                     scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
                     scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
@@ -266,43 +267,43 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         return getCurrentActivity();
     }
 
-    public String getPackageName(){
+    public String getPackageName() {
         return context.getPackageName();
     }
 
-    public String getNativeLibraryDir(){
+    public String getNativeLibraryDir() {
         return context.getApplicationInfo().nativeLibraryDir;
     }
 
-    public AssetManager getAssets(){
+    public AssetManager getAssets() {
         return context.getAssets();
     }
 
 
-
     //判断坐标系Type是否相等，避免不支持的type转Enum抛异常
-    public static boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSys coordSys2){
-        try{
-            if(coordSys1.getType() == coordSys2.getType()){
+    public static boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSys coordSys2) {
+        try {
+            if (coordSys1.getType() == coordSys2.getType()) {
                 return true;
             }
             return false;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
 
     //判断坐标系Type是否相等，避免不支持的type转Enum抛异常
-    public static boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSysType prjCoordSysType){
-        try{
-            if(coordSys1.getType() == prjCoordSysType){
+    public static boolean safeGetType(PrjCoordSys coordSys1, PrjCoordSysType prjCoordSysType) {
+        try {
+            if (coordSys1.getType() == prjCoordSysType) {
                 return true;
             }
             return false;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
+
     /**
      * 获取许可文件状态
      *
@@ -370,7 +371,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap.smMapWC.getMapControl().getMap().refresh();
 
             Point2D pt = new Point2D(longitude, latitude);
-            if (!safeGetType(sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
+            if (!safeGetType(sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
                 Point2Ds point2Ds = new Point2Ds();
                 point2Ds.add(pt);
                 PrjCoordSys prjCoordSys = new PrjCoordSys();
@@ -461,7 +462,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //                    sMap.getSmMapWC().getMapControl().getMap().setWorkspace(sMap.getSmMapWC().getWorkspace());
 
                     sMap.getSmMapWC().getMapControl().getMap().setVisibleScalesEnabled(false);
-                   // sMap.getSmMapWC().getMapControl().setMagnifierEnabled(true);
+                    // sMap.getSmMapWC().getMapControl().setMagnifierEnabled(true);
                     sMap.getSmMapWC().getMapControl().getMap().setAntialias(true);
                     sMap.getSmMapWC().getMapControl().getMap().refresh();
                 }
@@ -932,7 +933,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 isOpen = map.open(name);
 
                 if (isOpen) {
-                   getScaleViewHelper();
+                    getScaleViewHelper();
 
                     if (viewEntire) {
                         map.viewEntire();
@@ -1039,7 +1040,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = getInstance();
             if (scaleViewHelper != null) {
-                if(scaleViewHelper.mapParameterChangedListener != null){
+                if (scaleViewHelper.mapParameterChangedListener != null) {
                     scaleViewHelper.removeScaleChangeListener();
 //                    scaleViewHelper.mapParameterChangedListener = null;
                 }
@@ -1083,12 +1084,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
-    private void clearLayerSelection(LayerGroup layerGroup){
+    private void clearLayerSelection(LayerGroup layerGroup) {
         for (int i = 0; i < layerGroup.getCount(); i++) {
             Layer layer = layerGroup.get(i);
-            if(layer instanceof LayerGroup){
-                clearLayerSelection((LayerGroup)layer);
-            }else{
+            if (layer instanceof LayerGroup) {
+                clearLayerSelection((LayerGroup) layer);
+            } else {
                 Selection selection = layer.getSelection();
                 if (selection != null) {
                     selection.clear();
@@ -1097,6 +1098,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
         }
     }
+
     /**
      * 清除Selection
      *
@@ -1112,9 +1114,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             for (int i = 0; i < layers.getCount(); i++) {
 
                 Layer layer = layers.get(i);
-                if(layer instanceof LayerGroup){
-                    clearLayerSelection((LayerGroup)layer);
-                }else{
+                if (layer instanceof LayerGroup) {
+                    clearLayerSelection((LayerGroup) layer);
+                } else {
                     Selection selection = layer.getSelection();
                     if (selection != null) {
                         selection.clear();
@@ -1393,24 +1395,24 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                     String resultName = args[0];
                     if (resultName != null && !resultName.equals("")) {
-                        if(addition.hasKey("filterLayers")){
+                        if (addition.hasKey("filterLayers")) {
                             WritableMap additionMap = Arguments.createMap();
                             ReadableMapKeySetIterator keySetIterator = addition.keySetIterator();
                             while (keySetIterator.hasNextKey()) {
                                 String key = keySetIterator.nextKey();
-                                if(key.equals("filterLayers")){
+                                if (key.equals("filterLayers")) {
                                     ReadableArray filterLayers = addition.getArray(key);
                                     WritableArray arr = Arguments.createArray();
-                                    for(int i = 0; i < filterLayers.size(); i++){
+                                    for (int i = 0; i < filterLayers.size(); i++) {
                                         arr.pushString(filterLayers.getString(i));
                                     }
                                     additionMap.putArray(key, arr);
-                                }else{
+                                } else {
                                     additionMap.putString(key, addition.getString(key));
                                 }
                             }
                             resultName = sMap.smMapWC.saveMapName(resultName, sMap.smMapWC.getWorkspace(), nModule, additionMap, true, true, isPrivate);
-                        }else{
+                        } else {
                             Map<String, String> additionMap = new HashMap<>();
                             ReadableMapKeySetIterator keySetIterator = addition.keySetIterator();
                             while (keySetIterator.hasNextKey()) {
@@ -1732,7 +1734,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     // Point2D point2D = new Point2D(pt);
 
                     if (pt.getX() <= 180 && pt.getX() >= -180 && pt.getY() >= -90 && pt.getY() <= 90) {
-                        if (!safeGetType(mapControl.getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
+                        if (!safeGetType(mapControl.getMap().getPrjCoordSys(), PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
                             Point2Ds point2Ds = new Point2Ds();
                             point2Ds.add(pt);
                             PrjCoordSys prjCoordSys = new PrjCoordSys();
@@ -1743,7 +1745,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                             pt = point2Ds.getItem(0);
                         }
                     } else {
-                        if (!safeGetType(mapControl.getMap().getPrjCoordSys(),PrjCoordSysType.PCS_SPHERE_MERCATOR)) {
+                        if (!safeGetType(mapControl.getMap().getPrjCoordSys(), PrjCoordSysType.PCS_SPHERE_MERCATOR)) {
                             Point2Ds point2Ds = new Point2Ds();
                             point2Ds.add(pt);
                             PrjCoordSys prjCoordSys = new PrjCoordSys();
@@ -2502,21 +2504,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             ReadableMapKeySetIterator keys = addition.keySetIterator();
             WritableMap writableMap = Arguments.createMap();
             boolean needFilter = false;
-            if(addition.hasKey("filterLayers")){
+            if (addition.hasKey("filterLayers")) {
                 needFilter = true;
                 while (keys.hasNextKey()) {
                     String key = keys.nextKey();
-                    if(key.equals("filterLayers")){
+                    if (key.equals("filterLayers")) {
                         WritableArray array = Arguments.createArray();
-                        for(int i = 0; i< addition.getArray(key).size(); i++){
+                        for (int i = 0; i < addition.getArray(key).size(); i++) {
                             array.pushString(addition.getArray(key).getString(i));
                         }
                         writableMap.putArray(key, array);
-                    }else{
+                    } else {
                         writableMap.putString(key, addition.getString(key));
                     }
                 }
-            }else{
+            } else {
                 while (keys.hasNextKey()) {
                     String key = keys.nextKey();
                     additionInfo.put(key, addition.getString(key));
@@ -2524,9 +2526,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
 
             if (mapSaved) {
-                if(needFilter){
+                if (needFilter) {
                     mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, writableMap, (isNew || bNew), bResourcesModified, bPrivate);
-                }else{
+                } else {
                     mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, additionInfo, (isNew || bNew), bResourcesModified, bPrivate);
                 }
             }
@@ -2961,28 +2963,28 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             Layer layerWeb = null;
             int nLayerCount = map.getLayers().getCount();
-            if (nLayerCount>1){
-                Layer layerTemp = map.getLayers().get(nLayerCount-1);
-                if (layerTemp.isVisible() && layerTemp.getDataset()!=null && layerTemp.getDataset().getDatasource()!=null){
+            if (nLayerCount > 1) {
+                Layer layerTemp = map.getLayers().get(nLayerCount - 1);
+                if (layerTemp.isVisible() && layerTemp.getDataset() != null && layerTemp.getDataset().getDatasource() != null) {
                     EngineType engineType = layerTemp.getDataset().getDatasource().getConnectionInfo().getEngineType();
-                    if(engineType==EngineType.OGC ||
-                            engineType==EngineType.SuperMapCloud ||
-                            engineType==EngineType.GoogleMaps ||
-                            engineType==EngineType.Rest ||
-                            engineType==EngineType.BaiDu ||
-                            engineType==EngineType.BingMaps ||
-                            engineType==EngineType.OpenStreetMaps
+                    if (engineType == EngineType.OGC ||
+                            engineType == EngineType.SuperMapCloud ||
+                            engineType == EngineType.GoogleMaps ||
+                            engineType == EngineType.Rest ||
+                            engineType == EngineType.BaiDu ||
+                            engineType == EngineType.BingMaps ||
+                            engineType == EngineType.OpenStreetMaps
                             ) {
                         layerWeb = layerTemp;
                     }
                 }
             }
 
-            if (layerWeb!=null){
+            if (layerWeb != null) {
                 layerWeb.setVisible(false);
                 map.viewEntire();
                 layerWeb.setVisible(true);
-            }else{
+            } else {
                 map.viewEntire();
             }
 
@@ -3517,7 +3519,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
             Rectangle2D bounds = layer.getDataset().getBounds();
 
-            if (!safeGetType(layer.getDataset().getPrjCoordSys(),sMap.smMapWC.getMapControl().getMap().getPrjCoordSys())) {
+            if (!safeGetType(layer.getDataset().getPrjCoordSys(), sMap.smMapWC.getMapControl().getMap().getPrjCoordSys())) {
                 Point2Ds point2Ds = new Point2Ds();
                 point2Ds.add(new Point2D(bounds.getLeft(), bounds.getTop()));
                 point2Ds.add(new Point2D(bounds.getRight(), bounds.getBottom()));
@@ -3597,7 +3599,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             Datasource opendatasource = workspace.getDatasources().get(datasourceName);
             Datasets datasets = opendatasource.getDatasets();
             DatasetVector dataset = (DatasetVector) datasets.get(datasetName);
-            if(dataset != null){
+            if (dataset != null) {
                 dataset.setReadOnly(false);
             }
             Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
@@ -3681,7 +3683,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
-    private  GeometryAddedListener delegate = null;
+    private GeometryAddedListener delegate = null;
+
     /**
      * 设置标注面随机色
      *
@@ -3693,7 +3696,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
-            if(delegate == null){
+            if (delegate == null) {
                 delegate = new GeometryAddedListener() {
                     @Override
                     public void geometryAdded(GeometryEvent event) {
@@ -3734,6 +3737,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 设置MapControl 画笔样式
+     *
      * @param style
      * @param promise
      */
@@ -3927,7 +3931,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             final MapControl mapControl = sMap.smMapWC.getMapControl();
 
             Dataset dataset = null;
-            Layer cadLayer =null;
+            Layer cadLayer = null;
             String userpath = null, name = "PlotEdit_" + (isDefaultNew ? newName : mapControl.getMap().getName());
             if (plotSymbolPaths.size() > 0) {
                 String[] strArr = plotSymbolPaths.getString(0).split("/");
@@ -3940,8 +3944,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
 
 //            String plotDatasourceName="Plotting_" + userpath + "#";
-            String plotDatasourceName="Plotting_" + name + "#";
-            plotDatasourceName.replace(".","");
+            String plotDatasourceName = "Plotting_" + name + "#";
+            plotDatasourceName.replace(".", "");
             Workspace workspace = mapControl.getMap().getWorkspace();
             Datasource opendatasource = workspace.getDatasources().get(plotDatasourceName);
             Datasource datasource = null;
@@ -3949,19 +3953,19 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
                 info.setAlias(plotDatasourceName);
                 info.setEngineType(EngineType.UDB);
-                String server=rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/"+plotDatasourceName+".udb";
+                String server = rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/" + plotDatasourceName + ".udb";
                 info.setServer(server);
 
                 datasource = workspace.getDatasources().open(info);
                 if (datasource == null) {
-                    String serverUDD=rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/"+plotDatasourceName+".udd";
+                    String serverUDD = rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/" + plotDatasourceName + ".udd";
                     info.setServer(server);
-                    File file=new File(server);
-                    if(file.exists()){
+                    File file = new File(server);
+                    if (file.exists()) {
                         file.delete();
                     }
-                    File fileUdd=new File(serverUDD);
-                    if(fileUdd.exists()){
+                    File fileUdd = new File(serverUDD);
+                    if (fileUdd.exists()) {
                         fileUdd.delete();
                     }
                     datasource = workspace.getDatasources().create(info);
@@ -3980,14 +3984,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
             Datasets datasets = datasource.getDatasets();
 
-            for (int i=0;i<mapControl.getMap().getLayers().getCount();i++){
-                Layer tempLayer=mapControl.getMap().getLayers().get(i);
-                if(tempLayer.getName().startsWith("PlotEdit_")&&tempLayer.getDataset()!=null){
-                    if(tempLayer.getDataset().getType()==DatasetType.CAD) {
+            for (int i = 0; i < mapControl.getMap().getLayers().getCount(); i++) {
+                Layer tempLayer = mapControl.getMap().getLayers().get(i);
+                if (tempLayer.getName().startsWith("PlotEdit_") && tempLayer.getDataset() != null) {
+                    if (tempLayer.getDataset().getType() == DatasetType.CAD) {
                         dataset = tempLayer.getDataset();
                         cadLayer = tempLayer;
                     }
-                }else {
+                } else {
                     tempLayer.setEditable(false);
                 }
             }
@@ -4026,7 +4030,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //                    layer.setEditable(true);
 //                }
             }
-
 
 
             WritableMap writeMap = Arguments.createMap();
@@ -4099,13 +4102,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
 
-            for (int i=0;i<mapControl.getMap().getLayers().getCount();i++){
-                Layer tempLayer=mapControl.getMap().getLayers().get(i);
-                if(tempLayer.getName().startsWith("PlotEdit_")&&tempLayer.getDataset()!=null){
-                    if(tempLayer.getDataset().getType()==DatasetType.CAD) {
+            for (int i = 0; i < mapControl.getMap().getLayers().getCount(); i++) {
+                Layer tempLayer = mapControl.getMap().getLayers().get(i);
+                if (tempLayer.getName().startsWith("PlotEdit_") && tempLayer.getDataset() != null) {
+                    if (tempLayer.getDataset().getType() == DatasetType.CAD) {
                         tempLayer.setEditable(true);
                     }
-                }else {
+                } else {
                     tempLayer.setEditable(false);
                 }
             }
@@ -4169,7 +4172,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      */
     public static boolean importPlotLibDataMethod(String fromPath) {
         String toPath = homeDirectory + "/iTablet/User/" + SMap.getInstance().smMapWC.getUserName() + "/Data" + "/Plotting/";
-        boolean result = copyFiles(fromPath, toPath, "plot", "Symbol", "SymbolIcon",false);
+        boolean result = copyFiles(fromPath, toPath, "plot", "Symbol", "SymbolIcon", false);
         return result;
     }
 
@@ -4190,28 +4193,30 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
     private static Timer m_timer;
 //    private static AnimationManager am;
+
     /**
      * 初始化态势推演
      */
     @ReactMethod
-    public static void initAnimation(Promise promise){
+    public static void initAnimation(Promise promise) {
         try {
 
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
 //            am = AnimationManager.getInstance();
             //开启定时器
-            if(m_timer==null){
-                m_timer=new Timer();
+            if (m_timer == null) {
+                m_timer = new Timer();
             }
             m_timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     AnimationManager.getInstance().excute();
                 }
-            },0,100);
+            }, 0, 100);
             mapControl.setAnimations();
             promise.resolve(true);
         } catch (Exception e) {
@@ -4224,13 +4229,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * 读取态势推演xml文件
      */
     @ReactMethod
-    public static void readAnimationXmlFile(String filePath,Promise promise){
+    public static void readAnimationXmlFile(String filePath, Promise promise) {
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
 
-            if(m_timer==null){
-                m_timer= new Timer();
+            if (m_timer == null) {
+                m_timer = new Timer();
             }
             //开启定时器
             m_timer.schedule(new TimerTask() {
@@ -4238,15 +4243,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 public void run() {
                     AnimationManager.getInstance().excute();
                 }
-            },0,100);
-            Layers layers=mapControl.getMap().getLayers();
-            int count=layers.getCount();
+            }, 0, 100);
+            Layers layers = mapControl.getMap().getLayers();
+            int count = layers.getCount();
             for (int i = 0; i < count; i++) {
-                if (layers.get(i).getDataset().getType()==DatasetType.CAD){
+                if (layers.get(i).getDataset().getType() == DatasetType.CAD) {
                     layers.get(i).setEditable(true);
                 }
             }
-            
+
             mapControl.setAnimations();
             AnimationManager.getInstance().deleteAll();
             AnimationManager.getInstance().getAnimationFromXML(filePath);
@@ -4286,7 +4291,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * 播放态势推演动画
      */
     @ReactMethod
-    public static void animationPlay(Promise promise){
+    public static void animationPlay(Promise promise) {
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
@@ -4303,7 +4308,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * 暂停态势推演动画
      */
     @ReactMethod
-    public static void animationPause(Promise promise){
+    public static void animationPause(Promise promise) {
         try {
             AnimationManager.getInstance().pause();
 
@@ -4317,7 +4322,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * 复位态势推演动画
      */
     @ReactMethod
-    public static void animationReset(Promise promise){
+    public static void animationReset(Promise promise) {
         try {
             AnimationManager.getInstance().reset();
 
@@ -4331,7 +4336,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * 停止态势推演动画
      */
     @ReactMethod
-    public static void animationStop(Promise promise){
+    public static void animationStop(Promise promise) {
         try {
             AnimationManager.getInstance().stop();
 
@@ -4345,10 +4350,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * 关闭态势推演
      */
     @ReactMethod
-    public static void animationClose(Promise promise){
+    public static void animationClose(Promise promise) {
         try {
             m_timer.cancel();
-            m_timer=null;
+            m_timer = null;
             AnimationManager.getInstance().stop();
             AnimationManager.getInstance().reset();
             AnimationManager.getInstance().deleteAll();
@@ -4359,168 +4364,169 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     private Point2Ds point2Ds;
+
     /**
      * 创建推演动画对象
      */
     @ReactMethod
-    public  void createAnimationGo(ReadableMap createInfo,String newPlotMapName,Promise promise){
-            //顺序：路径、闪烁、属性、显隐、旋转、比例、生长
-            try {
-                if (!createInfo.hasKey("animationMode")) {
-                    promise.resolve(false);
-                    return;
-                }
-                sMap = SMap.getInstance();
-                MapControl mapControl = sMap.smMapWC.getMapControl();
+    public void createAnimationGo(ReadableMap createInfo, String newPlotMapName, Promise promise) {
+        //顺序：路径、闪烁、属性、显隐、旋转、比例、生长
+        try {
+            if (!createInfo.hasKey("animationMode")) {
+                promise.resolve(false);
+                return;
+            }
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
 
-                String animationGroupName="Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
-                AnimationGroup animationGroup=AnimationManager.getInstance().getGroupByName(animationGroupName);
-                if(animationGroup==null){
-                    animationGroup=AnimationManager.getInstance().addAnimationGroup(animationGroupName);
-                }
+            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
+            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
+            if (animationGroup == null) {
+                animationGroup = AnimationManager.getInstance().addAnimationGroup(animationGroupName);
+            }
 
-                int animationMode = createInfo.getInt("animationMode");
-                AnimationGO animationGO =  AnimationManager.getInstance().createAnimation(new AnimationDefine.AnimationType(animationMode, animationMode));
-                switch (animationMode){
-                    case 0:
-                        AnimationWay animationWay=(AnimationWay)animationGO;
-                        Point3Ds point3Ds=new Point3Ds();
-                        if(createInfo.hasKey("wayPoints")){
-                            ReadableArray array=createInfo.getArray("wayPoints");
-                            for (int i=0;i<array.size();i++){
-                                ReadableMap map=array.getMap(i);
-                                double x=map.getDouble("x");
-                                double y=map.getDouble("y");
-                                point3Ds.add(new Point3D(x,y,0));
-                            }
-                        }
-                        animationWay.addPathPts(point3Ds);
-                        animationWay.setTrackLineWidth(0.5);
-                        animationWay.setPathType(AnimationDefine.PathType.POLYLINE);
-                        animationWay.setTrackLineColor(new com.supermap.data.Color(255,0,0,255));
-                        animationWay.setPathTrackDir(true);
-                        animationWay.showPathTrack(true);
-                        animationGO=animationWay;
-
-                        break;
-                    case 1:
-                        AnimationBlink animationBlink= (AnimationBlink) animationGO;
-                        animationBlink.setBlinkNumberofTimes(20);
-                        animationBlink.setBlinkStyle(AnimationDefine.BlinkAnimationBlinkStyle.NumberBlink);
-                        animationBlink.setReplaceStyle(AnimationDefine.BlinkAnimationReplaceStyle.ColorReplace);
-                        animationBlink.setBlinkAnimationReplaceColor(new com.supermap.data.Color(0,0,255,255));
-                        animationGO=animationBlink;
-                        break;
-                    case 2:
-                        AnimationAttribute animationAttribute = (AnimationAttribute) animationGO;
-                        animationAttribute.setStartLineColor(new com.supermap.data.Color(255,0,0,255));
-                        animationAttribute.setEndLineColor(new com.supermap.data.Color(0,0,255,255));
-                        animationAttribute.setLineColorAttr(true);
-                        animationAttribute.setStartLineWidth(0);
-                        animationAttribute.setEndLineWidth(1);
-                        animationAttribute.setLineWidthAttr(true);
-                        animationGO=animationAttribute;
-                        break;
-                    case 3:
-                        AnimationShow animationShow = (AnimationShow)animationGO;
-                        animationShow.setShowEffect(0);
-                        animationShow.setShowState(true);
-                        animationGO=animationShow;
-                        break;
-                    case 4:
-                        AnimationRotate animationRotate=(AnimationRotate)animationGO;
-                        animationRotate.setStartAngle(new Point3D(0,0,0));
-                        animationRotate.setEndAngle(new Point3D(720,720,0));
-                        animationGO=animationRotate;
-                        break;
-                    case 5:
-                        AnimationScale animationScale=(AnimationScale)animationGO;
-                        animationScale.setStartScaleFactor(0);
-                        animationScale.setEndScaleFactor(1);
-                        animationGO=animationScale;
-                        break;
-                    case 6:
-                        AnimationGrow animationGrow=(AnimationGrow)animationGO;
-                        animationGrow.setStartLocation(0);
-                        animationGrow.setEndLocation(1);
-                        animationGO=animationGrow;
-                        break;
-                }
-                //清空创建路径动画时的数据
-                mapControl.getMap().getTrackingLayer().clear();
-                point2Ds=null;
-
-                if (createInfo.hasKey("startTime")&&animationGroup.getAnimationCount()>0) {
-                    int startTime = createInfo.getInt("startTime");
-                    if (createInfo.hasKey("startMode")) {
-                        int startMode = createInfo.getInt("startMode");
-                        AnimationGO lastAnimationGo=animationGroup.getAnimationByIndex(animationGroup.getAnimationCount()-1);
-                        switch (startMode){
-                            case 1:         //上一动作播放之后
-                                double lastEndTime=lastAnimationGo.getStartTime()+lastAnimationGo.getDuration();
-                                startTime+=lastEndTime;
-                                break;
-                            case 2:         //点击开始
-                                break;
-                            case 3:         //上一动作同时播放
-                                double lastStartTime=lastAnimationGo.getStartTime();
-                                startTime+=lastStartTime;
-                                break;
+            int animationMode = createInfo.getInt("animationMode");
+            AnimationGO animationGO = AnimationManager.getInstance().createAnimation(new AnimationDefine.AnimationType(animationMode, animationMode));
+            switch (animationMode) {
+                case 0:
+                    AnimationWay animationWay = (AnimationWay) animationGO;
+                    Point3Ds point3Ds = new Point3Ds();
+                    if (createInfo.hasKey("wayPoints")) {
+                        ReadableArray array = createInfo.getArray("wayPoints");
+                        for (int i = 0; i < array.size(); i++) {
+                            ReadableMap map = array.getMap(i);
+                            double x = map.getDouble("x");
+                            double y = map.getDouble("y");
+                            point3Ds.add(new Point3D(x, y, 0));
                         }
                     }
-                    animationGO.setStartTime(startTime);
-                }else if(createInfo.hasKey("startTime")&&animationGroup.getAnimationCount()==0){
-                    int startTime = createInfo.getInt("startTime");
-                    animationGO.setStartTime(startTime);
-                }
-                if (createInfo.hasKey("durationTime")) {
-                    int durationTime = createInfo.getInt("durationTime");
-                    animationGO.setDuration(durationTime);
-                }
+                    animationWay.addPathPts(point3Ds);
+                    animationWay.setTrackLineWidth(0.5);
+                    animationWay.setPathType(AnimationDefine.PathType.POLYLINE);
+                    animationWay.setTrackLineColor(new com.supermap.data.Color(255, 0, 0, 255));
+                    animationWay.setPathTrackDir(true);
+                    animationWay.showPathTrack(true);
+                    animationGO = animationWay;
+
+                    break;
+                case 1:
+                    AnimationBlink animationBlink = (AnimationBlink) animationGO;
+                    animationBlink.setBlinkNumberofTimes(20);
+                    animationBlink.setBlinkStyle(AnimationDefine.BlinkAnimationBlinkStyle.NumberBlink);
+                    animationBlink.setReplaceStyle(AnimationDefine.BlinkAnimationReplaceStyle.ColorReplace);
+                    animationBlink.setBlinkAnimationReplaceColor(new com.supermap.data.Color(0, 0, 255, 255));
+                    animationGO = animationBlink;
+                    break;
+                case 2:
+                    AnimationAttribute animationAttribute = (AnimationAttribute) animationGO;
+                    animationAttribute.setStartLineColor(new com.supermap.data.Color(255, 0, 0, 255));
+                    animationAttribute.setEndLineColor(new com.supermap.data.Color(0, 0, 255, 255));
+                    animationAttribute.setLineColorAttr(true);
+                    animationAttribute.setStartLineWidth(0);
+                    animationAttribute.setEndLineWidth(1);
+                    animationAttribute.setLineWidthAttr(true);
+                    animationGO = animationAttribute;
+                    break;
+                case 3:
+                    AnimationShow animationShow = (AnimationShow) animationGO;
+                    animationShow.setShowEffect(1);
+                    animationShow.setShowState(true);
+                    animationGO = animationShow;
+                    break;
+                case 4:
+                    AnimationRotate animationRotate = (AnimationRotate) animationGO;
+                    animationRotate.setStartAngle(new Point3D(0, 0, 0));
+                    animationRotate.setEndAngle(new Point3D(720, 720, 0));
+                    animationGO = animationRotate;
+                    break;
+                case 5:
+                    AnimationScale animationScale = (AnimationScale) animationGO;
+                    animationScale.setStartScaleFactor(0);
+                    animationScale.setEndScaleFactor(1);
+                    animationGO = animationScale;
+                    break;
+                case 6:
+                    AnimationGrow animationGrow = (AnimationGrow) animationGO;
+                    animationGrow.setStartLocation(0);
+                    animationGrow.setEndLocation(1);
+                    animationGO = animationGrow;
+                    break;
+            }
+            //清空创建路径动画时的数据
+            mapControl.getMap().getTrackingLayer().clear();
+            point2Ds = null;
+
+            if (createInfo.hasKey("startTime") && animationGroup.getAnimationCount() > 0) {
+                int startTime = createInfo.getInt("startTime");
                 if (createInfo.hasKey("startMode")) {
                     int startMode = createInfo.getInt("startMode");
-
-                }
-
-                String mapName=mapControl.getMap().getName();
-                if(mapName==null||mapName.equals("")){
-                    if(newPlotMapName!=null&&!newPlotMapName.equals("")){
-                        mapName=newPlotMapName;
-                    }else {
-                        int layerCount=mapControl.getMap().getLayers().getCount();
-                        if(layerCount>0){
-                            mapName=mapControl.getMap().getLayers().get(layerCount).getName();
-                        }
+                    AnimationGO lastAnimationGo = animationGroup.getAnimationByIndex(animationGroup.getAnimationCount() - 1);
+                    switch (startMode) {
+                        case 1:         //上一动作播放之后
+                            double lastEndTime = lastAnimationGo.getStartTime() + lastAnimationGo.getDuration();
+                            startTime += lastEndTime;
+                            break;
+                        case 2:         //点击开始
+                            break;
+                        case 3:         //上一动作同时播放
+                            double lastStartTime = lastAnimationGo.getStartTime();
+                            startTime += lastStartTime;
+                            break;
                     }
-                    mapControl.getMap().save(mapName);
                 }
+                animationGO.setStartTime(startTime);
+            } else if (createInfo.hasKey("startTime") && animationGroup.getAnimationCount() == 0) {
+                int startTime = createInfo.getInt("startTime");
+                animationGO.setStartTime(startTime);
+            }
+            if (createInfo.hasKey("durationTime")) {
+                int durationTime = createInfo.getInt("durationTime");
+                animationGO.setDuration(durationTime);
+            }
+            if (createInfo.hasKey("startMode")) {
+                int startMode = createInfo.getInt("startMode");
+
+            }
+
+            String mapName = mapControl.getMap().getName();
+            if (mapName == null || mapName.equals("")) {
+                if (newPlotMapName != null && !newPlotMapName.equals("")) {
+                    mapName = newPlotMapName;
+                } else {
+                    int layerCount = mapControl.getMap().getLayers().getCount();
+                    if (layerCount > 0) {
+                        mapName = mapControl.getMap().getLayers().get(layerCount).getName();
+                    }
+                }
+                mapControl.getMap().save(mapName);
+            }
 
 
-                String animationGoName="动画_"+AnimationManager.getInstance().getGroupByName(animationGroupName).getAnimationCount();
-                if (createInfo.hasKey("layerName")&&createInfo.hasKey("geoId")) {
-                    String layerName=createInfo.getString("layerName");
-                    int geoId=createInfo.getInt("geoId");
-                    Layer layer=mapControl.getMap().getLayers().get(layerName);
-                    if(layer!=null){
-                        DatasetVector dataset = (DatasetVector) mapControl.getMap().getLayers().get(layerName).getDataset();
-                        Recordset recordset = dataset.query("SmID="+geoId, CursorType.STATIC);
-                        Geometry geometry=recordset.getGeometry();
-                        if(geometry!=null){
-                            animationGO.setName(animationGoName);
+            String animationGoName = "动画_" + AnimationManager.getInstance().getGroupByName(animationGroupName).getAnimationCount();
+            if (createInfo.hasKey("layerName") && createInfo.hasKey("geoId")) {
+                String layerName = createInfo.getString("layerName");
+                int geoId = createInfo.getInt("geoId");
+                Layer layer = mapControl.getMap().getLayers().get(layerName);
+                if (layer != null) {
+                    DatasetVector dataset = (DatasetVector) mapControl.getMap().getLayers().get(layerName).getDataset();
+                    Recordset recordset = dataset.query("SmID=" + geoId, CursorType.STATIC);
+                    Geometry geometry = recordset.getGeometry();
+                    if (geometry != null) {
+                        animationGO.setName(animationGoName);
 //                            String name=mapControl.getMap().getName();
 //                            if(name==null||name.equals("")){
 //                                mapControl.getMap().save();
 //                            }
-                            animationGO.setGeometry((GeoGraphicObject) geometry, mapControl.getHandle(), layer.getName());
-                            animationGroup.addAnimation(animationGO);
-                        }
+                        animationGO.setGeometry((GeoGraphicObject) geometry, mapControl.getHandle(), layer.getName());
+                        animationGroup.addAnimation(animationGO);
                     }
                 }
-
-                promise.resolve(true);
-            }catch (Exception e) {
-                promise.resolve(false);
             }
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.resolve(false);
+        }
     }
 
     /**
@@ -4532,8 +4538,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //        String path=sdcard+"/supermap/demos/plotdata/qdwj/强渡乌江_2.xml";
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
-            File file=new File(savePath);
-            if(!file.exists()){
+            File file = new File(savePath);
+            if (!file.exists()) {
                 file.mkdirs();
             }
 //            String mapName=mapControl.getMap().getName();
@@ -4545,7 +4551,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
 
             promise.resolve(result);
-        }catch (Exception e) {
+        } catch (Exception e) {
             promise.resolve(false);
         }
     }
@@ -4554,28 +4560,28 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * 获取标绘对象type
      */
     @ReactMethod
-    public static void getGeometryTypeById(String layerName,int geoId,Promise promise){
+    public static void getGeometryTypeById(String layerName, int geoId, Promise promise) {
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
 
-            int type=-1;
-            Layer layer=mapControl.getMap().getLayers().get(layerName);
-            if(layer!=null){
+            int type = -1;
+            Layer layer = mapControl.getMap().getLayers().get(layerName);
+            if (layer != null) {
                 DatasetVector dataset = (DatasetVector) mapControl.getMap().getLayers().get(layerName).getDataset();
-                Recordset recordset = dataset.query("SmID="+geoId, CursorType.STATIC);
-                Geometry geometry=recordset.getGeometry();
-                Geometry geometry1=(GeoGraphicObject) geometry;
-                if(geometry!=null){
-                    GeoGraphicObject geoGraphicObject=(GeoGraphicObject) geometry;
-                    GraphicObjectType graphicObjectType= geoGraphicObject.getSymbolType();
-                    type=graphicObjectType.value();
+                Recordset recordset = dataset.query("SmID=" + geoId, CursorType.STATIC);
+                Geometry geometry = recordset.getGeometry();
+                Geometry geometry1 = (GeoGraphicObject) geometry;
+                if (geometry != null) {
+                    GeoGraphicObject geoGraphicObject = (GeoGraphicObject) geometry;
+                    GraphicObjectType graphicObjectType = geoGraphicObject.getSymbolType();
+                    type = graphicObjectType.value();
                 }
             }
 
 
             promise.resolve(type);
-        }catch (Exception e) {
+        } catch (Exception e) {
             promise.resolve(-1);
         }
     }
@@ -4583,23 +4589,24 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 添加路径动画点获取回退路径动画点
+     *
      * @param point
      * @param promise
      */
     @ReactMethod
-    public void addAnimationWayPoint(ReadableMap point, boolean isAdd,Promise promise) {
+    public void addAnimationWayPoint(ReadableMap point, boolean isAdd, Promise promise) {
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
 
-            if(!isAdd){
-                if(point2Ds==null||point2Ds.getCount()==0){
+            if (!isAdd) {
+                if (point2Ds == null || point2Ds.getCount() == 0) {
                     promise.resolve(false);
                     return;
-                }else {
-                    point2Ds.remove(point2Ds.getCount()-1);
+                } else {
+                    point2Ds.remove(point2Ds.getCount() - 1);
                 }
-            }else {
+            } else {
                 Point point1 = new Point((int) point.getDouble("x"), (int) point.getDouble("y"));
                 Point2D point2D = mapControl.getMap().pixelToMap(point1);
                 if (point2Ds == null) {
@@ -4612,19 +4619,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             style.setLineColor(new Color(255, 105, 0));
             style.setMarkerSymbolID(3614);
             {
-                if(point2Ds.getCount()==0){
+                if (point2Ds.getCount() == 0) {
                     mapControl.getMap().getTrackingLayer().clear();
-                }
-                else if(point2Ds.getCount()==1){
+                } else if (point2Ds.getCount() == 1) {
                     mapControl.getMap().getTrackingLayer().clear();
-                    GeoPoint geoPoint=new GeoPoint(point2Ds.getItem(0));
+                    GeoPoint geoPoint = new GeoPoint(point2Ds.getItem(0));
                     geoPoint.setStyle(style);
-                    mapControl.getMap().getTrackingLayer().add(geoPoint,"point");
-                }else if(point2Ds.getCount()>1){
+                    mapControl.getMap().getTrackingLayer().add(geoPoint, "point");
+                } else if (point2Ds.getCount() > 1) {
                     mapControl.getMap().getTrackingLayer().clear();
-                    GeoLine geoLine=new GeoLine(point2Ds);
+                    GeoLine geoLine = new GeoLine(point2Ds);
                     geoLine.setStyle(style);
-                    mapControl.getMap().getTrackingLayer().add(geoLine,"line");
+                    mapControl.getMap().getTrackingLayer().add(geoLine, "line");
                 }
                 mapControl.getMap().refresh();
             }
@@ -4636,6 +4642,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 结束添加路径动画
+     *
      * @param isSave
      * @param promise
      */
@@ -4645,20 +4652,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
 
-            if(!isSave){
+            if (!isSave) {
                 mapControl.getMap().getTrackingLayer().clear();
-                point2Ds=null;
+                point2Ds = null;
                 promise.resolve(true);
                 return;
             }
 
             WritableArray arr = Arguments.createArray();
-            if (point2Ds.getCount()>0) {
+            if (point2Ds.getCount() > 0) {
                 for (int i = 0; i < point2Ds.getCount(); i++) {
                     WritableMap writeMap = Arguments.createMap();
-                    Point2D point2D=point2Ds.getItem(i);
-                    writeMap.putDouble("x",point2D.getX());
-                    writeMap.putDouble("y",point2D.getY());
+                    Point2D point2D = point2Ds.getItem(i);
+                    writeMap.putDouble("x", point2D.getX());
+                    writeMap.putDouble("y", point2D.getY());
                     arr.pushMap(writeMap);
                 }
             }
@@ -4828,7 +4835,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void getScaleData(Promise promise) {
         try {
-            if(scaleViewHelper == null){
+            if (scaleViewHelper == null) {
                 getScaleViewHelper();
             }
 
@@ -5077,31 +5084,33 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 获取放大镜是否开启
+     *
      * @param promise
      */
     @ReactMethod
-    public void isMagnifierEnabled(Promise promise){
+    public void isMagnifierEnabled(Promise promise) {
         try {
             sMap = SMap.getInstance();
             boolean b = sMap.smMapWC.getMapControl().isMagnifierEnabled();
             promise.resolve(b);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 设置放大镜是否开启
+     *
      * @param b
      * @param promise
      */
     @ReactMethod
-    public void setIsMagnifierEnabled(boolean b, Promise promise){
+    public void setIsMagnifierEnabled(boolean b, Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().setMagnifierEnabled(b);
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
@@ -5605,41 +5614,43 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 初始化二维POI搜索
+     *
      * @param promise
      */
     @ReactMethod
-    public void initPointSearch(Promise promise){
+    public void initPointSearch(Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.poiSearchHelper2D = POISearchHelper2D.getInstence();
             MapControl mapControl = sMap.smMapWC.getMapControl();
-            sMap.poiSearchHelper2D.initMapControl(mapControl,context);
+            sMap.poiSearchHelper2D.initMapControl(mapControl, context);
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 二维POI搜索
+     *
      * @param keyword
      * @param promise
      */
     @ReactMethod
-    public void pointSearch(String keyword, Promise promise){
+    public void pointSearch(String keyword, Promise promise) {
         try {
             sMap.poiSearchHelper2D.poiSearch(keyword, new POISearchHelper2D.PoiSearchCallBack() {
                 @Override
                 public void poiSearchInfos(ArrayList<PoiGsonBean.PoiInfos> poiInfos) {
                     WritableArray array = Arguments.createArray();
                     int count = poiInfos.size();
-                    for(int i = 0; i < count; i++){
+                    for (int i = 0; i < count; i++) {
                         WritableMap map = Arguments.createMap();
                         PoiGsonBean.PoiInfos poiInfo = poiInfos.get(i);
                         String name = poiInfo.getName();
-                        map.putString("pointName",name);
-                        map.putDouble("x",poiInfo.getLocation().getX());
-                        map.putDouble("y",poiInfo.getLocation().getY());
+                        map.putString("pointName", name);
+                        map.putDouble("x", poiInfo.getLocation().getX());
+                        map.putDouble("y", poiInfo.getLocation().getY());
                         array.pushMap(map);
                     }
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -5647,23 +5658,24 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 }
             });
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 在搜索结果的某个位置添加callout
+     *
      * @param index
      * @param promise
      */
     @ReactMethod
-    public void toLocationPoint(int index,Promise promise){
+    public void toLocationPoint(int index, Promise promise) {
         try {
             sMap = SMap.getInstance();
             boolean isSuccess = sMap.poiSearchHelper2D.toLocationPoint(index);
             promise.resolve(isSuccess);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
@@ -5671,32 +5683,34 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 获取当前定位的经纬度
+     *
      * @param promise
      */
     @ReactMethod
-    public void getCurrentPosition(Promise promise){
+    public void getCurrentPosition(Promise promise) {
         try {
             LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
             WritableMap map = Arguments.createMap();
-            map.putDouble("x",gpsDat.dLongitude);
-            map.putDouble("y",gpsDat.dLatitude);
+            map.putDouble("x", gpsDat.dLongitude);
+            map.putDouble("y", gpsDat.dLatitude);
             promise.resolve(map);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
      * 移除POI搜索的callout
+     *
      * @param promise
      */
     @ReactMethod
-    public void removePOICallout(Promise promise){
+    public void removePOICallout(Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.poiSearchHelper2D.clearPoint();
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
@@ -5704,20 +5718,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     /************************************** 导航模块 START ****************************************/
     /**
      * 清除导航路线
+     *
      * @param promise
      */
     @ReactMethod
-    public void clearTarckingLayer(Promise promise){
+    public void clearTarckingLayer(Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().getTrackingLayer().clear();
             sMap.smMapWC.getMapControl().getMap().getMapView().removeAllCallOut();
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
-
 
 
     private void setNavigationOnline(NavigationOnlineData data) {
@@ -5737,7 +5751,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(geoLine, "线路");
         LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
         Point2D pt = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
-        if (!safeGetType(sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
+        if (!safeGetType(sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
             Point2Ds point2Ds = new Point2Ds();
             point2Ds.add(pt);
             PrjCoordSys prjCoordSys = new PrjCoordSys();
@@ -5753,21 +5767,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
 
         WritableArray array = Arguments.createArray();
-        for(int i = 0; i <  pathInfoList.size(); i++){
+        for (int i = 0; i < pathInfoList.size(); i++) {
             WritableMap map = Arguments.createMap();
             PathInfo pathInfo = pathInfoList.get(i);
             String roadName = pathInfo.getRoadName();
             int nextDirection = pathInfo.getNextDirection();
             double roadLength = pathInfo.getLength();
 
-            map.putString("roadName",roadName);
-            map.putInt("nextDirection",nextDirection);
-            map.putDouble("roadLength",roadLength);
+            map.putString("roadName", roadName);
+            map.putInt("nextDirection", nextDirection);
+            map.putDouble("roadLength", roadLength);
             array.pushMap(map);
         }
 
         WritableMap map = Arguments.createMap();
-        map.putString("Length",data.getLength());
+        map.putString("Length", data.getLength());
 
         context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(EventConst.NAVIGATION_WAYS, array);
@@ -5776,10 +5790,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 .emit(EventConst.NAVIGATION_LENGTH, map);
     }
 
-    Point2D endPoint,startPoint;
+    Point2D endPoint, startPoint;
 
     @ReactMethod
-    public void routeAnalyst(int index,Promise promise){
+    public void routeAnalyst(int index, Promise promise) {
         try {
             sMap = SMap.getInstance();
             endPoint = sMap.poiSearchHelper2D.getSearchPoint(index);
@@ -5792,6 +5806,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 public void calculateSuccess(NavigationOnlineData data) {
                     setNavigationOnline(data);
                 }
+
                 @Override
                 public void calculateFailed(String errorInfo) {
                     Log.e("LocationMore", errorInfo);
@@ -5804,7 +5819,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             parameter.setRouteType(RouteType.RE_COMMEND);
             navigationOnline.routeAnalyst(parameter);
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
@@ -5812,27 +5827,33 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 打开二维导航工作空间及地图
+     *
      * @param promise
      */
     @ReactMethod
-    public void open2DNavigationMap(Promise promise){
+    public void open2DNavigationMap(ReadableMap data, Promise promise) {
         try {
-            sMap = SMap.getInstance();
+            sMap = getInstance();
+            WritableArray array = Arguments.createArray();
+            Map params = data.toHashMap();
+            boolean result = sMap.smMapWC.openWorkspace(params);
+            if (result) {
+                if (sMap.getSmMapWC().getMapControl() != null && sMap.getSmMapWC().getMapControl().getMap() != null && !sMap.getSmMapWC().getMapControl().getMap().getName().equals("")) {
+                    sMap.getSmMapWC().getMapControl().getMap().setVisibleScalesEnabled(false);
+                    sMap.getSmMapWC().getMapControl().getMap().setAntialias(true);
+                    sMap.getSmMapWC().getMapControl().getMap().refresh();
+                }
+                Workspace mWorkspace = SMap.getInstance().getSmMapWC().getWorkspace();
+                for (int i = 0; i < mWorkspace.getMaps().getCount(); i++) {
+                    String name = mWorkspace.getMaps().get(i);
+                    WritableMap map = Arguments.createMap();
+                    map.putString("name", name);
+                    array.pushMap(map);
+                }
+            }
 
-            Workspace mWorkspace = SMap.getInstance().getSmMapWC().getWorkspace();
-
-//            WorkspaceConnectionInfo m_info = new WorkspaceConnectionInfo();
-//            m_info.setServer(android.os.Environment.getExternalStorageDirectory().getAbsolutePath().toString()+"/SuperMap/Demos/3DNaviDemo/室内外导航/beijing.smwu");
-//            m_info.setType(WorkspaceType.SMWU);
-//            mWorkspace.open(m_info);
-
-//            sMap.smMapWC.getMapControl().getMap().setWorkspace(mWorkspace);
-            String mapName = mWorkspace.getMaps().get(0);
-            sMap.smMapWC.getMapControl().getMap().open(mapName);
-            sMap.smMapWC.getMapControl().getMap().setFullScreenDrawModel(true);
-            sMap.smMapWC.getMapControl().getMap().refresh();
-            promise.resolve(true);
-        }catch (Exception e){
+            promise.resolve(array);
+        } catch (Exception e) {
             promise.reject(e);
         }
     }
@@ -5840,82 +5861,187 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     /**
      * 开启行业导航
+     *
      * @param promise
      */
     @ReactMethod
-    public void startNavigation(Promise promise){
+    public void startNavigation(String networkDatasetName, String netModel, Promise promise) {
         try {
             sMap = SMap.getInstance();
 
             Workspace mWorkspace = SMap.getInstance().getSmMapWC().getWorkspace();
-            String networkDatasetName = "RoadNetwork";         // 已有的网络数据集的名称
 
-            // 初始化行业导航对象
-            DatasetVector networkDataset = (DatasetVector) mWorkspace.getDatasources().get("beijing").getDatasets().get(networkDatasetName);
-            Navigation2 m_Navigation2 = sMap.getSmMapWC().getMapControl().getNavigation2();      // 获取行业导航控件，只能通过此方法初始化m_Navigation2
-            m_Navigation2.setPathVisible(true);                 // 设置分析所得路径可见
-            m_Navigation2.setNetworkDataset(networkDataset);    // 设置网络数据集
-            m_Navigation2.loadModel( android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/"+ "iTablet/User/Customer/DefaultData/Navigation2Data/netModel.snm");  // 加载网络模型
-            m_Navigation2.addNaviInfoListener(new NaviListener() {
+            for (int i = 0; i < mWorkspace.getDatasources().getCount(); i++) {
+                Datasource datasource = mWorkspace.getDatasources().get(i);
+                Dataset dataset = datasource.getDatasets().get(networkDatasetName);
+                if (dataset != null) {
+                    // 初始化行业导航对象
+                    DatasetVector networkDataset = (DatasetVector) dataset;
+                    Navigation2 m_Navigation2 = sMap.getSmMapWC().getMapControl().getNavigation2();      // 获取行业导航控件，只能通过此方法初始化m_Navigation2
+                    m_Navigation2.setNetworkDataset(networkDataset);    // 设置网络数据集
+                    m_Navigation2.loadModel(netModel);  // 加载网络模型
+                    m_Navigation2.addNaviInfoListener(new NaviListener() {
 
+                        @Override
+                        public void onStopNavi() {
+                            // TODO Auto-generated method stub
+                            Log.e("+++++++++++++", "-------------****************");
+                            WritableMap map = Arguments.createMap();
+                            map.putBoolean("finsh", true);
+                            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                    .emit(EventConst.INDUSTRYNAVIAGTION, map);
+                        }
+
+                        @Override
+                        public void onStartNavi() {
+                            // TODO Auto-generated method stub
+                            Log.e("+++++++++++++", "-------------****************");
+                        }
+
+                        @Override
+                        public void onNaviInfoUpdate(NaviInfo arg0) {
+                            // TODO Auto-generated method stub
+                            Log.e("+++++++++++++", "-------------****************");
+                        }
+
+                        @Override
+                        public void onAarrivedDestination() {
+                            // TODO Auto-generated method stub
+                            Log.e("+++++++++++++", "-------------****************");
+                            WritableMap map = Arguments.createMap();
+                            map.putBoolean("finsh", true);
+                            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                    .emit(EventConst.INDUSTRYNAVIAGTION, map);
+                        }
+
+                        @Override
+                        public void onAdjustFailure() {
+                            // TODO Auto-generated method stub
+                            Log.e("+++++++++++++", "-------------****************");
+                        }
+
+                        @Override
+                        public void onPlayNaviMessage(String arg0) {
+                            // TODO Auto-generated method stub
+                            Log.e("+++++++++++++", "-------------****************");
+                        }
+                    });
+
+                    m_Navigation2.setStartPoint(116.505792, 39.985568);        // 设置起点
+                    m_Navigation2.setDestinationPoint(116.4635753632, 39.9653458698);     // 设置终点
+                    m_Navigation2.setPathVisible(true);                                       // 设置路径可见
+                    boolean isfind = m_Navigation2.routeAnalyst();
+                    Log.e("++++++++++++", "" + isfind);
+                    if (isfind) {
+                        m_Navigation2.startGuide(1);
+                    }
+                }
+            }
+
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 开启室内导航
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void startIndoorNavigation(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+
+            Navigation3 mNavigation3 = sMap.getSmMapWC().getMapControl().getNavigation3();
+            GeoStyle style = new GeoStyle();
+            style.setLineSymbolID(964882);
+            mNavigation3.setRouteStyle(style);
+            GeoStyle styleHint = new GeoStyle();
+            styleHint.setLineWidth(2);
+            styleHint.setLineColor(new com.supermap.data.Color(82, 198, 223));
+            styleHint.setLineSymbolID(2);
+            mNavigation3.setHintRouteStyle(styleHint);
+
+//            mNavigation3.addWayPoint(116.3525216274329, 39.94207874702884, sMap.getSmMapWC().getFloorListView().getCurrentFloorId());
+            mNavigation3.setStartPoint(116.3525216274329, 39.94207874702884, "138690110100018");
+            mNavigation3.setDestinationPoint(116.3527056024031, 39.94154705936499, "138690110100018");
+
+            mNavigation3.addNaviInfoListener(new NaviListener() {
                 @Override
                 public void onStopNavi() {
                     // TODO Auto-generated method stub
-                    Log.e("+++++++++++++","-------------****************");
-                    WritableMap map = Arguments.createMap();
-                    map.putBoolean("finsh",true);
-                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(EventConst.INDUSTRYNAVIAGTION, map);
                 }
 
                 @Override
                 public void onStartNavi() {
                     // TODO Auto-generated method stub
-                    Log.e("+++++++++++++","-------------****************");
                 }
 
                 @Override
-                public void onNaviInfoUpdate(NaviInfo arg0) {
+                public void onPlayNaviMessage(String message) {
                     // TODO Auto-generated method stub
-                    Log.e("+++++++++++++","-------------****************");
+
                 }
 
                 @Override
-                public void onAarrivedDestination() {
+                public void onNaviInfoUpdate(NaviInfo naviInfo) {
                     // TODO Auto-generated method stub
-                    Log.e("+++++++++++++","-------------****************");
-                    WritableMap map = Arguments.createMap();
-                    map.putBoolean("finsh",true);
-                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(EventConst.INDUSTRYNAVIAGTION, map);
+
                 }
 
                 @Override
                 public void onAdjustFailure() {
                     // TODO Auto-generated method stub
-                    Log.e("+++++++++++++","-------------****************");
+
                 }
 
                 @Override
-                public void onPlayNaviMessage(String arg0) {
+                public void onAarrivedDestination() {
                     // TODO Auto-generated method stub
-                    Log.e("+++++++++++++","-------------****************");
                 }
             });
 
-            m_Navigation2.setStartPoint(116.505792, 39.985568);        // 设置起点
-            m_Navigation2.setDestinationPoint(116.4635753632,39.9653458698);     // 设置终点
-            m_Navigation2.setPathVisible(false);                                       // 设置路径可见
-            boolean isfind = m_Navigation2.routeAnalyst();
-            Log.e("++++++++++++",""+isfind);
-            if(isfind){
-                m_Navigation2.startGuide(1);
+            Datasource datasource = sMap.getSmMapWC().getMapControl().getMap().getWorkspace().getDatasources().get("kaide_mall");
+
+            mNavigation3.setDatasource(datasource);
+
+            boolean result = mNavigation3.routeAnalyst();
+            if (result) {
+                mNavigation3.startGuide(1);
             }
 
             promise.resolve(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             promise.reject(e);
         }
+    }
+
+    /**
+     * 获取路网信息
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getNavigationData(Promise promise) {
+        sMap = SMap.getInstance();
+        WritableArray array = Arguments.createArray();
+        Workspace mWorkspace = SMap.getInstance().getSmMapWC().getWorkspace();
+        Datasources datasources = mWorkspace.getDatasources();
+        for (int i = 0; i < datasources.getCount(); i++) {
+            Datasource datasource = datasources.get(i);
+            for (int j = 0; j < datasource.getDatasets().getCount(); j++) {
+                if (datasource.getDatasets().get(j).getType() == DatasetType.NETWORK) {
+                    WritableMap map = Arguments.createMap();
+                    map.putString("dataset", datasource.getDatasets().get(j).getName());
+                    array.pushMap(map);
+                }
+            }
+        }
+        promise.resolve(array);
     }
 
 
