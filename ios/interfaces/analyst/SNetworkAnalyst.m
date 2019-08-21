@@ -91,6 +91,23 @@ RCT_EXPORT_MODULE();
     CGPoint p = CGPointMake(x, y);
     Selection* hitSelection = [nodeLayer hitTestEx:p With:20];
     
+//    if (!hitSelection || hitSelection.getCount == 0) {
+//        Point2D* pt = [[SMap singletonInstance].smMapWC.mapControl.map pixelTomap:p];
+//        SMap* sMap = [SMap singletonInstance];
+//        if ([sMap.smMapWC.mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+//            Point2Ds *points = [[Point2Ds alloc] init];
+//            [points add:pt];
+//            PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+//            [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+//            CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+//
+//            //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+//            [CoordSysTranslator convert:points PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] PrjCoordSys:srcPrjCoorSys CoordSysTransParameter:param CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+//            pt = [points getItem:0];
+//        }
+//        hitSelection = [nodeLayer hitTest:pt With:20];
+//    }
+    
     NSMutableDictionary* pDic = nil;
     Point2D* p2D = nil;
     
