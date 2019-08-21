@@ -1957,9 +1957,11 @@ export default (function () {
    * 打开二维导航工作空间及地图
    * @returns {*|void|Promise<void>}
    */
-  function open2DNavigationMap() {
+  function open2DNavigationMap(infoDic) {
     try {
-      return SMap.open2DNavigationMap()
+      const type = infoDic.server.split('.').pop()
+      Object.assign(infoDic, {type: getWorkspaceType(type)})
+      return SMap.open2DNavigationMap(infoDic)
     } catch (e) {
       console.error(e)
     }
@@ -1969,14 +1971,38 @@ export default (function () {
    * 开启行业导航
    * @returns {*|void|Promise<void>}
    */
-  function startNavigation() {
+  function startNavigation(networkDatasetName,netModel) {
     try {
-      return SMap.startNavigation()
+      return SMap.startNavigation(networkDatasetName,netModel)
     } catch (e) {
       console.error(e)
     }
   }
 
+
+  /**
+   * 开启室内二维导航
+   * @returns {*|void|Promise<void>}
+   */
+  function startIndoorNavigation() {
+    try {
+      return SMap.startIndoorNavigation()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取路网信息
+   * @returns {*|void|Promise<void>}
+   */
+  function getNavigationData() {
+    try {
+      return SMap.getNavigationData()
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
 
   let SMapExp = {
@@ -2120,6 +2146,8 @@ export default (function () {
     clearTarckingLayer,
     open2DNavigationMap,
     startNavigation,
+    startIndoorNavigation,
+    getNavigationData,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)
 

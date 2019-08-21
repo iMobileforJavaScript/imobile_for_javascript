@@ -23,7 +23,7 @@ public class MeasureViewManager extends SimpleViewManager<CustomMeasureView> {
 
     private ThemedReactContext mReactContext = null;
     private CustomMeasureView mMeasureView = null;
-    private DecimalFormat mDecimalFormat = new DecimalFormat("0.0000");
+    private DecimalFormat mDecimalFormat = new DecimalFormat("0.00");
 
     @Override
     public String getName() {
