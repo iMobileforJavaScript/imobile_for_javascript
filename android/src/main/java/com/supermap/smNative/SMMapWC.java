@@ -54,6 +54,7 @@ import com.supermap.data.Workspace;
 import com.supermap.data.WorkspaceConnectionInfo;
 import com.supermap.data.WorkspaceType;
 import com.supermap.data.WorkspaceVersion;
+import com.supermap.indoor.FloorListView;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.interfaces.utils.ScaleViewHelper;
 import com.supermap.mapping.Layer;
@@ -92,6 +93,7 @@ import java.util.Set;
 public class SMMapWC {
     Workspace workspace;
     MapControl mapControl;
+    FloorListView floorListView;
     public Workspace getWorkspace() {
         return workspace;
     }
@@ -106,6 +108,14 @@ public class SMMapWC {
 
     public void setMapControl(MapControl mapControl) {
         this.mapControl = mapControl;
+    }
+
+    public FloorListView getFloorListView(){
+        return floorListView;
+    }
+
+    public void setFloorListView(FloorListView mfloorListView){
+        floorListView = mfloorListView;
     }
 
     private final String encodingUTF8 = "UTF-8";
