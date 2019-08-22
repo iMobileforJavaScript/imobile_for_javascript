@@ -8,6 +8,7 @@
 
 #import "SMMapWC.h"
 #import "SMap.h"
+#import "GDataXMLNode.h"
 
 @implementation SMMapWC
 
@@ -1473,7 +1474,26 @@
                         bExist = [[NSFileManager defaultManager] fileExistsAtPath:subFilePath isDirectory:&bDir];
                         if(bExist&&!bDir){
                             NSString* strAnimation=[animationDic stringByAppendingFormat:@"/%@",[fileArr objectAtIndex:index]];
-                            [[NSFileManager defaultManager] copyItemAtPath:subFilePath toPath:strAnimation error:nil];
+                            BOOL result=[[NSFileManager defaultManager] copyItemAtPath:subFilePath toPath:strAnimation error:nil];
+                            if(result){
+                                NSData* data=[[NSFileManager defaultManager] contentsAtPath:strAnimation];
+                                GDataXMLDocument *xmlDocument = [[GDataXMLDocument alloc] initWithData:data options:0 error:nil];
+                                // 取根节点
+                                GDataXMLElement *rootElement = [xmlDocument rootElement];
+                                // 获取根节点下的所有子节点
+                                NSArray *elementArray =  rootElement.children;
+                                for (GDataXMLElement *element1 in elementArray) {
+                                    for (GDataXMLElement *element2 in element1.children) {
+                                        for (GDataXMLElement *element3 in element2.children) {
+                                            if([element3.name isEqualToString:@"CONTROLNAME"]){
+                                                [element3 setStringValue:strResName];
+                                            }
+                                        }
+                                    }
+                                }
+                                NSData *xmlData = [xmlDocument XMLData];
+                                [xmlData writeToFile:strAnimation atomically:YES];
+                            }
                         }
                     }
                 }
