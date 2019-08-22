@@ -4495,7 +4495,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 } else {
                     int layerCount = mapControl.getMap().getLayers().getCount();
                     if (layerCount > 0) {
-                        mapName = mapControl.getMap().getLayers().get(layerCount).getName();
+                        mapName = mapControl.getMap().getLayers().get(layerCount-1).getName();
                     }
                 }
                 mapControl.getMap().save(mapName);
