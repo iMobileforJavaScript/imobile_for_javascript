@@ -198,7 +198,8 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo setting:(
             NSString* datasetName = [settingDic objectForKey:@"networkDataset"];
             if (datasetName) {
                 ds = [datasource.datasets getWithName:datasetName];
-                layer = [SMLayer findLayerByDatasetName:ds.name];
+                NSString* layerName = [NSString stringWithFormat:@"%@@%@", ds.name, datasource.alias];
+                layer = [SMLayer findLayerWithName:layerName];
                 if (!layer) {
 //                    [[SMap singletonInstance].smMapWC.mapControl.map setDynamicProjection:YES];
                     layer = [layers addDataset:ds ToHead:YES];
@@ -209,6 +210,14 @@ RCT_REMAP_METHOD(load, loadByDatasource:(NSDictionary *)datasourceInfo setting:(
                         nodeLayer = [layers addDataset:nodeDataset ToHead:YES];
                         nodeLayer.selectable = YES;
                         nodeLayer.visible = YES;
+                    }
+                } else {
+                    NSRange range = [layer.name rangeOfString:@"@"];
+                    NSString* name = [layer.name substringToIndex:range.location];
+                    NSString* dsName = [layer.name substringFromIndex:NSMaxRange(range)];
+                    if (![name isEqualToString:@""] && ![dsName isEqualToString:@""]) {
+                        NSString* nodeLayerName = [NSString stringWithFormat:@"%@_Node@%@", name, dsName];
+                        nodeLayer = [SMLayer findLayerWithName:nodeLayerName];
                     }
                 }
             }

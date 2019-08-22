@@ -13,7 +13,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipException;
 
 public class FileUtil {
@@ -140,7 +142,111 @@ public class FileUtil {
 
     }
 
+    /*
+     * Java文件操作 获取文件扩展名
+     * */
+    public static String getExtensionName(String filename) {
+        if ((filename != null) && (filename.length() > 0)) {
+            int dot = filename.lastIndexOf('.');
+            if ((dot >-1) && (dot < (filename.length() - 1))) {
+                return filename.substring(dot + 1);
+            }
+        }
+        return filename;
+    }
 
+    /*
+     * Java文件操作 获取不带扩展名的文件名
+     * */
+    public static String getFileNameNoEx(String filename) {
+        if ((filename != null) && (filename.length() > 0)) {
+            int dot = filename.lastIndexOf('.');
+            if ((dot >-1) && (dot < (filename.length()))) {
+                return filename.substring(0, dot);
+            }
+        }
+        return filename;
+    }
+
+    public static  boolean copyDirFromPath(String srcPath, String desPath){
+        boolean copySucc = true;
+
+        List<String> array = contentsOfDirectoryAtPath(srcPath);
+        for (int i = 0; i < array.size(); i++) {
+            String fullPath = srcPath + "/" + array.get(i);
+            String fullToPath = desPath + "/" + array.get(i);
+            boolean isDir = false;
+            File fileFullPath = new File(fullPath);
+            boolean isExist = fileFullPath.exists();
+            isDir = fileFullPath.isDirectory();
+            if (isExist) {
+
+                if (isDir) {
+                    copyDirFromPath(fullPath, fullToPath);
+                }else{
+                    File fileDesPath = new File(fullToPath);
+                    File dir = new File(fileDesPath.getParent());
+                    if (!dir.exists()) {
+                        dir.mkdirs();
+                    }
+                    if (!copyFile(fullPath, fullToPath)) {
+                        copySucc = false;
+                    }
+                }
+            }
+
+        }
+        return copySucc;
+    }
+
+    private static boolean copyFile(String oldPath, String newPath) {
+
+        File oldfile = new File(oldPath);
+        File newfile = new File(newPath);
+        if (oldfile.exists()) {
+            if (newfile.exists()) {
+                newfile.delete();
+            }
+            try {
+                newfile.createNewFile();
+                FileInputStream input = new FileInputStream(oldPath);
+                BufferedInputStream inBuff = new BufferedInputStream(input);
+                FileOutputStream output = new FileOutputStream(newPath);
+                BufferedOutputStream outBuff = new BufferedOutputStream(output);
+
+                byte[] b = new byte[1024 * 5];
+                int len;
+                while ((len = inBuff.read(b)) != -1) {
+                    outBuff.write(b, 0, len);
+                }
+                outBuff.flush();
+
+                inBuff.close();
+                outBuff.close();
+                output.close();
+                input.close();
+            } catch (IOException e) {
+                Log.e("error+zjs", e.toString());
+            }
+
+            return true;
+        }
+        return false;
+
+    }
+    private static List<String> contentsOfDirectoryAtPath(String path) {
+        File file = new File(path);
+        File[] files = file.listFiles();
+        List<String> s = new ArrayList<>();
+        if (files == null) {
+            Log.e("error", "空目录");
+            return s;
+        }
+        for (int i = 0; i < files.length; i++) {
+            s.add(files[i].getName());
+        }
+        return s;
+    }
 
     private boolean copyFile(File from, File des,boolean rewrite){
         //目标路径不存在的话就创建一个

@@ -1568,9 +1568,9 @@ export default (function () {
   /**
    * 保存态势推演动画
    */
-  function animationSave(savePath){
+  function animationSave(savePath,fileName){
     try{
-      return SMap.animationSave(savePath)
+      return SMap.animationSave(savePath,fileName)
     } catch (e){
       console.error(e)
     }
@@ -1954,6 +1954,28 @@ export default (function () {
     }
   }
 
+  /**
+   * 停止行业导航
+   * @param handlers
+   */
+  function setIndustryNavigationListener(handlers){
+    try {
+      if (Platform.OS === 'ios' && handlers) {
+        if (typeof handlers.callback === 'function') {
+
+        }
+      } else if (Platform.OS === 'android' && handlers) {
+        if (typeof handlers.callback === "function") {
+          DeviceEventEmitter.addListener(EventConst.INDUSTRYNAVIAGTION, function (e) {
+            handlers.callback(e);
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 
 
   /**
@@ -1985,14 +2007,64 @@ export default (function () {
    * 打开二维导航工作空间及地图
    * @returns {*|void|Promise<void>}
    */
-  function open2DNavigationMap() {
+  function open2DNavigationMap(infoDic) {
     try {
-      return SMap.open2DNavigationMap()
+      const type = infoDic.server.split('.').pop()
+      Object.assign(infoDic, {type: getWorkspaceType(type)})
+      return SMap.open2DNavigationMap(infoDic)
     } catch (e) {
       console.error(e)
     }
   }
 
+  /**
+   * 开启行业导航
+   * @returns {*|void|Promise<void>}
+   */
+  function startNavigation(networkDatasetName,netModel) {
+    try {
+      return SMap.startNavigation(networkDatasetName,netModel)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+
+  /**
+   * 开启室内二维导航
+   * @returns {*|void|Promise<void>}
+   */
+  function startIndoorNavigation() {
+    try {
+      return SMap.startIndoorNavigation()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取路网信息
+   * @returns {*|void|Promise<void>}
+   */
+  function getNavigationData() {
+    try {
+      return SMap.getNavigationData()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+ /**
+   * 智能配图
+   * @returns {*|void|Promise<void>}
+   */
+  function matchPictureStyle(picPath) {
+    try {
+      return SMap.matchPictureStyle(picPath)
+    }catch (e) {
+      console.error(e)
+    }
+  }
 
 
   let SMapExp = {
@@ -2008,6 +2080,7 @@ export default (function () {
     setOnlineNavigation2Listener,
     // pointSearch,
     // initPointSearch,
+    setIndustryNavigationListener,
     getEnvironmentStatus,
     refreshMap,
     openWorkspace,
@@ -2138,6 +2211,11 @@ export default (function () {
     routeAnalyst,
     clearTarckingLayer,
     open2DNavigationMap,
+    startNavigation,
+    startIndoorNavigation,
+    getNavigationData,
+
+    matchPictureStyle,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)
 
