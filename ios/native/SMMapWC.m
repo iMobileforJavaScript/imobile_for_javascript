@@ -9,6 +9,7 @@
 #import "SMMapWC.h"
 #import "SMap.h"
 #import "GDataXMLNode.h"
+#import "FileUtils.h"
 
 @implementation SMMapWC
 
@@ -1042,9 +1043,17 @@
                 }//!New
                 
                 // 拷贝
-                if(![manager copyItemAtPath:strSrcServer toPath:strTargetServer error:nil]){
-                    continue;
+                if([strSrcServer.pathExtension.uppercaseString isEqualToString:@"SCI"]){//sci
+                    NSString* targetDir = [NSString stringWithFormat:@"%@/%@", strTargetServer.stringByDeletingLastPathComponent,[strTargetServer.lastPathComponent stringByReplacingOccurrencesOfString:@".sci" withString:@""] ];
+                    [FileUtils copyDirFromPath:strSrcServer.stringByDeletingLastPathComponent toPath:targetDir];
+                    strTargetServer = [NSString stringWithFormat:@"%@/%@",targetDir,strSrcServer.lastPathComponent];
+                    
+                }else{
+                    if(![manager copyItemAtPath:strSrcServer toPath:strTargetServer error:nil]){
+                        continue;
+                    }
                 }
+                
             }//bUDB
         }
         DatasourceConnectionInfo *desInfo = [[DatasourceConnectionInfo alloc]init];
@@ -1735,9 +1744,17 @@
                     
                     
                     // 拷贝
-                    if(![[NSFileManager defaultManager] copyItemAtPath:strSrcServer toPath:strTargetServer error:nil]){
-                        continue;
+                    if([strSrcServer.pathExtension.uppercaseString isEqualToString:@"SCI"]){//sci
+                       NSString* targetDir = [NSString stringWithFormat:@"%@/%@", strTargetServer.stringByDeletingLastPathComponent,[strTargetServer.lastPathComponent stringByReplacingOccurrencesOfString:@".sci" withString:@""] ];
+                        [FileUtils copyDirFromPath:strSrcServer.stringByDeletingLastPathComponent toPath:targetDir];
+                        strTargetServer = [NSString stringWithFormat:@"%@/%@",targetDir,strSrcServer.lastPathComponent];
+                        
+                    }else{
+                        if(![[NSFileManager defaultManager] copyItemAtPath:strSrcServer toPath:strTargetServer error:nil]){
+                            continue;
+                        }
                     }
+                   
                 }//bUDB
 
             }
