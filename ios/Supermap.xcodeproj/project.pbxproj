@@ -180,6 +180,7 @@
 		0AD551A122389E9E00D24453 /* SMessageService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD551A022389E9E00D24453 /* SMessageService.m */; };
 		0AF348682270018F004D6D09 /* SAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF348662270018F004D6D09 /* SAnalyst.m */; };
 		182832BB22F98190006586BF /* SIPortalService.m in Sources */ = {isa = PBXBuildFile; fileRef = 182832BA22F98190006586BF /* SIPortalService.m */; };
+		2AAEE1D1230E6A6000902D1D /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AAEE196230E68CE00902D1D /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2AD00E8522461CC70087FC43 /* PoiSearchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD00E8322461CC70087FC43 /* PoiSearchHelper.m */; };
 		4A99EBEB21EDD9D000493EB1 /* SPUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A99EBEA21EDD9CF00493EB1 /* SPUtils.m */; };
 		4AA0C2ED21B1316C00614FE4 /* STranslate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AA0C2EB21B1316B00614FE4 /* STranslate.m */; };
@@ -570,6 +571,8 @@
 		134814201AA4EA6300B7C361 /* libSupermap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSupermap.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		182832B922F980AB006586BF /* SIPortalService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SIPortalService.h; sourceTree = "<group>"; };
 		182832BA22F98190006586BF /* SIPortalService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SIPortalService.m; sourceTree = "<group>"; };
+		2AAEE195230E68CD00902D1D /* GDataXMLNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GDataXMLNode.h; sourceTree = "<group>"; };
+		2AAEE196230E68CE00902D1D /* GDataXMLNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GDataXMLNode.m; sourceTree = "<group>"; };
 		2AD00E8322461CC70087FC43 /* PoiSearchHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PoiSearchHelper.m; sourceTree = "<group>"; };
 		2AD00E8422461CC70087FC43 /* PoiSearchHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PoiSearchHelper.h; sourceTree = "<group>"; };
 		4A99EBE921EDD9CF00493EB1 /* SPUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPUtils.h; sourceTree = "<group>"; };
@@ -769,9 +772,19 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		2AAEE194230E68CD00902D1D /* GDataXMLNode */ = {
+			isa = PBXGroup;
+			children = (
+				2AAEE195230E68CD00902D1D /* GDataXMLNode.h */,
+				2AAEE196230E68CE00902D1D /* GDataXMLNode.m */,
+			);
+			path = GDataXMLNode;
+			sourceTree = "<group>";
+		};
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				2AAEE194230E68CD00902D1D /* GDataXMLNode */,
 				0A8D32E622A65D0C007EF3BA /* extern */,
 				D8FB9D3D219AADF600597AE5 /* component */,
 				D854DA522187FCA80075B5F8 /* constants */,
@@ -1268,6 +1281,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AAEE1D1230E6A6000902D1D /* GDataXMLNode.m in Sources */,
 				0A332E57211D623E00F56F26 /* JSSupplyCenterType.m in Sources */,
 				4AF967A421B50EC000105B74 /* SMCartography.m in Sources */,
 				0A332E2C211D623E00F56F26 /* JSMap.m in Sources */,
@@ -1561,6 +1575,7 @@
 					"$(BUILT_PRODUCTS_DIR)/include/React/**",
 					"$(SRCROOT)",
 					"$(PROJECT_DIR)/extern/Headers",
+					/usr/include/libxml2,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1586,6 +1601,7 @@
 					"$(BUILT_PRODUCTS_DIR)/include/React/**",
 					"$(SRCROOT)",
 					"$(PROJECT_DIR)/extern/Headers",
+					/usr/include/libxml2,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

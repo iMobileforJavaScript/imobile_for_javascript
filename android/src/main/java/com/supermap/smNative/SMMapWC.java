@@ -1093,8 +1093,18 @@ public class SMMapWC {
                     }//!New
 
                     // 拷贝
-                    if (!copyFile(strSrcServer, strTargetServer)) {
-                        continue;
+                    if(FileUtil.getExtensionName(strSrcServer).toUpperCase().equals("SCI")){
+                        File SrcFile = new File(strSrcServer);
+                        File TargetFile = new File(strTargetServer);
+                        String targetDir =  TargetFile.getParent() + "/" + TargetFile.getName().replace(".sci","");
+                        String src = SrcFile.getParent();
+                        FileUtil.copyDirFromPath(src,targetDir);
+                        strTargetServer = targetDir +"/"+ SrcFile.getName();
+
+                    }else{
+                        if (!copyFile(strSrcServer, strTargetServer)) {
+                            continue;
+                        }
                     }
 
                 }//udb
@@ -1898,9 +1908,20 @@ public class SMMapWC {
 
 
                         // 拷贝
-                        if (!copyFile(strSrcServer, strTargetServer)) {
-                            continue;
+                        if(FileUtil.getExtensionName(strSrcServer).toUpperCase().equals("SCI")){
+                            File SrcFile = new File(strSrcServer);
+                            File TargetFile = new File(strTargetServer);
+                            String targetDir =  TargetFile.getParent() + "/" + TargetFile.getName().replace(".sci","");
+                            String src = SrcFile.getParent();
+                            FileUtil.copyDirFromPath(src,targetDir);
+                            strTargetServer = targetDir +"/"+ SrcFile.getName();
+
+                        }else{
+                            if (!copyFile(strSrcServer, strTargetServer)) {
+                                continue;
+                            }
                         }
+
                     }//bUDB
 
                 }
