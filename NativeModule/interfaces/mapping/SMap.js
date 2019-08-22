@@ -2004,6 +2004,18 @@ export default (function () {
     }
   }
 
+ /**
+   * 智能配图
+   * @returns {*|void|Promise<void>}
+   */
+  function matchPictureStyle(picPath) {
+    try {
+      return SMap.matchPictureStyle(picPath)
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
 
   let SMapExp = {
     removePOICallout,
@@ -2148,6 +2160,8 @@ export default (function () {
     startNavigation,
     startIndoorNavigation,
     getNavigationData,
+
+    matchPictureStyle,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)
 
