@@ -470,6 +470,7 @@ public class SDatasource extends ReactContextBaseJavaModule {
             if (dataset != null) {
                 Recordset recordset = ((DatasetVector)dataset).getRecordset(false, CursorType.STATIC);
                 infos = JsonUtil.getFieldInfos(recordset, filter);
+                recordset.dispose();
             }
 
             promise.resolve(infos);

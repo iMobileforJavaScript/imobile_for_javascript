@@ -54,6 +54,7 @@ RCT_EXPORT_MODULE();
                      @"UBIT32":@(UBIT32),
                      @"BIT64":@(BIT64),
                      @"SINGLE":@(SINGLE),
+                     @"DOUBLE":@(DOUBLE),
                      },
              @"VariogramMode": @{
                      @"EXPONENTIAL":@(VM_EXPONENTIAL), // 球函数
