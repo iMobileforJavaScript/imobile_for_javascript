@@ -97,6 +97,7 @@ import com.supermap.plot.AnimationWay;
 import com.supermap.plot.GeoGraphicObject;
 import com.supermap.plot.GraphicObjectType;
 import com.supermap.plugin.LocationManagePlugin;
+import com.supermap.smNative.SMMapRender;
 import com.supermap.smNative.collector.SMCollector;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
@@ -6048,4 +6049,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     /************************************** 导航模块 END ****************************************/
 
 
+    /**
+     * 智能配图
+     *
+     * @param picPath
+     * @param promise
+     */
+    @ReactMethod
+    public void matchPictureStyle(String picPath, Promise promise){
+        try {
+            SMMapRender smMapRender = SMMapRender.getInstance();
+            smMapRender.matchPictureStyle(picPath);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 }
