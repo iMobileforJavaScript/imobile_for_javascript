@@ -55,13 +55,12 @@
 #import "SMLayer.h"
 #import "SOrientation.h"
 #import "ScaleViewHelper.h"
-#import "POISearchHelper2D.h"
+#import "InfoCallout.h"
 #import "SMMap.h"
-@interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate,AfterGeometryAddedDelegate,LegendContentDelegate,MapParameterChangedDelegate,PoiSearch2DDelegate>
+@interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate,AfterGeometryAddedDelegate,LegendContentDelegate,MapParameterChangedDelegate>
 @property (strong, nonatomic) SMMapWC* smMapWC;
 @property (strong, nonatomic) Selection* selection;
 @property (strong, nonatomic) ScaleViewHelper* scaleViewHelper;
-@property (strong, nonatomic) POISearchHelper2D* poiSearchHelper2D;
 ///定时器
 @property (nonatomic,strong) dispatch_source_t timer;
 

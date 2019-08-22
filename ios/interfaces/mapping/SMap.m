@@ -23,6 +23,7 @@
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
 static NSMutableArray *fillColors;
+static NSMutableArray *calloutArr;
 NSString * const LEGEND_CONTENT_CHANGE = @"com.supermap.RN.Map.Legend.legend_content_change";
 
 @interface SMap()
@@ -60,7 +61,7 @@ RCT_EXPORT_MODULE();
              MAP_BOUNDS_CHANGED,
              LEGEND_CONTENT_CHANGE,
              MAP_SCALEVIEW_CHANGED,
-             POINTSEARCH2D_KEYWORDS,
+//             POINTSEARCH2D_KEYWORDS,
              ];
 }
 
@@ -777,27 +778,27 @@ RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTProm
 //    }
 //}
 
-#pragma mark 初始化二维搜索
-RCT_REMAP_METHOD(initPointSearch, initPointSearchWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        sMap = [SMap singletonInstance];
-        sMap.poiSearchHelper2D = [POISearchHelper2D singletonInstance];
-        [sMap.poiSearchHelper2D initMapControl:sMap.smMapWC.mapControl];
-        sMap.poiSearchHelper2D.delegate =self;
-        resolve(@(YES));
-    } @catch (NSException *exception) {
-        reject(@"initPointSearch",exception.reason,nil);
-    }
-}
-#pragma mark 二维搜索
-RCT_REMAP_METHOD(pointSearch, pointSearchWithString:(NSString *)str resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        [sMap.poiSearchHelper2D poiSearch:str];
-        resolve(@(YES));
-    } @catch (NSException *exception) {
-        reject(@"pointSearch",exception.reason,nil);
-    }
-}
+//#pragma mark 初始化二维搜索
+//RCT_REMAP_METHOD(initPointSearch, initPointSearchWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        sMap = [SMap singletonInstance];
+//        sMap.poiSearchHelper2D = [POISearchHelper2D singletonInstance];
+//        [sMap.poiSearchHelper2D initMapControl:sMap.smMapWC.mapControl];
+//        sMap.poiSearchHelper2D.delegate =self;
+//        resolve(@(YES));
+//    } @catch (NSException *exception) {
+//        reject(@"initPointSearch",exception.reason,nil);
+//    }
+//}
+//#pragma mark 二维搜索
+//RCT_REMAP_METHOD(pointSearch, pointSearchWithString:(NSString *)str resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        [sMap.poiSearchHelper2D poiSearch:str];
+//        resolve(@(YES));
+//    } @catch (NSException *exception) {
+//        reject(@"pointSearch",exception.reason,nil);
+//    }
+//}
 #pragma mark 获取当前定位经纬度
 RCT_REMAP_METHOD(getCurrentPosition, getCurrentPositionWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try{
@@ -810,42 +811,185 @@ RCT_REMAP_METHOD(getCurrentPosition, getCurrentPositionWithResolver:(RCTPromiseR
         reject(@"getCurrentPosition",exception.reason,nil);
     }
 }
+#pragma mark 获取地图中心点经纬度
+RCT_REMAP_METHOD(getMapcenterPosition, getMapcenterPositionWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        MapControl *mapControl = sMap.smMapWC.mapControl;
+        
+        Point2D *mapCenter = mapControl.map.center;
+        Point2Ds *points = [[Point2Ds alloc] init];
+        [points add:mapCenter];
+        
+        PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+        CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
+        
+        [CoordSysTranslator convert:points PrjCoordSys:mapControl.map.prjCoordSys PrjCoordSys:sourcePrjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        Point2D *point = [points getItem:0];
+        resolve(@{
+                  @"x":[NSNumber numberWithDouble:point.x],
+                  @"y":[NSNumber numberWithDouble:point.y]
+                  });
+    }@catch(NSException *exception){
+        reject(@"getCurrentPosition",exception.reason,nil);
+    }
+}
 #pragma mark 移除POI搜索的callout
 RCT_REMAP_METHOD(removePOICallout, removePOICalloutWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
-        [sMap.poiSearchHelper2D clearPoint];
+        NSString *tagName = @"POISEARCH_2D_POINT";
+        [sMap clearCalloutWithTagName:tagName];
+        resolve(@(YES));
+    }@catch(NSException *exception){
+        reject(@"removePOICallout",exception.reason,nil);
+    }
+}
+#pragma mark 移除周边搜索的callout
+RCT_REMAP_METHOD(removeAllCallout, removeAllCalloutWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        MapControl *mapControl = sMap.smMapWC.mapControl;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [mapControl removeCalloutWithArr:calloutArr];
+            calloutArr = nil;
+        });
+        //搜索结果的callout最多10条
+//        for(int i = 0; i < 10; i++){
+//            NSString *tagName = [NSString stringWithFormat:@"%@%d",@"POISEARCH_2D_POINTS",i];
+//            [sMap clearCalloutWithTagName:tagName];
+//        }
         resolve(@(YES));
     }@catch(NSException *exception){
         reject(@"removePOICallout",exception.reason,nil);
     }
 }
 #pragma mark 定位到搜索结果某个点
-RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithIndex:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithItem:(NSDictionary *)item resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        BOOL isSuccess = [sMap.poiSearchHelper2D toLocationPoint:index];
+        double x = [[item valueForKey:@"x"] doubleValue];
+        double y =[[item valueForKey:@"y"] doubleValue];
+        NSString *name = [item valueForKey:@"pointName"];
+        NSString *tagName = @"POISEARCH_2D_POINT";
+        [sMap clearCalloutWithTagName:tagName];
+        BOOL isSuccess = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:YES];
         resolve(@(isSuccess));
     } @catch (NSException *exception) {
         reject(@"toLocationPoint",exception.reason,nil);
     }
 }
--(void)locations:(NSArray *)locations{
-    NSMutableArray* arr = [[NSMutableArray alloc]initWithCapacity:1];
-    NSString* name;
-    NSDictionary* map;
-    int count = locations.count;
-    for (int i = 0; i < count; i++) {
-        OnlinePOIInfo * onlinePoiInfo=[locations objectAtIndex:i];
-        name = onlinePoiInfo.name;
-        map = @{
-                @"pointName":name,
-                @"x":[NSNumber numberWithDouble:onlinePoiInfo.location.x],
-                @"y":[NSNumber numberWithDouble:onlinePoiInfo.location.y],
-                };
-        [arr addObject:map];
+
+#pragma mark 当前选中的callout移动到地图中心
+RCT_REMAP_METHOD(setCalloutToMapCenter, setCalloutToMapCenter:(NSDictionary *)item resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        double x = [[item valueForKey:@"x"] doubleValue];
+        double y =[[item valueForKey:@"y"] doubleValue];
+        MapControl *mapcontrol = sMap.smMapWC.mapControl;
+        Point2D *point = [[Point2D alloc] initWithX:x Y:y];
+        Point2Ds *points = [[Point2Ds alloc] init];
+        [points add:point];
+        PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+        
+        CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
+        [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapcontrol.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        Point2D *mapPoint = [points getItem:0];
+        //移动无效
+        //[mapcontrol panTo:mapPoint time:1000];
+        mapcontrol.map.center = mapPoint;
+        [mapcontrol.map refresh];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"toLocationPoint",exception.reason,nil);
     }
-    [self sendEventWithName:POINTSEARCH2D_KEYWORDS body:arr];
+}
+
+#pragma mark 添加搜索到的callouts
+RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        //清除当前点
+        [sMap clearCalloutWithTagName:@"POISEARCH_2D_POINT"];
+        //最多添加10条
+        int l = pointList.count < 10 ? pointList.count : 10;
+        BOOL isSuccess = YES;
+        for(int i = 0; i < l; i++){
+            NSDictionary *dic = pointList[i];
+            double x = [[dic valueForKey:@"x"] doubleValue];
+            double y = [[dic valueForKey:@"y"] doubleValue];
+            NSString *name = @"";
+            NSString *tagName = [[NSString alloc] initWithFormat:@"%@%d",@"POISEARCH_2D_POINTS",i];
+            BOOL b = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:NO];
+            if(!b){
+                isSuccess = b;
+            }
+        }
+        resolve(@(isSuccess));
+    } @catch (NSException *exception) {
+        reject(@"addCallouts",exception.reason,nil);
+    }
+}
+
+#pragma mark 添加callout x y为经纬度
+-(BOOL)addCalloutWithX:(double)x Y:(double)y Name:(NSString *)name TagName:(NSString *)tagName changeCenter:(BOOL) change{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        MapControl *mapcontrol = [SMap singletonInstance].smMapWC.mapControl;
+        Point2D *point = [[Point2D alloc] initWithX:x Y:y];
+        Point2Ds *points = [[Point2Ds alloc] init];
+        [points add:point];
+        PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+        
+        CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
+        [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapcontrol.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        Point2D *mapPoint = [points getItem:0];
+        
+        InfoCallout *callout = [[InfoCallout alloc]initWithMapControl:mapcontrol BackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0] Alignment:CALLOUT_LEFTBOTTOM];
+        callout.width = 200;
+        callout.height = 40;
+        //sMap.callout.description = tagName;
+    
+    
+        UIImage *image = [UIImage imageNamed:@"resources.bundle/icon_red.png"];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+        [imageView setFrame:CGRectMake(0, 0, 40, 40)];
+        
+        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(40, 0, 160, 40)];
+        
+        UIFont *font = [UIFont systemFontOfSize:16.0];
+        label.font = font;
+        label.text = name;
+        
+        label.textColor = [UIColor grayColor];
+        label.layer.shadowColor = [UIColor whiteColor].CGColor;
+        label.layer.shadowOffset = CGSizeMake(0, 0);
+        label.layer.shadowOpacity = 1;
+        
+        [callout addSubview:imageView];
+        [callout addSubview:label];
+        [callout showAt:mapPoint Tag:tagName];
+        if(calloutArr == nil){
+            calloutArr = [[NSMutableArray alloc]init];
+        }
+        if(![tagName isEqualToString:@"POISEARCH_2D_POINT"]){
+            [calloutArr addObject:callout];
+        }
+        if(mapcontrol.map.scale < 0.000011947150294723098)
+            mapcontrol.map.scale = 0.000011947150294723098;
+        if(change){
+            mapcontrol.map.center = mapPoint;
+        }
+        [mapcontrol.map refresh];
+    });
+    return YES;
+}
+
+-(void)clearCalloutWithTagName:(NSString *)tagName{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        MapControl *mapcontrol = [SMap singletonInstance].smMapWC.mapControl;
+        [mapcontrol removeCalloutWithTag:tagName];
+        [mapcontrol.map refresh];
+    });
 }
 
 #pragma mark 关闭工作空间
