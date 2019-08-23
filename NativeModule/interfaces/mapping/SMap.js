@@ -2063,6 +2063,7 @@ export default (function () {
       if (SMap.matchPictureStyle) {
         return SMap.matchPictureStyle(picPath)
       }
+      return
     }catch (e) {
       console.error(e)
     }
