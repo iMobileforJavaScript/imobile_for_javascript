@@ -123,7 +123,7 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
                         writeMap.putString("Title", recognition.getTitle());
                         Float confidence = recognition.getConfidence();
                         DecimalFormat mDecimalFormat = new DecimalFormat("0.00");
-                        writeMap.putString("Confidence", mDecimalFormat.format(confidence));
+                        writeMap.putString("Confidence", mDecimalFormat.format(confidence * 100) + "%");
                         arr.pushMap(writeMap);
                         Log.d(REACT_CLASS, "ID:" + recognition.getId() + ", Title:" + recognition.getTitle() + ", Confidence:" + recognition.getConfidence());
                     }
@@ -324,6 +324,22 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
             Log.d(REACT_CLASS, "----------------startPreview--------RN--------");
             if (mCameraView != null) {
                 mCameraView.start();
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 暂停
+     */
+    @ReactMethod
+    public void stopPreview(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------stopPreview--------RN--------");
+            if (mCameraView != null) {
+                mCameraView.stop();
             }
             promise.resolve(true);
         } catch (Exception e) {
