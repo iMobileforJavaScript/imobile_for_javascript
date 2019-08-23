@@ -27,6 +27,7 @@ static SMap *sMap = nil;
 static NSMutableArray *fillColors;
 static NSMutableArray *calloutArr;
 static Point2Ds *animationWayPoint2Ds;
+static Point2Ds *animationWaySavePoint2Ds;
 NSString * const LEGEND_CONTENT_CHANGE = @"com.supermap.RN.Map.Legend.legend_content_change";
 
 @interface SMap()
@@ -3074,6 +3075,7 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
         //清空创建路径动画时的数据
         [mapControl.map.trackingLayer clear];
         animationWayPoint2Ds=nil;
+        animationWaySavePoint2Ds=nil;
         
         if([createInfo objectForKey:@"startTime"]&&[animationGroup getAnimationCount]>0){
             NSNumber* startTimeNumber=[createInfo objectForKey:@"startTime"];
@@ -3241,6 +3243,49 @@ RCT_REMAP_METHOD(addAnimationWayPoint,addAnimationWayPoint:(NSDictionary*)point 
     }
 }
 
+#pragma mark 刷新路径动画点
+RCT_REMAP_METHOD(refreshAnimationWayPoint,refreshAnimationWayPoint:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+       
+        if(!animationWaySavePoint2Ds||([animationWaySavePoint2Ds getCount]==0)){
+            animationWayPoint2Ds=nil;
+            [mapControl.map.trackingLayer clear];
+            resolve([NSNumber numberWithBool:YES]);
+            return;
+        }
+        animationWayPoint2Ds=[[Point2Ds alloc] initWithPoint2Ds:animationWaySavePoint2Ds];
+        
+        GeoStyle* style=[[GeoStyle alloc] init];
+        [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
+        [style setLineColor:[[Color alloc] initWithR:225 G:105 B:0]];
+        //        [style setMarkerID:@"3614"];
+        {
+            if([animationWayPoint2Ds getCount]==0){
+                [mapControl.map.trackingLayer clear];
+            }
+            else if([animationWayPoint2Ds getCount]==1){
+                [mapControl.map.trackingLayer clear];
+                GeoPoint* geoPoint=[[GeoPoint alloc] initWithPoint2D:[animationWayPoint2Ds getItem:0]];
+                [geoPoint setStyle:style];
+                [mapControl.map.trackingLayer addGeometry:geoPoint WithTag:@"point"];
+            }else if([animationWayPoint2Ds getCount]>1){
+                [mapControl.map.trackingLayer clear];
+                GeoLine* geoline=[[GeoLine alloc] initWithPoint2Ds:animationWayPoint2Ds];
+                [geoline setStyle:style];
+                [mapControl.map.trackingLayer addGeometry:geoline WithTag:@"line"];
+            }
+            [mapControl.map refresh];
+        }
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"addAnimationWayPoint", exception.reason, nil);
+    }
+}
+
 #pragma mark 结束添加路径动画
 RCT_REMAP_METHOD(endAnimationWayPoint,endAnimationWayPoint:(BOOL)isSave resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -3251,6 +3296,7 @@ RCT_REMAP_METHOD(endAnimationWayPoint,endAnimationWayPoint:(BOOL)isSave resolver
         if(!isSave){
             [mapControl.map.trackingLayer clear];
             animationWayPoint2Ds=nil;
+            animationWaySavePoint2Ds=nil;
             resolve([NSNumber numberWithBool:YES]);
             return;
         }
@@ -3263,6 +3309,7 @@ RCT_REMAP_METHOD(endAnimationWayPoint,endAnimationWayPoint:(BOOL)isSave resolver
                                     };
                 [arr addObject:map];
             }
+            animationWaySavePoint2Ds=[[Point2Ds alloc] initWithPoint2Ds:animationWayPoint2Ds];
         }
         resolve(arr);
     } @catch (NSException *exception) {

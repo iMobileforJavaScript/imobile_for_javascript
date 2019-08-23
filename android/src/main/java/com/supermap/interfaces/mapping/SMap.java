@@ -4371,6 +4371,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     private Point2Ds point2Ds;
+    private Point2Ds savePoint2Ds;
 
     /**
      * 创建推演动画对象
@@ -4435,7 +4436,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     break;
                 case 3:
                     AnimationShow animationShow = (AnimationShow) animationGO;
-                    animationShow.setShowEffect(1);
+                    animationShow.setShowEffect(0);
                     animationShow.setShowState(true);
                     animationGO = animationShow;
                     break;
@@ -4461,6 +4462,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             //清空创建路径动画时的数据
             mapControl.getMap().getTrackingLayer().clear();
             point2Ds = null;
+            savePoint2Ds = null;
+
             if (createInfo.hasKey("startTime") && animationGroup.getAnimationCount() > 0) {
                 int startTime = createInfo.getInt("startTime");
                 if (createInfo.hasKey("startMode")) {
@@ -4647,6 +4650,51 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 刷新路径动画点
+     * @param promise
+     */
+    @ReactMethod
+    public void refreshAnimationWayPoint(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            if(savePoint2Ds==null||savePoint2Ds.getCount()==0){
+                point2Ds=null;
+                mapControl.getMap().getTrackingLayer().clear();
+                promise.resolve(true);
+                return;
+            }
+            point2Ds=new Point2Ds(savePoint2Ds);
+
+            GeoStyle style = new GeoStyle();
+            style.setMarkerSize(new Size2D(10, 10));
+            style.setLineColor(new Color(255, 105, 0));
+            style.setMarkerSymbolID(3614);
+            {
+
+                if (point2Ds.getCount() == 0) {
+                    mapControl.getMap().getTrackingLayer().clear();
+                } else if (point2Ds.getCount() == 1) {
+                    mapControl.getMap().getTrackingLayer().clear();
+                    GeoPoint geoPoint = new GeoPoint(point2Ds.getItem(0));
+                    geoPoint.setStyle(style);
+                    mapControl.getMap().getTrackingLayer().add(geoPoint, "point");
+                } else if (point2Ds.getCount() > 1) {
+                    mapControl.getMap().getTrackingLayer().clear();
+                    GeoLine geoLine = new GeoLine(point2Ds);
+                    geoLine.setStyle(style);
+                    mapControl.getMap().getTrackingLayer().add(geoLine, "line");
+                }
+                mapControl.getMap().refresh();
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 结束添加路径动画
      *
      * @param isSave
@@ -4661,6 +4709,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (!isSave) {
                 mapControl.getMap().getTrackingLayer().clear();
                 point2Ds = null;
+                savePoint2Ds = null;
                 promise.resolve(true);
                 return;
             }
@@ -4675,6 +4724,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     arr.pushMap(writeMap);
                 }
             }
+            savePoint2Ds=new Point2Ds(point2Ds);
             promise.resolve(arr);
         } catch (Exception e) {
             promise.reject(e);

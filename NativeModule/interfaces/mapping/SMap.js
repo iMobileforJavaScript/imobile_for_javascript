@@ -1598,7 +1598,17 @@ export default (function () {
       console.error(e)
     }
   }
-  
+
+  /**
+   * 刷新路径动画点
+   */
+  function refreshAnimationWayPoint(){
+    try{
+      return SMap.refreshAnimationWayPoint()
+    } catch (e){
+      console.error(e)
+    }
+  }
 
   /**
    * 添加路径动画点
@@ -2190,6 +2200,7 @@ export default (function () {
     animationSave,
     getGeometryTypeById,
     addAnimationWayPoint,
+    refreshAnimationWayPoint,
     endAnimationWayPoint,
     undo,
     redo,
