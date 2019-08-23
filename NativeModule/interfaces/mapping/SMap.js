@@ -1774,39 +1774,77 @@ export default (function () {
     }
   }
 
-  /**
-   * 初始化二维搜索功能
-   * @returns {*|void}
-   */
-  function initPointSearch(){
-    try {
-      return SMap.initPointSearch()
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  /**
-   * 二维搜索
-   * @param str
-   * @returns {*|void}
-   */
-  function pointSearch(str){
-    try {
-      return SMap.pointSearch(str)
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 初始化二维搜索功能
+  //  * @returns {*|void}
+  //  */
+  // function initPointSearch(){
+  //   try {
+  //     return SMap.initPointSearch()
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
+  //
+  // /**
+  //  * 二维搜索
+  //  * @param str
+  //  * @returns {*|void}
+  //  */
+  // function pointSearch(str){
+  //   try {
+  //     return SMap.pointSearch(str)
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
 
   /**
    * 定位到POI搜索结果某个点
-   * @param index
+   * @param item
    * @returns {*|void|Promise<void>}
    */
-  function toLocationPoint(index) {
+  function toLocationPoint(item) {
     try {
-      return SMap.toLocationPoint(index)
+      return SMap.toLocationPoint(item)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 添加callouts
+   * @param pointList
+   * @returns {*}
+   */
+  function addCallouts(pointList) {
+    try {
+      return SMap.addCallouts(pointList)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移除当前搜有搜索出的结果
+   * @returns {*|void}
+   */
+  function removeAllCallout() {
+    try {
+      return SMap.removeAllCallout()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 当前选中的callout移动到地图中心
+   * @param item
+   * @returns {*}
+   */
+  function setCalloutToMapCenter(item) {
+    try {
+      return SMap.setCalloutToMapCenter(item)
     } catch (e) {
       console.error(e)
     }
@@ -1825,6 +1863,18 @@ export default (function () {
   }
 
   /**
+   * 获取地图中心点经纬度
+   * @returns {*}
+   */
+  function getMapcenterPosition() {
+    try {
+      return SMap.getMapcenterPosition()
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 移除二维搜索的Callout
    * @returns {*|void}
    */
@@ -1835,29 +1885,29 @@ export default (function () {
       console.error(e)
     }
   }
-  /**
-   * 二维 添加位置搜索事件监听
-   * @param handlers
-   */
-  function setPointSearchListener(handlers){
-    try {
-      if (Platform.OS === 'ios' && handlers) {
-        if (typeof handlers.callback === 'function') {
-          nativeEvt.addListener(EventConst.POINTSEARCH2D_KEYWORDS, function (e) {
-            handlers.callback(e)
-          })
-        }
-      } else if (Platform.OS === 'android' && handlers) {
-        if (typeof handlers.callback === "function") {
-          DeviceEventEmitter.addListener(EventConst.POINTSEARCH2D_KEYWORDS, function (e) {
-            handlers.callback(e);
-          });
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  // /**
+  //  * 二维 添加位置搜索事件监听
+  //  * @param handlers
+  //  */
+  // function setPointSearchListener(handlers){
+  //   try {
+  //     if (Platform.OS === 'ios' && handlers) {
+  //       if (typeof handlers.callback === 'function') {
+  //         nativeEvt.addListener(EventConst.POINTSEARCH2D_KEYWORDS, function (e) {
+  //           handlers.callback(e)
+  //         })
+  //       }
+  //     } else if (Platform.OS === 'android' && handlers) {
+  //       if (typeof handlers.callback === "function") {
+  //         DeviceEventEmitter.addListener(EventConst.POINTSEARCH2D_KEYWORDS, function (e) {
+  //           handlers.callback(e);
+  //         });
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
 
 
   /**
@@ -2018,15 +2068,19 @@ export default (function () {
 
 
   let SMapExp = {
+    setCalloutToMapCenter,
+    removeAllCallout,
+    addCallouts,
     removePOICallout,
     getCurrentPosition,
+    getMapcenterPosition,
     toLocationPoint,
-    setPointSearchListener,
+    //setPointSearchListener,
     setOnlineNavigationListener,
     setOnlineNavigation2Listener,
+    // pointSearch,
+    // initPointSearch,
     setIndustryNavigationListener,
-    pointSearch,
-    initPointSearch,
     getEnvironmentStatus,
     refreshMap,
     openWorkspace,

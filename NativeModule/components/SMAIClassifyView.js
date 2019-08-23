@@ -3,7 +3,7 @@ import {
   requireNativeComponent,
   ViewPropTypes,
   StyleSheet,
-  View, InteractionManager, Platform
+  View, InteractionManager, Platform, DeviceEventEmitter
 } from "react-native";
 import PropTypes from 'prop-types'
 import { scaleSize } from "../../../../src/utils";
@@ -20,7 +20,7 @@ class SMAIClassifyView extends React.Component {
 
     this.state = {
       viewId: 0,
-      visible: false,
+      visible: true,
     }
   }
 
@@ -30,18 +30,22 @@ class SMAIClassifyView extends React.Component {
   };
 
   static defaultProps = {
-    visible: false,
+    visible: true,
   }
 
   componentDidMount() {
-    GLOBAL.Type === constants.MAP_AR &&
-    this.setState({
-      visible: true,
+    InteractionManager.runAfterInteractions(() => {
+      // (async function() {
+      //   GLOBAL.Type === constants.MAP_AR &&
+      //   this.setState({
+      //     visible: true,
+      //   })
+      // }.bind(this)())
     })
   }
 
   componentDidUpdate(prevProps) {
-    SAIClassifyView.startPreview()
+    // SAIClassifyView.startPreview()
   }
 
   componentWillUnmount() {
