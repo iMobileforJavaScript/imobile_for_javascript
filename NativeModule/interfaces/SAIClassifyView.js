@@ -65,6 +65,14 @@ setQuant = (value) => {
   }
 }
 
+stopPreview = () => {
+  try {
+    return SAIClassifyView.stopPreview()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   startPreview,
   captureImage,
@@ -73,4 +81,5 @@ export default {
   setLabelName,
   setInputSize,
   setQuant,
+  stopPreview,
 }

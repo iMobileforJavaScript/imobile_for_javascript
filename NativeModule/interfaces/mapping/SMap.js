@@ -2070,7 +2070,10 @@ export default (function () {
    */
   function matchPictureStyle(picPath) {
     try {
-      return SMap.matchPictureStyle(picPath)
+      if (SMap.matchPictureStyle) {
+        return SMap.matchPictureStyle(picPath)
+      }
+      return
     }catch (e) {
       console.error(e)
     }

@@ -343,7 +343,7 @@ public class LabelHelper {
                 Feature3D feature3D = layer3d.getFeatures().add(favoriteFeature3D);
                 feature3D.setDescription("x="+(int)(favoriteFeature3D.getGeometry().getInnerPoint3D().getX()*100)/100.0+" y="+(int)(favoriteFeature3D.getGeometry().getInnerPoint3D().getY()*100)/100.0+" z="+(int)(favoriteFeature3D.getGeometry().getInnerPoint3D().getZ()*100)/100.0);
               //  feature3D.setDescription(favoriteFeature3D.getGeometry().getInnerPoint3D().getX() + "," + favoriteFeature3D.getGeometry().getInnerPoint3D().getY());
-                feature3D.setName("兴趣点");
+               // feature3D.setName("兴趣点");
 //                Layer3D favoriteLayer3d = mSceneControl.getScene().getLayers().get("Favorite");
                 layer3d.getFeatures().remove(favoriteFeature3D);
                 favoriteFeature3D = null;
