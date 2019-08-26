@@ -1621,6 +1621,17 @@ export default (function () {
       console.error(e)
     }
   }
+  /**
+   * 根据geoId获取已经创建的动画类型和数量
+   * @param {} geoId 
+   */
+  function getGeoAnimationTypes(geoId){
+    try{
+      return SMap.getGeoAnimationTypes(geoId)
+    } catch (e){
+      console.error(e)
+    }
+  }
   /************************************** 地图编辑历史操作 ****************************************/
   /**
    * 地图撤销
@@ -2205,6 +2216,7 @@ export default (function () {
     addAnimationWayPoint,
     refreshAnimationWayPoint,
     endAnimationWayPoint,
+    getGeoAnimationTypes,
     undo,
     redo,
     removeHistory,

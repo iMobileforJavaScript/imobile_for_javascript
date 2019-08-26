@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
@@ -34,7 +33,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
-import com.supermap.RNUtils.FileUtil;
 import com.supermap.component.MapWrapView;
 import com.supermap.containts.EventConst;
 import com.supermap.data.*;
@@ -4709,6 +4707,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             MapControl mapControl = sMap.smMapWC.getMapControl();
 
             if (!isSave) {
+                AnimationManager.getInstance().deleteAll();
                 mapControl.getMap().getTrackingLayer().clear();
                 point2Ds = null;
                 savePoint2Ds = null;
@@ -4732,6 +4731,54 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
+    /**
+     * 根据geoId获取对象已设置的动画类型数量
+     *
+     * @param geoId
+     * @param promise
+     */
+    @ReactMethod
+    public void getGeoAnimationTypes(int geoId, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+
+            int[] array=new int[7];
+            WritableArray arr = Arguments.createArray();
+            for (int i = 0; i < array.length; i++) {
+                arr.pushInt(0);
+            }
+
+            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
+            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
+            if (animationGroup == null) {
+                promise.resolve(arr);
+                return;
+            }
+
+            int size=animationGroup.getAnimationCount();
+            for (int i = 0; i < size; i++) {
+                AnimationGO animationGO=animationGroup.getAnimationByIndex(i);
+                int id=animationGO.getGeometry();
+                if(id==geoId){
+                    int type=animationGO.getAnimationType().value();
+                    array[type]+=1;
+                }
+            }
+
+            arr = Arguments.createArray();
+            for (int i = 0; i < array.length; i++) {
+                arr.pushInt(array[i]);
+            }
+            promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
 
 /************************************** 地图编辑历史操作 BEGIN****************************************/
 
@@ -6318,12 +6365,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void matchPictureStyle(String picPath, Promise promise){
         try {
             SMMapRender smMapRender = SMMapRender.getInstance();
-
-            String path = picPath;
-            if (picPath.indexOf("content://") == 0) {
-                path = FileUtil.getRealFilePath(getReactApplicationContext(), Uri.parse(picPath));
-            }
-            smMapRender.matchPictureStyle(path);
+            smMapRender.matchPictureStyle(picPath);
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
