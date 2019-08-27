@@ -35,8 +35,8 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SAIDetectView";
 
     private static Context mContext = null;
-    private static AIdetectView mAIDetectView = null;
-    private static AidetectViewInfo mAidetectViewInfo;
+    private static AIDetectView mAIDetectView = null;
+    private static AIDetectViewInfo mAidetectViewInfo;
     private static World mWorld;
 
     private Vector<String> mStrToUseAll = new Vector<>(); //模型文件中所有可用的模型
@@ -45,9 +45,9 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     private static int mDetectInterval = 2000;//识别时间间隔,默认3000毫秒
 
     private static ArView mArView = null;//绑定的AR显示类
-    private static boolean mIsPOIMode = true; //AR-POI投射模式
+    private static boolean mIsPOIMode = false; //AR-POI投射模式
     private static boolean mIsPOIOverlap = false; //POI避让
-    private static AiDetectStyle mAiDetectStyle = null;
+    private static AIDetectStyle mAiDetectStyle = null;
 
     private static ArObject mCurrentArObject = null;
 
@@ -65,11 +65,11 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         return REACT_CLASS;
     }
 
-    public static void setInstance(AIdetectView aiDetectView) {
+    public static void setInstance(AIDetectView aiDetectView) {
         Log.d(REACT_CLASS, "----------------SAIDetectView--setInstance--------RN--------");
 
         mAIDetectView = aiDetectView;
-        mAidetectViewInfo = new AidetectViewInfo();
+        mAidetectViewInfo = new AIDetectViewInfo();
         mAidetectViewInfo.assetManager = mContext.getAssets();
         prepareAiDetectViewInfo("detect.tflite", "file:///android_asset/labelmap.txt");
 
@@ -108,13 +108,14 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
         //风格
         if (mAiDetectStyle == null) {
-            mAiDetectStyle = new AiDetectStyle();
-            mAiDetectStyle.isDrawTitle = false;
+            mAiDetectStyle = new AIDetectStyle();
+            mAiDetectStyle.isDrawTitle = true;
             mAiDetectStyle.isDrawConfidence = false;
         }
         mAIDetectView.setAiDetectStyle(mAiDetectStyle);
 
-        mAIDetectView.startDetect();
+        mAIDetectView.startCameraPreview();
+        mAIDetectView.resumeDetect();
         mAIDetectView.startCountTrackedObjs();
     }
 
@@ -188,7 +189,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
                         if (mAIDetectView == null) {
                             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                     ViewGroup.LayoutParams.MATCH_PARENT);
-                            mAIDetectView = new AIdetectView(mReactContext);
+                            mAIDetectView = new AIDetectView(mReactContext);
                             mAIDetectView.setLayoutParams(params);
                             mAIDetectView.init();
                             mAIDetectView.setGravity(Gravity.CENTER);
@@ -249,7 +250,8 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
                         if (mAIDetectView == null) {
                             return;
                         }
-                        mAIDetectView.startDetect();//开始识别
+                        mAIDetectView.startCameraPreview();
+                        mAIDetectView.resumeDetect();//开始识别
                         mAIDetectView.startCountTrackedObjs();
 
                         mWorld.clearWorld();
@@ -278,7 +280,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
                         if (mAIDetectView == null) {
                             return;
                         }
-                        mAIDetectView.pauseDetect(true);
+                        mAIDetectView.pauseDetect();
                         mAIDetectView.stopCountTrackedObjs();
 
                         mWorld.clearWorld();
@@ -330,7 +332,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
                         if (isDisposed()) {
                             return;
                         }
-                        mAIDetectView.pauseDetect(true);
+                        mAIDetectView.pauseDetect();
                         mAIDetectView.stopCountTrackedObjs();
                         mAIDetectView.dispose();
 
@@ -496,7 +498,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 设置是否聚合模式
+     * 设置是否聚合模式(态势检测)
      * @param promise
      */
     @ReactMethod
@@ -516,7 +518,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void isPolynerize(boolean value, Promise promise) {
+    public void isPolynerize(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------SAIDetectView--isPolynerize--------RN--------");
             boolean polynerize = mAIDetectView.isPolynerize();
@@ -936,7 +938,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         return saved;
     }
 
-    private static AIdetectView.DetectListener mDetectListener = new AIdetectView.DetectListener() {
+    private static AIDetectView.DetectListener mDetectListener = new AIDetectView.DetectListener() {
         @Override
         public void onDectetComplete(Map<String, Integer> result) {
             //流量统计
@@ -981,6 +983,11 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         @Override
         public void onTrackedCountChanged(int i) {
             Log.d("DetectListener", "-----------onTrackedCountChanged-----------:" + i);
+        }
+
+        @Override
+        public void onAISizeChanged(AISize aiSize) {
+
         }
     };
 
