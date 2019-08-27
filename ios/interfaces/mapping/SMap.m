@@ -3346,9 +3346,9 @@ RCT_REMAP_METHOD(getGeoAnimationTypes,getGeoAnimationTypes:(int)geoId resolver:(
             AnimationGO* animationGo=[animationGroup getAnimationByIndex:i];
             int id=[animationGo getGeometry];
             if(id==geoId){
-//                int type=[animationGo getType];
-//                int typeCount=[arr[type] intValue]+1;
-//                [arr replaceObjectAtIndex:type withObject:@(typeCount)];
+                int type=[animationGo getAnimationType];
+                int typeCount=[arr[type] intValue]+1;
+                [arr replaceObjectAtIndex:type withObject:@(typeCount)];
             }
         }
         resolve(arr);
