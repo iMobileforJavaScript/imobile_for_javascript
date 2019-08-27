@@ -60,4 +60,5 @@ export default {
   /** 导航路线 **/
   NAVIGATION_WAYS :"com.supermap.RN.Navigation.online_navigation_ways",
   NAVIGATION_LENGTH :"com.supermap.RN.Navigation.online_navigation_length",
+  INDUSTRYNAVIAGTION:"com.supermap.RN.Navigation.industry_navigation",
 }

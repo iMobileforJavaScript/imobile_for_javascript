@@ -18,11 +18,16 @@
 #import "SuperMap/AnimationRotate.h"
 #import "SuperMap/AnimationScale.h"
 #import "SuperMap/AnimationGrow.h"
+#import "SuperMap/AnimationWay.h"
 #import "SuperMap/Point3D.h"
+#import "SuperMap/GeoLine.h"
 
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
 static NSMutableArray *fillColors;
+static NSMutableArray *calloutArr;
+static Point2Ds *animationWayPoint2Ds;
+static Point2Ds *animationWaySavePoint2Ds;
 NSString * const LEGEND_CONTENT_CHANGE = @"com.supermap.RN.Map.Legend.legend_content_change";
 
 @interface SMap()
@@ -60,7 +65,7 @@ RCT_EXPORT_MODULE();
              MAP_BOUNDS_CHANGED,
              LEGEND_CONTENT_CHANGE,
              MAP_SCALEVIEW_CHANGED,
-             POINTSEARCH2D_KEYWORDS,
+//             POINTSEARCH2D_KEYWORDS,
              ];
 }
 
@@ -777,27 +782,27 @@ RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTProm
 //    }
 //}
 
-#pragma mark 初始化二维搜索
-RCT_REMAP_METHOD(initPointSearch, initPointSearchWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        sMap = [SMap singletonInstance];
-        sMap.poiSearchHelper2D = [POISearchHelper2D singletonInstance];
-        [sMap.poiSearchHelper2D initMapControl:sMap.smMapWC.mapControl];
-        sMap.poiSearchHelper2D.delegate =self;
-        resolve(@(YES));
-    } @catch (NSException *exception) {
-        reject(@"initPointSearch",exception.reason,nil);
-    }
-}
-#pragma mark 二维搜索
-RCT_REMAP_METHOD(pointSearch, pointSearchWithString:(NSString *)str resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
-        [sMap.poiSearchHelper2D poiSearch:str];
-        resolve(@(YES));
-    } @catch (NSException *exception) {
-        reject(@"pointSearch",exception.reason,nil);
-    }
-}
+//#pragma mark 初始化二维搜索
+//RCT_REMAP_METHOD(initPointSearch, initPointSearchWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        sMap = [SMap singletonInstance];
+//        sMap.poiSearchHelper2D = [POISearchHelper2D singletonInstance];
+//        [sMap.poiSearchHelper2D initMapControl:sMap.smMapWC.mapControl];
+//        sMap.poiSearchHelper2D.delegate =self;
+//        resolve(@(YES));
+//    } @catch (NSException *exception) {
+//        reject(@"initPointSearch",exception.reason,nil);
+//    }
+//}
+//#pragma mark 二维搜索
+//RCT_REMAP_METHOD(pointSearch, pointSearchWithString:(NSString *)str resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        [sMap.poiSearchHelper2D poiSearch:str];
+//        resolve(@(YES));
+//    } @catch (NSException *exception) {
+//        reject(@"pointSearch",exception.reason,nil);
+//    }
+//}
 #pragma mark 获取当前定位经纬度
 RCT_REMAP_METHOD(getCurrentPosition, getCurrentPositionWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try{
@@ -810,42 +815,185 @@ RCT_REMAP_METHOD(getCurrentPosition, getCurrentPositionWithResolver:(RCTPromiseR
         reject(@"getCurrentPosition",exception.reason,nil);
     }
 }
+#pragma mark 获取地图中心点经纬度
+RCT_REMAP_METHOD(getMapcenterPosition, getMapcenterPositionWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        MapControl *mapControl = sMap.smMapWC.mapControl;
+        
+        Point2D *mapCenter = mapControl.map.center;
+        Point2Ds *points = [[Point2Ds alloc] init];
+        [points add:mapCenter];
+        
+        PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+        CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
+        
+        [CoordSysTranslator convert:points PrjCoordSys:mapControl.map.prjCoordSys PrjCoordSys:sourcePrjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        Point2D *point = [points getItem:0];
+        resolve(@{
+                  @"x":[NSNumber numberWithDouble:point.x],
+                  @"y":[NSNumber numberWithDouble:point.y]
+                  });
+    }@catch(NSException *exception){
+        reject(@"getCurrentPosition",exception.reason,nil);
+    }
+}
 #pragma mark 移除POI搜索的callout
 RCT_REMAP_METHOD(removePOICallout, removePOICalloutWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
-        [sMap.poiSearchHelper2D clearPoint];
+        NSString *tagName = @"POISEARCH_2D_POINT";
+        [sMap clearCalloutWithTagName:tagName];
+        resolve(@(YES));
+    }@catch(NSException *exception){
+        reject(@"removePOICallout",exception.reason,nil);
+    }
+}
+#pragma mark 移除周边搜索的callout
+RCT_REMAP_METHOD(removeAllCallout, removeAllCalloutWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        MapControl *mapControl = sMap.smMapWC.mapControl;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [mapControl removeCalloutWithArr:calloutArr];
+            calloutArr = nil;
+        });
+        //搜索结果的callout最多10条
+//        for(int i = 0; i < 10; i++){
+//            NSString *tagName = [NSString stringWithFormat:@"%@%d",@"POISEARCH_2D_POINTS",i];
+//            [sMap clearCalloutWithTagName:tagName];
+//        }
         resolve(@(YES));
     }@catch(NSException *exception){
         reject(@"removePOICallout",exception.reason,nil);
     }
 }
 #pragma mark 定位到搜索结果某个点
-RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithIndex:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithItem:(NSDictionary *)item resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        BOOL isSuccess = [sMap.poiSearchHelper2D toLocationPoint:index];
+        double x = [[item valueForKey:@"x"] doubleValue];
+        double y =[[item valueForKey:@"y"] doubleValue];
+        NSString *name = [item valueForKey:@"pointName"];
+        NSString *tagName = @"POISEARCH_2D_POINT";
+        [sMap clearCalloutWithTagName:tagName];
+        BOOL isSuccess = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:YES];
         resolve(@(isSuccess));
     } @catch (NSException *exception) {
         reject(@"toLocationPoint",exception.reason,nil);
     }
 }
--(void)locations:(NSArray *)locations{
-    NSMutableArray* arr = [[NSMutableArray alloc]initWithCapacity:1];
-    NSString* name;
-    NSDictionary* map;
-    int count = locations.count;
-    for (int i = 0; i < count; i++) {
-        OnlinePOIInfo * onlinePoiInfo=[locations objectAtIndex:i];
-        name = onlinePoiInfo.name;
-        map = @{
-                @"pointName":name,
-                @"x":[NSNumber numberWithDouble:onlinePoiInfo.location.x],
-                @"y":[NSNumber numberWithDouble:onlinePoiInfo.location.y],
-                };
-        [arr addObject:map];
+
+#pragma mark 当前选中的callout移动到地图中心
+RCT_REMAP_METHOD(setCalloutToMapCenter, setCalloutToMapCenter:(NSDictionary *)item resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        double x = [[item valueForKey:@"x"] doubleValue];
+        double y =[[item valueForKey:@"y"] doubleValue];
+        MapControl *mapcontrol = sMap.smMapWC.mapControl;
+        Point2D *point = [[Point2D alloc] initWithX:x Y:y];
+        Point2Ds *points = [[Point2Ds alloc] init];
+        [points add:point];
+        PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+        
+        CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
+        [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapcontrol.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        Point2D *mapPoint = [points getItem:0];
+        //移动无效
+        //[mapcontrol panTo:mapPoint time:1000];
+        mapcontrol.map.center = mapPoint;
+        [mapcontrol.map refresh];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"toLocationPoint",exception.reason,nil);
     }
-    [self sendEventWithName:POINTSEARCH2D_KEYWORDS body:arr];
+}
+
+#pragma mark 添加搜索到的callouts
+RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        //清除当前点
+        [sMap clearCalloutWithTagName:@"POISEARCH_2D_POINT"];
+        //最多添加10条
+        int l = pointList.count < 10 ? pointList.count : 10;
+        BOOL isSuccess = YES;
+        for(int i = 0; i < l; i++){
+            NSDictionary *dic = pointList[i];
+            double x = [[dic valueForKey:@"x"] doubleValue];
+            double y = [[dic valueForKey:@"y"] doubleValue];
+            NSString *name = @"";
+            NSString *tagName = [[NSString alloc] initWithFormat:@"%@%d",@"POISEARCH_2D_POINTS",i];
+            BOOL b = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:NO];
+            if(!b){
+                isSuccess = b;
+            }
+        }
+        resolve(@(isSuccess));
+    } @catch (NSException *exception) {
+        reject(@"addCallouts",exception.reason,nil);
+    }
+}
+
+#pragma mark 添加callout x y为经纬度
+-(BOOL)addCalloutWithX:(double)x Y:(double)y Name:(NSString *)name TagName:(NSString *)tagName changeCenter:(BOOL) change{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        MapControl *mapcontrol = [SMap singletonInstance].smMapWC.mapControl;
+        Point2D *point = [[Point2D alloc] initWithX:x Y:y];
+        Point2Ds *points = [[Point2Ds alloc] init];
+        [points add:point];
+        PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+        
+        CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
+        [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapcontrol.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        Point2D *mapPoint = [points getItem:0];
+        
+        InfoCallout *callout = [[InfoCallout alloc]initWithMapControl:mapcontrol BackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0] Alignment:CALLOUT_LEFTBOTTOM];
+        callout.width = 200;
+        callout.height = 40;
+        //sMap.callout.description = tagName;
+    
+    
+        UIImage *image = [UIImage imageNamed:@"resources.bundle/icon_red.png"];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+        [imageView setFrame:CGRectMake(0, 0, 40, 40)];
+        
+        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(40, 0, 160, 40)];
+        
+        UIFont *font = [UIFont systemFontOfSize:16.0];
+        label.font = font;
+        label.text = name;
+        
+        label.textColor = [UIColor grayColor];
+        label.layer.shadowColor = [UIColor whiteColor].CGColor;
+        label.layer.shadowOffset = CGSizeMake(0, 0);
+        label.layer.shadowOpacity = 1;
+        
+        [callout addSubview:imageView];
+        [callout addSubview:label];
+        [callout showAt:mapPoint Tag:tagName];
+        if(calloutArr == nil){
+            calloutArr = [[NSMutableArray alloc]init];
+        }
+        if(![tagName isEqualToString:@"POISEARCH_2D_POINT"]){
+            [calloutArr addObject:callout];
+        }
+        if(mapcontrol.map.scale < 0.000011947150294723098)
+            mapcontrol.map.scale = 0.000011947150294723098;
+        if(change){
+            mapcontrol.map.center = mapPoint;
+        }
+        [mapcontrol.map refresh];
+    });
+    return YES;
+}
+
+-(void)clearCalloutWithTagName:(NSString *)tagName{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        MapControl *mapcontrol = [SMap singletonInstance].smMapWC.mapControl;
+        [mapcontrol removeCalloutWithTag:tagName];
+        [mapcontrol.map refresh];
+    });
 }
 
 #pragma mark 关闭工作空间
@@ -2574,8 +2722,10 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
         NSMutableDictionary* libInfo = [[NSMutableDictionary alloc] init];
         for (NSString* path in plotSymbolPaths) {
             int libId=[sMap.smMapWC.mapControl addPlotLibrary:path];
-            NSString* libName=[sMap.smMapWC.mapControl getPlotSymbolLibName: libId];
-            [libInfo setObject:@(libId) forKey:libName];
+            if(-1 != libId){
+                NSString* libName=[sMap.smMapWC.mapControl getPlotSymbolLibName: libId];
+                [libInfo setObject:@(libId) forKey:libName];
+            }
             
 //            if(isFirst&&[libName isEqualToString:@"警用标号"]){
 //                Point2Ds* point2Ds=[[Point2Ds alloc] init];
@@ -2826,7 +2976,7 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
         
-        NSString* animationGroupName=@"Create_Animation_Instance_#";
+        NSString* animationGroupName=@"Create_Animation_Instance_#";   //动画动画组名，名称特殊，保证唯一
         int count=[AnimationManager.getInstance getGroupCount];
         //组件缺陷，group的count等于0调用getGroupByName还是能返回一个对象
 //        AnimationGroup* animationGroup=[AnimationManager.getInstance getGroupByName:animationGroupName];
@@ -2865,7 +3015,26 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
         AnimationGO* animationGo=[AnimationManager.getInstance createAnimation:type];
         
         if(type==WayAnimation){
-            
+            AnimationWay* animationWay=(AnimationWay*)animationGo;
+            Point3Ds* point3Ds=[[Point3Ds alloc] init];
+            if ([createInfo objectForKey:@"wayPoints"]) {
+                NSMutableArray* array=[createInfo objectForKey:@"wayPoints"];
+                for(int i=0;i<array.count;i++){
+                    NSDictionary* map=[array objectAtIndex:i];
+                    double x=[[map objectForKey:@"x"] doubleValue];
+                    double y=[[map objectForKey:@"y"] doubleValue];
+                    Point3D point3D = {x,y,0};
+                    [point3Ds addPoint3D:point3D];
+                    [animationWay addPathPt:point3D];
+//                    [animationWay insertPathPt:0 pt:point3D];
+                }
+            }
+            [animationWay setTrackLineWidth:0.5];
+            [animationWay setPathType:0];
+            [animationWay setTrackLineColor:[[Color alloc] initWithR:255 G:0 B:0]];
+            [animationWay setPathTrackDir:YES];
+            animationWay.showPathTrack=YES;
+            animationGo=animationWay;
         }else if(type==BlinkAnimation){
             AnimationBlink* animationBlink=(AnimationBlink*)animationGo;
             [animationBlink setBlinkNumberofTimes:20];
@@ -2903,6 +3072,10 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
         }else if(type==GrowAnimation){
             //默认是从0生成到1
         }
+        //清空创建路径动画时的数据
+        [mapControl.map.trackingLayer clear];
+        animationWayPoint2Ds=nil;
+        animationWaySavePoint2Ds=nil;
         
         if([createInfo objectForKey:@"startTime"]&&[animationGroup getAnimationCount]>0){
             NSNumber* startTimeNumber=[createInfo objectForKey:@"startTime"];
@@ -2970,16 +3143,16 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
 }
 
 #pragma mark 保存推演动画
-RCT_REMAP_METHOD(animationSave,animationSave:(NSString*) savePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(animationSave,animationSave:(NSString*) savePath fileName:(NSString*)fileName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
         sMap = [SMap singletonInstance];
-        MapControl* mapControl=sMap.smMapWC.mapControl;
+//        MapControl* mapControl=sMap.smMapWC.mapControl;
         if(![[NSFileManager defaultManager] fileExistsAtPath:savePath]){
             [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:YES attributes:nil error:nil];
         }
-        NSString* mapName=mapControl.map.name;
-        NSString* tempPath=[NSString stringWithFormat:@"%@/%@.xml",savePath,mapName];
+//        NSString* mapName=mapControl.map.name;
+        NSString* tempPath=[NSString stringWithFormat:@"%@/%@.xml",savePath,fileName];
         NSString* path=[FileUtils formateNoneExistFileName:tempPath isDir:false];
         BOOL result=[AnimationManager.getInstance saveAnimationToXML:path];
         [AnimationManager.getInstance reset];
@@ -3017,6 +3190,174 @@ RCT_REMAP_METHOD(getGeometryTypeById,getGeometryTypeById:(NSString*) layerName g
         reject(@"getGeometryTypeById", exception.reason, nil);
     }
 }
+
+#pragma mark 添加路径动画点获取回退路径动画点
+RCT_REMAP_METHOD(addAnimationWayPoint,addAnimationWayPoint:(NSDictionary*)point isAdd:(BOOL)isAdd resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        if(!isAdd){
+            if(!animationWayPoint2Ds||[animationWayPoint2Ds getCount]==0){
+                resolve([NSNumber numberWithBool:NO]);
+                return;
+            }else{
+                [animationWayPoint2Ds remove:[animationWayPoint2Ds getCount]-1];
+            }
+        }else{
+            int x=[[point objectForKey:@"x"] intValue];
+            int y=[[point objectForKey:@"y"] intValue];
+            CGPoint point1=CGPointMake(x, y);
+            Point2D* point2D=[mapControl.map pixelTomap:point1];
+            if(!animationWayPoint2Ds){
+                animationWayPoint2Ds=[[Point2Ds alloc] init];
+            }
+            [animationWayPoint2Ds add:point2D];
+        }
+        GeoStyle* style=[[GeoStyle alloc] init];
+        [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
+        [style setLineColor:[[Color alloc] initWithR:225 G:105 B:0]];
+//        [style setMarkerID:@"3614"];
+        {
+            if([animationWayPoint2Ds getCount]==0){
+                [mapControl.map.trackingLayer clear];
+            }
+            else if([animationWayPoint2Ds getCount]==1){
+                [mapControl.map.trackingLayer clear];
+                GeoPoint* geoPoint=[[GeoPoint alloc] initWithPoint2D:[animationWayPoint2Ds getItem:0]];
+                [geoPoint setStyle:style];
+                [mapControl.map.trackingLayer addGeometry:geoPoint WithTag:@"point"];
+            }else if([animationWayPoint2Ds getCount]>1){
+                [mapControl.map.trackingLayer clear];
+                GeoLine* geoline=[[GeoLine alloc] initWithPoint2Ds:animationWayPoint2Ds];
+                [geoline setStyle:style];
+                [mapControl.map.trackingLayer addGeometry:geoline WithTag:@"line"];
+            }
+            [mapControl.map refresh];
+        }
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"addAnimationWayPoint", exception.reason, nil);
+    }
+}
+
+#pragma mark 刷新路径动画点
+RCT_REMAP_METHOD(refreshAnimationWayPoint,refreshAnimationWayPoint:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+       
+        if(!animationWaySavePoint2Ds||([animationWaySavePoint2Ds getCount]==0)){
+            animationWayPoint2Ds=nil;
+            [mapControl.map.trackingLayer clear];
+            resolve([NSNumber numberWithBool:YES]);
+            return;
+        }
+        animationWayPoint2Ds=[[Point2Ds alloc] initWithPoint2Ds:animationWaySavePoint2Ds];
+        
+        GeoStyle* style=[[GeoStyle alloc] init];
+        [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
+        [style setLineColor:[[Color alloc] initWithR:225 G:105 B:0]];
+        //        [style setMarkerID:@"3614"];
+        {
+            if([animationWayPoint2Ds getCount]==0){
+                [mapControl.map.trackingLayer clear];
+            }
+            else if([animationWayPoint2Ds getCount]==1){
+                [mapControl.map.trackingLayer clear];
+                GeoPoint* geoPoint=[[GeoPoint alloc] initWithPoint2D:[animationWayPoint2Ds getItem:0]];
+                [geoPoint setStyle:style];
+                [mapControl.map.trackingLayer addGeometry:geoPoint WithTag:@"point"];
+            }else if([animationWayPoint2Ds getCount]>1){
+                [mapControl.map.trackingLayer clear];
+                GeoLine* geoline=[[GeoLine alloc] initWithPoint2Ds:animationWayPoint2Ds];
+                [geoline setStyle:style];
+                [mapControl.map.trackingLayer addGeometry:geoline WithTag:@"line"];
+            }
+            [mapControl.map refresh];
+        }
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"addAnimationWayPoint", exception.reason, nil);
+    }
+}
+
+#pragma mark 结束添加路径动画
+RCT_REMAP_METHOD(endAnimationWayPoint,endAnimationWayPoint:(BOOL)isSave resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        if(!isSave){
+            [AnimationManager.getInstance deleteAll];
+            [mapControl.map.trackingLayer clear];
+            animationWayPoint2Ds=nil;
+            animationWaySavePoint2Ds=nil;
+            resolve([NSNumber numberWithBool:YES]);
+            return;
+        }
+        NSMutableArray* arr=[[NSMutableArray alloc] init];
+        if([animationWayPoint2Ds getCount]>0){
+            for(int i=0;i<[animationWayPoint2Ds getCount];i++){
+                NSDictionary* map=@{
+                                    @"x":[NSNumber numberWithDouble:[animationWayPoint2Ds getItem:i].x],
+                                    @"y":[NSNumber numberWithDouble:[animationWayPoint2Ds getItem:i].y],
+                                    };
+                [arr addObject:map];
+            }
+            animationWaySavePoint2Ds=[[Point2Ds alloc] initWithPoint2Ds:animationWayPoint2Ds];
+        }
+        resolve(arr);
+    } @catch (NSException *exception) {
+        reject(@"addAnimationWayPoint", exception.reason, nil);
+    }
+}
+
+#pragma mark 根据geoId获取已经创建的动画类型和数量
+RCT_REMAP_METHOD(getGeoAnimationTypes,getGeoAnimationTypes:(int)geoId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+//        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        NSMutableArray* arr=[[NSMutableArray alloc] init];
+        for (int x=0; x<7; x++) {
+            [arr addObject:@(0)];
+        }
+        
+//        NSString* animationGroupName=@"Create_Animation_Instance_#";   //动画动画组名，名称特殊，保证唯一
+        int count=[AnimationManager.getInstance getGroupCount];
+        //组件缺陷，group的count等于0调用getGroupByName还是能返回一个对象
+        //        AnimationGroup* animationGroup=[AnimationManager.getInstance getGroupByName:animationGroupName];
+        AnimationGroup* animationGroup;
+        if(count==0){
+            resolve(arr);
+            return;
+        }else{
+            animationGroup=[AnimationManager.getInstance getGroupByIndex:0];
+        }
+        int size=[animationGroup getAnimationCount];
+        for (int i=0; i<size; i++) {
+            AnimationGO* animationGo=[animationGroup getAnimationByIndex:i];
+            int id=[animationGo getGeometry];
+            if(id==geoId){
+//                int type=[animationGo getType];
+//                int typeCount=[arr[type] intValue]+1;
+//                [arr replaceObjectAtIndex:type withObject:@(typeCount)];
+            }
+        }
+        resolve(arr);
+    } @catch (NSException *exception) {
+        reject(@"addAnimationWayPoint", exception.reason, nil);
+    }
+}
+
+
 
 #pragma mark /************************************** 选择集操作 BEGIN****************************************/
 #pragma mark 设置Selection样式
@@ -3763,16 +4104,17 @@ RCT_REMAP_METHOD(setMaxVisibleScale, setMaxVisibleScaleWithName:(NSString *)name
 }
 
 #pragma mark 添加文字标注
-RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDataName:(NSString *)dataname Name:(NSString *)name Path:(NSString *)userpath X:(int)x Y:(int)y Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addTextRecordset, addTextRecordsetWithDatasourceName:(NSString *)datasourceName DatasetName:(NSString *)datasetName Name:(NSString *)name X:(int)x Y:(int)y Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         Point2D *p =[sMap.smMapWC.mapControl.map pixelTomap:CGPointMake(x, y)];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
-        Datasource *opendatasource = [workspace.datasources getAlias:labelName];
+        Datasource *opendatasource = [workspace.datasources getAlias:datasourceName];
         Datasets *datasets = opendatasource.datasets;
-        DatasetVector *dataset =(DatasetVector *)[datasets getWithName:dataname];
-        [dataset setReadOnly:NO];
+        DatasetVector *dataset =(DatasetVector *)[datasets getWithName:datasetName];
+        if(dataset != nil){
+            [dataset setReadOnly:NO];
+        }
         Recordset *recordset = [dataset recordset:NO cursorType:DYNAMIC];
         TextPart *textpart = [[TextPart alloc]init];
         TextStyle *textStyle = [[TextStyle alloc]init];

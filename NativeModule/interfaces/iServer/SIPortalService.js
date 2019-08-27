@@ -45,23 +45,23 @@ function uploadData (path, fileName, cb) {
   uploadingFileListener && uploadingFileListener.remove()
   uploadFileListener && uploadFileListener.remove()
   if(Platform.OS === 'ios'){
-      if(typeof cb.onProgress === 'function' ) {
+      if(cb && typeof cb.onProgress === 'function' ) {
         uploadingFileListener = callBackIOS.addListener(EventConst.IPORTAL_SERVICE_UPLOADING, function (progress) {
             cb.onProgress(progress)
         })
       }
-      if (typeof cb.onResult === 'function') {
+      if (cb && typeof cb.onResult === 'function') {
         uploadFileListener = callBackIOS.addListener(EventConst.IPORTAL_SERVICE_UPLOADED, function (value) {
           cb.onResult(value)
         })
       }
   } else {
-    if (typeof cb.onProgress === 'function') {
+    if (cb && typeof cb.onProgress === 'function') {
         uploadingFileListener = DeviceEventEmitter.addListener(EventConst.IPORTAL_SERVICE_UPLOADING, function (progress) {
           cb.onProgress(progress)
         })
       }
-      if (typeof cb.onResult === 'function') {
+      if (cb && typeof cb.onResult === 'function') {
         uploadFileListener = DeviceEventEmitter.addListener(EventConst.IPORTAL_SERVICE_UPLOADED, function (result) {
           cb.onResult(result)
         })

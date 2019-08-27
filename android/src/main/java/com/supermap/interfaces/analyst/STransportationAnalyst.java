@@ -316,7 +316,8 @@ public class STransportationAnalyst extends SNetworkAnalyst {
                 String datasetName = settingMap.getString("networkDataset");
                 if (datasetName != null && !datasetName.equals("")) {
                     dataset = datasource.getDatasets().get(datasetName);
-                    layer = SMLayer.findLayerByDatasetName(dataset.getName());
+                    String layerName = dataset.getName() + "@" + datasource.getAlias();
+                    layer = SMLayer.findLayerWithName(layerName);
                     if (layer == null) {
                         layer = layers.add(dataset, true);
                         layer.setSelectable(false);
@@ -326,6 +327,14 @@ public class STransportationAnalyst extends SNetworkAnalyst {
                             nodeLayer = layers.add(nodeDataset, true);
                             nodeLayer.setSelectable(true);
                             nodeLayer.setVisible(true);
+                        }
+                    } else {
+                        int index = layer.getName().indexOf("@");
+                        String name = layer.getName().substring(0, index);
+                        String dsName = layer.getName().substring(index + 1);
+                        if (!name.equals("") && !dsName.equals("")) {
+                            String nodeLayerName = name + "_Node@" + dsName;
+                            nodeLayer = SMLayer.findLayerWithName(nodeLayerName);
                         }
                     }
                 }

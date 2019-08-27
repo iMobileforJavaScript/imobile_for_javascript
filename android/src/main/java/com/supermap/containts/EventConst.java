@@ -76,4 +76,5 @@ public class EventConst {
     /** 导航路线 **/
     public static final String NAVIGATION_WAYS = "com.supermap.RN.Navigation.online_navigation_ways";
     public static final String NAVIGATION_LENGTH = "com.supermap.RN.Navigation.online_navigation_length";
+    public static final String INDUSTRYNAVIAGTION = "com.supermap.RN.Navigation.industry_navigation";
 }

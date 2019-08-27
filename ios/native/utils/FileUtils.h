@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 +(BOOL)deleteFile:(NSString *)path;
 +(BOOL)createFileDirectories:(NSString*)path;
 +(BOOL)copyFile:(NSString *)fromPath targetPath:(NSString *)toPath;
++(BOOL)copyDirFromPath:(NSString *)sourcePath toPath:(NSString *)toPath;
 +(NSArray *)copyFiles:(NSArray *)fromPaths targetDictionary:(NSString *)targetDictionary;
 +(NSString*)getLastModifiedTime:(NSDate*) nsDate;
 +(NSDictionary *)readLocalFileWithPath:(NSString *)path;
