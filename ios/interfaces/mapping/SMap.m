@@ -949,8 +949,6 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         Point2D *mapPoint = [points getItem:0];
         
         InfoCallout *callout = [[InfoCallout alloc]initWithMapControl:mapcontrol BackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0] Alignment:CALLOUT_LEFTBOTTOM];
-        callout.width = 200;
-        callout.height = 40;
         //sMap.callout.description = tagName;
     
     
@@ -958,17 +956,24 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
         [imageView setFrame:CGRectMake(0, 0, 40, 40)];
         
-        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(40, 0, 160, 40)];
-        
+//        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(40, 0, 160, 160)];
+        UILabel *label = [[UILabel alloc]init];
         UIFont *font = [UIFont systemFontOfSize:16.0];
         label.font = font;
         label.text = name;
         
+        CGRect rect = [label.text boundingRectWithSize:CGSizeMake(160, 500)
+                                               options:NSStringDrawingTruncatesLastVisibleLine| NSStringDrawingUsesFontLeading| NSStringDrawingUsesLineFragmentOrigin
+                                            attributes:@{NSFontAttributeName:label.font}
+                                               context:nil];
+        label.frame = CGRectMake(40, 0, 160, CGRectGetHeight(rect));
         label.textColor = [UIColor grayColor];
-        label.layer.shadowColor = [UIColor whiteColor].CGColor;
-        label.layer.shadowOffset = CGSizeMake(0, 0);
-        label.layer.shadowOpacity = 1;
-        
+        label.numberOfLines = 0;
+//        label.layer.shadowColor = [UIColor whiteColor].CGColor;
+//        label.layer.shadowOffset = CGSizeMake(0, 0);
+//        label.layer.shadowOpacity = 1;
+        callout.width = CGRectGetWidth(rect) + 60;
+        callout.height = CGRectGetHeight(rect) + 20;
         [callout addSubview:imageView];
         [callout addSubview:label];
         [callout showAt:mapPoint Tag:tagName];

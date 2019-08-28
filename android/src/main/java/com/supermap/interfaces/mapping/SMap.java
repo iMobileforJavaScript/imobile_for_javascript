@@ -5983,13 +5983,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 imageView.setMaxHeight(60);
 
                 TextView textView = new TextView(context);
-                textView.setHeight(60);
+                textView.setHeight(180);
                 textView.setWidth(180);
-                textView.setShadowLayer(3, 3, -3, android.graphics.Color.WHITE);
+                //textView.setShadowLayer(3, 3, -3, android.graphics.Color.WHITE);
                 textView.setText(name);
 
                 LinearLayout linearLayout = new LinearLayout(context);
-                linearLayout.setLayoutParams(new LinearLayout.LayoutParams(240, 60));
+                linearLayout.setLayoutParams(new LinearLayout.LayoutParams(240, 180));
                 linearLayout.addView(imageView);
                 linearLayout.addView(textView);
 
