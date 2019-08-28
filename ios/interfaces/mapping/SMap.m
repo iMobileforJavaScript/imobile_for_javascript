@@ -2976,7 +2976,7 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
         
-        NSString* animationGroupName=@"Create_Animation_Instance_#";
+        NSString* animationGroupName=@"Create_Animation_Instance_#";   //动画动画组名，名称特殊，保证唯一
         int count=[AnimationManager.getInstance getGroupCount];
         //组件缺陷，group的count等于0调用getGroupByName还是能返回一个对象
 //        AnimationGroup* animationGroup=[AnimationManager.getInstance getGroupByName:animationGroupName];
@@ -3294,6 +3294,7 @@ RCT_REMAP_METHOD(endAnimationWayPoint,endAnimationWayPoint:(BOOL)isSave resolver
         MapControl* mapControl=sMap.smMapWC.mapControl;
         
         if(!isSave){
+            [AnimationManager.getInstance deleteAll];
             [mapControl.map.trackingLayer clear];
             animationWayPoint2Ds=nil;
             animationWaySavePoint2Ds=nil;
@@ -3316,6 +3317,47 @@ RCT_REMAP_METHOD(endAnimationWayPoint,endAnimationWayPoint:(BOOL)isSave resolver
         reject(@"addAnimationWayPoint", exception.reason, nil);
     }
 }
+
+#pragma mark 根据geoId获取已经创建的动画类型和数量
+RCT_REMAP_METHOD(getGeoAnimationTypes,getGeoAnimationTypes:(int)geoId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+//        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        NSMutableArray* arr=[[NSMutableArray alloc] init];
+        for (int x=0; x<7; x++) {
+            [arr addObject:@(0)];
+        }
+        
+//        NSString* animationGroupName=@"Create_Animation_Instance_#";   //动画动画组名，名称特殊，保证唯一
+        int count=[AnimationManager.getInstance getGroupCount];
+        //组件缺陷，group的count等于0调用getGroupByName还是能返回一个对象
+        //        AnimationGroup* animationGroup=[AnimationManager.getInstance getGroupByName:animationGroupName];
+        AnimationGroup* animationGroup;
+        if(count==0){
+            resolve(arr);
+            return;
+        }else{
+            animationGroup=[AnimationManager.getInstance getGroupByIndex:0];
+        }
+        int size=[animationGroup getAnimationCount];
+        for (int i=0; i<size; i++) {
+            AnimationGO* animationGo=[animationGroup getAnimationByIndex:i];
+            int id=[animationGo getGeometry];
+            if(id==geoId){
+                int type=[animationGo getAnimationType];
+                int typeCount=[arr[type] intValue]+1;
+                [arr replaceObjectAtIndex:type withObject:@(typeCount)];
+            }
+        }
+        resolve(arr);
+    } @catch (NSException *exception) {
+        reject(@"addAnimationWayPoint", exception.reason, nil);
+    }
+}
+
+
 
 #pragma mark /************************************** 选择集操作 BEGIN****************************************/
 #pragma mark 设置Selection样式

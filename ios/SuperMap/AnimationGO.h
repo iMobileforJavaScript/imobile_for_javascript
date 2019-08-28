@@ -43,4 +43,5 @@ typedef enum{
 -(int)getGeometry;
 -(NSString*)getControlName;
 -(NSString*)getLayerName;
+-(AnimationType)getAnimationType;
 @end
