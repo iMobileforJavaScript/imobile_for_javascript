@@ -949,8 +949,6 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         Point2D *mapPoint = [points getItem:0];
         
         InfoCallout *callout = [[InfoCallout alloc]initWithMapControl:mapcontrol BackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0] Alignment:CALLOUT_LEFTBOTTOM];
-        callout.width = 200;
-        callout.height = 40;
         //sMap.callout.description = tagName;
     
     
@@ -958,17 +956,24 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
         [imageView setFrame:CGRectMake(0, 0, 40, 40)];
         
-        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(40, 0, 160, 40)];
-        
+//        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(40, 0, 160, 160)];
+        UILabel *label = [[UILabel alloc]init];
         UIFont *font = [UIFont systemFontOfSize:16.0];
         label.font = font;
         label.text = name;
         
+        CGRect rect = [label.text boundingRectWithSize:CGSizeMake(160, 500)
+                                               options:NSStringDrawingTruncatesLastVisibleLine| NSStringDrawingUsesFontLeading| NSStringDrawingUsesLineFragmentOrigin
+                                            attributes:@{NSFontAttributeName:label.font}
+                                               context:nil];
+        label.frame = CGRectMake(40, 0, 160, CGRectGetHeight(rect));
         label.textColor = [UIColor grayColor];
-        label.layer.shadowColor = [UIColor whiteColor].CGColor;
-        label.layer.shadowOffset = CGSizeMake(0, 0);
-        label.layer.shadowOpacity = 1;
-        
+        label.numberOfLines = 0;
+//        label.layer.shadowColor = [UIColor whiteColor].CGColor;
+//        label.layer.shadowOffset = CGSizeMake(0, 0);
+//        label.layer.shadowOpacity = 1;
+        callout.width = CGRectGetWidth(rect) + 60;
+        callout.height = CGRectGetHeight(rect) + 20;
         [callout addSubview:imageView];
         [callout addSubview:label];
         [callout showAt:mapPoint Tag:tagName];
@@ -3232,16 +3237,12 @@ RCT_REMAP_METHOD(addAnimationWayPoint,addAnimationWayPoint:(NSDictionary*)point 
         [style setLineColor:[[Color alloc] initWithR:225 G:105 B:0]];
 //        [style setMarkerID:@"3614"];
         {
-            if([animationWayPoint2Ds getCount]==0){
-                [mapControl.map.trackingLayer clear];
-            }
-            else if([animationWayPoint2Ds getCount]==1){
-                [mapControl.map.trackingLayer clear];
+            [mapControl.map.trackingLayer clear];
+            if([animationWayPoint2Ds getCount]==1){
                 GeoPoint* geoPoint=[[GeoPoint alloc] initWithPoint2D:[animationWayPoint2Ds getItem:0]];
                 [geoPoint setStyle:style];
                 [mapControl.map.trackingLayer addGeometry:geoPoint WithTag:@"point"];
             }else if([animationWayPoint2Ds getCount]>1){
-                [mapControl.map.trackingLayer clear];
                 GeoLine* geoline=[[GeoLine alloc] initWithPoint2Ds:animationWayPoint2Ds];
                 [geoline setStyle:style];
                 [mapControl.map.trackingLayer addGeometry:geoline WithTag:@"line"];
@@ -3294,7 +3295,23 @@ RCT_REMAP_METHOD(refreshAnimationWayPoint,refreshAnimationWayPoint:(RCTPromiseRe
         
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
-        reject(@"addAnimationWayPoint", exception.reason, nil);
+        reject(@"refreshAnimationWayPoint", exception.reason, nil);
+    }
+}
+
+#pragma mark 取消路径动画，清除点
+RCT_REMAP_METHOD(cancelAnimationWayPoint,cancelAnimationWayPoint:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        [mapControl.map.trackingLayer clear];
+        animationWayPoint2Ds=nil;
+        animationWaySavePoint2Ds=nil;
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"cancelAnimationWayPoint", exception.reason, nil);
     }
 }
 
@@ -3326,7 +3343,7 @@ RCT_REMAP_METHOD(endAnimationWayPoint,endAnimationWayPoint:(BOOL)isSave resolver
         }
         resolve(arr);
     } @catch (NSException *exception) {
-        reject(@"addAnimationWayPoint", exception.reason, nil);
+        reject(@"endAnimationWayPoint", exception.reason, nil);
     }
 }
 
@@ -4315,8 +4332,8 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
 #pragma mark 智能配图
 RCT_REMAP_METHOD(matchPictureStyle, matchPictureStyle:(NSString *)picPath resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
-//        SMMapRender* mapRender = [SMMapRender sharedInstance];
-//        [mapRender matchPictureStyle:picPath];
+        SMMapRender* mapRender = [SMMapRender sharedInstance];
+        [mapRender matchPictureStyle:picPath];
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setLabelColor",exception.reason,nil);

@@ -1611,6 +1611,17 @@ export default (function () {
   }
 
   /**
+   * 取消路径动画点
+   */
+  function cancelAnimationWayPoint(){
+    try{
+      return SMap.cancelAnimationWayPoint()
+    } catch (e){
+      console.error(e)
+    }
+  }
+
+  /**
    * 添加路径动画点
    * @param {点信息} point 
    */
@@ -2004,9 +2015,9 @@ export default (function () {
    * @param index
    * @returns {*|void|Promise<void>}
    */
-  function routeAnalyst(index) {
+  function routeAnalyst(x,y) {
     try {
-      return SMap.routeAnalyst(index)
+      return SMap.routeAnalyst(x,y)
     } catch (e) {
       console.error(e)
     }
@@ -2039,7 +2050,7 @@ export default (function () {
   }
 
   /**
-   * 开启行业导航
+   * 设置行业导航
    * @returns {*|void|Promise<void>}
    */
   function startNavigation(networkDatasetName,netModel) {
@@ -2052,7 +2063,7 @@ export default (function () {
 
 
   /**
-   * 开启室内二维导航
+   * 设置室内导航
    * @returns {*|void|Promise<void>}
    */
   function startIndoorNavigation() {
@@ -2075,6 +2086,19 @@ export default (function () {
     }
   }
 
+
+  /**
+   * 开始导航
+   * @returns {*|void|Promise<void>}
+   */
+  function beginNavigation(x1,y1,x2,y2) {
+    try {
+      return SMap.beginNavigation(x1,y1,x2,y2)
+    } catch (e) {
+  console.error(e)
+}
+}
+
  /**
    * 智能配图
    * @returns {*|void|Promise<void>}
@@ -2086,6 +2110,167 @@ export default (function () {
       console.error(e)
     }
   }
+
+  /**
+   * 开启室内导航
+   * @returns {*|void|Promise<void>}
+   */
+  function beginIndoorNavigation(x1,y1,x2,y2) {
+    try {
+      return SMap.beginIndoorNavigation(x1,y1,x2,y2)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取起始点
+   * @returns {*|void|Promise<void>}
+   */
+  function getStartPoint(x,y) {
+    try {
+      return SMap.getStartPoint(x,y)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取终点
+   * @returns {*|void|Promise<void>}
+   */
+  function getEndPoint(x,y) {
+    try {
+      return SMap.getEndPoint(x,y)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+
+  /**
+   * 清除起终点
+   * @returns {*|void|Promise<void>}
+   */
+  function clearPoint() {
+    try {
+      return SMap.clearPoint()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取室内导航数据源
+   * @returns {*|void|Promise<void>}
+   */
+  function getIndoorNavigationData(name) {
+    try {
+      return SMap.getIndoorNavigationData(name)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+
+  /**
+   * 判断是否是室内点
+   * @returns {*|void|Promise<void>}
+   */
+  function isIndoorPoint(x,y) {
+    try {
+      return SMap.isIndoorPoint(x,y)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 打开实时路况信息
+   * @returns {*|void|Promise<void>}
+   */
+  function openTrafficMap() {
+    try {
+      return SMap.openTrafficMap()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+
+  /**
+   * 获取路网数据集
+   * @returns {*|void|Promise<void>}
+   */
+  function getNetWorkDataset() {
+    try {
+      return SMap.getNetWorkDataset()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 生成路网
+   * @returns {*|void|Promise<void>}
+   */
+  function buildNetwork(networkdataset) {
+    try {
+      return SMap.buildNetwork(networkdataset)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+
+  /**
+   * 新建路网数据集
+   * @returns {*|void|Promise<void>}
+   */
+  function newIncrementRoad(name) {
+    try {
+      return SMap.newIncrementRoad(name)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * GPS开始
+   * @returns {*|void|Promise<void>}
+   */
+  function gpsBegin() {
+    try {
+      return SMap.gpsBegin()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * GPS停止
+   * @returns {*|void|Promise<void>}
+   */
+  function gpsStop() {
+    try {
+      return SMap.gpsStop()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 添加GPS轨迹
+   * @returns {*|void|Promise<void>}
+   */
+  function addGPSRecordset() {
+    try {
+      return SMap.addGPSRecordset()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
 
 
   let SMapExp = {
@@ -2212,6 +2397,7 @@ export default (function () {
     getGeometryTypeById,
     addAnimationWayPoint,
     refreshAnimationWayPoint,
+    cancelAnimationWayPoint,
     endAnimationWayPoint,
     getGeoAnimationTypes,
     undo,
@@ -2237,6 +2423,20 @@ export default (function () {
     startNavigation,
     startIndoorNavigation,
     getNavigationData,
+    beginNavigation,
+    beginIndoorNavigation,
+    getStartPoint,
+    getEndPoint,
+    clearPoint,
+    getIndoorNavigationData,
+    isIndoorPoint,
+    openTrafficMap,
+    getNetWorkDataset,
+    buildNetwork,
+    newIncrementRoad,
+    gpsBegin,
+    gpsStop,
+    addGPSRecordset,
 
     matchPictureStyle,
   }
