@@ -93,8 +93,8 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
         @Override
         public void onImage(CameraKitImage cameraKitImage) {
             Log.e(REACT_CLASS, "CameraKitEventListener: onImage");
+            WritableArray arr = Arguments.createArray();
             if (cameraKitImage.getJpeg() != null && cameraKitImage.getJpeg().length > 0) {
-
                 if (mBitmap != null && !mBitmap.isRecycled()) {
                     mBitmap.recycle();
                     mBitmap = null;
@@ -110,7 +110,6 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
                 final List<Classifier2.Recognition> results = classifier.recognizeImage(bitmap);
 
                 if (results != null && results.size() > 0) {
-                    WritableArray arr = Arguments.createArray();
                     for (int  i= 0; i < results.size(); i++){
                         Classifier2.Recognition recognition = results.get(i);
                         WritableMap writeMap = Arguments.createMap();
@@ -130,13 +129,12 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
                         arr.pushMap(writeMap);
                         Log.d(REACT_CLASS, "ID:" + recognition.getId() + ", Title:" + recognition.getTitle() + ", Confidence:" + recognition.getConfidence());
                     }
-
-                    WritableMap allResults = Arguments.createMap();
-                    allResults.putArray("results", arr);
-
-                    sendEvent(mReactContext, "recognizeImage", allResults);
                 }
             }
+            WritableMap allResults = Arguments.createMap();
+            allResults.putArray("results", arr);
+
+            sendEvent(mReactContext, "recognizeImage", allResults);
         }
 
         @Override
