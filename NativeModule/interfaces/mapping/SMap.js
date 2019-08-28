@@ -1611,6 +1611,17 @@ export default (function () {
   }
 
   /**
+   * 取消路径动画点
+   */
+  function cancelAnimationWayPoint(){
+    try{
+      return SMap.cancelAnimationWayPoint()
+    } catch (e){
+      console.error(e)
+    }
+  }
+
+  /**
    * 添加路径动画点
    * @param {点信息} point 
    */
@@ -2215,6 +2226,7 @@ export default (function () {
     getGeometryTypeById,
     addAnimationWayPoint,
     refreshAnimationWayPoint,
+    cancelAnimationWayPoint,
     endAnimationWayPoint,
     getGeoAnimationTypes,
     undo,
