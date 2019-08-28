@@ -1648,7 +1648,7 @@ RCT_REMAP_METHOD(startDrawFavorite,  startDrawFavoriteWithText:(NSString *)text 
     sScene = [SScene singletonInstance];
     SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
     CGPoint pixel = [sceneControl.scene globeToPixel:pnt];
-    [[LableHelper3D sharedInstance] setFavoriteText:@"兴趣点"];
+    //[[LableHelper3D sharedInstance] setFavoriteText:@"兴趣点"];
     [self sendEventWithName:SSCENE_FAVORITE
                        body:@{@"pointX":@(pixel.x),@"pointY":@(pixel.y)}];
 }

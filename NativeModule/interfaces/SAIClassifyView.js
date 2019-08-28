@@ -65,6 +65,46 @@ setQuant = (value) => {
   }
 }
 
+stopPreview = () => {
+  try {
+    return SAIClassifyView.stopPreview()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+initAIClassify = (datasourceAlias, datasetName, language) => {
+  try {
+    return SAIClassifyView.initAIClassify(datasourceAlias, datasetName, language)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+modifyLastItem = (params) => {
+  try {
+    return SAIClassifyView.modifyLastItem(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+getImagePath = (uri) => {
+  try {
+    return SAIClassifyView.getImagePath(uri)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+clearBitmap = () => {
+  try {
+    return SAIClassifyView.clearBitmap()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   startPreview,
   captureImage,
@@ -73,4 +113,9 @@ export default {
   setLabelName,
   setInputSize,
   setQuant,
+  stopPreview,
+  initAIClassify,
+  modifyLastItem,//编辑最新添加的对象
+  getImagePath,
+  clearBitmap,
 }

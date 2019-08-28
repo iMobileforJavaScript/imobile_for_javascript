@@ -5,6 +5,7 @@ ios/iPhoneSimulator.sdk
 ios/MessageQueue.sdk
 ios/Supermap.xcodeproj/project.xcworkspace/xcuserdata/xianglongli.xcuserdatad/
 ios/Supermap.xcodeproj/xcuserdata/xianglongli.xcuserdatad/
+ios/python
 
 android/imobile_for_reactnative.iml
 android/local.properties

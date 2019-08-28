@@ -1598,7 +1598,28 @@ export default (function () {
       console.error(e)
     }
   }
-  
+
+  /**
+   * 刷新路径动画点
+   */
+  function refreshAnimationWayPoint(){
+    try{
+      return SMap.refreshAnimationWayPoint()
+    } catch (e){
+      console.error(e)
+    }
+  }
+
+  /**
+   * 取消路径动画点
+   */
+  function cancelAnimationWayPoint(){
+    try{
+      return SMap.cancelAnimationWayPoint()
+    } catch (e){
+      console.error(e)
+    }
+  }
 
   /**
    * 添加路径动画点
@@ -1607,6 +1628,17 @@ export default (function () {
   function endAnimationWayPoint(isSave){
     try{
       return SMap.endAnimationWayPoint(isSave)
+    } catch (e){
+      console.error(e)
+    }
+  }
+  /**
+   * 根据geoId获取已经创建的动画类型和数量
+   * @param {} geoId 
+   */
+  function getGeoAnimationTypes(geoId){
+    try{
+      return SMap.getGeoAnimationTypes(geoId)
     } catch (e){
       console.error(e)
     }
@@ -2367,7 +2399,10 @@ export default (function () {
     animationSave,
     getGeometryTypeById,
     addAnimationWayPoint,
+    refreshAnimationWayPoint,
+    cancelAnimationWayPoint,
     endAnimationWayPoint,
+    getGeoAnimationTypes,
     undo,
     redo,
     removeHistory,

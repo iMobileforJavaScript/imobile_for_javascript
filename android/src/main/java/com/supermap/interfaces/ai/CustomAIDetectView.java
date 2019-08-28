@@ -2,9 +2,9 @@ package com.supermap.interfaces.ai;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import com.supermap.ai.AIdetectView;
+import com.supermap.ai.AIDetectView;
 
-public class CustomAIDetectView extends AIdetectView {
+public class CustomAIDetectView extends AIDetectView {
 
     public CustomAIDetectView(Context context) {
         super(context);

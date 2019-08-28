@@ -493,7 +493,8 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  * @param pnt   设置动画的位置
  */
 -(void)showFavorite:(Point3D)pnt3d{
-    [self addFavoritePoint:pnt3d Text:@""];
+    NSString *text = favoriteFeature3D.name;
+    [self addFavoritePoint:pnt3d Text:text];
     if (self.delegate && [self.delegate respondsToSelector:@selector(drawFavoriteAtPoint:)]) {
         //[mSceneControl.scene globeToPixel:pnt3d];
         [self.delegate drawFavoriteAtPoint:pnt3d];

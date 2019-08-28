@@ -1,15 +1,12 @@
 package com.supermap.interfaces.ar;
 
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import com.facebook.react.bridge.*;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.ar.core.ArCoreApk;
 import com.supermap.RNUtils.LocationTransfer;
 import com.supermap.ar.highprecision.MeasureView;
-import com.supermap.ar.highprecision.OnLengthChangedListener;
 import com.supermap.data.*;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
@@ -17,7 +14,6 @@ import com.supermap.mapping.MapControl;
 import com.supermap.plugin.LocationManagePlugin;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.collector.SMCollector;
-import com.supermap.track.HPTrack;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -155,6 +151,29 @@ public class SMeasureView extends ReactContextBaseJavaModule {
             Log.d(REACT_CLASS, "----------------SMeasureView--setEnableSupport--------RN--------");
             if (mMeasureView != null) {
                 mMeasureView.enableSupport(value);
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置模型类型
+     */
+    @ReactMethod
+    public void setFlagType(String type, Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SMeasureView--setEnableSupport--------RN--------");
+            if (mMeasureView != null) {
+                switch (type) {
+                    case "PIN_BOWLING":
+                        mMeasureView.setFlagType(MeasureView.FlagType.PIN_BOWLING);
+                        break;
+                    case "RED_FLAG":
+                        mMeasureView.setFlagType(MeasureView.FlagType.RED_FLAG);
+                        break;
+                }
             }
             promise.resolve(true);
         } catch (Exception e) {

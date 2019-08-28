@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -4383,6 +4382,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     private Point2Ds point2Ds;
+    private Point2Ds savePoint2Ds;
 
     /**
      * 创建推演动画对象
@@ -4447,7 +4447,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     break;
                 case 3:
                     AnimationShow animationShow = (AnimationShow) animationGO;
-                    animationShow.setShowEffect(1);
+                    animationShow.setShowEffect(0);
                     animationShow.setShowState(true);
                     animationGO = animationShow;
                     break;
@@ -4473,6 +4473,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             //清空创建路径动画时的数据
             mapControl.getMap().getTrackingLayer().clear();
             point2Ds = null;
+            savePoint2Ds = null;
+
             if (createInfo.hasKey("startTime") && animationGroup.getAnimationCount() > 0) {
                 int startTime = createInfo.getInt("startTime");
                 if (createInfo.hasKey("startMode")) {
@@ -4659,6 +4661,66 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 刷新路径动画点
+     * @param promise
+     */
+    @ReactMethod
+    public void refreshAnimationWayPoint(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            if(savePoint2Ds==null||savePoint2Ds.getCount()==0){
+                point2Ds=null;
+                mapControl.getMap().getTrackingLayer().clear();
+                promise.resolve(true);
+                return;
+            }
+            point2Ds=new Point2Ds(savePoint2Ds);
+
+            GeoStyle style = new GeoStyle();
+            style.setMarkerSize(new Size2D(10, 10));
+            style.setLineColor(new Color(255, 105, 0));
+            style.setMarkerSymbolID(3614);
+            {
+                mapControl.getMap().getTrackingLayer().clear();
+                if (point2Ds.getCount() == 1) {
+                    GeoPoint geoPoint = new GeoPoint(point2Ds.getItem(0));
+                    geoPoint.setStyle(style);
+                    mapControl.getMap().getTrackingLayer().add(geoPoint, "point");
+                } else if (point2Ds.getCount() > 1) {
+                    GeoLine geoLine = new GeoLine(point2Ds);
+                    geoLine.setStyle(style);
+                    mapControl.getMap().getTrackingLayer().add(geoLine, "line");
+                }
+                mapControl.getMap().refresh();
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 结束添加路径动画
+     * @param promise
+     */
+    @ReactMethod
+    public void cancelAnimationWayPoint(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            mapControl.getMap().getTrackingLayer().clear();
+            point2Ds = null;
+            savePoint2Ds = null;
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 结束添加路径动画
      *
      * @param isSave
@@ -4671,8 +4733,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             MapControl mapControl = sMap.smMapWC.getMapControl();
 
             if (!isSave) {
+                AnimationManager.getInstance().deleteAll();
                 mapControl.getMap().getTrackingLayer().clear();
                 point2Ds = null;
+                savePoint2Ds = null;
                 promise.resolve(true);
                 return;
             }
@@ -4687,11 +4751,60 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     arr.pushMap(writeMap);
                 }
             }
+            savePoint2Ds=new Point2Ds(point2Ds);
             promise.resolve(arr);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
+
+    /**
+     * 根据geoId获取对象已设置的动画类型数量
+     *
+     * @param geoId
+     * @param promise
+     */
+    @ReactMethod
+    public void getGeoAnimationTypes(int geoId, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+
+            int[] array=new int[7];
+            WritableArray arr = Arguments.createArray();
+            for (int i = 0; i < array.length; i++) {
+                arr.pushInt(0);
+            }
+
+            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
+            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
+            if (animationGroup == null) {
+                promise.resolve(arr);
+                return;
+            }
+
+            int size=animationGroup.getAnimationCount();
+            for (int i = 0; i < size; i++) {
+                AnimationGO animationGO=animationGroup.getAnimationByIndex(i);
+                int id=animationGO.getGeometry();
+                if(id==geoId){
+                    int type=animationGO.getAnimationType().value();
+                    array[type]+=1;
+                }
+            }
+
+            arr = Arguments.createArray();
+            for (int i = 0; i < array.length; i++) {
+                arr.pushInt(array[i]);
+            }
+            promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
 
 /************************************** 地图编辑历史操作 BEGIN****************************************/
 
@@ -5898,13 +6011,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 imageView.setMaxHeight(60);
 
                 TextView textView = new TextView(context);
-                textView.setHeight(60);
+                textView.setHeight(180);
                 textView.setWidth(180);
-                textView.setShadowLayer(3, 3, -3, android.graphics.Color.WHITE);
+                //textView.setShadowLayer(3, 3, -3, android.graphics.Color.WHITE);
                 textView.setText(name);
 
                 LinearLayout linearLayout = new LinearLayout(context);
-                linearLayout.setLayoutParams(new LinearLayout.LayoutParams(240, 60));
+                linearLayout.setLayoutParams(new LinearLayout.LayoutParams(240, 180));
                 linearLayout.addView(imageView);
                 linearLayout.addView(textView);
 
@@ -6676,12 +6789,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void matchPictureStyle(String picPath, Promise promise) {
         try {
             SMMapRender smMapRender = SMMapRender.getInstance();
-
-            String path = picPath;
-            if (picPath.indexOf("content://") == 0) {
-                path = FileUtil.getRealFilePath(getReactApplicationContext(), Uri.parse(picPath));
-            }
-            smMapRender.matchPictureStyle(path);
+            smMapRender.matchPictureStyle(picPath);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
