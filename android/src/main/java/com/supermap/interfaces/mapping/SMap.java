@@ -2538,6 +2538,23 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 } else {
                     mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, additionInfo, (isNew || bNew), bResourcesModified, bPrivate);
                 }
+
+                //保存地图后拷贝推演动画xml文件
+                if(mapName!=null){
+                    String strUserName = null;
+                    if (!bPrivate) {
+                        strUserName = "Customer";
+                    }else{
+                        strUserName = SMap.getInstance().smMapWC.getUserName();
+                    }
+                    String strRootPath = homeDirectory + "/iTablet/User/";
+                    String strAnimationPath = strRootPath+strUserName+"/Data/Animation/";
+                    String fromPath=strAnimationPath+oldName;
+                    String toPath=strAnimationPath+mapName+"/";
+                    if((new File(fromPath)).exists()){
+                        SMap.getInstance().smMapWC.copyAnimationFile(fromPath,toPath,mapName);
+                    }
+                }
             }
 
             Maps maps = sMap.getSmMapWC().getWorkspace().getMaps();

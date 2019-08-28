@@ -2325,6 +2325,22 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
         NSString* mapName = @"";
         if (mapSaved) {
             mapName = [sMap.smMapWC saveMapName:name fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:withAddition isNewMap:(isNew || bNew) isResourcesModyfied:bResourcesModified isPrivate:isPrivate];
+            //保存地图后拷贝推演动画xml文件
+            if(mapName){
+                NSString *strUserName = nil;
+                if (!isPrivate) {
+                    strUserName = @"Customer";
+                }else{
+                    strUserName = [sMap.smMapWC getUserName];
+                }
+                NSString *strRootPath = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User"];
+                NSString *strAnimationPath = [NSString stringWithFormat:@"%@/%@/Data/Animation",strRootPath,strUserName];
+                NSString *fromPath=[NSString stringWithFormat:@"%@/%@",strAnimationPath,oldName];
+                NSString *toPath=[NSString stringWithFormat:@"%@/%@",strAnimationPath,mapName];
+                if([[NSFileManager defaultManager] fileExistsAtPath:fromPath]){
+                    [sMap.smMapWC copyAnimationFileFrom:fromPath to:toPath toMapName:mapName];
+                }
+            }
         }
         
         // isNew为true，另存为后保证当前地图是原地图

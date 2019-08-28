@@ -63,4 +63,5 @@
 -(BOOL)addLayersFromMap:(NSString*)srcMapName toMap:(Map*)desMap withParam:(NSDictionary*)dicParam;
 -(BOOL)addLayersFromMapJson:(NSString*)jsonSrcMap toMap:(NSString*)jsonDesMap;
 -(NSString *)getUserName;
+- (BOOL)copyAnimationFileFrom:(NSString*)fromPath to:(NSString*)toPath toMapName:(NSString*)mapName;
 @end
