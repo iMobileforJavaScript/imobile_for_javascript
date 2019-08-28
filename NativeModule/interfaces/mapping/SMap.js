@@ -2081,10 +2081,7 @@ export default (function () {
    */
   function matchPictureStyle(picPath) {
     try {
-      if (SMap.matchPictureStyle) {
-        return SMap.matchPictureStyle(picPath)
-      }
-      return
+      return SMap.matchPictureStyle(picPath)
     }catch (e) {
       console.error(e)
     }

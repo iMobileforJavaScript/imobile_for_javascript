@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
@@ -33,6 +34,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.supermap.RNUtils.FileUtil;
 import com.supermap.component.MapWrapView;
 import com.supermap.containts.EventConst;
 import com.supermap.data.*;
@@ -6365,7 +6367,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void matchPictureStyle(String picPath, Promise promise){
         try {
             SMMapRender smMapRender = SMMapRender.getInstance();
-            smMapRender.matchPictureStyle(picPath);
+
+            String path = picPath;
+            if (picPath.indexOf("content://") == 0) {
+                path = FileUtil.getRealFilePath(getReactApplicationContext(), Uri.parse(picPath));
+            }
+            smMapRender.matchPictureStyle(path);
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
