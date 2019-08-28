@@ -10,7 +10,9 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.supermap.ar.highprecision.MeasureView;
 import com.supermap.ar.highprecision.OnLengthChangedListener;
+import com.supermap.ar.highprecision.OnRuntimeStatusChangedListener;
 
 import java.text.DecimalFormat;
 
@@ -42,6 +44,7 @@ public class MeasureViewManager extends SimpleViewManager<CustomMeasureView> {
         SMeasureView.setInstance(mMeasureView);
 
         mMeasureView.setOnLengthChangedListener(mOnLengthChangedListener);
+        mMeasureView.setOnRuntimeStatusChangedLisener(mOnRuntimeStatusChangedListener);
 
         return mMeasureView;
     }
@@ -61,6 +64,24 @@ public class MeasureViewManager extends SimpleViewManager<CustomMeasureView> {
             WritableMap params = Arguments.createMap();
             params.putString("total", mDecimalFormat.format(value));
             sendEvent(mReactContext, "onTotalLengthChanged", params);
+        }
+    };
+
+    private OnRuntimeStatusChangedListener mOnRuntimeStatusChangedListener = new OnRuntimeStatusChangedListener() {
+        @Override
+        public void onRuntimeNotice(MeasureView.RuntimeStatus runtimeStatus, String s) {
+            Log.d(REACT_CLASS, "onRuntimeNotice: " + s );
+            if (runtimeStatus == MeasureView.RuntimeStatus.SEARCHING_SURFACES) {
+                sendEvent(mReactContext, "onSearchingSurfaces", null);
+            } else if (runtimeStatus == MeasureView.RuntimeStatus.SEARCHING_SURFACES_SUCCEED) {
+                sendEvent(mReactContext, "onSearchingSurfacesSucceed", null);
+            } else if (runtimeStatus == MeasureView.RuntimeStatus.INITIAL_FAILED) {
+
+            } else if (runtimeStatus == MeasureView.RuntimeStatus.RUNTIME_TRACKING_PAUSED) {
+
+            } else if (runtimeStatus == MeasureView.RuntimeStatus.RUNTIME_TRACKING_STOPPED) {
+
+            }
         }
     };
 

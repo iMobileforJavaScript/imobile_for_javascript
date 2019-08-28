@@ -3023,6 +3023,18 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
                     NSDictionary* map=[array objectAtIndex:i];
                     double x=[[map objectForKey:@"x"] doubleValue];
                     double y=[[map objectForKey:@"y"] doubleValue];
+                    if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+                        Point2Ds *points = [[Point2Ds alloc]init];
+                        [points add:[[Point2D alloc]initWithX:x Y:y]];
+                        PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+                        [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+                        CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+                        
+                        //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+                        [CoordSysTranslator convert:points PrjCoordSys:[mapControl.map prjCoordSys]  PrjCoordSys:srcPrjCoorSys CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+                       x = [points getItem:0].x;
+                       y = [points getItem:0].y;
+                    }
                     Point3D point3D = {x,y,0};
                     [point3Ds addPoint3D:point3D];
                     [animationWay addPathPt:point3D];
