@@ -65,6 +65,14 @@ initMeasureCollector = (datasourceName, datasetName) => {
   }
 }
 
+setFlagType = type => {
+  try {
+    return SMeasureView.setFlagType(type)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   addNewRecord,
   undoDraw,
@@ -73,4 +81,5 @@ export default {
   isSupportedARCore,
   saveDataset,
   initMeasureCollector,
+  setFlagType,
 }

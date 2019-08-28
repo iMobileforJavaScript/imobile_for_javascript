@@ -6,7 +6,7 @@ import android.widget.RelativeLayout;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.supermap.ai.AIdetectView;
+import com.supermap.ai.AIDetectView;
 import com.supermap.ar.ARRendererInfoUtil;
 import com.supermap.ar.ArView;
 
@@ -21,7 +21,7 @@ public class AIDetectViewManager extends SimpleViewManager<CustomRelativeLayout>
     public static final String REACT_CLASS = "RCTAIDetectView";
 
     private ThemedReactContext mReactContext = null;
-    private AIdetectView mAIdetectView = null;
+    private AIDetectView mAIdetectView = null;
     private ArView mArView = null;
     private CustomRelativeLayout mCustomRelativeLayout = null;
 
@@ -42,7 +42,7 @@ public class AIDetectViewManager extends SimpleViewManager<CustomRelativeLayout>
         mCustomRelativeLayout.setBackgroundColor(Color.parseColor("#2D2D2F"));
         SAIDetectView.setViewManager(mCustomRelativeLayout);
 
-        mAIdetectView = new AIdetectView(reactContext);
+        mAIdetectView = new AIDetectView(reactContext);
         mAIdetectView.setLayoutParams(params);
         SAIDetectView.setInstance(mAIdetectView);
 

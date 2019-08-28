@@ -3028,6 +3028,18 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
                     NSDictionary* map=[array objectAtIndex:i];
                     double x=[[map objectForKey:@"x"] doubleValue];
                     double y=[[map objectForKey:@"y"] doubleValue];
+                    if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+                        Point2Ds *points = [[Point2Ds alloc]init];
+                        [points add:[[Point2D alloc]initWithX:x Y:y]];
+                        PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+                        [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+                        CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+                        
+                        //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+                        [CoordSysTranslator convert:points PrjCoordSys:[mapControl.map prjCoordSys]  PrjCoordSys:srcPrjCoorSys CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+                       x = [points getItem:0].x;
+                       y = [points getItem:0].y;
+                    }
                     Point3D point3D = {x,y,0};
                     [point3Ds addPoint3D:point3D];
                     [animationWay addPathPt:point3D];
@@ -3225,16 +3237,12 @@ RCT_REMAP_METHOD(addAnimationWayPoint,addAnimationWayPoint:(NSDictionary*)point 
         [style setLineColor:[[Color alloc] initWithR:225 G:105 B:0]];
 //        [style setMarkerID:@"3614"];
         {
-            if([animationWayPoint2Ds getCount]==0){
-                [mapControl.map.trackingLayer clear];
-            }
-            else if([animationWayPoint2Ds getCount]==1){
-                [mapControl.map.trackingLayer clear];
+            [mapControl.map.trackingLayer clear];
+            if([animationWayPoint2Ds getCount]==1){
                 GeoPoint* geoPoint=[[GeoPoint alloc] initWithPoint2D:[animationWayPoint2Ds getItem:0]];
                 [geoPoint setStyle:style];
                 [mapControl.map.trackingLayer addGeometry:geoPoint WithTag:@"point"];
             }else if([animationWayPoint2Ds getCount]>1){
-                [mapControl.map.trackingLayer clear];
                 GeoLine* geoline=[[GeoLine alloc] initWithPoint2Ds:animationWayPoint2Ds];
                 [geoline setStyle:style];
                 [mapControl.map.trackingLayer addGeometry:geoline WithTag:@"line"];
@@ -3287,7 +3295,23 @@ RCT_REMAP_METHOD(refreshAnimationWayPoint,refreshAnimationWayPoint:(RCTPromiseRe
         
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
-        reject(@"addAnimationWayPoint", exception.reason, nil);
+        reject(@"refreshAnimationWayPoint", exception.reason, nil);
+    }
+}
+
+#pragma mark 取消路径动画，清除点
+RCT_REMAP_METHOD(cancelAnimationWayPoint,cancelAnimationWayPoint:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        [mapControl.map.trackingLayer clear];
+        animationWayPoint2Ds=nil;
+        animationWaySavePoint2Ds=nil;
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"cancelAnimationWayPoint", exception.reason, nil);
     }
 }
 
@@ -3319,7 +3343,7 @@ RCT_REMAP_METHOD(endAnimationWayPoint,endAnimationWayPoint:(BOOL)isSave resolver
         }
         resolve(arr);
     } @catch (NSException *exception) {
-        reject(@"addAnimationWayPoint", exception.reason, nil);
+        reject(@"endAnimationWayPoint", exception.reason, nil);
     }
 }
 

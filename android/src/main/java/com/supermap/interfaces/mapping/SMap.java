@@ -4672,22 +4672,37 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             style.setLineColor(new Color(255, 105, 0));
             style.setMarkerSymbolID(3614);
             {
-
-                if (point2Ds.getCount() == 0) {
-                    mapControl.getMap().getTrackingLayer().clear();
-                } else if (point2Ds.getCount() == 1) {
-                    mapControl.getMap().getTrackingLayer().clear();
+                mapControl.getMap().getTrackingLayer().clear();
+                if (point2Ds.getCount() == 1) {
                     GeoPoint geoPoint = new GeoPoint(point2Ds.getItem(0));
                     geoPoint.setStyle(style);
                     mapControl.getMap().getTrackingLayer().add(geoPoint, "point");
                 } else if (point2Ds.getCount() > 1) {
-                    mapControl.getMap().getTrackingLayer().clear();
                     GeoLine geoLine = new GeoLine(point2Ds);
                     geoLine.setStyle(style);
                     mapControl.getMap().getTrackingLayer().add(geoLine, "line");
                 }
                 mapControl.getMap().refresh();
             }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 结束添加路径动画
+     * @param promise
+     */
+    @ReactMethod
+    public void cancelAnimationWayPoint(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            mapControl.getMap().getTrackingLayer().clear();
+            point2Ds = null;
+            savePoint2Ds = null;
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
