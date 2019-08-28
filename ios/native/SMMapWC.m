@@ -1472,39 +1472,7 @@
                 BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:plotXmlDicPath isDirectory:&bDir];
                 if(bExist&&bDir){
                     NSString* animationDic=[strCustomer stringByAppendingFormat:@"/Animation/%@",strResName];
-                    BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:animationDic isDirectory:&bDir];
-                    if(bExist){
-                        [[NSFileManager defaultManager] removeItemAtPath:animationDic error:nil];
-                    }
-                    [[NSFileManager defaultManager] createDirectoryAtPath:animationDic withIntermediateDirectories:YES attributes:nil error:nil];
-                    NSArray *fileArr = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:plotXmlDicPath error:nil];
-                    for (int index=0; index<fileArr.count; index++) {
-                        NSString *subFilePath = [plotXmlDicPath stringByAppendingPathComponent:[fileArr objectAtIndex:index]];
-                        bExist = [[NSFileManager defaultManager] fileExistsAtPath:subFilePath isDirectory:&bDir];
-                        if(bExist&&!bDir){
-                            NSString* strAnimation=[animationDic stringByAppendingFormat:@"/%@",[fileArr objectAtIndex:index]];
-                            BOOL result=[[NSFileManager defaultManager] copyItemAtPath:subFilePath toPath:strAnimation error:nil];
-                            if(result){
-                                NSData* data=[[NSFileManager defaultManager] contentsAtPath:strAnimation];
-                                GDataXMLDocument *xmlDocument = [[GDataXMLDocument alloc] initWithData:data options:0 error:nil];
-                                // 取根节点
-                                GDataXMLElement *rootElement = [xmlDocument rootElement];
-                                // 获取根节点下的所有子节点
-                                NSArray *elementArray =  rootElement.children;
-                                for (GDataXMLElement *element1 in elementArray) {
-                                    for (GDataXMLElement *element2 in element1.children) {
-                                        for (GDataXMLElement *element3 in element2.children) {
-                                            if([element3.name isEqualToString:@"CONTROLNAME"]){
-                                                [element3 setStringValue:strResName];
-                                            }
-                                        }
-                                    }
-                                }
-                                NSData *xmlData = [xmlDocument XMLData];
-                                [xmlData writeToFile:strAnimation atomically:YES];
-                            }
-                        }
-                    }
+                    [self copyAnimationFileFrom:plotXmlDicPath to:animationDic toMapName:strResName];
                 }
             }
             if(arrTemp.count>0){
@@ -1518,6 +1486,53 @@
     }
     return arrResult;
     
+}
+
+- (BOOL)copyAnimationFileFrom:(NSString*)fromPath to:(NSString*)toPath toMapName:(NSString*)mapName{
+    //复制态势推演动画xml文件
+//    NSString* plotXmlDicPath=[strRootDir stringByAppendingString:@"/plot"];
+    NSString* plotXmlDicPath=fromPath;
+    BOOL bDir = NO;
+    BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:plotXmlDicPath isDirectory:&bDir];
+    if(bExist&&bDir){
+//        NSString* animationDic=[strCustomer stringByAppendingFormat:@"/Animation/%@",strResName];
+        NSString* animationDic=toPath;
+        BOOL bExist = [[NSFileManager defaultManager] fileExistsAtPath:animationDic isDirectory:&bDir];
+        if(bExist){
+            [[NSFileManager defaultManager] removeItemAtPath:animationDic error:nil];
+        }
+        [[NSFileManager defaultManager] createDirectoryAtPath:animationDic withIntermediateDirectories:YES attributes:nil error:nil];
+        NSArray *fileArr = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:plotXmlDicPath error:nil];
+        for (int index=0; index<fileArr.count; index++) {
+            NSString *subFilePath = [plotXmlDicPath stringByAppendingPathComponent:[fileArr objectAtIndex:index]];
+            bExist = [[NSFileManager defaultManager] fileExistsAtPath:subFilePath isDirectory:&bDir];
+            if(bExist&&!bDir){
+                NSString* strAnimation=[animationDic stringByAppendingFormat:@"/%@",[fileArr objectAtIndex:index]];
+                BOOL result=[[NSFileManager defaultManager] copyItemAtPath:subFilePath toPath:strAnimation error:nil];
+                if(result){
+                    NSData* data=[[NSFileManager defaultManager] contentsAtPath:strAnimation];
+                    GDataXMLDocument *xmlDocument = [[GDataXMLDocument alloc] initWithData:data options:0 error:nil];
+                    // 取根节点
+                    GDataXMLElement *rootElement = [xmlDocument rootElement];
+                    // 获取根节点下的所有子节点
+                    NSArray *elementArray =  rootElement.children;
+                    for (GDataXMLElement *element1 in elementArray) {
+                        for (GDataXMLElement *element2 in element1.children) {
+                            for (GDataXMLElement *element3 in element2.children) {
+                                if([element3.name isEqualToString:@"CONTROLNAME"]){
+//                                    [element3 setStringValue:strResName];
+                                    [element3 setStringValue:mapName];
+                                }
+                            }
+                        }
+                    }
+                    NSData *xmlData = [xmlDocument XMLData];
+                    [xmlData writeToFile:strAnimation atomically:YES];
+                }
+            }
+        }
+    }
+    return YES;
 }
 
 //

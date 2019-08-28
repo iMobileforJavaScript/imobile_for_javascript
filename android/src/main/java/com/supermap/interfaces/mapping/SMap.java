@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -2548,6 +2549,23 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, writableMap, (isNew || bNew), bResourcesModified, bPrivate);
                 } else {
                     mapName = sMap.smMapWC.saveMapName(name, sMap.smMapWC.getWorkspace(), nModule, additionInfo, (isNew || bNew), bResourcesModified, bPrivate);
+                }
+
+                //保存地图后拷贝推演动画xml文件
+                if(mapName!=null){
+                    String strUserName = null;
+                    if (!bPrivate) {
+                        strUserName = "Customer";
+                    }else{
+                        strUserName = SMap.getInstance().smMapWC.getUserName();
+                    }
+                    String strRootPath = homeDirectory + "/iTablet/User/";
+                    String strAnimationPath = strRootPath+strUserName+"/Data/Animation/";
+                    String fromPath=strAnimationPath+oldName;
+                    String toPath=strAnimationPath+mapName+"/";
+                    if((new File(fromPath)).exists()){
+                        SMap.getInstance().smMapWC.copyAnimationFile(fromPath,toPath,mapName);
+                    }
                 }
             }
 
@@ -6744,7 +6762,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void matchPictureStyle(String picPath, Promise promise) {
         try {
             SMMapRender smMapRender = SMMapRender.getInstance();
-            smMapRender.matchPictureStyle(picPath);
+
+            String path = picPath;
+            if (picPath.indexOf("content://") == 0) {
+                path = FileUtil.getRealFilePath(getReactApplicationContext(), Uri.parse(picPath));
+            }
+            smMapRender.matchPictureStyle(path);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

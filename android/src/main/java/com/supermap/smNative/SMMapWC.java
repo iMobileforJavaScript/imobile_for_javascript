@@ -1610,57 +1610,8 @@ public class SMMapWC {
                     File plotXmlDicFile=new File(plotXmlDicPath);
                     if(plotXmlDicFile.exists()&&plotXmlDicFile.isDirectory()){
                         String animationDic=strCustomer+ "/Animation/"+strResName+"/";
-                        File animationDicFile=new File(animationDic);
-                        if(animationDicFile.exists()&&animationDicFile.isDirectory()){
-                            animationDicFile.delete();
-                        }
-                        animationDicFile.mkdirs();
-                        File[] files=plotXmlDicFile.listFiles();
-                        for (File file : files) {
-                            if(!file.isDirectory()) {
-                                String strAnimation = animationDic + file.getName();
-                                copyFile(file.getPath(), strAnimation);
-                                {
-                                    boolean result=copyFile(file.getPath(), strAnimation);
-                                    if(result) {
-                                        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                                        //通过实例构建DocumentBuilder
-                                        DocumentBuilder db = null;
-                                        try {
-                                            db = dbf.newDocumentBuilder();
-                                            //创建Document    解析给定的文件
-                                            Document doc = db.parse(new FileInputStream(strAnimation));
-                                            NodeList nodeList=doc.getElementsByTagName("CONTROLNAME");
-                                            for (int index = 0; index < nodeList.getLength(); index++) {
-                                                Node node=nodeList.item(index);
-                                                node.getChildNodes().item(0).setNodeValue(strResName);
-                                            }
 
-                                            //创建工厂对象
-                                            TransformerFactory tfs = TransformerFactory.newInstance();
-                                            //创建Transformer对象
-                                            Transformer tf = tfs.newTransformer();
-                                            //将document输出到输出流中。
-                                            tf.transform(new DOMSource(doc),new StreamResult(strAnimation));
-
-                                        } catch (ParserConfigurationException e) {
-                                            e.printStackTrace();
-                                        } catch (FileNotFoundException e) {
-                                            e.printStackTrace();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        } catch (SAXException e) {
-                                            e.printStackTrace();
-                                        } catch (TransformerConfigurationException e) {
-                                            e.printStackTrace();
-                                        } catch (TransformerException e) {
-                                            e.printStackTrace();
-                                        }
-
-                                    }
-                                }
-                            }
-                        }
+                        copyAnimationFile(plotXmlDicPath,animationDic,strResName);
                     }
                 }
             }
@@ -1676,6 +1627,74 @@ public class SMMapWC {
 
         return arrResult;
 
+    }
+
+    /**
+     * 拷贝动画xml文件
+     * @param fromPath
+     * @param toPath
+     * @param toMapName
+     * @return
+     */
+    public boolean copyAnimationFile(String fromPath,String toPath,String toMapName){
+        String plotXmlDicPath=fromPath;
+        File plotXmlDicFile=new File(plotXmlDicPath);
+        if(plotXmlDicFile.exists()&&plotXmlDicFile.isDirectory()){
+            String animationDic=toPath;
+            File animationDicFile=new File(animationDic);
+            if(animationDicFile.exists()&&animationDicFile.isDirectory()){
+                animationDicFile.delete();
+            }
+            animationDicFile.mkdirs();
+            File[] files=plotXmlDicFile.listFiles();
+            for (File file : files) {
+                if(!file.isDirectory()) {
+                    String strAnimation = animationDic + file.getName();
+                    copyFile(file.getPath(), strAnimation);
+                    {
+                        boolean result=copyFile(file.getPath(), strAnimation);
+                        if(result) {
+                            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                            //通过实例构建DocumentBuilder
+                            DocumentBuilder db = null;
+                            try {
+                                db = dbf.newDocumentBuilder();
+                                //创建Document    解析给定的文件
+                                Document doc = db.parse(new FileInputStream(strAnimation));
+                                NodeList nodeList=doc.getElementsByTagName("CONTROLNAME");
+                                for (int index = 0; index < nodeList.getLength(); index++) {
+                                    Node node=nodeList.item(index);
+                                    node.getChildNodes().item(0).setNodeValue(toMapName);
+                                }
+
+                                //创建工厂对象
+                                TransformerFactory tfs = TransformerFactory.newInstance();
+                                //创建Transformer对象
+                                Transformer tf = tfs.newTransformer();
+                                //将document输出到输出流中。
+                                tf.transform(new DOMSource(doc),new StreamResult(strAnimation));
+
+                                return true;
+                            } catch (ParserConfigurationException e) {
+                                e.printStackTrace();
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (SAXException e) {
+                                e.printStackTrace();
+                            } catch (TransformerConfigurationException e) {
+                                e.printStackTrace();
+                            } catch (TransformerException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     //
