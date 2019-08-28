@@ -6675,66 +6675,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
 
-//    //GPS定位计时器
-//    Handler handler = new Handler() {
-//        @Override
-//        public void handleMessage(Message msg) {
-//            if (msg.what == 1) {
-//                LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
-//                Point2D gpsPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
-//                Log.e("+++++++++++++++++++",""+gpsPoint);
-//                GpsPoint2Ds.add(gpsPoint);
-//            }
-//            super.handleMessage(msg);
-//        }
-//    };
-//
-//    Timer timer = new Timer();
-//    TimerTask timerTask = new TimerTask() {
-//        @Override
-//        public void run() {
-//            Looper.prepare();
-//            Message message = new Message();
-//            message.what = 1;
-//            handler.sendMessage(message);
-//            Looper.loop();
-//        }
-//    };
-//
-//
-//    /**
-//     * GPS开始
-//     *
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void gpsBegin(Promise promise) {
-//        sMap = SMap.getInstance();
-//        context.getCurrentActivity().runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                timer.schedule(timerTask,1000,3000);
-//            }
-//        });
-//        promise.resolve(true);
-//    }
-//
-//    /**
-//     * GPS停止
-//     *
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void gpsStop(Promise promise) {
-//        sMap = SMap.getInstance();
-//        context.getCurrentActivity().runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                timer.cancel();
-//            }
-//        });
-//        promise.resolve(true);
-//    }
+
+    /**
+     * GPS开始
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void gpsBegin(Promise promise) {
+        sMap = SMap.getInstance();
+        LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+        Point2D gpsPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
+        Log.e("+++++++++++++++++++",""+gpsPoint);
+        GpsPoint2Ds.add(gpsPoint);
+        promise.resolve(true);
+    }
 
 
 

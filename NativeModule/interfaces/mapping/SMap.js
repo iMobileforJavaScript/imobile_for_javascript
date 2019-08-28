@@ -2250,17 +2250,6 @@ export default (function () {
     }
   }
 
-  /**
-   * GPS停止
-   * @returns {*|void|Promise<void>}
-   */
-  function gpsStop() {
-    try {
-      return SMap.gpsStop()
-    } catch (e) {
-      console.error(e)
-    }
-  }
 
   /**
    * 添加GPS轨迹
@@ -2438,7 +2427,6 @@ export default (function () {
     buildNetwork,
     newIncrementRoad,
     gpsBegin,
-    gpsStop,
     addGPSRecordset,
 
     matchPictureStyle,
