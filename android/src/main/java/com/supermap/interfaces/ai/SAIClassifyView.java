@@ -5,7 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.ai.classifier.Classifier2;
@@ -45,7 +47,7 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
 
     private String mDatasourceAlias, mDatasetName = null;
     private static CameraView mCameraView = null;
-    private static ImageView mImageView = null;
+//    private static ImageView mImageView = null;
     private static Bitmap mBitmap = null;
 
     @Override
@@ -62,11 +64,11 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     public static void setInstance(CameraView cameraView) {
         Log.d(REACT_CLASS, "----------------setInstance--------RN--------");
         mCameraView = cameraView;
-        mCameraView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        mCameraView.start();
+//        mCameraView.setBackgroundColor(Color.parseColor("#FFFFFF"));
         mCameraView.setFocus(CameraKit.Constants.FOCUS_TAP);
         mCameraView.setJpegQuality(100);
         mCameraView.setPinchToZoom(true);
-
 
         mCameraView.setFacing(CameraKit.Constants.FACING_BACK);
         mCameraView.setFlash(CameraKit.Constants.FLASH_OFF);
@@ -76,9 +78,9 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
         mCameraView.addCameraKitListener(mCameraKitEventListener);
     }
 
-    public static void setImageView(ImageView imageView) {
-        mImageView = imageView;
-    }
+//    public static void setImageView(ImageView imageView) {
+//        mImageView = imageView;
+//    }
 
     private static CameraKitEventListener mCameraKitEventListener = new CameraKitEventListener() {
         @Override
@@ -108,7 +110,7 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
                 bitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
                 Log.d(REACT_CLASS, "bitmap" + bitmap.getByteCount());
 
-                mImageView.setImageBitmap(mBitmap);
+//                mImageView.setImageBitmap(mBitmap);
 
                 final List<Classifier2.Recognition> results = classifier.recognizeImage(bitmap);
 
@@ -320,7 +322,9 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     public void startPreview(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------startPreview--------RN--------");
-            mCameraView.start();
+            if (mCameraView != null) {
+                mCameraView.start();
+            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -334,7 +338,9 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     public void captureImage(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------captureImage--------RN--------");
-            mCameraView.captureImage();
+            if (mCameraView != null) {
+                mCameraView.captureImage();
+            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -348,8 +354,10 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     public void dispose(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------dispose--------RN--------");
-            mCameraView.stop();
-            mImageView.setImageBitmap(null);
+            if (mCameraView != null) {
+                mCameraView.stop();
+            }
+//            mImageView.setImageBitmap(null);
             if (mBitmap != null && !mBitmap.isRecycled()) {
                 mBitmap.recycle();
                 mBitmap = null;

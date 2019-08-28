@@ -66,5 +66,7 @@ typedef enum{
                * 
 	   * 可表示范围在1.5E-45到3.4E+38范围内的单精度浮点数，只提供给 <DatasetGrid> （栅格数据集）使用。
               */
-    SINGLE = 3200
+    SINGLE = 3200,
+    
+    DOUBLE = 6400
 }OCPixelFormat;

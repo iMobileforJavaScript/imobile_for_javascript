@@ -8,8 +8,10 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Base64;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -33,6 +35,11 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.supermap.RNUtils.FileUtil;
+import com.supermap.analyst.TopologyProcessing;
+import com.supermap.analyst.TopologyProcessingOptions;
+import com.supermap.analyst.networkanalyst.NetworkBuilder;
+import com.supermap.analyst.networkanalyst.NetworkSplitMode;
 import com.supermap.component.MapWrapView;
 import com.supermap.containts.EventConst;
 import com.supermap.data.*;
@@ -102,6 +109,7 @@ import com.supermap.plot.GeoGraphicObject;
 import com.supermap.plot.GraphicObjectType;
 import com.supermap.plugin.LocationManagePlugin;
 import com.supermap.rnsupermap.R;
+import com.supermap.smNative.SMMapRender;
 import com.supermap.smNative.collector.SMCollector;
 import com.supermap.smNative.SMLayer;
 import com.supermap.smNative.SMMapWC;
@@ -157,6 +165,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private Point2D navistart, naviend;
     private InfoCallout m_callout;
     private Datasource IndoorDatasource;
+    private String IncrementRoadName;
+    Point2Ds GpsPoint2Ds = new Point2Ds();
     String rootPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 
 
@@ -4416,7 +4426,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     animationWay.setPathTrackDir(true);
                     animationWay.showPathTrack(true);
                     animationGO = animationWay;
-
                     break;
                 case 1:
                     AnimationBlink animationBlink = (AnimationBlink) animationGO;
@@ -4438,7 +4447,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     break;
                 case 3:
                     AnimationShow animationShow = (AnimationShow) animationGO;
-                    animationShow.setShowEffect(0);
+                    animationShow.setShowEffect(1);
                     animationShow.setShowState(true);
                     animationGO = animationShow;
                     break;
@@ -4464,7 +4473,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             //清空创建路径动画时的数据
             mapControl.getMap().getTrackingLayer().clear();
             point2Ds = null;
-
             if (createInfo.hasKey("startTime") && animationGroup.getAnimationCount() > 0) {
                 int startTime = createInfo.getInt("startTime");
                 if (createInfo.hasKey("startMode")) {
@@ -4504,7 +4512,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 } else {
                     int layerCount = mapControl.getMap().getLayers().getCount();
                     if (layerCount > 0) {
-                        mapName = mapControl.getMap().getLayers().get(layerCount).getName();
+                        mapName = mapControl.getMap().getLayers().get(layerCount - 1).getName();
                     }
                 }
                 mapControl.getMap().save(mapName);
@@ -4628,6 +4636,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             style.setLineColor(new Color(255, 105, 0));
             style.setMarkerSymbolID(3614);
             {
+
                 if (point2Ds.getCount() == 0) {
                     mapControl.getMap().getTrackingLayer().clear();
                 } else if (point2Ds.getCount() == 1) {
@@ -5620,69 +5629,72 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
     /************************************** 地图设置 END ****************************************/
+//
+//    /**
+//     * 初始化二维POI搜索
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void initPointSearch(Promise promise){
+//        try {
+//            sMap = SMap.getInstance();
+//            sMap.poiSearchHelper2D = POISearchHelper2D.getInstence();
+//            MapControl mapControl = sMap.smMapWC.getMapControl();
+//            sMap.poiSearchHelper2D.initMapControl(mapControl,context);
+//            promise.resolve(true);
+//        }catch (Exception e){
+//            promise.reject(e);
+//        }
+//    }
+//
+//    /**
+//     * 二维POI搜索
+//     * @param keyword
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void pointSearch(String keyword, Promise promise){
+//        try {
+//            sMap.poiSearchHelper2D.poiSearch(keyword, new POISearchHelper2D.PoiSearchCallBack() {
+//                @Override
+//                public void poiSearchInfos(ArrayList<PoiGsonBean.PoiInfos> poiInfos) {
+//                    WritableArray array = Arguments.createArray();
+//                    int count = poiInfos.size();
+//                    for(int i = 0; i < count; i++){
+//                        WritableMap map = Arguments.createMap();
+//                        PoiGsonBean.PoiInfos poiInfo = poiInfos.get(i);
+//                        String name = poiInfo.getName();
+//                        map.putString("pointName",name);
+//                        map.putDouble("x",poiInfo.getLocation().getX());
+//                        map.putDouble("y",poiInfo.getLocation().getY());
+//                        array.pushMap(map);
+//                    }
+//                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+//                            .emit(EventConst.POINTSEARCH2D_KEYWORDS, array);
+//                }
+//            });
+//            promise.resolve(true);
+//        }catch (Exception e){
+//            promise.reject(e);
+//        }
+//    }
 
     /**
-     * 初始化二维POI搜索
+     * 定位到搜索结果某个点
      *
+     * @param map
      * @param promise
      */
     @ReactMethod
-    public void initPointSearch(Promise promise) {
+    public void toLocationPoint(ReadableMap map, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            sMap.poiSearchHelper2D = POISearchHelper2D.getInstence();
-            MapControl mapControl = sMap.smMapWC.getMapControl();
-            sMap.poiSearchHelper2D.initMapControl(mapControl, context);
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    /**
-     * 二维POI搜索
-     *
-     * @param keyword
-     * @param promise
-     */
-    @ReactMethod
-    public void pointSearch(String keyword, Promise promise) {
-        try {
-            sMap.poiSearchHelper2D.poiSearch(keyword, new POISearchHelper2D.PoiSearchCallBack() {
-                @Override
-                public void poiSearchInfos(ArrayList<PoiGsonBean.PoiInfos> poiInfos) {
-                    WritableArray array = Arguments.createArray();
-                    int count = poiInfos.size();
-                    for (int i = 0; i < count; i++) {
-                        WritableMap map = Arguments.createMap();
-                        PoiGsonBean.PoiInfos poiInfo = poiInfos.get(i);
-                        String name = poiInfo.getName();
-                        map.putString("pointName", name);
-                        map.putDouble("x", poiInfo.getLocation().getX());
-                        map.putDouble("y", poiInfo.getLocation().getY());
-                        array.pushMap(map);
-                    }
-                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(EventConst.POINTSEARCH2D_KEYWORDS, array);
-                }
-            });
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    /**
-     * 在搜索结果的某个位置添加callout
-     *
-     * @param index
-     * @param promise
-     */
-    @ReactMethod
-    public void toLocationPoint(int index, Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            boolean isSuccess = sMap.poiSearchHelper2D.toLocationPoint(index);
+            double x = map.getDouble("x");
+            double y = map.getDouble("y");
+            String name = map.getString("pointName");
+            String tagName = "POISEARCH_2D_POINT";
+            clearPoint(tagName);
+            Boolean isSuccess = addCallout(x, y, name, tagName, true);
             promise.resolve(isSuccess);
         } catch (Exception e) {
             promise.reject(e);
@@ -5709,6 +5721,43 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 获取地图中心点经纬度
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapcenterPosition(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            Point2D point = mapControl.getMap().getCenter();
+            Point2Ds point2Ds = new Point2Ds();
+            point2Ds.add(point);
+
+            PrjCoordSys sourcePrjCoordSys = new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+
+            CoordSysTransParameter coordSysTransParameter = new CoordSysTransParameter();
+
+            CoordSysTranslator.convert(
+                    point2Ds,
+                    mapControl.getMap().getPrjCoordSys(),
+                    sourcePrjCoordSys,
+                    coordSysTransParameter,
+                    CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+
+            Point2D mapPoint = point2Ds.getItem(0);
+
+            WritableMap map = Arguments.createMap();
+            map.putDouble("x", mapPoint.getX());
+            map.putDouble("y", mapPoint.getY());
+
+            promise.resolve(map);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 移除POI搜索的callout
      *
      * @param promise
@@ -5717,13 +5766,177 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void removePOICallout(Promise promise) {
         try {
             sMap = SMap.getInstance();
-            sMap.poiSearchHelper2D.clearPoint();
+            String tagName = "POISEARCH_2D_POINT";
+            clearPoint(tagName);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
 
+    @ReactMethod
+    public void removeAllCallout(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            for (int i = 0; i < 10; i++) {
+                String tagName = "POISEARCH_2D_POINTS" + i;
+                clearPoint(tagName);
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 当前选中的callout移动到地图中心
+     *
+     * @param item
+     * @param promise
+     */
+    @ReactMethod
+    public void setCalloutToMapCenter(ReadableMap item, Promise promise) {
+        try {
+            MapControl mapControl = SMap.getInstance().smMapWC.getMapControl();
+            double x = item.getDouble("x");
+            double y = item.getDouble("y");
+            Point2D point = new Point2D(x, y);
+            Point2Ds point2Ds = new Point2Ds();
+            point2Ds.add(point);
+
+            PrjCoordSys sourcePrjCoordSys = new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+            CoordSysTransParameter coordSysTransParameter = new CoordSysTransParameter();
+
+            CoordSysTranslator.convert(
+                    point2Ds,
+                    sourcePrjCoordSys,
+                    mapControl.getMap().getPrjCoordSys(),
+                    coordSysTransParameter,
+                    CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+
+            Point2D mapPoint = point2Ds.getItem(0);
+
+            mapControl.getMap().setCenter(mapPoint);
+            mapControl.getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 添加搜索到的callouts
+     *
+     * @param pointList
+     * @param promise
+     */
+    @ReactMethod
+    public void addCallouts(ReadableArray pointList, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            sMap.clearPoint("POISEARCH_2D_POINT");
+            Boolean isSuccess = true;
+            //最多10个callout
+            int len = pointList.size() < 10 ? pointList.size() : 10;
+
+            for (int i = 0; i < len; i++) {
+                ReadableMap map = pointList.getMap(i);
+                double x = map.getDouble("x");
+                double y = map.getDouble("y");
+                String name = "";
+                String tagName = "POISEARCH_2D_POINTS" + i;
+                Boolean b = addCallout(x, y, name, tagName, false);
+                if (!b) {
+                    isSuccess = b;
+                }
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 添加callout
+     *
+     * @param x            经度
+     * @param y            纬度
+     * @param name         显示的名字
+     * @param tagName      标识名
+     * @param changeCenter 是否改变地图中心点
+     */
+    public Boolean addCallout(final double x, final double y, final String name, final String tagName, final Boolean changeCenter) {
+        context.getCurrentActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                sMap = SMap.getInstance();
+                MapControl mapControl = sMap.smMapWC.getMapControl();
+                Point2D point = new Point2D(x, y);
+                Point2Ds point2Ds = new Point2Ds();
+                point2Ds.add(point);
+
+                PrjCoordSys sourcePrjCoordSys = new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                CoordSysTransParameter coordSysTransParameter = new CoordSysTransParameter();
+
+                CoordSysTranslator.convert(
+                        point2Ds,
+                        sourcePrjCoordSys,
+                        mapControl.getMap().getPrjCoordSys(),
+                        coordSysTransParameter,
+                        CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+
+                Point2D mapPoint = point2Ds.getItem(0);
+
+                InfoCallout callout = new InfoCallout(context);
+                callout.setStyle(CalloutAlignment.LEFT_BOTTOM);
+                callout.setBackground(0, 0);
+                ImageView imageView = new ImageView(context);
+                imageView.setImageResource(R.drawable.icon_red);
+                imageView.setAdjustViewBounds(true);
+                imageView.setMaxWidth(60);
+                imageView.setMaxHeight(60);
+
+                TextView textView = new TextView(context);
+                textView.setHeight(60);
+                textView.setWidth(180);
+                textView.setShadowLayer(3, 3, -3, android.graphics.Color.WHITE);
+                textView.setText(name);
+
+                LinearLayout linearLayout = new LinearLayout(context);
+                linearLayout.setLayoutParams(new LinearLayout.LayoutParams(240, 60));
+                linearLayout.addView(imageView);
+                linearLayout.addView(textView);
+
+                callout.setContentView(linearLayout);
+                // 20处理默认callout背景位置偏差
+                double x = mapPoint.getX() - 20;
+                double y = mapPoint.getY() - 20;
+                callout.setLocation(x, y);
+
+                mapControl.getMap().getMapView().addCallout(callout, tagName);
+                mapControl.getMap().getMapView().showCallOut();
+                if (mapControl.getMap().getScale() < 0.000011947150294723098) {
+                    mapControl.getMap().setScale(0.000011947150294723098);
+                }
+                if (changeCenter) {
+                    mapControl.getMap().setCenter(mapPoint);
+                }
+                mapControl.getMap().refresh();
+            }
+        });
+        return true;
+    }
+
+    public void clearPoint(final String tagName) {
+        context.getCurrentActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                MapControl mapControl = SMap.getInstance().smMapWC.getMapControl();
+                mapControl.getMap().getMapView().removeCallOut(tagName);
+            }
+        });
+    }
     /************************************** 导航模块 START ****************************************/
     /**
      * 清除导航路线
@@ -5807,10 +6020,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     Point2D endPoint, startPoint;
 
     @ReactMethod
-    public void routeAnalyst(int index, Promise promise) {
+    public void routeAnalyst(double x, double y, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            endPoint = sMap.poiSearchHelper2D.getSearchPoint(index);
+            endPoint = new Point2D(x, y);
             LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
             startPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
             NavigationOnline navigationOnline = new NavigationOnline();
@@ -5953,7 +6166,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void beginNavigation(double x,double y,double x2,double y2,Promise promise) {
+    public void beginNavigation(double x, double y, double x2, double y2, Promise promise) {
         try {
             Point2D pointstart = getPoint(x, y);
             Point2D pointend = getPoint(x2, y2);
@@ -6016,7 +6229,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 @Override
                 public void onNaviInfoUpdate(NaviInfo naviInfo) {
                     // TODO Auto-generated method stub
-                    Log.e("++++++++++++++++++",""+naviInfo.CurRoadName);
+                    Log.e("++++++++++++++++++", "" + naviInfo.CurRoadName);
                 }
 
                 @Override
@@ -6045,7 +6258,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void beginIndoorNavigation(double x,double y,double x2,double y2,Promise promise) {
+    public void beginIndoorNavigation(double x, double y, double x2, double y2, Promise promise) {
         try {
             Point2D pointstart = getPoint(x, y);
             Point2D pointend = getPoint(x2, y2);
@@ -6108,6 +6321,91 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
 
     /**
+     * 新建路网数据集
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void newIncrementRoad(String name, Promise promise) {
+        if (IndoorDatasource != null) {
+            Datasets datasets = IndoorDatasource.getDatasets();
+            String datasetName = datasets.getAvailableDatasetName(name);
+            IncrementRoadName = datasetName;
+            DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+            datasetVectorInfo.setType(DatasetType.LINE);
+            datasetVectorInfo.setEncodeType(EncodeType.NONE);
+            datasetVectorInfo.setName(datasetName);
+            DatasetVector datasetVector = datasets.create(datasetVectorInfo);
+            datasetVector.setPrjCoordSys(sMap.getSmMapWC().getMapControl().getMap().getPrjCoordSys());
+
+            Dataset ds = datasets.get(datasetName);
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            Layer layer = map.getLayers().add(ds, true);
+            layer.setEditable(true);
+            layer.setSnapable(true);
+            datasetVectorInfo.dispose();
+            datasetVector.close();
+        }
+        promise.resolve(true);
+    }
+
+
+    /**
+     * 获取路网数据集
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getNetWorkDataset(Promise promise) {
+        if (IndoorDatasource != null) {
+            Datasets datasets = IndoorDatasource.getDatasets();
+            WritableArray array = Arguments.createArray();
+            for (int i = 0; i < datasets.getCount(); i++) {
+                if (datasets.get(i).getType() == DatasetType.NETWORK) {
+                    WritableMap map = Arguments.createMap();
+                    map.putString("dataset", datasets.get(i).getName());
+                    array.pushMap(map);
+                }
+            }
+            promise.resolve(array);
+        }
+    }
+
+
+    /**
+     * 生成路网
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void buildNetwork(String networkdataset, Promise promise) {
+        DatasetVector lineDataset = (DatasetVector) IndoorDatasource.getDatasets().get(IncrementRoadName);
+        String datasetName = IndoorDatasource.getDatasets().getAvailableDatasetName(IncrementRoadName);
+        DatasetVector datasetVector2 = (DatasetVector) IndoorDatasource.copyDataset(
+                lineDataset, datasetName, EncodeType.NONE);
+        // 构造拓扑处理选项topologyProcessingOptions，各属性设置成false
+        TopologyProcessingOptions topologyProcessingOptions = new TopologyProcessingOptions();
+        topologyProcessingOptions.setLinesIntersected(true);
+        TopologyProcessing.clean(datasetVector2, topologyProcessingOptions);
+
+        IndoorDatasource.getDatasets().delete(networkdataset);
+
+        String[] lineFieldNames = new String[datasetVector2.getFieldInfos().getCount()];
+        for (int i = 0; i < datasetVector2.getFieldInfos().getCount(); i++) {
+            lineFieldNames[i] = datasetVector2.getFieldInfos().get(i).getCaption();
+        }
+
+        DatasetVector datasets[] = {datasetVector2};
+        DatasetVector resultDataset = NetworkBuilder.buildNetwork(datasets, null, lineFieldNames, null,
+                IndoorDatasource, networkdataset, NetworkSplitMode.LINE_SPLIT_BY_POINT, 0.0000001);
+
+        DatasetVector datasetVector = (DatasetVector) IndoorDatasource.getDatasets().get(networkdataset);
+        sMap.getSmMapWC().getMapControl().getMap().getLayers().add(datasetVector.getChildDataset(), true);
+        promise.resolve(true);
+    }
+
+
+    /**
      * 判断是否是室内点
      *
      * @param promise
@@ -6116,15 +6414,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void isIndoorPoint(double x, double y, Promise promise) {
         sMap = SMap.getInstance();
         boolean isindoor = false;
-        if(IndoorDatasource!=null){
+        if (IndoorDatasource != null) {
             Recordset recordset = null;
             QueryParameter parameter = new QueryParameter();
             parameter.setCursorType(CursorType.STATIC);
-            parameter.setSpatialQueryObject(new Point2D(x,y));
-            for (int i=0;i<IndoorDatasource.getDatasets().getCount();i++){
+            parameter.setSpatialQueryObject(new Point2D(x, y));
+            for (int i = 0; i < IndoorDatasource.getDatasets().getCount(); i++) {
                 DatasetVector datasetVector = (DatasetVector) IndoorDatasource.getDatasets().get(i);
                 recordset = datasetVector.query(parameter);
-                if(recordset!=null){
+                if (recordset != null) {
                     isindoor = true;
                 }
             }
@@ -6167,16 +6465,16 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void clearPoint(Promise promise) {
         sMap = SMap.getInstance();
-            context.getCurrentActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView().removeAllCallOut();
-                    sMap.getSmMapWC().getMapControl().getNavigation2().cleanPath();
-                    sMap.getSmMapWC().getMapControl().getNavigation2().stopGuide();
-                    sMap.getSmMapWC().getMapControl().getNavigation3().cleanPath();
-                    sMap.getSmMapWC().getMapControl().getNavigation3().stopGuide();
-                }
-            });
+        context.getCurrentActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView().removeAllCallOut();
+                sMap.getSmMapWC().getMapControl().getNavigation2().cleanPath();
+                sMap.getSmMapWC().getMapControl().getNavigation2().stopGuide();
+                sMap.getSmMapWC().getMapControl().getNavigation3().cleanPath();
+                sMap.getSmMapWC().getMapControl().getNavigation3().stopGuide();
+            }
+        });
         promise.resolve(true);
     }
 
@@ -6200,7 +6498,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     desPrjCoordSys, new CoordSysTransParameter(),
                     CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
             point2D = point2Ds.getItem(0);
-        } else{
+        } else {
             point2D = new Point2D(x, y);
         }
         return point2D;
@@ -6236,7 +6534,157 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
 
+    /**
+     * 打开实时路况信息
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void openTrafficMap(Promise promise) {
+        sMap = SMap.getInstance();
+        Layers layers = sMap.getSmMapWC().getMapControl().getMap().getLayers();
+        boolean isadd = false;
+        for (int i = 0; i < layers.getCount(); i++) {
+            if (layers.get(i).getName().equals("tencent@TrafficRest")) {
+                isadd = true;
+            }
+        }
+        if (!isadd) {
+            DatasourceConnectionInfo info = new DatasourceConnectionInfo();
+            info.setAlias("TrafficRest");
+            info.setEngineType(EngineType.Rest);
+            String url = "https://www.supermapol.com/iserver/services/traffic/rest/maps/tencent";
+            info.setServer(url);
+            Datasource datasource = sMap.getSmMapWC().getWorkspace().getDatasources().open(info);
+            sMap.getSmMapWC().getMapControl().getMap().getLayers().add(datasource.getDatasets().get(0), true);
+        }
+        promise.resolve(true);
+    }
+
+
+//    //GPS定位计时器
+//    Handler handler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            if (msg.what == 1) {
+//                LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+//                Point2D gpsPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
+//                Log.e("+++++++++++++++++++",""+gpsPoint);
+//                GpsPoint2Ds.add(gpsPoint);
+//            }
+//            super.handleMessage(msg);
+//        }
+//    };
+//
+//    Timer timer = new Timer();
+//    TimerTask timerTask = new TimerTask() {
+//        @Override
+//        public void run() {
+//            Looper.prepare();
+//            Message message = new Message();
+//            message.what = 1;
+//            handler.sendMessage(message);
+//            Looper.loop();
+//        }
+//    };
+//
+//
+//    /**
+//     * GPS开始
+//     *
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void gpsBegin(Promise promise) {
+//        sMap = SMap.getInstance();
+//        context.getCurrentActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                timer.schedule(timerTask,1000,3000);
+//            }
+//        });
+//        promise.resolve(true);
+//    }
+//
+//    /**
+//     * GPS停止
+//     *
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void gpsStop(Promise promise) {
+//        sMap = SMap.getInstance();
+//        context.getCurrentActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                timer.cancel();
+//            }
+//        });
+//        promise.resolve(true);
+//    }
+
+
+
+    /**
+     * 添加GPS轨迹
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void addGPSRecordset(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            DatasetVector dataset = (DatasetVector) IndoorDatasource.getDatasets().get(IncrementRoadName);
+            if (dataset != null) {
+                dataset.setReadOnly(false);
+            }
+            Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
+            GeoLine geoline = new GeoLine();
+            geoline.addPart(GpsPoint2Ds);
+            recordset.addNew(geoline);
+            recordset.update();
+            int id[] = new int[1];
+            id[0] = recordset.getID();
+            recordset.close();
+            geoline.dispose();
+            recordset.dispose();
+            Recordset recordset1 = dataset.query(id, CursorType.DYNAMIC);
+            sMap.smMapWC.getMapControl().getEditHistory().batchBegin();
+            sMap.smMapWC.getMapControl().getEditHistory().addHistoryType(EditHistoryType.ADDNEW, recordset1, true);
+            sMap.smMapWC.getMapControl().getEditHistory().batchEnd();
+            recordset1.close();
+            recordset1.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+
     /************************************** 导航模块 END ****************************************/
 
 
+    /**
+     * 智能配图
+     *
+     * @param picPath
+     * @param promise
+     */
+    @ReactMethod
+    public void matchPictureStyle(String picPath, Promise promise) {
+        try {
+            SMMapRender smMapRender = SMMapRender.getInstance();
+
+            String path = picPath;
+            if (picPath.indexOf("content://") == 0) {
+                path = FileUtil.getRealFilePath(getReactApplicationContext(), Uri.parse(picPath));
+            }
+            smMapRender.matchPictureStyle(path);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 }

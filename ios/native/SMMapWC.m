@@ -8,6 +8,8 @@
 
 #import "SMMapWC.h"
 #import "SMap.h"
+#import "GDataXMLNode.h"
+#import "FileUtils.h"
 
 @implementation SMMapWC
 
@@ -1041,9 +1043,17 @@
                 }//!New
                 
                 // 拷贝
-                if(![manager copyItemAtPath:strSrcServer toPath:strTargetServer error:nil]){
-                    continue;
+                if([strSrcServer.pathExtension.uppercaseString isEqualToString:@"SCI"]){//sci
+                    NSString* targetDir = [NSString stringWithFormat:@"%@/%@", strTargetServer.stringByDeletingLastPathComponent,[strTargetServer.lastPathComponent stringByReplacingOccurrencesOfString:@".sci" withString:@""] ];
+                    [FileUtils copyDirFromPath:strSrcServer.stringByDeletingLastPathComponent toPath:targetDir];
+                    strTargetServer = [NSString stringWithFormat:@"%@/%@",targetDir,strSrcServer.lastPathComponent];
+                    
+                }else{
+                    if(![manager copyItemAtPath:strSrcServer toPath:strTargetServer error:nil]){
+                        continue;
+                    }
                 }
+                
             }//bUDB
         }
         DatasourceConnectionInfo *desInfo = [[DatasourceConnectionInfo alloc]init];
@@ -1473,7 +1483,26 @@
                         bExist = [[NSFileManager defaultManager] fileExistsAtPath:subFilePath isDirectory:&bDir];
                         if(bExist&&!bDir){
                             NSString* strAnimation=[animationDic stringByAppendingFormat:@"/%@",[fileArr objectAtIndex:index]];
-                            [[NSFileManager defaultManager] copyItemAtPath:subFilePath toPath:strAnimation error:nil];
+                            BOOL result=[[NSFileManager defaultManager] copyItemAtPath:subFilePath toPath:strAnimation error:nil];
+                            if(result){
+                                NSData* data=[[NSFileManager defaultManager] contentsAtPath:strAnimation];
+                                GDataXMLDocument *xmlDocument = [[GDataXMLDocument alloc] initWithData:data options:0 error:nil];
+                                // 取根节点
+                                GDataXMLElement *rootElement = [xmlDocument rootElement];
+                                // 获取根节点下的所有子节点
+                                NSArray *elementArray =  rootElement.children;
+                                for (GDataXMLElement *element1 in elementArray) {
+                                    for (GDataXMLElement *element2 in element1.children) {
+                                        for (GDataXMLElement *element3 in element2.children) {
+                                            if([element3.name isEqualToString:@"CONTROLNAME"]){
+                                                [element3 setStringValue:strResName];
+                                            }
+                                        }
+                                    }
+                                }
+                                NSData *xmlData = [xmlDocument XMLData];
+                                [xmlData writeToFile:strAnimation atomically:YES];
+                            }
                         }
                     }
                 }
@@ -1715,9 +1744,17 @@
                     
                     
                     // 拷贝
-                    if(![[NSFileManager defaultManager] copyItemAtPath:strSrcServer toPath:strTargetServer error:nil]){
-                        continue;
+                    if([strSrcServer.pathExtension.uppercaseString isEqualToString:@"SCI"]){//sci
+                       NSString* targetDir = [NSString stringWithFormat:@"%@/%@", strTargetServer.stringByDeletingLastPathComponent,[strTargetServer.lastPathComponent stringByReplacingOccurrencesOfString:@".sci" withString:@""] ];
+                        [FileUtils copyDirFromPath:strSrcServer.stringByDeletingLastPathComponent toPath:targetDir];
+                        strTargetServer = [NSString stringWithFormat:@"%@/%@",targetDir,strSrcServer.lastPathComponent];
+                        
+                    }else{
+                        if(![[NSFileManager defaultManager] copyItemAtPath:strSrcServer toPath:strTargetServer error:nil]){
+                            continue;
+                        }
                     }
+                   
                 }//bUDB
 
             }

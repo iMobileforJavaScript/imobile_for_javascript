@@ -331,9 +331,11 @@ RCT_REMAP_METHOD(getFieldInfos, getFieldInfos:(NSDictionary*)dataDic filter:(NSD
         if (dataset) {
             Recordset* recordset = [(DatasetVector *)dataset recordset:NO cursorType:STATIC];
             infos = [NativeUtil getFieldInfos:recordset filter:filter];
+            [recordset dispose];
         } else {
             infos = [[NSArray alloc] init];
         }
+        
         
         resolve(infos);
     }

@@ -163,8 +163,7 @@ public class SMLayer {
         wMap.putBoolean("isEditable", layer.isEditable());
         wMap.putBoolean("isVisible", layer.isVisible());
         wMap.putBoolean("isSelectable", layer.isSelectable());
-//            wMap.putBoolean("isSnapable", layer.isSnapable()); // TODO 对象被释放
-        wMap.putBoolean("isSnapable", true);
+        wMap.putBoolean("isSnapable", layer.isSnapable());
         wMap.putString("layerGroupId", groupId);
         wMap.putString("groupName", groupName);
         wMap.putInt("themeType", themeType);
