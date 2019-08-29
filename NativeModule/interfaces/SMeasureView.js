@@ -1,7 +1,7 @@
 /*********************************************************************************
  Copyright © SuperMap. All rights reserved.
  Author: tronzzb
- Description: AR高精度采集
+ Description: AR户型图采集
  **********************************************************************************/
 import {
   NativeModules,

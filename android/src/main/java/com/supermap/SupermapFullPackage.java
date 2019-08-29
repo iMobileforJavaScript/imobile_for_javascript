@@ -13,11 +13,7 @@ import com.supermap.interfaces.ai.SAIDetectView;
 import com.supermap.interfaces.analyst.SAnalyst;
 import com.supermap.interfaces.analyst.SFacilityAnalyst;
 import com.supermap.interfaces.analyst.STransportationAnalyst;
-import com.supermap.interfaces.ar.RCTARView;
-import com.supermap.interfaces.ar.RCTArrowRenderView;
-import com.supermap.interfaces.ar.RCTFloorListView;
-import com.supermap.interfaces.ar.MeasureViewManager;
-import com.supermap.interfaces.ar.SMeasureView;
+import com.supermap.interfaces.ar.*;
 import com.supermap.interfaces.collector.SCollector;
 import com.supermap.interfaces.collector.SCollectorType;
 import com.supermap.interfaces.collector.SMediaCollector;
@@ -52,6 +48,7 @@ public class SupermapFullPackage implements ReactPackage {
                 new LayerListViewManager(),new ScaleViewManager(),new CallOutManager()
                 ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView(),new RCTARView(),new RCTFloorListView()
                 ,new AIDetectViewManager(), new MeasureViewManager(), new AIClassifyViewManager()
+                ,new CollectSceneFormViewManager()
         );
     }
 
@@ -223,6 +220,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new SMeasureView(reactContext));
         //AI检测分类
         modules.add(new SAIClassifyView(reactContext));
+        modules.add(new SCollectSceneFormView(reactContext));
         return modules;
     }
 }
