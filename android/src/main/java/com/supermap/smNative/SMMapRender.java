@@ -114,7 +114,7 @@ public class SMMapRender {
             byte[] buffer = new byte[1024];
             InputStream in;
             int readLen = 0;
-            in = assetManager.open(Name);
+            in = assetManager.open("python_android_assets/"+Name);
             while((readLen = in.read(buffer)) != -1){
                 out.write(buffer, 0, readLen);
             }
@@ -210,7 +210,7 @@ public class SMMapRender {
         }
 
         try{
-            InputStream dataSource = assetManager.open("PIL.zip");
+            InputStream dataSource = assetManager.open("python_android_assets/PIL.zip");
             unzip(dataSource, "/data/data/"+getPackageName()+"/files",false );
             dataSource.close();
         }

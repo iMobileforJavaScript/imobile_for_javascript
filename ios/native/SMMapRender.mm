@@ -70,6 +70,7 @@
 @end
 
 @implementation SMMapRender
+@synthesize delegate = _delegate;
 
 //由Objective-C的一些特性可以知道，在对象创建的时候，无论是alloc还是new，都会调用到 allocWithZone方法。
 +(id)allocWithZone:(struct _NSZone *)zone{
@@ -130,7 +131,7 @@ static VS_UWORD MsgCallBack( VS_ULONG ServiceGroupID, VS_ULONG uMsg, VS_UWORD wP
 }
 
 static class ClassOfSRPInterface *SRPInterface;
-
+static BOOL pythonResult = false;
 
 extern "C" void init_ssl(void);
 extern "C" void init_hashlib(void);
@@ -142,7 +143,7 @@ extern "C" void init_imagingft(void);
 extern "C" void init_imagingmath(void);
 
 -(void)onCreate{
-    
+    _delegate = nil;
     _matchedColors = [[NSMutableDictionary alloc]init];
     _compressMode = 0;
     _colorNumber = 50;
@@ -237,10 +238,12 @@ extern "C" void init_imagingmath(void);
     //[script appendString:@" print(result2)\n"];
     [script appendString:@"except Exception,e:\n"];
     [script appendString:@" traceback.print_exc()"];
+    
     SRPControl->SRPLock();
     const VS_CHAR *str = [script UTF8String];
     SRPInterface->DoBuffer("python", str, strlen(str), NULL, NULL, NULL, VS_TRUE);
     SRPControl->SRPUnLock();
+    
 }
 
 
@@ -280,6 +283,7 @@ extern "C" void init_imagingmath(void);
     }
     Map* map = [[[[SMap singletonInstance]smMapWC]mapControl] map];
     [self setMapStyle:map withDes:arrDesColor fromSrc:arrSrcColor];
+    pythonResult = YES;
 }
 
 /**
@@ -620,6 +624,10 @@ extern "C" void init_imagingmath(void);
     BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:strImagePath isDirectory:&isDir];
     NSRange range = [[strImagePath lowercaseString] rangeOfString:@"assets-library://"];
     if (((!isExist) || isDir) && (range.location == NSNotFound || range.length == 0)) {
+        if (_delegate!=nil) {
+            NSDictionary*dic = [[NSDictionary alloc] initWithObjectsAndKeys:@(0),@"result",strImagePath,@"image",@"file not exist",@"error", nil];
+            [_delegate matchImageFinished:dic];
+        }
         return;
     }
     
@@ -630,6 +638,10 @@ extern "C" void init_imagingmath(void);
     dispatch_async(maiQueue, ^{
         MapControl *mapcontrol = [[[SMap singletonInstance] smMapWC] mapControl];
         if ([[[mapcontrol map]layers]getCount]==0) {
+            if (_delegate!=nil) {
+                NSDictionary*dic = [[NSDictionary alloc] initWithObjectsAndKeys:@(1),@"result",strImagePath,@"image", nil];
+                [_delegate matchImageFinished:dic];
+            }
             return ;
         }
         CGImageRef imgRef = [mapcontrol outputMap:mapcontrol.bounds];
@@ -701,7 +713,27 @@ extern "C" void init_imagingmath(void);
         NSData *imgData = UIImagePNGRepresentation(image);
         [imgData writeToFile:strMapPath atomically:YES];
         
+        pythonResult = false;
+        
         [self pythonMatchPictureStyle:strImagePath from:strMapPath colorCount:nColorNumber mode:nCompressMode];
+        
+        if (pythonResult) {
+            if (_delegate!=nil) {
+                NSDictionary*dic = [[NSDictionary alloc] initWithObjectsAndKeys:@(1),@"result",strPicPath,@"image", nil];
+                [_delegate matchImageFinished:dic];
+            }
+        }else{
+            if (_delegate!=nil) {
+                NSDictionary*dic = [[NSDictionary alloc] initWithObjectsAndKeys:@(0),@"result",strPicPath,@"image",@"python error" ,@"error",nil];
+                [_delegate matchImageFinished:dic];
+            }
+        }
+        
+    }else{
+        if (_delegate!=nil) {
+            NSDictionary*dic = [[NSDictionary alloc] initWithObjectsAndKeys:@(0),@"result",strPicPath,@"image",@"read image error",@"error", nil];
+            [_delegate matchImageFinished:dic];
+        }
     }
 }
 
