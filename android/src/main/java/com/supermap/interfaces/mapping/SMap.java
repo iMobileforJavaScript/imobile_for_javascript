@@ -516,6 +516,26 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
 
     /**
+     * 判断当前数据源别名是否可用，返回可用别名
+     * @param alias
+     * @param promise
+     */
+    @ReactMethod
+    public void isAvilableAlias(String alias, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+            int index = 1;
+            while (datasources.indexOf(alias) != -1){
+                alias += "_" + index;
+                index++;
+            }
+            promise.resolve(alias);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+    /**
      * 以数据源形式打开工作空间setLayerFieldInfo
      *
      * @param data

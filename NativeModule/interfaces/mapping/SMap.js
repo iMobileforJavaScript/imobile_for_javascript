@@ -2260,9 +2260,22 @@ export default (function () {
     }
   }
 
+  /**
+   * 判断当前数据源别名是否可用，返回可用别名
+   * @param alias
+   * @returns {*}
+   */
+  function isAvilableAlias(alias){
+    try{
+      return SMap.isAvilableAlias(alias)
+    }catch (e) {
+      console.error(e)
+    }
+  }
 
 
   let SMapExp = {
+    isAvilableAlias,
     setCalloutToMapCenter,
     removeAllCallout,
     addCallouts,
