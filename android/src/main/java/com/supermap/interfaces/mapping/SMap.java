@@ -6767,6 +6767,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (picPath.indexOf("content://") == 0) {
                 path = FileUtil.getRealFilePath(getReactApplicationContext(), Uri.parse(picPath));
             }
+            smMapRender.setCompressMode(2);
             smMapRender.matchPictureStyle(path);
             promise.resolve(true);
         } catch (Exception e) {

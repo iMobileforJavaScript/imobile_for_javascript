@@ -4358,6 +4358,7 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
 RCT_REMAP_METHOD(matchPictureStyle, matchPictureStyle:(NSString *)picPath resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
         SMMapRender* mapRender = [SMMapRender sharedInstance];
+        [mapRender setCompressMode:2];
         [mapRender matchPictureStyle:picPath];
         resolve(@(YES));
     } @catch (NSException *exception) {
