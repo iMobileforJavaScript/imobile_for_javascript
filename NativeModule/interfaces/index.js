@@ -8,6 +8,7 @@ import SMessageService from './SMessageService'
 import SAIDetectView from './SAIDetectView'
 import SMeasureView from './SMeasureView'
 import SAIClassifyView from './SAIClassifyView'
+import SCollectSceneFormView from './SCollectSceneFormView'
 
 export {
   SMap,
@@ -28,8 +29,10 @@ export {
   SMessageService,
   /*AI识别*/
   SAIDetectView,
-  /*AI高精采集*/
+  /*AI户型图采集*/
   SMeasureView,
   /*AI分类*/
   SAIClassifyView,
+  /*AI高精度采集*/
+  SCollectSceneFormView,
 }
