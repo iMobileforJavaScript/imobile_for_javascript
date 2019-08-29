@@ -2247,17 +2247,6 @@ export default (function () {
     }
   }
 
-  /**
-   * GPS停止
-   * @returns {*|void|Promise<void>}
-   */
-  function gpsStop() {
-    try {
-      return SMap.gpsStop()
-    } catch (e) {
-      console.error(e)
-    }
-  }
 
   /**
    * 添加GPS轨迹
@@ -2271,9 +2260,22 @@ export default (function () {
     }
   }
 
+  /**
+   * 判断当前数据源别名是否可用，返回可用别名
+   * @param alias
+   * @returns {*}
+   */
+  function isAvilableAlias(alias){
+    try{
+      return SMap.isAvilableAlias(alias)
+    }catch (e) {
+      console.error(e)
+    }
+  }
 
 
   let SMapExp = {
+    isAvilableAlias,
     setCalloutToMapCenter,
     removeAllCallout,
     addCallouts,
@@ -2435,7 +2437,6 @@ export default (function () {
     buildNetwork,
     newIncrementRoad,
     gpsBegin,
-    gpsStop,
     addGPSRecordset,
 
     matchPictureStyle,

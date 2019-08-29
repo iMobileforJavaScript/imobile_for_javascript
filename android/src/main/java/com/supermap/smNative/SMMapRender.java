@@ -114,7 +114,7 @@ public class SMMapRender {
             byte[] buffer = new byte[1024];
             InputStream in;
             int readLen = 0;
-            in = assetManager.open(Name);
+            in = assetManager.open("python_android_assets/"+Name);
             while((readLen = in.read(buffer)) != -1){
                 out.write(buffer, 0, readLen);
             }
@@ -210,7 +210,7 @@ public class SMMapRender {
         }
 
         try{
-            InputStream dataSource = assetManager.open("PIL.zip");
+            InputStream dataSource = assetManager.open("python_android_assets/PIL.zip");
             unzip(dataSource, "/data/data/"+getPackageName()+"/files",false );
             dataSource.close();
         }
@@ -336,7 +336,7 @@ public class SMMapRender {
 
     HashMap<Color, MatchedColors> m_matchedColors = null;
     private ArrayList<Color> m_arrColors = null;
-
+    private boolean bPythonSucc = false;
     private void pythonMatchPictureStyle(String strPicPath1 , String strPicPath2 ,int nColorCount ,int nMode){
 
 //        if ( !canBeginePython() ){
@@ -393,10 +393,23 @@ public class SMMapRender {
                 "    \n" +
                 "except Exception,e:\n" +
                 "    traceback.print_exc()";
+        bPythonSucc = false;
         starcore._SRPLock();
         Service._RunScript("python", script + "\n", "", "");
         starcore._SRPUnLock();
 
+
+        if (bPythonSucc){
+            if(smMapRenderListener!=null){
+                smMapRenderListener.onMatchPictureStyleFinished(true,strPicPath1,null);
+            }
+        }else{
+            if(smMapRenderListener!=null){
+                smMapRenderListener.onMatchPictureStyleFinished(false,strPicPath2,"python error");
+            }
+        }
+
+        endPython();
 
     }
 
@@ -418,13 +431,12 @@ public class SMMapRender {
                 }else{
 
                     setMapColors(SMap.getInstance().getSmMapWC().getMapControl().getMap() , m_arrColors ,arrColors);
+                    bPythonSucc = true;
 
-                    endPython();
                 }
             }
         }catch (Exception e){
             System.out.println(e);
-            endPython();
         }
 
 
@@ -824,6 +836,10 @@ public class SMMapRender {
         }
 
         if (count==waitMax){
+            if(smMapRenderListener!=null){
+                smMapRenderListener.onMatchPictureStyleFinished(false,strImagePath,"out of time");
+            }
+
             return;
         }
 
@@ -869,6 +885,9 @@ public class SMMapRender {
                         } catch (Exception e) {
                             e.printStackTrace();
                             endPython();
+                            if(smMapRenderListener!=null){
+                                smMapRenderListener.onMatchPictureStyleFinished(false,strImagePath,"outputmap error");
+                            }
                             return;
                         }
 
@@ -902,6 +921,18 @@ public class SMMapRender {
 //            endPython();
 //        }
 
+    }
+
+    public interface SMMapRenderListener{
+        void onMatchPictureStyleFinished(boolean bSucssed,String strPath,String error);
+    }
+
+    private SMMapRenderListener smMapRenderListener = null;
+    public void setSmMapRenderListener(SMMapRenderListener listener){
+        smMapRenderListener = listener;
+    }
+    public SMMapRenderListener getSmMapRenderListener(){
+        return smMapRenderListener;
     }
 
 }

@@ -183,9 +183,6 @@
 		0AEFC1EC2316867B006FEDD8 /* _imagingmath.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 617D9BEE230FE37E00ADCCCA /* _imagingmath.a */; };
 		0AEFC1ED2316867B006FEDD8 /* _imagingmorph.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 617D9BF2230FE37F00ADCCCA /* _imagingmorph.a */; };
 		0AEFC1EE2316867B006FEDD8 /* _imagingtk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 617D9BF1230FE37F00ADCCCA /* _imagingtk.a */; };
-		0AEFC1EF2316867B006FEDD8 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 610C41BA2314F80D001EC84A /* libfreetype.a */; };
-		0AEFC1F02316867B006FEDD8 /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 610C41BB2314F80D001EC84A /* libjpeg.a */; };
-		0AEFC1F12316867B006FEDD8 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 610C41BC2314F80D001EC84A /* libpng16.a */; };
 		0AEFC1F22316867B006FEDD8 /* libstarcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 617D9BFB230FE3B500ADCCCA /* libstarcore.a */; };
 		0AEFC1F32316867B006FEDD8 /* libstarpy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 617D9BFA230FE3B500ADCCCA /* libstarpy.a */; };
 		0AEFC1F42316867B006FEDD8 /* libpython2.7.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 610C41C42314F852001EC84A /* libpython2.7.a */; };
@@ -599,9 +596,6 @@
 		4AF967A321B50EC000105B74 /* SMCartography.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMCartography.m; sourceTree = "<group>"; };
 		4AF967A521B5283A00105B74 /* SCartography.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCartography.h; path = interfaces/SCartography.h; sourceTree = SOURCE_ROOT; };
 		4AF967A621B5283A00105B74 /* SCartography.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCartography.m; path = interfaces/SCartography.m; sourceTree = SOURCE_ROOT; };
-		610C41BA2314F80D001EC84A /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = "python/Pillow-master/libfreetype.a"; sourceTree = "<group>"; };
-		610C41BB2314F80D001EC84A /* libjpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjpeg.a; path = "python/Pillow-master/libjpeg.a"; sourceTree = "<group>"; };
-		610C41BC2314F80D001EC84A /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng16.a; path = "python/Pillow-master/libpng16.a"; sourceTree = "<group>"; };
 		610C41C42314F852001EC84A /* libpython2.7.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpython2.7.a; path = "python/starcore_for_ios/python-2.7/libpython2.7.a"; sourceTree = "<group>"; };
 		61786D45230A71E300D92877 /* SMMapRender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMapRender.h; sourceTree = "<group>"; };
 		61786D46230A71E300D92877 /* SMMapRender.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SMMapRender.mm; sourceTree = "<group>"; };
@@ -669,15 +663,12 @@
 				0AEFC1F32316867B006FEDD8 /* libstarpy.a in Frameworks */,
 				0AEFC1EC2316867B006FEDD8 /* _imagingmath.a in Frameworks */,
 				0AEFC1EB2316867B006FEDD8 /* _imagingft.a in Frameworks */,
-				0AEFC1F02316867B006FEDD8 /* libjpeg.a in Frameworks */,
 				0A4BFCEF22A666D1001563DF /* AMapFoundationKit in Frameworks */,
 				0AEFC1ED2316867B006FEDD8 /* _imagingmorph.a in Frameworks */,
 				0AEFC1EE2316867B006FEDD8 /* _imagingtk.a in Frameworks */,
-				0AEFC1F12316867B006FEDD8 /* libpng16.a in Frameworks */,
 				0AEFC1EA2316867B006FEDD8 /* _imaging.a in Frameworks */,
 				0A4BFCF022A666D1001563DF /* AMapLocationKit in Frameworks */,
 				0AEFC1F42316867B006FEDD8 /* libpython2.7.a in Frameworks */,
-				0AEFC1EF2316867B006FEDD8 /* libfreetype.a in Frameworks */,
 				0AEFC1F22316867B006FEDD8 /* libstarcore.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -841,9 +832,6 @@
 				617D9BEE230FE37E00ADCCCA /* _imagingmath.a */,
 				617D9BF2230FE37F00ADCCCA /* _imagingmorph.a */,
 				617D9BF1230FE37F00ADCCCA /* _imagingtk.a */,
-				610C41BA2314F80D001EC84A /* libfreetype.a */,
-				610C41BB2314F80D001EC84A /* libjpeg.a */,
-				610C41BC2314F80D001EC84A /* libpng16.a */,
 				617D9BFB230FE3B500ADCCCA /* libstarcore.a */,
 				617D9BFA230FE3B500ADCCCA /* libstarpy.a */,
 				610C41C42314F852001EC84A /* libpython2.7.a */,
