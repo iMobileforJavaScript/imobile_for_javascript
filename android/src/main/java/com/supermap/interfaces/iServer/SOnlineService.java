@@ -19,6 +19,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.containts.EventConst;
 import com.supermap.data.Point2D;
+import com.supermap.onlineservices.DataType;
 import com.supermap.onlineservices.DownLoadFile;
 import com.supermap.onlineservices.Geocoding;
 import com.supermap.onlineservices.GeocodingData;
@@ -324,6 +325,40 @@ public class SOnlineService extends ReactContextBaseJavaModule{
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void uploadByType(String filePath,String onlineDataName,String dataType,final Promise promise){
+        try {
+
+            String tags="用户数据";
+            DataType type=DataType.WORKSPACE;
+            if(dataType.equals("UDB")){
+                type=DataType.UDB;
+            }
+
+            OnlineService.uploadFile(onlineDataName,filePath,tags,type, new UpLoadFile.UpLoadListener() {
+                @Override
+                public void getProgress(int progress) {
+                    if (progress % 10 == 0) {
+                        mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADING,progress);
+                    }
+                }
+
+                @Override
+                public void onComplete() {
+                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADED,true);
+                }
+
+                @Override
+                public void onFailure() {
+                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADFAILURE,false);
+                }
+            });
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
     @ReactMethod
     public void getDataList(int currentPage,int pageSize,final Promise promise){
         try {
