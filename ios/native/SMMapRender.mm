@@ -618,7 +618,8 @@ extern "C" void init_imagingmath(void);
 -(void)matchPictureStyle:(NSString *)strImagePath{
     BOOL isDir = false;
     BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:strImagePath isDirectory:&isDir];
-    if ( (!isExist) || isDir) {
+    NSRange range = [[strImagePath lowercaseString] rangeOfString:@"assets-library://"];
+    if (((!isExist) || isDir) && (range.location == NSNotFound || range.length == 0)) {
         return;
     }
     
@@ -640,42 +641,69 @@ extern "C" void init_imagingmath(void);
 }
 
 -(void)pythonThreadRun:(PythonParam*)parame{
-
+    
     UIImage*image = parame.image;
     NSString*strPicPath = parame.picPath;
-    UIImage *desImg = [UIImage imageWithContentsOfFile:strPicPath];
-    int nColorNumber =  parame.colorCount;
-    int nCompressMode =  parame.compressMode;
     
     NSFileManager *manager = [NSFileManager defaultManager];
     NSString *strDir = [NSHomeDirectory() stringByAppendingFormat:@"/Documents/MapRenderCache"];
-    BOOL isDir = false;
-    BOOL isExist = [manager fileExistsAtPath:strDir isDirectory:&isDir];
-    if (!isExist || !isDir) {
-        [manager createDirectoryAtPath:strDir withIntermediateDirectories:YES attributes:nil error:nil];
-    }
-    NSString *strMapPath = [NSString stringWithFormat:@"%@/src_temporary.png",strDir];
-    //NSString *strMapPath = [NSString stringWithFormat:@"%@/temporary.jpg",strDir];
-    //NSString *strMapPath = [NSString stringWithFormat:@"%@/BeachStones.jpg",strDir];
-    isDir = true;
-    isExist = [manager fileExistsAtPath:strMapPath isDirectory:&isDir];
-    if (isExist && !isDir) {
-        [manager removeItemAtPath:strMapPath error:nil];
-    }
-    //NSData *imgData = UIImageJPEGRepresentation(image,1.0);
-    NSData *imgData = UIImagePNGRepresentation(image);
-    [imgData writeToFile:strMapPath atomically:YES];
-    
     NSString *strImagePath = [NSString stringWithFormat:@"%@/des_temporary.png",strDir];
-    isDir = true;
-    isExist = [manager fileExistsAtPath:strImagePath isDirectory:&isDir];
-    if (isExist && !isDir) {
-        [manager removeItemAtPath:strImagePath error:nil];
-    }
-    NSData *desData = UIImagePNGRepresentation(desImg);
-    [desData writeToFile:strImagePath atomically:YES];
     
-    [self pythonMatchPictureStyle:strImagePath from:strMapPath colorCount:nColorNumber mode:nCompressMode];
+    static UIImage *desImg;
+    
+    NSRange range = [[strPicPath lowercaseString] rangeOfString:@"assets-library://"];
+    if (range.location != NSNotFound && range.length != 0) {
+        ALAssetsLibrary *lib = [[ALAssetsLibrary alloc] init];
+        dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+        [lib assetForURL:[NSURL URLWithString:strPicPath] resultBlock:^(ALAsset *asset) {
+            desImg = nil;
+            ALAssetRepresentation *assetRep = [asset defaultRepresentation];
+            CGImageRef imgRef = [assetRep fullResolutionImage];
+            desImg = [UIImage imageWithCGImage:imgRef
+                                         scale:assetRep.scale
+                                   orientation:(UIImageOrientation)assetRep.orientation];
+            dispatch_semaphore_signal(sem);
+        } failureBlock:^(NSError *error) {
+            dispatch_semaphore_signal(sem);
+        }];
+        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+    } else {
+        desImg = [UIImage imageWithContentsOfFile:strPicPath];
+    }
+    
+    if (desImg) {
+        BOOL isDir = false;
+        BOOL isExist = [manager fileExistsAtPath:strDir isDirectory:&isDir];
+        if (!isExist || !isDir) {
+            [manager createDirectoryAtPath:strDir withIntermediateDirectories:YES attributes:nil error:nil];
+        }
+        isDir = true;
+        isExist = [manager fileExistsAtPath:strImagePath isDirectory:&isDir];
+        if (isExist && !isDir) {
+            [manager removeItemAtPath:strImagePath error:nil];
+        }
+        
+        NSData *desData = UIImagePNGRepresentation(desImg);
+        [desData writeToFile:strImagePath atomically:YES];
+        
+        int nColorNumber =  parame.colorCount;
+        int nCompressMode =  parame.compressMode;
+        
+        NSString *strMapPath = [NSString stringWithFormat:@"%@/src_temporary.png",strDir];
+        //NSString *strMapPath = [NSString stringWithFormat:@"%@/temporary.jpg",strDir];
+        //NSString *strMapPath = [NSString stringWithFormat:@"%@/BeachStones.jpg",strDir];
+        isDir = true;
+        isExist = [manager fileExistsAtPath:strMapPath isDirectory:&isDir];
+        if (isExist && !isDir) {
+            [manager removeItemAtPath:strMapPath error:nil];
+        }
+        //NSData *imgData = UIImageJPEGRepresentation(image,1.0);
+        NSData *imgData = UIImagePNGRepresentation(image);
+        [imgData writeToFile:strMapPath atomically:YES];
+        
+        [self pythonMatchPictureStyle:strImagePath from:strMapPath colorCount:nColorNumber mode:nCompressMode];
+    }
 }
+
 
 @end
