@@ -22,12 +22,12 @@ public class RCTFloorListView extends SimpleViewManager<MapFloorListView> {
         m_View = new MapFloorListView(reactContext.getCurrentActivity());
 
         SMap.getInstance().getSmMapWC().setFloorListView(m_View);
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                m_View.linkMapControl(SMap.getInstance().getSmMapWC().getMapControl());
-//            }
-//        });
+        reactContext.getCurrentActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                m_View.linkMapControl(SMap.getInstance().getSmMapWC().getMapControl());
+            }
+        });
 
 
         return m_View;
