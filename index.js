@@ -153,6 +153,7 @@ import SMDynamicArrowView from './NativeModule/components/SMDynamicArrowView.js'
 import SMAIDetectView from './NativeModule/components/SMAIDetectView.js';
 import SMMeasureView from './NativeModule/components/SMMeasureView.js';
 import SMAIClassifyView from './NativeModule/components/SMAIClassifyView.js';
+import SMCollectSceneFormView from './NativeModule/components/SMCollectSceneFormView.js';
 
 import EngineType from './NativeModule/EngineType'
 import ThemeLabelItem from './NativeModule/ThemeLabelItem'
@@ -196,6 +197,7 @@ import {
   SAIDetectView,
   SMeasureView,
   SAIClassifyView,
+  SCollectSceneFormView,
 } from './NativeModule/interfaces'
 let SMCollectorType = NativeModules.SCollectorType;
 
@@ -215,6 +217,7 @@ export {
   SMAIDetectView,
   SMMeasureView,
   SMAIClassifyView,
+  SMCollectSceneFormView,
 
   Utility,
 
@@ -398,4 +401,5 @@ export {
   SAIDetectView,
   SMeasureView,
   SAIClassifyView,
+  SCollectSceneFormView,
 };
