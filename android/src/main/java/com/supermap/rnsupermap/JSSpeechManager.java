@@ -114,7 +114,7 @@ public class JSSpeechManager extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setAudioPath(String path, Promise promise){
         try {
-            String absolutePath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + path;
+            String absolutePath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() +"/"+ path;
             m_SpeechManager = getInstance();
             m_SpeechManager.setAudioPath(absolutePath);
             promise.resolve(true);

@@ -57,6 +57,7 @@
 #import "ScaleViewHelper.h"
 #import "InfoCallout.h"
 #import "SMMap.h"
+#import "SMMapRender.h"
 @interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate,AfterGeometryAddedDelegate,LegendContentDelegate,MapParameterChangedDelegate>
 @property (strong, nonatomic) SMMapWC* smMapWC;
 @property (strong, nonatomic) Selection* selection;

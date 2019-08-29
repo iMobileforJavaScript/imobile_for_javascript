@@ -8,7 +8,7 @@
 
 #import "JSChartView.h"
 #import "SuperMap/ChartView.h"
-#import "SuperMap/ChartLegend.h"
+//#import "SuperMap/ChartLegend.h"
 #import "SuperMap/ChartPoint.h"
 #import "JSObjManager.h"
 
@@ -39,10 +39,11 @@ RCT_REMAP_METHOD(getTitle, getTitleById:(NSString*)chartviewId resolver:(RCTProm
 RCT_REMAP_METHOD(getLegend, getLegendById:(NSString*)chartviewId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     ChartView* chartview = [JSObjManager getObjWithKey:chartviewId];
     if (chartview) {
-        ChartLegend* legend = chartview.legend;
-        [JSObjManager addObj:legend];
-        NSInteger legendKey = (NSInteger)legend;
-        resolve(@{@"chartLegendId":@(legendKey).stringValue});
+//        ChartLegend* legend = chartview.legend;
+//        [JSObjManager addObj:legend];
+//        NSInteger legendKey = (NSInteger)legend;
+//        resolve(@{@"chartLegendId":@(legendKey).stringValue});
+        resolve(@{@"chartLegendId":@(1)});
     }else{
         reject(@"chartview",@"get title failed",nil);
     }
