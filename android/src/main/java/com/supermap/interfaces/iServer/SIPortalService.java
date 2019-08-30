@@ -253,8 +253,21 @@ public class SIPortalService extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void uploadData(final String filePath, String fileName, final Promise promise) {
+        upload(filePath,fileName,"用户数据",DataItemType.WORKSPACE,promise);
+    }
+
+    @ReactMethod
+    public void uploadDataByType(final String filePath, String fileName,String dataType, final Promise promise){
+        DataItemType type=DataItemType.WORKSPACE;
+        if(dataType.equals("UDB")){
+            type=DataItemType.UDB;
+        }
+        upload(filePath,fileName,"用户数据",type,promise);
+    }
+
+    public void upload(final String filePath, String fileName,String tags,DataItemType dataType, final Promise promise){
         try{
-            String tags = "用户数据";
+//            String tags = "用户数据";
 
             //获取ID
             IPortalService.getInstance().addOnResponseListener(new OnResponseListener(){
@@ -316,7 +329,7 @@ public class SIPortalService extends ReactContextBaseJavaModule {
                 }
             });
 
-            IPortalService.getInstance().getMyDataID(fileName, tags, DataItemType.WORKSPACE);
+            IPortalService.getInstance().getMyDataID(fileName, tags, dataType);
         } catch (Exception e){
             promise.reject(e);
         }
