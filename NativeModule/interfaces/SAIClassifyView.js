@@ -33,17 +33,9 @@ dispose = () => {
   }
 }
 
-setModelName = (value) => {
+setModel = (params) => {
   try {
-    return SAIClassifyView.setModelName(value)
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-setLabelName = (value) => {
-  try {
-    return SAIClassifyView.setLabelName(value)
+    return SAIClassifyView.setModel(params)
   } catch (error) {
     console.error(error)
   }
@@ -109,8 +101,7 @@ export default {
   startPreview,
   captureImage,
   dispose,
-  setModelName,
-  setLabelName,
+  setModel,
   setInputSize,
   setQuant,
   stopPreview,

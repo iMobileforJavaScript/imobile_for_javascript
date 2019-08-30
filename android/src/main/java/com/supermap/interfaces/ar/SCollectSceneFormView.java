@@ -239,6 +239,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             Log.d(REACT_CLASS, "----------------onDestroy--------RN--------");
             isShowTrace = false;
             mArSceneView.getScene().removeOnUpdateListener(mOnUpdateListener);
+            mArSceneView.getScene().getView().destroy();
             mRenderer.getCurrentScene().clearFrameCallbacks();
             mArSceneView.pause();
             mArSceneView.destroy();

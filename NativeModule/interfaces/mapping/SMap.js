@@ -2095,19 +2095,62 @@ export default (function () {
     try {
       return SMap.beginNavigation(x1,y1,x2,y2)
     } catch (e) {
-  console.error(e)
-}
-}
-
- /**
-   * 智能配图
-   * @returns {*|void|Promise<void>}
-   */
-  function matchPictureStyle(picPath) {
-    try {
-      return SMap.matchPictureStyle(picPath)
-    }catch (e) {
       console.error(e)
+    }
+  }
+  
+  /**
+   * 智能配图
+   * @param picPath
+   * @param handler
+   */
+  function matchPictureStyle(picPath, handler = () => {}) {
+    try {
+      if (this.matchPictureListener) return
+      SMap.matchPictureStyle(picPath)
+      if (Platform.OS === 'ios') {
+        this.matchPictureListener = nativeEvt.addListener(EventConst.MATCH_IMAGE_RESULT, result => {
+          if(typeof handler === "function"){
+            handler(result);
+            if (this.matchPictureListener) {
+              this.matchPictureListener.remove()
+              nativeEvt.removeAllListeners(EventConst.MATCH_IMAGE_RESULT)
+              SMap.deleteMatchPictureListener()
+  
+              this.matchPictureListener = null
+            }
+          }
+        })
+      } else {
+        this.matchPictureListener = DeviceEventEmitter.addListener(EventConst.MATCH_IMAGE_RESULT, result=>{
+          if (typeof handler === "function") {
+            handler(result);
+            if (this.matchPictureListener) {
+              this.matchPictureListener.remove()
+              DeviceEventEmitter.removeListener(EventConst.MATCH_IMAGE_RESULT, handler)
+              SMap.deleteMatchPictureListener()
+  
+              this.matchPictureListener = null
+            }
+          }
+        })
+      }
+    } catch (e) {
+      if (this.matchPictureListener) {
+        if (Platform.OS === 'ios') {
+          this.matchPictureListener.remove()
+          nativeEvt.removeAllListeners(EventConst.MATCH_IMAGE_RESULT)
+          SMap.deleteMatchPictureListener()
+    
+          this.matchPictureListener = null
+        } else {
+          this.matchPictureListener.remove()
+          DeviceEventEmitter.removeListener(EventConst.MATCH_IMAGE_RESULT, handler)
+          SMap.deleteMatchPictureListener()
+  
+          this.matchPictureListener = null
+        }
+      }
     }
   }
 
