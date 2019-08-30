@@ -66,6 +66,7 @@ RCT_EXPORT_MODULE();
              LEGEND_CONTENT_CHANGE,
              MAP_SCALEVIEW_CHANGED,
 //             POINTSEARCH2D_KEYWORDS,
+             MATCH_IMAGE_RESULT,
              ];
 }
 
@@ -4371,8 +4372,20 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
 RCT_REMAP_METHOD(matchPictureStyle, matchPictureStyle:(NSString *)picPath resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
         SMMapRender* mapRender = [SMMapRender sharedInstance];
+        mapRender.delegate = self;
         [mapRender setCompressMode:2];
         [mapRender matchPictureStyle:picPath];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
+    }
+}
+
+#pragma mark 智能配图
+RCT_REMAP_METHOD(deleteMatchPictureListener, deleteMatchPictureListenerWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMMapRender* mapRender = [SMMapRender sharedInstance];
+        mapRender.delegate = nil;
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setLabelColor",exception.reason,nil);
@@ -4602,8 +4615,9 @@ RCT_REMAP_METHOD(matchPictureStyle, matchPictureStyle:(NSString *)picPath resolv
     [self sendEventWithName:MAP_GEOMETRY_MULTI_SELECTED body:@{@"geometries":(NSArray*)layersIdAndIds}];
 }
 
-//-(void)measureState{
-//
-//}
+#pragma mark - 智能配图结果监听
+-(void)matchImageFinished:(NSDictionary*)result {
+    [self sendEventWithName:MATCH_IMAGE_RESULT body:result];
+}
 
 @end

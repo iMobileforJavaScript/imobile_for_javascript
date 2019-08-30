@@ -6782,6 +6782,17 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void matchPictureStyle(String picPath, Promise promise) {
         try {
             SMMapRender smMapRender = SMMapRender.getInstance();
+            smMapRender.setSmMapRenderListener(new SMMapRender.SMMapRenderListener() {
+                @Override
+                public void onMatchPictureStyleFinished(boolean bSucssed, String strPath, String error) {
+                    WritableMap res = Arguments.createMap();
+                    res.putBoolean("result", bSucssed);
+                    res.putString("image", strPath);
+                    res.putString("error", error);
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MATCH_IMAGE_RESULT, res);
+                }
+            });
 
             String path = picPath;
             if (picPath.indexOf("content://") == 0) {
@@ -6789,6 +6800,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
             smMapRender.setCompressMode(2);
             smMapRender.matchPictureStyle(path);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 移除智能配图监听
+     * @param promise
+     */
+    @ReactMethod
+    public void deleteMatchPictureListener(Promise promise) {
+        try {
+            SMMapRender smMapRender = SMMapRender.getInstance();
+            smMapRender.setSmMapRenderListener(null);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
