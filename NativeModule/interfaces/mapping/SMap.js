@@ -134,8 +134,12 @@ export default (function () {
         b = SMap.openDatasourceWithName(params, value, toHead, isVisible)
       }
 
-      SMap.enableRotateTouch(bEnableRotateTouch)
-      SMap.enableSlantTouch(bEnableSlantTouch)
+      bEnableRotateTouch = false
+      bEnableSlantTouch = false
+      SMap.enableRotateTouch(false)
+      SMap.enableSlantTouch(false)
+      SMap.setMapAngle(0)
+      SMap.setMapSlantAngle(0)
       return b
     } catch (e) {
       console.error(e)
@@ -228,8 +232,12 @@ export default (function () {
       } else {
         b = SMap.openMapByName(value, viewEntire, center)
       }
-      SMap.enableRotateTouch(bEnableRotateTouch)
-      SMap.enableSlantTouch(bEnableSlantTouch)
+      bEnableRotateTouch = false
+      bEnableSlantTouch = false
+      SMap.enableRotateTouch(false)
+      SMap.enableSlantTouch(false)
+      SMap.setMapAngle(0)
+      SMap.setMapSlantAngle(0)
       return b
     } catch (e) {
       console.error(e)

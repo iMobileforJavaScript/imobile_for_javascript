@@ -5067,6 +5067,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    @ReactMethod
+    public void setMapSlantAngle(double angle, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getMap().SetSlantAngle(angle);
+            sMap.smMapWC.getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     /**
      * 获取地图颜色模式
      *

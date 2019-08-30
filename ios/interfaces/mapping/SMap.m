@@ -260,6 +260,18 @@ RCT_REMAP_METHOD(setMapAngle, setMapAngleWithValue:(double)angle Resolver:(RCTPr
     }
 }
 
+#pragma mark 设置地图旋转角度
+RCT_REMAP_METHOD(setMapSlantAngle, setMapSlantAngleValue:(double)angle Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Map *map = sMap.smMapWC.mapControl.map;
+        map.slantAngle = angle;
+        [map refresh];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setMapAngle",exception.reason,nil);
+    }
+}
 #pragma mark 获取地图颜色模式
 RCT_REMAP_METHOD(getMapColorMode, getMapColorModeWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
