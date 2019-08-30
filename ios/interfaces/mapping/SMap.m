@@ -66,6 +66,7 @@ RCT_EXPORT_MODULE();
              LEGEND_CONTENT_CHANGE,
              MAP_SCALEVIEW_CHANGED,
 //             POINTSEARCH2D_KEYWORDS,
+             MATCH_IMAGE_RESULT,
              ];
 }
 
@@ -1020,8 +1021,21 @@ RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBl
         reject(@"workspace", exception.reason, nil);
     }
 }
-
-
+#pragma mark 判断当前数据源别名是否可用，返回可用别名
+RCT_REMAP_METHOD(isAvilableAlias, isAvilableAliasWithAlias:(NSString*)alias resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Datasources *datasources = sMap.smMapWC.workspace.datasources;
+        int index = 1;
+        while ([datasources indexOf:alias] != -1) {
+            alias = [NSString stringWithFormat:@"%@__%d",alias,index];
+            index++;
+        }
+        resolve(alias);
+    } @catch (NSException *exception) {
+        reject(@"isAvaliableAlias",exception.reason,nil);
+    }
+}
 #pragma mark 以数据源形式打开工作空间, 默认根据Map 图层索引显示图层
 RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)params defaultIndex:(int)defaultIndex toHead:(BOOL)toHead visible:(BOOL)visible resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
@@ -2932,8 +2946,17 @@ RCT_REMAP_METHOD(animationPlay,animationPlay:(RCTPromiseResolveBlock)resolve rej
     @try {
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
+        double scale = mapControl.map.scale ;
+        mapControl.map.scale += 0.1;
         [mapControl.map refresh];
-        [[AnimationManager getInstance] play];
+        mapControl.map.scale = scale;
+        [mapControl.map refresh];
+//        [mapControl zoomTo:mapControl.map.scale*0.95 time:100];
+//        [mapControl.map refresh];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+             [[AnimationManager getInstance] play];
+        });
+       
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setDynamicProjection", exception.reason, nil);
@@ -4349,7 +4372,20 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
 RCT_REMAP_METHOD(matchPictureStyle, matchPictureStyle:(NSString *)picPath resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
         SMMapRender* mapRender = [SMMapRender sharedInstance];
+        mapRender.delegate = self;
+        [mapRender setCompressMode:2];
         [mapRender matchPictureStyle:picPath];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
+    }
+}
+
+#pragma mark 智能配图
+RCT_REMAP_METHOD(deleteMatchPictureListener, deleteMatchPictureListenerWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMMapRender* mapRender = [SMMapRender sharedInstance];
+        mapRender.delegate = nil;
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setLabelColor",exception.reason,nil);
@@ -4579,8 +4615,9 @@ RCT_REMAP_METHOD(matchPictureStyle, matchPictureStyle:(NSString *)picPath resolv
     [self sendEventWithName:MAP_GEOMETRY_MULTI_SELECTED body:@{@"geometries":(NSArray*)layersIdAndIds}];
 }
 
-//-(void)measureState{
-//
-//}
+#pragma mark - 智能配图结果监听
+-(void)matchImageFinished:(NSDictionary*)result {
+    [self sendEventWithName:MATCH_IMAGE_RESULT body:result];
+}
 
 @end

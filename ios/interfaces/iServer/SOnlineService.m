@@ -339,6 +339,29 @@ RCT_REMAP_METHOD(upload, uploadByPath:(NSString *)path fileName:(NSString *)file
     }
 }
 
+#pragma mark ---------------------------- uploadByType
+RCT_REMAP_METHOD(uploadByType, uploadByPath:(NSString *)path fileName:(NSString *)fileName dataType:(NSString *)type resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSString* tags=@"用户数据";
+        DataType dataType=WORKSPACE;
+        if([type isEqualToString:@"UDB"]){
+            dataType=UDB;
+        }
+        
+        //        OnlineService* m_onlineService = [OnlineService sharedService];
+        if(m_onlineService.uploadDelegate == nil){
+            m_onlineService.uploadDelegate = self;
+        }
+        [m_onlineService uploadFilePath:path onlineFileName:fileName tags:tags dataType:dataType];
+//        [m_onlineService uploadFilePath:path onlineFileName:fileName];
+        uploadId = fileName;
+        NSNumber* number =[NSNumber numberWithBool:YES];
+        resolve(number);
+    } @catch (NSException *exception) {
+        reject(kTAG, @"upload failed", nil);
+    }
+}
+
 #pragma mark ---------------------------- verifyCodeImage
 RCT_REMAP_METHOD(verifyCodeImage,verifyCodeImageResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try{
