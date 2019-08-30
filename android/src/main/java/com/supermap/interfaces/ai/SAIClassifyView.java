@@ -24,15 +24,20 @@ import java.util.*;
 
 public class SAIClassifyView extends ReactContextBaseJavaModule {
 
-    public static final String REACT_CLASS = "SAIClassifyView";
+    private static final String REACT_CLASS = "SAIClassifyView";
 
-    private static String MODEL_NAME = "mobilenet_v1_1.0_224_quant.tflite";
-    private static String LABEL_NAME = "labels_mobilenet_quant_v1_224.txt";
-    private static String LABEL_CN_TRANSLATE = "classifier_labels_mobilenet_quant_v1_224_cn.txt";
+    private static final String DEFAULT_MODEL_NAME = "mobilenet_quant_224.tflite";
+    private static final String DEFAULT_LABEL_NAME = "mobilenet_quant_224.txt";
+    private static final String DEFAULT_LABEL_CN_TRANSLATE = "mobilenet_quant_224_cn.txt";
+
+    private static ModelType mModelType = ModelType.ASSETS_FILE;
+    private static String MODEL_PATH = "";
+    private static String LABEL_PATH = "";
+
     private static int INPUT_SIZE = 224;
     private static boolean QUANT = true;
 
-    private static Classifier2 classifier = null;
+    private static Classifier2 mClassifier = null;
 
     private static Context mContext = null;
     private static ReactApplicationContext mReactContext = null;
@@ -107,7 +112,7 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
 
 //                mImageView.setImageBitmap(mBitmap);
 
-                final List<Classifier2.Recognition> results = classifier.recognizeImage(bitmap);
+                final List<Classifier2.Recognition> results = mClassifier.recognizeImage(bitmap);
 
                 if (results != null && results.size() > 0) {
                     for (int  i= 0; i < results.size(); i++){
@@ -150,14 +155,20 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
 
     private static void initTensorFlowAndLoadModel() {
         try {
-            classifier = TensorFlowImageClassifier.create(
-                    mContext.getAssets(),
-                    MODEL_NAME,
-                    LABEL_NAME,
-                    INPUT_SIZE,
-                    QUANT);
-            Log.d(REACT_CLASS, "MODEL_NAME=" + MODEL_NAME + ", LABEL_NAME=" + LABEL_NAME +
-                    ", INPUT_SIZE=" + INPUT_SIZE + ", QUANT=" + QUANT);
+            if (mModelType == ModelType.ASSETS_FILE) {
+                mClassifier = TensorFlowImageClassifier.create(
+                        mContext.getAssets(),
+                        DEFAULT_MODEL_NAME,
+                        DEFAULT_LABEL_NAME,
+                        INPUT_SIZE,
+                        QUANT);
+            } else if (mModelType == ModelType.ABSOLUTE_FILE_PATH) {
+                mClassifier = TensorFlowImageClassifier.create(
+                        MODEL_PATH,
+                        LABEL_PATH,
+                        INPUT_SIZE,
+                        QUANT);
+            }
         } catch (final Exception e) {
             throw new RuntimeException("Error initializing TensorFlow!", e);
         }
@@ -299,6 +310,11 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
         }
     }
 
+    private void initData() {
+        mListCNClassifyNames = getAllChineseClassifyName();
+        mListENClassifyNames = getAllEngClassifyName();
+    }
+
     /********************************************************************************************/
     //初始化
     @ReactMethod
@@ -310,8 +326,7 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
             mDatasetName = datasetName;
 
             mLanguage = language;
-            mListCNClassifyNames = getAllChineseClassifyName();
-            mListENClassifyNames = getAllEngClassifyName();
+            initData();
 //            createDataset(datasourceAlias, datasetName);
 //
 //            if (SMLayer.findLayerByDatasetName(datasetName) == null) {
@@ -452,7 +467,7 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
                         mBitmap = BitmapFactory.decodeFile(finalMediaPath);
                         Bitmap bitmap = Bitmap.createScaledBitmap(mBitmap, INPUT_SIZE, INPUT_SIZE, false);
 
-                        final List<Classifier2.Recognition> results = classifier.recognizeImage(bitmap);
+                        final List<Classifier2.Recognition> results = mClassifier.recognizeImage(bitmap);
 
                         if (results != null && results.size() > 0) {
                             WritableArray arr = Arguments.createArray();
@@ -578,9 +593,13 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     private List<String> getAllChineseClassifyName() {
         List<String> list = new ArrayList<>();
         try {
-            InputStream inputStream = mContext.getAssets().open(LABEL_CN_TRANSLATE);
-
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            InputStream inputStream = null;
+            if (mModelType == ModelType.ASSETS_FILE) {
+                inputStream = mContext.getAssets().open(DEFAULT_LABEL_CN_TRANSLATE);
+            } else if (mModelType == ModelType.ABSOLUTE_FILE_PATH) {
+                inputStream = new FileInputStream(new File(LABEL_PATH));
+            }
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 if (!line.contains("?") && !line.equals("")){
@@ -595,15 +614,19 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 获取所有的分类类型的中文翻译(顺序与label文件对应)
+     * 获取所有的分类类型
      * @return
      */
     private List<String> getAllEngClassifyName() {
         List<String> list = new ArrayList<>();
         try {
-            InputStream inputStream = mContext.getAssets().open(LABEL_NAME);
-
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            InputStream inputStream = null;
+            if (mModelType == ModelType.ASSETS_FILE) {
+                inputStream = mContext.getAssets().open(DEFAULT_LABEL_NAME);
+            } else if (mModelType == ModelType.ABSOLUTE_FILE_PATH) {
+                inputStream = new FileInputStream(new File(LABEL_PATH));
+            }
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 if (!line.contains("?") && !line.equals("")){
@@ -691,23 +714,48 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setModelName(String modelName, Promise promise) {
+    public void setModel(ReadableMap readableMap, Promise promise) {
         try {
-            Log.d(REACT_CLASS, "----------------setModelName--------RN--------");
-            MODEL_NAME = modelName;
-            initTensorFlowAndLoadModel();
+            Log.d(REACT_CLASS, "----------------setModel--------RN--------");
+            HashMap<String, Object> data = readableMap.toHashMap();
 
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
+            ModelType modelType = null;
+            String modelPath = null;
+            String labelPath = null;
 
-    @ReactMethod
-    public void setLabelName(String labelName, Promise promise) {
-        try {
-            Log.d(REACT_CLASS, "----------------setLabelName--------RN--------");
-            LABEL_NAME = labelName;
+            if (data.containsKey("ModelType")){
+                String type = data.get("ModelType").toString();
+                if (type.equals("ASSETS_FILE")) {
+                    modelType = ModelType.ASSETS_FILE;
+                } else if (type.equals("ABSOLUTE_FILE_PATH")) {
+                    modelType = ModelType.ABSOLUTE_FILE_PATH;
+                }
+            }
+            if (data.containsKey("ModelPath")){
+                modelPath = data.get("ModelPath").toString();
+            }
+            if (data.containsKey("LabelPath")){
+                labelPath = data.get("LabelPath").toString();
+            }
+
+            if (modelType == null) {
+                promise.resolve(false);
+                return;
+            } else {
+                if (modelType == ModelType.ABSOLUTE_FILE_PATH) {
+                    if (modelPath == null || labelPath == null || modelPath.isEmpty() || labelPath.isEmpty()) {
+                        promise.resolve(false);
+                        return;
+                    }
+                }
+            }
+            mModelType = modelType;
+            if (mModelType == ModelType.ABSOLUTE_FILE_PATH) {
+                MODEL_PATH = modelPath;
+                LABEL_PATH = labelPath;
+            }
+
+            initData();
             initTensorFlowAndLoadModel();
 
             promise.resolve(true);
@@ -740,6 +788,11 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             promise.reject(e);
         }
+    }
+
+    public enum ModelType{
+        ASSETS_FILE,
+        ABSOLUTE_FILE_PATH,
     }
 
 }

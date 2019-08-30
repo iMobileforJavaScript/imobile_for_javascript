@@ -4351,9 +4351,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
-            mapControl.getMap().refresh();
-            AnimationManager.getInstance().play();
+//            double scale = mapControl.getMap().getScale();
+//            mapControl.zoomTo(mapControl.getMap().getScale()+0.1,100);
+////            mapControl.getMap().setScale( mapControl.getMap().getScale()+0.1);
+//            mapControl.getMap().refresh();
+//            mapControl.zoomTo(scale,100);
+////            mapControl.getMap().setScale( scale);
+//            mapControl.getMap().refresh();
 
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    AnimationManager.getInstance().play();
+                }
+            }, 0);//3秒后执行Runnable中的run方法
             promise.resolve(true);
         } catch (Exception e) {
             promise.resolve(false);
@@ -5048,6 +5060,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().setAngle(angle);
+            sMap.smMapWC.getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setMapSlantAngle(double angle, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getMap().SetSlantAngle(angle);
             sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
@@ -6782,6 +6806,17 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void matchPictureStyle(String picPath, Promise promise) {
         try {
             SMMapRender smMapRender = SMMapRender.getInstance();
+            smMapRender.setSmMapRenderListener(new SMMapRender.SMMapRenderListener() {
+                @Override
+                public void onMatchPictureStyleFinished(boolean bSucssed, String strPath, String error) {
+                    WritableMap res = Arguments.createMap();
+                    res.putBoolean("result", bSucssed);
+                    res.putString("image", strPath);
+                    res.putString("error", error);
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MATCH_IMAGE_RESULT, res);
+                }
+            });
 
             String path = picPath;
             if (picPath.indexOf("content://") == 0) {
@@ -6789,6 +6824,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
             smMapRender.setCompressMode(2);
             smMapRender.matchPictureStyle(path);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 移除智能配图监听
+     * @param promise
+     */
+    @ReactMethod
+    public void deleteMatchPictureListener(Promise promise) {
+        try {
+            SMMapRender smMapRender = SMMapRender.getInstance();
+            smMapRender.setSmMapRenderListener(null);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

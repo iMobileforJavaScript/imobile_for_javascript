@@ -66,6 +66,7 @@ RCT_EXPORT_MODULE();
              LEGEND_CONTENT_CHANGE,
              MAP_SCALEVIEW_CHANGED,
 //             POINTSEARCH2D_KEYWORDS,
+             MATCH_IMAGE_RESULT,
              ];
 }
 
@@ -259,6 +260,18 @@ RCT_REMAP_METHOD(setMapAngle, setMapAngleWithValue:(double)angle Resolver:(RCTPr
     }
 }
 
+#pragma mark 设置地图旋转角度
+RCT_REMAP_METHOD(setMapSlantAngle, setMapSlantAngleValue:(double)angle Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Map *map = sMap.smMapWC.mapControl.map;
+        map.slantAngle = angle;
+        [map refresh];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setMapAngle",exception.reason,nil);
+    }
+}
 #pragma mark 获取地图颜色模式
 RCT_REMAP_METHOD(getMapColorMode, getMapColorModeWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -4371,8 +4384,20 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
 RCT_REMAP_METHOD(matchPictureStyle, matchPictureStyle:(NSString *)picPath resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
         SMMapRender* mapRender = [SMMapRender sharedInstance];
+        mapRender.delegate = self;
         [mapRender setCompressMode:2];
         [mapRender matchPictureStyle:picPath];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
+    }
+}
+
+#pragma mark 智能配图
+RCT_REMAP_METHOD(deleteMatchPictureListener, deleteMatchPictureListenerWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMMapRender* mapRender = [SMMapRender sharedInstance];
+        mapRender.delegate = nil;
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setLabelColor",exception.reason,nil);
@@ -4602,8 +4627,9 @@ RCT_REMAP_METHOD(matchPictureStyle, matchPictureStyle:(NSString *)picPath resolv
     [self sendEventWithName:MAP_GEOMETRY_MULTI_SELECTED body:@{@"geometries":(NSArray*)layersIdAndIds}];
 }
 
-//-(void)measureState{
-//
-//}
+#pragma mark - 智能配图结果监听
+-(void)matchImageFinished:(NSDictionary*)result {
+    [self sendEventWithName:MATCH_IMAGE_RESULT body:result];
+}
 
 @end
