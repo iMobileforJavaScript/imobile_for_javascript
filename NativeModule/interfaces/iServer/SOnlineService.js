@@ -69,6 +69,36 @@ function uploadFile (path, dataName, handler) {
   OnlineServiceNative.upload(path, dataName)
 }
 
+function uploadFilebyType (path, dataName,dataType, handler) {
+  uploadFileListener && uploadFileListener.remove()
+  uploadingFileListener && uploadingFileListener.remove()
+  if (Platform.OS === 'ios' && handler) {
+    if (typeof handler.onProgress === 'function') {
+      uploadingFileListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (obj) {
+        handler.onProgress(obj.progress)
+      })
+    }
+    if (typeof handler.onResult === 'function') {
+      uploadFileListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADED, function (value) {
+        handler.onResult(value)
+      })
+    }
+  } else {
+    if (typeof handler.onProgress === 'function') {
+      uploadingFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
+        handler.onProgress(progress)
+      })
+    }
+    if (typeof handler.onResult === 'function' && handler) {
+      uploadFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADED, function (result) {
+        handler.onResult(result)
+      })
+    }
+  }
+  
+  OnlineServiceNative.uploadByType(path, dataName, dataType)
+}
+
 let downloadingListener
 let downloadedListener
 let downloadfailureListener
@@ -358,6 +388,7 @@ function reverseGeocoding (longitude, latitude, handler) {
 export default {
   init,
   uploadFile,
+  uploadFilebyType,
   downloadFile,
   objCallBack,
   login,

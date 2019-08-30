@@ -1020,8 +1020,21 @@ RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBl
         reject(@"workspace", exception.reason, nil);
     }
 }
-
-
+#pragma mark 判断当前数据源别名是否可用，返回可用别名
+RCT_REMAP_METHOD(isAvilableAlias, isAvilableAliasWithAlias:(NSString*)alias resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Datasources *datasources = sMap.smMapWC.workspace.datasources;
+        int index = 1;
+        while ([datasources indexOf:alias] != -1) {
+            alias = [NSString stringWithFormat:@"%@__%d",alias,index];
+            index++;
+        }
+        resolve(alias);
+    } @catch (NSException *exception) {
+        reject(@"isAvaliableAlias",exception.reason,nil);
+    }
+}
 #pragma mark 以数据源形式打开工作空间, 默认根据Map 图层索引显示图层
 RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)params defaultIndex:(int)defaultIndex toHead:(BOOL)toHead visible:(BOOL)visible resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
