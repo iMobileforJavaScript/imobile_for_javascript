@@ -1870,17 +1870,29 @@ export default (function () {
   }
 
   /**
-   * 当前选中的callout移动到地图中心
+   * 设置当前选中callout
    * @param item
    * @returns {*}
    */
-  function setCalloutToMapCenter(item) {
-    try {
-      return SMap.setCalloutToMapCenter(item)
-    } catch (e) {
+  function setCenterCallout(item) {
+    try{
+      return SMap.setCenterCallout(item)
+    }catch (e) {
       console.error(e)
     }
   }
+  // /**
+  //  * 当前选中的callout移动到地图中心
+  //  * @param item
+  //  * @returns {*}
+  //  */
+  // function setCalloutToMapCenter(item) {
+  //   try {
+  //     return SMap.setCalloutToMapCenter(item)
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
 
   /**
    * 获取当前所在位置经纬度
@@ -2276,7 +2288,8 @@ export default (function () {
 
   let SMapExp = {
     isAvilableAlias,
-    setCalloutToMapCenter,
+    setCenterCallout,
+    //setCalloutToMapCenter,
     removeAllCallout,
     addCallouts,
     removePOICallout,
