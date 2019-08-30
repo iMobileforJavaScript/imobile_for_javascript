@@ -161,6 +161,18 @@ RCT_REMAP_METHOD(uploadData, uploadFrom:(NSString*)filePath As:(NSString*)fileNa
     [m_iportalService getMyDataIDFor:fileName tag:tags type:DIT_WORKSPACE];
 }
 
+#pragma mark ---------------------------- uploadDataByType
+RCT_REMAP_METHOD(uploadDataByType, uploadFrom:(NSString*)filePath As:(NSString*)fileName dataType:(NSString*)type initWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    _resolve = resolve;
+    _uploadFilePath = filePath;
+    NSString* tags = @"用户数据";
+    DataItemType dataType=DIT_WORKSPACE;
+    if([type isEqualToString:@"UDB"]){
+        dataType=DIT_UDB;
+    }
+    [m_iportalService getMyDataIDFor:fileName tag:tags type:dataType];
+}
+
 #pragma mark ----------------------------获取上传id回调
 -(void)myDataIDResult:(NSDictionary *)result{
     NSNumber* id = [result objectForKey:@"childID"];
