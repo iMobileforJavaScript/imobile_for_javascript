@@ -197,6 +197,7 @@
 		4AE32D4921BA0C4800555A5A /* SThemeCartography.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AE32D4821BA0C4800555A5A /* SThemeCartography.m */; };
 		4AF967A421B50EC000105B74 /* SMCartography.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AF967A321B50EC000105B74 /* SMCartography.m */; };
 		4AF967A721B5283A00105B74 /* SCartography.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AF967A621B5283A00105B74 /* SCartography.m */; };
+		611AE55923177F96009A0B9A /* SMMapFixColors.mm in Sources */ = {isa = PBXBuildFile; fileRef = 611AE55823177F96009A0B9A /* SMMapFixColors.mm */; };
 		D82C65AB214208DC00E9EEC5 /* JSWorkspaceType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */; };
 		D82F377A2189ABEF00F85267 /* SCollectorType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82F37792189ABEF00F85267 /* SCollectorType.m */; };
 		D835E5B0219EC726008910F0 /* SLayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D835E5AF219EC726008910F0 /* SLayerManager.m */; };
@@ -597,6 +598,8 @@
 		4AF967A521B5283A00105B74 /* SCartography.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCartography.h; path = interfaces/SCartography.h; sourceTree = SOURCE_ROOT; };
 		4AF967A621B5283A00105B74 /* SCartography.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCartography.m; path = interfaces/SCartography.m; sourceTree = SOURCE_ROOT; };
 		610C41C42314F852001EC84A /* libpython2.7.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpython2.7.a; path = "python/starcore_for_ios/python-2.7/libpython2.7.a"; sourceTree = "<group>"; };
+		611AE55723177F96009A0B9A /* SMMapFixColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMapFixColors.h; sourceTree = "<group>"; };
+		611AE55823177F96009A0B9A /* SMMapFixColors.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SMMapFixColors.mm; sourceTree = "<group>"; };
 		61786D45230A71E300D92877 /* SMMapRender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMapRender.h; sourceTree = "<group>"; };
 		61786D46230A71E300D92877 /* SMMapRender.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SMMapRender.mm; sourceTree = "<group>"; };
 		617D9BEE230FE37E00ADCCCA /* _imagingmath.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = _imagingmath.a; path = "python/Pillow-master/_imagingmath.a"; sourceTree = "<group>"; };
@@ -935,6 +938,8 @@
 				0A22981122BB1762001B2356 /* SMParameter.m */,
 				61786D45230A71E300D92877 /* SMMapRender.h */,
 				61786D46230A71E300D92877 /* SMMapRender.mm */,
+				611AE55723177F96009A0B9A /* SMMapFixColors.h */,
+				611AE55823177F96009A0B9A /* SMMapFixColors.mm */,
 			);
 			path = native;
 			sourceTree = "<group>";
@@ -1412,6 +1417,7 @@
 				0A332DFD211D623E00F56F26 /* JSCollectorElement.m in Sources */,
 				0A332E3E211D623E00F56F26 /* JSPolymerChart.m in Sources */,
 				0A332E6D211D623E00F56F26 /* NativeUtil.m in Sources */,
+				611AE55923177F96009A0B9A /* SMMapFixColors.mm in Sources */,
 				0A332E0F211D623E00F56F26 /* JSElementPolygon.m in Sources */,
 				0A01192E212412C500BC4AAB /* JSRangeMode.m in Sources */,
 				0A332E73211D623E00F56F26 /* SceneViewManager.m in Sources */,
