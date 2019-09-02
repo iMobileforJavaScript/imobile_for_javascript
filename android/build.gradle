@@ -68,8 +68,5 @@ dependencies {
     implementation 'com.google.ar:core:1.7.0'
     implementation 'de.javagl:obj:0.2.1'
     implementation files('libs/starcore_android_r2.51.jar')
-    implementation ('com.wonderkiln:camerakit:0.13.1'){
-        exclude group: 'com.android.support'
-    }
     implementation 'org.rajawali3d:rajawali:1.0.325@aar'
 }

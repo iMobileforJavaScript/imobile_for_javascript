@@ -105,6 +105,14 @@ getCurrentModel = () => {
   }
 }
 
+loadImageUri = (imgUri) => {
+  try {
+    return SAIClassifyView.loadImageUri(imgUri)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   startPreview,
   captureImage,
@@ -118,4 +126,5 @@ export default {
   getImagePath,
   clearBitmap,
   getCurrentModel,
+  loadImageUri,
 }

@@ -109,9 +109,9 @@ setIsPolymerize = (value) => {
 }
 
 //返回是否聚合模式
-isPolynerize = () => {
+isPolymerize = () => {
   try {
-    return SAIDetectView.isPolynerize()
+    return SAIDetectView.isPolymerize()
   } catch (error) {
     console.error(error)
   }
@@ -296,7 +296,7 @@ export default {
   getAllDetectArrayProvide,
   clearDetectObjects,
   setIsPolymerize,
-  isPolynerize,
+  isPolymerize,
   setPolymerizeThreshold,
   setPolySize,
   getTrackedCount,

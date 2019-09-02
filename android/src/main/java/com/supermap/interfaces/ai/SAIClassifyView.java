@@ -15,7 +15,6 @@ import com.supermap.ai.classifier.TensorFlowImageClassifier;
 import com.supermap.data.*;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.MapControl;
-import com.wonderkiln.camerakit.*;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -43,7 +42,6 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     private static ReactApplicationContext mReactContext = null;
 
     private String mDatasourceAlias, mDatasetName = null;
-    private static CameraView mCameraView = null;
     private static Bitmap mBitmap = null;
 
     private static List<String> mListCNClassifyNames = null;
@@ -61,85 +59,9 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
         mContext = getReactApplicationContext();
     }
 
-    public static void setInstance(CameraView cameraView) {
-        Log.d(REACT_CLASS, "----------------setInstance--------RN--------");
-        mCameraView = cameraView;
-        mCameraView.start();
-//        mCameraView.setBackgroundColor(Color.parseColor("#FFFFFF"));
-        mCameraView.setFocus(CameraKit.Constants.FOCUS_TAP);
-        mCameraView.setJpegQuality(100);
-        mCameraView.setPinchToZoom(true);
-
-        mCameraView.setFacing(CameraKit.Constants.FACING_BACK);
-        mCameraView.setFlash(CameraKit.Constants.FLASH_OFF);
-        mCameraView.setMethod(CameraKit.Constants.METHOD_STANDARD);
-
-        initTensorFlowAndLoadModel();
-        mCameraView.addCameraKitListener(mCameraKitEventListener);
-    }
-
-    private static CameraKitEventListener mCameraKitEventListener = new CameraKitEventListener() {
-        @Override
-        public void onEvent(CameraKitEvent cameraKitEvent) {
-            Log.d(REACT_CLASS, "CameraKitEventListener: onEvent" + cameraKitEvent.getMessage());
-
-        }
-
-        @Override
-        public void onError(CameraKitError cameraKitError) {
-            Log.d(REACT_CLASS, "CameraKitEventListener: onError" + cameraKitError.getMessage());
-        }
-
-        @Override
-        public void onImage(CameraKitImage cameraKitImage) {
-            Log.d(REACT_CLASS, "CameraKitEventListener: onImage");
-            WritableArray arr = Arguments.createArray();
-            if (cameraKitImage.getJpeg() != null && cameraKitImage.getJpeg().length > 0) {
-                if (mBitmap != null && !mBitmap.isRecycled()) {
-                    mBitmap.recycle();
-                    mBitmap = null;
-                }
-                mBitmap = cameraKitImage.getBitmap();
-                Log.d(REACT_CLASS, "mBitmap" + mBitmap.getByteCount());
-
-                Bitmap bitmap = Bitmap.createScaledBitmap(mBitmap, INPUT_SIZE, INPUT_SIZE, false);
-                Log.d(REACT_CLASS, "bitmap" + bitmap.getByteCount());
-
-                final List<Classifier2.Recognition> results = mClassifier.recognizeImage(bitmap);
-
-                if (results != null && results.size() > 0) {
-                    for (int  i= 0; i < results.size(); i++){
-                        Classifier2.Recognition recognition = results.get(i);
-                        WritableMap writeMap = Arguments.createMap();
-                        writeMap.putString("ID", recognition.getId());
-                        String title = recognition.getTitle();
-                        if (mLanguage.equals("CN")) {
-                            if (mListENClassifyNames.contains(title)){
-                                int index = mListENClassifyNames.indexOf(title);
-                                title = mListCNClassifyNames.get(index);
-                            }
-                        }
-                        writeMap.putString("Title",title);
-                        writeMap.putString("Time", getCurrentTime());
-                        Float confidence = recognition.getConfidence();
-                        DecimalFormat mDecimalFormat = new DecimalFormat("0.00");
-                        writeMap.putString("Confidence", mDecimalFormat.format(confidence * 100) + "%");
-                        arr.pushMap(writeMap);
-                        Log.d(REACT_CLASS, "ID:" + recognition.getId() + ", Title:" + recognition.getTitle() + ", Confidence:" + recognition.getConfidence());
-                    }
-                }
-            }
-            WritableMap allResults = Arguments.createMap();
-            allResults.putArray("results", arr);
-
-            sendEvent(mReactContext, "recognizeImage", allResults);
-        }
-
-        @Override
-        public void onVideo(CameraKitVideo cameraKitVideo) {
-
-        }
-    };
+//    public static void setInstance() {
+//        initTensorFlowAndLoadModel();
+//    }
 
     private static void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -318,6 +240,7 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
             mDatasourceAlias = datasourceAlias;
             mDatasetName = datasetName;
 
+            initTensorFlowAndLoadModel();
             mLanguage = language;
             initData();
 //            createDataset(datasourceAlias, datasetName);
@@ -339,9 +262,6 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     public void startPreview(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------startPreview--------RN--------");
-            if (mCameraView != null) {
-                mCameraView.start();
-            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -355,9 +275,6 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     public void stopPreview(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------stopPreview--------RN--------");
-            if (mCameraView != null) {
-                mCameraView.stop();
-            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -371,9 +288,6 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     public void captureImage(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------captureImage--------RN--------");
-            if (mCameraView != null) {
-                mCameraView.captureImage();
-            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -387,14 +301,72 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     public void dispose(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------dispose--------RN--------");
-            if (mCameraView != null) {
-                mCameraView.stop();
-            }
             if (mBitmap != null && !mBitmap.isRecycled()) {
                 mBitmap.recycle();
                 mBitmap = null;
             }
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 加载react-native-camera拍的照片（应用私有存储）
+     */
+    @ReactMethod
+    public void loadImageUri(final String imgUri, Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------loadImageUri--------RN--------");
+            if (imgUri != null && !imgUri.isEmpty()) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //压缩图片到指定kb大小
+                        mBitmap = BitmapFactory.decodeFile(imgUri);
+                        //删除原始图片
+                        File file = new File(imgUri);
+                        if (file.exists()){
+                            boolean delete = file.delete();
+                            if (delete) {
+                                Log.d(REACT_CLASS, "Delete Cache imgUri Success!");
+                            }
+                        }
+                        Bitmap bitmap = Bitmap.createScaledBitmap(mBitmap, INPUT_SIZE, INPUT_SIZE, false);
+
+                        final List<Classifier2.Recognition> results = mClassifier.recognizeImage(bitmap);
+                        WritableArray arr = Arguments.createArray();
+
+                        if (results != null && results.size() > 0) {
+                            for (int  i= 0; i < results.size(); i++){
+                                Classifier2.Recognition recognition = results.get(i);
+                                WritableMap writeMap = Arguments.createMap();
+                                writeMap.putString("ID", recognition.getId());
+                                String title = recognition.getTitle();
+                                if (mLanguage.equals("CN")) {
+                                    if (mListENClassifyNames.contains(title)){
+                                        int index = mListENClassifyNames.indexOf(title);
+                                        title = mListCNClassifyNames.get(index);
+                                    }
+                                }
+                                writeMap.putString("Title",title);
+                                writeMap.putString("Time", getCurrentTime());
+                                Float confidence = recognition.getConfidence();
+                                DecimalFormat mDecimalFormat = new DecimalFormat("0.00");
+                                writeMap.putString("Confidence", mDecimalFormat.format(confidence * 100) + "%");
+                                arr.pushMap(writeMap);
+                                Log.d(REACT_CLASS, "ID:" + recognition.getId() + ", Title:" + recognition.getTitle() + ", Confidence:" + recognition.getConfidence());
+                            }
+                        }
+                        WritableMap allResults = Arguments.createMap();
+                        allResults.putArray("results", arr);
+
+                        sendEvent(mReactContext, "recognizeImage", allResults);
+                    }
+                }).start();
+            } else {
+                promise.resolve(false);
+            }
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -460,9 +432,10 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
                         Bitmap bitmap = Bitmap.createScaledBitmap(mBitmap, INPUT_SIZE, INPUT_SIZE, false);
 
                         final List<Classifier2.Recognition> results = mClassifier.recognizeImage(bitmap);
+                        WritableMap allResults = Arguments.createMap();
+                        WritableArray arr = Arguments.createArray();
 
                         if (results != null && results.size() > 0) {
-                            WritableArray arr = Arguments.createArray();
                             for (int  i= 0; i < results.size(); i++){
                                 Classifier2.Recognition recognition = results.get(i);
                                 WritableMap writeMap = Arguments.createMap();
@@ -482,12 +455,9 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
                                 arr.pushMap(writeMap);
                                 Log.d(REACT_CLASS, "ID:" + recognition.getId() + ", Title:" + recognition.getTitle() + ", Confidence:" + recognition.getConfidence());
                             }
-
-                            WritableMap allResults = Arguments.createMap();
-                            allResults.putArray("results", arr);
-
-                            sendEvent(mReactContext, "recognizeImage", allResults);
                         }
+                        allResults.putArray("results", arr);
+                        sendEvent(mReactContext, "recognizeImage", allResults);
                     }
                 }).start();
             }
@@ -514,7 +484,7 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
 //    }
 
     /**
-     * 拷贝图片到media文件夹
+     * 清除bitmap
      */
     @ReactMethod
     public void clearBitmap(Promise promise) {
