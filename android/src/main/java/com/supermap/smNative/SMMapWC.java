@@ -1332,6 +1332,7 @@ public class SMMapWC {
 // 返回结果：NSArray为导入成功的所有地图名
 //    public boolean importWorkspaceInfo(Map infoMap, String strModule) {
     public List<String> importWorkspaceInfo(Map infoMap, String strModule, boolean bPrivate) {
+        
 
         List<String> arrResult = null;
         if (infoMap == null || infoMap.get("server") == null || infoMap.get("type") == null || workspace.getConnectionInfo().getServer().equals(infoMap.get("server"))) {
