@@ -2,19 +2,27 @@ package com.supermap.interfaces.ar;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.ar.highprecision.MeasureView;
 import com.supermap.interfaces.ai.CustomRelativeLayout;
 import com.supermap.interfaces.ar.rajawali.MotionRajawaliRenderer;
 import org.rajawali3d.scene.ASceneFrameCallback;
 import org.rajawali3d.surface.IRajawaliSurface;
 import org.rajawali3d.surface.RajawaliSurfaceView;
+
+import java.text.DecimalFormat;
 
 public class SCollectSceneFormView extends ReactContextBaseJavaModule {
 
@@ -30,6 +38,8 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     private static boolean isShowTrace = true;//初始值
     private static float[] mCurrentPoseTranslation = new float[3];
     private static float[] mCurrentPoseRotation = new float[4];
+
+    private static DecimalFormat mDecimalFormat = new DecimalFormat("0.00");
 
     public static void setMeasureView(MeasureView measureView) {
         mMeasureView = measureView;
@@ -77,6 +87,11 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
         setupRenderer();
     }
 
+    private static void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(eventName, params);
+    }
+
     private static void setupRenderer() {
         // motion renderer
         mSurfaceView.setEGLContextClientVersion(2);
@@ -90,8 +105,12 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
                     mRenderer.updateCameraPoseFromVecotr(mCurrentPoseTranslation, mCurrentPoseRotation);
 
                     //记录总长度
-                    String totalLength = mRenderer.getTotalLength() + "m";
-                    Log.e(REACT_CLASS, "TotalLength: " + totalLength);
+                    float totalLength = mRenderer.getTotalLength();
+                    Log.d(REACT_CLASS, "TotalLength: " + totalLength + "m");
+
+                    WritableMap allResults = Arguments.createMap();
+                    allResults.putString("totalLength", mDecimalFormat.format(totalLength));
+                    sendEvent(mReactContext, "onTotalLengthChanged", allResults);
                 }
             }
 
