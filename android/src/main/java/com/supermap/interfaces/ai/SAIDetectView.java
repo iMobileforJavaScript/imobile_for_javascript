@@ -525,9 +525,9 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     public void isPolynerize(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------SAIDetectView--isPolynerize--------RN--------");
-            boolean polynerize = mAIDetectView.isPolymerize();
+//            boolean polynerize = mAIDetectView.isPolymerize();
 
-            promise.resolve(polynerize);
+//            promise.resolve(polynerize);
         } catch (Exception e) {
             promise.reject(e);
         }

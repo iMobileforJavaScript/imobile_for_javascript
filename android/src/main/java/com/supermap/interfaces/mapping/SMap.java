@@ -6820,6 +6820,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
 
 
+    /**
+     * 拷贝室外地图网络模型snm文件
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void copyNaviSnmFile(String path,Promise promise) {
+        sMap = SMap.getInstance();
+        sMap.getSmMapWC().copyNaviSnmFile(path);
+        promise.resolve(true);
+    }
+
+
+
     /************************************** 导航模块 END ****************************************/
 
 

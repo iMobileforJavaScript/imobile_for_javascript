@@ -3943,4 +3943,26 @@ public class SMMapWC {
 
     }
 
+    // 拷贝室外地图网络模型snm文件
+    public void copyNaviSnmFile(String path){
+
+        String strUserName;
+        strUserName = getUserName();
+
+        String strRootPath = getRootPath();
+        String strCustomer = strRootPath + "/" + strUserName + "/Data";
+        List<String> arrSubs = contentsOfDirectoryAtPath(path);
+        for (int i = 0; i < arrSubs.size(); i++) {
+            String strSub = arrSubs.get(i);
+            if (strSub.endsWith(".snm")) {
+                String strSrcTemplate = path + "/" + strSub;
+                String strDesTemplate = strCustomer + "/Datasource/" + strSub;
+                strDesTemplate = formateNoneExistFileName(strDesTemplate, false);
+                copyFile(strSrcTemplate, strDesTemplate);
+                break;
+            }
+        }
+    }
+
+
 }
