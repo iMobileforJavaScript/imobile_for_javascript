@@ -3201,6 +3201,10 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
                 }
             }
             [animationGo setStartTime:startTime];
+        }else if([createInfo objectForKey:@"startTime"]&&[animationGroup getAnimationCount]==0){
+            NSNumber* startTimeNumber=[createInfo objectForKey:@"startTime"];
+             double startTime=[startTimeNumber doubleValue];
+            [animationGo setStartTime:startTime];
         }
         if([createInfo objectForKey:@"durationTime"]){
             NSNumber* durationTimeNumber=[createInfo objectForKey:@"durationTime"];
