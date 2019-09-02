@@ -4423,6 +4423,7 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
 #pragma mark 智能配图
 RCT_REMAP_METHOD(matchPictureStyle, matchPictureStyle:(NSString *)picPath resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
+        [[SMap.singletonInstance.smMapWC.mapControl getEditHistory] addMapHistory];
         SMMapRender* mapRender = [SMMapRender sharedInstance];
         mapRender.delegate = self;
         [mapRender setCompressMode:2];

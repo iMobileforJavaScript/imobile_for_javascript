@@ -6838,6 +6838,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void matchPictureStyle(String picPath, Promise promise) {
         try {
+            SMap.getInstance().smMapWC.getMapControl().getEditHistory().addMapHistory();
             SMMapRender smMapRender = SMMapRender.getInstance();
             smMapRender.setSmMapRenderListener(new SMMapRender.SMMapRenderListener() {
                 @Override
