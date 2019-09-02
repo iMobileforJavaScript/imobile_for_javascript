@@ -91,7 +91,7 @@ typedef enum{
 
 @implementation LableHelper3D
 SUPERMAP_SIGLETON_IMP(LableHelper3D);
-
+NSString *featureText = @"";
 -(void)initSceneControl:(SceneControl*)control path:(NSString*)strpath kml:(NSString*)strkmlName{
     [self closePage];
     
@@ -493,8 +493,7 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
  * @param pnt   设置动画的位置
  */
 -(void)showFavorite:(Point3D)pnt3d{
-    NSString *text = favoriteFeature3D.name;
-    [self addFavoritePoint:pnt3d Text:text];
+    [self addFavoritePoint:pnt3d Text:featureText];
     if (self.delegate && [self.delegate respondsToSelector:@selector(drawFavoriteAtPoint:)]) {
         //[mSceneControl.scene globeToPixel:pnt3d];
         [self.delegate drawFavoriteAtPoint:pnt3d];
@@ -502,10 +501,13 @@ SUPERMAP_SIGLETON_IMP(LableHelper3D);
 }
 
 -(void)setFavoriteText:(NSString*)text{
+    if(![text isEqualToString:@""]){
+        featureText = text;
+    }
     if (favoriteFeature3D!=nil) {
         GeoPoint3D * geoPnt = (GeoPoint3D *)[(GeoPlacemark *)[favoriteFeature3D geometry3D] geometry];
         Point3D pnt3d = {geoPnt.x,geoPnt.y,geoPnt.z};
-        [self addFavoritePoint:pnt3d Text:text];
+        [self addFavoritePoint:pnt3d Text:featureText];
     }
 }
 

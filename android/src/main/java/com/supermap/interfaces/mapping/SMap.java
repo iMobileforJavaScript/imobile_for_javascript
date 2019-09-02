@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -157,7 +158,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private GestureDetector mGestureDetector;
     private GeometrySelectedListener mGeometrySelectedListener;
     private ScaleViewHelper scaleViewHelper;
-    private POISearchHelper2D poiSearchHelper2D;
+    private static Boolean hasBigCallout = false;
     private static final int curLocationTag = 118081;
     public static int fillNum;
     public static Color[] fillColors;
@@ -4351,9 +4352,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
-            mapControl.getMap().refresh();
-            AnimationManager.getInstance().play();
+//            double scale = mapControl.getMap().getScale();
+//            mapControl.zoomTo(mapControl.getMap().getScale()+0.1,100);
+////            mapControl.getMap().setScale( mapControl.getMap().getScale()+0.1);
+//            mapControl.getMap().refresh();
+//            mapControl.zoomTo(scale,100);
+////            mapControl.getMap().setScale( scale);
+//            mapControl.getMap().refresh();
 
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    AnimationManager.getInstance().play();
+                }
+            }, 0);//3秒后执行Runnable中的run方法
             promise.resolve(true);
         } catch (Exception e) {
             promise.resolve(false);
@@ -5048,6 +5061,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().setAngle(angle);
+            sMap.smMapWC.getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setMapSlantAngle(double angle, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getMap().SetSlantAngle(angle);
             sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
@@ -5845,7 +5870,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             String name = map.getString("pointName");
             String tagName = "POISEARCH_2D_POINT";
             clearPoint(tagName);
-            Boolean isSuccess = addCallout(x, y, name, tagName, true);
+            Boolean isSuccess = addCallout(x, y, name, tagName, true, false);
             promise.resolve(isSuccess);
         } catch (Exception e) {
             promise.reject(e);
@@ -5929,53 +5954,70 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void removeAllCallout(Promise promise) {
         try {
             sMap = SMap.getInstance();
-            MapControl mapControl = sMap.smMapWC.getMapControl();
             for (int i = 0; i < 10; i++) {
                 String tagName = "POISEARCH_2D_POINTS" + i;
                 clearPoint(tagName);
             }
+            clearPoint("bigCallout");
+            hasBigCallout = false;
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
 
-    /**
-     * 当前选中的callout移动到地图中心
-     *
-     * @param item
-     * @param promise
-     */
+//    /**
+//     * 当前选中的callout移动到地图中心
+//     *
+//     * @param item
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void setCalloutToMapCenter(ReadableMap item, Promise promise) {
+//        try {
+//            MapControl mapControl = SMap.getInstance().smMapWC.getMapControl();
+//            double x = item.getDouble("x");
+//            double y = item.getDouble("y");
+//            Point2D point = new Point2D(x, y);
+//            Point2Ds point2Ds = new Point2Ds();
+//            point2Ds.add(point);
+//
+//            PrjCoordSys sourcePrjCoordSys = new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+//            CoordSysTransParameter coordSysTransParameter = new CoordSysTransParameter();
+//
+//            CoordSysTranslator.convert(
+//                    point2Ds,
+//                    sourcePrjCoordSys,
+//                    mapControl.getMap().getPrjCoordSys(),
+//                    coordSysTransParameter,
+//                    CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+//
+//            Point2D mapPoint = point2Ds.getItem(0);
+//
+//            mapControl.getMap().setCenter(mapPoint);
+//            mapControl.getMap().refresh();
+//            promise.resolve(true);
+//        } catch (Exception e) {
+//            promise.reject(e);
+//        }
+//    }
     @ReactMethod
-    public void setCalloutToMapCenter(ReadableMap item, Promise promise) {
-        try {
-            MapControl mapControl = SMap.getInstance().smMapWC.getMapControl();
+    public void setCenterCallout(ReadableMap item,Promise promise){
+        try{
+            sMap = SMap.getInstance();
+            if(hasBigCallout){
+                clearPoint("bigCallout");
+            }
             double x = item.getDouble("x");
             double y = item.getDouble("y");
-            Point2D point = new Point2D(x, y);
-            Point2Ds point2Ds = new Point2Ds();
-            point2Ds.add(point);
-
-            PrjCoordSys sourcePrjCoordSys = new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-            CoordSysTransParameter coordSysTransParameter = new CoordSysTransParameter();
-
-            CoordSysTranslator.convert(
-                    point2Ds,
-                    sourcePrjCoordSys,
-                    mapControl.getMap().getPrjCoordSys(),
-                    coordSysTransParameter,
-                    CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
-
-            Point2D mapPoint = point2Ds.getItem(0);
-
-            mapControl.getMap().setCenter(mapPoint);
-            mapControl.getMap().refresh();
-            promise.resolve(true);
-        } catch (Exception e) {
+            String name = "";
+            String tagName = "bigCallout";
+            boolean b = addCallout(x,y,name,tagName,true,true);
+            promise.resolve(b);
+        }catch (Exception e){
             promise.reject(e);
         }
     }
-
     /**
      * 添加搜索到的callouts
      *
@@ -5997,7 +6039,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 double y = map.getDouble("y");
                 String name = "";
                 String tagName = "POISEARCH_2D_POINTS" + i;
-                Boolean b = addCallout(x, y, name, tagName, false);
+                Boolean b = addCallout(x, y, name, tagName, false,false);
                 if (!b) {
                     isSuccess = b;
                 }
@@ -6016,8 +6058,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param name         显示的名字
      * @param tagName      标识名
      * @param changeCenter 是否改变地图中心点
+     * @param bigCallout   是否特别标注（绿色、加大）
      */
-    public Boolean addCallout(final double x, final double y, final String name, final String tagName, final Boolean changeCenter) {
+    public Boolean addCallout(final double x, final double y, final String name, final String tagName, final Boolean changeCenter, final Boolean bigCallout) {
         context.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -6039,14 +6082,28 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                 Point2D mapPoint = point2Ds.getItem(0);
 
+                DisplayMetrics dm = new DisplayMetrics();
+                getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+                float density = dm.density;
+
                 InfoCallout callout = new InfoCallout(context);
                 callout.setStyle(CalloutAlignment.LEFT_BOTTOM);
                 callout.setBackground(0, 0);
                 ImageView imageView = new ImageView(context);
-                imageView.setImageResource(R.drawable.icon_red);
                 imageView.setAdjustViewBounds(true);
-                imageView.setMaxWidth(60);
-                imageView.setMaxHeight(60);
+                if(bigCallout){
+                    hasBigCallout = true;
+                    imageView.setImageResource(R.drawable.icon_green);
+                    imageView.setMaxWidth((int)(50*density));
+                    imageView.setMaxHeight((int)(50*density));
+                }else{
+                    imageView.setImageResource(R.drawable.icon_red);
+                    imageView.setMaxWidth((int)(40*density));
+                    imageView.setMaxHeight((int)(40*density));
+                    imageView.setPadding((int)(5*density),
+                            (int)(5*density),0,0);
+                }
+
 
                 TextView textView = new TextView(context);
                 textView.setHeight(180);
@@ -6769,6 +6826,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
 
 
+    /**
+     * 拷贝室外地图网络模型snm文件
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void copyNaviSnmFile(String path,Promise promise) {
+        sMap = SMap.getInstance();
+        sMap.getSmMapWC().copyNaviSnmFile(path);
+        promise.resolve(true);
+    }
+
+
+
     /************************************** 导航模块 END ****************************************/
 
 
@@ -6781,6 +6852,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void matchPictureStyle(String picPath, Promise promise) {
         try {
+            SMap.getInstance().smMapWC.getMapControl().getEditHistory().addMapHistory();
             SMMapRender smMapRender = SMMapRender.getInstance();
             smMapRender.setSmMapRenderListener(new SMMapRender.SMMapRenderListener() {
                 @Override

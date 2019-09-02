@@ -134,8 +134,12 @@ export default (function () {
         b = SMap.openDatasourceWithName(params, value, toHead, isVisible)
       }
 
-      SMap.enableRotateTouch(bEnableRotateTouch)
-      SMap.enableSlantTouch(bEnableSlantTouch)
+      bEnableRotateTouch = false
+      bEnableSlantTouch = false
+      SMap.enableRotateTouch(false)
+      SMap.enableSlantTouch(false)
+      SMap.setMapAngle(0)
+      SMap.setMapSlantAngle(0)
       return b
     } catch (e) {
       console.error(e)
@@ -228,8 +232,12 @@ export default (function () {
       } else {
         b = SMap.openMapByName(value, viewEntire, center)
       }
-      SMap.enableRotateTouch(bEnableRotateTouch)
-      SMap.enableSlantTouch(bEnableSlantTouch)
+      bEnableRotateTouch = false
+      bEnableSlantTouch = false
+      SMap.enableRotateTouch(false)
+      SMap.enableSlantTouch(false)
+      SMap.setMapAngle(0)
+      SMap.setMapSlantAngle(0)
       return b
     } catch (e) {
       console.error(e)
@@ -1870,17 +1878,29 @@ export default (function () {
   }
 
   /**
-   * 当前选中的callout移动到地图中心
+   * 设置当前选中callout
    * @param item
    * @returns {*}
    */
-  function setCalloutToMapCenter(item) {
-    try {
-      return SMap.setCalloutToMapCenter(item)
-    } catch (e) {
+  function setCenterCallout(item) {
+    try{
+      return SMap.setCenterCallout(item)
+    }catch (e) {
       console.error(e)
     }
   }
+  // /**
+  //  * 当前选中的callout移动到地图中心
+  //  * @param item
+  //  * @returns {*}
+  //  */
+  // function setCalloutToMapCenter(item) {
+  //   try {
+  //     return SMap.setCalloutToMapCenter(item)
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
 
   /**
    * 获取当前所在位置经纬度
@@ -2316,10 +2336,24 @@ export default (function () {
     }
   }
 
+  /**
+   * 拷贝室外地图网络模型snm文件
+   * @returns {*|void|Promise<void>}
+   */
+  function copyNaviSnmFile(path) {
+    try {
+      return SMap.copyNaviSnmFile(path)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+
 
   let SMapExp = {
     isAvilableAlias,
-    setCalloutToMapCenter,
+    setCenterCallout,
+    //setCalloutToMapCenter,
     removeAllCallout,
     addCallouts,
     removePOICallout,
@@ -2481,6 +2515,7 @@ export default (function () {
     newIncrementRoad,
     gpsBegin,
     addGPSRecordset,
+    copyNaviSnmFile,
 
     matchPictureStyle,
   }
