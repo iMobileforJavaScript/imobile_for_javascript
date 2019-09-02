@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import com.wonderkiln.camerakit.CameraView;
 
 public class CustomCameraView extends CameraView {
+
     public CustomCameraView(@NonNull Context context) {
         super(context);
     }

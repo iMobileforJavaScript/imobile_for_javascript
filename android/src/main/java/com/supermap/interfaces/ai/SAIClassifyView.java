@@ -35,7 +35,7 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     private static String LABEL_PATH = "";
 
     private static int INPUT_SIZE = 224;
-    private static boolean QUANT = true;
+    private static boolean QUANT = true;//量化模型
 
     private static Classifier2 mClassifier = null;
 
@@ -44,7 +44,6 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
 
     private String mDatasourceAlias, mDatasetName = null;
     private static CameraView mCameraView = null;
-//    private static ImageView mImageView = null;
     private static Bitmap mBitmap = null;
 
     private static List<String> mListCNClassifyNames = null;
@@ -79,10 +78,6 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
         mCameraView.addCameraKitListener(mCameraKitEventListener);
     }
 
-//    public static void setImageView(ImageView imageView) {
-//        mImageView = imageView;
-//    }
-
     private static CameraKitEventListener mCameraKitEventListener = new CameraKitEventListener() {
         @Override
         public void onEvent(CameraKitEvent cameraKitEvent) {
@@ -97,7 +92,7 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
 
         @Override
         public void onImage(CameraKitImage cameraKitImage) {
-            Log.e(REACT_CLASS, "CameraKitEventListener: onImage");
+            Log.d(REACT_CLASS, "CameraKitEventListener: onImage");
             WritableArray arr = Arguments.createArray();
             if (cameraKitImage.getJpeg() != null && cameraKitImage.getJpeg().length > 0) {
                 if (mBitmap != null && !mBitmap.isRecycled()) {
@@ -109,8 +104,6 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
 
                 Bitmap bitmap = Bitmap.createScaledBitmap(mBitmap, INPUT_SIZE, INPUT_SIZE, false);
                 Log.d(REACT_CLASS, "bitmap" + bitmap.getByteCount());
-
-//                mImageView.setImageBitmap(mBitmap);
 
                 final List<Classifier2.Recognition> results = mClassifier.recognizeImage(bitmap);
 
@@ -397,7 +390,6 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
             if (mCameraView != null) {
                 mCameraView.stop();
             }
-//            mImageView.setImageBitmap(null);
             if (mBitmap != null && !mBitmap.isRecycled()) {
                 mBitmap.recycle();
                 mBitmap = null;
@@ -753,12 +745,37 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
             if (mModelType == ModelType.ABSOLUTE_FILE_PATH) {
                 MODEL_PATH = modelPath;
                 LABEL_PATH = labelPath;
+                INPUT_SIZE = 64;
+                QUANT = false;
+            } else if (mModelType == ModelType.ASSETS_FILE){
+                MODEL_PATH = "";
+                LABEL_PATH = "";
+                INPUT_SIZE = 224;
+                QUANT = true;
             }
 
-            initData();
             initTensorFlowAndLoadModel();
+            initData();
 
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getCurrentModel(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------getCurrentModel--------RN--------");
+            WritableMap writableMap = Arguments.createMap();
+            String modelType = mModelType.toString();
+            writableMap.putString("ModelType", modelType);
+            if (mModelType == ModelType.ABSOLUTE_FILE_PATH) {
+                writableMap.putString("ModelPath", MODEL_PATH);
+                writableMap.putString("LabelPath", LABEL_PATH);
+            }
+
+            promise.resolve(writableMap);
         } catch (Exception e) {
             promise.reject(e);
         }

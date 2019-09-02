@@ -71,7 +71,5 @@ dependencies {
     implementation ('com.wonderkiln:camerakit:0.13.1'){
         exclude group: 'com.android.support'
     }
-    implementation 'com.google.ar.sceneform:core:1.7.0'
-    implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.7.0'
     implementation 'org.rajawali3d:rajawali:1.0.325@aar'
 }

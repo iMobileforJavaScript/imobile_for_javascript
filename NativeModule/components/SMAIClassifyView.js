@@ -15,61 +15,19 @@ import constants from "../../../../src/containers/workspace/constants"
 
 class SMAIClassifyView extends React.Component {
 
-  constructor() {
-    super()
-
-    this.state = {
-      viewId: 0,
-      visible: true,
-    }
-  }
-
   static propTypes = {
-    visible: PropTypes.bool,
     ...ViewPropTypes,
   };
 
   static defaultProps = {
-    visible: true,
-  }
-
-  componentDidMount() {
-    InteractionManager.runAfterInteractions(() => {
-      // (async function() {
-      //   GLOBAL.Type === constants.MAP_AR &&
-      //   this.setState({
-      //     visible: true,
-      //   })
-      // }.bind(this)())
-    })
-  }
-
-  componentDidUpdate(prevProps) {
-    // SAIClassifyView.startPreview()
   }
 
   componentWillUnmount() {
     SAIClassifyView.dispose()
   }
 
-  setVisible = (visible) => {
-    if (this.state.visible === visible) return
-    this.setState({
-      visible: visible,
-    }, () => {
-      if (visible) {
-        SAIClassifyView.startPreview()
-      } else {
-      }
-    })
-  }
-
   render() {
     var props = { ...this.props };
-
-    if (!this.state.visible) {
-      return null
-    }
 
     return (
       <View
@@ -96,7 +54,6 @@ var styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'transparent',
   },
 });
 
