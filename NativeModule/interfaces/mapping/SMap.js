@@ -134,8 +134,12 @@ export default (function () {
         b = SMap.openDatasourceWithName(params, value, toHead, isVisible)
       }
 
-      SMap.enableRotateTouch(bEnableRotateTouch)
-      SMap.enableSlantTouch(bEnableSlantTouch)
+      bEnableRotateTouch = false
+      bEnableSlantTouch = false
+      SMap.enableRotateTouch(false)
+      SMap.enableSlantTouch(false)
+      SMap.setMapAngle(0)
+      SMap.setMapSlantAngle(0)
       return b
     } catch (e) {
       console.error(e)
@@ -228,8 +232,12 @@ export default (function () {
       } else {
         b = SMap.openMapByName(value, viewEntire, center)
       }
-      SMap.enableRotateTouch(bEnableRotateTouch)
-      SMap.enableSlantTouch(bEnableSlantTouch)
+      bEnableRotateTouch = false
+      bEnableSlantTouch = false
+      SMap.enableRotateTouch(false)
+      SMap.enableSlantTouch(false)
+      SMap.setMapAngle(0)
+      SMap.setMapSlantAngle(0)
       return b
     } catch (e) {
       console.error(e)
@@ -1870,17 +1878,29 @@ export default (function () {
   }
 
   /**
-   * 当前选中的callout移动到地图中心
+   * 设置当前选中callout
    * @param item
    * @returns {*}
    */
-  function setCalloutToMapCenter(item) {
-    try {
-      return SMap.setCalloutToMapCenter(item)
-    } catch (e) {
+  function setCenterCallout(item) {
+    try{
+      return SMap.setCenterCallout(item)
+    }catch (e) {
       console.error(e)
     }
   }
+  // /**
+  //  * 当前选中的callout移动到地图中心
+  //  * @param item
+  //  * @returns {*}
+  //  */
+  // function setCalloutToMapCenter(item) {
+  //   try {
+  //     return SMap.setCalloutToMapCenter(item)
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
 
   /**
    * 获取当前所在位置经纬度
@@ -2095,19 +2115,62 @@ export default (function () {
     try {
       return SMap.beginNavigation(x1,y1,x2,y2)
     } catch (e) {
-  console.error(e)
-}
-}
-
- /**
-   * 智能配图
-   * @returns {*|void|Promise<void>}
-   */
-  function matchPictureStyle(picPath) {
-    try {
-      return SMap.matchPictureStyle(picPath)
-    }catch (e) {
       console.error(e)
+    }
+  }
+  
+  /**
+   * 智能配图
+   * @param picPath
+   * @param handler
+   */
+  function matchPictureStyle(picPath, handler = () => {}) {
+    try {
+      if (this.matchPictureListener) return
+      SMap.matchPictureStyle(picPath)
+      if (Platform.OS === 'ios') {
+        this.matchPictureListener = nativeEvt.addListener(EventConst.MATCH_IMAGE_RESULT, result => {
+          if(typeof handler === "function"){
+            handler(result);
+            if (this.matchPictureListener) {
+              this.matchPictureListener.remove()
+              nativeEvt.removeAllListeners(EventConst.MATCH_IMAGE_RESULT)
+              SMap.deleteMatchPictureListener()
+  
+              this.matchPictureListener = null
+            }
+          }
+        })
+      } else {
+        this.matchPictureListener = DeviceEventEmitter.addListener(EventConst.MATCH_IMAGE_RESULT, result=>{
+          if (typeof handler === "function") {
+            handler(result);
+            if (this.matchPictureListener) {
+              this.matchPictureListener.remove()
+              DeviceEventEmitter.removeListener(EventConst.MATCH_IMAGE_RESULT, handler)
+              SMap.deleteMatchPictureListener()
+  
+              this.matchPictureListener = null
+            }
+          }
+        })
+      }
+    } catch (e) {
+      if (this.matchPictureListener) {
+        if (Platform.OS === 'ios') {
+          this.matchPictureListener.remove()
+          nativeEvt.removeAllListeners(EventConst.MATCH_IMAGE_RESULT)
+          SMap.deleteMatchPictureListener()
+    
+          this.matchPictureListener = null
+        } else {
+          this.matchPictureListener.remove()
+          DeviceEventEmitter.removeListener(EventConst.MATCH_IMAGE_RESULT, handler)
+          SMap.deleteMatchPictureListener()
+  
+          this.matchPictureListener = null
+        }
+      }
     }
   }
 
@@ -2260,10 +2323,24 @@ export default (function () {
     }
   }
 
+  /**
+   * 判断当前数据源别名是否可用，返回可用别名
+   * @param alias
+   * @returns {*}
+   */
+  function isAvilableAlias(alias){
+    try{
+      return SMap.isAvilableAlias(alias)
+    }catch (e) {
+      console.error(e)
+    }
+  }
 
 
   let SMapExp = {
-    setCalloutToMapCenter,
+    isAvilableAlias,
+    setCenterCallout,
+    //setCalloutToMapCenter,
     removeAllCallout,
     addCallouts,
     removePOICallout,

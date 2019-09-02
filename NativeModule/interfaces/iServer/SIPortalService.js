@@ -71,6 +71,36 @@ function uploadData (path, fileName, cb) {
   return IPortalServiceNative.uploadData(path, fileName)
 }
 
+function uploadDataByType (path, fileName,dataType, cb) {
+    uploadingFileListener && uploadingFileListener.remove()
+    uploadFileListener && uploadFileListener.remove()
+    if(Platform.OS === 'ios'){
+        if(cb && typeof cb.onProgress === 'function' ) {
+          uploadingFileListener = callBackIOS.addListener(EventConst.IPORTAL_SERVICE_UPLOADING, function (progress) {
+              cb.onProgress(progress)
+          })
+        }
+        if (cb && typeof cb.onResult === 'function') {
+          uploadFileListener = callBackIOS.addListener(EventConst.IPORTAL_SERVICE_UPLOADED, function (value) {
+            cb.onResult(value)
+          })
+        }
+    } else {
+      if (cb && typeof cb.onProgress === 'function') {
+          uploadingFileListener = DeviceEventEmitter.addListener(EventConst.IPORTAL_SERVICE_UPLOADING, function (progress) {
+            cb.onProgress(progress)
+          })
+        }
+        if (cb && typeof cb.onResult === 'function') {
+          uploadFileListener = DeviceEventEmitter.addListener(EventConst.IPORTAL_SERVICE_UPLOADED, function (result) {
+            cb.onResult(result)
+          })
+        }
+    }
+        
+    return IPortalServiceNative.uploadDataByType(path, fileName,dataType)
+  }
+
 let downloadListener
 function downloadMyData(path, id, cb) {
     downloadListener && downloadListener.remove()
@@ -133,6 +163,7 @@ export default {
     publishService,
     setServicesShareConfig,
     uploadData,
+    uploadDataByType,
     downloadMyData,
     downloadMyDataByName,
   }

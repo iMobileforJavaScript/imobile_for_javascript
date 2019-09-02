@@ -157,7 +157,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private GestureDetector mGestureDetector;
     private GeometrySelectedListener mGeometrySelectedListener;
     private ScaleViewHelper scaleViewHelper;
-    private POISearchHelper2D poiSearchHelper2D;
+    private static Boolean hasBigCallout = false;
     private static final int curLocationTag = 118081;
     public static int fillNum;
     public static Color[] fillColors;
@@ -515,6 +515,26 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
 
+    /**
+     * 判断当前数据源别名是否可用，返回可用别名
+     * @param alias
+     * @param promise
+     */
+    @ReactMethod
+    public void isAvilableAlias(String alias, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+            int index = 1;
+            while (datasources.indexOf(alias) != -1){
+                alias += "_" + index;
+                index++;
+            }
+            promise.resolve(alias);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
     /**
      * 以数据源形式打开工作空间setLayerFieldInfo
      *
@@ -4331,9 +4351,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
-            mapControl.getMap().refresh();
-            AnimationManager.getInstance().play();
+//            double scale = mapControl.getMap().getScale();
+//            mapControl.zoomTo(mapControl.getMap().getScale()+0.1,100);
+////            mapControl.getMap().setScale( mapControl.getMap().getScale()+0.1);
+//            mapControl.getMap().refresh();
+//            mapControl.zoomTo(scale,100);
+////            mapControl.getMap().setScale( scale);
+//            mapControl.getMap().refresh();
 
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    AnimationManager.getInstance().play();
+                }
+            }, 0);//3秒后执行Runnable中的run方法
             promise.resolve(true);
         } catch (Exception e) {
             promise.resolve(false);
@@ -5028,6 +5060,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().setAngle(angle);
+            sMap.smMapWC.getMapControl().getMap().refresh();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setMapSlantAngle(double angle, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getMap().SetSlantAngle(angle);
             sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
@@ -5825,7 +5869,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             String name = map.getString("pointName");
             String tagName = "POISEARCH_2D_POINT";
             clearPoint(tagName);
-            Boolean isSuccess = addCallout(x, y, name, tagName, true);
+            Boolean isSuccess = addCallout(x, y, name, tagName, true, false);
             promise.resolve(isSuccess);
         } catch (Exception e) {
             promise.reject(e);
@@ -5909,53 +5953,70 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void removeAllCallout(Promise promise) {
         try {
             sMap = SMap.getInstance();
-            MapControl mapControl = sMap.smMapWC.getMapControl();
             for (int i = 0; i < 10; i++) {
                 String tagName = "POISEARCH_2D_POINTS" + i;
                 clearPoint(tagName);
             }
+            clearPoint("bigCallout");
+            hasBigCallout = false;
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
 
-    /**
-     * 当前选中的callout移动到地图中心
-     *
-     * @param item
-     * @param promise
-     */
+//    /**
+//     * 当前选中的callout移动到地图中心
+//     *
+//     * @param item
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void setCalloutToMapCenter(ReadableMap item, Promise promise) {
+//        try {
+//            MapControl mapControl = SMap.getInstance().smMapWC.getMapControl();
+//            double x = item.getDouble("x");
+//            double y = item.getDouble("y");
+//            Point2D point = new Point2D(x, y);
+//            Point2Ds point2Ds = new Point2Ds();
+//            point2Ds.add(point);
+//
+//            PrjCoordSys sourcePrjCoordSys = new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+//            CoordSysTransParameter coordSysTransParameter = new CoordSysTransParameter();
+//
+//            CoordSysTranslator.convert(
+//                    point2Ds,
+//                    sourcePrjCoordSys,
+//                    mapControl.getMap().getPrjCoordSys(),
+//                    coordSysTransParameter,
+//                    CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+//
+//            Point2D mapPoint = point2Ds.getItem(0);
+//
+//            mapControl.getMap().setCenter(mapPoint);
+//            mapControl.getMap().refresh();
+//            promise.resolve(true);
+//        } catch (Exception e) {
+//            promise.reject(e);
+//        }
+//    }
     @ReactMethod
-    public void setCalloutToMapCenter(ReadableMap item, Promise promise) {
-        try {
-            MapControl mapControl = SMap.getInstance().smMapWC.getMapControl();
+    public void setCenterCallout(ReadableMap item,Promise promise){
+        try{
+            sMap = SMap.getInstance();
+            if(hasBigCallout){
+                clearPoint("bigCallout");
+            }
             double x = item.getDouble("x");
             double y = item.getDouble("y");
-            Point2D point = new Point2D(x, y);
-            Point2Ds point2Ds = new Point2Ds();
-            point2Ds.add(point);
-
-            PrjCoordSys sourcePrjCoordSys = new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-            CoordSysTransParameter coordSysTransParameter = new CoordSysTransParameter();
-
-            CoordSysTranslator.convert(
-                    point2Ds,
-                    sourcePrjCoordSys,
-                    mapControl.getMap().getPrjCoordSys(),
-                    coordSysTransParameter,
-                    CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
-
-            Point2D mapPoint = point2Ds.getItem(0);
-
-            mapControl.getMap().setCenter(mapPoint);
-            mapControl.getMap().refresh();
-            promise.resolve(true);
-        } catch (Exception e) {
+            String name = "";
+            String tagName = "bigCallout";
+            boolean b = addCallout(x,y,name,tagName,true,true);
+            promise.resolve(b);
+        }catch (Exception e){
             promise.reject(e);
         }
     }
-
     /**
      * 添加搜索到的callouts
      *
@@ -5977,7 +6038,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 double y = map.getDouble("y");
                 String name = "";
                 String tagName = "POISEARCH_2D_POINTS" + i;
-                Boolean b = addCallout(x, y, name, tagName, false);
+                Boolean b = addCallout(x, y, name, tagName, false,false);
                 if (!b) {
                     isSuccess = b;
                 }
@@ -5996,8 +6057,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param name         显示的名字
      * @param tagName      标识名
      * @param changeCenter 是否改变地图中心点
+     * @param bigCallout   是否特别标注（绿色、加大）
      */
-    public Boolean addCallout(final double x, final double y, final String name, final String tagName, final Boolean changeCenter) {
+    public Boolean addCallout(final double x, final double y, final String name, final String tagName, final Boolean changeCenter, final Boolean bigCallout) {
         context.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -6023,10 +6085,19 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 callout.setStyle(CalloutAlignment.LEFT_BOTTOM);
                 callout.setBackground(0, 0);
                 ImageView imageView = new ImageView(context);
-                imageView.setImageResource(R.drawable.icon_red);
                 imageView.setAdjustViewBounds(true);
-                imageView.setMaxWidth(60);
-                imageView.setMaxHeight(60);
+                if(bigCallout){
+                    hasBigCallout = true;
+                    imageView.setImageResource(R.drawable.icon_green);
+                    imageView.setMaxWidth(50);
+                    imageView.setMaxHeight(50);
+                }else{
+                    imageView.setImageResource(R.drawable.icon_red);
+                    imageView.setMaxWidth(40);
+                    imageView.setMaxHeight(40);
+                    imageView.setPadding(5,5,0,0);
+                }
+
 
                 TextView textView = new TextView(context);
                 textView.setHeight(180);
@@ -6762,12 +6833,39 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void matchPictureStyle(String picPath, Promise promise) {
         try {
             SMMapRender smMapRender = SMMapRender.getInstance();
+            smMapRender.setSmMapRenderListener(new SMMapRender.SMMapRenderListener() {
+                @Override
+                public void onMatchPictureStyleFinished(boolean bSucssed, String strPath, String error) {
+                    WritableMap res = Arguments.createMap();
+                    res.putBoolean("result", bSucssed);
+                    res.putString("image", strPath);
+                    res.putString("error", error);
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MATCH_IMAGE_RESULT, res);
+                }
+            });
 
             String path = picPath;
             if (picPath.indexOf("content://") == 0) {
                 path = FileUtil.getRealFilePath(getReactApplicationContext(), Uri.parse(picPath));
             }
+            smMapRender.setCompressMode(2);
             smMapRender.matchPictureStyle(path);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 移除智能配图监听
+     * @param promise
+     */
+    @ReactMethod
+    public void deleteMatchPictureListener(Promise promise) {
+        try {
+            SMMapRender smMapRender = SMMapRender.getInstance();
+            smMapRender.setSmMapRenderListener(null);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

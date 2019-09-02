@@ -9,6 +9,18 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+/**
+ * 文件类型
+ */
+typedef enum  {
+    CSV, //csv数据
+    EXCEL, //excel数据
+    GEOJSON, //geojson数据
+    SHP, //shp空间数据
+    UDB, //udb 数据源
+    WORKSPACE //工作空间 sxwu, smwu, sxw, smw
+}DataType;
+
 typedef void(^OnlineServiceCompletionCallback)(NSError *error);
 typedef void(^OnlineServiceInfoCompletionCallback)(NSDictionary *info, NSError *error);
 
@@ -78,6 +90,15 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite;
  */
 -(void)uploadFilePath:(NSString*)filePath onlineFileName:(NSString*)fileName;
 
+/**
+ 上传online在线数据,需要在登录过后才能调用
+ @param filePath 完整的数据路径
+ @param fileName 服务器上数据的名称
+ @param tag 标注
+ @param type 数据类型
+ 注：目前仅支持上传.zip压缩包
+ */
+-(void)uploadFilePath:(NSString*)filePath onlineFileName:(NSString*)fileName tags:(NSString*)tag dataType:(DataType)type;
 /**
  上传协议
  */

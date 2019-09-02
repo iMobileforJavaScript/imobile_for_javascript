@@ -25,6 +25,7 @@
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
 static NSMutableArray *fillColors;
+static BOOL hasBigCallout = NO;
 static NSMutableArray *calloutArr;
 static Point2Ds *animationWayPoint2Ds;
 static Point2Ds *animationWaySavePoint2Ds;
@@ -66,6 +67,7 @@ RCT_EXPORT_MODULE();
              LEGEND_CONTENT_CHANGE,
              MAP_SCALEVIEW_CHANGED,
 //             POINTSEARCH2D_KEYWORDS,
+             MATCH_IMAGE_RESULT,
              ];
 }
 
@@ -259,6 +261,18 @@ RCT_REMAP_METHOD(setMapAngle, setMapAngleWithValue:(double)angle Resolver:(RCTPr
     }
 }
 
+#pragma mark 设置地图旋转角度
+RCT_REMAP_METHOD(setMapSlantAngle, setMapSlantAngleValue:(double)angle Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Map *map = sMap.smMapWC.mapControl.map;
+        map.slantAngle = angle;
+        [map refresh];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setMapAngle",exception.reason,nil);
+    }
+}
 #pragma mark 获取地图颜色模式
 RCT_REMAP_METHOD(getMapColorMode, getMapColorModeWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -857,6 +871,7 @@ RCT_REMAP_METHOD(removeAllCallout, removeAllCalloutWithResolver:(RCTPromiseResol
         dispatch_async(dispatch_get_main_queue(), ^{
             [mapControl removeCalloutWithArr:calloutArr];
             calloutArr = nil;
+            hasBigCallout = NO;
         });
         //搜索结果的callout最多10条
 //        for(int i = 0; i < 10; i++){
@@ -877,35 +892,53 @@ RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithItem:(NSDictionary *)item r
         NSString *name = [item valueForKey:@"pointName"];
         NSString *tagName = @"POISEARCH_2D_POINT";
         [sMap clearCalloutWithTagName:tagName];
-        BOOL isSuccess = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:YES];
+        BOOL isSuccess = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:YES BigCallout:NO];
         resolve(@(isSuccess));
     } @catch (NSException *exception) {
         reject(@"toLocationPoint",exception.reason,nil);
     }
 }
 
-#pragma mark 当前选中的callout移动到地图中心
-RCT_REMAP_METHOD(setCalloutToMapCenter, setCalloutToMapCenter:(NSDictionary *)item resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try {
+//#pragma mark 当前选中的callout移动到地图中心
+//RCT_REMAP_METHOD(setCalloutToMapCenter, setCalloutToMapCenter:(NSDictionary *)item resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try {
+//        sMap = [SMap singletonInstance];
+//        double x = [[item valueForKey:@"x"] doubleValue];
+//        double y =[[item valueForKey:@"y"] doubleValue];
+//        MapControl *mapcontrol = sMap.smMapWC.mapControl;
+//        Point2D *point = [[Point2D alloc] initWithX:x Y:y];
+//        Point2Ds *points = [[Point2Ds alloc] init];
+//        [points add:point];
+//        PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+//
+//        CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
+//        [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapcontrol.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+//        Point2D *mapPoint = [points getItem:0];
+//        //移动无效
+//        //[mapcontrol panTo:mapPoint time:1000];
+//        mapcontrol.map.center = mapPoint;
+//        [mapcontrol.map refresh];
+//        resolve(@(YES));
+//    } @catch (NSException *exception) {
+//        reject(@"toLocationPoint",exception.reason,nil);
+//    }
+//}
+ #pragma mark 将当前点击的callout特别标注
+RCT_REMAP_METHOD(setCenterCallout, setCenterCalloutWithItem:(NSDictionary *)item resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
         sMap = [SMap singletonInstance];
-        double x = [[item valueForKey:@"x"] doubleValue];
-        double y =[[item valueForKey:@"y"] doubleValue];
-        MapControl *mapcontrol = sMap.smMapWC.mapControl;
-        Point2D *point = [[Point2D alloc] initWithX:x Y:y];
-        Point2Ds *points = [[Point2Ds alloc] init];
-        [points add:point];
-        PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
         
-        CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
-        [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapcontrol.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
-        Point2D *mapPoint = [points getItem:0];
-        //移动无效
-        //[mapcontrol panTo:mapPoint time:1000];
-        mapcontrol.map.center = mapPoint;
-        [mapcontrol.map refresh];
-        resolve(@(YES));
-    } @catch (NSException *exception) {
-        reject(@"toLocationPoint",exception.reason,nil);
+        if(hasBigCallout){
+            [sMap clearCalloutWithTagName:@"bigCallout"];
+        }
+        double x = [[item valueForKey:@"x"] doubleValue];
+        double y = [[item valueForKey:@"y"] doubleValue];
+        NSString *name = @"";
+        NSString *tagName = @"bigCallout";
+        BOOL b = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:YES BigCallout:YES];
+        resolve(@(b));
+    }@catch(NSException *exception){
+        reject(@"setCenterCallout",exception.reason,nil);
     }
 }
 
@@ -924,7 +957,7 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
             double y = [[dic valueForKey:@"y"] doubleValue];
             NSString *name = @"";
             NSString *tagName = [[NSString alloc] initWithFormat:@"%@%d",@"POISEARCH_2D_POINTS",i];
-            BOOL b = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:NO];
+            BOOL b = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:NO BigCallout:NO];
             if(!b){
                 isSuccess = b;
             }
@@ -935,8 +968,16 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
     }
 }
 
-#pragma mark 添加callout x y为经纬度
--(BOOL)addCalloutWithX:(double)x Y:(double)y Name:(NSString *)name TagName:(NSString *)tagName changeCenter:(BOOL) change{
+#pragma mark 添加callout
+/**  params
+ * x 经度
+ * y 纬度
+ * name 要显示的文字
+ * tagName callout标识符 可用于删除callout
+ * changeCenter 是否设置地图中心点到当前经纬度
+ * bigCallout 是否特别标注（绿色、加大）
+ **/
+-(BOOL)addCalloutWithX:(double)x Y:(double)y Name:(NSString *)name TagName:(NSString *)tagName changeCenter:(BOOL) change BigCallout:(BOOL)bigCallout{
     dispatch_async(dispatch_get_main_queue(), ^{
         MapControl *mapcontrol = [SMap singletonInstance].smMapWC.mapControl;
         Point2D *point = [[Point2D alloc] initWithX:x Y:y];
@@ -952,10 +993,18 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         //sMap.callout.description = tagName;
     
     
-        UIImage *image = [UIImage imageNamed:@"resources.bundle/icon_red.png"];
+        UIImage *image;
+        CGRect imgRect;
+        if(bigCallout){
+            hasBigCallout = YES;
+            image = [UIImage imageNamed:@"resources.bundle/icon_green.png"];
+            imgRect = CGRectMake(-5, -5, 50, 50);
+        }else{
+            image = [UIImage imageNamed:@"resources.bundle/icon_red.png"];
+            imgRect = CGRectMake(0, 0, 40, 40);
+        }
         UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-        [imageView setFrame:CGRectMake(0, 0, 40, 40)];
-        
+        [imageView setFrame:imgRect];
 //        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(40, 0, 160, 160)];
         UILabel *label = [[UILabel alloc]init];
         UIFont *font = [UIFont systemFontOfSize:16.0];
@@ -1020,8 +1069,21 @@ RCT_REMAP_METHOD(closeWorkspace, closeWorkspaceWithResolver:(RCTPromiseResolveBl
         reject(@"workspace", exception.reason, nil);
     }
 }
-
-
+#pragma mark 判断当前数据源别名是否可用，返回可用别名
+RCT_REMAP_METHOD(isAvilableAlias, isAvilableAliasWithAlias:(NSString*)alias resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Datasources *datasources = sMap.smMapWC.workspace.datasources;
+        int index = 1;
+        while ([datasources indexOf:alias] != -1) {
+            alias = [NSString stringWithFormat:@"%@__%d",alias,index];
+            index++;
+        }
+        resolve(alias);
+    } @catch (NSException *exception) {
+        reject(@"isAvaliableAlias",exception.reason,nil);
+    }
+}
 #pragma mark 以数据源形式打开工作空间, 默认根据Map 图层索引显示图层
 RCT_REMAP_METHOD(openDatasourceWithIndex, openDatasourceByParams:(NSDictionary*)params defaultIndex:(int)defaultIndex toHead:(BOOL)toHead visible:(BOOL)visible resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
@@ -2932,8 +2994,17 @@ RCT_REMAP_METHOD(animationPlay,animationPlay:(RCTPromiseResolveBlock)resolve rej
     @try {
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
+        double scale = mapControl.map.scale ;
+        mapControl.map.scale += 0.1;
         [mapControl.map refresh];
-        [[AnimationManager getInstance] play];
+        mapControl.map.scale = scale;
+        [mapControl.map refresh];
+//        [mapControl zoomTo:mapControl.map.scale*0.95 time:100];
+//        [mapControl.map refresh];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+             [[AnimationManager getInstance] play];
+        });
+       
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setDynamicProjection", exception.reason, nil);
@@ -4349,7 +4420,20 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
 RCT_REMAP_METHOD(matchPictureStyle, matchPictureStyle:(NSString *)picPath resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
         SMMapRender* mapRender = [SMMapRender sharedInstance];
+        mapRender.delegate = self;
+        [mapRender setCompressMode:2];
         [mapRender matchPictureStyle:picPath];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
+    }
+}
+
+#pragma mark 智能配图
+RCT_REMAP_METHOD(deleteMatchPictureListener, deleteMatchPictureListenerWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMMapRender* mapRender = [SMMapRender sharedInstance];
+        mapRender.delegate = nil;
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setLabelColor",exception.reason,nil);
@@ -4579,8 +4663,9 @@ RCT_REMAP_METHOD(matchPictureStyle, matchPictureStyle:(NSString *)picPath resolv
     [self sendEventWithName:MAP_GEOMETRY_MULTI_SELECTED body:@{@"geometries":(NSArray*)layersIdAndIds}];
 }
 
-//-(void)measureState{
-//
-//}
+#pragma mark - 智能配图结果监听
+-(void)matchImageFinished:(NSDictionary*)result {
+    [self sendEventWithName:MATCH_IMAGE_RESULT body:result];
+}
 
 @end

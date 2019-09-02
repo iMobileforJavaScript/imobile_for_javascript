@@ -7,6 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AssetsLibrary/AssetsLibrary.h>
+
+@protocol SMMapRenderDelegate <NSObject>
+@required
+
+-(void)matchImageFinished:(NSDictionary*)result;
+
+@end
 
 @interface SMMapRender : NSObject
 
@@ -20,6 +28,8 @@
 @property (nonatomic,assign) int compressMode;
 
 @property (nonatomic,assign) int colorNumber;
+
+@property (nonatomic,assign) id<SMMapRenderDelegate>delegate;
 
 -(void)matchPictureStyle:(NSString*)strImagePath;
 

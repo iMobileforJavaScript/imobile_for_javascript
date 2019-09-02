@@ -76,6 +76,9 @@ NSString * const MEDIA_CAPTURE_TAP_ACTION = @"com.supermap.RN.MediaCaptureTapAct
 /** 分析 **/
 NSString * const ONLINE_ANALYST_RESULT = @"com.supermap.RN.online_analyst_result";
 
+/** 智能监听 **/
+NSString * const MATCH_IMAGE_RESULT = @"com.supermap.RN.match_image_result";
+
 @implementation Constants : NSObject
 
 @end

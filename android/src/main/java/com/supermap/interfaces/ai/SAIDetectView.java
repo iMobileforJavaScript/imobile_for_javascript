@@ -46,7 +46,11 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
     private static ArView mArView = null;//绑定的AR显示类
     private static boolean mIsPOIMode = false; //AR-POI投射模式
+    private static boolean mIsPolymerize = false; //聚合模式
     private static boolean mIsPOIOverlap = false; //POI避让
+    private static boolean mIsDrawTitle = false;
+    private static boolean mIsDrawConfidence = false;
+
     private static AIDetectStyle mAiDetectStyle = null;
 
     private static ArObject mCurrentArObject = null;
@@ -102,15 +106,14 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
         mAIDetectView.setDetectInterval(mDetectInterval);//设置识别时间间隔
 
-        mAIDetectView.setisPolymerize(false);//是否聚合模式
-
+        mAIDetectView.setisPolymerize(mIsPolymerize);//是否聚合模式
         mAIDetectView.setPolymerizeThreshold(100, 100);//设置聚合模式网格宽高
 
         //风格
         if (mAiDetectStyle == null) {
             mAiDetectStyle = new AIDetectStyle();
-            mAiDetectStyle.isDrawTitle = true;
-            mAiDetectStyle.isDrawConfidence = false;
+            mAiDetectStyle.isDrawTitle = mIsDrawTitle;
+            mAiDetectStyle.isDrawConfidence = mIsDrawConfidence;
         }
         mAIDetectView.setAiDetectStyle(mAiDetectStyle);
 
@@ -506,6 +509,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         try {
             Log.d(REACT_CLASS, "----------------SAIDetectView--setisPolymerize--------RN--------");
             mAIDetectView.setisPolymerize(value);
+            mIsPolymerize = value;
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -521,7 +525,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     public void isPolynerize(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------SAIDetectView--isPolynerize--------RN--------");
-            boolean polynerize = mAIDetectView.isPolynerize();
+            boolean polynerize = mAIDetectView.isPolymerize();
 
             promise.resolve(polynerize);
         } catch (Exception e) {
@@ -725,7 +729,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setPOIOverlapEnable(final boolean value, Promise promise) {
+    public void setPOIOverlapEnable(boolean value, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------SAIDetectView--setPOIOverlapEnable--------RN--------");
 
@@ -739,7 +743,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 投射模式
+     * 是否避让模式
      * @param promise
      */
     @ReactMethod
@@ -783,10 +787,11 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setDrawTileEnable(final boolean value, Promise promise) {
+    public void setDrawTileEnable(boolean value, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------SAIDetectView--setDrawTileEnable--------RN--------");
 
+            mIsDrawTitle = value;
             mAiDetectStyle.isDrawTitle = value;
             mAIDetectView.setAiDetectStyle(mAiDetectStyle);
             promise.resolve(true);
@@ -815,10 +820,11 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void setDrawConfidenceEnable(final boolean value, Promise promise) {
+    public void setDrawConfidenceEnable(boolean value, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------SAIDetectView--setDrawConfidenceEnable--------RN--------");
 
+            mIsDrawConfidence = value;
             mAiDetectStyle.isDrawConfidence = value;
             mAIDetectView.setAiDetectStyle(mAiDetectStyle);
             promise.resolve(true);
