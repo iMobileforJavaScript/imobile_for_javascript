@@ -97,6 +97,22 @@ clearBitmap = () => {
   }
 }
 
+getCurrentModel = () => {
+  try {
+    return SAIClassifyView.getCurrentModel()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+loadImageUri = (imgUri) => {
+  try {
+    return SAIClassifyView.loadImageUri(imgUri)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   startPreview,
   captureImage,
@@ -109,4 +125,6 @@ export default {
   modifyLastItem,//编辑最新添加的对象
   getImagePath,
   clearBitmap,
+  getCurrentModel,
+  loadImageUri,
 }

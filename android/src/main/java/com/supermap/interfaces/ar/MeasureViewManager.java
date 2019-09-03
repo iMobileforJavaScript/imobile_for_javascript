@@ -17,7 +17,7 @@ import com.supermap.ar.highprecision.OnRuntimeStatusChangedListener;
 import java.text.DecimalFormat;
 
 /**
- * AR高精度采集
+ * AR户型图采集
  */
 public class MeasureViewManager extends SimpleViewManager<CustomMeasureView> {
 
