@@ -2342,7 +2342,11 @@ export default (function () {
    */
   function copyNaviSnmFile(path) {
     try {
-      return SMap.copyNaviSnmFile(path)
+      if(SMap.copyNaviSnmFile){
+        return SMap.copyNaviSnmFile(path)
+      }else {
+        return true
+      }
     } catch (e) {
       console.error(e)
     }
