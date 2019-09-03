@@ -228,9 +228,7 @@
 }
 
 -(void)onCreate{
-    for (int i=0; i<12; i++) {
-        _parame[i] = 0;
-    }
+    [self reset:NO];
     
 //    //Brightness
 //    _LB =0  ;
@@ -249,7 +247,19 @@
 //    _TS =0  ;
 }
 
--(int)getMapFixColorModeValue:(FixColorsMode)mode{
+-(void)reset:(BOOL)bMapReset{
+    if (bMapReset) {
+        for (int i=0; i<12; i++) {
+            [self updateMapFixColorsMode:(FixColorsMode)i value:0];
+        }
+    }else{
+        for (int i=0; i<12; i++) {
+            _parame[i] = 0;
+        }
+    }
+}
+
+-(int)getMapFixColorsModeValue:(FixColorsMode)mode{
     return  _parame[mode];
 }
 
