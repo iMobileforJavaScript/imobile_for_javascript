@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -6170,6 +6171,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                 Point2D mapPoint = point2Ds.getItem(0);
 
+                DisplayMetrics dm = new DisplayMetrics();
+                getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+                float density = dm.density;
+
                 InfoCallout callout = new InfoCallout(context);
                 callout.setStyle(CalloutAlignment.LEFT_BOTTOM);
                 callout.setBackground(0, 0);
@@ -6178,13 +6183,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 if(bigCallout){
                     hasBigCallout = true;
                     imageView.setImageResource(R.drawable.icon_green);
-                    imageView.setMaxWidth(50);
-                    imageView.setMaxHeight(50);
+                    imageView.setMaxWidth((int)(50*density));
+                    imageView.setMaxHeight((int)(50*density));
                 }else{
                     imageView.setImageResource(R.drawable.icon_red);
-                    imageView.setMaxWidth(40);
-                    imageView.setMaxHeight(40);
-                    imageView.setPadding(5,5,0,0);
+                    imageView.setMaxWidth((int)(40*density));
+                    imageView.setMaxHeight((int)(40*density));
+                    imageView.setPadding((int)(5*density),
+                            (int)(5*density),0,0);
                 }
 
 
@@ -6909,6 +6915,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
 
 
+    /**
+     * 拷贝室外地图网络模型snm文件
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void copyNaviSnmFile(String path,Promise promise) {
+        sMap = SMap.getInstance();
+        sMap.getSmMapWC().copyNaviSnmFile(path);
+        promise.resolve(true);
+    }
+
+
+
     /************************************** 导航模块 END ****************************************/
 
 
@@ -6921,6 +6941,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void matchPictureStyle(String picPath, Promise promise) {
         try {
+            SMap.getInstance().smMapWC.getMapControl().getEditHistory().addMapHistory();
             SMMapRender smMapRender = SMMapRender.getInstance();
             smMapRender.setSmMapRenderListener(new SMMapRender.SMMapRenderListener() {
                 @Override

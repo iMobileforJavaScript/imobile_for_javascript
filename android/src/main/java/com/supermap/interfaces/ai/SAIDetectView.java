@@ -75,7 +75,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         mAIDetectView = aiDetectView;
         mAidetectViewInfo = new AIDetectViewInfo();
         mAidetectViewInfo.assetManager = mContext.getAssets();
-        prepareAiDetectViewInfo("detect.tflite", "file:///android_asset/labelmap.txt");
+        prepareAiDetectViewInfo("detect.tflite", "labelmap.txt");
 
         mAIDetectView.init();
 
@@ -123,7 +123,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     }
 
     public static void setArView(ArView arView) {
-        Log.d(REACT_CLASS, "----------------SAIDetectView--setArView--------RN--------");
+        Log.d(REACT_CLASS, "----------------SAIDetectView--setSurfaceView--------RN--------");
         mArView = arView;
 //        mArView.setBackgroundColor(Color.parseColor("#2000fSMediaCollectorf00"));
 
@@ -522,12 +522,12 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void isPolynerize(Promise promise) {
+    public void isPolymerize(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------SAIDetectView--isPolynerize--------RN--------");
-            boolean polynerize = mAIDetectView.isPolymerize();
+//            boolean polymerize = mAIDetectView.isPolymerize();
 
-            promise.resolve(polynerize);
+            promise.resolve(mIsPolymerize);
         } catch (Exception e) {
             promise.reject(e);
         }

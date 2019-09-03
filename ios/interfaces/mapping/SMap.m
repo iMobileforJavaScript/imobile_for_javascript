@@ -2995,15 +2995,16 @@ RCT_REMAP_METHOD(animationPlay,animationPlay:(RCTPromiseResolveBlock)resolve rej
     @try {
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
-        double scale = mapControl.map.scale ;
-        mapControl.map.scale += 0.1;
-        [mapControl.map refresh];
-        mapControl.map.scale = scale;
+//        double scale = mapControl.map.scale ;
+//        mapControl.map.scale += 0.1;
+//        [mapControl.map refresh];
+//        mapControl.map.scale = scale;
         [mapControl.map refresh];
 //        [mapControl zoomTo:mapControl.map.scale*0.95 time:100];
 //        [mapControl.map refresh];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-             [[AnimationManager getInstance] play];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [mapControl.map refresh];
+            [[AnimationManager getInstance] play];
         });
        
         resolve(@(YES));
@@ -4565,6 +4566,7 @@ RCT_REMAP_METHOD(setLabelColor, setLabelColorWithResolver:(RCTPromiseResolveBloc
 #pragma mark 智能配图
 RCT_REMAP_METHOD(matchPictureStyle, matchPictureStyle:(NSString *)picPath resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
+        [[SMap.singletonInstance.smMapWC.mapControl getEditHistory] addMapHistory];
         SMMapRender* mapRender = [SMMapRender sharedInstance];
         mapRender.delegate = self;
         [mapRender setCompressMode:2];

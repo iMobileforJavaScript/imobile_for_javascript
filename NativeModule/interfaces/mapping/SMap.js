@@ -2380,6 +2380,23 @@ export default (function () {
     }
   }
 
+  /**
+   * 拷贝室外地图网络模型snm文件
+   * @returns {*|void|Promise<void>}
+   */
+  function copyNaviSnmFile(path) {
+    try {
+      if(SMap.copyNaviSnmFile){
+        return SMap.copyNaviSnmFile(path)
+      }else {
+        return true
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+
 
   let SMapExp = {
     isAvilableAlias,
@@ -2550,6 +2567,7 @@ export default (function () {
     newIncrementRoad,
     gpsBegin,
     addGPSRecordset,
+    copyNaviSnmFile,
 
     matchPictureStyle,
   }
