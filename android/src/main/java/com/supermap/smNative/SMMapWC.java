@@ -1332,6 +1332,7 @@ public class SMMapWC {
 // 返回结果：NSArray为导入成功的所有地图名
 //    public boolean importWorkspaceInfo(Map infoMap, String strModule) {
     public List<String> importWorkspaceInfo(Map infoMap, String strModule, boolean bPrivate) {
+        
 
         List<String> arrResult = null;
         if (infoMap == null || infoMap.get("server") == null || infoMap.get("type") == null || workspace.getConnectionInfo().getServer().equals(infoMap.get("server"))) {
@@ -3941,5 +3942,27 @@ public class SMMapWC {
         return true;
 
     }
+
+    // 拷贝室外地图网络模型snm文件
+    public void copyNaviSnmFile(String path){
+
+        String strUserName;
+        strUserName = getUserName();
+
+        String strRootPath = getRootPath();
+        String strCustomer = strRootPath + "/" + strUserName + "/Data";
+        List<String> arrSubs = contentsOfDirectoryAtPath(path);
+        for (int i = 0; i < arrSubs.size(); i++) {
+            String strSub = arrSubs.get(i);
+            if (strSub.endsWith(".snm")) {
+                String strSrcTemplate = path + "/" + strSub;
+                String strDesTemplate = strCustomer + "/Datasource/" + strSub;
+                strDesTemplate = formateNoneExistFileName(strDesTemplate, false);
+                copyFile(strSrcTemplate, strDesTemplate);
+                break;
+            }
+        }
+    }
+
 
 }

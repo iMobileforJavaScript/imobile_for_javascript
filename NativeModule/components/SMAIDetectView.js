@@ -17,65 +17,32 @@ class SMAIDetectView extends React.Component {
 
   constructor() {
     super()
+  }
 
-    this.state = {
-      viewId: 0,
-      visible: false,
-    }
+  state = {
+    viewId: 0,
   }
 
   static propTypes = {
-    visible: PropTypes.bool,
     onArObjectClick: PropTypes.func,
     ...ViewPropTypes,
   };
 
-  static defaultProps = {
-    visible: false,
-  }
-
-  componentDidMount() {
-    GLOBAL.Type === constants.MAP_AR &&
-    this.setState({
-      visible: true,
-    })
-  }
-
   componentDidUpdate(prevProps) {
-    // if (this.state.visible) {
-    //   SAIDetectView.initAIDetect()
-    //   SAIDetectView.startDetect()
-    // }
+  //   SAIDetectView.initAIDetect()
+  //   SAIDetectView.startDetect()
   }
 
   componentWillUnmount() {
-    GLOBAL.Type === constants.MAP_AR && this.state.visible && SAIDetectView.dispose()
+    SAIDetectView.dispose()
   }
 
   _onArObjectClick = ({nativeEvent}) => {
     this.props.onArObjectClick && this.props.onArObjectClick(nativeEvent)
   }
 
-  setVisible = (visible) => {
-    if (this.state.visible === visible) return
-    this.setState({
-      visible: visible,
-    }, () => {
-      if (visible) {
-        // SAIDetectView.initAIDetect()
-        // SAIDetectView.startDetect()
-      } else {
-        SAIDetectView.dispose()
-      }
-    })
-  }
-
   render() {
     var props = { ...this.props };
-
-    if (!this.state.visible) {
-      return null
-    }
 
     return (
       <View
@@ -93,15 +60,6 @@ class SMAIDetectView extends React.Component {
 }
 
 var styles = StyleSheet.create({
-  views: {
-    flex: 1,
-    alignSelf: 'stretch',
-    backgroundColor: 'transparent',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    flexDirection: 'column',
-  },
   view: {
     flex: 1,
     alignSelf: 'stretch',
