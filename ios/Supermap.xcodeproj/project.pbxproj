@@ -171,6 +171,7 @@
 		0A51675321AD437D003C77BE /* SMSceneWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */; };
 		0A51675621AF7EF7003C77BE /* MapTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A51675521AF7EF7003C77BE /* MapTool.m */; };
 		0A56919121B7E58300F46C9B /* SMFileUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A56919021B7E58300F46C9B /* SMFileUtil.m */; };
+		0A6F014E231E0AAC004D5290 /* FixColorMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6F014D231E0AAC004D5290 /* FixColorMode.m */; };
 		0A7196AC228C0873009C2C50 /* SMMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7196AB228C0873009C2C50 /* SMMedia.m */; };
 		0A84DED321BA403B007995FC /* SDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A84DED221BA403B007995FC /* SDatasource.m */; };
 		0A84DED621BA44C9007995FC /* SMDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A84DED521BA44C9007995FC /* SMDatasource.m */; };
@@ -551,6 +552,8 @@
 		0A56919021B7E58300F46C9B /* SMFileUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMFileUtil.m; sourceTree = "<group>"; };
 		0A6DE64021A2CC4000CD27EA /* SMSceneWC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSceneWC.m; sourceTree = "<group>"; };
 		0A6DE64121A2CC4000CD27EA /* SMSceneWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSceneWC.h; sourceTree = "<group>"; };
+		0A6F014C231E0AAC004D5290 /* FixColorMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FixColorMode.h; sourceTree = "<group>"; };
+		0A6F014D231E0AAC004D5290 /* FixColorMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FixColorMode.m; sourceTree = "<group>"; };
 		0A7196AA228C0873009C2C50 /* SMMedia.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMedia.h; sourceTree = "<group>"; };
 		0A7196AB228C0873009C2C50 /* SMMedia.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMMedia.m; sourceTree = "<group>"; };
 		0A84DED121BA403B007995FC /* SDatasource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SDatasource.h; sourceTree = "<group>"; };
@@ -1260,6 +1263,8 @@
 			children = (
 				D854DA532187FD970075B5F8 /* Constants.h */,
 				D854DA542187FD970075B5F8 /* Constants.m */,
+				0A6F014C231E0AAC004D5290 /* FixColorMode.h */,
+				0A6F014D231E0AAC004D5290 /* FixColorMode.m */,
 			);
 			path = constants;
 			sourceTree = "<group>";
@@ -1462,6 +1467,7 @@
 				0A332E10211D623E00F56F26 /* JSEncodeType.m in Sources */,
 				0A332E71211D623E00F56F26 /* RCTConvert+EncodeType.m in Sources */,
 				D8DD422D21758371009D80E9 /* JSSymbolMarker.m in Sources */,
+				0A6F014E231E0AAC004D5290 /* FixColorMode.m in Sources */,
 				0A332E17211D623E00F56F26 /* JSGeoLineM.m in Sources */,
 				0A332E32211D623E00F56F26 /* JSNavigation2.m in Sources */,
 				D83F3C42218BDA97001C56BE /* SMMapWC.m in Sources */,

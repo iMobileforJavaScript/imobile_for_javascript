@@ -247,6 +247,7 @@
 //    _TS =0  ;
 }
 
+
 -(void)reset:(BOOL)bMapReset{
     if (bMapReset) {
         for (int i=0; i<12; i++) {
