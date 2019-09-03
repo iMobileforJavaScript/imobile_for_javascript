@@ -6,19 +6,11 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.ar.highprecision.MeasureView;
 import com.supermap.data.*;
-import com.supermap.data.Enum;
 import com.supermap.interfaces.ai.CustomRelativeLayout;
 import com.supermap.interfaces.ar.rajawali.MotionRajawaliRenderer;
 import com.supermap.interfaces.mapping.SMap;
@@ -31,6 +23,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class SCollectSceneFormView extends ReactContextBaseJavaModule {
@@ -234,6 +227,9 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             if (mPostData != null) {
                 mPostData.clear();
             }
+            WritableMap allResults = Arguments.createMap();
+            allResults.putString("totalLength", mDecimalFormat.format(0.0));
+            sendEvent(mReactContext, "onTotalLengthChanged", allResults);
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -432,13 +428,15 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
         Date date = new Date(l);
         //转换提日期输出格式
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_ms", Locale.CHINA);
+        //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_ms", Locale.CHINA);
 
         return dateFormat.format(date);
     }
 
-    // 获取指定数据集中所有信息
-    public ArrayList<POIInfo> getDatasetAllGeometry(String UDBName, String DatasetName) {
+    /**
+     * 获取指定数据集中所有信息
+     */
+    public List<SceneFormInfo> getDatasetAllGeometry(String UDBName, String DatasetName) {
         DatasetVector datasetVector = null;
         if (UDBName != null && DatasetName != null) {
             MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
@@ -452,6 +450,11 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             return null;
         }
 
+        if (datasetVector.getType() != DatasetType.LINE3D) {
+            Log.e(REACT_CLASS, "DatasetType is not LINE3D!");
+            return null;
+        }
+
         // 如果数据集未打开
         if (!datasetVector.isOpen()) {
             return null;
@@ -462,10 +465,12 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
         Object ob;
         FieldInfos fieldInfos = recordset.getFieldInfos();
 
-        ArrayList<POIInfo> list = new ArrayList<POIInfo>();
+        ArrayList<SceneFormInfo> list = new ArrayList<SceneFormInfo>();
 
         while (!recordset.isEOF()) {
             int geometryId = recordset.getGeometry().getID();
+
+            GeoLine3D geoLine3D = (GeoLine3D) recordset.getGeometry();
 
             String NAME = "";
             if (fieldInfos.indexOf("NAME") != -1) {
@@ -475,84 +480,31 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
                 }
             }
 
-            String TYPE = "";
-            if (fieldInfos.indexOf("TYPE") != -1) {
-                ob = recordset.getFieldValue("TYPE");
-                if (ob != null) {
-                    TYPE = ob.toString();
-                }
-            }
-
-            String PERSON = "";
-            if (fieldInfos.indexOf("PERSON") != -1) {
-                ob = recordset.getFieldValue("PERSON");
-                if (ob != null) {
-                    PERSON = ob.toString();
-                }
-            }
-
             String TIME = "";
-            if (fieldInfos.indexOf("TIME") != -1) {
-                ob = recordset.getFieldValue("TIME");
+            if (fieldInfos.indexOf("ModifiedDate") != -1) {
+                ob = recordset.getFieldValue("ModifiedDate");
                 if (ob != null) {
                     TIME = ob.toString();
                 }
             }
 
-            String ADDRESS = "";
-            if (fieldInfos.indexOf("ADDRESS") != -1) {
-                ob = recordset.getFieldValue("ADDRESS");
+            String Description = "";
+            if (fieldInfos.indexOf("Description") != -1) {
+                ob = recordset.getFieldValue("Description");
                 if (ob != null) {
-                    ADDRESS = ob.toString();
+                    Description = ob.toString();
                 }
             }
 
-            String PICPATH = "";
-            if (fieldInfos.indexOf("PICPATH") != -1) {
-                ob = recordset.getFieldValue("PICPATH");
-                if (ob != null) {
-                    PICPATH = ob.toString();
-                }
-            }
-
-            String NOTES = "";
-            if (fieldInfos.indexOf("NOTES") != -1) {
-                ob = recordset.getFieldValue("NOTES");
-                if (ob != null) {
-                    NOTES = ob.toString();
-                }
-            }
-
-            double LOCATIONX = 0;
-            if (fieldInfos.indexOf("LOCATIONX") != -1) {
-                ob = recordset.getFieldValue("LOCATIONX");
-                if (ob != null) {
-                    LOCATIONX = Double.parseDouble(ob.toString());
-                }
-            }
-
-            double LOCATIONY = 0;
-            if (fieldInfos.indexOf("LOCATIONY") != -1) {
-                ob = recordset.getFieldValue("LOCATIONY");
-                if (ob != null) {
-                    LOCATIONY = Double.parseDouble(ob.toString());
-                }
-            }
-
-            POIInfo poiInfo = new POIInfo.Builder()
+            SceneFormInfo info = new SceneFormInfo.Builder()
                     .ID(geometryId)
+                    .geoLine3D(geoLine3D)
                     .name(NAME)
-                    .type(TYPE)
-                    .person(PERSON)
                     .time(TIME)
-                    .address(ADDRESS)
-                    .picpath(PICPATH)
-                    .notes(NOTES)
-                    .locationX(LOCATIONX)
-                    .locationY(LOCATIONY)
+                    .notes(Description)
                     .build();
 
-            list.add(poiInfo);
+            list.add(info);
 
             recordset.moveNext();
         }
