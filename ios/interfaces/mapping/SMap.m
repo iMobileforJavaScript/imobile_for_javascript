@@ -2831,6 +2831,7 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
 //            });
 //        }
        
+        [sMap.smMapWC.mapControl.map refresh];
         resolve(libInfo);
     } @catch (NSException *exception) {
         reject(@"initPlotSymbolLibrary", exception.reason, nil);
@@ -3473,7 +3474,148 @@ RCT_REMAP_METHOD(getGeoAnimationTypes,getGeoAnimationTypes:(int)geoId resolver:(
         }
         resolve(arr);
     } @catch (NSException *exception) {
-        reject(@"addAnimationWayPoint", exception.reason, nil);
+        reject(@"getGeoAnimationTypes", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取所有动画节点数据
+RCT_REMAP_METHOD(getAnimationNodeList,getAnimationNodeList:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        //        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        NSMutableArray* arr=[[NSMutableArray alloc] init];
+
+        //        NSString* animationGroupName=@"Create_Animation_Instance_#";   //动画动画组名，名称特殊，保证唯一
+        int count=[AnimationManager.getInstance getGroupCount];
+        //组件缺陷，group的count等于0调用getGroupByName还是能返回一个对象
+        //        AnimationGroup* animationGroup=[AnimationManager.getInstance getGroupByName:animationGroupName];
+        AnimationGroup* animationGroup;
+        if(count==0){
+            resolve(arr);
+            return;
+        }else{
+            animationGroup=[AnimationManager.getInstance getGroupByIndex:0];
+        }
+        int size=[animationGroup getAnimationCount];
+        for (int i=0; i<size; i++) {
+            AnimationGO* animationGo=[animationGroup getAnimationByIndex:i];
+            NSDictionary* map=@{
+                                @"index":[NSNumber numberWithInt:i],
+                                @"name":animationGo.name
+                                };
+            [arr addObject:map];
+        }
+        resolve(arr);
+    } @catch (NSException *exception) {
+        reject(@"getAnimationNodeList", exception.reason, nil);
+    }
+}
+
+#pragma mark 删除动画节点
+RCT_REMAP_METHOD(deleteAnimationNode,deleteAnimationNode:(NSString*)nodeName resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        //        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        
+        //        NSString* animationGroupName=@"Create_Animation_Instance_#";   //动画动画组名，名称特殊，保证唯一
+        int count=[AnimationManager.getInstance getGroupCount];
+        //组件缺陷，group的count等于0调用getGroupByName还是能返回一个对象
+        //        AnimationGroup* animationGroup=[AnimationManager.getInstance getGroupByName:animationGroupName];
+        AnimationGroup* animationGroup;
+        if(count==0){
+            resolve([NSNumber numberWithBool:NO]);
+            return;
+        }else{
+            animationGroup=[AnimationManager.getInstance getGroupByIndex:0];
+        }
+        BOOL result=[animationGroup deleteAnimationByName:nodeName];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"deleteAnimationNode", exception.reason, nil);
+    }
+}
+
+#pragma mark 修改动画节点名称
+RCT_REMAP_METHOD(modifyAnimationNodeName,modifyAnimationNodeName:(int)index withNewName:(NSString*)newNodeName resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        //        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        //        NSString* animationGroupName=@"Create_Animation_Instance_#";   //动画动画组名，名称特殊，保证唯一
+        int count=[AnimationManager.getInstance getGroupCount];
+        //组件缺陷，group的count等于0调用getGroupByName还是能返回一个对象
+        //        AnimationGroup* animationGroup=[AnimationManager.getInstance getGroupByName:animationGroupName];
+        AnimationGroup* animationGroup;
+        if(count==0){
+            resolve([NSNumber numberWithBool:NO]);
+            return;
+        }else{
+            animationGroup=[AnimationManager.getInstance getGroupByIndex:0];
+        }
+        AnimationGO* animationGo=[animationGroup getAnimationByIndex:index];
+        [animationGo setName:newNodeName];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"getAnimationNodeList", exception.reason, nil);
+    }
+}
+
+#pragma mark 移动节点位置
+RCT_REMAP_METHOD(moveAnimationNode,moveAnimationNode:(int)index isUp:(BOOL)isUp resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        //        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        NSString* animationGroupName=@"Create_Animation_Instance_#";   //动画动画组名，名称特殊，保证唯一
+        int count=[AnimationManager.getInstance getGroupCount];
+        //组件缺陷，group的count等于0调用getGroupByName还是能返回一个对象
+        //        AnimationGroup* animationGroup=[AnimationManager.getInstance getGroupByName:animationGroupName];
+        AnimationGroup* animationGroup;
+        AnimationGroup* tempGroup;
+        if(count==0){
+            resolve([NSNumber numberWithBool:NO]);
+            return;
+        }
+        
+        animationGroup=[AnimationManager.getInstance getGroupByIndex:0];
+            
+        NSString* tempGroupName=@"temp";
+        tempGroup=[AnimationManager.getInstance addAnimationGroup:tempGroupName];
+            
+        
+        int size=[animationGroup getAnimationCount];
+        AnimationGO* tempAnimationGo;
+        int tempIndex=isUp?index-1:index;
+        for (int i=0; i<size; i++) {
+            AnimationGO* animationGo=[animationGroup getAnimationByIndex:i];
+            
+            if(tempIndex==i){
+                tempAnimationGo=animationGo;
+                [tempGroup addAnimation:[animationGroup getAnimationByIndex:i+1]];
+            }
+            else if(tempIndex+1==i){
+                [tempGroup addAnimation:tempAnimationGo];
+            }
+            else{
+                [tempGroup addAnimation:animationGo];
+            }
+        }
+        
+        //ios暂时没有这个方法
+        [AnimationManager.getInstance deleteGroupByName:animationGroupName];
+        [tempGroup setName:animationGroupName];
+    
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"getAnimationNodeList", exception.reason, nil);
     }
 }
 

@@ -1651,6 +1651,50 @@ export default (function () {
       console.error(e)
     }
   }
+  
+  /**
+   * 获取所有动画节点的数据
+   */
+  function getAnimationNodeList(){
+    try{
+      return SMap.getAnimationNodeList()
+    } catch (e){
+      console.error(e)
+    }
+  }
+
+  /**
+   * 删除动画节点
+   */
+  function deleteAnimationNode(nodeName){
+    try{
+      return SMap.deleteAnimationNode(nodeName)
+    } catch (e){
+      console.error(e)
+    }
+  }
+
+  /**
+   * 修改动画节点名称
+   */
+  function modifyAnimationNodeName(index,newNodeName){
+    try{
+      return SMap.modifyAnimationNodeName(index,newNodeName)
+    } catch (e){
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移动动画节点位置
+   */
+  function moveAnimationNode(index,isUp){
+    try{
+      return SMap.moveAnimationNode(index,isUp)
+    } catch (e){
+      console.error(e)
+    }
+  }
   /************************************** 地图编辑历史操作 ****************************************/
   /**
    * 地图撤销
@@ -2466,6 +2510,10 @@ export default (function () {
     cancelAnimationWayPoint,
     endAnimationWayPoint,
     getGeoAnimationTypes,
+    getAnimationNodeList,
+    deleteAnimationNode,
+    modifyAnimationNodeName,
+    moveAnimationNode,
     undo,
     redo,
     removeHistory,
