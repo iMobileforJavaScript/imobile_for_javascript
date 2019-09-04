@@ -43,6 +43,8 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
 
     private static DecimalFormat mDecimalFormat = new DecimalFormat("0.00");
     private ArrayList<Point3D> mPostData = new ArrayList<>();
+
+    List<SceneFormInfo> infoList = new ArrayList<>();
     private ArrayList<Point3D> mQueryData = new ArrayList<>();//查询到的数据
 
     private String mDatasourceAlias, mDatasetName = null;
@@ -177,7 +179,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void saveData(Promise promise) {
+    public void saveData(String name, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------saveData--------RN--------");
             if (mPostData == null) {
@@ -189,7 +191,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
                 mRenderer.savePoseData(mPostData);
             }
             //保存到数据集
-            saveDataset();
+            saveDataset(name);
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -201,14 +203,33 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void loadData(int ID, Promise promise) {
+    public void loadData(int index, Promise promise) {
         try {
-            Log.d(REACT_CLASS, "----------------stopRecording--------RN--------");
-            if (mRenderer != null) {
-                mRenderer.loadPoseData(mPostData);
+            Log.d(REACT_CLASS, "----------------loadData--------RN--------");
+            if (mQueryData == null) {
+                mQueryData = new ArrayList<>();
+            } else {
+                mQueryData.clear();
             }
 
-            promise.resolve(true);
+            if (infoList != null && infoList.size() > 0) {
+                SceneFormInfo info = infoList.get(index);
+                GeoLine3D geoLine3D = info.getGeoLine3D();
+                for (int i = 0; i < geoLine3D.getPartCount(); i++) {
+                    Point3Ds part = geoLine3D.getPart(i);
+                    Point3D[] point3DS = part.toArray();
+                    for (Point3D point : point3DS ) {
+                        mQueryData.add(point);
+                    }
+                }
+
+                if (mRenderer != null) {
+                    mRenderer.loadPoseData(mQueryData);
+                }
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -220,16 +241,13 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void clearData(Promise promise) {
         try {
-            Log.d(REACT_CLASS, "----------------stopRecording--------RN--------");
+            Log.d(REACT_CLASS, "----------------clearData--------RN--------");
             if (mRenderer != null) {
                 mRenderer.clearPoseData();
             }
             if (mPostData != null) {
                 mPostData.clear();
             }
-            WritableMap allResults = Arguments.createMap();
-            allResults.putString("totalLength", mDecimalFormat.format(0.0));
-            sendEvent(mReactContext, "onTotalLengthChanged", allResults);
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -241,16 +259,16 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     public void setArSceneViewVisible(final boolean isVisible, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------setArSceneViewVisible--------RN--------");
-            getCurrentActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (isVisible) {
-                        mMeasureView.setVisibility(View.VISIBLE);
-                    } else {
-                        mMeasureView.setVisibility(View.INVISIBLE);
-                    }
-                }
-            });
+//            getCurrentActivity().runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    if (isVisible) {
+//                        mMeasureView.setVisibility(View.VISIBLE);
+//                    } else {
+//                        mMeasureView.setVisibility(View.INVISIBLE);
+//                    }
+//                }
+//            });
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -262,8 +280,9 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     public void onDestroy(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------onDestroy--------RN--------");
-            isShowTrace = false;
-            mRenderer.getCurrentScene().clearFrameCallbacks();
+            if (mRenderer != null) {
+                mRenderer.getCurrentScene().clearFrameCallbacks();
+            }
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -284,6 +303,39 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             createDataset(mDatasourceAlias, mDatasetName);
 
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void getHistoryData(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------getHistoryData--------RN--------");
+            if (infoList == null) {
+                infoList = new ArrayList<>();
+            } else {
+                infoList.clear();;
+            }
+            infoList = getDatasetAllGeometry(this.mDatasourceAlias, this.mDatasetName);
+            if (infoList != null && infoList.size() > 0) {
+                WritableArray arr = Arguments.createArray();
+                for (int i = 0; i < infoList.size(); i++) {
+                    WritableMap writeMap = Arguments.createMap();
+                    writeMap.putString("name", infoList.get(i).getName());
+                    writeMap.putString("time", infoList.get(i).getTime());
+                    writeMap.putString("description",infoList.get(i).getNotes());
+                    writeMap.putInt("index", i);
+                    arr.pushMap(writeMap);
+                }
+
+                WritableMap writableMap = Arguments.createMap();
+                writableMap.putArray("history", arr);
+
+                promise.resolve(writableMap);
+            } else {
+                promise.resolve(false);
+            }
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -372,7 +424,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     /**
      * 保存数据
      */
-    private void saveDataset() {
+    private void saveDataset(String name) {
         try {
             DatasetVector datasetVector = null;
             MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
@@ -407,6 +459,16 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
                     }
                     if (!getCurrentTime().equals(str)) {
                         recordset.setFieldValue("ModifiedDate", getCurrentTime());
+                    }
+                }
+                if (fieldInfos.indexOf("NAME") != -1) {
+                    String str = null;
+                    Object ob = recordset.getFieldValue("NAME");
+                    if (ob != null) {
+                        str = ob.toString();
+                    }
+                    if (!name.equals(str)) {
+                        recordset.setFieldValue("NAME", name);
                     }
                 }
 
