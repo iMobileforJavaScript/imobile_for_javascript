@@ -198,11 +198,39 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
 
     public void clearPoseData(){
         mTrajectory.clearPoseData();
+
+
+        totalLength = 0.0f;
     }
+
 
     public void loadPoseData(ArrayList<Point3D>  src){
         mTrajectory.loadPoseData(src);
+
+        totalLength = (float)_getTotalLengthFromPointList(src);
     }
+
+
+
+
+
+    private double _getTotalLengthFromPointList(ArrayList<Point3D> src){
+        double totalLength = 0.0D;
+
+        if(src == null || src.size()<= 1){
+            return totalLength;
+        }
+
+        for(int i = 0;i<src.size()-1;i++){
+            totalLength  += Math.sqrt(Math.pow(src.get(i).getX()-src.get(i+1).getX(),2)+
+                            Math.pow(src.get(i).getY()-src.get(i+1).getY(),2)+
+                            Math.pow(src.get(i).getZ()-src.get(i+1).getZ(),2)
+                    );
+        }
+
+        return totalLength;
+    }
+
 
 
 }
