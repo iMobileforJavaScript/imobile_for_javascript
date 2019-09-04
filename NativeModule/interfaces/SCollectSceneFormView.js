@@ -57,9 +57,9 @@ saveData = (name) => {
   }
 }
 
-loadData = (ID) => {
+loadData = (index) => {
   try {
-    return SCollectSceneFormView.loadData(ID)
+    return SCollectSceneFormView.loadData(index)
   } catch (error) {
     console.error(error)
   }
