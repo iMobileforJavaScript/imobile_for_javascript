@@ -9,9 +9,9 @@ import {
 } from "react-native"
 let SCollectSceneFormView = NativeModules.SCollectSceneFormView
 
-startNewRecording = () => {
+startRecording = () => {
   try {
-    return SCollectSceneFormView.startNewRecording()
+    return SCollectSceneFormView.startRecording()
   } catch (error) {
     console.error(error)
   }
@@ -20,22 +20,6 @@ startNewRecording = () => {
 stopRecording = () => {
   try {
     return SCollectSceneFormView.stopRecording()
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-onResume = () => {
-  try {
-    return SCollectSceneFormView.onResume()
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-onPause = () => {
-  try {
-    return SCollectSceneFormView.onPause()
   } catch (error) {
     console.error(error)
   }
@@ -57,11 +41,45 @@ setArSceneViewVisible = (isVisible) => {
   }
 }
 
+initSceneFormView = (datasourceAlias, datasetName, language, UDBpath) => {
+  try {
+    return SCollectSceneFormView.initSceneFormView(datasourceAlias, datasetName, language, UDBpath)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+saveData = () => {
+  try {
+    return SCollectSceneFormView.saveData()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+loadData = () => {
+  try {
+    return SCollectSceneFormView.loadData()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+clearData = () => {
+  try {
+    return SCollectSceneFormView.clearData()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
-  startNewRecording,
+  startRecording,
   stopRecording,
   setArSceneViewVisible,
-  onResume,
-  onPause,
   onDestroy,
+  initSceneFormView,
+  saveData,
+  loadData,
+  clearData,
 }

@@ -34,7 +34,7 @@ public class CollectSceneFormViewManager extends SimpleViewManager<CustomRelativ
 
         mCustomRelativeLayout = new CustomRelativeLayout(reactContext);
         mCustomRelativeLayout.setLayoutParams(params);
-        mCustomRelativeLayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        mCustomRelativeLayout.setBackgroundColor(Color.parseColor("#505050"));
         SCollectSceneFormView.setViewManager(mCustomRelativeLayout);
 
         mMeasureView = new MeasureView(reactContext.getCurrentActivity());
@@ -43,7 +43,7 @@ public class CollectSceneFormViewManager extends SimpleViewManager<CustomRelativ
 
         mSurfaceView = new RajawaliSurfaceView(reactContext.getCurrentActivity());
         mSurfaceView.setLayoutParams(params);
-        SCollectSceneFormView.setArView(mSurfaceView);
+        SCollectSceneFormView.setSurfaceView(mSurfaceView);
 
         mCustomRelativeLayout.addView(mMeasureView);
         mCustomRelativeLayout.addView(mSurfaceView);

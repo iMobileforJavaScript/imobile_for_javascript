@@ -38,4 +38,5 @@ typedef enum{
 -(void)updateMapFixColorsMode:(FixColorsMode)mode value:(int)value;
 -(int)getMapFixColorsModeValue:(FixColorsMode)mode;
 
+-(void)reset:(BOOL)bMapReset;
 @end
