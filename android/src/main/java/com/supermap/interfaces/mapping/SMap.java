@@ -4121,6 +4121,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //                    }.start();
 //                }
             }
+            mapControl.getMap().refresh();
 
             promise.resolve(writeMap);
         } catch (Exception e) {
@@ -4358,7 +4359,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //            mapControl.getMap().refresh();
 //            mapControl.zoomTo(scale,100);
 ////            mapControl.getMap().setScale( scale);
-//            mapControl.getMap().refresh();
+            mapControl.getMap().refresh();
 
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -4855,6 +4856,94 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     * 获取所有动画节点数据
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getAnimationNodeList(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            WritableArray arr = Arguments.createArray();
+
+            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
+            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
+            if (animationGroup == null) {
+                promise.resolve(arr);
+                return;
+            }
+
+            int size=animationGroup.getAnimationCount();
+            for (int i = 0; i < size; i++) {
+                AnimationGO animationGO=animationGroup.getAnimationByIndex(i);
+                WritableMap writeMap = Arguments.createMap();
+                writeMap.putInt("index",i);
+                writeMap.putString("name",animationGO.getName());
+                arr.pushMap(writeMap);
+            }
+            promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 删除动画节点
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void deleteAnimationNode(String nodeName,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+
+            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
+            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
+            if (animationGroup == null) {
+                promise.resolve(false);
+                return;
+            }
+
+            boolean result=animationGroup.deleteAnimation(nodeName);
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 删除动画节点
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void modifyAnimationNodeName(int index,String newNodeName,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+
+            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
+            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
+            if (animationGroup == null) {
+                promise.resolve(false);
+                return;
+            }
+
+            AnimationGO animationGO=animationGroup.getAnimationByIndex(index);
+            boolean result=animationGO.setName(newNodeName);
+
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 
 
 /************************************** 地图编辑历史操作 BEGIN****************************************/
