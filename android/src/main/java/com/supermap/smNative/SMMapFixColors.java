@@ -244,18 +244,18 @@ public class SMMapFixColors {
 
     public void reset(boolean bMapRefresh){
         if (bMapRefresh){
-            updateMapFixColors(SMMapFixColorsMode.FCM_LH,0);
-            updateMapFixColors(SMMapFixColorsMode.FCM_FH,0);
-            updateMapFixColors(SMMapFixColorsMode.FCM_BH,0);
-            updateMapFixColors(SMMapFixColorsMode.FCM_TH,0);
-            updateMapFixColors(SMMapFixColorsMode.FCM_LS,0);
-            updateMapFixColors(SMMapFixColorsMode.FCM_FS,0);
-            updateMapFixColors(SMMapFixColorsMode.FCM_BS,0);
-            updateMapFixColors(SMMapFixColorsMode.FCM_TS,0);
-            updateMapFixColors(SMMapFixColorsMode.FCM_LB,0);
-            updateMapFixColors(SMMapFixColorsMode.FCM_FB,0);
-            updateMapFixColors(SMMapFixColorsMode.FCM_BB,0);
-            updateMapFixColors(SMMapFixColorsMode.FCM_TB,0);
+            if(_param[0]!=0)updateMapFixColors(SMMapFixColorsMode.FCM_LH,0);
+            if(_param[1]!=0)updateMapFixColors(SMMapFixColorsMode.FCM_FH,0);
+            if(_param[2]!=0)updateMapFixColors(SMMapFixColorsMode.FCM_BH,0);
+            if(_param[3]!=0)updateMapFixColors(SMMapFixColorsMode.FCM_TH,0);
+            if(_param[4]!=0)updateMapFixColors(SMMapFixColorsMode.FCM_LS,0);
+            if(_param[5]!=0)updateMapFixColors(SMMapFixColorsMode.FCM_FS,0);
+            if(_param[6]!=0)updateMapFixColors(SMMapFixColorsMode.FCM_BS,0);
+            if(_param[7]!=0)updateMapFixColors(SMMapFixColorsMode.FCM_TS,0);
+            if(_param[8]!=0)updateMapFixColors(SMMapFixColorsMode.FCM_LB,0);
+            if(_param[9]!=0)updateMapFixColors(SMMapFixColorsMode.FCM_FB,0);
+            if(_param[10]!=0)updateMapFixColors(SMMapFixColorsMode.FCM_BB,0);
+            if(_param[11]!=0)updateMapFixColors(SMMapFixColorsMode.FCM_TB,0);
         }else{
             for (int i=0;i<12;i++){
                 _param[i] = 0;

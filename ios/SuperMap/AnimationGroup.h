@@ -28,4 +28,5 @@
 // 3);//停止播放
 //4);//复位
 -(int)getAnimationGroupPlayState;
+-(BOOL)deleteAnimationByName:(NSString*)name;
 @end

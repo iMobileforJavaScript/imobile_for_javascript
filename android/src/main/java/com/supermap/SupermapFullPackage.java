@@ -6,6 +6,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.supermap.component.SMSymbolTable;
+import com.supermap.containts.FixColorMode;
 import com.supermap.interfaces.ai.AIClassifyViewManager;
 import com.supermap.interfaces.ai.AIDetectViewManager;
 import com.supermap.interfaces.ai.SAIClassifyView;
@@ -121,6 +122,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSRadiusUnit(reactContext));
         modules.add(new JSEncodeType(reactContext));
         modules.add(new JSDatasetType(reactContext));
+        modules.add(new FixColorMode(reactContext));
 
         modules.add(new JSAMQPManager(reactContext));
         modules.add(new JSAMQPSender(reactContext));

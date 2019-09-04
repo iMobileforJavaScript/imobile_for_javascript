@@ -45,5 +45,5 @@
 -(BOOL)getAnimationFromXML:(NSString*)filePath;
 -(BOOL)saveAnimationToXML:(NSString*)filePath;
 -(Geometry*)CreateGraphicObject:(Geometry*)geo mapName:(NSString*)mapName layerName:(NSString*)layerName;
-
+-(BOOL)deleteGroupByName:(NSString*)groupName;
 @end
