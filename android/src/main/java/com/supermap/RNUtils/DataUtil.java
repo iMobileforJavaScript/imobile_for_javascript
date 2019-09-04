@@ -164,4 +164,9 @@ public class DataUtil {
         return newArray;
     }
 
+    public static <T> T getEnum(Class<T> clazz,int index){
+        T[] c=clazz.getEnumConstants();
+        return c[index];
+    }
+
 }

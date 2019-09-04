@@ -2217,6 +2217,48 @@ export default (function () {
       }
     }
   }
+  
+  /**
+   * 调整智能配图 亮度、饱和度、色调
+   * @param mode  (0 - 11)
+   * @param value (-100 - 100)
+   * @returns {*}
+   */
+  function updateMapFixColorsMode(mode, value) {
+    try {
+      return SMap.updateMapFixColorsMode(mode, value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 获取智能配图 亮度、饱和度、色调
+   * @param mode  (0 - 11)
+   * @param value (-100 - 100)
+   * @returns {*}
+   */
+  function getMapFixColorsModeValue(mode) {
+    try {
+      return SMap.getMapFixColorsModeValue(mode)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  
+  /**
+   * 重置智能配图 亮度、饱和度、色调 的值
+   * 切换地图，关闭地图时调用
+   * @param isRest 是否重置地图
+   * @returns {*}
+   */
+  function resetMapFixColorsModeValue(isRest = false) {
+    try {
+      return SMap.resetMapFixColorsModeValue(isRest)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
    * 开启室内导航
@@ -2570,6 +2612,9 @@ export default (function () {
     copyNaviSnmFile,
 
     matchPictureStyle,
+    updateMapFixColorsMode,
+    getMapFixColorsModeValue,
+    resetMapFixColorsModeValue,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)
 
