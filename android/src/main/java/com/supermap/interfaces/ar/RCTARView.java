@@ -30,7 +30,9 @@ import com.supermap.onlineservices.POIInfo;
 import com.supermap.onlineservices.POIQuery;
 import com.supermap.onlineservices.POIQueryParameter;
 import com.supermap.onlineservices.POIQueryResult;
+import com.supermap.plugin.LocationManagePlugin;
 import com.supermap.rnsupermap.R;
+import com.supermap.smNative.collector.SMCollector;
 
 import java.util.ArrayList;
 
@@ -41,7 +43,8 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
     private World mWorld;
     POIInfo[] poiInfos;
     Point2Ds point2Ds;
-    double y, x;
+    double locationy, locationx,naviPointx,naviPointy;
+    String naviName,naviAddress;
 
     @Override
     public String getName() {
@@ -73,9 +76,16 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
 
     @ReactProp(name = "ARView")
     public void setStyle(MapARView view, ReadableMap style) {
-        queryPOI(style.getString("name"), style.getDouble("x"), style.getDouble("y"));
-        x = style.getDouble("x");
-        y = style.getDouble("y");
+        naviPointx=style.getDouble("x");
+        naviPointy=style.getDouble("y");
+        naviName=style.getString("name");
+        naviAddress=style.getString("address");
+        if(style.getBoolean("isNaviPoint")){
+            createNaviPointCoordPoi(m_ThemedReactContext.getCurrentActivity().getResources().getDisplayMetrics().widthPixels / 2,
+                    m_ThemedReactContext.getCurrentActivity().getResources().getDisplayMetrics().heightPixels / 2);
+        }else {
+            queryPOI(style.getString("name"));
+        }
     }
 
 
@@ -98,6 +108,16 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
         }
     }
 
+    private void createNaviPointCoordPoi(int x,int y){
+        Point3D point = m_View.getIntersectionPoint(x, y);
+        if (point != null) {
+            GeoObject tempArObject = new GeoObject(System.currentTimeMillis());
+            tempArObject.setGeoPosition(naviPointx,naviPointy);
+            tempArObject.setName(naviName.replace("/", ""));
+            updateImagesByStaticView(tempArObject, naviName, naviAddress, new Point2D(naviPointx,naviPointy));
+            mWorld.addArObject(tempArObject);
+        }
+    }
 
     private void createScreenCoordPoi(int x, int y) {
         Point3D point = m_View.getIntersectionPoint(x, y);
@@ -125,7 +145,7 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
         m_address.setText(address);
 
         TextView m_info = view.findViewById(R.id.info);
-        m_info.setText(String.valueOf(getDistance(point2D.getY(), point2D.getX(), y, x) + "米"));
+        m_info.setText(String.valueOf(getDistance(point2D.getY(), point2D.getX(), locationy, locationx) + "米"));
 
 
         ImageView iv = (ImageView) view.findViewById(R.id.ai_ar_content);
@@ -155,8 +175,12 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
         return (int) s;
     }
 
-    public void queryPOI(String str, double x, double y) {
-        mWorld.setGeoPosition(x, y);
+    public void queryPOI(String str) {
+        LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+        Point2D gpsPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
+        mWorld.setGeoPosition(gpsPoint.getX(), gpsPoint.getY());
+        locationx=gpsPoint.getX();
+        locationy=gpsPoint.getY();
         POIQuery poiQuery = new POIQuery(m_ThemedReactContext);
         POIQueryParameter queryParameter = new POIQueryParameter();
         //			用户申请的钥匙
@@ -168,7 +192,7 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
 
         queryParameter.setPageSize(10);
 
-        queryParameter.setLocation(x, y);
+        queryParameter.setLocation(gpsPoint.getX(), gpsPoint.getY());
 
         queryParameter.setRadius("1000");
 

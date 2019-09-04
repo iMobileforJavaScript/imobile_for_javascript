@@ -6156,12 +6156,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().getTrackingLayer().clear();
-            context.getCurrentActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView().removeAllCallOut();
-                }
-            });
+//            context.getCurrentActivity().runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView().removeAllCallOut();
+//                }
+//            });
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
