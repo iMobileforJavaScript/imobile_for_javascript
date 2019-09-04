@@ -251,7 +251,9 @@
 -(void)reset:(BOOL)bMapReset{
     if (bMapReset) {
         for (int i=0; i<12; i++) {
-            [self updateMapFixColorsMode:(FixColorsMode)i value:0];
+            if(_parame[i]!=0){
+                [self updateMapFixColorsMode:(FixColorsMode)i value:0];
+            }
         }
     }else{
         for (int i=0; i<12; i++) {
