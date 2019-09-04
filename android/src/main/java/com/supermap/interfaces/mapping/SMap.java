@@ -4358,7 +4358,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //            mapControl.getMap().refresh();
 //            mapControl.zoomTo(scale,100);
 ////            mapControl.getMap().setScale( scale);
-//            mapControl.getMap().refresh();
+            mapControl.getMap().refresh();
 
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
