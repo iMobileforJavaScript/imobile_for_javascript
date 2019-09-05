@@ -58,6 +58,8 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     private static ReactApplicationContext mReactContext = null;
     private static CustomRelativeLayout mCustomRelativeLayout = null;
 
+    private static String mLanguage = "CN";//EN
+
     public SAIDetectView(ReactApplicationContext reactContext) {
         super(reactContext);
         mReactContext = reactContext;
@@ -181,57 +183,11 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void initAIDetect(Promise promise){
+    public void initAIDetect(String language, Promise promise){
         try{
             Log.d(REACT_CLASS, "----------------SAIDetectView--initAIDetect--------RN--------");
-            Activity currentActivity = getCurrentActivity();
-            if (currentActivity != null) {
-                currentActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mAIDetectView == null) {
-                            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.MATCH_PARENT);
-                            mAIDetectView = new AIDetectView(mReactContext);
-                            mAIDetectView.setLayoutParams(params);
-                            mAIDetectView.init();
-                            mAIDetectView.setGravity(Gravity.CENTER);
-                        }
-                        mAIDetectView.setBackgroundColor(Color.parseColor("#2D2D2F"));
-                        mAIDetectView.setDetectInfo(mAidetectViewInfo);//设置数据
+            mLanguage = language;
 
-                        mStrToUse.clear();
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.PERSON));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BICYCLE));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CAR));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOTORCYCLE));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BUS));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TRUCK));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CUP));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CHAIR));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.POTTEDPLANT));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.LAPTOP));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOUSE));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TV));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.KEYBOARD));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CELLPHONE));
-                        mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BOTTLE));
-
-                        mAIDetectView.setDetectArrayToUse(mStrToUse);//设置初始模型
-
-                        mAIDetectView.setDetectedListener(mDetectListener);//设置Ai监听回调
-
-                        mAIDetectView.setDetectInterval(mDetectInterval);//设置识别时间间隔
-
-                        mAIDetectView.setisPolymerize(false);//是否聚合模式
-
-                        mAIDetectView.setPolymerizeThreshold(100, 100);//设置聚合模式网格宽高
-
-//                        mAIDetectView.startDetect();
-//                        mAIDetectView.startCountTrackedObjs();
-                    }
-                });
-            }
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
@@ -1045,10 +1001,22 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         if (layoutInflater != null) {
             View view = layoutInflater.inflate(R.layout.ar_object_view_wrapcontent, null);
+            TextView tv_name = view.findViewById(R.id.tv_name);
+            TextView tv_address = view.findViewById(R.id.tv_address);
+
             ImageView imageView = view.findViewById(R.id.ai_ar_content);
             TextView info = view.findViewById(R.id.info);
-            info.setText(AIDetectModel2.getChineseName(type));
             TextView address = view.findViewById(R.id.address);
+
+            if (mLanguage.equals("CN")) {
+                tv_name.setText("类别:");
+                tv_address.setText("时间:");
+                info.setText(AIDetectModel2.getChineseName(type));
+            } else {
+                tv_name.setText("Type:");
+                tv_address.setText("Time:");
+                info.setText(AIDetectModel2.getEnglishName(type));
+            }
 
 //            address.setText("未知定位,请检查网络或者GPS.");
             address.setText(getCurrentTime());

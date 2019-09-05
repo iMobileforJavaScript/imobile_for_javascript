@@ -10,9 +10,9 @@ import {
 let SAIDetectView = NativeModules.SAIDetectView
 
 //初始化
-initAIDetect = () => {
+initAIDetect = (language) => {
   try {
-    return SAIDetectView.initAIDetect()
+    return SAIDetectView.initAIDetect(language)
   } catch (error) {
     console.error(error)
   }
