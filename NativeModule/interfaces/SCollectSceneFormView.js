@@ -49,17 +49,17 @@ initSceneFormView = (datasourceAlias, datasetName, language, UDBpath) => {
   }
 }
 
-saveData = () => {
+saveData = (name) => {
   try {
-    return SCollectSceneFormView.saveData()
+    return SCollectSceneFormView.saveData(name)
   } catch (error) {
     console.error(error)
   }
 }
 
-loadData = () => {
+loadData = (index) => {
   try {
-    return SCollectSceneFormView.loadData()
+    return SCollectSceneFormView.loadData(index)
   } catch (error) {
     console.error(error)
   }
@@ -68,6 +68,14 @@ loadData = () => {
 clearData = () => {
   try {
     return SCollectSceneFormView.clearData()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+getHistoryData = () => {
+  try {
+    return SCollectSceneFormView.getHistoryData()
   } catch (error) {
     console.error(error)
   }
@@ -82,4 +90,5 @@ export default {
   saveData,
   loadData,
   clearData,
+  getHistoryData,
 }

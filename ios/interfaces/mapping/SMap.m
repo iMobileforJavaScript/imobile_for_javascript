@@ -4619,6 +4619,39 @@ RCT_REMAP_METHOD(deleteMatchPictureListener, deleteMatchPictureListenerWithResol
     }
 }
 
+#pragma mark 调整智能配图 亮度、饱和度、色调
+RCT_REMAP_METHOD(updateMapFixColorsMode, updateMapFixColorsMode:(int)mode value:(int)value resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMMapFixColors* mapFixColors = [SMMapFixColors sharedInstance];
+        [mapFixColors updateMapFixColorsMode:mode value:value];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取智能配图 亮度、饱和度、色调
+RCT_REMAP_METHOD(getMapFixColorsModeValue, getMapFixColorsModeValue:(int)mode resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMMapFixColors* mapFixColors = [SMMapFixColors sharedInstance];
+        int value = [mapFixColors getMapFixColorsModeValue:mode];
+        resolve(@(value));
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
+    }
+}
+
+#pragma mark 重置智能配图 亮度、饱和度、色调 的值
+RCT_REMAP_METHOD(resetMapFixColorsModeValue, resetMapFixColorsModeValue:(BOOL)isReset resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        SMMapFixColors* mapFixColors = [SMMapFixColors sharedInstance];
+        [mapFixColors reset:isReset];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
+    }
+}
+
 #pragma mark /************************************************ 监听事件 ************************************************/
 #pragma mark 监听事件
 /*

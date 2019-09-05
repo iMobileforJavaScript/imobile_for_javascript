@@ -386,6 +386,38 @@ public enum AIDetectModel2 {
         }
     }
 
+    public static List<String> getALLEnglishModels() {
+        List<String> list = new ArrayList<String>();
+
+        list.add(AIDetectModel2.getEnglishName(PERSON));
+        list.add(AIDetectModel2.getEnglishName(BICYCLE));
+        list.add(AIDetectModel2.getEnglishName(CAR));
+        list.add(AIDetectModel2.getEnglishName(MOTORCYCLE));
+        list.add(AIDetectModel2.getEnglishName(BUS));
+
+        list.add(AIDetectModel2.getEnglishName(TRUCK));
+        list.add(AIDetectModel2.getEnglishName(TRAFFICLIGHT));
+        list.add(AIDetectModel2.getEnglishName(FIREHYDRANT));
+        list.add(AIDetectModel2.getEnglishName(CUP));
+        list.add(AIDetectModel2.getEnglishName(CHAIR));
+
+        list.add(AIDetectModel2.getEnglishName(BIRD));
+        list.add(AIDetectModel2.getEnglishName(CAT));
+        list.add(AIDetectModel2.getEnglishName(DOG));
+        list.add(AIDetectModel2.getEnglishName(POTTEDPLANT));
+        list.add(AIDetectModel2.getEnglishName(TV));
+
+        list.add(AIDetectModel2.getEnglishName(LAPTOP));
+        list.add(AIDetectModel2.getEnglishName(MOUSE));
+        list.add(AIDetectModel2.getEnglishName(KEYBOARD));
+        list.add(AIDetectModel2.getEnglishName(CELLPHONE));
+        list.add(AIDetectModel2.getEnglishName(BOOK));
+
+        list.add(AIDetectModel2.getEnglishName(BOTTLE));
+
+        return list;
+    }
+
     public static String getChineseName(AIDetectModel2 model) {
         switch (model) {
             case PERSON:
@@ -438,38 +470,6 @@ public enum AIDetectModel2 {
             default:
                 return "unknown";
         }
-    }
-
-    public static List<String> getALLEnglishModels() {
-        List<String> list = new ArrayList<String>();
-
-        list.add(AIDetectModel2.getEnglishName(PERSON));
-        list.add(AIDetectModel2.getEnglishName(BICYCLE));
-        list.add(AIDetectModel2.getEnglishName(CAR));
-        list.add(AIDetectModel2.getEnglishName(MOTORCYCLE));
-        list.add(AIDetectModel2.getEnglishName(BUS));
-
-        list.add(AIDetectModel2.getEnglishName(TRUCK));
-        list.add(AIDetectModel2.getEnglishName(TRAFFICLIGHT));
-        list.add(AIDetectModel2.getEnglishName(FIREHYDRANT));
-        list.add(AIDetectModel2.getEnglishName(CUP));
-        list.add(AIDetectModel2.getEnglishName(CHAIR));
-
-        list.add(AIDetectModel2.getEnglishName(BIRD));
-        list.add(AIDetectModel2.getEnglishName(CAT));
-        list.add(AIDetectModel2.getEnglishName(DOG));
-        list.add(AIDetectModel2.getEnglishName(POTTEDPLANT));
-        list.add(AIDetectModel2.getEnglishName(TV));
-
-        list.add(AIDetectModel2.getEnglishName(LAPTOP));
-        list.add(AIDetectModel2.getEnglishName(MOUSE));
-        list.add(AIDetectModel2.getEnglishName(KEYBOARD));
-        list.add(AIDetectModel2.getEnglishName(CELLPHONE));
-        list.add(AIDetectModel2.getEnglishName(BOOK));
-
-        list.add(AIDetectModel2.getEnglishName(BOTTLE));
-
-        return list;
     }
 
     public static List<String> getALLChineseModels() {

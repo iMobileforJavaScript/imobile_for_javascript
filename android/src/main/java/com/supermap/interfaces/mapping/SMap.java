@@ -36,6 +36,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.supermap.RNUtils.DataUtil;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.analyst.TopologyProcessing;
 import com.supermap.analyst.TopologyProcessingOptions;
@@ -110,6 +111,7 @@ import com.supermap.plot.GeoGraphicObject;
 import com.supermap.plot.GraphicObjectType;
 import com.supermap.plugin.LocationManagePlugin;
 import com.supermap.rnsupermap.R;
+import com.supermap.smNative.SMMapFixColors;
 import com.supermap.smNative.SMMapRender;
 import com.supermap.smNative.collector.SMCollector;
 import com.supermap.smNative.SMLayer;
@@ -4359,7 +4361,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //            mapControl.getMap().refresh();
 //            mapControl.zoomTo(scale,100);
 ////            mapControl.getMap().setScale( scale);
-//            mapControl.getMap().refresh();
+            mapControl.getMap().refresh();
 
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -7015,6 +7017,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     /************************************** 导航模块 END ****************************************/
 
 
+
+    /************************************** 智能配图 BEGIN ****************************************/
     /**
      * 智能配图
      *
@@ -7064,4 +7068,56 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
+    /**
+     * 调整智能配图 亮度、饱和度、色调
+     * @param mode
+     * @param value
+     * @param promise
+     */
+    @ReactMethod
+    public void updateMapFixColorsMode(int mode, int value, Promise promise) {
+        try {
+            SMMapFixColors smMapFixColors = SMMapFixColors.getInstance();
+            SMMapFixColors.SMMapFixColorsMode _mode = DataUtil.getEnum(SMMapFixColors.SMMapFixColorsMode.class, mode);
+            smMapFixColors.updateMapFixColors(_mode, value);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取智能配图 亮度、饱和度、色调
+     * @param mode
+     * @param promise
+     */
+    @ReactMethod
+    public void getMapFixColorsModeValue(int mode, Promise promise) {
+        try {
+            SMMapFixColors smMapFixColors = SMMapFixColors.getInstance();
+            SMMapFixColors.SMMapFixColorsMode _mode = DataUtil.getEnum(SMMapFixColors.SMMapFixColorsMode.class, mode);
+            int value = smMapFixColors.getMapFixColorsModeValue(_mode);
+            promise.resolve(value);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 重置智能配图 亮度、饱和度、色调 的值
+     * @param isReset 是否重置地图
+     * @param promise
+     */
+    @ReactMethod
+    public void resetMapFixColorsModeValue(boolean isReset, Promise promise) {
+        try {
+            SMMapFixColors smMapFixColors = SMMapFixColors.getInstance();
+            smMapFixColors.reset(isReset);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /************************************** 智能配图 END ****************************************/
 }
