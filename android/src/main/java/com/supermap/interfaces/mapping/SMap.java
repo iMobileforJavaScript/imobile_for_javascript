@@ -4606,7 +4606,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public static void animationSave(String savePath, String fileName, Promise promise) {
         try {
-//        String path=sdcard+"/supermap/demos/plotdata/qdwj/强渡乌江_2.xml";
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
             File file = new File(savePath);
@@ -4944,6 +4943,90 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
+    /**
+     * 移动节点位置
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void moveAnimationNode(int index,boolean isUp,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+
+            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
+            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
+            if (animationGroup == null) {
+                promise.resolve(false);
+                return;
+            }
+
+
+            int size=animationGroup.getAnimationCount();
+            if((isUp&&index==0)||(!isUp&&index==size-1)){
+                promise.resolve(false);
+                return;
+            }
+            int tempIndex=isUp?index-1:index;
+            String tempGroupName="temp";
+            AnimationGroup tempGroup=AnimationManager.getInstance().addAnimationGroup(tempGroupName);
+            for (int i=0;i<size;i++){
+                if(tempIndex==i){
+                    AnimationGO animationGO1=AnimationManager.getInstance().createAnimation(animationGroup.getAnimationByIndex(tempIndex).getAnimationType());
+                    String xmlStr1=animationGroup.getAnimationByIndex(tempIndex).toXml();
+                    animationGO1.fromXml(xmlStr1);
+
+                    AnimationGO animationGO2=AnimationManager.getInstance().createAnimation(animationGroup.getAnimationByIndex(tempIndex+1).getAnimationType());
+                    String xmlStr2=animationGroup.getAnimationByIndex(tempIndex+1).toXml();
+                    animationGO2.fromXml(xmlStr2);
+
+                    tempGroup.addAnimation(animationGO2);
+                    tempGroup.addAnimation(animationGO1);
+                    i++;
+                }else {
+                    AnimationGO animationGO1=AnimationManager.getInstance().createAnimation(animationGroup.getAnimationByIndex(i).getAnimationType());
+                    String xmlStr1=animationGroup.getAnimationByIndex(i).toXml();
+                    animationGO1.fromXml(xmlStr1);
+                    tempGroup.addAnimation(animationGO1);
+                }
+            }
+//            String tempAnimationDic= rootPath + "/iTablet/Cache";
+//            String tempAnimationXmlPath=tempAnimationDic+"/tempAnimation.xml";
+//            File tempAnimationDicFile=new File(tempAnimationDic);
+//            if(!tempAnimationDicFile.exists()){
+//                tempAnimationDicFile.mkdirs();
+//            }
+//            File tempAnimationXmlFile=new File(tempAnimationXmlPath);
+//            if(tempAnimationXmlFile.exists()){
+//                tempAnimationXmlFile.delete();
+//            }
+//
+//            AnimationManager.getInstance().saveAnimationToXML(tempAnimationXmlPath);
+//            AnimationManager.getInstance().deleteAll();
+//            File tempAnimationXmlFile2=new File(tempAnimationXmlPath);
+//            if(tempAnimationXmlFile2.exists()){
+//                AnimationManager.getInstance().getAnimationFromXML(tempAnimationXmlPath);
+//                int groupCount=AnimationManager.getInstance().getGroupCount();
+//                if(groupCount==2){
+//                    AnimationManager.getInstance().deleteGroupByName(animationGroupName);
+//                    AnimationManager.getInstance().getGroupByIndex(0).setGroupName(animationGroupName);
+//                }
+//                tempAnimationXmlFile2.delete();
+//            }
+
+            AnimationManager.getInstance().getGroupByIndex(0).setGroupName(animationGroupName);
+            AnimationManager.getInstance().deleteGroupByName(animationGroupName);
+            AnimationManager.getInstance().getGroupByIndex(0).setGroupName(animationGroupName);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
 
 
 /************************************** 地图编辑历史操作 BEGIN****************************************/
