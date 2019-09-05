@@ -8,14 +8,14 @@
 
 #import <Foundation/Foundation.h>
 typedef enum{
-   UnknowAnimation = -1,//未知类型
+    UnknowAnimation = -1,//未知类型
     WayAnimation = 0,//路径动画
-   BlinkAnimation =  1,//闪烁动画
-   AttribAnimation = 2,//属性动画
-   ShowAnimation =  3,//显隐动画
-   RotateAnimation = 4,//旋转动画
+    BlinkAnimation =  1,//闪烁动画
+    AttribAnimation = 2,//属性动画
+    ShowAnimation =  3,//显隐动画
+    RotateAnimation = 4,//旋转动画
     ScaleAnimation =  5,// 比例动画
-     GrowAnimation =  6,//生长动画
+    GrowAnimation =  6,//生长动画
     //! \brief 平移动画。
     MoveAnimation =  7,
     
@@ -26,10 +26,10 @@ typedef enum{
     PanAnimation =  9,
     
     //! \brief 地图缩放动画。
-     ZoomAnimation = 10,
+    ZoomAnimation = 10,
     
     //! \brief 清态势动画。
-     ClearSitAnimation =  11,
+    ClearSitAnimation =  11,
 }AnimationType;
 
 @class Geometry,MapControl;
@@ -44,4 +44,6 @@ typedef enum{
 -(NSString*)getControlName;
 -(NSString*)getLayerName;
 -(AnimationType)getAnimationType;
+-(BOOL)fromXML:(NSString*)xml;
+-(NSString*)toXML;
 @end

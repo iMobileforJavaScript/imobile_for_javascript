@@ -25,11 +25,12 @@ class SMAIDetectView extends React.Component {
 
   static propTypes = {
     onArObjectClick: PropTypes.func,
+    language: '',
     ...ViewPropTypes,
   };
 
   componentDidUpdate(prevProps) {
-  //   SAIDetectView.initAIDetect()
+    SAIDetectView.initAIDetect(this.props.language)
   //   SAIDetectView.startDetect()
   }
 

@@ -3584,35 +3584,66 @@ RCT_REMAP_METHOD(moveAnimationNode,moveAnimationNode:(int)index isUp:(BOOL)isUp 
             resolve([NSNumber numberWithBool:NO]);
             return;
         }
-        
         animationGroup=[AnimationManager.getInstance getGroupByIndex:0];
-            
-        NSString* tempGroupName=@"temp";
-        tempGroup=[AnimationManager.getInstance addAnimationGroup:tempGroupName];
-            
-        
         int size=[animationGroup getAnimationCount];
+        if((isUp&&index==0)||(!isUp&&index==size-1)){
+            resolve([NSNumber numberWithBool:NO]);
+            return;
+        }
         AnimationGO* tempAnimationGo;
         int tempIndex=isUp?index-1:index;
+        
+        NSString* tempGroupName=@"temp";
+        tempGroup=[AnimationManager.getInstance addAnimationGroup:tempGroupName];
         for (int i=0; i<size; i++) {
             AnimationGO* animationGo=[animationGroup getAnimationByIndex:i];
-            
             if(tempIndex==i){
-                tempAnimationGo=animationGo;
-                [tempGroup addAnimation:[animationGroup getAnimationByIndex:i+1]];
-            }
-            else if(tempIndex+1==i){
+                NSString* xmlStr=[animationGo toXML];
+                tempAnimationGo=[AnimationManager.getInstance createAnimation:animationGo.getAnimationType];
+                [tempAnimationGo fromXML:xmlStr];
+
+                NSString* xmlStr2=[[animationGroup getAnimationByIndex:i+1] toXML];
+                AnimationGO* animationGo2=[AnimationManager.getInstance createAnimation:[animationGroup getAnimationByIndex:i+1].getAnimationType];
+                [animationGo2 fromXML:xmlStr2];
+
+                [tempGroup addAnimation:animationGo2];
                 [tempGroup addAnimation:tempAnimationGo];
+                i++;
             }
             else{
-                [tempGroup addAnimation:animationGo];
+                AnimationGO* animationGo2=[AnimationManager.getInstance createAnimation:animationGo.getAnimationType];
+                NSString* xmlStr=[animationGo toXML];
+                [animationGo2 fromXML:xmlStr];
+                [tempGroup addAnimation:animationGo2];
             }
         }
         
-        //ios暂时没有这个方法
+//        NSString *tempAnimationDic = [NSString stringWithFormat: @"%@%@",NSHomeDirectory(),@"/Documents/iTablet/Cache"];
+//        NSString *tempAnimationXmlPath = [NSString stringWithFormat: @"%@%@",tempAnimationDic,@"/tempAnimation.xml"];
+//        NSFileManager *fileManager = [NSFileManager defaultManager];
+//        BOOL isDir = FALSE;
+//        BOOL isDirExist = [fileManager fileExistsAtPath:tempAnimationDic isDirectory:&isDir];
+//        if(!(isDirExist && isDir))
+//        {
+//            [fileManager createDirectoryAtPath:tempAnimationDic withIntermediateDirectories:YES attributes:nil error:nil];
+//        }
+//        [AnimationManager.getInstance saveAnimationToXML:tempAnimationXmlPath];
+//        [AnimationManager.getInstance deleteAll];   //这个地方报错，不知道什么原因
+//        isDirExist = [fileManager fileExistsAtPath:tempAnimationXmlPath isDirectory:&isDir];
+//        if(isDirExist&&!isDir){
+//            [AnimationManager.getInstance getAnimationFromXML:tempAnimationXmlPath];
+//            int groupCount=[AnimationManager.getInstance getGroupCount];
+//            if(groupCount==2){
+//                [AnimationManager.getInstance deleteGroupByName:animationGroupName];
+//                [[AnimationManager.getInstance getGroupByIndex:0] setName:animationGroupName];
+//            }
+//            [fileManager removeItemAtPath:tempAnimationXmlPath error:nil];
+//        }
+        
+        [[AnimationManager.getInstance getGroupByIndex:0] setName:animationGroupName];
         [AnimationManager.getInstance deleteGroupByName:animationGroupName];
-        [tempGroup setName:animationGroupName];
-    
+        [[AnimationManager.getInstance getGroupByIndex:0] setName:animationGroupName];
+        
         
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
