@@ -2276,9 +2276,9 @@ export default (function () {
    * 获取起始点
    * @returns {*|void|Promise<void>}
    */
-  function getStartPoint(x,y) {
+  function getStartPoint(x,y,isindoor) {
     try {
-      return SMap.getStartPoint(x,y)
+      return SMap.getStartPoint(x,y,isindoor)
     } catch (e) {
       console.error(e)
     }
@@ -2288,9 +2288,9 @@ export default (function () {
    * 获取终点
    * @returns {*|void|Promise<void>}
    */
-  function getEndPoint(x,y) {
+  function getEndPoint(x,y,isindoor) {
     try {
-      return SMap.getEndPoint(x,y)
+      return SMap.getEndPoint(x,y,isindoor)
     } catch (e) {
       console.error(e)
     }

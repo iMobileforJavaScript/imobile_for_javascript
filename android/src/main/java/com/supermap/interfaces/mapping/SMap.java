@@ -6562,8 +6562,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             Point2D pointstart = getPoint(x, y);
             Point2D pointend = getPoint(x2, y2);
             sMap = SMap.getInstance();
-            sMap.getSmMapWC().getMapControl().getNavigation3().setStartPoint(pointstart.getX(), pointstart.getY(), sMap.getSmMapWC().getFloorListView().getCurrentFloorId());
-            sMap.getSmMapWC().getMapControl().getNavigation3().setDestinationPoint(pointend.getX(), pointend.getY(), sMap.getSmMapWC().getFloorListView().getCurrentFloorId());
 
             boolean result = sMap.getSmMapWC().getMapControl().getNavigation3().routeAnalyst();
             Log.e("++++++++++++", "" + result);
@@ -6737,9 +6735,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void getStartPoint(double x, double y, Promise promise) {
+    public void getStartPoint(double x, double y,boolean isindoor ,Promise promise) {
         sMap = SMap.getInstance();
-        showPointByCallout(x, y, "startpoint");
+        if(isindoor){
+            sMap.getSmMapWC().getMapControl().getNavigation3().setStartPoint(x, y, sMap.getSmMapWC().getFloorListView().getCurrentFloorId());
+        }else {
+            showPointByCallout(x, y, "startpoint");
+        }
         promise.resolve(true);
     }
 
@@ -6749,9 +6751,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void getEndPoint(double x, double y, Promise promise) {
+    public void getEndPoint(double x, double y,boolean isindoor ,Promise promise) {
         sMap = SMap.getInstance();
-        showPointByCallout(x, y, "endpoint");
+        if(isindoor){
+            sMap.getSmMapWC().getMapControl().getNavigation3().setDestinationPoint(x, y, sMap.getSmMapWC().getFloorListView().getCurrentFloorId());
+        }else {
+            showPointByCallout(x, y, "endpoint");
+        }
         promise.resolve(true);
     }
 
