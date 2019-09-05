@@ -6352,7 +6352,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //		从data中获取geoline
         GeoLine geoLine = data.getRoute();
         GeoStyle geoLineStyle = new GeoStyle();
-        Color color = new Color(255, 0, 0);
+        Color color = new Color(0, 191, 255);
+        geoLineStyle.setLineSymbolID(15);
         geoLineStyle.setLineColor(color);
 //		为geoLine设置风格
         geoLine.setStyle(geoLineStyle);
@@ -6931,6 +6932,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void openTrafficMap(Promise promise) {
         sMap = SMap.getInstance();
         Layers layers = sMap.getSmMapWC().getMapControl().getMap().getLayers();
+        Point2D center = sMap.getSmMapWC().getMapControl().getMap().getCenter();
+        double scale = sMap.getSmMapWC().getMapControl().getMap().getScale();
         boolean isadd = false;
         for (int i = 0; i < layers.getCount(); i++) {
             if (layers.get(i).getName().equals("tencent@TrafficRest")) {
@@ -6945,6 +6948,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             info.setServer(url);
             Datasource datasource = sMap.getSmMapWC().getWorkspace().getDatasources().open(info);
             sMap.getSmMapWC().getMapControl().getMap().getLayers().add(datasource.getDatasets().get(0), true);
+            sMap.getSmMapWC().getMapControl().getMap().setScale(scale);
+            sMap.getSmMapWC().getMapControl().getMap().setCenter(center);
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
         }
         promise.resolve(true);
     }
