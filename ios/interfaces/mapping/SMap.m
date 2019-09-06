@@ -2410,19 +2410,22 @@ RCT_REMAP_METHOD(saveMapName, saveMapName:(NSString *)name ofModule:(NSString *)
             }
         }
         
-        // isNew为true，另存为后保证当前地图是原地图
-        BOOL isOpen = NO;
+//        BOOL isOpen = NO;
+        //另存地图 不对已打开地图做操作
         if (oldName && ![oldName isEqualToString:@""] && ![oldName isEqualToString:mapName] && isNew) {
-            [map close];
-            isOpen = [map open:oldName];
             if ([sMap.smMapWC.workspace.maps indexOf:mapName] >= 0) {
-                isOpen = [map open:mapName];
-            } else {
-                [map saveAs:mapName];
+                [sMap.smMapWC.workspace.maps removeMapName:mapName];
             }
-            if (isOpen && [sMap.smMapWC.workspace.maps indexOf:oldName] >= 0) {
-                [sMap.smMapWC.workspace.maps removeMapName:oldName];
-            }
+//            [map close];
+//            isOpen = [map open:oldName];
+//            if ([sMap.smMapWC.workspace.maps indexOf:mapName] >= 0) {
+//                isOpen = [map open:mapName];
+//            } else {
+//                [map saveAs:mapName];
+//            }
+//            if (isOpen && [sMap.smMapWC.workspace.maps indexOf:oldName] >= 0) {
+//                [sMap.smMapWC.workspace.maps removeMapName:oldName];
+//            }
         }
         
          [map refresh];

@@ -2593,17 +2593,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
 
             Maps maps = sMap.getSmMapWC().getWorkspace().getMaps();
-            // isNew为true，另存为后自动打开另存的地图
-            boolean isOpen = false;
+            // isNew为true，另存为后不操作另存地图 原地图保持当前状态
+            //boolean isOpen = false;
             if (oldName != null && !oldName.equals("") && !oldName.equals(mapName) && isNew) {
-                if (maps.indexOf(mapName) >= 0) {
-                    isOpen = map.open(mapName);
-                } else {
-                    map.saveAs(mapName);
+                if(maps.indexOf(mapName) >= 0){
+                    maps.remove(mapName);
                 }
-                if (isOpen && maps.indexOf(oldName) >= 0) {
-                    maps.remove(oldName);
-                }
+//                if (maps.indexOf(mapName) >= 0) {
+//                    isOpen = map.open(mapName);
+//                } else {
+//                    map.saveAs(mapName);
+//                }
+//                if (isOpen && maps.indexOf(oldName) >= 0) {
+//                    maps.remove(oldName);
+//                }
             }
 
             map.refresh();
