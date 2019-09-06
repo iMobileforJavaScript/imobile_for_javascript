@@ -4315,30 +4315,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             mapControl.setAnimations();
             AnimationManager.getInstance().deleteAll();
             AnimationManager.getInstance().getAnimationFromXML(filePath);
-
-
-//            开始推演时定位到推演图层，获取的推演图层范围有错误
-//            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-//            try{
-//                DocumentBuilder db = dbf.newDocumentBuilder();
-//                Document document = db.parse("file:///"+filePath);
-//                NodeList booklist = document.getElementsByTagName("LAYERNAME");
-//                if(booklist.getLength()>0){
-//                    Element element= (Element) booklist.item(0);
-//                    if(element.getChildNodes().getLength()>0) {
-//                        String layerName=element.getChildNodes().item(0).getNodeValue();
-//                        Layer layer=mapControl.getMap().getLayers().get(layerName);
-//                        if(layer!=null) {
-//                            mapControl.getMap().setViewBounds(layer.getDataset().getBounds());
-//                            mapControl.getMap().refresh();
-//                        }
-//                    }
-//                }
-//            }catch (ParserConfigurationException e){
-//                e.printStackTrace();
-//            }catch (IOException e){
-//                e.printStackTrace();
-//            }
+            if(AnimationManager.getInstance().getGroupCount()>0){
+                String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
+                AnimationManager.getInstance().getGroupByIndex(0).setGroupName(animationGroupName);
+            }
 
 
             promise.resolve(true);
