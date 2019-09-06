@@ -2995,6 +2995,52 @@ RCT_REMAP_METHOD(animationPlay,animationPlay:(RCTPromiseResolveBlock)resolve rej
     @try {
         sMap = [SMap singletonInstance];
         MapControl* mapControl=sMap.smMapWC.mapControl;
+        if([AnimationManager.getInstance getGroupCount]>0)
+        {
+            Rectangle2D* rectangle2D=[[Rectangle2D alloc] init];
+            AnimationGroup* animationGroup=[AnimationManager.getInstance getGroupByIndex:0];
+            int animationCount=[animationGroup getAnimationCount];
+            if(animationCount>0){
+                for(int i=0;i<animationCount;i++){
+                    AnimationGO* animationGo=[animationGroup getAnimationByIndex:i];
+                    NSString* layerName=[animationGo getLayerName];
+                    DatasetVector* dataset=(DatasetVector*)[mapControl.map.layers getLayerWithName:layerName].dataset;
+                    QueryParameter* queryParameter=[[QueryParameter alloc] init];
+                    [queryParameter setQueryIDs:[[NSArray alloc]initWithObjects:@([animationGo getGeometry]), nil]];
+                    [queryParameter setQueryType:IDS];
+                    Recordset* recordset=[dataset query:queryParameter];
+                    Geometry* geometry=[recordset geometry];
+                    if(geometry){
+                        if(i==0){
+                            rectangle2D=[[geometry getBounds] clone];
+                        }else{
+                            Rectangle2D* bounds=[geometry getBounds];
+                            if(bounds.left<rectangle2D.left){
+                                [rectangle2D setLeft:bounds.left];
+                            }
+                            if(bounds.right>rectangle2D.right){
+                                [rectangle2D setRight:bounds.right];
+                            }
+                            if(bounds.bottom<rectangle2D.bottom){
+                                [rectangle2D setBottom:bounds.bottom];
+                            }
+                            if(bounds.top>rectangle2D.top){
+                                [rectangle2D setTop:bounds.top];
+                            }
+                        }
+//                        [rectangle2D unions:[geometry getBounds]];    组件接口方式有问题left和bottom一直为-1.7976931348623157E+308值不变
+                    }
+                }
+                double offsetX=(rectangle2D.right-rectangle2D.left)/6;
+                double offsetY=(rectangle2D.top-rectangle2D.bottom)/6;
+                [rectangle2D setLeft:rectangle2D.left-offsetX];
+                [rectangle2D setRight:rectangle2D.right+offsetX];
+                [rectangle2D setBottom:rectangle2D.bottom-offsetY*1.5];
+                [rectangle2D setTop:rectangle2D.top+offsetY*0.5];
+                
+                [mapControl.map setViewBounds:rectangle2D];
+            }
+        }
 //        double scale = mapControl.map.scale ;
 //        mapControl.map.scale += 0.1;
 //        [mapControl.map refresh];
@@ -3297,7 +3343,8 @@ RCT_REMAP_METHOD(getGeometryTypeById,getGeometryTypeById:(NSString*) layerName g
         }
         resolve(@(type));
     } @catch (NSException *exception) {
-        reject(@"getGeometryTypeById", exception.reason, nil);
+        resolve(@(-1));
+//        reject(@"getGeometryTypeById", exception.reason, nil);
     }
 }
 

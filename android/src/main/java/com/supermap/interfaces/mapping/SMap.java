@@ -4315,30 +4315,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             mapControl.setAnimations();
             AnimationManager.getInstance().deleteAll();
             AnimationManager.getInstance().getAnimationFromXML(filePath);
-
-
-//            开始推演时定位到推演图层，获取的推演图层范围有错误
-//            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-//            try{
-//                DocumentBuilder db = dbf.newDocumentBuilder();
-//                Document document = db.parse("file:///"+filePath);
-//                NodeList booklist = document.getElementsByTagName("LAYERNAME");
-//                if(booklist.getLength()>0){
-//                    Element element= (Element) booklist.item(0);
-//                    if(element.getChildNodes().getLength()>0) {
-//                        String layerName=element.getChildNodes().item(0).getNodeValue();
-//                        Layer layer=mapControl.getMap().getLayers().get(layerName);
-//                        if(layer!=null) {
-//                            mapControl.getMap().setViewBounds(layer.getDataset().getBounds());
-//                            mapControl.getMap().refresh();
-//                        }
-//                    }
-//                }
-//            }catch (ParserConfigurationException e){
-//                e.printStackTrace();
-//            }catch (IOException e){
-//                e.printStackTrace();
-//            }
+            if(AnimationManager.getInstance().getGroupCount()>0){
+                String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
+                AnimationManager.getInstance().getGroupByIndex(0).setGroupName(animationGroupName);
+            }
 
 
             promise.resolve(true);
@@ -4355,6 +4335,51 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             MapControl mapControl = sMap.smMapWC.getMapControl();
+
+            if(AnimationManager.getInstance().getGroupCount()>0){
+                Rectangle2D rectangle2D=new Rectangle2D();
+                AnimationGroup animationGroup=AnimationManager.getInstance().getGroupByIndex(0);
+                int animationCount=animationGroup.getAnimationCount();
+                if(animationCount>0){
+                    for (int i=0;i<animationCount;i++){
+                        AnimationGO animationGO=animationGroup.getAnimationByIndex(i);
+                        String layerName=animationGO.getLayerName();
+                        DatasetVector datasetVector= (DatasetVector) mapControl.getMap().getLayers().get(layerName).getDataset();
+
+                        Recordset recordset = datasetVector.query("SmID=" + animationGO.getGeometry(), CursorType.STATIC);
+                        Geometry geometry = recordset.getGeometry();
+                        if (geometry != null) {
+
+                            if(i==0){
+                                rectangle2D=geometry.getBounds();
+                            }else {
+                                Rectangle2D boouds=geometry.getBounds();
+                                if(boouds.getLeft()<rectangle2D.getLeft()){
+                                    rectangle2D.setLeft(boouds.getLeft());
+                                }
+                                if(boouds.getRight()>rectangle2D.getRight()){
+                                    rectangle2D.setRight(boouds.getRight());
+                                }
+                                if(boouds.getBottom()<rectangle2D.getBottom()){
+                                    rectangle2D.setBottom(boouds.getBottom());
+                                }
+                                if(boouds.getTop()>rectangle2D.getTop()){
+                                    rectangle2D.setTop(boouds.getTop());
+                                }
+                            }
+                        }
+                    }
+                    double offsetX=(rectangle2D.getRight()-rectangle2D.getLeft())/6;
+                    double offsetY=(rectangle2D.getTop()-rectangle2D.getBottom())/6;
+                    rectangle2D.setLeft(rectangle2D.getLeft()-offsetX);
+                    rectangle2D.setRight(rectangle2D.getRight()+offsetX);
+                    rectangle2D.setBottom(rectangle2D.getBottom()-offsetY*1.5);
+                    rectangle2D.setTop(rectangle2D.getTop()+offsetY*0.5);
+
+                    mapControl.getMap().setViewBounds(rectangle2D);
+                }
+            }
+
 //            double scale = mapControl.getMap().getScale();
 //            mapControl.zoomTo(mapControl.getMap().getScale()+0.1,100);
 ////            mapControl.getMap().setScale( mapControl.getMap().getScale()+0.1);
