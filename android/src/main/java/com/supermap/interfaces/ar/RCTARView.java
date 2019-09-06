@@ -81,6 +81,12 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
         naviName=style.getString("name");
         naviAddress=style.getString("address");
         if(style.getBoolean("isNaviPoint")){
+            mWorld.clearWorld();
+            LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+            Point2D gpsPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
+            mWorld.setGeoPosition(gpsPoint.getX(), gpsPoint.getY());
+            locationx=gpsPoint.getX();
+            locationy=gpsPoint.getY();
             createNaviPointCoordPoi(m_ThemedReactContext.getCurrentActivity().getResources().getDisplayMetrics().widthPixels / 2,
                     m_ThemedReactContext.getCurrentActivity().getResources().getDisplayMetrics().heightPixels / 2);
         }else {
@@ -109,19 +115,19 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
     }
 
     private void createNaviPointCoordPoi(int x,int y){
-        Point3D point = m_View.getIntersectionPoint(x, y);
-        if (point != null) {
+//        Point3D point = m_View.getIntersectionPoint(x, y);
+//        if (point != null) {
             GeoObject tempArObject = new GeoObject(System.currentTimeMillis());
             tempArObject.setGeoPosition(naviPointx,naviPointy);
             tempArObject.setName(naviName.replace("/", ""));
             updateImagesByStaticView(tempArObject, naviName, naviAddress, new Point2D(naviPointx,naviPointy));
             mWorld.addArObject(tempArObject);
-        }
+//        }
     }
 
     private void createScreenCoordPoi(int x, int y) {
-        Point3D point = m_View.getIntersectionPoint(x, y);
-        if (point != null) {
+//        Point3D point = m_View.getIntersectionPoint(x, y);
+//        if (point != null) {
             for (int i = 0; i < point2Ds.getCount(); i++) {
                 GeoObject tempArObject = new GeoObject(System.currentTimeMillis() + i);
                 tempArObject.setGeoPosition(point2Ds.getItem(i).getX(),
@@ -130,7 +136,7 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
                 updateImagesByStaticView(tempArObject, poiInfos[i].getName(), poiInfos[i].getAddress(), point2Ds.getItem(i));
                 mWorld.addArObject(tempArObject);
             }
-        }
+//        }
 
     }
 
@@ -149,6 +155,7 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
 
 
         ImageView iv = (ImageView) view.findViewById(R.id.ai_ar_content);
+        iv.setImageDrawable(m_ThemedReactContext.getResources().getDrawable(R.mipmap.address));
 
         m_View.storeArObjectViewAndUri(view, arObject);
     }
