@@ -3214,11 +3214,22 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             Workspace workspace = sMap.smMapWC.getMapControl().getMap().getWorkspace();
             Datasource opendatasource = workspace.getDatasources().get("Label_" + userpath + "#");
             if (opendatasource == null) {
+
+                String lableUDB=rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Label_" + userpath + "#.udb";
+
                 DatasourceConnectionInfo info = new DatasourceConnectionInfo();
                 info.setAlias("Label_" + userpath + "#");
                 info.setEngineType(EngineType.UDB);
-                info.setServer(rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/Label_" + userpath + "#.udb");
-                Datasource datasource = workspace.getDatasources().open(info);
+                info.setServer(lableUDB);
+
+                Datasource datasource = null;
+                File file=new File(lableUDB);
+                if(!file.exists()) {
+                    datasource = workspace.getDatasources().create(info);
+                }else{
+                    datasource = workspace.getDatasources().open(info);
+                }
+
                 if (datasource != null) {
                     Datasets datasets = datasource.getDatasets();
                     com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
