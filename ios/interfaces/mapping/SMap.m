@@ -4054,7 +4054,14 @@ RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithPath:(NSString *)user
             info.engineType = ET_UDB;
             NSString *path = [NSString stringWithFormat: @"%@%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Datasource/",labelName];
             info.server = path;
-            Datasource *datasource = [workspace.datasources open:info];
+            
+            Datasource *datasource = nil;
+            if([[NSFileManager defaultManager] fileExistsAtPath:path]){
+                datasource = [workspace.datasources open:info];
+            }else{
+                datasource = [workspace.datasources create:info];
+            }
+//            Datasource *datasource = [workspace.datasources open:info];
             if(datasource != nil){
                 Datasets *datasets = datasource.datasets;
                 Map *map = sMap.smMapWC.mapControl.map;

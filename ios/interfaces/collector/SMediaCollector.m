@@ -154,6 +154,7 @@ RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName 
         }
         
         if (saveResult) {
+            SMMedia* media2 = [SMMediaCollector findMediaByLayer:layer geoID:geoID];
             MapControl* mapControl = SMap.singletonInstance.smMapWC.mapControl;
             BOOL isExist = NO;
             
@@ -164,21 +165,21 @@ RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName 
                 if (callout.mediaFilePaths.count > 0) {
                     firstCalloutFile = callout.mediaFilePaths[0];
                 }
-                if (media.paths.count > 0) {
-                    firstMediaFile = media.paths[0];
+                if (media2.paths.count > 0) {
+                    firstMediaFile = media2.paths[0];
                 }
                 if (
                     callout && [callout.layerName isEqualToString:layer.name] &&
-                    (media.fileName != nil && callout.mediaName != nil && [callout.mediaName isEqualToString:media.fileName]) &&
+                    (media2.fileName != nil && callout.mediaName != nil && [callout.mediaName isEqualToString:media2.fileName]) &&
                     (![firstCalloutFile isEqualToString: firstMediaFile] || [firstMediaFile isEqualToString:@""])
                     ) {
                     isExist = YES;
                     [mapControl removeCalloutAtIndex:i];
-                    if (![firstMediaFile isEqualToString:@""]) [self addCallout:media layer:layer];
+                    if (![firstMediaFile isEqualToString:@""]) [self addCallout:media2 layer:layer];
                 }
             }
             if ((mapControl.callouts.count == 0 || !isExist) && media.paths.count > 0) {
-                [self addCallout:media layer:layer];
+                [self addCallout:media2 layer:layer];
             }
         }
         

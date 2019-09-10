@@ -71,6 +71,8 @@ static SMMediaCollector* sMediaCollector = nil;
     media.datasourse = layer.dataset.datasource;
     media.dataset = layer.dataset;
     media.fileName = (NSString *)[recordset getFieldValueWithString:@"MediaName"];
+    media.httpAddress = (NSString *)[recordset getFieldValueWithString:@"HttpAddress"];
+    media.Description = (NSString *)[recordset getFieldValueWithString:@"Description"];
     
     NSString* paths = (NSString *)[recordset getFieldValueWithString:@"MediaFilePaths"];
     media.paths = [paths componentsSeparatedByString:@","];
@@ -110,6 +112,8 @@ static SMMediaCollector* sMediaCollector = nil;
         media.datasourse = layer.dataset.datasource;
         media.dataset = layer.dataset;
         media.fileName = (NSString *)[recordset getFieldValueWithString:@"MediaName"];
+        media.httpAddress = (NSString *)[recordset getFieldValueWithString:@"HttpAddress"];
+        media.Description = (NSString *)[recordset getFieldValueWithString:@"Description"];
         
         NSString* paths = (NSString *)[recordset getFieldValueWithString:@"MediaFilePaths"];
         media.paths = [paths componentsSeparatedByString:@","];
@@ -145,6 +149,8 @@ static SMMediaCollector* sMediaCollector = nil;
                 media.datasourse = layer.dataset.datasource;
                 media.dataset = layer.dataset;
                 media.fileName = (NSString *)[recordset getFieldValueWithString:@"MediaName"];
+                media.httpAddress = (NSString *)[recordset getFieldValueWithString:@"HttpAddress"];
+                media.Description = (NSString *)[recordset getFieldValueWithString:@"Description"];
                 
                 NSString* paths = (NSString *)[recordset getFieldValueWithString:@"MediaFilePaths"];
                 media.paths = [paths componentsSeparatedByString:@","];
@@ -203,6 +209,8 @@ static SMMediaCollector* sMediaCollector = nil;
                 media.datasourse = layer.dataset.datasource;
                 media.dataset = layer.dataset;
                 media.fileName = (NSString *)[recordset getFieldValueWithString:@"MediaName"];
+                media.httpAddress = (NSString *)[recordset getFieldValueWithString:@"HttpAddress"];
+                media.Description = (NSString *)[recordset getFieldValueWithString:@"Description"];
                 
                 NSString* paths = (NSString *)[recordset getFieldValueWithString:@"MediaFilePaths"];
                 if (paths && paths.length > 0) {
@@ -306,8 +314,8 @@ static SMMediaCollector* sMediaCollector = nil;
     callout.mediaName = media.fileName;
     callout.mediaFilePaths = media.paths;
     callout.layerName = layerName;
-    callout.httpAddress = @"";
-    callout.description = @"";
+    callout.httpAddress = media.httpAddress;
+    callout.description = media.Description;
     NSDate* date = [NSDate date];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -367,8 +375,8 @@ static SMMediaCollector* sMediaCollector = nil;
     callout.mediaFilePaths = media.paths;
     //            callout.type = media.mediaType;
     callout.layerName = layerName;
-    callout.httpAddress = @"";
-    callout.description = @"";
+    callout.httpAddress = media.httpAddress;
+    callout.description = media.Description;
     NSDate* date = [NSDate date];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
