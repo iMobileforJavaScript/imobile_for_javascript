@@ -91,6 +91,8 @@ import com.supermap.navi.NaviListener;
 import com.supermap.navi.Navigation2;
 import com.supermap.navi.Navigation3;
 import com.supermap.onlineservices.CoordinateType;
+import com.supermap.onlineservices.Geocoding;
+import com.supermap.onlineservices.GeocodingData;
 import com.supermap.onlineservices.NavigationOnline;
 import com.supermap.onlineservices.NavigationOnlineData;
 import com.supermap.onlineservices.NavigationOnlineParameter;
@@ -6520,10 +6522,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         public void onStopNavi() {
                             // TODO Auto-generated method stub
                             Log.e("+++++++++++++", "-------------****************");
-                            WritableMap map = Arguments.createMap();
-                            map.putBoolean("finsh", true);
                             context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                    .emit(EventConst.INDUSTRYNAVIAGTION, map);
+                                    .emit(EventConst.INDUSTRYNAVIAGTION, true);
                         }
 
                         @Override
@@ -6542,10 +6542,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         public void onAarrivedDestination() {
                             // TODO Auto-generated method stub
                             Log.e("+++++++++++++", "-------------****************");
-                            WritableMap map = Arguments.createMap();
-                            map.putBoolean("finsh", true);
                             context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                    .emit(EventConst.INDUSTRYNAVIAGTION, map);
+                                    .emit(EventConst.INDUSTRYNAVIAGTION, true);
                         }
 
                         @Override
@@ -6621,6 +6619,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 @Override
                 public void onStopNavi() {
                     // TODO Auto-generated method stub
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.INDUSTRYNAVIAGTION, true);
                 }
 
                 @Override
@@ -6649,6 +6649,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 @Override
                 public void onAarrivedDestination() {
                     // TODO Auto-generated method stub
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.INDUSTRYNAVIAGTION, true);
                 }
             });
 
@@ -6854,6 +6856,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         promise.resolve(true);
     }
 
+
     /**
      * 添加终点
      *
@@ -6890,6 +6893,47 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
         });
         promise.resolve(true);
+    }
+
+
+    /**
+     * 判断起终点地理位置名称
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getPointName(double x,double y,boolean start,Promise promise){
+        Point2D point2D = getPoint(x,y);
+        ReverseGeocoding(point2D,start);
+    }
+
+    public void ReverseGeocoding(Point2D point2D, final boolean start){
+        Geocoding reverseGeocoding = new Geocoding();
+//			必须调用
+//			设置钥匙
+        reverseGeocoding.setKey("fvV2osxwuZWlY0wJb8FEb2i5");
+        reverseGeocoding.setGeocodingCallback(new Geocoding.GeocodingCallback() {
+            @Override
+            public void reverseGeocodeSuccess(GeocodingData data) {
+                Log.e("------------------",""+data.getFormatedAddress());
+                if(start){
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MAPSELECTPOINTNAMESTART, data.getFormatedAddress());
+                }else {
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.MAPSELECTPOINTNAMEEND, data.getFormatedAddress());
+                }
+
+            }
+            @Override
+            public void geocodeSuccess(List<GeocodingData> dataList) {
+            }
+            @Override
+            public void geocodeFailed(String errorMsg) {
+            }
+        });
+//			进行逆地理编码
+        reverseGeocoding.reverseGeocoding(point2D);
     }
 
 
@@ -6967,7 +7011,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
         if (!isadd) {
             DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-            info.setAlias("TrafficRest");
             info.setEngineType(EngineType.Rest);
             String url = "https://www.supermapol.com/iserver/services/traffic/rest/maps/tencent";
             info.setServer(url);
@@ -6976,6 +7019,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap.getSmMapWC().getMapControl().getMap().setScale(scale);
             sMap.getSmMapWC().getMapControl().getMap().setCenter(center);
             sMap.getSmMapWC().getMapControl().getMap().refresh();
+            info.dispose();
         }
         promise.resolve(true);
     }

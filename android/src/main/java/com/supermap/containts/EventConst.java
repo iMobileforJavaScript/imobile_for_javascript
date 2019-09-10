@@ -77,6 +77,9 @@ public class EventConst {
     public static final String NAVIGATION_WAYS = "com.supermap.RN.Navigation.online_navigation_ways";
     public static final String NAVIGATION_LENGTH = "com.supermap.RN.Navigation.online_navigation_length";
     public static final String INDUSTRYNAVIAGTION = "com.supermap.RN.Navigation.industry_navigation";
+    public static final String MAPSELECTPOINTNAMESTART = "com.supermap.RN.Navigation.mapselectpointnamestart";
+    public static final String MAPSELECTPOINTNAMEEND = "com.supermap.RN.Navigation.mapselectpointnameend";
+
 
     /** 智能配图 **/
     public static final String MATCH_IMAGE_RESULT = "com.supermap.RN.match_image_result";

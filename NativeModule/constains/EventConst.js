@@ -61,6 +61,8 @@ export default {
   NAVIGATION_WAYS :"com.supermap.RN.Navigation.online_navigation_ways",
   NAVIGATION_LENGTH :"com.supermap.RN.Navigation.online_navigation_length",
   INDUSTRYNAVIAGTION:"com.supermap.RN.Navigation.industry_navigation",
+  MAPSELECTPOINTNAMESTART:"com.supermap.RN.Navigation.mapselectpointnamestart",
+  MAPSELECTPOINTNAMEEND:"com.supermap.RN.Navigation.mapselectpointnameend",
   
   /** 智能监听 **/
   MATCH_IMAGE_RESULT: "com.supermap.RN.match_image_result",

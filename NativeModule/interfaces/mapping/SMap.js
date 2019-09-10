@@ -2051,7 +2051,7 @@ export default (function () {
   }
 
   /**
-   * 停止行业导航
+   * 导航结束监听
    * @param handlers
    */
   function setIndustryNavigationListener(handlers){
@@ -2438,6 +2438,62 @@ export default (function () {
     }
   }
 
+  /**
+   * 获取地图选点地理名称
+   * @returns {*|void|Promise<void>}
+   */
+  function getPointName(x,y,start) {
+    try {
+      return SMap.getPointName(x,y,start)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 地图选点起点地理名称监听
+   * @param handlers
+   */
+  function setStartPointNameListener(handlers){
+    try {
+      if (Platform.OS === 'ios' && handlers) {
+        if (typeof handlers.callback === 'function') {
+
+        }
+      } else if (Platform.OS === 'android' && handlers) {
+        if (typeof handlers.callback === "function") {
+          DeviceEventEmitter.addListener(EventConst.MAPSELECTPOINTNAMESTART, function (e) {
+            handlers.callback(e);
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  /**
+   * 地图选点终点地理名称监听
+   * @param handlers
+   */
+  function setEndPointNameListener(handlers){
+    try {
+      if (Platform.OS === 'ios' && handlers) {
+        if (typeof handlers.callback === 'function') {
+
+        }
+      } else if (Platform.OS === 'android' && handlers) {
+        if (typeof handlers.callback === "function") {
+          DeviceEventEmitter.addListener(EventConst.MAPSELECTPOINTNAMEEND, function (e) {
+            handlers.callback(e);
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 
 
   let SMapExp = {
@@ -2610,6 +2666,9 @@ export default (function () {
     gpsBegin,
     addGPSRecordset,
     copyNaviSnmFile,
+    getPointName,
+    setStartPointNameListener,
+    setEndPointNameListener,
 
     matchPictureStyle,
     updateMapFixColorsMode,
