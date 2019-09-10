@@ -627,16 +627,16 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
         if (!toFile.exists()) {
             toFile.mkdirs();
         }
-        {
-            //添加一个.nomedis文件，系统不能访问里面的图片
-            String noMediaPath=".nomedia";
-            File mediaFile=new File(toPath,noMediaPath);
-            try {
-                mediaFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+//        {
+//            //添加一个.nomedis文件，系统不能访问里面的图片
+//            String noMediaPath=".nomedia";
+//            File mediaFile=new File(toPath,noMediaPath);
+//            try {
+//                mediaFile.createNewFile();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
         try {
             if (fromFile.isFile()) {
                 return copyFile(fromFile, toFile, true);
@@ -652,6 +652,9 @@ public class SMFileUtil extends ReactContextBaseJavaModule {
             File[] fileList = fromFile.listFiles();
             for (File file : fileList) {
                 if (file.isFile()) {
+                    if(file.getName().equals(".nomedia")){
+                        continue;
+                    }
                     String filePath=file.getAbsolutePath();
                     int index = filePath.lastIndexOf(".");
                     String strSuffix = filePath.substring(index);

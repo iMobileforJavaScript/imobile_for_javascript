@@ -39,6 +39,8 @@
 @property (nonatomic, strong) NSString* fileName;
 //@property (nonatomic, strong) NSData* data;
 @property (nonatomic, strong) Point2D* location;
+@property (nonatomic, strong) NSString* httpAddress;
+@property (nonatomic, strong) NSString* Description;
 
 /**
  * 初始化，获取当前位置

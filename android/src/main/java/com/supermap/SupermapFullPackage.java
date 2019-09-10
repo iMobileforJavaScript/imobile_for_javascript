@@ -26,6 +26,7 @@ import com.supermap.interfaces.*;
 import com.supermap.interfaces.iServer.SOnlineService;
 import com.supermap.interfaces.iServer.SIPortalService;
 import com.supermap.component.SMRLegendView;
+import com.supermap.interfaces.mapping.SPlot;
 import com.supermap.interfaces.utils.SMFileUtil;
 import com.supermap.rnsupermap.*;
 
@@ -194,6 +195,7 @@ public class SupermapFullPackage implements ReactPackage {
 
         modules.add(new SMap(reactContext));
         modules.add(new SLayerManager(reactContext));
+        modules.add(new SPlot(reactContext));
         modules.add(new SScene(reactContext));
         modules.add(new JSLayer3DType(reactContext));
         modules.add(new JSImageFormatType(reactContext));

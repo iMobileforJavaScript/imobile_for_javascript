@@ -102,7 +102,7 @@ public class PoiSearchHelper {
         Feature3D param = addMarkFile(mSceneControl, poiInfos.getName(), point3d2,
                 dataPath, GlobalControlHelper.getCurrentFeature());
         GlobalControlHelper.setCurrentFeature(param);
-        mSceneControl.getScene().flyToPoint(point3d);
+        mSceneControl.getScene().flyToPoint(point3d,5000);
     }
 
 

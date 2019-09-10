@@ -52,6 +52,8 @@ public class SMMedia {
     private String fileName;
 //    private Bitmap data;
     private Point2D location; // 地图坐标
+    private String httpAddress;
+    private String description;
 
     public Datasource getDatasourse() {
         return datasourse;
@@ -91,6 +93,22 @@ public class SMMedia {
 
     public void setLocation(Point2D location) {
         this.location = location;
+    }
+
+    public String getHttpAddress() {
+        return httpAddress;
+    }
+
+    public void setHttpAddress(String httpAddress) {
+        this.httpAddress = httpAddress;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public SMMedia() {

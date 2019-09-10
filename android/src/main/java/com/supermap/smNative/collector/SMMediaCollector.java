@@ -120,6 +120,8 @@ public class SMMediaCollector {
         smMedia.setDatasourse(layer.getDataset().getDatasource());
         smMedia.setDataset(layer.getDataset());
         smMedia.setFileName((String)recordset.getFieldValue("MediaName"));
+        smMedia.setHttpAddress((String)recordset.getFieldValue("HttpAddress"));
+        smMedia.setDescription((String)recordset.getFieldValue("Description"));
 
         String paths = (String)recordset.getFieldValue("MediaFilePaths");
         if (paths == null) paths = "";
@@ -158,6 +160,8 @@ public class SMMediaCollector {
             media.setDatasourse(layer.getDataset().getDatasource());
             media.setDataset(layer.getDataset());
             media.setFileName((String)recordset.getFieldValue("MediaName"));
+            media.setHttpAddress((String)recordset.getFieldValue("HttpAddress"));
+            media.setDescription((String)recordset.getFieldValue("Description"));
 
             String paths = (String)recordset.getFieldValue("MediaFilePaths");
             ArrayList<String> pathArr = (ArrayList<String>)Arrays.asList(paths.split(","));
@@ -188,6 +192,8 @@ public class SMMediaCollector {
                 media.setDatasourse(layer.getDataset().getDatasource());
                 media.setDataset(layer.getDataset());
                 media.setFileName((String)recordset.getFieldValue("MediaName"));
+                media.setHttpAddress((String)recordset.getFieldValue("HttpAddress"));
+                media.setDescription((String)recordset.getFieldValue("Description"));
 
                 String paths = (String)recordset.getFieldValue("MediaFilePaths");
                 ArrayList<String> pathArr = new ArrayList<>(Arrays.asList(paths.split(",")));
@@ -235,6 +241,8 @@ public class SMMediaCollector {
                 }
                 SMMedia media = new SMMedia();
 
+                media.setHttpAddress((String)recordset.getFieldValue("HttpAddress"));
+                media.setDescription((String)recordset.getFieldValue("Description"));
                 media.setDatasourse(layer.getDataset().getDatasource());
                 media.setDataset(layer.getDataset());
                 media.setFileName(fileName);
@@ -331,8 +339,8 @@ public class SMMediaCollector {
         callout.setMediaName(media.getFileName());
         callout.setMediaFilePaths(media.getPaths());
         callout.setLayerName(layerName);
-        callout.setHttpAddress("");
-        callout.setDescription("");
+        callout.setHttpAddress(media.getHttpAddress());
+        callout.setDescription(media.getDescription());
 
         Date date = new Date();
         callout.setModifiedDate(DateUtil.formatDateToString(date, "yyyy-MM-dd HH:mm:ss"));
