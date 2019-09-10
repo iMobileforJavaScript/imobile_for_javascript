@@ -8,6 +8,7 @@ import { NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform, PixelR
 import * as MapTool from './SMapTool'
 import * as MapSettings from './SMapSettings'
 import * as LayerManager from './SLayerManager'
+import * as Plot from './SPlot'
 import * as Datasource from './SDatasource'
 import { EventConst } from '../../constains/index'
 let SMap = NativeModules.SMap
@@ -1416,285 +1417,285 @@ export default (function () {
   //   }
   // }
 
-  /**
-   * 初始化标绘符号库
-   */
-  function initPlotSymbolLibrary(plotSymbolPaths,isFirst,newName,isDefaultNew) {
-    try {
-      return SMap.initPlotSymbolLibrary(plotSymbolPaths,isFirst,newName,isDefaultNew)
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 初始化标绘符号库
+  //  */
+  // function initPlotSymbolLibrary(plotSymbolPaths,isFirst,newName,isDefaultNew) {
+  //   try {
+  //     return SMap.initPlotSymbolLibrary(plotSymbolPaths,isFirst,newName,isDefaultNew)
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 设置标绘符号
-   */
-  function setPlotSymbol(libId,symbolCode) {
-    try {
-      return SMap.setPlotSymbol(libId,symbolCode)
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 设置标绘符号
+  //  */
+  // function setPlotSymbol(libId,symbolCode) {
+  //   try {
+  //     return SMap.setPlotSymbol(libId,symbolCode)
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 新建cad图层
-   */
-  function addCadLayer(layerName){
-    try {
-      return SMap.addCadLayer(layerName)
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 新建cad图层
+  //  */
+  // function addCadLayer(layerName){
+  //   try {
+  //     return SMap.addCadLayer(layerName)
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 导入标绘库数据
-   * @param fromPath  标绘库数据路径
-   */
-  function importPlotLibData(fromPath){
-    try{
-      return SMap.importPlotLibData(fromPath)
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 导入标绘库数据
+  //  * @param fromPath  标绘库数据路径
+  //  */
+  // function importPlotLibData(fromPath){
+  //   try{
+  //     return SMap.importPlotLibData(fromPath)
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
   
-  /**
-   * 移除标绘库
-   * @param plotSymbolIds  标绘库数据id
-   */
-  function removePlotSymbolLibraryArr(plotSymbolIds){
-    try{
-      return SMap.removePlotSymbolLibraryArr(plotSymbolIds)
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 移除标绘库
+  //  * @param plotSymbolIds  标绘库数据id
+  //  */
+  // function removePlotSymbolLibraryArr(plotSymbolIds){
+  //   try{
+  //     return SMap.removePlotSymbolLibraryArr(plotSymbolIds)
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 根据标绘库获取标绘库名称
-   * @param {标绘库id} libId 
-   */
-  function getPlotSymbolLibNameById(libId){
-    try{
-      return SMap.getPlotSymbolLibNameById(libId)
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 根据标绘库获取标绘库名称
+  //  * @param {标绘库id} libId 
+  //  */
+  // function getPlotSymbolLibNameById(libId){
+  //   try{
+  //     return SMap.getPlotSymbolLibNameById(libId)
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 初始化态势推演
-   */
-  function initAnimation(){
-    try{
-      return SMap.initAnimation()
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 初始化态势推演
+  //  */
+  // function initAnimation(){
+  //   try{
+  //     return SMap.initAnimation()
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 读取态势推演xml文件
-   */
-  function readAnimationXmlFile(filePath){
-    try{
-      return SMap.readAnimationXmlFile(filePath)
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 读取态势推演xml文件
+  //  */
+  // function readAnimationXmlFile(filePath){
+  //   try{
+  //     return SMap.readAnimationXmlFile(filePath)
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 播放态势推演动画
-   */
-  function animationPlay(){
-    try{
-      return SMap.animationPlay()
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 播放态势推演动画
+  //  */
+  // function animationPlay(){
+  //   try{
+  //     return SMap.animationPlay()
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 暂停态势推演动画
-   */
-  function animationPause(){
-    try{
-      return SMap.animationPause()
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 暂停态势推演动画
+  //  */
+  // function animationPause(){
+  //   try{
+  //     return SMap.animationPause()
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 重置态势推演动画
-   */
-  function animationReset(){
-    try{
-      return SMap.animationReset()
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 重置态势推演动画
+  //  */
+  // function animationReset(){
+  //   try{
+  //     return SMap.animationReset()
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
 
-   /**
-   * 停止态势推演动画
-   */
-  function animationStop(){
-    try{
-      return SMap.animationStop()
-    } catch (e){
-      console.error(e)
-    }
-  }
+  //  /**
+  //  * 停止态势推演动画
+  //  */
+  // function animationStop(){
+  //   try{
+  //     return SMap.animationStop()
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 关闭态势推演动画
-   */
-  function animationClose(){
-    try{
-      return SMap.animationClose()
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 关闭态势推演动画
+  //  */
+  // function animationClose(){
+  //   try{
+  //     return SMap.animationClose()
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 创建态势推演动画
-   */
-  function createAnimationGo(createInfo,newPlotMapName){
-    try{
-      return SMap.createAnimationGo(createInfo,newPlotMapName)
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 创建态势推演动画
+  //  */
+  // function createAnimationGo(createInfo,newPlotMapName){
+  //   try{
+  //     return SMap.createAnimationGo(createInfo,newPlotMapName)
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
   
-  /**
-   * 保存态势推演动画
-   */
-  function animationSave(savePath,fileName){
-    try{
-      return SMap.animationSave(savePath,fileName)
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 保存态势推演动画
+  //  */
+  // function animationSave(savePath,fileName){
+  //   try{
+  //     return SMap.animationSave(savePath,fileName)
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
   
-  /**
-   * 保存态势推演动画
-   */
-  function getGeometryTypeById(layerName,geoId){
-    try{
-      return SMap.getGeometryTypeById(layerName,geoId)
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 保存态势推演动画
+  //  */
+  // function getGeometryTypeById(layerName,geoId){
+  //   try{
+  //     return SMap.getGeometryTypeById(layerName,geoId)
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
   
-  /**
-   * 添加路径动画点
-   * @param {点信息} point 
-   */
-  function addAnimationWayPoint(point,isAdd){
-    try{
-      return SMap.addAnimationWayPoint(point,isAdd)
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 添加路径动画点
+  //  * @param {点信息} point 
+  //  */
+  // function addAnimationWayPoint(point,isAdd){
+  //   try{
+  //     return SMap.addAnimationWayPoint(point,isAdd)
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 刷新路径动画点
-   */
-  function refreshAnimationWayPoint(){
-    try{
-      return SMap.refreshAnimationWayPoint()
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 刷新路径动画点
+  //  */
+  // function refreshAnimationWayPoint(){
+  //   try{
+  //     return SMap.refreshAnimationWayPoint()
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 取消路径动画点
-   */
-  function cancelAnimationWayPoint(){
-    try{
-      return SMap.cancelAnimationWayPoint()
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 取消路径动画点
+  //  */
+  // function cancelAnimationWayPoint(){
+  //   try{
+  //     return SMap.cancelAnimationWayPoint()
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 添加路径动画点
-   * @param {点信息} point 
-   */
-  function endAnimationWayPoint(isSave){
-    try{
-      return SMap.endAnimationWayPoint(isSave)
-    } catch (e){
-      console.error(e)
-    }
-  }
-  /**
-   * 根据geoId获取已经创建的动画类型和数量
-   * @param {} geoId 
-   */
-  function getGeoAnimationTypes(geoId){
-    try{
-      return SMap.getGeoAnimationTypes(geoId)
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 添加路径动画点
+  //  * @param {点信息} point 
+  //  */
+  // function endAnimationWayPoint(isSave){
+  //   try{
+  //     return SMap.endAnimationWayPoint(isSave)
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
+  // /**
+  //  * 根据geoId获取已经创建的动画类型和数量
+  //  * @param {} geoId 
+  //  */
+  // function getGeoAnimationTypes(geoId){
+  //   try{
+  //     return SMap.getGeoAnimationTypes(geoId)
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
   
-  /**
-   * 获取所有动画节点的数据
-   */
-  function getAnimationNodeList(){
-    try{
-      return SMap.getAnimationNodeList()
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 获取所有动画节点的数据
+  //  */
+  // function getAnimationNodeList(){
+  //   try{
+  //     return SMap.getAnimationNodeList()
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 删除动画节点
-   */
-  function deleteAnimationNode(nodeName){
-    try{
-      return SMap.deleteAnimationNode(nodeName)
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 删除动画节点
+  //  */
+  // function deleteAnimationNode(nodeName){
+  //   try{
+  //     return SMap.deleteAnimationNode(nodeName)
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 修改动画节点名称
-   */
-  function modifyAnimationNodeName(index,newNodeName){
-    try{
-      return SMap.modifyAnimationNodeName(index,newNodeName)
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 修改动画节点名称
+  //  */
+  // function modifyAnimationNodeName(index,newNodeName){
+  //   try{
+  //     return SMap.modifyAnimationNodeName(index,newNodeName)
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
 
-  /**
-   * 移动动画节点位置
-   */
-  function moveAnimationNode(index,isUp){
-    try{
-      return SMap.moveAnimationNode(index,isUp)
-    } catch (e){
-      console.error(e)
-    }
-  }
+  // /**
+  //  * 移动动画节点位置
+  //  */
+  // function moveAnimationNode(index,isUp){
+  //   try{
+  //     return SMap.moveAnimationNode(index,isUp)
+  //   } catch (e){
+  //     console.error(e)
+  //   }
+  // }
   /************************************** 地图编辑历史操作 ****************************************/
   /**
    * 地图撤销
@@ -2548,31 +2549,31 @@ export default (function () {
     showMarker,
     deleteMarker,
 
-    initPlotSymbolLibrary,
-    setPlotSymbol,
-    addCadLayer,
-    importPlotLibData,
-    removePlotSymbolLibraryArr,
-    getPlotSymbolLibNameById,
-    initAnimation,
-    readAnimationXmlFile,
-    animationPlay,
-    animationPause,
-    animationReset,
-    animationStop,
-    animationClose,
-    createAnimationGo,
-    animationSave,
-    getGeometryTypeById,
-    addAnimationWayPoint,
-    refreshAnimationWayPoint,
-    cancelAnimationWayPoint,
-    endAnimationWayPoint,
-    getGeoAnimationTypes,
-    getAnimationNodeList,
-    deleteAnimationNode,
-    modifyAnimationNodeName,
-    moveAnimationNode,
+    // initPlotSymbolLibrary,
+    // setPlotSymbol,
+    // addCadLayer,
+    // importPlotLibData,
+    // removePlotSymbolLibraryArr,
+    // getPlotSymbolLibNameById,
+    // initAnimation,
+    // readAnimationXmlFile,
+    // animationPlay,
+    // animationPause,
+    // animationReset,
+    // animationStop,
+    // animationClose,
+    // createAnimationGo,
+    // animationSave,
+    // getGeometryTypeById,
+    // addAnimationWayPoint,
+    // refreshAnimationWayPoint,
+    // cancelAnimationWayPoint,
+    // endAnimationWayPoint,
+    // getGeoAnimationTypes,
+    // getAnimationNodeList,
+    // deleteAnimationNode,
+    // modifyAnimationNodeName,
+    // moveAnimationNode,
     undo,
     redo,
     removeHistory,
@@ -2616,7 +2617,7 @@ export default (function () {
     getMapFixColorsModeValue,
     resetMapFixColorsModeValue,
   }
-  Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings)
+  Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings, Plot)
 
   return SMapExp
 })()

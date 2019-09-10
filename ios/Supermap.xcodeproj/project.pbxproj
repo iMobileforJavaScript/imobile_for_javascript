@@ -192,6 +192,7 @@
 		182832BB22F98190006586BF /* SIPortalService.m in Sources */ = {isa = PBXBuildFile; fileRef = 182832BA22F98190006586BF /* SIPortalService.m */; };
 		2AAEE1D1230E6A6000902D1D /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AAEE196230E68CE00902D1D /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2AD00E8522461CC70087FC43 /* PoiSearchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD00E8322461CC70087FC43 /* PoiSearchHelper.m */; };
+		2AD85BD523265A0600BDE6A6 /* SPlot.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD85BD423265A0600BDE6A6 /* SPlot.m */; };
 		4A99EBEB21EDD9D000493EB1 /* SPUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A99EBEA21EDD9CF00493EB1 /* SPUtils.m */; };
 		4AA0C2ED21B1316C00614FE4 /* STranslate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AA0C2EB21B1316B00614FE4 /* STranslate.m */; };
 		4AE32D4621B91EB500555A5A /* SMThemeCartography.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AE32D4521B91EB500555A5A /* SMThemeCartography.m */; };
@@ -588,6 +589,8 @@
 		2AAEE196230E68CE00902D1D /* GDataXMLNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GDataXMLNode.m; sourceTree = "<group>"; };
 		2AD00E8322461CC70087FC43 /* PoiSearchHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PoiSearchHelper.m; sourceTree = "<group>"; };
 		2AD00E8422461CC70087FC43 /* PoiSearchHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PoiSearchHelper.h; sourceTree = "<group>"; };
+		2AD85BD323265A0600BDE6A6 /* SPlot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPlot.h; sourceTree = "<group>"; };
+		2AD85BD423265A0600BDE6A6 /* SPlot.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPlot.m; sourceTree = "<group>"; };
 		4A99EBE921EDD9CF00493EB1 /* SPUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPUtils.h; sourceTree = "<group>"; };
 		4A99EBEA21EDD9CF00493EB1 /* SPUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPUtils.m; sourceTree = "<group>"; };
 		4AA0C2EB21B1316B00614FE4 /* STranslate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STranslate.m; sourceTree = "<group>"; };
@@ -888,6 +891,8 @@
 				D835E5AF219EC726008910F0 /* SLayerManager.m */,
 				0A84DED121BA403B007995FC /* SDatasource.h */,
 				0A84DED221BA403B007995FC /* SDatasource.m */,
+				2AD85BD323265A0600BDE6A6 /* SPlot.h */,
+				2AD85BD423265A0600BDE6A6 /* SPlot.m */,
 			);
 			path = mapping;
 			sourceTree = "<group>";
@@ -1336,6 +1341,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AD85BD523265A0600BDE6A6 /* SPlot.m in Sources */,
 				2AAEE1D1230E6A6000902D1D /* GDataXMLNode.m in Sources */,
 				0A332E57211D623E00F56F26 /* JSSupplyCenterType.m in Sources */,
 				4AF967A421B50EC000105B74 /* SMCartography.m in Sources */,
