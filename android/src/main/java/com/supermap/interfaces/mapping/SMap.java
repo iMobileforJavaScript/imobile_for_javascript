@@ -1466,6 +1466,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                             resultName = sMap.smMapWC.saveMapName(resultName, sMap.smMapWC.getWorkspace(), nModule, additionMap, true, true, isPrivate);
                         }
 
+                        //另存后从maps移除当前另存的地图，以免添加地图失败
+                    sMap.smMapWC.getWorkspace().getMaps().remove(resultName);
                     }
                     sMap.smMapWC.getMapControl().getMap().refresh();
                     writeMap.putString("mapName", resultName);

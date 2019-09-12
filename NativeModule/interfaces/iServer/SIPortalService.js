@@ -15,7 +15,15 @@ function login (serverUrl, userName, password, remember) {
 }
 
 function logout () {
+  if(Platform.OS === 'android') {
+      let logoutUrl = iPortalUrl
+      if(iPortalUrl.lastIndexOf('web') !== -1) {
+        logoutUrl = iPortalUrl.substr(0, iPortalUrl.lastIndexOf('web')) + 'services'
+      }
+      IPortalServiceNative.logout(logoutUrl)
+  } else{
     IPortalServiceNative.logout()
+  }
 }
 
 function getIPortalCookie() {
