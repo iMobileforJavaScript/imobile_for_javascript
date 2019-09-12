@@ -7012,28 +7012,24 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void openTrafficMap(Promise promise) {
+    public void openTrafficMap(ReadableMap data,Promise promise) {
         sMap = SMap.getInstance();
+        Map params = data.toHashMap();
+        Datasource datasource = sMap.smMapWC.openDatasource(params);
         Layers layers = sMap.getSmMapWC().getMapControl().getMap().getLayers();
         Point2D center = sMap.getSmMapWC().getMapControl().getMap().getCenter();
         double scale = sMap.getSmMapWC().getMapControl().getMap().getScale();
         boolean isadd = false;
         for (int i = 0; i < layers.getCount(); i++) {
-            if (layers.get(i).getName().equals("tencent@TrafficRest")) {
+            if (layers.get(i).getName().equals("tencent@TrafficMap")) {
                 isadd = true;
             }
         }
         if (!isadd) {
-            DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-            info.setEngineType(EngineType.Rest);
-            String url = "https://www.supermapol.com/iserver/services/traffic/rest/maps/tencent";
-            info.setServer(url);
-            Datasource datasource = sMap.getSmMapWC().getWorkspace().getDatasources().open(info);
             sMap.getSmMapWC().getMapControl().getMap().getLayers().add(datasource.getDatasets().get(0), true);
             sMap.getSmMapWC().getMapControl().getMap().setScale(scale);
             sMap.getSmMapWC().getMapControl().getMap().setCenter(center);
             sMap.getSmMapWC().getMapControl().getMap().refresh();
-            info.dispose();
         }
         promise.resolve(true);
     }
