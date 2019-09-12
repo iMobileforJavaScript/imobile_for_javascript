@@ -305,12 +305,15 @@
                ) {
                 if ([fileManager copyItemAtPath:paths[i] toPath:filePath error:&error]) {
                     res = YES;
-                    [fileManager removeItemAtPath:paths[i] error:&error];
+//                    [fileManager removeItemAtPath:paths[i] error:&error];
                     paths[i] = [filePath stringByReplacingOccurrencesOfString:appHomePath withString:@""];
 //                    _paths = paths;
                 } else {
                     res = NO;
                 }
+            } else {
+                res = YES;
+                paths[i] = [filePath stringByReplacingOccurrencesOfString:appHomePath withString:@""];
             }
         }
     }
