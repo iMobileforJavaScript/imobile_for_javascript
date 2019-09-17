@@ -100,26 +100,11 @@ public class SIPortalService extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void logout(String url, final Promise promise){
+    public void logout(final Promise promise){
         try{
-            IPortalService.getInstance().addOnResponseListener(new OnResponseListener(){
-                @Override
-                public void onFailed(Exception e) {
-                    promise.resolve(false);
-                }
-
-                @Override
-                public void onResponse(Response response) {
-                    try{
-                        promise.resolve(true);
-                    } catch (Exception e) {
-                        promise.resolve(false);
-                    }
-                }
-            });
-
-            IPortalService.getInstance().logout(url);
+            IPortalService.getInstance().logout();
             setIPortalCookie(null);
+            promise.resolve(true);
         } catch (Exception e){
             promise.reject(e);
         }
