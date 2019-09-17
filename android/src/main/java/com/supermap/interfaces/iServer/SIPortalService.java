@@ -161,6 +161,8 @@ public class SIPortalService extends ReactContextBaseJavaModule {
             HashMap<String, String> searchParameter = new HashMap<>();
             searchParameter.put("currentPage", Integer.toString(currentPage));
             searchParameter.put("pageSize", Integer.toString(pageSize));
+            searchParameter.put("orderBy", "LASTMODIFIEDTIME");
+            searchParameter.put("orderType", "DESC");
 
             IPortalService.getInstance().getMyDatas(searchParameter);
         } catch (Exception e){
@@ -192,6 +194,8 @@ public class SIPortalService extends ReactContextBaseJavaModule {
             HashMap<String, String> searchParameter = new HashMap<>();
             searchParameter.put("currentPage", Integer.toString(currentPage));
             searchParameter.put("pageSize", Integer.toString(pageSize));
+            searchParameter.put("orderBy", "UPDATETIME");
+            searchParameter.put("orderType", "DESC");
 
             IPortalService.getInstance().getMyServices(searchParameter);
         } catch (Exception e){
