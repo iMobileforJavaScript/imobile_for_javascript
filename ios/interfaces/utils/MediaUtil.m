@@ -18,7 +18,12 @@
 //                                                   withString:@""];
     
     //视频路径URL
-    NSURL *fileURL = [NSURL fileURLWithPath:filePath];
+    NSURL *fileURL;
+    if ([filePath hasPrefix:@"assets-library"]) {
+        fileURL = [NSURL URLWithString:filePath];
+    } else {
+        fileURL = [NSURL fileURLWithPath:filePath];
+    }
     
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:fileURL options:nil];
     
@@ -64,7 +69,12 @@
 }
 
 + (int)getVideoTimeByPath:(NSString*)path {
-    NSURL*videoUrl = [NSURL fileURLWithPath:path];
+    NSURL* videoUrl = [NSURL URLWithString:path];
+    if ([path hasPrefix:@"assets-library"]) {
+        videoUrl = [NSURL URLWithString:path];
+    } else {
+        videoUrl = [NSURL fileURLWithPath:path];
+    }
     AVURLAsset *avUrl = [AVURLAsset assetWithURL:videoUrl];
     CMTime time = [avUrl duration];
     int seconds = ceil(time.value/time.timescale);
