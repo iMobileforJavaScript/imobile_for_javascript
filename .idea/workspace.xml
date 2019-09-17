@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="52760a13-1fb3-4ef7-ab6f-c3316017cf08" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/android/src/main/java/com/supermap/smNative/SMMapWC.java" afterPath="$PROJECT_DIR$/android/src/main/java/com/supermap/smNative/SMMapWC.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ios/Supermap.xcodeproj/xcuserdata/shanglongyang.xcuserdatad/xcschemes/xcschememanagement.plist" afterPath="$PROJECT_DIR$/ios/Supermap.xcodeproj/xcuserdata/shanglongyang.xcuserdatad/xcschemes/xcschememanagement.plist" />
     </list>
     <ignored path="Deployment3.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -65,14 +65,24 @@
     <favorites_list name="Deployment3" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.36458334">
+    <splitter split-orientation="horizontal" split-proportion="0.5546875">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="SOnlineService.js" pinned="false" current-in-tab="true">
+          <file leaf-file-name="SOnlineService.js" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/NativeModule/interfaces/iServer/SOnlineService.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="119">
-                  <caret line="8" column="15" lean-forward="false" selection-start-line="8" selection-start-column="15" selection-end-line="8" selection-end-column="15" />
+                <state relative-caret-position="255">
+                  <caret line="16" column="1" lean-forward="false" selection-start-line="16" selection-start-column="1" selection-end-line="16" selection-end-column="1" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="JSMapControl.m" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/ios/oldNative/JSMapControl.m">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="582">
+                  <caret line="61" column="14" lean-forward="false" selection-start-line="61" selection-start-column="14" selection-end-line="61" selection-end-column="14" />
                   <folding />
                 </state>
               </provider>
@@ -137,6 +147,7 @@
         <option value="$PROJECT_DIR$/android/build.gradle" />
         <option value="$PROJECT_DIR$/NativeModule/OnlineService.js" />
         <option value="$PROJECT_DIR$/NativeModule/interfaces/iServer/SOnlineService.js" />
+        <option value="$PROJECT_DIR$/ios/oldNative/JSMapControl.m" />
       </list>
     </option>
   </component>
@@ -193,8 +204,8 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="PackagesPane" />
       <pane id="ColorIdeProjectViewPane">
         <subPane>
@@ -290,7 +301,7 @@
     <property name="nodejs_interpreter_path" value="node" />
     <property name="settings.editor.selected.configurable" value="Settings.JavaScript" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
-    <property name="SearchEverywhereHistoryKey" value="SMMAPW&#9;FILE&#9;file:///Users/shanglongyang/Documents/workspace/SuperMap/iTablet/node_modules/imobile_for_reactnative/android/src/main/java/com/supermap/smNative/SMMapWC.java&#10;SMTheme&#9;FILE&#9;file:///Users/shanglongyang/Documents/workspace/SuperMap/iTablet/node_modules/imobile_for_reactnative/ios/native/SMThemeCartography.m&#10;Smap.java&#9;FILE&#9;file:///Users/shanglongyang/Documents/workspace/SuperMap/iTablet/node_modules/imobile_for_reactnative/android/src/main/java/com/supermap/interfaces/mapping/SMap.java" />
+    <property name="SearchEverywhereHistoryKey" value="jsmapcontrol.&#9;FILE&#9;file:///Users/shanglongyang/Documents/workspace/SuperMap/Version/0_57_4/iTablet/node_modules/imobile_for_reactnative/ios/oldNative/JSMapControl.m&#10;SMMAPW&#9;FILE&#9;file:///Users/shanglongyang/Documents/workspace/SuperMap/iTablet/node_modules/imobile_for_reactnative/android/src/main/java/com/supermap/smNative/SMMapWC.java&#10;SMTheme&#9;FILE&#9;file:///Users/shanglongyang/Documents/workspace/SuperMap/iTablet/node_modules/imobile_for_reactnative/ios/native/SMThemeCartography.m&#10;Smap.java&#9;FILE&#9;file:///Users/shanglongyang/Documents/workspace/SuperMap/iTablet/node_modules/imobile_for_reactnative/android/src/main/java/com/supermap/interfaces/mapping/SMap.java" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -422,20 +433,20 @@
       <workItem from="1562119875652" duration="49000" />
       <workItem from="1562143890267" duration="123000" />
       <workItem from="1562145263907" duration="555000" />
+      <workItem from="1568269778211" duration="53000" />
+      <workItem from="1568272700537" duration="697000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="14918000" />
+    <option name="totallyTimeSpent" value="15668000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1920" height="1057" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3299595" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -448,6 +459,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -483,6 +495,54 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/NativeModule/interfaces/iServer/SOnlineService.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="8" column="15" lean-forward="false" selection-start-line="8" selection-start-column="15" selection-end-line="8" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/NativeModule/OnlineService.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="6" column="34" lean-forward="false" selection-start-line="6" selection-start-column="21" selection-end-line="6" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/interfaces/mapping/SMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="41276">
+          <caret line="2428" column="26" lean-forward="false" selection-start-line="2428" selection-start-column="26" selection-end-line="2428" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/NativeModule/interfaces/iServer/SOnlineService.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="8" column="15" lean-forward="false" selection-start-line="8" selection-start-column="15" selection-end-line="8" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/NativeModule/OnlineService.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="6" column="34" lean-forward="false" selection-start-line="6" selection-start-column="21" selection-end-line="6" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/android/src/main/java/com/supermap/interfaces/mapping/SMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="41276">
+          <caret line="2428" column="26" lean-forward="false" selection-start-line="2428" selection-start-column="26" selection-end-line="2428" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/NativeModule/interfaces/iServer/SOnlineService.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
@@ -636,14 +696,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/NativeModule/interfaces/iServer/SOnlineService.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="8" column="15" lean-forward="false" selection-start-line="8" selection-start-column="15" selection-end-line="8" selection-end-column="15" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ios/native/SMThemeCartography.m">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
@@ -655,7 +707,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="363">
           <caret line="1218" column="40" lean-forward="true" selection-start-line="1215" selection-start-column="18" selection-end-line="1215" selection-end-column="29" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -663,6 +714,22 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="346">
           <caret line="2428" column="26" lean-forward="false" selection-start-line="2428" selection-start-column="26" selection-end-line="2428" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/NativeModule/interfaces/iServer/SOnlineService.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="16" column="1" lean-forward="false" selection-start-line="16" selection-start-column="1" selection-end-line="16" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ios/oldNative/JSMapControl.m">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="582">
+          <caret line="61" column="14" lean-forward="false" selection-start-line="61" selection-start-column="14" selection-end-line="61" selection-end-column="14" />
           <folding />
         </state>
       </provider>

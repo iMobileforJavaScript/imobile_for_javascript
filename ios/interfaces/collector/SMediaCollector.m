@@ -79,12 +79,12 @@ RCT_REMAP_METHOD(addMedia, addMedia:(NSDictionary*)info addToMap:(BOOL)addToMap 
 }
 
 #pragma mark 保存/修改 多媒体采集
-RCT_REMAP_METHOD(saveMediaByLayer, saveMediaByLayer:(NSString *)layerName geoID:(int)geoID toPath:(NSString *)toPath fieldInfos:(NSArray *)fieldInfos resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(saveMediaByLayer, saveMediaByLayer:(NSString *)layerName geoID:(int)geoID toPath:(NSString *)toPath fieldInfos:(NSArray *)fieldInfos addToMap:(BOOL)addToMap resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
    
     Layer* layer = [SMLayer findLayerWithName:layerName];
     
     @try {
-        BOOL saveResult = [self saveMedia:layer geoID:geoID toPath:toPath fieldInfos:fieldInfos];
+        BOOL saveResult = [self saveMedia:layer geoID:geoID toPath:toPath fieldInfos:fieldInfos addToMap:addToMap];
         resolve(@(saveResult));
     } @catch (NSException *exception) {
         reject(@"SMediaCollector", exception.reason, nil);
@@ -92,7 +92,7 @@ RCT_REMAP_METHOD(saveMediaByLayer, saveMediaByLayer:(NSString *)layerName geoID:
 }
 
 #pragma mark 保存/修改 多媒体采集
-RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName geoID:(int)geoID toPath:(NSString *)toPath fieldInfos:(NSArray *)fieldInfos resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName geoID:(int)geoID toPath:(NSString *)toPath fieldInfos:(NSArray *)fieldInfos addToMap:(BOOL)addToMap resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     Layer* layer = [SMLayer findLayerByDatasetName:datasetName];
     if (!layer) {
@@ -100,14 +100,14 @@ RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName 
     }
     
     @try {
-        BOOL saveResult = [self saveMedia:layer geoID:geoID toPath:toPath fieldInfos:fieldInfos];
+        BOOL saveResult = [self saveMedia:layer geoID:geoID toPath:toPath fieldInfos:fieldInfos addToMap:addToMap];
         resolve(@(saveResult));
     } @catch (NSException *exception) {
         reject(@"SMediaCollector", exception.reason, nil);
     }
 }
 
-- (BOOL)saveMedia:(Layer *)layer geoID:(int)geoID toPath:(NSString *)toPath fieldInfos:(NSArray *)fieldInfos {
+- (BOOL)saveMedia:(Layer *)layer geoID:(int)geoID toPath:(NSString *)toPath fieldInfos:(NSArray *)fieldInfos addToMap:(BOOL)addToMap {
     @try {
         if (layer == nil) return NO;
         NSMutableArray* infos = [[NSMutableArray alloc] init];
@@ -153,7 +153,7 @@ RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName 
             saveResult = [SMLayer setLayerFieldInfo:layer fieldInfos:infos params:params];
         }
         
-        if (saveResult) {
+        if (saveResult && addToMap) {
             SMMedia* media2 = [SMMediaCollector findMediaByLayer:layer geoID:geoID];
             MapControl* mapControl = SMap.singletonInstance.smMapWC.mapControl;
             BOOL isExist = NO;
