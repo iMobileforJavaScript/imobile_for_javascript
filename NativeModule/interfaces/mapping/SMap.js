@@ -2153,7 +2153,7 @@ export default (function () {
 
 
   /**
-   * 开始导航
+   * 室外导航路径分析
    * @returns {*|void|Promise<void>}
    */
   function beginNavigation(x1,y1,x2,y2) {
@@ -2262,12 +2262,36 @@ export default (function () {
   }
 
   /**
-   * 开启室内导航
+   * 室内导航路径分析
    * @returns {*|void|Promise<void>}
    */
   function beginIndoorNavigation(x1,y1,x2,y2) {
     try {
       return SMap.beginIndoorNavigation(x1,y1,x2,y2)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 开启室内导航
+   * @returns {*|void|Promise<void>}
+   */
+  function indoorNavigation() {
+    try {
+      return SMap.indoorNavigation()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 开启室外导航
+   * @returns {*|void|Promise<void>}
+   */
+  function outdoorNavigation() {
+    try {
+      return SMap.outdoorNavigation()
     } catch (e) {
       console.error(e)
     }
@@ -2342,6 +2366,31 @@ export default (function () {
   function openTrafficMap(params) {
     try {
       return SMap.openTrafficMap(params)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+
+  /**
+   * 判断是否打开实时路况
+   * @returns {*|void|Promise<void>}
+   */
+  function isOpenTrafficMap() {
+    try {
+      return SMap.isOpenTrafficMap()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 移除实时路况
+   * @returns {*|void|Promise<void>}
+   */
+  function removeTrafficMap(name) {
+    try {
+      return SMap.removeTrafficMap(name)
     } catch (e) {
       console.error(e)
     }
@@ -2655,12 +2704,16 @@ export default (function () {
     getNavigationData,
     beginNavigation,
     beginIndoorNavigation,
+    outdoorNavigation,
+    indoorNavigation,
     getStartPoint,
     getEndPoint,
     clearPoint,
     getIndoorNavigationData,
     isIndoorPoint,
     openTrafficMap,
+    isOpenTrafficMap,
+    removeTrafficMap,
     getNetWorkDataset,
     buildNetwork,
     newIncrementRoad,

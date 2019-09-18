@@ -339,8 +339,9 @@ RCT_REMAP_METHOD(animationPlay,animationPlay:(RCTPromiseResolveBlock)resolve rej
                                 [rectangle2D setTop:bounds.top];
                             }
                         }
-                        //                        [rectangle2D unions:[geometry getBounds]];    组件接口方式有问题left和bottom一直为-1.7976931348623157E+308值不变
+                        [geometry dispose];
                     }
+                    [recordset dispose];
                 }
                 double offsetX=(rectangle2D.right-rectangle2D.left)/6;
                 double offsetY=(rectangle2D.top-rectangle2D.bottom)/6;
@@ -349,7 +350,9 @@ RCT_REMAP_METHOD(animationPlay,animationPlay:(RCTPromiseResolveBlock)resolve rej
                 [rectangle2D setBottom:rectangle2D.bottom-offsetY*1.5];
                 [rectangle2D setTop:rectangle2D.top+offsetY*0.5];
                 
-                [mapControl.map setViewBounds:rectangle2D];
+                if((rectangle2D.right-rectangle2D.left)>0&&(rectangle2D.top-rectangle2D.bottom)>0){
+                    [mapControl.map setViewBounds:rectangle2D];
+                }
             }
         }
         //        double scale = mapControl.map.scale ;
@@ -600,7 +603,10 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
                     [animationGo setName:animationGoName];
                     [animationGo setGeomtry:geometry mapControl:mapControl layer:layer.name];
                     [animationGroup addAnimation:animationGo];
+                    
+                    [geometry dispose];
                 }
+                [recordset dispose];
             }
         }
         resolve(@(YES));
@@ -650,7 +656,9 @@ RCT_REMAP_METHOD(getGeometryTypeById,getGeometryTypeById:(NSString*) layerName g
             if(geometry){
                 GeoGraphicObject* geoGraphicObject=(GeoGraphicObject*)geometry;
                 type=[geoGraphicObject getSymbolType];
+                [geometry dispose];
             }
+            [recordset dispose];
         }
         resolve(@(type));
     } @catch (NSException *exception) {
@@ -976,28 +984,6 @@ RCT_REMAP_METHOD(moveAnimationNode,moveAnimationNode:(int)index isUp:(BOOL)isUp 
             }
         }
         
-        //        NSString *tempAnimationDic = [NSString stringWithFormat: @"%@%@",NSHomeDirectory(),@"/Documents/iTablet/Cache"];
-        //        NSString *tempAnimationXmlPath = [NSString stringWithFormat: @"%@%@",tempAnimationDic,@"/tempAnimation.xml"];
-        //        NSFileManager *fileManager = [NSFileManager defaultManager];
-        //        BOOL isDir = FALSE;
-        //        BOOL isDirExist = [fileManager fileExistsAtPath:tempAnimationDic isDirectory:&isDir];
-        //        if(!(isDirExist && isDir))
-        //        {
-        //            [fileManager createDirectoryAtPath:tempAnimationDic withIntermediateDirectories:YES attributes:nil error:nil];
-        //        }
-        //        [AnimationManager.getInstance saveAnimationToXML:tempAnimationXmlPath];
-        //        [AnimationManager.getInstance deleteAll];   //这个地方报错，不知道什么原因
-        //        isDirExist = [fileManager fileExistsAtPath:tempAnimationXmlPath isDirectory:&isDir];
-        //        if(isDirExist&&!isDir){
-        //            [AnimationManager.getInstance getAnimationFromXML:tempAnimationXmlPath];
-        //            int groupCount=[AnimationManager.getInstance getGroupCount];
-        //            if(groupCount==2){
-        //                [AnimationManager.getInstance deleteGroupByName:animationGroupName];
-        //                [[AnimationManager.getInstance getGroupByIndex:0] setName:animationGroupName];
-        //            }
-        //            [fileManager removeItemAtPath:tempAnimationXmlPath error:nil];
-        //        }
-        
         [[AnimationManager.getInstance getGroupByIndex:0] setName:animationGroupName];
         [AnimationManager.getInstance deleteGroupByName:animationGroupName];
         [[AnimationManager.getInstance getGroupByIndex:0] setName:animationGroupName];
@@ -1008,6 +994,261 @@ RCT_REMAP_METHOD(moveAnimationNode,moveAnimationNode:(int)index isUp:(BOOL)isUp 
         reject(@"getAnimationNodeList", exception.reason, nil);
     }
 }
+
+#pragma mark 获取动画节点参数
+RCT_REMAP_METHOD(getAnimationGoInfo,getAnimationGoInfo:(int)index resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        //        MapControl* mapControl=sMap.smMapWC.mapControl;
+        
+        NSString* animationGroupName=@"Create_Animation_Instance_#";   //动画动画组名，名称特殊，保证唯一
+        int count=[AnimationManager.getInstance getGroupCount];
+        //组件缺陷，group的count等于0调用getGroupByName还是能返回一个对象
+        //        AnimationGroup* animationGroup=[AnimationManager.getInstance getGroupByName:animationGroupName];
+        AnimationGroup* animationGroup;
+        AnimationGroup* tempGroup;
+        if(count==0){
+            resolve([NSNumber numberWithBool:NO]);
+            return;
+        }
+        animationGroup=[AnimationManager.getInstance getGroupByIndex:0];
+        int size=[animationGroup getAnimationCount];
+        NSMutableDictionary* map=nil;
+        if(index>=0&&index<size){
+            AnimationGO* animationGo=[animationGroup getAnimationByIndex:index];
+            AnimationType type=[animationGo getAnimationType];
+//            WayAnimation = 0,//路径动画
+//            BlinkAnimation =  1,//闪烁动画
+//            AttribAnimation = 2,//属性动画
+//            ShowAnimation =  3,//显隐动画
+//            RotateAnimation = 4,//旋转动画
+//            ScaleAnimation =  5,// 比例动画
+//            GrowAnimation =  6,//生长动画
+//            NSDictionary* map=nil;
+            map=[[NSMutableDictionary alloc] init];
+            [map setObject:animationGo.name forKey:@"name"];
+            [map setObject:@(animationGo.startTime) forKey:@"startTime"];
+            [map setObject:@(animationGo.duration) forKey:@"durationTime"];
+            [map setObject:@(type) forKey:@"animationType"];
+            switch (type) {
+                case WayAnimation:
+                    
+                    break;
+                case BlinkAnimation:
+                    [map setObject:@(((AnimationBlink*)animationGo).blinkStyle) forKey:@"blinkStyle"];
+                    [map setObject:@(((AnimationBlink*)animationGo).blinkinterval) forKey:@"blinkinterval"];
+                    [map setObject:@(((AnimationBlink*)animationGo).blinkNumberofTimes) forKey:@"blinkNumber"];
+                    
+                    [map setObject:@(((AnimationBlink*)animationGo).blinkAnimationReplaceStyle) forKey:@"blinkAnimationReplaceStyle"];
+                    [map setObject:@([((AnimationBlink*)animationGo).blinkAnimationStartColor rgb]) forKey:@"blinkAnimationStartColor"];
+                    [map setObject:@([((AnimationBlink*)animationGo).blinkAnimationReplaceColor rgb]) forKey:@"blinkAnimationStartColor"];
+                    break;
+                case AttribAnimation:
+                    [map setObject:@(((AnimationAttribute*)animationGo).lineWidthAttr) forKey:@"lineWidthAttr"];
+                    [map setObject:@(((AnimationAttribute*)animationGo).startLineWidth) forKey:@"startLineWidth"];
+                    [map setObject:@(((AnimationAttribute*)animationGo).endLineWidth) forKey:@"endLineWidth"];
+                    [map setObject:@(((AnimationAttribute*)animationGo).lineColorAttr) forKey:@"lineColorAttr"];
+                    [map setObject:@([((AnimationAttribute*)animationGo).startLineColor rgb]) forKey:@"startLineColor"];
+                    [map setObject:@([((AnimationAttribute*)animationGo).endLineColor rgb]) forKey:@"endLineColor"];
+                    
+                    [map setObject:@(((AnimationAttribute*)animationGo).surroundLineWidthAttr) forKey:@"surroundLineWidthAttr"];
+                    [map setObject:@(((AnimationAttribute*)animationGo).startSurroundLineWidth) forKey:@"startSurroundLineWidth"];
+                    [map setObject:@(((AnimationAttribute*)animationGo).endSurroundLineWidth) forKey:@"endSurroundLineWidth"];
+                    [map setObject:@(((AnimationAttribute*)animationGo).surroundLineColorAttr) forKey:@"surroundLineColorAttr"];
+                    [map setObject:@([((AnimationAttribute*)animationGo).startSurroundLineColor rgb]) forKey:@"startSurroundLineColor"];
+                    [map setObject:@([((AnimationAttribute*)animationGo).endSurroundLineColor rgb]) forKey:@"endSurroundLineColor"];
+                    break;
+                case ShowAnimation:
+                    [map setObject:[NSNumber numberWithBool:((AnimationShow*)animationGo).showState] forKey:@"showState"];
+                    [map setObject:[NSNumber numberWithBool:((AnimationShow*)animationGo).showEffect] forKey:@"showEffect"];
+                    break;
+                case RotateAnimation:
+                    [map setObject:@(((AnimationRotate*)animationGo).rotateDirection) forKey:@"rotateDirection"];
+                    [map setObject:@{@"x":@(((AnimationRotate*)animationGo).startangle.x),
+                                     @"y":@(((AnimationRotate*)animationGo).startangle.y)
+                                     }forKey:@"startAngle"];
+                    [map setObject:@{@"x":@(((AnimationRotate*)animationGo).endAngle.x),
+                                     @"y":@(((AnimationRotate*)animationGo).endAngle.y)
+                                     }forKey:@"endAngle"];
+                    break;
+                case ScaleAnimation:
+                    [map setObject:@(((AnimationScale*)animationGo).startScaleFactor) forKey:@"startScale"];
+                    [map setObject:@(((AnimationScale*)animationGo).endScaleFactor) forKey:@"endScale"];
+                    break;
+                case GrowAnimation:
+                    [map setObject:@(((AnimationGrow*)animationGo).startLocation) forKey:@"startLocation"];
+                    [map setObject:@(((AnimationGrow*)animationGo).endLocation) forKey:@"endLocation"];
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+        
+        resolve(map);
+    } @catch (NSException *exception) {
+        reject(@"getAnimationGoInfo", exception.reason, nil);
+    }
+}
+
+#pragma mark 修改动画节点属性
+RCT_REMAP_METHOD(modifyAnimationNode,modifyAnimationNode:(int)index withNodeInfo:(NSDictionary*)nodeInfo resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        sMap = [SMap singletonInstance];
+        //        MapControl* mapControl=sMap.smMapWC.mapControl;
+
+        int count=[AnimationManager.getInstance getGroupCount];
+        //组件缺陷，group的count等于0调用getGroupByName还是能返回一个对象
+        //        AnimationGroup* animationGroup=[AnimationManager.getInstance getGroupByName:animationGroupName];
+        AnimationGroup* animationGroup;
+        if(count==0){
+            resolve([NSNumber numberWithBool:NO]);
+            return;
+        }else{
+            animationGroup=[AnimationManager.getInstance getGroupByIndex:0];
+        }
+        AnimationGO* animationGo=[animationGroup getAnimationByIndex:index];
+        if([nodeInfo objectForKey:@"name"]){
+            [animationGo setName:[nodeInfo objectForKey:@"name"]];
+        }
+        if([nodeInfo objectForKey:@"startTime"]){
+            [animationGo setStartTime:[[nodeInfo objectForKey:@"startTime"] doubleValue]];
+        }
+        if([nodeInfo objectForKey:@"durationTime"]){
+            [animationGo setDuration:[[nodeInfo objectForKey:@"durationTime"] doubleValue]];
+        }
+
+        AnimationType type=[animationGo getAnimationType];
+//        WayAnimation = 0,//路径动画
+//        BlinkAnimation =  1,//闪烁动画
+//        AttribAnimation = 2,//属性动画
+//        ShowAnimation =  3,//显隐动画
+//        RotateAnimation = 4,//旋转动画
+//        ScaleAnimation =  5,// 比例动画
+//        GrowAnimation =  6,//生长动画
+        switch (type) {
+            case WayAnimation:
+                break;
+            case BlinkAnimation:
+                if([nodeInfo objectForKey:@"blinkStyle"]){
+                    int blinkStyle=[[nodeInfo objectForKey:@"blinkStyle"] intValue];
+                    [(AnimationBlink*)animationGo setBlinkStyle:blinkStyle];
+                    if(blinkStyle){
+                        [(AnimationBlink*)animationGo setBlinkNumberofTimes:[[nodeInfo objectForKey:@"blinkNumber"] intValue]];
+                    }else{
+                        [(AnimationBlink*)animationGo setBlinkinterval:[[nodeInfo objectForKey:@"blinkinterval"] doubleValue]];
+                    }
+                }
+                break;
+            case AttribAnimation:
+                if([nodeInfo objectForKey:@"lineWidthAttr"]){
+                    int lineWidthAttr=[[nodeInfo objectForKey:@"lineWidthAttr"] intValue];
+                    [(AnimationAttribute*)animationGo setLineWidthAttr:lineWidthAttr];
+                    if(lineWidthAttr){
+                        if([nodeInfo objectForKey:@"startLineWidth"]){
+                            [(AnimationAttribute*)animationGo setStartLineWidth:[[nodeInfo objectForKey:@"startLineWidth"] doubleValue]];
+                        }
+                        if([nodeInfo objectForKey:@"endLineWidth"]){
+                            [(AnimationAttribute*)animationGo setEndLineWidth:[[nodeInfo objectForKey:@"endLineWidth"] doubleValue]];
+                        }
+                    }
+                }
+                if([nodeInfo objectForKey:@"lineColorAttr"]){
+                    int lineColorAttr=[[nodeInfo objectForKey:@"lineColorAttr"] intValue];
+                    [(AnimationAttribute*)animationGo setLineColorAttr:lineColorAttr];
+                    if(lineColorAttr){
+                        if([nodeInfo objectForKey:@"startLineColor"]){
+                            Color* startLineColor=[[Color alloc] initWithValue:[[nodeInfo objectForKey:@"startLineColor"] intValue]];
+                            [(AnimationAttribute*)animationGo setStartLineColor:startLineColor];
+                        }
+                        if([nodeInfo objectForKey:@"endLineColor"]){
+                            Color* endLineColor=[[Color alloc] initWithValue:[[nodeInfo objectForKey:@"endLineColor"] intValue]];
+                            [(AnimationAttribute*)animationGo setEndLineColor:endLineColor];
+                        }
+                    }
+                }
+                if([nodeInfo objectForKey:@"surroundLineWidthAttr"]){
+                    int surroundLineWidthAttr=[[nodeInfo objectForKey:@"surroundLineWidthAttr"] intValue];
+                    [(AnimationAttribute*)animationGo setSurroundLineWidthAttr:surroundLineWidthAttr];
+                    if(surroundLineWidthAttr){
+                        if([nodeInfo objectForKey:@"startSurroundLineWidth"]){
+                            [(AnimationAttribute*)animationGo setStartSurroundLineWidth:[[nodeInfo objectForKey:@"startSurroundLineWidth"] doubleValue]];
+                            
+                        }
+                        if([nodeInfo objectForKey:@"endSurroundLineWidth"]){
+                            [(AnimationAttribute*)animationGo setEndSurroundLineWidth:[[nodeInfo objectForKey:@"endSurroundLineWidth"] doubleValue]];
+                            
+                        }
+                    }
+                }
+                if([nodeInfo objectForKey:@"surroundLineColorAttr"]){
+                    int surroundLineColorAttr=[[nodeInfo objectForKey:@"surroundLineColorAttr"] intValue];
+                    [(AnimationAttribute*)animationGo setSurroundLineColorAttr:surroundLineColorAttr];
+                    if(surroundLineColorAttr){
+                        if([nodeInfo objectForKey:@"startSurroundLineColor"]){
+                            Color* startSurroundLineColor=[[Color alloc] initWithValue:[[nodeInfo objectForKey:@"startSurroundLineColor"] intValue]];
+                            [(AnimationAttribute*)animationGo setStartSurroundLineColor:startSurroundLineColor];
+                        }
+                        if([nodeInfo objectForKey:@"endSurroundLineColor"]){
+                            Color* endSurroundLineColor=[[Color alloc] initWithValue:[[nodeInfo objectForKey:@"endSurroundLineColor"] intValue]];
+                            [(AnimationAttribute*)animationGo setEndSurroundLineColor:endSurroundLineColor];
+                        }
+                    }
+                }
+                
+                break;
+            case ShowAnimation:
+                if([nodeInfo objectForKey:@"showState"]){
+                    [(AnimationShow*)animationGo setShowState:[[nodeInfo objectForKey:@"showState"] intValue]];
+                }
+                if([nodeInfo objectForKey:@"showEffect"]){
+                    [(AnimationShow*)animationGo setShowEffect:[[nodeInfo objectForKey:@"showEffect"] intValue]];
+                }
+                break;
+            case RotateAnimation:
+                if([nodeInfo objectForKey:@"rotateDirection"]){
+                    [(AnimationRotate*)animationGo setRotateDirection:[[nodeInfo objectForKey:@"rotateDirection"] intValue]];
+                }
+                if([nodeInfo objectForKey:@"startAngle"]){
+                    NSDictionary* startDic=[nodeInfo objectForKey:@"startAngle"];
+                    Point3D startPnt = {[[startDic objectForKey:@"x"] doubleValue],[[startDic objectForKey:@"y"] doubleValue],0};
+                    [(AnimationRotate*)animationGo setStartangle:startPnt];
+                }
+                if([nodeInfo objectForKey:@"endAngle"]){
+                    NSDictionary* endDic=[nodeInfo objectForKey:@"endAngle"];
+                    Point3D endPnt = {[[endDic objectForKey:@"x"] doubleValue],[[endDic objectForKey:@"y"] doubleValue],0};
+                    [(AnimationRotate*)animationGo setEndAngle:endPnt];
+                }
+                break;
+            case ScaleAnimation:
+                if([nodeInfo objectForKey:@"startScale"]){
+                    [(AnimationScale*)animationGo setStartScaleFactor:[[nodeInfo objectForKey:@"startScale"] doubleValue]];
+                }
+                if([nodeInfo objectForKey:@"endScale"]){
+                    [(AnimationScale*)animationGo setEndScaleFactor:[[nodeInfo objectForKey:@"endScale"] doubleValue]];
+                }
+                break;
+            case GrowAnimation:
+                if([nodeInfo objectForKey:@"startLocation"]){
+                    [(AnimationGrow*)animationGo setStartLocation:[[nodeInfo objectForKey:@"startLocation"] doubleValue]];
+                }
+                if([nodeInfo objectForKey:@"endLocation"]){
+                    [(AnimationGrow*)animationGo setEndLocation:[[nodeInfo objectForKey:@"endLocation"] doubleValue]];
+                }
+                break;
+            default:
+                break;
+        }
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"modifyAnimationNode", exception.reason, nil);
+    }
+}
+
+
 
 
 @end
