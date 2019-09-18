@@ -281,6 +281,27 @@ const SPlot = NativeModules.SPlot
     }
   }
 
+  /**
+   * 获取动画节点信息
+   */
+  function getAnimationGoInfo(index){
+    try{
+      return SPlot.getAnimationGoInfo(index)
+    } catch (e){
+      console.error(e)
+    }
+  }
+  /**
+   * 获取动画节点信息
+   */
+  function modifyAnimationNode(index,nodeInfo){
+    try{
+      return SPlot.modifyAnimationNode(index,nodeInfo)
+    } catch (e){
+      console.error(e)
+    }
+  }
+
 
 export {
     initPlotSymbolLibrary,
@@ -308,4 +329,6 @@ export {
     deleteAnimationNode,
     modifyAnimationNodeName,
     moveAnimationNode,
+    getAnimationGoInfo,
+    modifyAnimationNode,
 }

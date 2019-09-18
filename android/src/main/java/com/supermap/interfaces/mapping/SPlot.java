@@ -10,6 +10,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.data.Color;
@@ -58,11 +60,13 @@ import com.supermap.plot.GraphicObjectType;
 import com.supermap.smNative.SMMapWC;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import static com.supermap.RNUtils.FileUtil.homeDirectory;
 import static com.supermap.interfaces.utils.SMFileUtil.copyFiles;
+import static com.supermap.plot.AnimationDefine.AnimationType.WayAnimation;
 
 
 public class SPlot extends ReactContextBaseJavaModule {
@@ -473,7 +477,9 @@ public class SPlot extends ReactContextBaseJavaModule {
                                     rectangle2D.setTop(boouds.getTop());
                                 }
                             }
+                            geometry.dispose();
                         }
+                        recordset.dispose();
                     }
                     double offsetX=(rectangle2D.getRight()-rectangle2D.getLeft())/6;
                     double offsetY=(rectangle2D.getTop()-rectangle2D.getBottom())/6;
@@ -482,7 +488,9 @@ public class SPlot extends ReactContextBaseJavaModule {
                     rectangle2D.setBottom(rectangle2D.getBottom()-offsetY*1.5);
                     rectangle2D.setTop(rectangle2D.getTop()+offsetY*0.5);
 
-                    mapControl.getMap().setViewBounds(rectangle2D);
+                    if((rectangle2D.getRight()-rectangle2D.getLeft())>0&&(rectangle2D.getTop()-rectangle2D.getBottom())>0){
+                        mapControl.getMap().setViewBounds(rectangle2D);
+                    }
                 }
             }
 
@@ -723,7 +731,9 @@ public class SPlot extends ReactContextBaseJavaModule {
 //                            }
                         animationGO.setGeometry((GeoGraphicObject) geometry, mapControl.getHandle(), layer.getName());
                         animationGroup.addAnimation(animationGO);
+                        geometry.dispose();
                     }
+                    recordset.dispose();
                 }
             }
 
@@ -774,12 +784,13 @@ public class SPlot extends ReactContextBaseJavaModule {
                 DatasetVector dataset = (DatasetVector) mapControl.getMap().getLayers().get(layerName).getDataset();
                 Recordset recordset = dataset.query("SmID=" + geoId, CursorType.STATIC);
                 Geometry geometry = recordset.getGeometry();
-                Geometry geometry1 = (GeoGraphicObject) geometry;
                 if (geometry != null) {
                     GeoGraphicObject geoGraphicObject = (GeoGraphicObject) geometry;
                     GraphicObjectType graphicObjectType = geoGraphicObject.getSymbolType();
                     type = graphicObjectType.value();
+                    geometry.dispose();
                 }
+                recordset.dispose();
             }
 
 
@@ -1125,34 +1136,286 @@ public class SPlot extends ReactContextBaseJavaModule {
                     tempGroup.addAnimation(animationGO1);
                 }
             }
-//            String tempAnimationDic= rootPath + "/iTablet/Cache";
-//            String tempAnimationXmlPath=tempAnimationDic+"/tempAnimation.xml";
-//            File tempAnimationDicFile=new File(tempAnimationDic);
-//            if(!tempAnimationDicFile.exists()){
-//                tempAnimationDicFile.mkdirs();
-//            }
-//            File tempAnimationXmlFile=new File(tempAnimationXmlPath);
-//            if(tempAnimationXmlFile.exists()){
-//                tempAnimationXmlFile.delete();
-//            }
-//
-//            AnimationManager.getInstance().saveAnimationToXML(tempAnimationXmlPath);
-//            AnimationManager.getInstance().deleteAll();
-//            File tempAnimationXmlFile2=new File(tempAnimationXmlPath);
-//            if(tempAnimationXmlFile2.exists()){
-//                AnimationManager.getInstance().getAnimationFromXML(tempAnimationXmlPath);
-//                int groupCount=AnimationManager.getInstance().getGroupCount();
-//                if(groupCount==2){
-//                    AnimationManager.getInstance().deleteGroupByName(animationGroupName);
-//                    AnimationManager.getInstance().getGroupByIndex(0).setGroupName(animationGroupName);
-//                }
-//                tempAnimationXmlFile2.delete();
-//            }
 
             AnimationManager.getInstance().getGroupByIndex(0).setGroupName(animationGroupName);
             AnimationManager.getInstance().deleteGroupByName(animationGroupName);
             AnimationManager.getInstance().getGroupByIndex(0).setGroupName(animationGroupName);
 
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取动画节点参数
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getAnimationGoInfo(int index,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+
+            WritableMap writeMap = Arguments.createMap();
+            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
+            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
+            if (animationGroup == null) {
+                promise.resolve(writeMap);
+                return;
+            }
+            int size=animationGroup.getAnimationCount();
+            if(index>=0&&index<size){
+                AnimationGO animationGO=animationGroup.getAnimationByIndex(index);
+                AnimationDefine.AnimationType type=animationGO.getAnimationType();
+
+                writeMap.putString("name",animationGO.getName());
+                writeMap.putString("startTime",animationGO.getStartTime()+"");
+                writeMap.putString("durationTime",animationGO.getDuration()+"");
+                writeMap.putInt("animationType",animationGO.getAnimationType().value());
+
+                switch (type.value()){
+                    case 0:
+                        break;
+                    case 1:
+                        AnimationBlink animationBlink=(AnimationBlink)animationGO;
+                        writeMap.putInt("blinkStyle",animationBlink.getBlinkStyle().value());
+                        writeMap.putString("blinkinterval",animationBlink.getBlinkInterval()+"");
+                        writeMap.putString("blinkNumber",animationBlink.getBlinkNumberofTimes()+"");
+
+                        writeMap.putBoolean("blinkAnimationReplaceStyle",animationBlink.getReplaceStyle().value()==0?false:true);
+                        writeMap.putInt("blinkAnimationStartColor",animationBlink.getBlinkAnimationStartColor().getRGB());
+                        writeMap.putInt("blinkAnimationReplaceColor",animationBlink.getBlinkAnimationReplaceColor().getRGB());
+                        break;
+                    case 2:
+                        AnimationAttribute animationAttribute=(AnimationAttribute)animationGO;
+                        writeMap.putBoolean("lineWidthAttr",animationAttribute.getLineWidthAttr());
+                        writeMap.putString("startLineWidth",animationAttribute.getStartLineWidth()+"");
+                        writeMap.putString("endLineWidth",animationAttribute.getEndLineWidth()+"");
+                        writeMap.putBoolean("lineColorAttr",animationAttribute.getLineColorAttr());
+                        writeMap.putInt("startLineColor",animationAttribute.getStartLineColor().getRGB());
+                        writeMap.putInt("endLineColor",animationAttribute.getEndLineColor().getRGB());
+
+                        writeMap.putBoolean("surroundLineWidthAttr",animationAttribute.getSurroundLineWidthAttr());
+                        writeMap.putString("startSurroundLineWidth",animationAttribute.getStartSurroundLineWidth()+"");
+                        writeMap.putString("endSurroundLineWidth",animationAttribute.getEndSurroundLineWidth()+"");
+                        writeMap.putBoolean("surroundLineColorAttr",animationAttribute.getSurroundLineColorAttr());
+                        writeMap.putInt("startSurroundLineColor",animationAttribute.getStartSurroundLineColor().getRGB());
+                        writeMap.putInt("endSurroundLineColor",animationAttribute.getEndSurroundLineColor().getRGB());
+                        break;
+                    case 3:
+                        AnimationShow animationShow=(AnimationShow)animationGO;
+                        writeMap.putBoolean("showState",animationShow.getShowState());
+                        writeMap.putBoolean("showEffect",animationShow.getShowEffect()==0?false:true);
+                        break;
+                    case 4:
+                        AnimationRotate animationRotate=(AnimationRotate)animationGO;
+                        writeMap.putInt("rotateDirection", animationRotate.GetRotateDirection().value());
+                        WritableMap startAngle=Arguments.createMap();
+                        startAngle.putDouble("x",animationRotate.getStartAngle().getX());
+                        startAngle.putDouble("y",animationRotate.getStartAngle().getY());
+                        writeMap.putMap("startAngle",startAngle);
+                        WritableMap endAngle=Arguments.createMap();
+                        endAngle.putDouble("x",animationRotate.getEndAngle().getX());
+                        endAngle.putDouble("y",animationRotate.getEndAngle().getY());
+                        writeMap.putMap("endAngle",endAngle);
+                        break;
+                    case 5:
+                        AnimationScale animationScale=(AnimationScale)animationGO;
+                        writeMap.putString("startScale",animationScale.getStartScaleFactor()+"");
+                        writeMap.putString("endScale",animationScale.getEndScaleFactor()+"");
+                        break;
+                    case 6:
+                        AnimationGrow animationGrow=(AnimationGrow)animationGO;
+                        writeMap.putString("startLocation",animationGrow.getStartLocation()+"");
+                        writeMap.putString("endLocation",animationGrow.getEndLocation()+"");
+                        break;
+                }
+            }
+            ReadableMapKeySetIterator keySetIterator = writeMap.keySetIterator();
+            while (keySetIterator.hasNextKey()) {
+                String key = keySetIterator.nextKey();
+                ReadableType readableType=writeMap.getType(key);
+                if(readableType==ReadableType.String){
+                    String str=writeMap.getString(key);
+                    if(str.endsWith(".0")){
+                        writeMap.putString(key,str.replace(".0",""));
+                    }
+                }
+            }
+            promise.resolve(writeMap);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 修改动画节点属性
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void modifyAnimationNode(int index,ReadableMap nodeInfo,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+
+
+            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
+            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
+            if (animationGroup == null) {
+                promise.resolve(false);
+                return;
+            }
+            int size=animationGroup.getAnimationCount();
+            if(index>=0&&index<size){
+                AnimationGO animationGO=animationGroup.getAnimationByIndex(index);
+                AnimationDefine.AnimationType type=animationGO.getAnimationType();
+
+
+                if(nodeInfo.hasKey("name")){
+                    animationGO.setName(nodeInfo.getString("name"));
+                }
+                if(nodeInfo.hasKey("startTime")){
+                    animationGO.setStartTime(Double.parseDouble(nodeInfo.getString("startTime")));
+                }
+                if(nodeInfo.hasKey("durationTime")){
+                    animationGO.setDuration(Double.parseDouble(nodeInfo.getString("durationTime")));
+                }
+                switch (type.value()){
+                    case 0:
+                        break;
+                    case 1:
+                        AnimationBlink animationBlink=(AnimationBlink)animationGO;
+                        if(nodeInfo.hasKey("blinkStyle")){
+                            int blinkStyle=nodeInfo.getInt("blinkStyle");
+                            AnimationDefine.BlinkAnimationBlinkStyle linkStyle=blinkStyle==0?AnimationDefine.BlinkAnimationBlinkStyle.FrequencyBlink:AnimationDefine.BlinkAnimationBlinkStyle.NumberBlink;
+                            animationBlink.setBlinkStyle(linkStyle);
+                            if(blinkStyle==0){
+                                animationBlink.setBlinkInterval(Double.parseDouble(nodeInfo.getString("blinkinterval")));
+                            }else {
+                                animationBlink.setBlinkNumberofTimes(Integer.parseInt(nodeInfo.getString("blinkNumber")));
+                            }
+                        }
+                        if(nodeInfo.hasKey("blinkAnimationReplaceStyle")){
+                            boolean blinkAnimationReplaceStyle = nodeInfo.getBoolean("blinkAnimationReplaceStyle");
+                            animationBlink.setReplaceStyle(blinkAnimationReplaceStyle?AnimationDefine.BlinkAnimationReplaceStyle.ColorReplace:AnimationDefine.BlinkAnimationReplaceStyle.NoColorReplace);
+                            if(blinkAnimationReplaceStyle){
+                                if(nodeInfo.hasKey("blinkAnimationStartColor")){
+                                    Color blinkAnimationStartColor = new Color(nodeInfo.getInt("blinkAnimationStartColor"));
+                                    animationBlink.setBlinkAnimationStartColor(blinkAnimationStartColor);
+                                }
+                                if(nodeInfo.hasKey("blinkAnimationReplaceColor")){
+                                    Color blinkAnimationReplaceColor = new Color(nodeInfo.getInt("blinkAnimationReplaceColor"));
+                                    animationBlink.setBlinkAnimationReplaceColor(blinkAnimationReplaceColor);
+                                }
+                            }
+                        }
+                        break;
+                    case 2:
+                        AnimationAttribute animationAttribute=(AnimationAttribute)animationGO;
+
+                        if(nodeInfo.hasKey("lineWidthAttr")){
+                            boolean lineWidthAttr = nodeInfo.getBoolean("lineWidthAttr");
+                            animationAttribute.setLineWidthAttr(lineWidthAttr);
+                            if(lineWidthAttr){
+                                if(nodeInfo.hasKey("startLineWidth")){
+                                    animationAttribute.setStartLineWidth(Double.parseDouble(nodeInfo.getString("startLineWidth")));
+                                }
+                                if(nodeInfo.hasKey("endLineWidth")){
+                                    animationAttribute.setEndLineWidth(Double.parseDouble(nodeInfo.getString("endLineWidth")));
+                                }
+                            }
+                        }
+                        if(nodeInfo.hasKey("lineColorAttr")){
+                            boolean lineColorAttr = nodeInfo.getBoolean("lineColorAttr");
+                            animationAttribute.setLineColorAttr(lineColorAttr);
+                            if(lineColorAttr){
+                                if(nodeInfo.hasKey("startLineColor")){
+                                    Color startLineColor = new Color(nodeInfo.getInt("startLineColor"));
+                                    animationAttribute.setStartLineColor(startLineColor);
+                                }
+                                if(nodeInfo.hasKey("endLineColor")){
+                                    Color endLineColor = new Color(nodeInfo.getInt("endLineColor"));
+                                    animationAttribute.setEndLineColor(endLineColor);
+                                }
+                            }
+                        }
+                        if(nodeInfo.hasKey("surroundLineWidthAttr")){
+                            boolean surroundLineWidthAttr = nodeInfo.getBoolean("surroundLineWidthAttr");
+                            animationAttribute.setSurroundLineWidthAttr(surroundLineWidthAttr);
+                            if(surroundLineWidthAttr){
+                                if(nodeInfo.hasKey("startSurroundLineWidth")){
+                                    animationAttribute.setStartSurroundLineWidth(Double.parseDouble(nodeInfo.getString("startSurroundLineWidth")));
+                                }
+                                if(nodeInfo.hasKey("endSurroundLineWidth")){
+                                    animationAttribute.setEndSurroundLineWidth(Double.parseDouble(nodeInfo.getString("endSurroundLineWidth")));
+                                }
+                            }
+                        }
+                        if(nodeInfo.hasKey("surroundLineColorAttr")){
+                            boolean surroundLineColorAttr = nodeInfo.getBoolean("surroundLineColorAttr");
+                            animationAttribute.setSurroundLineColorAttr(surroundLineColorAttr);
+                            if(surroundLineColorAttr){
+                                if(nodeInfo.hasKey("startSurroundLineColor")){
+                                    Color startSurroundLineColor = new Color(nodeInfo.getInt("startSurroundLineColor"));
+                                    animationAttribute.setStartSurroundLineColor(startSurroundLineColor);
+                                }
+                                if(nodeInfo.hasKey("endSurroundLineColor")){
+                                    Color endSurroundLineColor = new Color(nodeInfo.getInt("endSurroundLineColor"));
+                                    animationAttribute.setEndSurroundLineColor(endSurroundLineColor);
+                                }
+                            }
+                        }
+                        break;
+                    case 3:
+                        AnimationShow animationShow=(AnimationShow)animationGO;
+                        if(nodeInfo.hasKey("showState")){
+                            animationShow.setShowState(nodeInfo.getBoolean("showState"));
+                        }
+                        if(nodeInfo.hasKey("showEffect")){
+                            animationShow.setShowEffect(nodeInfo.getBoolean("showEffect")?1:0);
+                        }
+                        break;
+                    case 4:
+                        AnimationRotate animationRotate=(AnimationRotate)animationGO;
+
+                        if(nodeInfo.hasKey("rotateDirection")) {
+                            AnimationDefine.RotateDirection rotateDirection = nodeInfo.getInt("rotateDirection") == 0 ? AnimationDefine.RotateDirection.ClockWise : AnimationDefine.RotateDirection.AntiClockWise;
+                            animationRotate.setRotateDirection(rotateDirection);
+                        }
+                        if(nodeInfo.hasKey("startAngle")){
+                            ReadableMap startAngle=nodeInfo.getMap("startAngle");
+                            Point3D startAnglePoint = new Point3D(startAngle.getDouble("x"), startAngle.getDouble("y"), 0);
+                            animationRotate.setStartAngle(startAnglePoint);
+                        }
+                        if(nodeInfo.hasKey("endAngle")){
+                            ReadableMap endAngle=nodeInfo.getMap("endAngle");
+                            Point3D endAnglePoint = new Point3D(endAngle.getDouble("x"), endAngle.getDouble("y"), 0);
+                            animationRotate.setEndAngle(endAnglePoint);
+                        }
+                        break;
+                    case 5:
+                        AnimationScale animationScale=(AnimationScale)animationGO;
+                        if(nodeInfo.hasKey("startScale")){
+                            animationScale.setStartScaleFactor(Double.parseDouble(nodeInfo.getString("startScale")));
+                        }
+                        if(nodeInfo.hasKey("endScale")){
+                            animationScale.setEndScaleFactor(Double.parseDouble(nodeInfo.getString("endScale")));
+                        }
+                        break;
+                    case 6:
+                        AnimationGrow animationGrow=(AnimationGrow)animationGO;
+                        if(nodeInfo.hasKey("startLocation")){
+                            animationGrow.setStartLocation(Double.parseDouble(nodeInfo.getString("startLocation")));
+                        }
+                        if(nodeInfo.hasKey("endLocation")){
+                            animationGrow.setEndLocation(Double.parseDouble(nodeInfo.getString("endLocation")));
+                        }
+                        break;
+                }
+            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
