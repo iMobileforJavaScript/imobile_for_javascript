@@ -1797,7 +1797,6 @@ RCT_REMAP_METHOD(setMeasureSquareAnalyst, setMeasureSquareAnalystResolver:(RCTPr
     }
 }
 -(void)areaResult:(double)area{
-    area = ((int)(area*1000000+0.5))/1000000.0;
     [self sendEventWithName:ANALYST_MEASURESQUARE body:@(area)];
 }
 
