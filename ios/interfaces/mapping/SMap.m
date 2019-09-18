@@ -3890,6 +3890,8 @@ RCT_REMAP_METHOD(clipMap, clipMapWithPoints:(NSArray *)points layersInfo:(NSArra
             if (result) {
                 if (mapName) {
                     mapName = [sMap.smMapWC saveMapName:mapName fromWorkspace:sMap.smMapWC.workspace ofModule:nModule withAddition:addition isNewMap:YES isResourcesModyfied:YES isPrivate:isPrivate];
+                    //另存后从maps移除当前另存的地图，以免添加地图失败
+                    [sMap.smMapWC.workspace.maps removeMapName:mapName];
                 } else if (mapName == nil) {
                     mapName = @"";
                 }

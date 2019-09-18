@@ -324,11 +324,11 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void saveMediaByLayer(String layerName, int geoID, String toPath, ReadableArray fieldInfos, Promise promise) {
+    public void saveMediaByLayer(String layerName, int geoID, String toPath, ReadableArray fieldInfos, boolean addToMap, Promise promise) {
         try {
             Layer layer = SMLayer.findLayerWithName(layerName);
 
-            boolean saveResult = saveMedia(layer, geoID, toPath, fieldInfos);
+            boolean saveResult = saveMedia(layer, geoID, toPath, fieldInfos, addToMap);
 
             promise.resolve(saveResult);
         } catch (Exception e) {
@@ -337,14 +337,14 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void saveMediaByDataset(String datasetName, int geoID, String toPath, ReadableArray fieldInfos, Promise promise) {
+    public void saveMediaByDataset(String datasetName, int geoID, String toPath, ReadableArray fieldInfos, boolean addToMap, Promise promise) {
         try {
             Layer layer = SMLayer.findLayerByDatasetName(datasetName);
             if (layer == null) {
                 layer = SMLayer.findLayerWithName(datasetName);
             }
 
-            boolean saveResult = saveMedia(layer, geoID, toPath, fieldInfos);
+            boolean saveResult = saveMedia(layer, geoID, toPath, fieldInfos, addToMap);
 
             promise.resolve(saveResult);
         } catch (Exception e) {
@@ -352,7 +352,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
         }
     }
 
-    public boolean saveMedia(final Layer layer, int geoID, String toPath, ReadableArray fieldInfos) {
+    public boolean saveMedia(final Layer layer, int geoID, String toPath, ReadableArray fieldInfos, boolean addToMap) {
         try {
             WritableArray infos = Arguments.createArray();
             SMMedia media = SMMediaCollector.findMediaByLayer(layer, geoID);
@@ -403,7 +403,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
                 saveResult = SMLayer.setLayerFieldInfo(layer, infos, params);
             }
 
-            if (saveResult) {
+            if (saveResult && addToMap) {
                 final SMMedia media1 = SMMediaCollector.findMediaByLayer(layer, geoID);
                 MapWrapView mapView = (MapWrapView)SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView();
                 List<CallOut> callouts = mapView.getCallouts();

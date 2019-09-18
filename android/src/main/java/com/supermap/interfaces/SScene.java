@@ -1551,7 +1551,6 @@ public class SScene extends ReactContextBaseJavaModule {
             AnalysisHelper.getInstence().setMeasureAreaCallBack(new AnalysisHelper.AreaCallBack() {
                 @Override
                 public void areaResult(double area) {
-                    area = ((int)(area*1000000+0.5))/1000000.0;
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ANALYST_MEASURESQUARE, area);
                 }
 

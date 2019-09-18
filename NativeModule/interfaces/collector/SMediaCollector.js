@@ -253,9 +253,10 @@ function addAIClassifyMedia (info, addToMap = true) {
  * @param geoID      修改对象的ID
  * @param toPath     保存Media 数据路径
  * @param fieldInfo  修改数据的属性
+ * @param addToMap   是否添加到地图上
  * @returns {*}
  */
-function saveMediaByLayer (layerName = '', geoID = -1, toPath = '', fieldInfo = []) {
+function saveMediaByLayer (layerName = '', geoID = -1, toPath = '', fieldInfo = [], addToMap = true) {
   if (fieldInfo.length === 0 || geoID < 0) return false
   let info = []
   for (let i = 0; i < fieldInfo.length; i++) {
@@ -265,10 +266,10 @@ function saveMediaByLayer (layerName = '', geoID = -1, toPath = '', fieldInfo = 
       value: fieldInfo[i].value,
     })
   }
-  return Collector.saveMediaByLayer(layerName, geoID, toPath, info)
+  return Collector.saveMediaByLayer(layerName, geoID, toPath, info, addToMap)
 }
 
-function saveMediaByDataset (datasetName = '', geoID = -1, toPath = '', fieldInfo = []) {
+function saveMediaByDataset (datasetName = '', geoID = -1, toPath = '', fieldInfo = [], addToMap = true) {
   if (fieldInfo.length === 0 || geoID < 0) return false
   let info = []
   for (let i = 0; i < fieldInfo.length; i++) {
@@ -278,7 +279,7 @@ function saveMediaByDataset (datasetName = '', geoID = -1, toPath = '', fieldInf
       value: fieldInfo[i].value,
     })
   }
-  return Collector.saveMediaByDataset(datasetName, geoID, toPath, info)
+  return Collector.saveMediaByDataset(datasetName, geoID, toPath, info, addToMap)
 }
 
 /**

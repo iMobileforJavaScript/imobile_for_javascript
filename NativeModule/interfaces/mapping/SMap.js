@@ -2339,9 +2339,9 @@ export default (function () {
    * 打开实时路况信息
    * @returns {*|void|Promise<void>}
    */
-  function openTrafficMap() {
+  function openTrafficMap(params) {
     try {
-      return SMap.openTrafficMap()
+      return SMap.openTrafficMap(params)
     } catch (e) {
       console.error(e)
     }
