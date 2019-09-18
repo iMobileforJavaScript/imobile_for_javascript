@@ -7,10 +7,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.supermap.component.SMSymbolTable;
 import com.supermap.containts.FixColorMode;
-import com.supermap.interfaces.ai.AIClassifyViewManager;
-import com.supermap.interfaces.ai.AIDetectViewManager;
-import com.supermap.interfaces.ai.SAIClassifyView;
-import com.supermap.interfaces.ai.SAIDetectView;
+import com.supermap.interfaces.ai.*;
 import com.supermap.interfaces.analyst.SAnalyst;
 import com.supermap.interfaces.analyst.SFacilityAnalyst;
 import com.supermap.interfaces.analyst.STransportationAnalyst;
@@ -50,7 +47,7 @@ public class SupermapFullPackage implements ReactPackage {
                 new LayerListViewManager(),new ScaleViewManager(),new CallOutManager()
                 ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView(),new RCTARView(),new RCTFloorListView()
                 ,new AIDetectViewManager(), new MeasureViewManager(), new AIClassifyViewManager()
-                ,new CollectSceneFormViewManager()
+                ,new CollectSceneFormViewManager(), new IllegallyParkViewManager()
         );
     }
 
@@ -220,11 +217,14 @@ public class SupermapFullPackage implements ReactPackage {
 
         //AI检测识别
         modules.add(new SAIDetectView(reactContext));
-        //AR高精采集
+        //户型图采集
         modules.add(new SMeasureView(reactContext));
         //AI检测分类
         modules.add(new SAIClassifyView(reactContext));
+        //AR高精采集
         modules.add(new SCollectSceneFormView(reactContext));
+        //违章采集
+        modules.add(new SIllegallyParkView(reactContext));
         return modules;
     }
 }
