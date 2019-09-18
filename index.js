@@ -142,6 +142,7 @@ import SMAIDetectView from './NativeModule/components/SMAIDetectView.js'
 import SMMeasureView from './NativeModule/components/SMMeasureView.js'
 import SMAIClassifyView from './NativeModule/components/SMAIClassifyView.js'
 import SMCollectSceneFormView from './NativeModule/components/SMCollectSceneFormView.js'
+import SMIllegallyParkView from './NativeModule/components/SMIllegallyParkView.js'
 
 import EngineType from './NativeModule/EngineType'
 import ThemeLabelItem from './NativeModule/ThemeLabelItem'
@@ -179,6 +180,7 @@ import {
   SMeasureView,
   SAIClassifyView,
   SCollectSceneFormView,
+  SIllegallyParkView,
 } from './NativeModule/interfaces'
 let SMCollectorType = NativeModules.SCollectorType
 
@@ -199,9 +201,10 @@ export {
   SMMeasureView,
   SMAIClassifyView,
   SMCollectSceneFormView,
-  
+  SMIllegallyParkView,
+
   Utility,
-  
+
   Layer3Ds,
   Layer3D,
   Feature3D,
@@ -210,7 +213,7 @@ export {
   Point3D,
   Camera,
   Layer3DOSGBFile,
-  
+
   AMQPManager,
   AMQPReceiver,
   AMQPSender,
@@ -218,7 +221,7 @@ export {
   // STOMPReceiver,
   // STOMPSender,
   // MQTTClientSide,
-  
+
   SMBarChartView,
   SMLineChartView,
   SMPieChartView,
@@ -239,7 +242,7 @@ export {
   RelationalPointChart,
   RelationalChartPoint,
   SMSymbolTable,
-  
+
   Action,
   BufferEndType,
   RadiusUnit,
@@ -250,7 +253,7 @@ export {
   Layer3DType,
   ImageFormatType,
   FixColorMode,
-  
+
   BufferAnalyst,
   BufferAnalystGeometry,
   BufferAnalystParameter,
@@ -304,7 +307,7 @@ export {
   TextStyle,
   TextPart,
   GeoText,
-  
+
   SupplyCenterType,
   PrjCoordSysType,
   CoordSysTransMethod,
@@ -316,9 +319,9 @@ export {
   TransportationAnalystSetting,
   CoordSysTranslator,
   CoordSysTransParameter,
-  
+
   EngineType,
-  
+
   RangeMode,
   ThemeLabelItem,
   ThemeRangeItem,
@@ -326,23 +329,23 @@ export {
   ThemeLabel,
   ThemeRange,
   ThemeUnique,
-  
+
   ColorGradientType,
-  
+
   GPSElementType,
   Collector,
   CollectorElement,
   ElementPoint,
   ElementLine,
   ElementPolygon,
-  
+
   SpeechManager,
-  
+
   ThemeType,
   WorkspaceType,
   OnlineService,
   Environment,
-  
+
   Resoures,
   Symbol,
   SymbolLibrary,
@@ -362,7 +365,7 @@ export {
    Maps,
    Recordset,
    */
-  
+
   SMap,
   SAnalyst,
   SFacilityAnalyst,
@@ -376,7 +379,7 @@ export {
   /*在线模块*/
   SOnlineService,
   SIPortalService,
-  
+
   /**消息服务*/
     SMessageService,
   /**视频地图模块(AR)**/
@@ -384,4 +387,5 @@ export {
   SMeasureView,
   SAIClassifyView,
   SCollectSceneFormView,
+  SIllegallyParkView,
 }

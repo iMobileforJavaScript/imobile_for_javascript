@@ -7,11 +7,14 @@ import {
 } from "react-native";
 import PropTypes from 'prop-types'
 import {
-  SAIDetectView,
+  SIllegallyParkView,
 } from 'imobile_for_reactnative'
 import constants from "../../../../src/containers/workspace/constants"
 
-class SMAIDetectView extends React.Component {
+/**
+ * 违章采集
+ */
+class SMIllegallyParkView extends React.Component {
 
   props: {
     language: String,
@@ -26,21 +29,15 @@ class SMAIDetectView extends React.Component {
   }
 
   static propTypes = {
-    onArObjectClick: PropTypes.func,
     ...ViewPropTypes,
   };
 
   componentDidUpdate(prevProps) {
-    SAIDetectView.initAIDetect(this.props.language)
-  //   SAIDetectView.startDetect()
+    // SIllegallyParkView.init(this.props.language)
   }
 
   componentWillUnmount() {
-    SAIDetectView.dispose()
-  }
-
-  _onArObjectClick = ({nativeEvent}) => {
-    this.props.onArObjectClick && this.props.onArObjectClick(nativeEvent)
+    SIllegallyParkView.onDestroy()
   }
 
   render() {
@@ -50,11 +47,10 @@ class SMAIDetectView extends React.Component {
       <View
         style={styles.container}
       >
-        <RCTAIDetectView
-          ref={ref => this.RCTAIDetectView = ref}
+        <RCTIllegallyParkView
+          ref={ref => this.RCTIllegallyParkView = ref}
           {...props}
           style={styles.view}
-          onArObjectClick={this._onArObjectClick}
         />
       </View>
     );
@@ -76,6 +72,6 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTAIDetectView = requireNativeComponent('RCTAIDetectView', SMAIDetectView)
+var RCTIllegallyParkView = requireNativeComponent('RCTIllegallyParkView', SMIllegallyParkView)
 
-export default SMAIDetectView
+export default SMIllegallyParkView

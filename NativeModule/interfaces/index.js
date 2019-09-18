@@ -9,6 +9,7 @@ import SAIDetectView from './SAIDetectView'
 import SMeasureView from './SMeasureView'
 import SAIClassifyView from './SAIClassifyView'
 import SCollectSceneFormView from './SCollectSceneFormView'
+import SIllegallyParkView from './SIllegallyParkView'
 
 export {
   SMap,
@@ -35,4 +36,6 @@ export {
   SAIClassifyView,
   /*AI高精度采集*/
   SCollectSceneFormView,
+  /*违章采集*/
+  SIllegallyParkView,
 }
