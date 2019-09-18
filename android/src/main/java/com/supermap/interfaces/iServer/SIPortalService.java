@@ -100,26 +100,11 @@ public class SIPortalService extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void logout(String url, final Promise promise){
+    public void logout(final Promise promise){
         try{
-            IPortalService.getInstance().addOnResponseListener(new OnResponseListener(){
-                @Override
-                public void onFailed(Exception e) {
-                    promise.resolve(false);
-                }
-
-                @Override
-                public void onResponse(Response response) {
-                    try{
-                        promise.resolve(true);
-                    } catch (Exception e) {
-                        promise.resolve(false);
-                    }
-                }
-            });
-
-            IPortalService.getInstance().logout(url);
+            IPortalService.getInstance().logout();
             setIPortalCookie(null);
+            promise.resolve(true);
         } catch (Exception e){
             promise.reject(e);
         }
@@ -176,6 +161,8 @@ public class SIPortalService extends ReactContextBaseJavaModule {
             HashMap<String, String> searchParameter = new HashMap<>();
             searchParameter.put("currentPage", Integer.toString(currentPage));
             searchParameter.put("pageSize", Integer.toString(pageSize));
+            searchParameter.put("orderBy", "LASTMODIFIEDTIME");
+            searchParameter.put("orderType", "DESC");
 
             IPortalService.getInstance().getMyDatas(searchParameter);
         } catch (Exception e){
@@ -207,6 +194,8 @@ public class SIPortalService extends ReactContextBaseJavaModule {
             HashMap<String, String> searchParameter = new HashMap<>();
             searchParameter.put("currentPage", Integer.toString(currentPage));
             searchParameter.put("pageSize", Integer.toString(pageSize));
+            searchParameter.put("orderBy", "UPDATETIME");
+            searchParameter.put("orderType", "DESC");
 
             IPortalService.getInstance().getMyServices(searchParameter);
         } catch (Exception e){

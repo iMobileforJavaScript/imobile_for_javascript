@@ -2537,7 +2537,7 @@ public class SMMapWC {
             }
             jsonObject.put("Datasources", jsonArray);
             //模板
-            if (dicAddition != null && dicAddition.hasKey("Tempplate")) {
+            if (dicAddition != null && dicAddition.hasKey("Template")) {
                 String strTemplate = dicAddition.getString("Template");
                 if (strTemplate != null) {
                     jsonObject.put("Template", strTemplate);

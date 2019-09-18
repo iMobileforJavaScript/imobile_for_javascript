@@ -160,7 +160,7 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
         m_View.storeArObjectViewAndUri(view, arObject);
     }
 
-    private static double EARTH_RADIUS = 6378.137;
+    private static double EARTH_RADIUS = 6371.393;
 
     private static double rad(double d) {
         return d * Math.PI / 180.0;
