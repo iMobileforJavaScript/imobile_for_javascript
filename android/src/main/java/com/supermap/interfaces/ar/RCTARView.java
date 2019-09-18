@@ -17,7 +17,6 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.supermap.RNUtils.RNLegendView;
 import com.supermap.ar.ARRendererInfoUtil;
 import com.supermap.ar.ArObject;
-import com.supermap.ar.ArView;
 import com.supermap.ar.ArViewAdapter;
 import com.supermap.ar.GeoObject;
 import com.supermap.ar.OnClickArObjectListener;
@@ -116,28 +115,29 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
     }
 
     private void createNaviPointCoordPoi(int x,int y){
-        Point3D point = m_View.getIntersectionPoint(x, y);
-        if (point != null) {
-            GeoObject tempArObject = new GeoObject(ArView.PROJECTION_MAP_ID);
+//        Point3D point = m_View.getIntersectionPoint(x, y);
+//        if (point != null) {
+            GeoObject tempArObject = new GeoObject(System.currentTimeMillis());
             tempArObject.setGeoPosition(naviPointx,naviPointy);
             tempArObject.setName(naviName.replace("/", ""));
             updateImagesByStaticView(tempArObject, naviName, naviAddress, new Point2D(naviPointx,naviPointy));
             mWorld.addArObject(tempArObject);
-        }
+//        }
     }
 
     private void createScreenCoordPoi(int x, int y) {
-        Point3D point = m_View.getIntersectionPoint(x, y);
-        if (point != null) {
+//        Point3D point = m_View.getIntersectionPoint(x, y);
+//        if (point != null) {
             for (int i = 0; i < point2Ds.getCount(); i++) {
-                GeoObject tempArObject = new GeoObject(ArView.PROJECTION_MAP_ID);
+                GeoObject tempArObject = new GeoObject(System.currentTimeMillis() + i);
                 tempArObject.setGeoPosition(point2Ds.getItem(i).getX(),
                         point2Ds.getItem(i).getY());
                 tempArObject.setName(i + poiInfos[i].getName().replace("/", ""));
                 updateImagesByStaticView(tempArObject, poiInfos[i].getName(), poiInfos[i].getAddress(), point2Ds.getItem(i));
                 mWorld.addArObject(tempArObject);
             }
-        }
+//        }
+
     }
 
 
