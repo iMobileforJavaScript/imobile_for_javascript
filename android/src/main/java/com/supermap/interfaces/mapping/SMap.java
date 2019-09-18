@@ -153,6 +153,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import static com.supermap.interfaces.utils.SMFileUtil.copyFiles;
 import static com.supermap.RNUtils.FileUtil.homeDirectory;
+import static java.lang.Double.isNaN;
 
 public class SMap extends ReactContextBaseJavaModule implements LegendContentChangeListener {
     public static final String REACT_CLASS = "SMap";
@@ -1270,6 +1271,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             mMeasureListener = new MeasureListener() {
                 @Override
                 public void lengthMeasured(double curResult, Point curPoint) {
+                    if (isNaN(curResult)) curResult = 0.0;
                     WritableMap map = Arguments.createMap();
                     map.putDouble("curResult", curResult);
                     WritableMap point = Arguments.createMap();
@@ -1283,6 +1285,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                 @Override
                 public void areaMeasured(double curResult, Point curPoint) {
+                    if (isNaN(curResult)) curResult = 0.0;
                     WritableMap map = Arguments.createMap();
                     map.putDouble("curResult", curResult);
                     WritableMap point = Arguments.createMap();
@@ -1296,6 +1299,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                 @Override
                 public void angleMeasured(double curAngle, Point curPoint) {
+                    if (isNaN(curAngle)) curAngle = 0.0;
                     WritableMap map = Arguments.createMap();
                     map.putDouble("curAngle", curAngle);
                     WritableMap point = Arguments.createMap();
