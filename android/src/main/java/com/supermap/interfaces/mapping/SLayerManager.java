@@ -641,6 +641,8 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                     idInfo.putDouble("y", point2D.getY());
 
                     arr.pushMap(idInfo);
+
+                    rs.dispose();
                 }
             }
 
@@ -699,6 +701,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                         idInfo.putDouble("y", point2D.getY());
 
                         arr.pushMap(idInfo);
+                        rs.dispose();
                     }
                 }
 
@@ -706,9 +709,9 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                     layer.setSelectable(false);
                 }
 
-                if (rs != null) {
-                    rs.moveFirst();
-                }
+//                if (rs != null) {
+//                    rs.moveFirst();
+//                }
             }
 
             sMap.getSmMapWC().getMapControl().getMap().refresh();
@@ -806,6 +809,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
                     recordset.moveNext();
                 }
+                recordset.dispose();
             }
 
             sMap.getSmMapWC().getMapControl().getMap().refresh();
