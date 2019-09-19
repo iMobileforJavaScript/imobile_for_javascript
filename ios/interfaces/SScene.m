@@ -1028,9 +1028,15 @@ RCT_REMAP_METHOD(setHeading,  setHeading:(RCTPromiseResolveBlock)resolve rejecte
  */
 RCT_REMAP_METHOD( getcompass,  getcompassResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        SceneControl* sceneControl = [[[SScene singletonInstance]smSceneWC] sceneControl];
-        double heading = sceneControl.scene.camera.heading ;
-        resolve(@(heading));
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+        if(sceneControl == nil){
+            resolve(@(0));
+        }else{
+            double heading = sceneControl.scene.camera.heading ;
+            resolve(@(heading));
+        }
+
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
     }

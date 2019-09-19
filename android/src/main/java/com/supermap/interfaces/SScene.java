@@ -1508,13 +1508,13 @@ public class SScene extends ReactContextBaseJavaModule {
     public void getcompass( Promise promise) {
         try {
             sScene = getInstance();
-            if(sScene.smSceneWc.getSceneControl()!=null){
+            if(sScene.smSceneWc.getSceneControl()==null){
                 promise.resolve(0);
-                return;
+            }else{
+                Scene scene=sScene.smSceneWc.getSceneControl().getScene();
+                double heading=scene.getCamera().getHeading();
+                promise.resolve(heading);
             }
-            Scene scene=sScene.smSceneWc.getSceneControl().getScene();
-            double heading=scene.getCamera().getHeading();
-            promise.resolve(heading);
         } catch (Exception e) {
             promise.reject(e);
         }
