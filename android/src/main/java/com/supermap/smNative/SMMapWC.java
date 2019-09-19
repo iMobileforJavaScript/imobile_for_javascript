@@ -1852,6 +1852,7 @@ public class SMMapWC {
                     }
                 }
                 recordset.close();
+                recordset.dispose();
             }
 
         }
@@ -2286,6 +2287,7 @@ public class SMMapWC {
                     }
                 }
                 recordset.close();
+                recordset.dispose();
             }
 
         }

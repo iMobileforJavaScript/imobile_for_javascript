@@ -252,6 +252,7 @@ public class SMLayer {
         Recordset recordset = dv.getRecordset(false, CursorType.DYNAMIC);
         int nCount = recordset.getRecordCount() > size ? size : recordset.getRecordCount();
         WritableMap data = JsonUtil.recordsetToMap(recordset, page, nCount);
+        recordset.dispose();
         return data;
     }
 

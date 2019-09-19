@@ -30,8 +30,9 @@ public class MapViewManager extends SimpleViewManager<MapWrapView> {
         Environment.initialization(reactContext.getBaseContext());
 
         m_ThemedReactContext=reactContext;
-        m_MapView = new MapWrapView(reactContext.getBaseContext());
-
+        if (m_MapView==null) {
+            m_MapView = new MapWrapView(reactContext.getBaseContext());
+        }
         JSMapView.setInstance(m_MapView);
         m_MapView.getMapControl().getNavigation2();
 //        n_r_eventSender.putString("mapViewId",mapViewId);
