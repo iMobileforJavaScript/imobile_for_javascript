@@ -1,15 +1,23 @@
 package com.supermap.RNUtils;
 
+import android.content.ContentUris;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
-import com.supermap.data.Point2D;
-import com.supermap.data.Point2Ds;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by lonecloud on 17/3/12.
@@ -169,4 +177,12 @@ public class DataUtil {
         return c[index];
     }
 
+    public static String getMediaPathFromUri(Context context, Uri uri) {
+        String[] proj = { MediaStore.Images.Media.DATA, MediaStore.Video.Media.DATA };
+        Cursor cursor = context.getContentResolver().query(uri, proj,null,null,null);
+        int actualMediaColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String mediaPath = cursor.getString(actualMediaColumnIndex);
+        return mediaPath;
+    }
 }

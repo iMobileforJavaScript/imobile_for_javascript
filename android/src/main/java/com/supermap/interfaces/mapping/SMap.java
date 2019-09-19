@@ -923,7 +923,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             Boolean isOpen = false;
 
-            if (maps.getCount() > 0) {
+            if (maps.getCount() > 0 ) {
                 String mapName = name;
 
                 if (name.equals("")) {
@@ -3805,6 +3805,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                                 recordset.setGeometry(geometry);
                                 recordset.update();
                             }
+                            geometry.dispose();
                             recordset.dispose();
                         }
                         sMap.smMapWC.getMapControl().removeGeometryAddedListener(delegate);
@@ -7000,7 +7001,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     if (recordset != null) {
                         isindoor = true;
                     }
+                    recordset.dispose();
                 }
+
+                parameter.dispose();
             }
             WritableMap map = Arguments.createMap();
             map.putBoolean("isindoor", isindoor);
