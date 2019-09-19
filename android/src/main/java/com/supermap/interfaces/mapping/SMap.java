@@ -88,6 +88,8 @@ import com.supermap.mapping.ThemeUnique;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.navi.NaviInfo;
 import com.supermap.navi.NaviListener;
+import com.supermap.navi.NaviPath;
+import com.supermap.navi.NaviStep;
 import com.supermap.navi.Navigation2;
 import com.supermap.navi.Navigation3;
 import com.supermap.onlineservices.CoordinateType;
@@ -6392,6 +6394,97 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     * 获取室外导航路径长度
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getOutdoorPathLength(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            NaviPath naviPath = sMap.getSmMapWC().getMapControl().getNavigation2().getNaviPath();
+            WritableMap map = Arguments.createMap();
+            map.putDouble("length", naviPath.getLength());
+            promise.resolve(map);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取室内导航路径长度
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getIndoorPathLength(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            NaviPath naviPath = sMap.getSmMapWC().getMapControl().getNavigation3().getNaviPath();
+            WritableMap map = Arguments.createMap();
+            map.putDouble("length", naviPath.getLength());
+            promise.resolve(map);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取室外导航路径详情
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getOndoorPath(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            NaviPath naviPath = sMap.getSmMapWC().getMapControl().getNavigation3().getNaviPath();
+            ArrayList<NaviStep> naviStep = naviPath.getStep();
+            WritableArray array = Arguments.createArray();
+            for (int i = 0; i < naviStep.size(); i++) {
+                WritableMap map = Arguments.createMap();
+                NaviStep naviStep1 = naviStep.get(i);
+                double getTime = naviStep1.getTime();
+                double roadLength = naviStep1.getLength();
+                map.putDouble("roadName", getTime);
+                map.putDouble("roadLength", roadLength);
+                array.pushMap(map);
+            }
+            promise.resolve(array);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 获取室内导航路径详情
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getIndoorPath(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            NaviPath naviPath = sMap.getSmMapWC().getMapControl().getNavigation3().getNaviPath();
+            ArrayList<NaviStep> naviStep = naviPath.getStep();
+            WritableArray array = Arguments.createArray();
+            for (int i = 0; i < naviStep.size(); i++) {
+                WritableMap map = Arguments.createMap();
+                NaviStep naviStep1 = naviStep.get(i);
+                double getTime = naviStep1.getTime();
+                double roadLength = naviStep1.getLength();
+                map.putDouble("roadName", getTime);
+                map.putDouble("roadLength", roadLength);
+                array.pushMap(map);
+            }
+            promise.resolve(array);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
     private void setNavigationOnline(NavigationOnlineData data) {
         if (data == null) {
@@ -6616,13 +6709,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void outdoorNavigation(Promise promise) {
+    public void outdoorNavigation(final boolean firstP, Promise promise) {
         try {
             sMap = SMap.getInstance();
                 context.getCurrentActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         sMap.getSmMapWC().getMapControl().getNavigation2().startGuide(1);
+                        if(firstP){
+                            sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(true);        // 设置整屏绘制
+                            sMap.getSmMapWC().getMapControl().getNavigation2().setCarUpFront(true);          // 设置车头向上
+                        } else {
+                            sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(false);
+                            sMap.getSmMapWC().getMapControl().getNavigation2().setCarUpFront(false);
+                        }
                     }
                 });
             promise.resolve(true);
@@ -6719,13 +6819,16 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void indoorNavigation(Promise promise) {
+    public void indoorNavigation(final boolean firstP, Promise promise) {
         try {
             sMap = SMap.getInstance();
             context.getCurrentActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         sMap.getSmMapWC().getMapControl().getNavigation3().startGuide(1);
+                        sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(firstP);        // 设置整屏绘制
+                        sMap.getSmMapWC().getMapControl().getNavigation3().setCarUpFront(firstP);          // 设置车头向上
+
                     }
                 });
             promise.resolve(true);
@@ -6963,9 +7066,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 public void run() {
                     SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView().removeAllCallOut();
                     sMap.getSmMapWC().getMapControl().getNavigation2().cleanPath();
-                    sMap.getSmMapWC().getMapControl().getNavigation2().stopGuide();
+//                    sMap.getSmMapWC().getMapControl().getNavigation2().stopGuide();
                     sMap.getSmMapWC().getMapControl().getNavigation3().cleanPath();
-                    sMap.getSmMapWC().getMapControl().getNavigation3().stopGuide();
+//                    sMap.getSmMapWC().getMapControl().getNavigation3().stopGuide();
                 }
             });
             promise.resolve(true);
@@ -7243,6 +7346,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
 
 
     /************************************** 导航模块 END ****************************************/
