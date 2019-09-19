@@ -508,7 +508,7 @@ public class SPlot extends ReactContextBaseJavaModule {
                 public void run() {
                     AnimationManager.getInstance().play();
                 }
-            }, 0);//3秒后执行Runnable中的run方法
+            }, 200);//3秒后执行Runnable中的run方法
             promise.resolve(true);
         } catch (Exception e) {
             promise.resolve(false);
