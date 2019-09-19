@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 
@@ -26,8 +27,12 @@ import java.io.IOException;
  * description:
  */
 public class MediaUtil {
-    public static Bitmap getScreenShotImageFromVideoPath(String filePath) {
-        Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.MICRO_KIND);
+    public static Bitmap getScreenShotImageFromVideoPath(Context context, String filePath) {
+        String path = filePath;
+        if (filePath.indexOf("content://") == 0) {
+            path = DataUtil.getMediaPathFromUri(context, Uri.parse(filePath));
+        }
+        Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Video.Thumbnails.MICRO_KIND);
 
         return bitmap;
     }
@@ -86,7 +91,7 @@ public class MediaUtil {
     public static WritableMap getScreenShotImage(Context context, String url) {
         WritableMap info = Arguments.createMap();
 
-        Bitmap bitmap = getScreenShotImageFromVideoPath(url);
+        Bitmap bitmap = getScreenShotImageFromVideoPath(context, url);
 
         String cachePath = context.getExternalCacheDir().getAbsolutePath();
 
@@ -115,10 +120,15 @@ public class MediaUtil {
         return null;
     }
 
-    public static int getVideoDuration(String url) {
+    public static int getVideoDuration(Context context, String url) {
         try {
             MediaPlayer mediaPlayer = new MediaPlayer();
-            mediaPlayer.setDataSource(url);
+
+            String path = url;
+            if (url.indexOf("content://") == 0) {
+                path = DataUtil.getMediaPathFromUri(context, Uri.parse(url));
+            }
+            mediaPlayer.setDataSource(path);
             mediaPlayer.prepare();
             int duration = mediaPlayer.getDuration();
 

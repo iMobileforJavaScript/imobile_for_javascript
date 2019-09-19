@@ -552,7 +552,7 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
     public void getVideoInfo(String path, Promise promise) {
         try {
             WritableMap info = MediaUtil.getScreenShotImage(getReactApplicationContext(), path);
-            int duration = MediaUtil.getVideoDuration(path);
+            int duration = MediaUtil.getVideoDuration(getReactApplicationContext(), path);
 
             duration = new Double(duration / 1000).intValue();
             info.putInt("duration", duration);
