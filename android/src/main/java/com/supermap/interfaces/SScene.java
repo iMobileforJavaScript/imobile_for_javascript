@@ -1516,7 +1516,7 @@ public class SScene extends ReactContextBaseJavaModule {
                 promise.resolve(heading);
             }
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(0);
         }
     }
 

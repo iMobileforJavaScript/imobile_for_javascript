@@ -1036,9 +1036,8 @@ RCT_REMAP_METHOD( getcompass,  getcompassResolver:(RCTPromiseResolveBlock)resolv
             double heading = sceneControl.scene.camera.heading ;
             resolve(@(heading));
         }
-
     } @catch (NSException *exception) {
-        reject(@"SScene", exception.reason, nil);
+        resolve(@(0));
     }
 }
 
