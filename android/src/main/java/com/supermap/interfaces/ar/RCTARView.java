@@ -84,7 +84,7 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
             mWorld.clearWorld();
             LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
             Point2D gpsPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
-            mWorld.setGeoPosition(gpsPoint.getX(), gpsPoint.getY());
+            mWorld.setGeoPosition(gpsPoint.getY(), gpsPoint.getX());
             locationx=gpsPoint.getX();
             locationy=gpsPoint.getY();
             createNaviPointCoordPoi(m_ThemedReactContext.getCurrentActivity().getResources().getDisplayMetrics().widthPixels / 2,
@@ -118,7 +118,7 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
 //        Point3D point = m_View.getIntersectionPoint(x, y);
 //        if (point != null) {
             GeoObject tempArObject = new GeoObject(System.currentTimeMillis());
-            tempArObject.setGeoPosition(naviPointx,naviPointy);
+            tempArObject.setGeoPosition(naviPointy,naviPointx);
             tempArObject.setName(naviName.replace("/", ""));
             updateImagesByStaticView(tempArObject, naviName, naviAddress, new Point2D(naviPointx,naviPointy));
             mWorld.addArObject(tempArObject);
@@ -130,8 +130,8 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
 //        if (point != null) {
             for (int i = 0; i < point2Ds.getCount(); i++) {
                 GeoObject tempArObject = new GeoObject(System.currentTimeMillis() + i);
-                tempArObject.setGeoPosition(point2Ds.getItem(i).getX(),
-                        point2Ds.getItem(i).getY());
+                tempArObject.setGeoPosition(point2Ds.getItem(i).getY(),
+                        point2Ds.getItem(i).getX());
                 tempArObject.setName(i + poiInfos[i].getName().replace("/", ""));
                 updateImagesByStaticView(tempArObject, poiInfos[i].getName(), poiInfos[i].getAddress(), point2Ds.getItem(i));
                 mWorld.addArObject(tempArObject);
@@ -185,7 +185,7 @@ public class RCTARView extends SimpleViewManager<MapARView> implements OnClickAr
     public void queryPOI(String str) {
         LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
         Point2D gpsPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
-        mWorld.setGeoPosition(gpsPoint.getX(), gpsPoint.getY());
+        mWorld.setGeoPosition(gpsPoint.getY(), gpsPoint.getX());
         locationx=gpsPoint.getX();
         locationy=gpsPoint.getY();
         POIQuery poiQuery = new POIQuery(m_ThemedReactContext);
