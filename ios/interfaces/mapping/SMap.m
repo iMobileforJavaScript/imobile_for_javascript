@@ -21,12 +21,14 @@
 #import "SuperMap/AnimationWay.h"
 #import "SuperMap/Point3D.h"
 #import "SuperMap/GeoLine.h"
-
+#import "SuperMap/DynamicView.h"
+#import "SuperMap/DynamicElement.h"
+#import "SuperMap/DynamicPoint.h"
+//#import "SuperMap/DynamicView.h"
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
 static NSMutableArray *fillColors;
-static BOOL hasBigCallout = NO;
-static NSMutableArray *calloutArr;
+//static NSMutableArray *calloutArr;
 static Point2Ds *animationWayPoint2Ds;
 static Point2Ds *animationWaySavePoint2Ds;
 NSString * const LEGEND_CONTENT_CHANGE = @"com.supermap.RN.Map.Legend.legend_content_change";
@@ -95,7 +97,11 @@ RCT_EXPORT_MODULE();
     if (sMap.smMapWC == nil) {
         sMap.smMapWC = [[SMMapWC alloc] init];
     }
-    sMap.smMapWC.mapControl = mapControl;
+    if(sMap.smMapWC.mapControl == nil){
+        sMap.smMapWC.mapControl = mapControl;
+        sMap.smMapWC.dynamicView = [[DynamicView alloc]initWithMapControl:mapControl];
+    }
+    
     if (sMap.smMapWC.workspace && sMap.smMapWC.mapControl.map.workspace == nil) {
         [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
     }
@@ -869,15 +875,11 @@ RCT_REMAP_METHOD(removeAllCallout, removeAllCalloutWithResolver:(RCTPromiseResol
         sMap = [SMap singletonInstance];
         MapControl *mapControl = sMap.smMapWC.mapControl;
         dispatch_async(dispatch_get_main_queue(), ^{
-            [mapControl removeCalloutWithArr:calloutArr];
-            calloutArr = nil;
-            hasBigCallout = NO;
+            [sMap.smMapWC.dynamicView clear];
+//            [mapControl removeCalloutWithArr:calloutArr];
+//            calloutArr = nil;
         });
-        //搜索结果的callout最多10条
-//        for(int i = 0; i < 10; i++){
-//            NSString *tagName = [NSString stringWithFormat:@"%@%d",@"POISEARCH_2D_POINTS",i];
-//            [sMap clearCalloutWithTagName:tagName];
-//        }
+
         resolve(@(YES));
     }@catch(NSException *exception){
         reject(@"removePOICallout",exception.reason,nil);
@@ -923,24 +925,21 @@ RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithItem:(NSDictionary *)item r
 //        reject(@"toLocationPoint",exception.reason,nil);
 //    }
 //}
- #pragma mark 将当前点击的callout特别标注
-RCT_REMAP_METHOD(setCenterCallout, setCenterCalloutWithItem:(NSDictionary *)item resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    @try{
-        sMap = [SMap singletonInstance];
-        
-        if(hasBigCallout){
-            [sMap clearCalloutWithTagName:@"bigCallout"];
-        }
-        double x = [[item valueForKey:@"x"] doubleValue];
-        double y = [[item valueForKey:@"y"] doubleValue];
-        NSString *name = @"";
-        NSString *tagName = @"bigCallout";
-        BOOL b = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:YES BigCallout:YES];
-        resolve(@(b));
-    }@catch(NSException *exception){
-        reject(@"setCenterCallout",exception.reason,nil);
-    }
-}
+// #pragma mark 将当前点击的callout特别标注
+//RCT_REMAP_METHOD(setCenterCallout, setCenterCalloutWithItem:(NSDictionary *)item resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+//    @try{
+//        sMap = [SMap singletonInstance];
+//
+//        double x = [[item valueForKey:@"x"] doubleValue];
+//        double y = [[item valueForKey:@"y"] doubleValue];
+//        NSString *name = @"";
+//        NSString *tagName = @"bigCallout";
+//        BOOL b = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:YES BigCallout:YES];
+//        resolve(@(b));
+//    }@catch(NSException *exception){
+//        reject(@"setCenterCallout",exception.reason,nil);
+//    }
+//}
 
 #pragma mark 添加搜索到的callouts
 RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -989,49 +988,74 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapcontrol.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
         Point2D *mapPoint = [points getItem:0];
         
-        InfoCallout *callout = [[InfoCallout alloc]initWithMapControl:mapcontrol BackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0] Alignment:CALLOUT_LEFTBOTTOM];
+//        InfoCallout *callout = [[InfoCallout alloc]initWithMapControl:mapcontrol BackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0] Alignment:CALLOUT_LEFTBOTTOM];
         //sMap.callout.description = tagName;
     
     
         UIImage *image;
-        CGRect imgRect;
-        if(bigCallout){
-            hasBigCallout = YES;
-            image = [UIImage imageNamed:@"resources.bundle/icon_green.png"];
-            imgRect = CGRectMake(-5, -5, 50, 50);
-        }else{
-            image = [UIImage imageNamed:@"resources.bundle/icon_red.png"];
-            imgRect = CGRectMake(0, 0, 40, 40);
-        }
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-        [imageView setFrame:imgRect];
-//        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(40, 0, 160, 160)];
-        UILabel *label = [[UILabel alloc]init];
-        UIFont *font = [UIFont systemFontOfSize:16.0];
-        label.font = font;
-        label.text = name;
+        image = [UIImage imageNamed:@"resources.bundle/icon_red.png"];
+        DynamicPoint* dvPoint =  [[DynamicPoint alloc]init];
+        [dvPoint addPoint:mapPoint];
+        dvPoint.alignment = DYN_BOTTOM;
+        dvPoint.textLableAlignment = DYN_RIGHT_TOP;
+        dvPoint.name = name;
+        dvPoint.nameHidden = false;
+        dvPoint.tag = tagName;
         
-        CGRect rect = [label.text boundingRectWithSize:CGSizeMake(160, 500)
-                                               options:NSStringDrawingTruncatesLastVisibleLine| NSStringDrawingUsesFontLeading| NSStringDrawingUsesLineFragmentOrigin
-                                            attributes:@{NSFontAttributeName:label.font}
-                                               context:nil];
-        label.frame = CGRectMake(40, 0, 160, CGRectGetHeight(rect));
-        label.textColor = [UIColor grayColor];
-        label.numberOfLines = 0;
-//        label.layer.shadowColor = [UIColor whiteColor].CGColor;
-//        label.layer.shadowOffset = CGSizeMake(0, 0);
-//        label.layer.shadowOpacity = 1;
-        callout.width = CGRectGetWidth(rect) + 60;
-        callout.height = CGRectGetHeight(rect) + 20;
-        [callout addSubview:imageView];
-        [callout addSubview:label];
-        [callout showAt:mapPoint Tag:tagName];
-        if(calloutArr == nil){
-            calloutArr = [[NSMutableArray alloc]init];
-        }
-        if(![tagName isEqualToString:@"POISEARCH_2D_POINT"]){
-            [calloutArr addObject:callout];
-        }
+        DynamicStyle* dynStyle =  [[DynamicStyle alloc]init];
+        dynStyle.bitmap = image;
+        dynStyle.width = 40;
+        dynStyle.height = 40;
+        dynStyle.radius = 20;
+        NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
+        paragraph.alignment = NSTextAlignmentLeft;
+        paragraph.lineBreakMode = NSLineBreakByTruncatingTail;
+        
+        NSDictionary* attribute = @{NSFontAttributeName: [UIFont fontWithName:@"Helvetica-Bold" size:15], NSParagraphStyleAttributeName: paragraph,NSForegroundColorAttributeName:[UIColor blackColor],NSStrokeWidthAttributeName:@(-2),NSStrokeColorAttributeName:[UIColor whiteColor] };
+        
+        dynStyle.textLableAttribute = attribute;
+        dvPoint.style = dynStyle;
+        
+        [[SMap singletonInstance].smMapWC.dynamicView addElement:dvPoint];
+//        if(bigCallout)
+//        {
+//            hasBigCallout = YES;
+//            image = [UIImage imageNamed:@"resources.bundle/icon_green.png"];
+////            imgRect = CGRectMake(-5, -5, 50, 50);
+//        }
+//        else{
+//
+////            imgRect = CGRectMake(0, 0, 40, 40);
+//        }
+//        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+//        [imageView setFrame:imgRect];
+////        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(40, 0, 160, 160)];
+//        UILabel *label = [[UILabel alloc]init];
+//        UIFont *font = [UIFont systemFontOfSize:16.0];
+//        label.font = font;
+//        label.text = name;
+//
+//        CGRect rect = [label.text boundingRectWithSize:CGSizeMake(160, 500)
+//                                               options:NSStringDrawingTruncatesLastVisibleLine| NSStringDrawingUsesFontLeading| NSStringDrawingUsesLineFragmentOrigin
+//                                            attributes:@{NSFontAttributeName:label.font}
+//                                               context:nil];
+//        label.frame = CGRectMake(40, 0, 160, CGRectGetHeight(rect));
+//        //label.textColor = [UIColor grayColor];
+//        label.numberOfLines = 0;
+////        label.layer.shadowColor = [UIColor whiteColor].CGColor;
+////        label.layer.shadowOffset = CGSizeMake(0, 0);
+////        label.layer.shadowOpacity = 1;
+//        callout.width = CGRectGetWidth(rect) + 60;
+//        callout.height = CGRectGetHeight(rect) + 20;
+//        [callout addSubview:imageView];
+//        [callout addSubview:label];
+//        [callout showAt:mapPoint Tag:tagName];
+//        if(calloutArr == nil){
+//            calloutArr = [[NSMutableArray alloc]init];
+//        }
+//        if(![tagName isEqualToString:@"POISEARCH_2D_POINT"]){
+//            [calloutArr addObject:tagName];
+//        }
         if(mapcontrol.map.scale < 0.000011947150294723098)
             mapcontrol.map.scale = 0.000011947150294723098;
         if(change){
@@ -1045,7 +1069,8 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
 -(void)clearCalloutWithTagName:(NSString *)tagName{
     dispatch_async(dispatch_get_main_queue(), ^{
         MapControl *mapcontrol = [SMap singletonInstance].smMapWC.mapControl;
-        [mapcontrol removeCalloutWithTag:tagName];
+        [sMap.smMapWC.dynamicView removeElementWithTag:tagName];
+        //[mapcontrol removeCalloutWithTag:tagName];
         [mapcontrol.map refresh];
     });
 }
@@ -4329,6 +4354,7 @@ RCT_REMAP_METHOD(getTaggingLayers, getTaggingLayersWithUserpath:(NSString *)user
     BOOL b = [recordset edit];
     FieldInfos *fieldInfos = recordset.fieldInfos;
     if([fieldInfos indexOfWithFieldName:fieldInfoName] == -1){
+        [recordset dispose];
         return;
     }
     [recordset setFieldValueWithString:fieldInfoName Obj:value];

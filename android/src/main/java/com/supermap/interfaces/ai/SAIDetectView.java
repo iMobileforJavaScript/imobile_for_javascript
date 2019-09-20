@@ -964,12 +964,11 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
     private static void createScreenCoordPoi(int x, int y, AIDetectModel2 type, int trackID) {
         Point3D point = mArView.getIntersectionPoint(x, y);
-//        Point3D point = new Point3D((float)-0.53319705,(float)-2.9590833, (float)1.9519894);
         if (point != null) {
             GeoObject tempArObject = new GeoObject(System.currentTimeMillis());
-            tempArObject.setGeoPosition(mWorld.getLatitude() + point.y / 107817.51838439942D,
-                    mWorld.getLongitude() + point.x / 107817.51838439942D,
-                    mWorld.getAltitude() + point.z / 107817.51838439942D);
+            tempArObject.setGeoPosition(mWorld.getLatitude() + point.y,
+                    mWorld.getLongitude() + point.x,
+                    mWorld.getAltitude() + point.z);
 
             if (type != null) {
                 tempArObject.setName("" + System.currentTimeMillis() + "_" + type.toString());

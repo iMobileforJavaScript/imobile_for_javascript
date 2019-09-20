@@ -629,7 +629,7 @@ RCT_REMAP_METHOD(animationSave,animationSave:(NSString*) savePath fileName:(NSSt
         NSString* path=[FileUtils formateNoneExistFileName:tempPath isDir:false];
         BOOL result=[AnimationManager.getInstance saveAnimationToXML:path];
         [AnimationManager.getInstance reset];
-        [AnimationManager.getInstance deleteAll];
+//        [AnimationManager.getInstance deleteAll];
         
         resolve(@(result));
     } @catch (NSException *exception) {
@@ -1040,9 +1040,9 @@ RCT_REMAP_METHOD(getAnimationGoInfo,getAnimationGoInfo:(int)index resolve:(RCTPr
                     [map setObject:@(((AnimationBlink*)animationGo).blinkinterval) forKey:@"blinkinterval"];
                     [map setObject:@(((AnimationBlink*)animationGo).blinkNumberofTimes) forKey:@"blinkNumber"];
                     
-                    [map setObject:@(((AnimationBlink*)animationGo).blinkAnimationReplaceStyle) forKey:@"blinkAnimationReplaceStyle"];
+                    [map setObject:@((((AnimationBlink*)animationGo).blinkAnimationReplaceStyle)==1?true:false) forKey:@"blinkAnimationReplaceStyle"];
                     [map setObject:@([((AnimationBlink*)animationGo).blinkAnimationStartColor rgb]) forKey:@"blinkAnimationStartColor"];
-                    [map setObject:@([((AnimationBlink*)animationGo).blinkAnimationReplaceColor rgb]) forKey:@"blinkAnimationStartColor"];
+                    [map setObject:@([((AnimationBlink*)animationGo).blinkAnimationReplaceColor rgb]) forKey:@"blinkAnimationReplaceColor"];
                     break;
                 case AttribAnimation:
                     [map setObject:@(((AnimationAttribute*)animationGo).lineWidthAttr) forKey:@"lineWidthAttr"];
@@ -1139,6 +1139,20 @@ RCT_REMAP_METHOD(modifyAnimationNode,modifyAnimationNode:(int)index withNodeInfo
                         [(AnimationBlink*)animationGo setBlinkNumberofTimes:[[nodeInfo objectForKey:@"blinkNumber"] intValue]];
                     }else{
                         [(AnimationBlink*)animationGo setBlinkinterval:[[nodeInfo objectForKey:@"blinkinterval"] doubleValue]];
+                    }
+                }
+                if([nodeInfo objectForKey:@"blinkAnimationReplaceStyle"]){
+                    int blinkAnimationReplaceStyle=[[nodeInfo objectForKey:@"blinkAnimationReplaceStyle"] intValue];
+                    [(AnimationBlink*)animationGo setBlinkAnimationReplaceStyle:blinkAnimationReplaceStyle];
+                    if(blinkAnimationReplaceStyle){
+                        if([nodeInfo objectForKey:@"blinkAnimationStartColor"]){
+                            Color* blinkAnimationStartColor=[[Color alloc] initWithValue:[[nodeInfo objectForKey:@"blinkAnimationStartColor"] intValue]];
+                            [(AnimationBlink*)animationGo setBlinkAnimationStartColor:blinkAnimationStartColor];
+                        }
+                        if([nodeInfo objectForKey:@"blinkAnimationReplaceColor"]){
+                            Color* blinkAnimationReplaceColor=[[Color alloc] initWithValue:[[nodeInfo objectForKey:@"blinkAnimationReplaceColor"] intValue]];
+                            [(AnimationBlink*)animationGo setBlinkAnimationReplaceColor:blinkAnimationReplaceColor];
+                        }
                     }
                 }
                 break;

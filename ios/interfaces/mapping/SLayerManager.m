@@ -441,6 +441,7 @@ RCT_REMAP_METHOD(selectObj, selectObjWith:(NSString *)layerPath ids:(NSArray *)i
                 [dic setObject:[NSNumber numberWithDouble:point2D.y] forKey:@"y"];
                 
                 [arr addObject:dic];
+                [rs dispose];
             }
         }
         
@@ -492,15 +493,16 @@ RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromise
                     [dic setObject:[NSNumber numberWithDouble:point2D.x] forKey:@"x"];
                     [dic setObject:[NSNumber numberWithDouble:point2D.y] forKey:@"y"];
                     [arr addObject:dic];
+                    [rs dispose];
                 }
             }
             
             if (!selectable) {
                 layer.selectable = NO;
             }
-            if (rs != nil) {
-                [rs moveFirst];
-            }
+//            if (rs != nil) {
+//                [rs moveFirst];
+//            }
         }
         
         [sMap.smMapWC.mapControl.map refresh];
@@ -588,6 +590,7 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
                 
                 [recordset moveNext];
             }
+            [recordset dispose];
         }
         
         [sMap.smMapWC.mapControl.map refresh];
