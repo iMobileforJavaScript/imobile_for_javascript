@@ -1680,6 +1680,7 @@
                 }
             }
             [recordset close];
+            [recordset dispose];
         }
     }
     

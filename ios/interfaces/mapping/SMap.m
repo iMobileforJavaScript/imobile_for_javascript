@@ -4329,6 +4329,7 @@ RCT_REMAP_METHOD(getTaggingLayers, getTaggingLayersWithUserpath:(NSString *)user
     BOOL b = [recordset edit];
     FieldInfos *fieldInfos = recordset.fieldInfos;
     if([fieldInfos indexOfWithFieldName:fieldInfoName] == -1){
+        [recordset dispose];
         return;
     }
     [recordset setFieldValueWithString:fieldInfoName Obj:value];
