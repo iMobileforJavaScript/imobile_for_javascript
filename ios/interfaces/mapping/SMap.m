@@ -997,7 +997,7 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         DynamicPoint* dvPoint =  [[DynamicPoint alloc]init];
         [dvPoint addPoint:mapPoint];
         dvPoint.alignment = DYN_BOTTOM;
-        dvPoint.textLableAlignment = DYN_LEFT_TOP;
+        dvPoint.textLableAlignment = DYN_RIGHT_TOP;
         dvPoint.name = name;
         dvPoint.nameHidden = false;
         dvPoint.tag = tagName;
@@ -1006,12 +1006,14 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         dynStyle.bitmap = image;
         dynStyle.width = 40;
         dynStyle.height = 40;
-        dynStyle.textLableAttribute = @{
-                                        NSFontAttributeName:[UIFont systemFontOfSize:18.0],
-                                        NSForegroundColorAttributeName:[UIColor whiteColor],
-                                        NSStrokeWidthAttributeName:@(-1),
-                                        NSStrokeColorAttributeName:[UIColor blackColor],
-                                        };
+        dynStyle.radius = 20;
+        NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
+        paragraph.alignment = NSTextAlignmentLeft;
+        paragraph.lineBreakMode = NSLineBreakByTruncatingTail;
+        
+        NSDictionary* attribute = @{NSFontAttributeName: [UIFont fontWithName:@"Helvetica-Bold" size:15], NSParagraphStyleAttributeName: paragraph,NSForegroundColorAttributeName:[UIColor blackColor],NSStrokeWidthAttributeName:@(-2),NSStrokeColorAttributeName:[UIColor whiteColor] };
+        
+        dynStyle.textLableAttribute = attribute;
         dvPoint.style = dynStyle;
         
         [[SMap singletonInstance].smMapWC.dynamicView addElement:dvPoint];
