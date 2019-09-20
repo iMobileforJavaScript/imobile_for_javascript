@@ -760,7 +760,7 @@ public class SPlot extends ReactContextBaseJavaModule {
             String path = SMFileUtil.formateNoneExistFileName(tempPath, false);
             boolean result = AnimationManager.getInstance().saveAnimationToXML(path);
             AnimationManager.getInstance().reset();
-            AnimationManager.getInstance().deleteAll();
+            // AnimationManager.getInstance().deleteAll();
 
 
             promise.resolve(result);
