@@ -7075,7 +7075,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             context.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView().removeAllCallOut();
+//                    SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView().removeAllCallOut();
                     sMap.getSmMapWC().getMapControl().getNavigation2().cleanPath();
 //                    sMap.getSmMapWC().getMapControl().getNavigation2().stopGuide();
                     sMap.getSmMapWC().getMapControl().getNavigation3().cleanPath();
