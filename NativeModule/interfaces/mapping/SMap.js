@@ -2277,9 +2277,9 @@ export default (function () {
    * 开启室内导航
    * @returns {*|void|Promise<void>}
    */
-  function indoorNavigation() {
+  function indoorNavigation(firstP) {
     try {
-      return SMap.indoorNavigation()
+      return SMap.indoorNavigation(firstP)
     } catch (e) {
       console.error(e)
     }
@@ -2289,9 +2289,9 @@ export default (function () {
    * 开启室外导航
    * @returns {*|void|Promise<void>}
    */
-  function outdoorNavigation() {
+  function outdoorNavigation(firstP) {
     try {
-      return SMap.outdoorNavigation()
+      return SMap.outdoorNavigation(firstP)
     } catch (e) {
       console.error(e)
     }
@@ -2544,6 +2544,54 @@ export default (function () {
     }
   }
 
+  /**
+   * 获取室外导航路径长度
+   * @returns {*|void|Promise<void>}
+   */
+  function getOutdoorPathLength() {
+    try {
+      return SMap.getOutdoorPathLength()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取室内导航路径长度
+   * @returns {*|void|Promise<void>}
+   */
+  function getIndoorPathLength() {
+    try {
+      return SMap.getIndoorPathLength()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取室外导航路径详情
+   * @returns {*|void|Promise<void>}
+   */
+  function getOutdoorPath() {
+    try {
+      return SMap.getOutdoorPath()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取室内导航路径详情
+   * @returns {*|void|Promise<void>}
+   */
+  function getIndoorPath() {
+    try {
+      return SMap.getIndoorPath()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
 
 
   let SMapExp = {
@@ -2723,6 +2771,10 @@ export default (function () {
     getPointName,
     setStartPointNameListener,
     setEndPointNameListener,
+    getOutdoorPath,
+    getIndoorPath,
+    getOutdoorPathLength,
+    getIndoorPathLength,
 
     matchPictureStyle,
     updateMapFixColorsMode,
