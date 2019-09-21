@@ -6448,8 +6448,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 NaviStep naviStep1 = naviStep.get(i);
                 double getTime = naviStep1.getTime();
                 double roadLength = naviStep1.getLength();
+                BigDecimal b =  new BigDecimal(roadLength);
+                double  length  =  b.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
                 map.putDouble("roadName", getTime);
-                map.putDouble("roadLength", roadLength);
+                map.putDouble("roadLength", length);
                 array.pushMap(map);
             }
             promise.resolve(array);
@@ -6476,8 +6478,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 NaviStep naviStep1 = naviStep.get(i);
                 double getTime = naviStep1.getTime();
                 double roadLength = naviStep1.getLength();
+                BigDecimal b =  new BigDecimal(roadLength);
+                double  length  =  b.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
                 map.putDouble("roadName", getTime);
-                map.putDouble("roadLength", roadLength);
+                map.putDouble("roadLength", length);
                 array.pushMap(map);
             }
             promise.resolve(array);
@@ -7345,6 +7349,30 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             sMap.getSmMapWC().copyNaviSnmFile(path);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取室内数据源
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getIndoorDatasource(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Datasources datasources = sMap.getSmMapWC().getWorkspace().getDatasources();
+            for(int i=0;i<datasources.getCount();i++){
+                if (datasources.get(i).getAlias().equals("bounds")){
+                    Datasets datasets = datasources.get(i).getDatasets();
+                    DatasetVector dataset = (DatasetVector) datasets.get("building");
+                    Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
+                    IndoorDatasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(recordset.getFieldValue("LinkDatasource").toString());
+                }
+            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
