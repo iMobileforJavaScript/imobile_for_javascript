@@ -873,11 +873,12 @@ RCT_REMAP_METHOD(removePOICallout, removePOICalloutWithResolver:(RCTPromiseResol
 RCT_REMAP_METHOD(removeAllCallout, removeAllCalloutWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
-        MapControl *mapControl = sMap.smMapWC.mapControl;
         dispatch_async(dispatch_get_main_queue(), ^{
+            Map *map = sMap.smMapWC.mapControl.map;
             [sMap.smMapWC.dynamicView clear];
 //            [mapControl removeCalloutWithArr:calloutArr];
 //            calloutArr = nil;
+            [map refresh];
         });
 
         resolve(@(YES));
@@ -992,8 +993,7 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         //sMap.callout.description = tagName;
     
     
-        UIImage *image;
-        image = [UIImage imageNamed:@"resources.bundle/icon_red.png"];
+        UIImage *image = [UIImage imageNamed:@"resources.bundle/icon_red.png"];
         DynamicPoint* dvPoint =  [[DynamicPoint alloc]init];
         [dvPoint addPoint:mapPoint];
         dvPoint.alignment = DYN_BOTTOM;
