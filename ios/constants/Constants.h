@@ -57,6 +57,9 @@ extern NSString * const MEDIA_CAPTURE_TAP_ACTION;
 
 extern NSString * const ONLINE_ANALYST_RESULT;
 extern NSString * const MATCH_IMAGE_RESULT;
+
+extern NSString * const NAVIGATION_WAYS;
+extern NSString * const NAVIGATION_LENGTH;
 @interface Constants : NSObject
 
 @end

@@ -70,6 +70,8 @@ RCT_EXPORT_MODULE();
              MAP_SCALEVIEW_CHANGED,
 //             POINTSEARCH2D_KEYWORDS,
              MATCH_IMAGE_RESULT,
+             NAVIGATION_WAYS,
+             NAVIGATION_LENGTH,
              ];
 }
 
@@ -769,6 +771,134 @@ RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTProm
     }
 }
 #pragma mark ---------------------地图设置菜单结束---------------------
+
+#pragma mark -------------------------导航模块开始---------------------------
+
+#pragma mark 清除导航路线
+RCT_REMAP_METHOD(clearTarckingLayer, clearTarckingLayerWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        [sMap.smMapWC.mapControl.map.trackingLayer clear];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"clearTarckingLayer",exception.reason,nil);
+    }
+}
+#pragma mark 获取室外导航路径长度
+RCT_REMAP_METHOD(getOutdoorPathLength, getOutdoorPathLengthWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        NSArray *naviPath = [[sMap.smMapWC.mapControl getNavigation2] getNaviPath];
+        NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+        [dic setObject:[NSNumber numberWithInteger:naviPath.count] forKey:@"length"];
+        resolve(dic);
+    } @catch (NSException *exception) {
+        reject(@"getOutdoorPathLength",exception.reason,nil);
+    }
+}
+#pragma mark 获取室内导航路径长度
+RCT_REMAP_METHOD(getIndoorPathLength, getIndoorPathLengthWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        NSArray *naviPath = [[sMap.smMapWC.mapControl getNavigation3] getNaviPath];
+        NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+        [dic setObject:[NSNumber numberWithInteger:naviPath.count] forKey:@"length"];
+        resolve(dic);
+    } @catch (NSException *exception) {
+        reject(@"getIndoorPathLength",exception.reason,nil);
+    }
+}
+//#pragma mark 获取室外导航路径详情
+//RCT_REMAP_METHOD(getOutdoorPath, getOutdoorPathWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+//    @try{
+//        sMap = [SMap singletonInstance];
+//        NSArray *naviPath = [[sMap.smMapWC.mapControl getNavigation2] getNaviPath];
+//        NSMutableArray *array = [[NSMutableArray alloc]init];
+//        for(int i = 0; i < naviPath.count; i++){
+//            NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+//            NaviStep *step = naviPath[i];
+//            double getTime =
+//
+//        }
+//    }@catch(NSException *exception){
+//
+//    }
+//}
+#pragma mark 路径分析
+RCT_REMAP_METHOD(routeAnalyst, routeAnalystWithX:(double)x Y:(double)y resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        Point2D *endPoint = [[Point2D alloc] initWithX:x Y:y];
+        GPSData* gpsData = [NativeUtil getGPSData];
+        Point2D* startPoint = [[Point2D alloc]initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
+        NavigationOnline *navigationOnline = [[NavigationOnline alloc]init];
+        [navigationOnline setKey:@"fvV2osxwuZWlY0wJb8FEb2i5"];
+        [navigationOnline setDelegate:self];
+        NavigationOnlineParamater *params = [[NavigationOnlineParamater alloc]init];
+        params.startPoint = startPoint;
+        params.endPoint = endPoint;
+        params.coordationType = NAVINFO_AMAP_MERCATOR;
+        params.routeType = RE_COMMEND;
+        [navigationOnline routeAnalyst:params];
+        resolve(@(YES));
+    }@catch(NSException *exception){
+        reject(@"routeAnalyst",exception.reason,nil);
+    }
+}
+#pragma mark 路径分析成功回调
+-(void)caculateSuccess:(NavigationOnlineData*)data{
+    if(data == nil)
+        return;
+    sMap = [SMap singletonInstance];
+    MapControl *mapControl = sMap.smMapWC.mapControl;
+    [mapControl.map.trackingLayer clear];
+    
+    GeoLine *geoline = data.route;
+    GeoStyle *geostyle = [[GeoStyle alloc] init];
+    Color *color = [[Color alloc] initWithR:0 G:191 B:255];
+    [geostyle setLineSymbolID:15];
+    [geostyle setLineColor:color];
+    [geoline setStyle:geostyle];
+    
+    [mapControl.map.trackingLayer addGeometry:geoline WithTag:@"线路"];
+    GPSData *gpsdata = [NativeUtil getGPSData];
+    Point2D *pt = [[Point2D alloc] initWithX:gpsdata.dLongitude Y:gpsdata.dLatitude];
+    if(mapControl.map.prjCoordSys.type != PCST_EARTH_LONGITUDE_LATITUDE){
+        Point2Ds *points = [[Point2Ds alloc] init];
+        [points add:pt];
+        PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+        
+        CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
+        [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapControl.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        pt = [points getItem:0];
+        [SMap showMarkerHelper:pt tag:curLocationTag];
+        
+        NSArray *pathInfos = data.pathInfos;
+        NSMutableArray *array = [[NSMutableArray alloc] init];
+        for(int i = 0; i < pathInfos.count; i++){
+            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+            NSDictionary *pathInfo = pathInfos[i];
+            NSString *roadName = [pathInfo valueForKey:@"roadName"];
+            int nextDirection = [[pathInfo valueForKey:@"nextDirection"] intValue];
+            double roadLength = [[pathInfo valueForKey:@"roadLength"] doubleValue];
+            [dic setObject:roadName forKey:@"roadName"];
+            [dic setObject:[NSNumber numberWithInt:nextDirection] forKey:@"nextDirection"];
+            [dic setObject:[NSNumber numberWithDouble: roadLength] forKey:@"roadLength"];
+            [array addObject:dic];
+        }
+        NSDictionary *map = @{@"Length":data.length};
+        [self sendEventWithName:NAVIGATION_WAYS
+                           body:array];
+        [self sendEventWithName:NAVIGATION_LENGTH
+                           body:map];
+    }
+}
+#pragma mark 路径分析失败回调
+-(void)caculateFailed:(NSString *)errorInfo{
+    NSLog(@"%@",errorInfo);
+}
+#pragma mark -------------------------导航模块结束---------------------------
+
 //#pragma mark 导入工作空间
 //RCT_REMAP_METHOD(openWorkspace, inputWKPath:(NSString*)inPutWorkspace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
 //    @try {
