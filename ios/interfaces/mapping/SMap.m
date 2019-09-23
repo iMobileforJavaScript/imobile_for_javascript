@@ -100,11 +100,14 @@ RCT_EXPORT_MODULE();
     if(sMap.smMapWC.mapControl == nil){
         sMap.smMapWC.mapControl = mapControl;
     }
-    if( sMap.smMapWC.dynamicView == nil){
+   // if( sMap.smMapWC.dynamicView == nil){
         dispatch_async(dispatch_get_main_queue(), ^{
+            [sMap.smMapWC.dynamicView removeFromSuperview];
+            sMap.smMapWC.dynamicView = nil;
             sMap.smMapWC.dynamicView = [[DynamicView alloc]initWithMapControl:mapControl];
+//            sMap.smMapWC.dynamicView.backgroundColor = [[UIColor alloc] initWithRed:255 green:0 blue:0 alpha:0.5];
         });
-    }
+   // }
     
     if (sMap.smMapWC.workspace && sMap.smMapWC.mapControl.map.workspace == nil) {
         [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
@@ -1004,8 +1007,10 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         
         GeoRegion* geo = [[GeoRegion alloc]initWithPoint2Ds:pts];
         Rectangle2D* bounds = geo.getBounds;
-        [bounds inflateX:bounds.width*0.2 Y:bounds.height*0.5];
+        [bounds inflateX:-bounds.width*0.2 Y:-bounds.height*0.5];
         sMap.smMapWC.mapControl.map.viewBounds = bounds;
+        
+        [sMap.smMapWC.mapControl.map refresh];
 //        [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.8 time:200];
         [geo dispose];
         resolve(@(isSuccess));
@@ -1050,7 +1055,7 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         paragraph.alignment = NSTextAlignmentLeft;
         paragraph.lineBreakMode = NSLineBreakByTruncatingTail;
         
-        NSDictionary* attribute = @{NSFontAttributeName: [UIFont fontWithName:@"Helvetica-Bold" size:15], NSParagraphStyleAttributeName: paragraph,NSForegroundColorAttributeName:[UIColor blackColor],NSStrokeWidthAttributeName:@(-2),NSStrokeColorAttributeName:[UIColor whiteColor] };
+        NSDictionary* attribute = @{NSFontAttributeName: [UIFont fontWithName:@"Helvetica-Bold" size:15], NSParagraphStyleAttributeName: paragraph,NSForegroundColorAttributeName:[UIColor blackColor],NSStrokeWidthAttributeName:@(-4),NSStrokeColorAttributeName:[UIColor whiteColor] };
         
         dynStyle.textLableAttribute = attribute;
         dvPoint.style = dynStyle;
