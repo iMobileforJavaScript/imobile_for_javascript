@@ -2328,7 +2328,11 @@ export default (function () {
    */
   function clearPoint() {
     try {
-      return SMap.clearPoint()
+      if(SMap.clearPoint){
+        return SMap.clearPoint()
+      }else{
+        return true
+      }
     } catch (e) {
       console.error(e)
     }
