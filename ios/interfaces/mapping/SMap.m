@@ -100,6 +100,11 @@ RCT_EXPORT_MODULE();
     if(sMap.smMapWC.mapControl == nil){
         sMap.smMapWC.mapControl = mapControl;
     }
+    if( sMap.smMapWC.dynamicView == nil){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            sMap.smMapWC.dynamicView = [[DynamicView alloc]initWithMapControl:mapControl];
+        });
+    }
     
     if (sMap.smMapWC.workspace && sMap.smMapWC.mapControl.map.workspace == nil) {
         [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
@@ -892,10 +897,27 @@ RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithItem:(NSDictionary *)item r
         sMap = [SMap singletonInstance];
         double x = [[item valueForKey:@"x"] doubleValue];
         double y =[[item valueForKey:@"y"] doubleValue];
+        
+        Point2D *mapPoint = [[Point2D alloc] initWithX:x Y:y];
+        MapControl *mapcontrol = [SMap singletonInstance].smMapWC.mapControl;
+        if(mapcontrol.map.prjCoordSys.type != PCST_EARTH_LONGITUDE_LATITUDE){
+            Point2Ds *points = [[Point2Ds alloc] init];
+            [points add:mapPoint];
+            PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+            
+            CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
+            [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapcontrol.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+            mapPoint = [points getItem:0];
+        }
         NSString *name = [item valueForKey:@"pointName"];
         NSString *tagName = @"POISEARCH_2D_POINT";
         [sMap clearCalloutWithTagName:tagName];
-        BOOL isSuccess = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:YES BigCallout:NO];
+        BOOL isSuccess = [sMap addCalloutWithX:mapPoint.x Y:mapPoint.y Name:name TagName:tagName changeCenter:YES BigCallout:NO];
+        if(mapcontrol.map.scale < 0.000011947150294723098)
+            mapcontrol.map.scale = 0.000011947150294723098;
+//        [mapcontrol panTo:mapPoint time:200];
+        mapcontrol.map.center = mapPoint;
+        [mapcontrol.map refresh];
         resolve(@(isSuccess));
     } @catch (NSException *exception) {
         reject(@"toLocationPoint",exception.reason,nil);
@@ -952,25 +974,40 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         int l = pointList.count < 10 ? pointList.count : 10;
         BOOL isSuccess = YES;
         
-        Rectangle2D* rect = [[Rectangle2D alloc]init];
+
+        Point2Ds* pts = [[Point2Ds alloc]init];
         for(int i = 0; i < l; i++){
             NSDictionary *dic = pointList[i];
             double x = [[dic valueForKey:@"x"] doubleValue];
             double y = [[dic valueForKey:@"y"] doubleValue];
+            Point2D *mapPoint = [[Point2D alloc] initWithX:x Y:y];
+            MapControl *mapcontrol = [SMap singletonInstance].smMapWC.mapControl;
+            if(mapcontrol.map.prjCoordSys.type != PCST_EARTH_LONGITUDE_LATITUDE){
+                Point2Ds *points = [[Point2Ds alloc] init];
+                [points add:mapPoint];
+                PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+                
+                CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
+                [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapcontrol.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+                mapPoint = [points getItem:0];
+            }
+            
             NSString *name = @"";
             NSString *tagName = [[NSString alloc] initWithFormat:@"%@%d",@"POISEARCH_2D_POINTS",i];
-            BOOL b = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:NO BigCallout:NO];
+            BOOL b = [sMap addCalloutWithX:mapPoint.x Y:mapPoint.y Name:name TagName:tagName changeCenter:NO BigCallout:NO];
             if(!b){
                 isSuccess = b;
             }else{
-                Rectangle2D* rectTmp = [[Rectangle2D alloc]initWithPoint2D:[[Point2D alloc]initWithX:x Y:y] Size2D:[[Size2D alloc] initWithWidth:0 Height:0] ];
-                [rect unions:rectTmp];
+                [pts add:mapPoint];
             }
         }
         
-        if(rect.width>0 && rect.height>0){
-//            sMap.smMapWC.mapControl.map.viewBounds = rect;
-        }
+        GeoRegion* geo = [[GeoRegion alloc]initWithPoint2Ds:pts];
+        Rectangle2D* bounds = geo.getBounds;
+        [bounds inflateX:bounds.width*0.2 Y:bounds.height*0.5];
+        sMap.smMapWC.mapControl.map.viewBounds = bounds;
+//        [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.8 time:200];
+        [geo dispose];
         resolve(@(isSuccess));
     } @catch (NSException *exception) {
         reject(@"addCallouts",exception.reason,nil);
@@ -988,19 +1025,9 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
  **/
 -(BOOL)addCalloutWithX:(double)x Y:(double)y Name:(NSString *)name TagName:(NSString *)tagName changeCenter:(BOOL) change BigCallout:(BOOL)bigCallout{
     dispatch_async(dispatch_get_main_queue(), ^{
-        MapControl *mapcontrol = [SMap singletonInstance].smMapWC.mapControl;
-        Point2D *point = [[Point2D alloc] initWithX:x Y:y];
-        Point2Ds *points = [[Point2Ds alloc] init];
-        [points add:point];
-        PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
         
-        CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
-        [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapcontrol.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
-        Point2D *mapPoint = [points getItem:0];
+        Point2D *mapPoint = [[Point2D alloc] initWithX:x Y:y];
         
-//        InfoCallout *callout = [[InfoCallout alloc]initWithMapControl:mapcontrol BackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0] Alignment:CALLOUT_LEFTBOTTOM];
-        //sMap.callout.description = tagName;
-    
         if( sMap.smMapWC.dynamicView == nil){
             sMap.smMapWC.dynamicView = [[DynamicView alloc]initWithMapControl:sMap.smMapWC.mapControl];
         }
@@ -1029,51 +1056,7 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         dvPoint.style = dynStyle;
         
         [[SMap singletonInstance].smMapWC.dynamicView addElement:dvPoint];
-//        if(bigCallout)
-//        {
-//            hasBigCallout = YES;
-//            image = [UIImage imageNamed:@"resources.bundle/icon_green.png"];
-////            imgRect = CGRectMake(-5, -5, 50, 50);
-//        }
-//        else{
-//
-////            imgRect = CGRectMake(0, 0, 40, 40);
-//        }
-//        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-//        [imageView setFrame:imgRect];
-////        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(40, 0, 160, 160)];
-//        UILabel *label = [[UILabel alloc]init];
-//        UIFont *font = [UIFont systemFontOfSize:16.0];
-//        label.font = font;
-//        label.text = name;
-//
-//        CGRect rect = [label.text boundingRectWithSize:CGSizeMake(160, 500)
-//                                               options:NSStringDrawingTruncatesLastVisibleLine| NSStringDrawingUsesFontLeading| NSStringDrawingUsesLineFragmentOrigin
-//                                            attributes:@{NSFontAttributeName:label.font}
-//                                               context:nil];
-//        label.frame = CGRectMake(40, 0, 160, CGRectGetHeight(rect));
-//        //label.textColor = [UIColor grayColor];
-//        label.numberOfLines = 0;
-////        label.layer.shadowColor = [UIColor whiteColor].CGColor;
-////        label.layer.shadowOffset = CGSizeMake(0, 0);
-////        label.layer.shadowOpacity = 1;
-//        callout.width = CGRectGetWidth(rect) + 60;
-//        callout.height = CGRectGetHeight(rect) + 20;
-//        [callout addSubview:imageView];
-//        [callout addSubview:label];
-//        [callout showAt:mapPoint Tag:tagName];
-//        if(calloutArr == nil){
-//            calloutArr = [[NSMutableArray alloc]init];
-//        }
-//        if(![tagName isEqualToString:@"POISEARCH_2D_POINT"]){
-//            [calloutArr addObject:tagName];
-//        }
-        if(mapcontrol.map.scale < 0.000011947150294723098)
-            mapcontrol.map.scale = 0.000011947150294723098;
-        if(change){
-            mapcontrol.map.center = mapPoint;
-        }
-        [mapcontrol.map refresh];
+
     });
     return YES;
 }
