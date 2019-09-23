@@ -6325,6 +6325,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             Rectangle2D bounds = geoRegion.getBounds();
             bounds.inflate(bounds.getWidth() * 0.2,bounds.getHeight() * 0.5);
             mapControl.getMap().setViewBounds(bounds);
+            mapControl.getMap().refresh();
             geoRegion.dispose();
 
             promise.resolve(true);
