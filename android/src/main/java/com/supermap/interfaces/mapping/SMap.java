@@ -7094,6 +7094,29 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
 
     /**
+     *停止导航
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void stopGuide(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            context.getCurrentActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    sMap.getSmMapWC().getMapControl().getNavigation2().stopGuide();
+                    sMap.getSmMapWC().getMapControl().getNavigation3().stopGuide();
+                }
+            });
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
      * 判断起终点地理位置名称
      *
      * @param promise

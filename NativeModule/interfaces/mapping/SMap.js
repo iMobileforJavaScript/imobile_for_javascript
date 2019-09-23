@@ -2339,6 +2339,22 @@ export default (function () {
   }
 
   /**
+   * 清除起终点
+   * @returns {*|void|Promise<void>}
+   */
+  function stopGuide() {
+    try {
+      if(SMap.stopGuide){
+        return SMap.stopGuide()
+      }else{
+        return true
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 获取室内导航数据源
    * @returns {*|void|Promise<void>}
    */
@@ -2777,6 +2793,7 @@ export default (function () {
     getStartPoint,
     getEndPoint,
     clearPoint,
+    stopGuide,
     getIndoorNavigationData,
     isIndoorPoint,
     openTrafficMap,
