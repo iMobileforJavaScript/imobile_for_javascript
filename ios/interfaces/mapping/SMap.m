@@ -99,7 +99,6 @@ RCT_EXPORT_MODULE();
     }
     if(sMap.smMapWC.mapControl == nil){
         sMap.smMapWC.mapControl = mapControl;
-        sMap.smMapWC.dynamicView = [[DynamicView alloc]initWithMapControl:mapControl];
     }
     
     if (sMap.smMapWC.workspace && sMap.smMapWC.mapControl.map.workspace == nil) {
@@ -137,6 +136,10 @@ RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTProm
 +(void)showMarkerHelper:(Point2D*)pt tag:(int)tag{
    
     dispatch_async(dispatch_get_main_queue(), ^{
+        
+        if( sMap.smMapWC.dynamicView == nil){
+            sMap.smMapWC.dynamicView = [[DynamicView alloc]initWithMapControl:sMap.smMapWC.mapControl];
+        }
 //        Callout* callout = [[Callout alloc]initWithMapControl:sMap.smMapWC.mapControl];
 //        callout.tag = tag;
 //        callout.width = 25;
@@ -950,6 +953,8 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         //最多添加10条
         int l = pointList.count < 10 ? pointList.count : 10;
         BOOL isSuccess = YES;
+        
+        Rectangle2D* rect = [[Rectangle2D alloc]init];
         for(int i = 0; i < l; i++){
             NSDictionary *dic = pointList[i];
             double x = [[dic valueForKey:@"x"] doubleValue];
@@ -959,7 +964,14 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
             BOOL b = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:NO BigCallout:NO];
             if(!b){
                 isSuccess = b;
+            }else{
+                Rectangle2D* rectTmp = [[Rectangle2D alloc]initWithPoint2D:[[Point2D alloc]initWithX:x Y:y] Size2D:[[Size2D alloc] initWithWidth:0 Height:0] ];
+                [rect unions:rectTmp];
             }
+        }
+        
+        if(rect.width>0 && rect.height>0){
+            sMap.smMapWC.mapControl.map.mapViewBounds = rect;
         }
         resolve(@(isSuccess));
     } @catch (NSException *exception) {
