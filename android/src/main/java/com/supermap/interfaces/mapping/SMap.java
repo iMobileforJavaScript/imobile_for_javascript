@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -123,7 +124,7 @@ import com.supermap.smNative.SMMapWC;
 import com.supermap.smNative.SMSymbol;
 import com.supermap.data.Color;
 import com.supermap.smNative.components.InfoCallout;
-
+import com.supermap.interfaces.utils.StrokeTextView;
 
 import org.apache.http.cookie.SM;
 import org.json.JSONObject;
@@ -6330,18 +6331,24 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 }
 
 
-                TextView textView = new TextView(context);
-                textView.setHeight(180);
-                textView.setWidth(180);
-                textView.setTextSize(18);
-                textView.setTextColor(android.graphics.Color.WHITE);
-                //textView.setShadowLayer(3, 3, -3, android.graphics.Color.WHITE);
-                textView.setText(name);
+                StrokeTextView strokeTextView = new StrokeTextView(context);
+                strokeTextView.setTextSize(18);
+                strokeTextView.setHeight((int)(180 * density));
+                strokeTextView.setWidth((int)(180 * density));
+                strokeTextView.setTextColor(android.graphics.Color.BLACK);
+                strokeTextView.setText(name);
+//                TextView textView = new TextView(context);
+//                textView.setHeight(180);
+//                textView.setWidth(180);
+//                textView.setTextSize(18);
+//                textView.setTextColor(android.graphics.Color.WHITE);
+//                //textView.setShadowLayer(3, 3, -3, android.graphics.Color.WHITE);
+//                textView.setText(name);
 
                 LinearLayout linearLayout = new LinearLayout(context);
                 linearLayout.setLayoutParams(new LinearLayout.LayoutParams(240, 180));
                 linearLayout.addView(imageView);
-                linearLayout.addView(textView);
+                linearLayout.addView(strokeTextView);
 
                 callout.setContentView(linearLayout);
                 // 20处理默认callout背景位置偏差
@@ -6448,8 +6455,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 NaviStep naviStep1 = naviStep.get(i);
                 double getTime = naviStep1.getTime();
                 double roadLength = naviStep1.getLength();
+                BigDecimal b =  new BigDecimal(roadLength);
+                double  length  =  b.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
                 map.putDouble("roadName", getTime);
-                map.putDouble("roadLength", roadLength);
+                map.putDouble("roadLength", length);
                 array.pushMap(map);
             }
             promise.resolve(array);
@@ -6476,8 +6485,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 NaviStep naviStep1 = naviStep.get(i);
                 double getTime = naviStep1.getTime();
                 double roadLength = naviStep1.getLength();
+                BigDecimal b =  new BigDecimal(roadLength);
+                double  length  =  b.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
                 map.putDouble("roadName", getTime);
-                map.putDouble("roadLength", roadLength);
+                map.putDouble("roadLength", length);
                 array.pushMap(map);
             }
             promise.resolve(array);
@@ -7345,6 +7356,30 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             sMap.getSmMapWC().copyNaviSnmFile(path);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取室内数据源
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getIndoorDatasource(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Datasources datasources = sMap.getSmMapWC().getWorkspace().getDatasources();
+            for(int i=0;i<datasources.getCount();i++){
+                if (datasources.get(i).getAlias().equals("bounds")){
+                    Datasets datasets = datasources.get(i).getDatasets();
+                    DatasetVector dataset = (DatasetVector) datasets.get("building");
+                    Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
+                    IndoorDatasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(recordset.getFieldValue("LinkDatasource").toString());
+                }
+            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);

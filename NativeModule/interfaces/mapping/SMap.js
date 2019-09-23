@@ -2592,6 +2592,22 @@ export default (function () {
     }
   }
 
+  /**
+   * 获取室内数据源
+   * @returns {*|void|Promise<void>}
+   */
+  function getIndoorDatasource() {
+    try {
+      if(SMap.getIndoorDatasource){
+        return SMap.getIndoorDatasource()
+      }else {
+        return true
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
 
 
   let SMapExp = {
@@ -2775,6 +2791,7 @@ export default (function () {
     getIndoorPath,
     getOutdoorPathLength,
     getIndoorPathLength,
+    getIndoorDatasource,
 
     matchPictureStyle,
     updateMapFixColorsMode,
