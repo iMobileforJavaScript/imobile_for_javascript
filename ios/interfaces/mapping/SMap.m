@@ -137,9 +137,6 @@ RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTProm
    
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        if( sMap.smMapWC.dynamicView == nil){
-            sMap.smMapWC.dynamicView = [[DynamicView alloc]initWithMapControl:sMap.smMapWC.mapControl];
-        }
 //        Callout* callout = [[Callout alloc]initWithMapControl:sMap.smMapWC.mapControl];
 //        callout.tag = tag;
 //        callout.width = 25;
@@ -972,7 +969,7 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         }
         
         if(rect.width>0 && rect.height>0){
-            sMap.smMapWC.mapControl.map.mapViewBounds = rect;
+//            sMap.smMapWC.mapControl.map.viewBounds = rect;
         }
         resolve(@(isSuccess));
     } @catch (NSException *exception) {
@@ -1004,6 +1001,9 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
 //        InfoCallout *callout = [[InfoCallout alloc]initWithMapControl:mapcontrol BackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0] Alignment:CALLOUT_LEFTBOTTOM];
         //sMap.callout.description = tagName;
     
+        if( sMap.smMapWC.dynamicView == nil){
+            sMap.smMapWC.dynamicView = [[DynamicView alloc]initWithMapControl:sMap.smMapWC.mapControl];
+        }
     
         UIImage *image = [UIImage imageNamed:@"resources.bundle/icon_red.png"];
         DynamicPoint* dvPoint =  [[DynamicPoint alloc]init];
