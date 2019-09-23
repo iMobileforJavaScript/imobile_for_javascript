@@ -669,7 +669,7 @@ public class SPlot extends ReactContextBaseJavaModule {
             savePoint2Ds = null;
 
             if (createInfo.hasKey("startTime") && animationGroup.getAnimationCount() > 0) {
-                int startTime = createInfo.getInt("startTime");
+                double startTime = createInfo.getDouble("startTime");
                 if (createInfo.hasKey("startMode")) {
                     int startMode = createInfo.getInt("startMode");
                     AnimationGO lastAnimationGo = animationGroup.getAnimationByIndex(animationGroup.getAnimationCount() - 1);
@@ -692,7 +692,7 @@ public class SPlot extends ReactContextBaseJavaModule {
                 animationGO.setStartTime(startTime);
             }
             if (createInfo.hasKey("durationTime")) {
-                int durationTime = createInfo.getInt("durationTime");
+                double durationTime = createInfo.getDouble("durationTime");
                 animationGO.setDuration(durationTime);
             }
             if (createInfo.hasKey("startMode")) {
