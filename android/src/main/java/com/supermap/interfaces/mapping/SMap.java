@@ -377,7 +377,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //                callout.setLocation(mapPt.getX(), mapPt.getY());
 //                sMap.smMapWC.getMapControl().getMap().getMapView().addCallout(callout,tagStr);
 //                sMap.smMapWC.getMapControl().getMap().getMapView().showCallOut();
-                sMap.smMapWC.getMapControl().getMap().setCenter(mapPt);
+                sMap.smMapWC.getMapControl().panTo(mapPt,200); //.getMap().setCenter(mapPt);
                 if (sMap.smMapWC.getMapControl().getMap().getScale() < 0.000011947150294723098)
                     sMap.smMapWC.getMapControl().getMap().setScale(0.000011947150294723098);
                 sMap.smMapWC.getMapControl().getMap().refresh();
@@ -6119,7 +6119,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (mapControl.getMap().getScale() < 0.000011947150294723098) {
                 mapControl.getMap().setScale(0.000011947150294723098);
             }
-            mapControl.getMap().setCenter(mapPoint);
+            mapControl.panTo(mapPoint,200);
+//            mapControl.getMap().setCenter(mapPoint);
             mapControl.getMap().refresh();
 
             promise.resolve(isSuccess);
@@ -6324,6 +6325,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             Rectangle2D bounds = geoRegion.getBounds();
             //bounds.inflate(-bounds.getWidth() * 0.2,-bounds.getHeight() * 0.5);
             mapControl.getMap().setViewBounds(bounds);
+            double scale  =  mapControl.getMap().getScale()*0.2;
+            mapControl.zoomTo(scale,200);
             mapControl.getMap().refresh();
             geoRegion.dispose();
 
@@ -6357,6 +6360,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                 InfoCallout callout = new InfoCallout(context);
                 callout.setStyle(CalloutAlignment.LEFT_BOTTOM);
+//                callout.setBackgroundColor(android.graphics.Color.RED);
                 callout.setBackground(0, 0);
                 ImageView imageView = new ImageView(context);
                 imageView.setAdjustViewBounds(true);
@@ -6375,9 +6379,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
 
                 StrokeTextView strokeTextView = new StrokeTextView(context);
-                strokeTextView.setTextSize(8*density);
-                strokeTextView.setHeight((int)(26*density));
-                strokeTextView.setWidth((int)(180 * density));
+                strokeTextView.setTextSize(12);
+                strokeTextView.setHeight((int)(100));
+                strokeTextView.setWidth((int)(260));
                 strokeTextView.setTextColor(android.graphics.Color.BLACK);
                 String showName = name.length() > 10 ? name.substring(0,10) + "..." : name;
                 strokeTextView.setText(showName);
