@@ -6098,8 +6098,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             clearPoint(tagName);
 
             Point2D mapPoint = new Point2D(x,y);
-
-            if(mapControl.getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE){
+            if(!safeGetType(mapControl.getMap().getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)){
                 Point2Ds points = new Point2Ds();
                 points.add(mapPoint);
                 PrjCoordSys sourcePrjCoordSys = new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
@@ -6323,7 +6322,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             GeoRegion geoRegion = new GeoRegion(point2Ds);
             Rectangle2D bounds = geoRegion.getBounds();
-            bounds.inflate(bounds.getWidth() * 0.2,bounds.getHeight() * 0.5);
+            //bounds.inflate(-bounds.getWidth() * 0.2,-bounds.getHeight() * 0.5);
             mapControl.getMap().setViewBounds(bounds);
             mapControl.getMap().refresh();
             geoRegion.dispose();
@@ -6368,19 +6367,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //                    imageView.setMaxHeight((int) (50 * density));
 //                } else {
                     imageView.setImageResource(R.drawable.icon_red);
-                    imageView.setMaxWidth((int) (40 * density));
-                    imageView.setMaxHeight((int) (40 * density));
-                    imageView.setPadding((int) (5 * density),
-                            (int) (5 * density), 0, 0);
+                    imageView.setMaxWidth((int)(26*density));
+                    imageView.setMaxHeight((int)(26*density));
+//                    imageView.setPadding((int) (5 * density),
+//                            (int) (5 * density), 0, 0);
             //    }
 
 
                 StrokeTextView strokeTextView = new StrokeTextView(context);
-                strokeTextView.setTextSize(18);
-                strokeTextView.setHeight((int)(180 * density));
+                strokeTextView.setTextSize(8*density);
+                strokeTextView.setHeight((int)(26*density));
                 strokeTextView.setWidth((int)(180 * density));
                 strokeTextView.setTextColor(android.graphics.Color.BLACK);
-                strokeTextView.setText(name);
+                String showName = name.length() > 10 ? name.substring(0,10) + "..." : name;
+                strokeTextView.setText(showName);
 
                 LinearLayout linearLayout = new LinearLayout(context);
                 linearLayout.setLayoutParams(new LinearLayout.LayoutParams(240, 180));
@@ -6469,7 +6469,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
-    /**
+    /** 待定
      * 获取室外导航路径详情
      *
      * @param promise
@@ -6478,7 +6478,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void getOndoorPath(Promise promise) {
         try {
             sMap = SMap.getInstance();
-            NaviPath naviPath = sMap.getSmMapWC().getMapControl().getNavigation3().getNaviPath();
+            NaviPath naviPath = sMap.getSmMapWC().getMapControl().getNavigation2().getNaviPath();
             ArrayList<NaviStep> naviStep = naviPath.getStep();
             WritableArray array = Arguments.createArray();
             for (int i = 0; i < naviStep.size(); i++) {
@@ -6499,7 +6499,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
 
-    /**
+    /** 待定
      * 获取室内导航路径详情
      *
      * @param promise
@@ -6621,7 +6621,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
 
-    /**
+    /** 待定
      * 打开二维导航工作空间及地图
      *
      * @param promise
@@ -6925,7 +6925,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
 
-    /**
+    /** 待定
      * 新建路网数据集
      *
      * @param promise

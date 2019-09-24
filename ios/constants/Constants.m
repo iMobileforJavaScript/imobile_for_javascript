@@ -79,6 +79,9 @@ NSString * const ONLINE_ANALYST_RESULT = @"com.supermap.RN.online_analyst_result
 /** 智能监听 **/
 NSString * const MATCH_IMAGE_RESULT = @"com.supermap.RN.match_image_result";
 
+/** 导航路线 **/
+NSString * const NAVIGATION_WAYS = @"com.supermap.RN.Navigation.online_navigation_ways";
+NSString * const NAVIGATION_LENGTH = @"com.supermap.RN.Navigation.online_navigation_length";
 @implementation Constants : NSObject
 
 @end
