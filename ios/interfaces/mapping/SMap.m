@@ -1007,7 +1007,7 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         
         GeoRegion* geo = [[GeoRegion alloc]initWithPoint2Ds:pts];
         Rectangle2D* bounds = geo.getBounds;
-        [bounds inflateX:-bounds.width*0.2 Y:-bounds.height*0.5];
+//        [bounds inflateX:-bounds.width*0.2 Y:-bounds.height*0.4];
         sMap.smMapWC.mapControl.map.viewBounds = bounds;
         
         [sMap.smMapWC.mapControl.map refresh];
