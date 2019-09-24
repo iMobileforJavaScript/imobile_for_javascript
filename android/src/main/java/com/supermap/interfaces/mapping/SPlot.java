@@ -76,6 +76,7 @@ public class SPlot extends ReactContextBaseJavaModule {
     private static SMap sMap;
 
     String rootPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+    private static WritableMap plotLibMap;
 
     public SPlot(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -201,11 +202,14 @@ public class SPlot extends ReactContextBaseJavaModule {
             }
 
 
+            plotLibMap=Arguments.createMap();
             WritableMap writeMap = Arguments.createMap();
             for (int i = 0; i < plotSymbolPaths.size(); i++) {
                 int libId = (int) mapControl.addPlotLibrary(plotSymbolPaths.getString(i));
                 String libName = mapControl.getPlotSymbolLibName((long) libId);
                 writeMap.putInt(libName, libId);
+                plotLibMap.putInt(libName, libId);
+
 //                if (isFirst && libName.equals("警用标号")) {
 //                    Point2Ds point2Ds = new Point2Ds();
 //                    Point2D point2D=new Point2D(mapControl.getMap().getViewBounds().getLeft()-100,mapControl.getMap().getViewBounds().getTop()-100);
@@ -233,6 +237,7 @@ public class SPlot extends ReactContextBaseJavaModule {
 //                    }.start();
 //                }
             }
+
             mapControl.getMap().refresh();
 
             promise.resolve(writeMap);
@@ -277,6 +282,27 @@ public class SPlot extends ReactContextBaseJavaModule {
                 if (tempLayer.getName().startsWith("PlotEdit_") && tempLayer.getDataset() != null) {
                     if (tempLayer.getDataset().getType() == DatasetType.CAD) {
                         tempLayer.setEditable(true);
+
+                        if (plotLibMap.hasKey("警用标号")) {
+                            try {
+                                Point2Ds point2Ds = new Point2Ds();
+                                Point2D point2D = new Point2D(mapControl.getMap().getViewBounds().getLeft() - 100, mapControl.getMap().getViewBounds().getTop() - 100);
+                                point2Ds.add(point2D);
+                                mapControl.addPlotObject(421, 20100, point2Ds);
+//                                mapControl.cancel();
+                                Dataset finalDataset = tempLayer.getDataset();
+                                Recordset recordset = ((DatasetVector) finalDataset).getRecordset(false, CursorType.DYNAMIC);
+                                recordset.moveLast();
+                                recordset.delete();
+                                recordset.update();
+                                recordset.dispose();
+                                mapControl.getMap().refresh();
+                                mapControl.setAction(Action.PAN);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        }
                     }
                 } else {
                     tempLayer.setEditable(false);
