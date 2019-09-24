@@ -102,7 +102,7 @@ public class SIPortalService extends ReactContextBaseJavaModule {
     @ReactMethod
     public void logout(final Promise promise){
         try{
-            IPortalService.getInstance().logout();
+            IPortalService.getInstance().logout("输入services地址");
             setIPortalCookie(null);
             promise.resolve(true);
         } catch (Exception e){

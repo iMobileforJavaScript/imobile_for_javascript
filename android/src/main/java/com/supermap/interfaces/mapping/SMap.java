@@ -20,6 +20,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.react.bridge.Arguments;
@@ -377,7 +378,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //                callout.setLocation(mapPt.getX(), mapPt.getY());
 //                sMap.smMapWC.getMapControl().getMap().getMapView().addCallout(callout,tagStr);
 //                sMap.smMapWC.getMapControl().getMap().getMapView().showCallOut();
-                sMap.smMapWC.getMapControl().getMap().setCenter(mapPt);
+                sMap.smMapWC.getMapControl().panTo(mapPt,200); //.getMap().setCenter(mapPt);
                 if (sMap.smMapWC.getMapControl().getMap().getScale() < 0.000011947150294723098)
                     sMap.smMapWC.getMapControl().getMap().setScale(0.000011947150294723098);
                 sMap.smMapWC.getMapControl().getMap().refresh();
@@ -1718,7 +1719,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             moveToCurrentThread.run();
 
             sMap.smMapWC.getMapControl().getMap().setAngle(0);
-            sMap.smMapWC.getMapControl().getMap().SetSlantAngle(0);
+            sMap.smMapWC.getMapControl().getMap().setSlantAngle(0);
 //            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -5297,7 +5298,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void setMapSlantAngle(double angle, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            sMap.smMapWC.getMapControl().getMap().SetSlantAngle(angle);
+            sMap.smMapWC.getMapControl().getMap().setSlantAngle(angle);
             sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
@@ -6119,7 +6120,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (mapControl.getMap().getScale() < 0.000011947150294723098) {
                 mapControl.getMap().setScale(0.000011947150294723098);
             }
-            mapControl.getMap().setCenter(mapPoint);
+            mapControl.panTo(mapPoint,200);
+//            mapControl.getMap().setCenter(mapPoint);
             mapControl.getMap().refresh();
 
             promise.resolve(isSuccess);
@@ -6324,6 +6326,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             Rectangle2D bounds = geoRegion.getBounds();
             //bounds.inflate(-bounds.getWidth() * 0.2,-bounds.getHeight() * 0.5);
             mapControl.getMap().setViewBounds(bounds);
+            double scale  =  mapControl.getMap().getScale()*0.2;
+            mapControl.zoomTo(scale,200);
             mapControl.getMap().refresh();
             geoRegion.dispose();
 
@@ -6353,44 +6357,46 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                 DisplayMetrics dm = new DisplayMetrics();
                 getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-                float density = dm.density;
+                double density = dm.density;
+
+                int markerSize = 30;
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(600,(int)(markerSize*density));
 
                 InfoCallout callout = new InfoCallout(context);
-                callout.setStyle(CalloutAlignment.LEFT_BOTTOM);
-                callout.setBackground(0, 0);
+                callout.setStyle(CalloutAlignment.BOTTOM);
+//                callout.setBackgroundColor(android.graphics.Color.GRAY);
+//                callout.setBackground(0, 0);
+                callout.setCustomize(true);
+                callout.setLayoutParams(params);
+
                 ImageView imageView = new ImageView(context);
                 imageView.setAdjustViewBounds(true);
-//                if (bigCallout) {
-//                    hasBigCallout = true;
-//                    imageView.setImageResource(R.drawable.icon_green);
-//                    imageView.setMaxWidth((int) (50 * density));
-//                    imageView.setMaxHeight((int) (50 * density));
-//                } else {
-                    imageView.setImageResource(R.drawable.icon_red);
-                    imageView.setMaxWidth((int)(26*density));
-                    imageView.setMaxHeight((int)(26*density));
-//                    imageView.setPadding((int) (5 * density),
-//                            (int) (5 * density), 0, 0);
-            //    }
+
+                imageView.setImageResource(R.drawable.icon_red);
+
+                params = new RelativeLayout.LayoutParams((int)(markerSize*density),(int)(markerSize*density));
+                params.setMargins(300-(int)(markerSize*density/2), 0,0, 0);
+                imageView.setLayoutParams(params);
+//                imageView.setBackgroundColor(android.graphics.Color.BLUE);
 
 
                 StrokeTextView strokeTextView = new StrokeTextView(context);
-                strokeTextView.setTextSize(8*density);
-                strokeTextView.setHeight((int)(26*density));
-                strokeTextView.setWidth((int)(180 * density));
+                strokeTextView.setTextSize(12);
+                params = new RelativeLayout.LayoutParams(300-(int)(markerSize*density/2),(int)(markerSize*density)+2);
+                params.setMargins(300+markerSize*(int)density/2, 0,0, 0);
+                strokeTextView.setLayoutParams(params);
                 strokeTextView.setTextColor(android.graphics.Color.BLACK);
                 String showName = name.length() > 10 ? name.substring(0,10) + "..." : name;
                 strokeTextView.setText(showName);
+//                strokeTextView.setBackgroundColor(android.graphics.Color.YELLOW);
+                callout.addView(imageView);
+                callout.addView(strokeTextView);
 
-                LinearLayout linearLayout = new LinearLayout(context);
-                linearLayout.setLayoutParams(new LinearLayout.LayoutParams(240, 180));
-                linearLayout.addView(imageView);
-                linearLayout.addView(strokeTextView);
 
-                callout.setContentView(linearLayout);
+//                callout.setContentView(linearLayout);
                 // 20处理默认callout背景位置偏差
-                double x = mapPoint.getX() - 20;
-                double y = mapPoint.getY() - 20;
+                double x = mapPoint.getX();
+                double y = mapPoint.getY();
                 callout.setLocation(x, y);
 
                 mapControl.getMap().getMapView().addCallout(callout, tagName);

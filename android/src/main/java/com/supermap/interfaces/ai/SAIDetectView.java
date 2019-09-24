@@ -2,6 +2,7 @@ package com.supermap.interfaces.ai;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -108,7 +109,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
         mAIDetectView.setDetectInterval(mDetectInterval);//设置识别时间间隔
 
-        mAIDetectView.setisPolymerize(mIsPolymerize);//是否聚合模式
+        mAIDetectView.setPolymerize(mIsPolymerize);//是否聚合模式
         mAIDetectView.setPolymerizeThreshold(100, 100);//设置聚合模式网格宽高
 
         //风格
@@ -117,7 +118,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
             mAiDetectStyle.isDrawTitle = mIsDrawTitle;
             mAiDetectStyle.isDrawConfidence = mIsDrawConfidence;
         }
-        mAIDetectView.setAiDetectStyle(mAiDetectStyle);
+        mAIDetectView.setAIDetectStyle(mAiDetectStyle);
 
         mAIDetectView.startCameraPreview();
         mAIDetectView.resumeDetect();
@@ -464,7 +465,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     public void setIsPolymerize(boolean value, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------SAIDetectView--setisPolymerize--------RN--------");
-            mAIDetectView.setisPolymerize(value);
+            mAIDetectView.setPolymerize(value);
             mIsPolymerize = value;
 
             promise.resolve(true);
@@ -634,7 +635,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
                 @Override
                 public void run() {
                     Log.d(REACT_CLASS, "----------------SAIDetectView--saveScreenCapture--------RN--------");
-                    Bitmap screenCapture = mAIDetectView.ScreenCapture();
+                    Bitmap screenCapture = mAIDetectView.getScreenCapture();
 
                     saveBitmapAsFile(pictureDirectory, fileName, screenCapture);
                 }
@@ -749,7 +750,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
             mIsDrawTitle = value;
             mAiDetectStyle.isDrawTitle = value;
-            mAIDetectView.setAiDetectStyle(mAiDetectStyle);
+            mAIDetectView.setAIDetectStyle(mAiDetectStyle);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -782,7 +783,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
             mIsDrawConfidence = value;
             mAiDetectStyle.isDrawConfidence = value;
-            mAIDetectView.setAiDetectStyle(mAiDetectStyle);
+            mAIDetectView.setAIDetectStyle(mAiDetectStyle);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -814,7 +815,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
             Log.d(REACT_CLASS, "----------------SAIDetectView--setSameColorEnable--------RN--------");
 
             mAiDetectStyle.isSameColor = value;
-            mAIDetectView.setAiDetectStyle(mAiDetectStyle);
+            mAIDetectView.setAIDetectStyle(mAiDetectStyle);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -831,7 +832,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
             Log.d(REACT_CLASS, "----------------SAIDetectView--setSameColor--------RN--------");
 
             mAiDetectStyle.aiColor = Color.parseColor(value);
-            mAIDetectView.setAiDetectStyle(mAiDetectStyle);
+            mAIDetectView.setAIDetectStyle(mAiDetectStyle);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -848,8 +849,27 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
             Log.d(REACT_CLASS, "----------------SAIDetectView--setStrokeWidth--------RN--------");
 
             mAiDetectStyle.aiStrokeWidth = value;
-            mAIDetectView.setAiDetectStyle(mAiDetectStyle);
+            mAIDetectView.setAIDetectStyle(mAiDetectStyle);
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * ARView是否可用
+     * @param promise
+     */
+    @ReactMethod
+    public void checkIfSensorsAvailable(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--checkIfSensorsAvailable--------RN--------");
+            PackageManager packageManager = mContext.getPackageManager();
+            boolean compass = packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_COMPASS);
+            boolean accelerometer = packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER);
+            Log.e(REACT_CLASS, "checkIfSensorsAvailable: " + (compass && accelerometer));
+
+            promise.resolve(compass && accelerometer);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -861,7 +881,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         mAidetectViewInfo.modeFile = modelName;
         mAidetectViewInfo.lableFile = lableName;
         mAidetectViewInfo.inputSize = 300;
-        mAidetectViewInfo.isQUANTIZED = true;
+        mAidetectViewInfo.isQuantized = true;
     }
 
     //毫秒
@@ -958,7 +978,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
             AIRecognition recognition = recognitions.get(i);
             AIDetectModel2 modelType = AIDetectModel2.getModelType(recognition.title);
             createScreenCoordPoi((int) (recognition.location.left + recognition.location.right) / 2,
-                    (int) (recognition.location.top + recognition.location.bottom) / 2, modelType, recognition.TrackedID);
+                    (int) (recognition.location.top + recognition.location.bottom) / 2, modelType, recognition.trackedID);
         }
     }
 
