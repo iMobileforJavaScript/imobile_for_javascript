@@ -11,6 +11,7 @@
 static SMap *sMap = nil;
 static Point2Ds *animationWayPoint2Ds;
 static Point2Ds *animationWaySavePoint2Ds;
+static NSMutableDictionary* m_libInfo;
 
 @implementation SPlot
 
@@ -136,6 +137,7 @@ RCT_REMAP_METHOD(initPlotSymbolLibrary, initPlotSymbolLibrary:(NSArray*)plotSymb
             //                [sMap.smMapWC.mapControl setAction:PAN];
             //            }
         }
+        m_libInfo=libInfo;
         //        if(isFirst){
         //            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         //                [self delay:dataset];
@@ -180,6 +182,25 @@ RCT_REMAP_METHOD(setPlotSymbol, setPlotSymbol:(int)libId symbolCode:(int)symbolC
             Layer* tempLayer=[sMap.smMapWC.mapControl.map.layers getLayerAtIndex:i];
             if([tempLayer.name hasPrefix:@"PlotEdit_"]&&tempLayer.dataset.datasetType==CAD){
                 [tempLayer setEditable:YES];
+                if([m_libInfo objectForKey:@"警用标号"]){
+                    @try {
+                        Point2Ds* point2Ds=[[Point2Ds alloc] init];
+                        Point2D* point2D=[[Point2D alloc] initWithX:sMap.smMapWC.mapControl.map.viewBounds.left Y:sMap.smMapWC.mapControl.map.viewBounds.top];
+                        [point2Ds add:point2D];
+                        [sMap.smMapWC.mapControl addPlotObject:421 symbolCode:20100 point:point2Ds];
+                        //                [sMap.smMapWC.mapControl cancel];
+                        Recordset *recordset = [(DatasetVector*)tempLayer.dataset recordset:NO cursorType:DYNAMIC];
+                        [recordset moveLast];
+                        [recordset delete];
+                        [recordset update];
+                        [recordset dispose];
+                        [sMap.smMapWC.mapControl.map refresh];
+                        [sMap.smMapWC.mapControl setAction:PAN];
+                    } @catch (NSException *exception) {
+                        
+                    }
+                }
+                break;
             }else{
                 [tempLayer setEditable:NO];
             }
