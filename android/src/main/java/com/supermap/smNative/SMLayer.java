@@ -506,28 +506,28 @@ public class SMLayer {
                 if(fieldInfo==null)
                     continue;
                 FieldType type = fieldInfo.getType();
-                String value = info.getString("value");
+                String value;
                 if (type == FieldType.INT16) {
-
-                    result = recordset.setInt16(name, Short.parseShort(value + ""));
+                    value = info.getInt("value") + "";
+                    result = recordset.setInt16(name, Short.parseShort(value));
                 } else if (type == FieldType.INT32) {
-//                int value = info.getInt("value");
-                    result = recordset.setInt32(name, Integer.parseInt(value + ""));
+                    value = info.getInt("value") + "";
+                    result = recordset.setInt32(name, Integer.parseInt(value));
                 } else if (type == FieldType.INT64) {
-//                int value = info.getInt("value");
-                    result = recordset.setInt64(name, Long.parseLong(value + ""));
+                    value = info.getInt("value") + "";
+                    result = recordset.setInt64(name, Long.parseLong(value));
                 } else if (type == FieldType.SINGLE) {
-//                int value = info.getInt("value");
-                    result = recordset.setSingle(name, Float.parseFloat(value + ""));
+                    value = info.getInt("value") + "";
+                    result = recordset.setSingle(name, Float.parseFloat(value));
                 } else if (type == FieldType.DOUBLE) {
-//                Double value = info.getDouble("value");
-                    result = recordset.setDouble(name, Double.parseDouble(value + ""));
+                    value = info.getDouble("value") + "";
+                    result = recordset.setDouble(name, Double.parseDouble(value));
                 } else if (type == FieldType.TEXT || type == FieldType.WTEXT
                         || type == FieldType.LONGBINARY || type == FieldType.BYTE) {
-//                String value1 = info.getString("value");
+                    value = info.getString("value");
                     result = recordset.setFieldValue(name, value);
                 }else if (type == FieldType.BOOLEAN) {
-//                boolean boolValue = info.getBoolean("value");
+                    value = info.getString("value");
                     boolean boolValue = false;
                     if (value == "YES" || value  == "true") {
                         boolValue = true;
