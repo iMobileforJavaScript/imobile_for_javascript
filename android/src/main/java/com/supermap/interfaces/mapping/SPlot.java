@@ -283,26 +283,26 @@ public class SPlot extends ReactContextBaseJavaModule {
                     if (tempLayer.getDataset().getType() == DatasetType.CAD) {
                         tempLayer.setEditable(true);
 
-                        if (plotLibMap.hasKey("警用标号")) {
-                            try {
-                                Point2Ds point2Ds = new Point2Ds();
-                                Point2D point2D = new Point2D(mapControl.getMap().getViewBounds().getLeft() - 100, mapControl.getMap().getViewBounds().getTop() - 100);
-                                point2Ds.add(point2D);
-                                mapControl.addPlotObject(421, 20100, point2Ds);
-//                                mapControl.cancel();
-                                Dataset finalDataset = tempLayer.getDataset();
-                                Recordset recordset = ((DatasetVector) finalDataset).getRecordset(false, CursorType.DYNAMIC);
-                                recordset.moveLast();
-                                recordset.delete();
-                                recordset.update();
-                                recordset.dispose();
-                                mapControl.getMap().refresh();
-                                mapControl.setAction(Action.PAN);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+//                         if (plotLibMap.hasKey("警用标号")) {
+//                             try {
+//                                 Point2Ds point2Ds = new Point2Ds();
+//                                 Point2D point2D = new Point2D(mapControl.getMap().getViewBounds().getLeft() - 100, mapControl.getMap().getViewBounds().getTop() - 100);
+//                                 point2Ds.add(point2D);
+//                                 mapControl.addPlotObject(421, 20100, point2Ds);
+// //                                mapControl.cancel();
+//                                 Dataset finalDataset = tempLayer.getDataset();
+//                                 Recordset recordset = ((DatasetVector) finalDataset).getRecordset(false, CursorType.DYNAMIC);
+//                                 recordset.moveLast();
+//                                 recordset.delete();
+//                                 recordset.update();
+//                                 recordset.dispose();
+//                                 mapControl.getMap().refresh();
+//                                 mapControl.setAction(Action.PAN);
+//                             } catch (Exception e) {
+//                                 e.printStackTrace();
+//                             }
 
-                        }
+//                         }
                     }
                 } else {
                     tempLayer.setEditable(false);
