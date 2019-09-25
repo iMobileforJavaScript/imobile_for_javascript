@@ -2587,7 +2587,7 @@ RCT_REMAP_METHOD(cancel, cancelWithResolver:(RCTPromiseResolveBlock)resolve reje
 }
 
 #pragma mark 保存地图 autoNaming为true的话若有相同名字的地图则自动命名
-RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)autoNaming resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)autoNaming saveWorkspace:(BOOL)saveWorkspace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BOOL mapSaved = NO;
         BOOL wsSaved = NO;
@@ -2614,9 +2614,11 @@ RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)auto
         } else {
             mapSaved = [map save:_name];
         }
-        wsSaved = [[SMap singletonInstance].smMapWC.workspace save];
+        if (mapSaved && saveWorkspace) {
+            wsSaved = [[SMap singletonInstance].smMapWC.workspace save];
+        }
         
-        if (mapSaved && wsSaved) {
+        if (mapSaved && (!saveWorkspace || wsSaved)) {
             resolve(_name);
         } else {
             resolve([NSNumber numberWithBool:mapSaved && wsSaved]);
@@ -2629,7 +2631,7 @@ RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)auto
 #pragma mark 移除指定位置的地图
 RCT_REMAP_METHOD(removeMapByIndex, removeMapWithIndex:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        BOOL result = NO;
+        BOOL result = YES;
         Maps* maps = SMap.singletonInstance.smMapWC.workspace.maps;
         if (maps.count > 0 && index < maps.count) {
             if (index < 0) {
@@ -2658,7 +2660,7 @@ RCT_REMAP_METHOD(removeMapByIndex, removeMapWithIndex:(int)index resolver:(RCTPr
 #pragma mark 移除指定名称的地图
 RCT_REMAP_METHOD(removeMapByName, removeMapWithName:(NSString *)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        BOOL result = NO;
+        BOOL result = YES;
         Maps* maps = SMap.singletonInstance.smMapWC.workspace.maps;
         if (maps.count > 0 && (name == nil || [name isEqualToString:@""])) {
             for (int i = 0; i < maps.count; i++) {
