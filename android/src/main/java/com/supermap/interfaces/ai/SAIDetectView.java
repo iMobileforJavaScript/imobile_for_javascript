@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.hardware.Camera;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -867,12 +868,52 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
             PackageManager packageManager = mContext.getPackageManager();
             boolean compass = packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_COMPASS);
             boolean accelerometer = packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER);
-            Log.e(REACT_CLASS, "checkIfSensorsAvailable: " + (compass && accelerometer));
+            Log.d(REACT_CLASS, "checkIfSensorsAvailable: " + (compass && accelerometer));
 
             promise.resolve(compass && accelerometer);
         } catch (Exception e) {
             promise.reject(e);
         }
+    }
+
+    /**
+     * 摄像头是否可用
+     * @param promise
+     */
+    @ReactMethod
+    public void checkIfCameraAvailable(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--checkIfCameraAvailable--------RN--------");
+            boolean available = isCameraUseable();
+            Log.d(REACT_CLASS, "checkIfCameraAvailable: " + available);
+
+            promise.resolve(available);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 摄像头是否可用
+     * 通过调用Camera.open(),然后根据是否出现异常来判断权限状态,Google就是这么干的.
+     * @return
+     */
+    public boolean isCameraUseable() {
+        boolean canUse = true;
+        Camera mCamera = null;
+        try {
+            mCamera = Camera.open();
+            // setParameters 是针对魅族MX5。MX5通过Camera.open()拿到的Camera对象不为null
+            Camera.Parameters mParameters = mCamera.getParameters();
+            mCamera.setParameters(mParameters);
+        } catch (Exception e) {
+            canUse = false;
+        }
+        if (mCamera != null) {
+            mCamera.release();
+        }
+        return canUse;
     }
 
 
