@@ -20,6 +20,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.react.bridge.Arguments;
@@ -1718,7 +1719,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             moveToCurrentThread.run();
 
             sMap.smMapWC.getMapControl().getMap().setAngle(0);
-            sMap.smMapWC.getMapControl().getMap().SetSlantAngle(0);
+            sMap.smMapWC.getMapControl().getMap().setSlantAngle(0);
 //            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -5297,7 +5298,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void setMapSlantAngle(double angle, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            sMap.smMapWC.getMapControl().getMap().SetSlantAngle(angle);
+            sMap.smMapWC.getMapControl().getMap().setSlantAngle(angle);
             sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
@@ -6356,45 +6357,46 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                 DisplayMetrics dm = new DisplayMetrics();
                 getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-                float density = dm.density;
+                double density = dm.density;
+
+                int markerSize = 30;
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(600,(int)(markerSize*density));
 
                 InfoCallout callout = new InfoCallout(context);
-                callout.setStyle(CalloutAlignment.LEFT_BOTTOM);
-//                callout.setBackgroundColor(android.graphics.Color.RED);
-                callout.setBackground(0, 0);
+                callout.setStyle(CalloutAlignment.BOTTOM);
+//                callout.setBackgroundColor(android.graphics.Color.GRAY);
+//                callout.setBackground(0, 0);
+                callout.setCustomize(true);
+                callout.setLayoutParams(params);
+
                 ImageView imageView = new ImageView(context);
                 imageView.setAdjustViewBounds(true);
-//                if (bigCallout) {
-//                    hasBigCallout = true;
-//                    imageView.setImageResource(R.drawable.icon_green);
-//                    imageView.setMaxWidth((int) (50 * density));
-//                    imageView.setMaxHeight((int) (50 * density));
-//                } else {
-                    imageView.setImageResource(R.drawable.icon_red);
-                    imageView.setMaxWidth((int)(26*density));
-                    imageView.setMaxHeight((int)(26*density));
-//                    imageView.setPadding((int) (5 * density),
-//                            (int) (5 * density), 0, 0);
-            //    }
+
+                imageView.setImageResource(R.drawable.icon_red);
+
+                params = new RelativeLayout.LayoutParams((int)(markerSize*density),(int)(markerSize*density));
+                params.setMargins(300-(int)(markerSize*density/2), 0,0, 0);
+                imageView.setLayoutParams(params);
+//                imageView.setBackgroundColor(android.graphics.Color.BLUE);
 
 
                 StrokeTextView strokeTextView = new StrokeTextView(context);
                 strokeTextView.setTextSize(12);
-                strokeTextView.setHeight((int)(100));
-                strokeTextView.setWidth((int)(260));
+                params = new RelativeLayout.LayoutParams(300-(int)(markerSize*density/2),(int)(markerSize*density)+2);
+                params.setMargins(300+markerSize*(int)density/2, 0,0, 0);
+                strokeTextView.setLayoutParams(params);
                 strokeTextView.setTextColor(android.graphics.Color.BLACK);
                 String showName = name.length() > 10 ? name.substring(0,10) + "..." : name;
                 strokeTextView.setText(showName);
+//                strokeTextView.setBackgroundColor(android.graphics.Color.YELLOW);
+                callout.addView(imageView);
+                callout.addView(strokeTextView);
 
-                LinearLayout linearLayout = new LinearLayout(context);
-                linearLayout.setLayoutParams(new LinearLayout.LayoutParams(240, 180));
-                linearLayout.addView(imageView);
-                linearLayout.addView(strokeTextView);
 
-                callout.setContentView(linearLayout);
+//                callout.setContentView(linearLayout);
                 // 20处理默认callout背景位置偏差
-                double x = mapPoint.getX() - 20;
-                double y = mapPoint.getY() - 20;
+                double x = mapPoint.getX();
+                double y = mapPoint.getY();
                 callout.setLocation(x, y);
 
                 mapControl.getMap().getMapView().addCallout(callout, tagName);

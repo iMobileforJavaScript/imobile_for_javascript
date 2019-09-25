@@ -284,6 +284,22 @@ isDrawConfidenceEnable = () => {
   }
 }
 
+checkIfSensorsAvailable = () => {
+  try {
+    return SAIDetectView.checkIfSensorsAvailable()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+checkIfCameraAvailable = () => {
+  try {
+    return SAIDetectView.checkIfCameraAvailable()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   initAIDetect,
   startDetect,
@@ -316,4 +332,6 @@ export default {
   isPOIOverlapEnable,
   isDrawTileEnable,
   isDrawConfidenceEnable,
+  checkIfSensorsAvailable,
+  checkIfCameraAvailable,
 }
