@@ -1458,7 +1458,17 @@ RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithItem:(NSDictionary *)item r
         double y =[[item valueForKey:@"y"] doubleValue];
         
         MapControl *mapcontrol = [SMap singletonInstance].smMapWC.mapControl;
-        Point2D *mapPoint = [SMap getPointWithX:x Y:y];
+        Point2D *mapPoint = [[Point2D alloc]initWithX:x Y:y];
+        if(mapcontrol.map.prjCoordSys.type != PCST_EARTH_LONGITUDE_LATITUDE){
+            Point2Ds *points = [[Point2Ds alloc] init];
+            [points add:mapPoint];
+            PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+            
+            CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
+            [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapcontrol.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+            mapPoint = [points getItem:0];
+        }
+        
         NSString *name = [item valueForKey:@"pointName"];
         NSString *tagName = @"POISEARCH_2D_POINT";
         [sMap clearCalloutWithTagName:tagName];

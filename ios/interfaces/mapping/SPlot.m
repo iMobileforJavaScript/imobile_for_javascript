@@ -182,24 +182,26 @@ RCT_REMAP_METHOD(setPlotSymbol, setPlotSymbol:(int)libId symbolCode:(int)symbolC
             Layer* tempLayer=[sMap.smMapWC.mapControl.map.layers getLayerAtIndex:i];
             if([tempLayer.name hasPrefix:@"PlotEdit_"]&&tempLayer.dataset.datasetType==CAD){
                 [tempLayer setEditable:YES];
-                if([m_libInfo objectForKey:@"警用标号"]){
-                    @try {
-                        Point2Ds* point2Ds=[[Point2Ds alloc] init];
-                        Point2D* point2D=[[Point2D alloc] initWithX:sMap.smMapWC.mapControl.map.viewBounds.left Y:sMap.smMapWC.mapControl.map.viewBounds.top];
-                        [point2Ds add:point2D];
-                        [sMap.smMapWC.mapControl addPlotObject:421 symbolCode:20100 point:point2Ds];
-                        //                [sMap.smMapWC.mapControl cancel];
-                        Recordset *recordset = [(DatasetVector*)tempLayer.dataset recordset:NO cursorType:DYNAMIC];
-                        [recordset moveLast];
-                        [recordset delete];
-                        [recordset update];
-                        [recordset dispose];
-                        [sMap.smMapWC.mapControl.map refresh];
-                        [sMap.smMapWC.mapControl setAction:PAN];
-                    } @catch (NSException *exception) {
-                        
-                    }
-                }
+                
+                //修改多媒体采集之后再标绘第一个标绘对象风格不对的问题，这个撤销后左上角会多一个点标号
+//                if([m_libInfo objectForKey:@"警用标号"]){
+//                    @try {
+//                        Point2Ds* point2Ds=[[Point2Ds alloc] init];
+//                        Point2D* point2D=[[Point2D alloc] initWithX:sMap.smMapWC.mapControl.map.viewBounds.left Y:sMap.smMapWC.mapControl.map.viewBounds.top];
+//                        [point2Ds add:point2D];
+//                        [sMap.smMapWC.mapControl addPlotObject:421 symbolCode:20100 point:point2Ds];
+//                        //                [sMap.smMapWC.mapControl cancel];
+//                        Recordset *recordset = [(DatasetVector*)tempLayer.dataset recordset:NO cursorType:DYNAMIC];
+//                        [recordset moveLast];
+//                        [recordset delete];
+//                        [recordset update];
+//                        [recordset dispose];
+//                        [sMap.smMapWC.mapControl.map refresh];
+//                        [sMap.smMapWC.mapControl setAction:PAN];
+//                    } @catch (NSException *exception) {
+//
+//                    }
+//                }
                 break;
             }else{
                 [tempLayer setEditable:NO];
