@@ -80,6 +80,8 @@ public class EventConst {
     public static final String MAPSELECTPOINTNAMESTART = "com.supermap.RN.Navigation.mapselectpointnamestart";
     public static final String MAPSELECTPOINTNAMEEND = "com.supermap.RN.Navigation.mapselectpointnameend";
 
+    public static final String ILLEGALLYPARK = "com.supermap.RN.Navigation.illegallypark";
+
 
     /** 智能配图 **/
     public static final String MATCH_IMAGE_RESULT = "com.supermap.RN.match_image_result";

@@ -2628,6 +2628,28 @@ export default (function () {
     }
   }
 
+  /**
+   * 违章采集监听
+   * @param handlers
+   */
+  function setIllegallyParkListener(handlers){
+    try {
+      if (Platform.OS === 'ios' && handlers) {
+        if (typeof handlers.callback === 'function') {
+
+        }
+      } else if (Platform.OS === 'android' && handlers) {
+        if (typeof handlers.callback === "function") {
+          DeviceEventEmitter.addListener(EventConst.ILLEGALLYPARK, function (e) {
+            handlers.callback(e);
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 
 
   let SMapExp = {
@@ -2813,6 +2835,8 @@ export default (function () {
     getOutdoorPathLength,
     getIndoorPathLength,
     getIndoorDatasource,
+    setIllegallyParkListener,
+
 
     matchPictureStyle,
     updateMapFixColorsMode,
