@@ -35,11 +35,13 @@
 #import "SuperMap/OverlayAnalystParameter.h"
 #import "SuperMap/RasterClip.h"
 #import "SuperMap/ScaleView.h"
+#import "SuperMap/FloorListView.h"
 @interface SMMapWC : NSObject
 
 @property (strong, nonatomic) Workspace* workspace;
 @property (strong, nonatomic) MapControl* mapControl;
 @property (strong, nonatomic) DynamicView* dynamicView;
+@property (strong, nonatomic) FloorListView* floorListView;
 
 - (BOOL)openWorkspace:(NSDictionary *)infoDic;
 - (Datasource *)openDatasource:(NSDictionary *)params;

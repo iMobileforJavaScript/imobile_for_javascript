@@ -31,6 +31,12 @@ static NSMutableArray *fillColors;
 //static NSMutableArray *calloutArr;
 static Point2Ds *animationWayPoint2Ds;
 static Point2Ds *animationWaySavePoint2Ds;
+//室内导航数据源
+static Datasource *IndoorDatasource;
+//路网数据集名称
+static NSString *IncrementRoadName;
+//是否是起点
+static BOOL isStart;
 NSString * const LEGEND_CONTENT_CHANGE = @"com.supermap.RN.Map.Legend.legend_content_change";
 
 @interface SMap()
@@ -70,6 +76,11 @@ RCT_EXPORT_MODULE();
              MAP_SCALEVIEW_CHANGED,
 //             POINTSEARCH2D_KEYWORDS,
              MATCH_IMAGE_RESULT,
+             NAVIGATION_WAYS,
+             NAVIGATION_LENGTH,
+             INDUSTRYNAVIAGTION,
+             MAPSELECTPOINTNAMESTART,
+             MAPSELECTPOINTNAMEEND,
              ];
 }
 
@@ -100,6 +111,14 @@ RCT_EXPORT_MODULE();
     if(sMap.smMapWC.mapControl == nil){
         sMap.smMapWC.mapControl = mapControl;
     }
+   // if( sMap.smMapWC.dynamicView == nil){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [sMap.smMapWC.dynamicView removeFromSuperview];
+            sMap.smMapWC.dynamicView = nil;
+            sMap.smMapWC.dynamicView = [[DynamicView alloc]initWithMapControl:mapControl];
+//            sMap.smMapWC.dynamicView.backgroundColor = [[UIColor alloc] initWithRed:255 green:0 blue:0 alpha:0.5];
+        });
+   // }
     
     if (sMap.smMapWC.workspace && sMap.smMapWC.mapControl.map.workspace == nil) {
         [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
@@ -764,6 +783,551 @@ RCT_REMAP_METHOD(removeLegendListener, removeLegendListenerWithResolver:(RCTProm
     }
 }
 #pragma mark ---------------------地图设置菜单结束---------------------
+
+#pragma mark -------------------------导航模块开始---------------------------
+
+#pragma mark 清除导航路线
+RCT_REMAP_METHOD(clearTarckingLayer, clearTarckingLayerWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        [sMap.smMapWC.mapControl.map.trackingLayer clear];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"clearTarckingLayer",exception.reason,nil);
+    }
+}
+#pragma mark 获取室外导航路径长度
+RCT_REMAP_METHOD(getOutdoorPathLength, getOutdoorPathLengthWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        NSArray *naviPath = [[sMap.smMapWC.mapControl getNavigation2] getNaviPath];
+        NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+        [dic setObject:[NSNumber numberWithInteger:naviPath.count] forKey:@"length"];
+        resolve(dic);
+    } @catch (NSException *exception) {
+        reject(@"getOutdoorPathLength",exception.reason,nil);
+    }
+}
+#pragma mark 获取室内导航路径长度
+RCT_REMAP_METHOD(getIndoorPathLength, getIndoorPathLengthWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        NSArray *naviPath = [[sMap.smMapWC.mapControl getNavigation3] getNaviPath];
+        NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+        [dic setObject:[NSNumber numberWithInteger:naviPath.count] forKey:@"length"];
+        resolve(dic);
+    } @catch (NSException *exception) {
+        reject(@"getIndoorPathLength",exception.reason,nil);
+    }
+}
+//#pragma mark 获取室外导航路径详情
+//RCT_REMAP_METHOD(getOutdoorPath, getOutdoorPathWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+//    @try{
+//        sMap = [SMap singletonInstance];
+//        NSArray *naviPath = [[sMap.smMapWC.mapControl getNavigation2] getNaviPath];
+//        NSMutableArray *array = [[NSMutableArray alloc]init];
+//        for(int i = 0; i < naviPath.count; i++){
+//            NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+//            NaviStep *step = naviPath[i];
+//            double getTime =
+//
+//        }
+//    }@catch(NSException *exception){
+//
+//    }
+//}
+#pragma mark 路径分析
+RCT_REMAP_METHOD(routeAnalyst, routeAnalystWithX:(double)x Y:(double)y resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        Point2D *endPoint = [[Point2D alloc] initWithX:x Y:y];
+        GPSData* gpsData = [NativeUtil getGPSData];
+        Point2D* startPoint = [[Point2D alloc]initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
+        NavigationOnline *navigationOnline = [[NavigationOnline alloc]init];
+        [navigationOnline setKey:@"fvV2osxwuZWlY0wJb8FEb2i5"];
+        navigationOnline.delegate = self;
+        NavigationOnlineParamater *params = [[NavigationOnlineParamater alloc]init];
+        params.startPoint = startPoint;
+        params.endPoint = endPoint;
+        params.coordationType = NAVINFO_AMAP_MERCATOR;
+        params.routeType = RE_COMMEND;
+        [navigationOnline routeAnalyst:params];
+        resolve(@(YES));
+    }@catch(NSException *exception){
+        reject(@"routeAnalyst",exception.reason,nil);
+    }
+}
+#pragma mark 路径分析成功回调
+-(void)caculateSuccess:(NavigationOnlineData*)data{
+    if(data == nil)
+        return;
+    sMap = [SMap singletonInstance];
+    MapControl *mapControl = sMap.smMapWC.mapControl;
+    [mapControl.map.trackingLayer clear];
+    
+    GeoLine *geoline = data.route;
+    GeoStyle *geostyle = [[GeoStyle alloc] init];
+    Color *color = [[Color alloc] initWithR:0 G:191 B:255];
+    [geostyle setLineSymbolID:15];
+    [geostyle setLineColor:color];
+    [geoline setStyle:geostyle];
+    
+    [mapControl.map.trackingLayer addGeometry:geoline WithTag:@"线路"];
+    GPSData *gpsdata = [NativeUtil getGPSData];
+    Point2D *pt = [[Point2D alloc] initWithX:gpsdata.dLongitude Y:gpsdata.dLatitude];
+    if(mapControl.map.prjCoordSys.type != PCST_EARTH_LONGITUDE_LATITUDE){
+        Point2Ds *points = [[Point2Ds alloc] init];
+        [points add:pt];
+        PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+        
+        CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
+        [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapControl.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        pt = [points getItem:0];
+        [SMap showMarkerHelper:pt tag:curLocationTag];
+        
+        NSArray *pathInfos = data.pathInfos;
+        NSMutableArray *array = [[NSMutableArray alloc] init];
+        for(int i = 0; i < pathInfos.count; i++){
+            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+            NSDictionary *pathInfo = pathInfos[i];
+            NSString *roadName = [pathInfo valueForKey:@"roadName"];
+            int nextDirection = [[pathInfo valueForKey:@"nextDirection"] intValue];
+            double roadLength = [[pathInfo valueForKey:@"roadLength"] doubleValue];
+            [dic setObject:roadName forKey:@"roadName"];
+            [dic setObject:[NSNumber numberWithInt:nextDirection] forKey:@"nextDirection"];
+            [dic setObject:[NSNumber numberWithDouble: roadLength] forKey:@"roadLength"];
+            [array addObject:dic];
+        }
+        NSDictionary *map = @{@"Length":data.length};
+        [self sendEventWithName:NAVIGATION_WAYS
+                           body:array];
+        [self sendEventWithName:NAVIGATION_LENGTH
+                           body:map];
+    }
+}
+#pragma mark 路径分析失败回调
+-(void)caculateFailed:(NSString *)errorInfo{
+    NSLog(@"%@",errorInfo);
+}
+#pragma mark 设置行业导航参数
+RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSString *)networkDatasetName NetModel:(NSString *)netModel resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Workspace *workspace = sMap.smMapWC.workspace;
+        Datasources *datasources = workspace.datasources;
+        for(int i = 0; i < [datasources count]; i++){
+            Datasource *datasource = [datasources get:i];
+            Dataset *dataset = [datasource.datasets getWithName:networkDatasetName];
+            if(dataset != nil){
+                DatasetVector *networkDataset = (DatasetVector *)dataset;
+                Navigation2 *navigation2 = [sMap.smMapWC.mapControl getNavigation2];
+                [navigation2 setNetworkDataset:networkDataset];
+                [navigation2 loadModel:netModel];
+                navigation2.navi2Delegate = self;
+                resolve(@(YES));
+            }
+        }
+    } @catch (NSException *exception) {
+        reject(@"startNavigation",exception.reason,nil);
+    }
+}
+#pragma mark 行业导航停止回调
+-(void)navi2GuideStop{
+    [self sendEventWithName:INDUSTRYNAVIAGTION
+                       body:@(YES)];
+}
+#pragma mark 行业导航 导航完成回调
+-(void)navi2GuideArrive{
+    [self sendEventWithName:INDUSTRYNAVIAGTION
+                       body:@(YES)];
+}
+
+#pragma mark 行业导航路径分析
+RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:(double)x2 Y2:(double)y2 resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        Point2D *startPoint = [SMap getPointWithX:x Y:y];
+        Point2D *endPoint = [SMap getPointWithX:x2 Y:y2];
+        Navigation2 *navigation2 = [[SMap singletonInstance].smMapWC.mapControl getNavigation2];
+        [navigation2 setStartPoint:startPoint.x sPointY:startPoint.y];
+        [navigation2 setDestinationPoint:endPoint.x dPointY:endPoint.y];
+        [navigation2 setPathVisible:YES];
+        BOOL isFind = [navigation2 routeAnalyst];
+        resolve(@(isFind));
+    } @catch (NSException *exception) {
+        reject(@"beginNavigation",exception.reason, nil);
+    }
+}
+
+#pragma mark 进行行业导航
+RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithBool:(BOOL)first resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [[mapControl getNavigation2] startGuide:1];
+            [mapControl.map setIsFullScreenDrawModel:first];
+            [[mapControl getNavigation2] setIsCarUpFront:first];
+            resolve(@(YES));
+        });
+    } @catch (NSException *exception) {
+        reject(@"outdoorNavigation",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取室内导航数据源
+RCT_REMAP_METHOD(getIndoorNavigationData, getIndoorNavigationDataWithName:(NSString *)name resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        IndoorDatasource = [sMap.smMapWC.workspace.datasources getAlias:name];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"getIndoorNavigationData",exception.reason,nil);
+    }
+}
+
+#pragma mark 设置室内导航
+RCT_REMAP_METHOD(startIndoorNavigation, startIndoorNavigationWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Navigation3 *navigation3 = [sMap.smMapWC.mapControl getNavigation3];
+        GeoStyle *style = [[GeoStyle alloc] init];
+        [style setLineSymbolID:964882];
+        [navigation3 setRouteStyle:style];
+        GeoStyle *styleHint = [[GeoStyle alloc] init];
+        [styleHint setLineWidth:2];
+        [styleHint setLineColor:[[Color alloc]initWithR:82 G:198 B:233]];
+        [styleHint setLineSymbolID:2];
+        [navigation3 setHintRouteStyle:styleHint];
+        navigation3.navDelegate = self;
+        [navigation3 setDatasource:IndoorDatasource];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"startIndoorNavigation",exception.reason,nil);
+    }
+}
+
+#pragma mark 到达目的地回调
+-(void)onAarrivedDestination{
+    [self sendEventWithName:INDUSTRYNAVIAGTION
+                       body:@(YES)];
+}
+
+#pragma mark 停止导航后回调
+-(void)onStopNavi{
+    [self sendEventWithName:INDUSTRYNAVIAGTION
+                       body:@(YES)];
+}
+
+#pragma mark 室内导航路径分析
+RCT_REMAP_METHOD(beginIndoorNavigation, beginIndoorNavigationWithX:(double)x Y:(double)y X2:(double)x2 Y2:(double)y2 resolver:(RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        BOOL result = [[sMap.smMapWC.mapControl getNavigation3] routeAnalyst];
+        resolve(@(result));
+    }@catch(NSException *exception){
+        reject(@"beginIndoorNavigation",exception.reason,nil);
+    }
+}
+
+#pragma mark 进行室内导航
+RCT_REMAP_METHOD(indoorNavigation, indoorNavigationWithBool:(BOOL)first resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [[mapControl getNavigation3] startGuide:1];
+            [mapControl.map setIsFullScreenDrawModel:first];
+            [[mapControl getNavigation3] setIsCarUpFront:first];
+            resolve(@(YES));
+        });
+    } @catch (NSException *exception) {
+        reject(@"indoorNavigation",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取路网信息
+RCT_REMAP_METHOD(getNavigationData, getNavigationDataWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        NSMutableArray *array = [[NSMutableArray alloc] init];
+        Workspace *workspace = sMap.smMapWC.workspace;
+        Datasources *datasources = workspace.datasources;
+        for(int i = 0; i < datasources.count; i++){
+            Datasource *datasource = [datasources get:i];
+            Datasets *datasets = datasource.datasets;
+            for(int j = 0; j < datasets.count; j++){
+                Dataset *dataset = [datasets get:j];
+                if(dataset.datasetType == Network){
+                    NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+                    [dic setObject:dataset.name forKey:@"dataset"];
+                    [array addObject:dic];
+                }
+            }
+        }
+        resolve(array);
+    }@catch(NSException *exception){
+        reject(@"getNavigationData",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取路网数据集
+RCT_REMAP_METHOD(getNetWorkDataset, getNetWorkDatasetWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        NSMutableArray *array = [[NSMutableArray alloc] init];
+        if(IndoorDatasource != nil){
+            Datasets *datasets = IndoorDatasource.datasets;
+            for(int i = 0; i < datasets.count; i++){
+                if([datasets get:i].datasetType == Network){
+                    NSDictionary *dic = @{@"dataset":[datasets get:i].name};
+                    [array addObject:dic];
+                }
+            }
+        }
+        resolve(array);
+    } @catch (NSException *exception) {
+        reject(@"getNetWorkDataset",exception.reason,nil);
+    }
+}
+
+#pragma mark 生成路网 缺TopologyProcessOptions类
+//RCT_REMAP_METHOD(buildNetwork, buildNetworkWithDatasetName:(NSString *)networkDataset resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+//    @try{
+//        Datasets *datasets = IndoorDatasource.datasets;
+//        DatasetVector *lineDataset = (DatasetVector *) [datasets getWithName:IncrementRoadName];
+//        NSString *datasetName = [datasets availableDatasetName:IncrementRoadName];
+//        DatasetVector *datasetVector = (DatasetVector *)[IndoorDatasource copyDataset:lineDataset desDatasetName:datasetName encodeType:NONE];
+//
+//
+//    }@catch(NSException *exception){
+//
+//    }
+//}
+#pragma mark 判断是否是室内点
+RCT_REMAP_METHOD(isIndoorPoint, isIndoorPointWithX:(double)x Y:(double) y resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        BOOL isIndoor = NO;
+        if(IndoorDatasource != nil){
+            Recordset *recordset = nil;
+            QueryParameter *params = [[QueryParameter alloc]init];
+            params.cursorType = STATIC;
+            params.spatialQueryObject = [[Point2D alloc] initWithX:x Y:y];
+            Datasets *datasets = IndoorDatasource.datasets;
+            for(int i = 0; i < datasets.count; i++){
+                DatasetVector *datasetVector = (DatasetVector *)[datasets get:i];
+                recordset = [datasetVector query:params];
+                if(recordset != nil){
+                    isIndoor = YES;
+                }
+                [recordset dispose];
+            }
+            [params dispose];
+        }
+        NSDictionary *dic = @{@"isindoor":@(isIndoor)};
+        resolve(dic);
+    }@catch(NSException *exception){
+        reject(@"isIndoorPoint",exception.reason,nil);
+    }
+}
+
+#pragma mark 添加起始点
+RCT_REMAP_METHOD(getStartPoint, getStartPointWithX:(double)x Y:(double) y isIndoor: (BOOL)isindoor resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        if(isindoor){
+            [[sMap.smMapWC.mapControl getNavigation3] setStartPoint:x Y:y ID:sMap.smMapWC.floorListView.currentFloorId];
+        }else{
+            [SMap showPointByCalloutAtX:x Y:y PointName:@"startpoint"];
+        }
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"getStartPoint", exception.reason, nil);
+    }
+}
+
+#pragma mark 添加终点
+RCT_REMAP_METHOD(getEndPoint, getEndPointWithX:(double)x Y:(double) y isIndoor: (BOOL)isindoor resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        if(isindoor){
+            [[sMap.smMapWC.mapControl getNavigation3] setStartPoint:x Y:y ID:sMap.smMapWC.floorListView.currentFloorId];
+        }else{
+            [SMap showPointByCalloutAtX:x Y:y PointName:@"endpoint"];
+        }
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"getStartPoint", exception.reason, nil);
+    }
+}
+
+#pragma mark 清除起终点
+RCT_REMAP_METHOD(clearPoint, clearPointWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [[sMap.smMapWC.mapControl getNavigation2] cleanPath];
+            [[sMap.smMapWC.mapControl getNavigation3] cleanPath];
+        });
+        resolve(@(YES));
+    }@catch(NSException *exception){
+        reject(@"clearPoint", exception.reason, nil);
+    }
+}
+
+#pragma mark 停止导航
+RCT_REMAP_METHOD(stopGuide, stopGuideWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [[sMap.smMapWC.mapControl getNavigation2] stopGuide];
+            [[sMap.smMapWC.mapControl getNavigation3] stopGuide];
+        });
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"stopGuide",exception.reason,nil);
+    }
+}
+
+#pragma mark 判断起终点地理位置名称
+RCT_REMAP_METHOD(getPointName, getPointNameWithX:(double)x Y:(double) y IsStart: (BOOL)isStart resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        Point2D *point2D = [SMap getPointWithX:x Y:y];
+        [SMap ReverseGeocodingWithPoint:point2D IsStart:isStart];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"getPointName",exception.reason,nil);
+    }
+}
+
++(void)ReverseGeocodingWithPoint:(Point2D *)point IsStart:(BOOL)start{
+    isStart = start;
+    Geocoding *reverseGeocoding = [[Geocoding alloc] init];
+    [reverseGeocoding setKey:@"fvV2osxwuZWlY0wJb8FEb2i5"];
+    reverseGeocoding.delegate = [SMap singletonInstance];
+    [reverseGeocoding reverseGeocoding:point];
+}
+
+#pragma mark 逆地理编码成功回调
+-(void)geocodingSuccess:(NSArray*)geocodingDataList{
+    GeocodingData *data = geocodingDataList[0];
+    if(isStart){
+        [[SMap singletonInstance] sendEventWithName: MAPSELECTPOINTNAMESTART body:data.formatedAddress];
+    }else{
+        [[SMap singletonInstance] sendEventWithName: MAPSELECTPOINTNAMEEND body:data.formatedAddress];
+    }
+}
+
+
+#pragma mark 显示起点/终点
++(void)showPointByCalloutAtX:(double)x Y:(double)y PointName:(NSString *)pointName{
+    MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
+    InfoCallout *infoCallout = [[InfoCallout alloc]initWithMapControl:mapControl BackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0] Alignment:CALLOUT_LEFTBOTTOM];
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        UIImage *image;
+        if([pointName isEqualToString:@"startpoint"]){
+            image = [UIImage imageNamed:@"resources.bundle/icon_scene_tool_start.png"];
+        }else{
+            image = [UIImage imageNamed:@"resources.bundle/icon_scene_tool_end.png"];
+        }
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+                [imageView setFrame:CGRectMake(0, 0, 40, 40)];
+                infoCallout.width = 80;
+                infoCallout.height = 80;
+                [infoCallout addSubview:imageView];
+                [infoCallout showAt:[[Point2D alloc] initWithX:x Y:y] Tag:pointName];
+    });
+}
+
+#pragma mark 将地图上的点转换为经纬坐标点
++(Point2D *)getPointWithX:(double)x Y:(double)y{
+    Point2D *point2D = nil;
+    PrjCoordSys *mapCoordSys = [SMap singletonInstance].smMapWC.mapControl.map.prjCoordSys;
+    if(mapCoordSys.type != PCST_EARTH_LONGITUDE_LATITUDE){
+        Point2Ds *points = [[Point2Ds alloc]init];
+        Point2D *point = [[Point2D alloc] initWithX:x Y:y];
+        [points add:point];
+        PrjCoordSys *desPrjCoordSys = [[PrjCoordSys alloc]init];
+        desPrjCoordSys.type = PCST_EARTH_LONGITUDE_LATITUDE;
+        [CoordSysTranslator convert:points PrjCoordSys:mapCoordSys PrjCoordSys:desPrjCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        point2D = [points getItem:0];
+    }else{
+        point2D = [[Point2D alloc] initWithX:x Y:y];
+    }
+    return point2D;
+}
+
+#pragma mark 打开实时路况信息
+RCT_REMAP_METHOD(openTrafficMap, openTrafficMapWithData:(NSDictionary *)data resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Map *map =sMap.smMapWC.mapControl.map;
+        Datasource *datasource = [sMap.smMapWC openDatasource:data];
+        Layers *layers = map.layers;
+        Point2D *center = map.center;
+        double scale = map.scale;
+        BOOL isAdded = NO;
+        for(int i = 0; i < [layers getCount]; i++){
+            if([[layers getLayerAtIndex:i].name isEqualToString:@"tencent@TrafficMap"]){
+                isAdded = YES;
+            }
+        }
+        if(!isAdded){
+            [map.layers addDataset:[datasource.datasets get:0] ToHead:YES];
+            map.scale = scale;
+            map.center = center;
+            [map refresh];
+        }
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"openTrafficMap",exception.reason,nil);
+    }
+}
+
+#pragma mark 判断是否打开实时路况
+RCT_REMAP_METHOD(isOpenTrafficMap, isOpenTrafficMapWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Layers *layers = sMap.smMapWC.mapControl.map.layers;
+        BOOL isOpen = NO;
+        for(int i = 0; i < [layers getCount]; i++){
+            if([[layers getLayerAtIndex:i].name isEqualToString:@"tencent@TrafficMap"]){
+                isOpen = YES;
+            }
+        }
+        resolve(@(isOpen));
+    } @catch (NSException *exception) {
+        reject(@"isOpenTrafficMap",exception.reason,nil);
+    }
+}
+
+#pragma mark 判断是否打开实时路况
+RCT_REMAP_METHOD(removeTrafficMap, removeTrafficMapWith:(NSString *)layerName resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        Map *map = sMap.smMapWC.mapControl.map;
+        Point2D *center = map.center;
+        double scale = map.scale;
+        BOOL result = NO;
+        Layer *layer = nil;
+        LayerGroup *layerGroup = nil;
+        [SMLayer findLayerAndGroupByPath:layerName layer:&layer group:&layerGroup];
+        if(layerGroup != nil){
+            if(layer != nil){
+                [layerGroup removeLayer:layer];
+            }
+        }else{
+            if(layer != nil){
+                result = [map.layers removeWithName:layerName];
+            }
+        }
+        map.scale = scale;
+        map.center = center;
+        [map refresh];
+        resolve(@(result));
+    }@catch(NSException *exception){
+        reject(@"removeTrafficMap",exception.reason,nil);
+    }
+}
+#pragma mark -------------------------导航模块结束---------------------------
+
 //#pragma mark 导入工作空间
 //RCT_REMAP_METHOD(openWorkspace, inputWKPath:(NSString*)inPutWorkspace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
 //    @try {
@@ -892,10 +1456,28 @@ RCT_REMAP_METHOD(toLocationPoint, toLocationPointWithItem:(NSDictionary *)item r
         sMap = [SMap singletonInstance];
         double x = [[item valueForKey:@"x"] doubleValue];
         double y =[[item valueForKey:@"y"] doubleValue];
+        
+        MapControl *mapcontrol = [SMap singletonInstance].smMapWC.mapControl;
+        Point2D *mapPoint = [[Point2D alloc]initWithX:x Y:y];
+        if(mapcontrol.map.prjCoordSys.type != PCST_EARTH_LONGITUDE_LATITUDE){
+            Point2Ds *points = [[Point2Ds alloc] init];
+            [points add:mapPoint];
+            PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+            
+            CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
+            [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapcontrol.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+            mapPoint = [points getItem:0];
+        }
+        
         NSString *name = [item valueForKey:@"pointName"];
         NSString *tagName = @"POISEARCH_2D_POINT";
         [sMap clearCalloutWithTagName:tagName];
-        BOOL isSuccess = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:YES BigCallout:NO];
+        BOOL isSuccess = [sMap addCalloutWithX:mapPoint.x Y:mapPoint.y Name:name TagName:tagName changeCenter:YES BigCallout:NO];
+        if(mapcontrol.map.scale < 0.000011947150294723098)
+            mapcontrol.map.scale = 0.000011947150294723098;
+//        [mapcontrol panTo:mapPoint time:200];
+        mapcontrol.map.center = mapPoint;
+        [mapcontrol.map refresh];
         resolve(@(isSuccess));
     } @catch (NSException *exception) {
         reject(@"toLocationPoint",exception.reason,nil);
@@ -952,25 +1534,42 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         int l = pointList.count < 10 ? pointList.count : 10;
         BOOL isSuccess = YES;
         
-        Rectangle2D* rect = [[Rectangle2D alloc]init];
+
+        Point2Ds* pts = [[Point2Ds alloc]init];
         for(int i = 0; i < l; i++){
             NSDictionary *dic = pointList[i];
             double x = [[dic valueForKey:@"x"] doubleValue];
             double y = [[dic valueForKey:@"y"] doubleValue];
+            Point2D *mapPoint = [[Point2D alloc] initWithX:x Y:y];
+            MapControl *mapcontrol = [SMap singletonInstance].smMapWC.mapControl;
+            if(mapcontrol.map.prjCoordSys.type != PCST_EARTH_LONGITUDE_LATITUDE){
+                Point2Ds *points = [[Point2Ds alloc] init];
+                [points add:mapPoint];
+                PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+                
+                CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
+                [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapcontrol.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+                mapPoint = [points getItem:0];
+            }
+            
             NSString *name = @"";
             NSString *tagName = [[NSString alloc] initWithFormat:@"%@%d",@"POISEARCH_2D_POINTS",i];
-            BOOL b = [sMap addCalloutWithX:x Y:y Name:name TagName:tagName changeCenter:NO BigCallout:NO];
+            BOOL b = [sMap addCalloutWithX:mapPoint.x Y:mapPoint.y Name:name TagName:tagName changeCenter:NO BigCallout:NO];
             if(!b){
                 isSuccess = b;
             }else{
-                Rectangle2D* rectTmp = [[Rectangle2D alloc]initWithPoint2D:[[Point2D alloc]initWithX:x Y:y] Size2D:[[Size2D alloc] initWithWidth:0 Height:0] ];
-                [rect unions:rectTmp];
+                [pts add:mapPoint];
             }
         }
         
-        if(rect.width>0 && rect.height>0){
-//            sMap.smMapWC.mapControl.map.viewBounds = rect;
-        }
+        GeoRegion* geo = [[GeoRegion alloc]initWithPoint2Ds:pts];
+        Rectangle2D* bounds = geo.getBounds;
+//        [bounds inflateX:-bounds.width*0.2 Y:-bounds.height*0.4];
+        sMap.smMapWC.mapControl.map.viewBounds = bounds;
+        sMap.smMapWC.mapControl.map.scale = sMap.smMapWC.mapControl.map.scale*0.2;
+        [sMap.smMapWC.mapControl.map refresh];
+//        [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.8 time:200];
+        [geo dispose];
         resolve(@(isSuccess));
     } @catch (NSException *exception) {
         reject(@"addCallouts",exception.reason,nil);
@@ -988,19 +1587,9 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
  **/
 -(BOOL)addCalloutWithX:(double)x Y:(double)y Name:(NSString *)name TagName:(NSString *)tagName changeCenter:(BOOL) change BigCallout:(BOOL)bigCallout{
     dispatch_async(dispatch_get_main_queue(), ^{
-        MapControl *mapcontrol = [SMap singletonInstance].smMapWC.mapControl;
-        Point2D *point = [[Point2D alloc] initWithX:x Y:y];
-        Point2Ds *points = [[Point2Ds alloc] init];
-        [points add:point];
-        PrjCoordSys *sourcePrjCoordSys = [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
         
-        CoordSysTransParameter *coordSysTransParameter = [[CoordSysTransParameter alloc] init];
-        [CoordSysTranslator convert:points PrjCoordSys:sourcePrjCoordSys PrjCoordSys:mapcontrol.map.prjCoordSys CoordSysTransParameter:coordSysTransParameter CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
-        Point2D *mapPoint = [points getItem:0];
+        Point2D *mapPoint = [[Point2D alloc] initWithX:x Y:y];
         
-//        InfoCallout *callout = [[InfoCallout alloc]initWithMapControl:mapcontrol BackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0] Alignment:CALLOUT_LEFTBOTTOM];
-        //sMap.callout.description = tagName;
-    
         if( sMap.smMapWC.dynamicView == nil){
             sMap.smMapWC.dynamicView = [[DynamicView alloc]initWithMapControl:sMap.smMapWC.mapControl];
         }
@@ -1023,57 +1612,13 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         paragraph.alignment = NSTextAlignmentLeft;
         paragraph.lineBreakMode = NSLineBreakByTruncatingTail;
         
-        NSDictionary* attribute = @{NSFontAttributeName: [UIFont fontWithName:@"Helvetica-Bold" size:15], NSParagraphStyleAttributeName: paragraph,NSForegroundColorAttributeName:[UIColor blackColor],NSStrokeWidthAttributeName:@(-2),NSStrokeColorAttributeName:[UIColor whiteColor] };
+        NSDictionary* attribute = @{NSFontAttributeName: [UIFont fontWithName:@"Helvetica-Bold" size:15], NSParagraphStyleAttributeName: paragraph,NSForegroundColorAttributeName:[UIColor blackColor],NSStrokeWidthAttributeName:@(-4),NSStrokeColorAttributeName:[UIColor whiteColor] };
         
         dynStyle.textLableAttribute = attribute;
         dvPoint.style = dynStyle;
         
         [[SMap singletonInstance].smMapWC.dynamicView addElement:dvPoint];
-//        if(bigCallout)
-//        {
-//            hasBigCallout = YES;
-//            image = [UIImage imageNamed:@"resources.bundle/icon_green.png"];
-////            imgRect = CGRectMake(-5, -5, 50, 50);
-//        }
-//        else{
-//
-////            imgRect = CGRectMake(0, 0, 40, 40);
-//        }
-//        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-//        [imageView setFrame:imgRect];
-////        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(40, 0, 160, 160)];
-//        UILabel *label = [[UILabel alloc]init];
-//        UIFont *font = [UIFont systemFontOfSize:16.0];
-//        label.font = font;
-//        label.text = name;
-//
-//        CGRect rect = [label.text boundingRectWithSize:CGSizeMake(160, 500)
-//                                               options:NSStringDrawingTruncatesLastVisibleLine| NSStringDrawingUsesFontLeading| NSStringDrawingUsesLineFragmentOrigin
-//                                            attributes:@{NSFontAttributeName:label.font}
-//                                               context:nil];
-//        label.frame = CGRectMake(40, 0, 160, CGRectGetHeight(rect));
-//        //label.textColor = [UIColor grayColor];
-//        label.numberOfLines = 0;
-////        label.layer.shadowColor = [UIColor whiteColor].CGColor;
-////        label.layer.shadowOffset = CGSizeMake(0, 0);
-////        label.layer.shadowOpacity = 1;
-//        callout.width = CGRectGetWidth(rect) + 60;
-//        callout.height = CGRectGetHeight(rect) + 20;
-//        [callout addSubview:imageView];
-//        [callout addSubview:label];
-//        [callout showAt:mapPoint Tag:tagName];
-//        if(calloutArr == nil){
-//            calloutArr = [[NSMutableArray alloc]init];
-//        }
-//        if(![tagName isEqualToString:@"POISEARCH_2D_POINT"]){
-//            [calloutArr addObject:tagName];
-//        }
-        if(mapcontrol.map.scale < 0.000011947150294723098)
-            mapcontrol.map.scale = 0.000011947150294723098;
-        if(change){
-            mapcontrol.map.center = mapPoint;
-        }
-        [mapcontrol.map refresh];
+
     });
     return YES;
 }
@@ -2042,7 +2587,7 @@ RCT_REMAP_METHOD(cancel, cancelWithResolver:(RCTPromiseResolveBlock)resolve reje
 }
 
 #pragma mark 保存地图 autoNaming为true的话若有相同名字的地图则自动命名
-RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)autoNaming resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)autoNaming saveWorkspace:(BOOL)saveWorkspace resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BOOL mapSaved = NO;
         BOOL wsSaved = NO;
@@ -2069,9 +2614,11 @@ RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)auto
         } else {
             mapSaved = [map save:_name];
         }
-        wsSaved = [[SMap singletonInstance].smMapWC.workspace save];
+        if (mapSaved && saveWorkspace) {
+            wsSaved = [[SMap singletonInstance].smMapWC.workspace save];
+        }
         
-        if (mapSaved && wsSaved) {
+        if (mapSaved && (!saveWorkspace || wsSaved)) {
             resolve(_name);
         } else {
             resolve([NSNumber numberWithBool:mapSaved && wsSaved]);
@@ -2084,7 +2631,7 @@ RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)auto
 #pragma mark 移除指定位置的地图
 RCT_REMAP_METHOD(removeMapByIndex, removeMapWithIndex:(int)index resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        BOOL result = NO;
+        BOOL result = YES;
         Maps* maps = SMap.singletonInstance.smMapWC.workspace.maps;
         if (maps.count > 0 && index < maps.count) {
             if (index < 0) {
@@ -2113,7 +2660,7 @@ RCT_REMAP_METHOD(removeMapByIndex, removeMapWithIndex:(int)index resolver:(RCTPr
 #pragma mark 移除指定名称的地图
 RCT_REMAP_METHOD(removeMapByName, removeMapWithName:(NSString *)name resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        BOOL result = NO;
+        BOOL result = YES;
         Maps* maps = SMap.singletonInstance.smMapWC.workspace.maps;
         if (maps.count > 0 && (name == nil || [name isEqualToString:@""])) {
             for (int i = 0; i < maps.count; i++) {

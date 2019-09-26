@@ -124,7 +124,7 @@ public class IllegallyParkViewManager extends SimpleViewManager<CustomFrameLayou
         aidetectViewInfo.modeFile = "detect.tflite";
         aidetectViewInfo.lableFile = "labelmap.txt";
         aidetectViewInfo.inputSize = 300;
-        aidetectViewInfo.isQUANTIZED = true;
+        aidetectViewInfo.isQuantized = true;
         mAIdetectView.setDetectInfo(aidetectViewInfo);
         mAIdetectView.init();
         AIDetectStyle detectStyle = new AIDetectStyle();
@@ -259,7 +259,7 @@ public class IllegallyParkViewManager extends SimpleViewManager<CustomFrameLayou
             return;
         }
         long screenTime1 = System.currentTimeMillis();
-        final Bitmap bitmap = mAIdetectView.ScreenCapture();
+        final Bitmap bitmap = mAIdetectView.getScreenCapture();
         bmp = bitmap;
         long screenTime2 = System.currentTimeMillis();
         Log.d(REACT_CLASS, "车牌识别截屏时间：" + (screenTime2 - screenTime1));
