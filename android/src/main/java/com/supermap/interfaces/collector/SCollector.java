@@ -364,10 +364,15 @@ public class SCollector extends ReactContextBaseJavaModule {
     public void cancel(int type, Promise promise) {
         try {
             SMap.getSMWorkspace().getMapControl().cancel();
-            if (type == SCollectorType.REGION_HAND_PATH || type == SCollectorType.LINE_HAND_PATH || type == -1) {
-                promise.resolve(true);
-            } else {
+//            if (type == SCollectorType.REGION_HAND_PATH || type == SCollectorType.LINE_HAND_PATH || type == -1) {
+//                promise.resolve(true);
+//            } else {
+//                startCollect(type, promise);
+//            }
+            if (type > -1) {
                 startCollect(type, promise);
+            } else {
+                promise.resolve(true);
             }
         } catch (Exception e) {
             promise.reject(e);
