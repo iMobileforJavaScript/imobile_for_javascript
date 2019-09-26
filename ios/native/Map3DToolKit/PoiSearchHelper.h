@@ -39,7 +39,7 @@ SUPERMAP_SIGLETON_DEF(PoiSearchHelper);
 -(void)poiSearch:(NSString*) keyWords;
 
 //-(void)toLocationPoint:(OnlinePOIInfo*)onlinePOIInfo;
--(void)toLocationPoint:(int) index;
+-(void)toLocationPoint:(OnlinePOIInfo *) poiInfo;
 
 
 -(Feature3D *)addMarkFile:(SceneControl*)control name:(NSString*)name point3D:(Point3D)point3D imagePath:(NSString*)imagePath currentFeature3D:(Feature3D*)currentFeature3D;
