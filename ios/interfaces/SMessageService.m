@@ -319,19 +319,23 @@ RCT_REMAP_METHOD(sendFileWithThirdServer,  message:(NSString*)message file:(NSSt
             [sub_messageDic setObject:[[messageDic valueForKey:@"user"] valueForKey:@"id"] forKey:@"userId"];
             
             int prevPercentage = 0;
-            for(int index=1;index<=total;index++){
+            long startPos = 0;
+            long length;
+            for(int index=1;index<=total;index++,startPos += length){
                 NSData* data;
-                if(index!=total){
+                if(index==total){
                     data=[fh readDataToEndOfFile];
-                    [sub_messageDic setValue:@(singleFileSize) forKey:@"dataLength"];
+                    length = data.length;
                 }else{
                     data=[fh readDataOfLength:singleFileSize];
-                    [sub_messageDic setValue:@(fileSize%singleFileSize) forKey:@"dataLength"];
+                    length = singleFileSize;
                 }
                 NSString * decodeStr = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
                 sFileBlock=decodeStr;
                 [sub_messageDic setObject:sFileBlock forKey:@"data"];
                 [sub_messageDic setValue:@(index) forKey:@"index"];
+                [sub_messageDic setValue:@(length) forKey:@"dataLength"];
+                [sub_messageDic setValue:@(startPos) forKey:@"startPos"];
                 
                 NSURL *url =[NSURL URLWithString:@"http://111.202.121.144:8124/upload"];
                 NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
