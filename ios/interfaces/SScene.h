@@ -16,7 +16,9 @@
 #import "SuperMap/TerrainLayers.h"
 #import "SuperMap/TerrainLayer.h"
 #import "SuperMap/Scene.h"
-#import "SuperMap/selection3D.h"
+#import "SuperMap/Selection3D.h"
+#import "SuperMap/LocationManagePlugin.h"
+#import "NativeUtil.h"
 #import "SuperMap/GeoBox.h"
 #import "SuperMap/Size2D.h"
 #import <math.h>

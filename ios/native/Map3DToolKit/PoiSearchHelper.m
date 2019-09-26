@@ -46,12 +46,8 @@ SUPERMAP_SIGLETON_IMP(PoiSearchHelper);
 }
 
 //-(void)toLocationPoint:(OnlinePOIInfo*)onlinePOIInfo{
--(void)toLocationPoint:(int) index{
-    if(!m_poiInfos){
-        return;
-    }
-    OnlinePOIInfo* onlinePOIInfo=[m_poiInfos objectAtIndex:index];
-    Point2D *point2D=onlinePOIInfo.location;
+-(void)toLocationPoint:(OnlinePOIInfo *) poiInfo{
+    Point2D *point2D=poiInfo.location;
     Point3D pnt3d;
     pnt3d.x=point2D.x;
     pnt3d.y=point2D.y;
@@ -62,7 +58,7 @@ SUPERMAP_SIGLETON_IMP(PoiSearchHelper);
     pnt3d2.z=100;
     NSString *strBundlePath = [[NSBundle mainBundle] pathForResource:@"resources" ofType:@"bundle"];
     NSString *strImageStartPath = [strBundlePath stringByAppendingString:@"/icon_green.png"];
-    Feature3D* param=[self addMarkFile:m_sceneControl name:onlinePOIInfo.name point3D:pnt3d2 imagePath:strImageStartPath currentFeature3D:m_feature3D];
+    Feature3D* param=[self addMarkFile:m_sceneControl name:poiInfo.name point3D:pnt3d2 imagePath:strImageStartPath currentFeature3D:m_feature3D];
     m_feature3D=param;
     [m_sceneControl.scene flyToPoint:pnt3d milliseconds:5000];
 }

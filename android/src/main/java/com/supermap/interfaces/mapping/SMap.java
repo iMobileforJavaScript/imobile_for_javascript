@@ -6192,7 +6192,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             promise.resolve(map);
         } catch (Exception e) {
-            promise.reject(e);
+            LocationManagePlugin.GPSData gpsData = SMCollector.getGPSPoint();
+            double x = gpsData.dLongitude;
+            double y  = gpsData.dLatitude;
+            WritableMap map = Arguments.createMap();
+            map.putDouble("x",x);
+            map.putDouble("y",y);
+            promise.resolve(map);
         }
     }
 
