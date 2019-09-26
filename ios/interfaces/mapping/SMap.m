@@ -2025,7 +2025,11 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
                 defaultMapCenter = map.center;
                 [sMap.smMapWC.mapControl setAction:PAN];
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
+                
                 [map refresh];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [map refresh];
+                });
             }
         }
         

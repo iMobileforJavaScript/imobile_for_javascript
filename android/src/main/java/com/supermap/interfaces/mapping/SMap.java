@@ -951,6 +951,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     sMap.smMapWC.getMapControl().setAction(Action.PAN);
                     map.setVisibleScalesEnabled(false);
                     map.refresh();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            sMap.smMapWC.getMapControl().getMap().refresh();
+                        }
+                        }, 3000);//3秒后执行Runnable中的run方法
                 }
             }
 
