@@ -67,6 +67,8 @@ NSString * const MAP_BOUNDS_CHANGED = @"Supermap.MapControl.MapParamChanged.Boun
 NSString * const POINTSEARCH2D_KEYWORDS = @"com.supermap.RN.MapControl.PointSearch2D_keyWords";
 /** 比例尺改变 RN显示比例尺专用 **/
 NSString * const MAP_SCALEVIEW_CHANGED = @"com.supermap.RN.Map.ScaleView.scaleView_change";
+/** 图例改变 **/
+NSString * const LEGEND_CONTENT_CHANGE = @"com.supermap.RN.Map.Legend.legend_content_change";
 /** 多媒体采集 **/
 NSString * const MEDIA_CAPTURE = @"com.supermap.RN.MediaCapture";
 
