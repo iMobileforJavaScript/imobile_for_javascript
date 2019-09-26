@@ -60,7 +60,7 @@ SUPERMAP_SIGLETON_IMP(PoiSearchHelper);
     NSString *strImageStartPath = [strBundlePath stringByAppendingString:@"/icon_green.png"];
     Feature3D* param=[self addMarkFile:m_sceneControl name:poiInfo.name point3D:pnt3d2 imagePath:strImageStartPath currentFeature3D:m_feature3D];
     m_feature3D=param;
-    [m_sceneControl.scene flyToPoint:pnt3d];
+    [m_sceneControl.scene flyToPoint:pnt3d milliseconds:5000];
 }
 
 -(Feature3D *)addMarkFile:(SceneControl*)control name:(NSString*)name point3D:(Point3D)point3D imagePath:(NSString*)imagePath currentFeature3D:(Feature3D*)currentFeature3D{

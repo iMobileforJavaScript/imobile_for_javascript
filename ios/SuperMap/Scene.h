@@ -123,6 +123,12 @@
  */
 - (void)flyToPoint:(Point3D)point3D;
 
+/**@brief 飞行到指定的三维点几何对象。
+ @param  point3D 指定的三维点几何对象。
+ @param  time 飞行到指定三维点几何对象的时间,单位毫秒。
+ */
+- (void)flyToPoint:(Point3D)point3D milliseconds:(NSInteger)time;
+
 /**@brief 飞行到指定相机位置。
  @param  camera 指定相机位置。
  */

@@ -307,40 +307,6 @@ public class SMMedia {
         }
     }
 
-    public boolean saveMedia(Context context, ArrayList<String> filePaths, String toDictionary, boolean addNew) {
-        String sdcard = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-
-        ArrayList<String> pathArr;
-        ArrayList<String> tempFilePaths = new ArrayList<>();
-        for (int i = 0; i < filePaths.size(); i++) {
-            if (filePaths.get(i).indexOf("content://") == 0) {
-                String  myImageUrl = filePaths.get(i);
-                Uri uri = Uri.parse(myImageUrl);
-                String[] proj = { MediaStore.Images.Media.DATA, MediaStore.Video.Media.DATA };
-                Cursor cursor = context.getContentResolver().query(uri, proj,null,null,null);
-                int actualMediaColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                cursor.moveToFirst();
-                String mediaPath = cursor.getString(actualMediaColumnIndex);
-                tempFilePaths.add(mediaPath);
-            } else {
-                tempFilePaths.add(filePaths.get(i));
-            }
-        }
-        pathArr = SMFileUtil.copyFiles(tempFilePaths, toDictionary);
-
-        for (int i = 0; i < pathArr.size(); i++) {
-            if (pathArr.get(i).indexOf(sdcard) == 0) {
-                pathArr.set(i, pathArr.get(i).replace(sdcard, ""));
-            }
-        }
-
-        paths = pathArr;
-
-        if (pathArr != null && addNew) saveLocationDataToDataset();
-
-        return pathArr != null && pathArr.size() > 0;
-    }
-
     public boolean saveArMedia(String mediaName, String toDictionary, boolean addNew) {
         String sdcard = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 
@@ -421,5 +387,39 @@ public class SMMedia {
         }
 
         return true;
+    }
+
+    public boolean saveMedia(Context context, ArrayList<String> filePaths, String toDictionary, boolean addNew) {
+        String sdcard = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+
+        ArrayList<String> pathArr;
+        ArrayList<String> tempFilePaths = new ArrayList<>();
+        for (int i = 0; i < filePaths.size(); i++) {
+            if (filePaths.get(i).indexOf("content://") == 0) {
+                String  myImageUrl = filePaths.get(i);
+                Uri uri = Uri.parse(myImageUrl);
+                String[] proj = { MediaStore.Images.Media.DATA, MediaStore.Video.Media.DATA };
+                Cursor cursor = context.getContentResolver().query(uri, proj,null,null,null);
+                int actualMediaColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                cursor.moveToFirst();
+                String mediaPath = cursor.getString(actualMediaColumnIndex);
+                tempFilePaths.add(mediaPath);
+            } else {
+                tempFilePaths.add(filePaths.get(i));
+            }
+        }
+        pathArr = SMFileUtil.copyFiles(tempFilePaths, toDictionary);
+
+        for (int i = 0; i < pathArr.size(); i++) {
+            if (pathArr.get(i).indexOf(sdcard) == 0) {
+                pathArr.set(i, pathArr.get(i).replace(sdcard, ""));
+            }
+        }
+
+        paths = pathArr;
+
+        if (pathArr != null && addNew) saveLocationDataToDataset();
+
+        return pathArr != null && pathArr.size() > 0;
     }
 }

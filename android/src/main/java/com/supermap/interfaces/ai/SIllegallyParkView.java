@@ -1,5 +1,6 @@
 package com.supermap.interfaces.ai;
 
+import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
@@ -49,7 +50,15 @@ public class SIllegallyParkView extends ReactContextBaseJavaModule {
     public void onStop(Promise promise) {
         Log.d(REACT_CLASS, "----------------onStop--------RN--------");
         if (mAIdetectView != null) {
-            mAIdetectView.pauseDetect();
+            Activity currentActivity = getCurrentActivity();
+            if (currentActivity != null) {
+                currentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAIdetectView.pauseDetect();
+                    }
+                });
+            }
         }
         if (mCarColorThread != null) {
             mCarColorThread.interrupt();
@@ -61,8 +70,16 @@ public class SIllegallyParkView extends ReactContextBaseJavaModule {
     public void onStart(Promise promise) {
         Log.d(REACT_CLASS, "----------------onStart--------RN--------");
         if (mAIdetectView != null) {
-            mAIdetectView.startCameraPreview();
-            mAIdetectView.resumeDetect();
+            Activity currentActivity = getCurrentActivity();
+            if (currentActivity != null) {
+                currentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAIdetectView.startCameraPreview();
+                        mAIdetectView.resumeDetect();
+                    }
+                });
+            }
         }
         if (mSensorManager != null) {
             mSensorManager.registerListener(mSensorEventListener, mSensor,SensorManager.SENSOR_DELAY_NORMAL);
@@ -82,7 +99,15 @@ public class SIllegallyParkView extends ReactContextBaseJavaModule {
             mIdentityCarNumberThread.interrupt();
         }
         if (mAIdetectView != null) {
-            mAIdetectView.dispose();
+            Activity currentActivity = getCurrentActivity();
+            if (currentActivity != null) {
+                currentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAIdetectView.dispose();
+                    }
+                });
+            }
         }
     }
 

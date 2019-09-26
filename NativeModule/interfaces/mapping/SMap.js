@@ -262,11 +262,12 @@ export default (function () {
    * 保存地图
    * @param name
    * @param autoNaming 为true的话若有相同名字的地图则自动命名
+   * @param saveWorkspace 为true的话若在保存地图的同时，保存工作空间
    * @returns {*}
    */
-  function saveMap (name = '', autoNaming = true) {
+  function saveMap (name = '', autoNaming = true, saveWorkspace = true) {
     try {
-      return SMap.saveMap(name, autoNaming)
+      return SMap.saveMap(name, autoNaming, saveWorkspace)
     } catch (e) {
       console.error(e)
     }
@@ -2628,6 +2629,28 @@ export default (function () {
     }
   }
 
+  /**
+   * 违章采集监听
+   * @param handlers
+   */
+  function setIllegallyParkListener(handlers){
+    try {
+      if (Platform.OS === 'ios' && handlers) {
+        if (typeof handlers.callback === 'function') {
+
+        }
+      } else if (Platform.OS === 'android' && handlers) {
+        if (typeof handlers.callback === "function") {
+          DeviceEventEmitter.addListener(EventConst.ILLEGALLYPARK, function (e) {
+            handlers.callback(e);
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 
 
   let SMapExp = {
@@ -2813,6 +2836,8 @@ export default (function () {
     getOutdoorPathLength,
     getIndoorPathLength,
     getIndoorDatasource,
+    setIllegallyParkListener,
+
 
     matchPictureStyle,
     updateMapFixColorsMode,

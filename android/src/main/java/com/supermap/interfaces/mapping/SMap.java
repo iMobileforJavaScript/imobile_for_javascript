@@ -1524,10 +1524,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      *
      * @param name
      * @param autoNaming 为true的话若有相同名字的地图则自动命名
+     * @param saveWorkspace 为true的话若在保存地图的同时，保存工作空间
      * @param promise
      */
     @ReactMethod
-    public void saveMap(String name, Boolean autoNaming, Promise promise) {
+    public void saveMap(String name, Boolean autoNaming, Boolean saveWorkspace, Promise promise) {
         try {
             sMap = getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
@@ -1557,10 +1558,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             } else {
                 mapSaved = map.save(_name);
             }
-            wsSaved = sMap.smMapWC.getWorkspace().save();
+            if (saveWorkspace) {
+                wsSaved = sMap.smMapWC.getWorkspace().save();
+            }
 //            wsSaved = true;
 
-            if (mapSaved && wsSaved) {
+            if (mapSaved && (!saveWorkspace || wsSaved)) {
                 promise.resolve(_name);
             } else {
                 promise.resolve(mapSaved && wsSaved);
@@ -1581,7 +1584,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = getInstance();
             Maps maps = sMap.smMapWC.getWorkspace().getMaps();
-            boolean result = false;
+            boolean result = true;
             if (maps.getCount() > 0 && index < maps.getCount()) {
                 if (index == -1) {
                     for (int i = maps.getCount() - 1; i >= 0; i--) {
@@ -1617,7 +1620,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = getInstance();
             Maps maps = sMap.smMapWC.getWorkspace().getMaps();
-            boolean result = false;
+            boolean result = true;
             if (maps.getCount() > 0 && (name == null || name.equals(""))) {
                 for (int i = 0; i < maps.getCount(); i++) {
                     String _name = maps.get(i);

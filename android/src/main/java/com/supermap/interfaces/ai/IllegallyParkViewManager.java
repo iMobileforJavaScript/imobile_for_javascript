@@ -16,9 +16,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.supermap.ai.*;
+import com.supermap.containts.EventConst;
 import com.supermap.interfaces.ai.illegallypark.CarColorUtil;
 import com.supermap.interfaces.ai.illegallypark.ImageColor;
 import com.supermap.interfaces.ai.illegallypark.QRfinderView;
@@ -73,6 +76,7 @@ public class IllegallyParkViewManager extends SimpleViewManager<CustomFrameLayou
         return REACT_CLASS;
     }
 
+
     @Override
     protected CustomFrameLayout createViewInstance(ThemedReactContext reactContext) {
         mReactContext = reactContext;
@@ -84,6 +88,7 @@ public class IllegallyParkViewManager extends SimpleViewManager<CustomFrameLayou
         frameLayout.setLayoutParams(params);
 
         View view = View.inflate(reactContext, R.layout.illegally_park_identity, frameLayout);
+
 
         mAIdetectView = ((AIDetectView) view.findViewById(R.id.ai_identity));
         qrView = ((QRfinderView) view.findViewById(R.id.viewfinder_view));
@@ -443,6 +448,9 @@ public class IllegallyParkViewManager extends SimpleViewManager<CustomFrameLayou
                 os.flush();
                 os.close();
                 Log.d(REACT_CLASS, "保存照片成功");
+                mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                        .emit(EventConst.ILLEGALLYPARK, filePath);
+                mAIdetectView.resumeDetect();
             } catch (Exception e) {
                 Log.e(REACT_CLASS, "保存照片失败");
                 return;
