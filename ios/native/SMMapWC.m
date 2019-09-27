@@ -3085,7 +3085,25 @@
     return result;
 
 }
-
+// 拷贝室外地图网络模型snm文件
+-(void)copyNaviSnmFileFrom:(NSString *)path{
+    NSString *userName = [self getUserName];
+    NSString *rootpath = [self getRootPath];
+    
+    NSString *userDatasourcePath = [NSString stringWithFormat:@"%@%@%@%@",rootpath,@"/",userName,@"/Data/Datasource/"];
+    
+    NSArray *fileList = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:nil];
+    
+    for(NSString *file in fileList){
+        if([file hasSuffix:@".snm"]){
+            NSString *sourcePath = [NSString stringWithFormat:@"%@%@%@",path,@"/",file];
+            NSString *destinationPath = [NSString stringWithFormat:@"%@%@",userDatasourcePath,file];
+            destinationPath = [self formateNoneExistFileName:destinationPath isDir:NO];
+            [FileUtils copyFile:sourcePath targetPath:destinationPath];
+            break;
+        }
+    }
+}
 
 
 @end

@@ -40,6 +40,7 @@ import com.supermap.map3D.toolKit.PoiGsonBean;
 import com.supermap.map3D.toolKit.TouchUtil;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MeasureListener;
+import com.supermap.plugin.LocationManagePlugin;
 import com.supermap.realspace.Action3D;
 import com.supermap.realspace.BoxClipPart;
 import com.supermap.realspace.Camera;
@@ -57,6 +58,7 @@ import com.supermap.realspace.Tracking3DEvent;
 import com.supermap.realspace.Tracking3DListener;
 import com.supermap.rnsupermap.SceneViewManager;
 import com.supermap.smNative.SMSceneWC;
+import com.supermap.smNative.collector.SMCollector;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -868,20 +870,35 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 根据index获取位置并飞行到该位置
-     *
+     * 传入map，飞到指定位置
+     * @param map = {
+     *            "x": double,
+     *            "y": double,
+     *            "pointName": String
+     *            }
      * @param promise
      */
     @ReactMethod
-    public void toLocationPoint(int index,Promise promise) {
+    public void toLocationPoint(ReadableMap map,Promise promise) {
         try {
             sScene = getInstance();
             SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
             sceneControl.getScene().getTrackingLayer().clear();
-            PoiGsonBean.PoiInfos poiInfos= (PoiGsonBean.PoiInfos) pointList.get(pointList.size()-1).get(index);
+
+            String name = map.getString("pointName");
+            double x = map.getDouble("x");
+            double y = map.getDouble("y");
+
+            PoiGsonBean.PoiInfos poiInfos= new PoiGsonBean.PoiInfos();
+            PoiGsonBean.Location location = new PoiGsonBean.Location();
+            location.setX(x);
+            location.setY(y);
+
+            poiInfos.setLocation(location);
+            poiInfos.setName(name);
             PoiSearchHelper.getInstence().toLocationPoint(poiInfos);
             sceneControl.getScene().refresh();
-            pointList.clear();
+//            pointList.clear();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -1008,6 +1025,31 @@ public class SScene extends ReactContextBaseJavaModule {
     }
 
 
+    /**
+     * 获取当前sScene中心点 相机位置 场景未打开则返回定位
+     * @param promise
+     */
+    @ReactMethod
+    public void getSceneCenter(Promise promise){
+        try{
+            sScene = SScene.getInstance();
+            Camera camera = sScene.smSceneWc.getSceneControl().getScene().getCamera();
+            double x = camera.getLongitude();
+            double y  = camera.getLatitude();
+            WritableMap map = Arguments.createMap();
+            map.putDouble("x",x);
+            map.putDouble("y",y);
+            promise.resolve(map);
+        }catch (Exception e){
+            LocationManagePlugin.GPSData gpsData = SMCollector.getGPSPoint();
+            double x = gpsData.dLongitude;
+            double y  = gpsData.dLatitude;
+            WritableMap map = Arguments.createMap();
+            map.putDouble("x",x);
+            map.putDouble("y",y);
+            promise.resolve(map);
+        }
+    }
     /**
      * 获取飞行列表
      *
