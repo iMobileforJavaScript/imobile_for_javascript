@@ -81,6 +81,14 @@ getHistoryData = () => {
   }
 }
 
+switchViewMode = () => {
+  try {
+    return SCollectSceneFormView.switchViewMode()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   startRecording,
   stopRecording,
@@ -91,4 +99,5 @@ export default {
   loadData,
   clearData,
   getHistoryData,
+  switchViewMode,
 }
