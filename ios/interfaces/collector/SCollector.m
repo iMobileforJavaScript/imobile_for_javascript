@@ -316,7 +316,9 @@ RCT_REMAP_METHOD(cancel, cancelWithType:(int)type resolver:(RCTPromiseResolveBlo
     @try {
         SMap* sMap = [SMap singletonInstance];
         [sMap.smMapWC.mapControl cancel];
-        [self startCollectWithType:type resolver:resolve rejecter:reject];
+        if (type) {
+            [self startCollectWithType:type resolver:resolve rejecter:reject];
+        }
     } @catch (NSException *exception) {
         reject(@"SCollector",@"submit expection",nil);
     }

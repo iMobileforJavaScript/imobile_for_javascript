@@ -879,7 +879,19 @@ export default (function () {
     }
   }
 
+    /**
+     * 获取当前场景
+     * @returns {*}
+     */
+  function getSceneCenter(){
+      try {
+          return SScene.getSceneCenter()
+      }catch (e) {
+          console.error(e)
+      }
+  }
     let SSceneExp = {
+        getSceneCenter,
         openWorkspace,
         closeWorkspace,
         saveWorkspace,
