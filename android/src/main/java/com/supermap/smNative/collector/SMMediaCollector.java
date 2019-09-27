@@ -1,6 +1,7 @@
 package com.supermap.smNative.collector;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -271,7 +272,9 @@ public class SMMediaCollector {
     }
 
     public static InfoCallout getCalloutByMedia(Context context, SMMedia media, Recordset recordset, String layerName, View.OnTouchListener listener) {
-        int imgSize = 60;
+        float density = context.getResources().getDisplayMetrics().density;
+
+        int imgSize = (int)(50*density);
 
         Point2D pt = new Point2D(media.getLocation().getX(), media.getLocation().getY());
 
@@ -293,7 +296,7 @@ public class SMMediaCollector {
         }
         callout.setContentView(img);
         callout.setLocation(pt.getX(), pt.getY());
-
+        callout.setCustomize(true);
         callout.setMediaName(media.getFileName());
         callout.setMediaFilePaths(media.getPaths());
         callout.setLayerName(layerName);
@@ -313,7 +316,10 @@ public class SMMediaCollector {
     }
 
     public static InfoCallout createCalloutByMedia(Context context, SMMedia media, Recordset recordset, String layerName, View.OnTouchListener listener) {
-        int imgSize = 60;
+
+        float density = context.getResources().getDisplayMetrics().density;
+
+        int imgSize = (int)(50*density);
 
         Point2D pt = new Point2D(media.getLocation().getX(), media.getLocation().getY());
 
@@ -334,6 +340,7 @@ public class SMMediaCollector {
             img.setImageBitmap(MediaUtil.getLocalBitmap(imagePath, imgSize, imgSize));
         }
         callout.setContentView(img);
+        callout.setCustomize(true);
         callout.setLocation(pt.getX(), pt.getY());
 
         callout.setMediaName(media.getFileName());
