@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.Camera;
+import android.os.Build;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -858,7 +859,26 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     }
 
     /**
-     * ARView是否可用
+     * ARView系统版本是否支持(只支持6.0以上设备)
+     * @param promise
+     */
+    @ReactMethod
+    public void checkIfAvailable(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--checkIfAvailable--------RN--------");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                //老设备体验很差, 不如不支持.
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * ARView需要的传感器是否可用
      * @param promise
      */
     @ReactMethod
