@@ -507,21 +507,23 @@ public class SMLayer {
                     continue;
                 FieldType type = fieldInfo.getType();
                 String value;
+
+                ReadableType valueType = info.getType("value");
                 if (type == FieldType.INT16) {
-                    value = info.getInt("value") + "";
-                    result = recordset.setInt16(name, Short.parseShort(value));
+                    value = valueType == ReadableType.String ? info.getString("value") : Double.valueOf(info.getDouble("value")).intValue() + "";
+                    if (!value.equals("")) result = recordset.setInt16(name, Short.parseShort(value));
                 } else if (type == FieldType.INT32) {
-                    value = info.getInt("value") + "";
-                    result = recordset.setInt32(name, Integer.parseInt(value));
+                    value = valueType == ReadableType.String ? info.getString("value") : Double.valueOf(info.getDouble("value")).intValue() + "";
+                    if (!value.equals("")) result = recordset.setInt32(name, Integer.parseInt(value));
                 } else if (type == FieldType.INT64) {
-                    value = info.getInt("value") + "";
-                    result = recordset.setInt64(name, Long.parseLong(value));
+                    value = valueType == ReadableType.String ? info.getString("value") : Double.valueOf(info.getDouble("value")).intValue() + "";
+                    if (!value.equals("")) result = recordset.setInt64(name, Long.parseLong(value));
                 } else if (type == FieldType.SINGLE) {
-                    value = info.getInt("value") + "";
-                    result = recordset.setSingle(name, Float.parseFloat(value));
+                    value = valueType == ReadableType.String ? info.getString("value") : Double.valueOf(info.getDouble("value")).intValue() + "";
+                    if (!value.equals("")) result = recordset.setSingle(name, Float.parseFloat(value));
                 } else if (type == FieldType.DOUBLE) {
-                    value = info.getDouble("value") + "";
-                    result = recordset.setDouble(name, Double.parseDouble(value));
+                    value = valueType == ReadableType.String ? info.getString("value") : info.getDouble("value") + "";
+                    if (!value.equals("")) result = recordset.setDouble(name, Double.parseDouble(value));
                 } else if (type == FieldType.TEXT || type == FieldType.WTEXT
                         || type == FieldType.LONGBINARY || type == FieldType.BYTE) {
                     value = info.getString("value");
