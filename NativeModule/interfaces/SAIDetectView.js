@@ -300,6 +300,14 @@ checkIfCameraAvailable = () => {
   }
 }
 
+checkIfAvailable = () => {
+  try {
+    return SAIDetectView.checkIfAvailable()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   initAIDetect,
   startDetect,
@@ -334,4 +342,5 @@ export default {
   isDrawConfidenceEnable,
   checkIfSensorsAvailable,
   checkIfCameraAvailable,
+  checkIfAvailable,
 }
