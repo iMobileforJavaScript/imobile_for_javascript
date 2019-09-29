@@ -2355,17 +2355,6 @@ export default (function () {
     }
   }
 
-  /**
-   * 获取室内导航数据源
-   * @returns {*|void|Promise<void>}
-   */
-  function getIndoorNavigationData(name) {
-    try {
-      return SMap.getIndoorNavigationData(name)
-    } catch (e) {
-      console.error(e)
-    }
-  }
 
 
   /**
@@ -2417,14 +2406,38 @@ export default (function () {
     }
   }
 
+  /**
+   * 获取路网线数据集
+   * @returns {*|void|Promise<void>}
+   */
+  function getLineDataset(name) {
+    try {
+      return SMap.getLineDataset(name)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
 
   /**
    * 获取路网数据集
    * @returns {*|void|Promise<void>}
    */
-  function getNetWorkDataset() {
+  function getNetWorkDataset(name) {
     try {
-      return SMap.getNetWorkDataset()
+      return SMap.getNetWorkDataset(name)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 将路网数据集添加到地图上
+   * @returns {*|void|Promise<void>}
+   */
+  function addNetWorkDataset(networkdataset) {
+    try {
+      return SMap.addNetWorkDataset(networkdataset)
     } catch (e) {
       console.error(e)
     }
@@ -2434,26 +2447,15 @@ export default (function () {
    * 生成路网
    * @returns {*|void|Promise<void>}
    */
-  function buildNetwork(networkdataset) {
+  function buildNetwork(linedataset,networkdataset) {
     try {
-      return SMap.buildNetwork(networkdataset)
+      return SMap.buildNetwork(linedataset,networkdataset)
     } catch (e) {
       console.error(e)
     }
   }
 
 
-  /**
-   * 新建路网数据集
-   * @returns {*|void|Promise<void>}
-   */
-  function newIncrementRoad(name) {
-    try {
-      return SMap.newIncrementRoad(name)
-    } catch (e) {
-      console.error(e)
-    }
-  }
 
   /**
    * GPS开始
@@ -2472,9 +2474,9 @@ export default (function () {
    * 添加GPS轨迹
    * @returns {*|void|Promise<void>}
    */
-  function addGPSRecordset() {
+  function addGPSRecordset(linedataset) {
     try {
-      return SMap.addGPSRecordset()
+      return SMap.addGPSRecordset(linedataset)
     } catch (e) {
       console.error(e)
     }
@@ -2817,14 +2819,14 @@ export default (function () {
     getEndPoint,
     clearPoint,
     stopGuide,
-    getIndoorNavigationData,
     isIndoorPoint,
     openTrafficMap,
     isOpenTrafficMap,
     removeTrafficMap,
+    getLineDataset,
     getNetWorkDataset,
+    addNetWorkDataset,
     buildNetwork,
-    newIncrementRoad,
     gpsBegin,
     addGPSRecordset,
     copyNaviSnmFile,
