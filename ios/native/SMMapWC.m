@@ -271,6 +271,7 @@
 }
 
 -(BOOL)reNameFile:(NSString*)strOldName with:(NSString*)strNewName inFolder:(NSString*)strFolder{
+    if ([strOldName isEqualToString:strNewName]) return true;
     NSString *strOld = [NSString stringWithFormat:@"%@/%@",strFolder,strOldName];
     NSString *strNew = [NSString stringWithFormat:@"%@/%@",strFolder,strNewName];
     

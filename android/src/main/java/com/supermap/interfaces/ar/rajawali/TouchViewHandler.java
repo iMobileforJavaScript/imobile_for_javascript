@@ -23,11 +23,7 @@ public class TouchViewHandler {
     private static final int THIRD_PERSON_FOV = 65;
     private static final int TOP_DOWN_FOV = 65;
 
-    private enum ViewMode {
-        FIRST_PERSON, TOP_DOWN, THIRD_PERSON
-    }
-
-    private ViewMode viewMode = ViewMode.THIRD_PERSON;
+    private ViewMode viewMode = ViewMode.THIRD_PERSON;//默认第三人称视角
 
     private GestureDetector gestureDetector;
     private ScaleGestureDetector scaleGestureDetector;
@@ -71,6 +67,10 @@ public class TouchViewHandler {
     public void onTouchEvent(MotionEvent motionEvent) {
         gestureDetector.onTouchEvent(motionEvent);
         scaleGestureDetector.onTouchEvent(motionEvent);
+    }
+
+    public ViewMode getViweMode() {
+        return viewMode;
     }
 
     public void setFirstPersonView() {
