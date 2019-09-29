@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 #import "Action3D.h"
 #import "Point3D.h"
+#import "Point3Ds.h"
 #import "SceneType.h"
 @protocol SceneControlTouchDelegate,Tracking3DDelegate,Tracked3DDelegate,PointInputDelegate;
 @class Scene,Tracking3DEvent,Tracked3DEvent
@@ -67,6 +68,9 @@
 
  /// 当用户手动改变SceneControl时需调用resize方法来强制重绘
  - (void)resize;
+
+//根据点刷新显示距离测量和面积测量
+- (void)displayDistanceOrArea:(Point3Ds *)point3Ds;
 @end
 
 

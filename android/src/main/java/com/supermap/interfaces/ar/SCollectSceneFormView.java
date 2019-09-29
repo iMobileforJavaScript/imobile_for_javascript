@@ -13,6 +13,7 @@ import com.supermap.ar.highprecision.MeasureView;
 import com.supermap.data.*;
 import com.supermap.interfaces.ai.CustomRelativeLayout;
 import com.supermap.interfaces.ar.rajawali.MotionRajawaliRenderer;
+import com.supermap.interfaces.ar.rajawali.ViewMode;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.MapControl;
 import org.rajawali3d.scene.ASceneFrameCallback;
@@ -336,6 +337,27 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             } else {
                 promise.resolve(false);
             }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 切换观看模式
+     * @param promise
+     */
+    @ReactMethod
+    public void switchViewMode(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------switchViewMode--------RN--------");
+            ViewMode viewMode = mRenderer.getViewMode();
+            if (viewMode == ViewMode.FIRST_PERSON) {
+                mRenderer.setViewMode(ViewMode.THIRD_PERSON);
+            } else {
+                mRenderer.setViewMode(ViewMode.FIRST_PERSON);
+            }
+
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }

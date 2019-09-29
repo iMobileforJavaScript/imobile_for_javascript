@@ -1714,7 +1714,7 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         paragraph.alignment = NSTextAlignmentLeft;
         paragraph.lineBreakMode = NSLineBreakByTruncatingTail;
         
-        NSDictionary* attribute = @{NSFontAttributeName: [UIFont fontWithName:@"Helvetica-Bold" size:15], NSParagraphStyleAttributeName: paragraph,NSForegroundColorAttributeName:[UIColor blackColor],NSStrokeWidthAttributeName:@(-4),NSStrokeColorAttributeName:[UIColor whiteColor] };
+        NSDictionary* attribute = @{NSFontAttributeName: [UIFont fontWithName:@"Helvetica-Bold" size:15], NSParagraphStyleAttributeName: paragraph,NSForegroundColorAttributeName:[UIColor whiteColor],NSStrokeWidthAttributeName:@(-4),NSStrokeColorAttributeName:[UIColor blackColor]};
         
         dynStyle.textLableAttribute = attribute;
         dvPoint.style = dynStyle;
@@ -2127,7 +2127,11 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
                 defaultMapCenter = map.center;
                 [sMap.smMapWC.mapControl setAction:PAN];
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
+                
                 [map refresh];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [map refresh];
+                });
             }
         }
         

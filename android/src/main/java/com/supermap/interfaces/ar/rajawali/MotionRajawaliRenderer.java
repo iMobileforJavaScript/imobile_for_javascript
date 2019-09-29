@@ -28,16 +28,29 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
     private Trajectory mTrajectory;
 
 
-
     public MotionRajawaliRenderer(Context context){
         super(context);
         mTouchViewHandler = new TouchViewHandler(mContext, getCurrentCamera());
     }
 
+    //设置观看模式
+    public void setViewMode(ViewMode viewMode) {
+        switch (viewMode) {
+            case FIRST_PERSON:
+                mTouchViewHandler.setFirstPersonView();
+                break;
+            case THIRD_PERSON:
+                mTouchViewHandler.setThirdPersonView();
+                break;
+        }
+    }
+
+    public ViewMode getViewMode() {
+        return mTouchViewHandler.getViweMode();
+    }
+
     @Override
     protected void initScene(){
-
-
         //        mGrid = new Grid(100, 1, 1, 0xFFCCCCCC);   //default here. comment by ypp.
 
         mGrid = new Grid(100, 1, 1, 0xFFCCCCFF);
