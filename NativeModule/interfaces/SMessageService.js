@@ -50,10 +50,13 @@ function disconnectionService() {
 function sendMessage(message, targetID) {
   return MessageServiceeNative.sendMessage(message,targetID);
 }
-//文件发送
-function sendFile(connectInfo, message, filePath, talkId, msgId) {
-  // return MessageServiceeNative.sendFile(connectInfo, message, filePath, talkId, msgId);   //用rabbitMQ发送文件
-  return MessageServiceeNative.sendFileWithThirdServer(message, filePath, talkId, msgId);     //用第三方服务器发送文件
+//用rabbitMQ发送文件
+function sendFileWithMQ(connectInfo, message, filePath, talkId, msgId) {
+  return MessageServiceeNative.sendFile(connectInfo, message, filePath, talkId, msgId);
+}
+//用第三方服务器发送文件
+function sendFileWithThirdServer(serverUrl, filePath, userId, talkId, msgId) {
+  return MessageServiceeNative.sendFileWithThirdServer(serverUrl, filePath, userId, talkId, msgId)
 }
 //声明多人会话
 function declareSession(memmbers,uuid) {
@@ -70,12 +73,14 @@ function receiveMessage(uuid) {
   return MessageServiceeNative.receiveMessage(uuid);
 }
 
-//开启文件接收
-function receiveFile(fileName, queueName, receivePath, talkId, msgId,userID,fileSize) {
-  // return MessageServiceeNative.receiveFile(fileName, queueName, receivePath, talkId, msgId);  //rabbitMQ接收文件
-  return MessageServiceeNative.receiveFileWithThirdServer(fileName, queueName, receivePath, talkId, msgId,userID,fileSize);  //用第三方服务器接收文件
+//rabbitMQ接收文件
+function receiveFileWithMQ(fileName, queueName, receivePath, talkId, msgId,) {
+  return MessageServiceeNative.receiveFile(fileName, queueName, receivePath, talkId, msgId);
 }
-
+//用第三方服务器接收文件
+function receiveFileWithThirdServer(serverUrl, fileOwnerId, md5, fileSize, receivePath, fileName, talkId, msgId){
+  return MessageServiceeNative.receiveFileWithThirdServer(serverUrl, fileOwnerId, md5, fileSize, receivePath, fileName, talkId, msgId)
+}
 //开启消息接收
 function startReceiveMessage(uuid,handle) {
   register(handle);
@@ -104,9 +109,11 @@ export default {
   startReceiveMessage,
   exitSession,
   declareSession,
-  sendFile,
+  sendFileWithMQ,
+  sendFileWithThirdServer,
   sendMessage,
-  receiveFile,
+  receiveFileWithMQ,
+  receiveFileWithThirdServer,
   disconnectionService,
   connectService,
   resume,

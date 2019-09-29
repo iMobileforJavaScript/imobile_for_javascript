@@ -902,18 +902,51 @@ RCT_REMAP_METHOD(initPointSearch, initPointSearch:(RCTPromiseResolveBlock)resolv
         reject(@"SScene",exception.reason, nil);
     }
 }
-
 /**
- *根据index获取位置并飞行到该位置
+ * 获取当前sScene中心点 相机位置  场景未打开则返回定位
  * @param promise
  */
-RCT_REMAP_METHOD(toLocationPoint, index:(int)index toLocationPoint:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getSceneCenter, getSceneCenterWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        Camera camera = sScene.smSceneWC.sceneControl.scene.camera;
+        double x = camera.longitude;
+        double y = camera.latitude;
+        resolve(@{@"x":[NSNumber numberWithDouble:x],@"y":[NSNumber numberWithDouble:y]});
+    } @catch (NSException *exception) {
+        GPSData* gpsData = [NativeUtil getGPSData];
+        double x = gpsData.dLongitude;
+        double y = gpsData.dLatitude;
+        resolve(@{@"x":[NSNumber numberWithDouble:x],@"y":[NSNumber numberWithDouble:y]});
+    }
+}
+/**
+ 传入map，飞到指定位置
+ * @param map = {
+ *            "x": double,
+ *            "y": double,
+ *            "pointName": String
+ *            }
+ * @param promise
+ */
+RCT_REMAP_METHOD(toLocationPoint, Map:(NSDictionary *)map toLocationPoint:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try{
         sScene = [SScene singletonInstance];
         Scene* scene = sScene.smSceneWC.sceneControl.scene;
         [scene.trackingLayer3D clear];
-        OnlinePOIInfo *onlinePoiInfo=[poiInfos objectAtIndex:index];
-        [[PoiSearchHelper sharedInstance] toLocationPoint:index];
+        
+        double x = [[map objectForKey:@"x"]doubleValue];
+        double y = [[map objectForKey:@"y"]doubleValue];
+        
+        Point2D *location = [[Point2D alloc]initWithX:x Y:y];
+        
+        NSString *name = [map objectForKey:@"pointName"];
+        
+        OnlinePOIInfo *onlinePoiInfo= [[OnlinePOIInfo alloc]init];
+        onlinePoiInfo.location = location;
+        onlinePoiInfo.name = name;
+        
+        [[PoiSearchHelper sharedInstance] toLocationPoint:onlinePoiInfo];
         [scene refresh];
         poiInfos=nil;
         resolve(@(1));
@@ -1778,7 +1811,8 @@ RCT_REMAP_METHOD(setMeasureLineAnalyst, setMeasureLineAnalystResolver:(RCTPromis
     }
 }
 -(void)distanceResult:(double)distance{
-    distance = ((int)(distance*1000000+0.5))/1000000.0;
+//    js处理小数位数
+//    distance = ((long)(distance*100))/100.0;
     [self sendEventWithName:ANALYST_MEASURELINE body:@(distance)];
 }
 

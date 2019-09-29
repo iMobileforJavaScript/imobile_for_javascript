@@ -37,7 +37,8 @@ static Datasource *IndoorDatasource;
 static NSString *IncrementRoadName;
 //是否是起点
 static BOOL isStart;
-NSString * const LEGEND_CONTENT_CHANGE = @"com.supermap.RN.Map.Legend.legend_content_change";
+//Gps点
+Point2Ds *GpsPoint2Ds;
 
 @interface SMap()
 {
@@ -836,6 +837,28 @@ RCT_REMAP_METHOD(getIndoorPathLength, getIndoorPathLengthWithResolver: (RCTPromi
 //
 //    }
 //}
+#pragma mark 获取室内导航路径详情
+RCT_REMAP_METHOD(getIndoorPath, getIndoorPathWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap  = [SMap singletonInstance];
+        NSArray *navipath = [[sMap.smMapWC.mapControl getNavigation3] getNaviPath];
+        NSMutableArray *array = [[NSMutableArray alloc] init];
+        for(int i = 0; i < navipath.count; i++){
+            NaviStep *step = navipath[i];
+            double getTime = step.time;
+            double roadLength = step.length;
+            int length = (int)round(roadLength);
+            NSDictionary *dic = @{@"roadName":[NSNumber numberWithDouble:getTime],
+                                  @"roadLength":[NSNumber numberWithInt:length],
+                                  };
+            [array addObject:dic];
+        }
+        resolve(array);
+    } @catch (NSException *exception) {
+        reject(@"getIndoorPath",exception.reason,nil);
+    }
+}
+
 #pragma mark 路径分析
 RCT_REMAP_METHOD(routeAnalyst, routeAnalystWithX:(double)x Y:(double)y resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
@@ -973,16 +996,16 @@ RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithBool:(BOOL)first resolv
     }
 }
 
-#pragma mark 获取室内导航数据源
-RCT_REMAP_METHOD(getIndoorNavigationData, getIndoorNavigationDataWithName:(NSString *)name resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
-    @try {
-        sMap = [SMap singletonInstance];
-        IndoorDatasource = [sMap.smMapWC.workspace.datasources getAlias:name];
-        resolve(@(YES));
-    } @catch (NSException *exception) {
-        reject(@"getIndoorNavigationData",exception.reason,nil);
-    }
-}
+//#pragma mark 获取室内导航数据源
+//RCT_REMAP_METHOD(getIndoorNavigationData, getIndoorNavigationDataWithName:(NSString *)name resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+//    @try {
+//        sMap = [SMap singletonInstance];
+//        IndoorDatasource = [sMap.smMapWC.workspace.datasources getAlias:name];
+//        resolve(@(YES));
+//    } @catch (NSException *exception) {
+//        reject(@"getIndoorNavigationData",exception.reason,nil);
+//    }
+//}
 
 #pragma mark 设置室内导航
 RCT_REMAP_METHOD(startIndoorNavigation, startIndoorNavigationWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
@@ -1148,7 +1171,7 @@ RCT_REMAP_METHOD(getEndPoint, getEndPointWithX:(double)x Y:(double) y isIndoor: 
     @try {
         sMap = [SMap singletonInstance];
         if(isindoor){
-            [[sMap.smMapWC.mapControl getNavigation3] setStartPoint:x Y:y ID:sMap.smMapWC.floorListView.currentFloorId];
+            [[sMap.smMapWC.mapControl getNavigation3] setDestinationPoint:x Y:y ID:sMap.smMapWC.floorListView.currentFloorId];
         }else{
             [SMap showPointByCalloutAtX:x Y:y PointName:@"endpoint"];
         }
@@ -1187,31 +1210,26 @@ RCT_REMAP_METHOD(stopGuide, stopGuideWithResolver: (RCTPromiseResolveBlock) reso
 }
 
 #pragma mark 判断起终点地理位置名称
-RCT_REMAP_METHOD(getPointName, getPointNameWithX:(double)x Y:(double) y IsStart: (BOOL)isStart resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getPointName, getPointNameWithX:(double)x Y:(double) y IsStart: (BOOL)isstart resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
+        isStart = isstart;
         Point2D *point2D = [SMap getPointWithX:x Y:y];
-        [SMap ReverseGeocodingWithPoint:point2D IsStart:isStart];
+        Geocoding *reverseGeocoding = [[Geocoding alloc] init];
+        [reverseGeocoding setKey:@"fvV2osxwuZWlY0wJb8FEb2i5"];
+        reverseGeocoding.delegate = self;
+        [reverseGeocoding reverseGeocoding:point2D];
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"getPointName",exception.reason,nil);
     }
 }
 
-+(void)ReverseGeocodingWithPoint:(Point2D *)point IsStart:(BOOL)start{
-    isStart = start;
-    Geocoding *reverseGeocoding = [[Geocoding alloc] init];
-    [reverseGeocoding setKey:@"fvV2osxwuZWlY0wJb8FEb2i5"];
-    reverseGeocoding.delegate = [SMap singletonInstance];
-    [reverseGeocoding reverseGeocoding:point];
-}
-
 #pragma mark 逆地理编码成功回调
--(void)geocodingSuccess:(NSArray*)geocodingDataList{
-    GeocodingData *data = geocodingDataList[0];
+-(void)reversegeocodingSuccess:(GeocodingData*)geocodingData{
     if(isStart){
-        [[SMap singletonInstance] sendEventWithName: MAPSELECTPOINTNAMESTART body:data.formatedAddress];
+        [self sendEventWithName: MAPSELECTPOINTNAMESTART body:geocodingData.formatedAddress];
     }else{
-        [[SMap singletonInstance] sendEventWithName: MAPSELECTPOINTNAMEEND body:data.formatedAddress];
+        [self sendEventWithName: MAPSELECTPOINTNAMEEND body:geocodingData.formatedAddress];
     }
 }
 
@@ -1246,6 +1264,7 @@ RCT_REMAP_METHOD(getPointName, getPointNameWithX:(double)x Y:(double) y IsStart:
         [points add:point];
         PrjCoordSys *desPrjCoordSys = [[PrjCoordSys alloc]init];
         desPrjCoordSys.type = PCST_EARTH_LONGITUDE_LATITUDE;
+        // 转换投影坐标
         [CoordSysTranslator convert:points PrjCoordSys:mapCoordSys PrjCoordSys:desPrjCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
         point2D = [points getItem:0];
     }else{
@@ -1298,7 +1317,7 @@ RCT_REMAP_METHOD(isOpenTrafficMap, isOpenTrafficMapWithResolver: (RCTPromiseReso
     }
 }
 
-#pragma mark 判断是否打开实时路况
+#pragma mark 移除实时路况
 RCT_REMAP_METHOD(removeTrafficMap, removeTrafficMapWith:(NSString *)layerName resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
@@ -1326,6 +1345,88 @@ RCT_REMAP_METHOD(removeTrafficMap, removeTrafficMapWith:(NSString *)layerName re
         reject(@"removeTrafficMap",exception.reason,nil);
     }
 }
+
+#pragma mark GPS开始
+RCT_REMAP_METHOD(gpsBegin, gpsBeginWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        GPSData *gpsData = [NativeUtil getGPSData];
+        Point2D *gpsPoint = [[Point2D alloc]initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
+        if(GpsPoint2Ds == nil){
+            GpsPoint2Ds = [[Point2Ds alloc] init];
+        }
+        [GpsPoint2Ds add:gpsPoint];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"gpsBegin",exception.reason,nil);
+    }
+}
+
+#pragma mark 添加GPS轨迹
+RCT_REMAP_METHOD(addGPSRecordset,addGPSRecordsetWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        DatasetVector *datasetVector = (DatasetVector *)[IndoorDatasource.datasets getWithName:IncrementRoadName];
+        if(datasetVector != nil){
+            [datasetVector setReadOnly:NO];
+        }
+        Recordset *recordset = [datasetVector recordset:NO cursorType:DYNAMIC];
+        GeoLine *geoline = [[GeoLine alloc] init];
+        [geoline addPart:GpsPoint2Ds];
+        [recordset addNew:geoline];
+        [recordset update];
+        NSArray *idNo = @[[NSNumber numberWithInteger:recordset.ID]];
+        
+        [recordset close];
+        [geoline dispose];
+        [recordset dispose];
+        Recordset *recordset1 = [datasetVector queryWithID:idNo Type:DYNAMIC];
+        EditHistory *history = [sMap.smMapWC.mapControl getEditHistory];
+        [history BatchBegin];
+        [history addHistoryType:EHT_AddNew recordset:recordset1 isCurrentOnly:YES];
+        [history BatchEnd];
+        [recordset1 close];
+        [recordset1 dispose];
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"addGPSRecordset",exception.reason,nil);
+    }
+}
+
+#pragma mark 拷贝室外地图网络模型snm文件
+RCT_REMAP_METHOD(copyNaviSnmFile,copyNaviSnmFileWithPath:(NSString *)path resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        [sMap.smMapWC copyNaviSnmFileFrom:path];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"copyNaviSnmFile",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取室内数据源
+RCT_REMAP_METHOD(getIndoorDatasource,getIndoorDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+       // IndoorDatasource = [sMap.smMapWC.floorListView getIndoorDatasource];
+        Datasources *datasources =sMap.smMapWC.workspace.datasources;
+        for(int i = 0; i < datasources.count; i++){
+            Datasource *datasource = [datasources get:i];
+            if([datasource.alias isEqualToString:@"bounds"]){
+                Datasets *datasets = datasource.datasets;
+                DatasetVector *dataset = (DatasetVector *)[datasets getWithName:@"building"];
+                Recordset *recordset = [dataset recordset:NO cursorType:DYNAMIC];
+                IndoorDatasource = [datasources getAlias:(NSString *)[recordset getFieldValueWithString:@"LinkDatasource"]];
+                [recordset dispose];
+            }
+        }
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"getIndoorDatasource",exception.reason,nil);
+    }
+}
+
 #pragma mark -------------------------导航模块结束---------------------------
 
 //#pragma mark 导入工作空间
@@ -1612,7 +1713,7 @@ RCT_REMAP_METHOD(addCallouts, addCalloutsWithArray:(NSArray *)pointList resolver
         paragraph.alignment = NSTextAlignmentLeft;
         paragraph.lineBreakMode = NSLineBreakByTruncatingTail;
         
-        NSDictionary* attribute = @{NSFontAttributeName: [UIFont fontWithName:@"Helvetica-Bold" size:15], NSParagraphStyleAttributeName: paragraph,NSForegroundColorAttributeName:[UIColor blackColor],NSStrokeWidthAttributeName:@(-4),NSStrokeColorAttributeName:[UIColor whiteColor] };
+        NSDictionary* attribute = @{NSFontAttributeName: [UIFont fontWithName:@"Helvetica-Bold" size:15], NSParagraphStyleAttributeName: paragraph,NSForegroundColorAttributeName:[UIColor whiteColor],NSStrokeWidthAttributeName:@(-4),NSStrokeColorAttributeName:[UIColor blackColor]};
         
         dynStyle.textLableAttribute = attribute;
         dvPoint.style = dynStyle;
@@ -2025,7 +2126,11 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
                 defaultMapCenter = map.center;
                 [sMap.smMapWC.mapControl setAction:PAN];
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
+                
                 [map refresh];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [map refresh];
+                });
             }
         }
         

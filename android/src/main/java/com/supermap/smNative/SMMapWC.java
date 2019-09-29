@@ -368,6 +368,7 @@ public class SMMapWC {
     }
 
     private boolean reNameFile(String strOldName, String strNewName, String strFolder) {
+        if (strOldName.equals(strNewName)) return true;
         String strOld = strFolder + "/" + strOldName;
         String strNew = strFolder + "/" + strNewName;
 

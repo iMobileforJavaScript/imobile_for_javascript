@@ -951,6 +951,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     sMap.smMapWC.getMapControl().setAction(Action.PAN);
                     map.setVisibleScalesEnabled(false);
                     map.refresh();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            sMap.smMapWC.getMapControl().getMap().refresh();
+                        }
+                        }, 3000);//3秒后执行Runnable中的run方法
                 }
             }
 
@@ -6185,7 +6192,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             promise.resolve(map);
         } catch (Exception e) {
-            promise.reject(e);
+            LocationManagePlugin.GPSData gpsData = SMCollector.getGPSPoint();
+            double x = gpsData.dLongitude;
+            double y  = gpsData.dLatitude;
+            WritableMap map = Arguments.createMap();
+            map.putDouble("x",x);
+            map.putDouble("y",y);
+            promise.resolve(map);
         }
     }
 
@@ -6363,7 +6376,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 double density = dm.density;
 
                 int markerSize = 30;
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(600,(int)(markerSize*density));
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int)(600*density),(int)(markerSize*density));
 
                 InfoCallout callout = new InfoCallout(context);
                 callout.setStyle(CalloutAlignment.BOTTOM);
@@ -6378,18 +6391,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 imageView.setImageResource(R.drawable.icon_red);
 
                 params = new RelativeLayout.LayoutParams((int)(markerSize*density),(int)(markerSize*density));
-                params.setMargins(300-(int)(markerSize*density/2), 0,0, 0);
+                params.setMargins((int)(150*density)-(int)(markerSize*density/2), 10,0, 0);
                 imageView.setLayoutParams(params);
 //                imageView.setBackgroundColor(android.graphics.Color.BLUE);
 
 
                 StrokeTextView strokeTextView = new StrokeTextView(context);
-                strokeTextView.setTextSize(12);
-                params = new RelativeLayout.LayoutParams(300-(int)(markerSize*density/2),(int)(markerSize*density)+2);
-                params.setMargins(300+markerSize*(int)density/2, 0,0, 0);
+                strokeTextView.setTextSize(14);
+                params = new RelativeLayout.LayoutParams((int)(150*density)-(int)(markerSize*density/2),(int)(markerSize*density)+10);
+                params.setMargins((int)(150*density)+markerSize*(int)density/2, 0,0, 0);
                 strokeTextView.setLayoutParams(params);
-                strokeTextView.setTextColor(android.graphics.Color.BLACK);
-                String showName = name.length() > 10 ? name.substring(0,10) + "..." : name;
+                strokeTextView.setTextColor(android.graphics.Color.WHITE);
+                String showName = name.length() > 15 ? name.substring(0,15) + "..." : name;
                 strokeTextView.setText(showName);
 //                strokeTextView.setBackgroundColor(android.graphics.Color.YELLOW);
                 callout.addView(imageView);
@@ -7470,6 +7483,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     DatasetVector dataset = (DatasetVector) datasets.get("building");
                     Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
                     IndoorDatasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(recordset.getFieldValue("LinkDatasource").toString());
+                    recordset.dispose();
                 }
             }
             promise.resolve(true);
