@@ -1729,7 +1729,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             moveToCurrentThread.run();
 
             sMap.smMapWC.getMapControl().getMap().setAngle(0);
-//            sMap.smMapWC.getMapControl().getMap().setSlantAngle(0);
+            sMap.smMapWC.getMapControl().getMap().setSlantAngle(0);
 //            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -5308,7 +5308,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void setMapSlantAngle(double angle, Promise promise) {
         try {
             sMap = SMap.getInstance();
-//            sMap.smMapWC.getMapControl().getMap().setSlantAngle(angle);
+            sMap.smMapWC.getMapControl().getMap().setSlantAngle(angle);
             sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
