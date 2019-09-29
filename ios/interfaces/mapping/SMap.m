@@ -837,6 +837,28 @@ RCT_REMAP_METHOD(getIndoorPathLength, getIndoorPathLengthWithResolver: (RCTPromi
 //
 //    }
 //}
+#pragma mark 获取室内导航路径详情
+RCT_REMAP_METHOD(getIndoorPath, getIndoorPathWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap  = [SMap singletonInstance];
+        NSArray *navipath = [[sMap.smMapWC.mapControl getNavigation3] getNaviPath];
+        NSMutableArray *array = [[NSMutableArray alloc] init];
+        for(int i = 0; i < navipath.count; i++){
+            NaviStep *step = navipath[i];
+            double getTime = step.time;
+            double roadLength = step.length;
+            int length = (int)round(roadLength);
+            NSDictionary *dic = @{@"roadName":[NSNumber numberWithDouble:getTime],
+                                  @"roadLength":[NSNumber numberWithInt:length],
+                                  };
+            [array addObject:dic];
+        }
+        resolve(array);
+    } @catch (NSException *exception) {
+        reject(@"getIndoorPath",exception.reason,nil);
+    }
+}
+
 #pragma mark 路径分析
 RCT_REMAP_METHOD(routeAnalyst, routeAnalystWithX:(double)x Y:(double)y resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
@@ -974,16 +996,16 @@ RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithBool:(BOOL)first resolv
     }
 }
 
-#pragma mark 获取室内导航数据源
-RCT_REMAP_METHOD(getIndoorNavigationData, getIndoorNavigationDataWithName:(NSString *)name resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
-    @try {
-        sMap = [SMap singletonInstance];
-        IndoorDatasource = [sMap.smMapWC.workspace.datasources getAlias:name];
-        resolve(@(YES));
-    } @catch (NSException *exception) {
-        reject(@"getIndoorNavigationData",exception.reason,nil);
-    }
-}
+//#pragma mark 获取室内导航数据源
+//RCT_REMAP_METHOD(getIndoorNavigationData, getIndoorNavigationDataWithName:(NSString *)name resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+//    @try {
+//        sMap = [SMap singletonInstance];
+//        IndoorDatasource = [sMap.smMapWC.workspace.datasources getAlias:name];
+//        resolve(@(YES));
+//    } @catch (NSException *exception) {
+//        reject(@"getIndoorNavigationData",exception.reason,nil);
+//    }
+//}
 
 #pragma mark 设置室内导航
 RCT_REMAP_METHOD(startIndoorNavigation, startIndoorNavigationWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
@@ -1134,6 +1156,8 @@ RCT_REMAP_METHOD(getStartPoint, getStartPointWithX:(double)x Y:(double) y isIndo
     @try {
         sMap = [SMap singletonInstance];
         if(isindoor){
+            NSString *iiid = sMap.smMapWC.floorListView.currentFloorId;
+            NSLog(@"%@",iiid);
             [[sMap.smMapWC.mapControl getNavigation3] setStartPoint:x Y:y ID:sMap.smMapWC.floorListView.currentFloorId];
         }else{
             [SMap showPointByCalloutAtX:x Y:y PointName:@"startpoint"];
@@ -1149,7 +1173,7 @@ RCT_REMAP_METHOD(getEndPoint, getEndPointWithX:(double)x Y:(double) y isIndoor: 
     @try {
         sMap = [SMap singletonInstance];
         if(isindoor){
-            [[sMap.smMapWC.mapControl getNavigation3] setStartPoint:x Y:y ID:sMap.smMapWC.floorListView.currentFloorId];
+            [[sMap.smMapWC.mapControl getNavigation3] setDestinationPoint:x Y:y ID:sMap.smMapWC.floorListView.currentFloorId];
         }else{
             [SMap showPointByCalloutAtX:x Y:y PointName:@"endpoint"];
         }
@@ -1188,31 +1212,26 @@ RCT_REMAP_METHOD(stopGuide, stopGuideWithResolver: (RCTPromiseResolveBlock) reso
 }
 
 #pragma mark 判断起终点地理位置名称
-RCT_REMAP_METHOD(getPointName, getPointNameWithX:(double)x Y:(double) y IsStart: (BOOL)isStart resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getPointName, getPointNameWithX:(double)x Y:(double) y IsStart: (BOOL)isstart resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
+        isStart = isstart;
         Point2D *point2D = [SMap getPointWithX:x Y:y];
-        [SMap ReverseGeocodingWithPoint:point2D IsStart:isStart];
+        Geocoding *reverseGeocoding = [[Geocoding alloc] init];
+        [reverseGeocoding setKey:@"fvV2osxwuZWlY0wJb8FEb2i5"];
+        reverseGeocoding.delegate = self;
+        [reverseGeocoding reverseGeocoding:point2D];
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"getPointName",exception.reason,nil);
     }
 }
 
-+(void)ReverseGeocodingWithPoint:(Point2D *)point IsStart:(BOOL)start{
-    isStart = start;
-    Geocoding *reverseGeocoding = [[Geocoding alloc] init];
-    [reverseGeocoding setKey:@"fvV2osxwuZWlY0wJb8FEb2i5"];
-    reverseGeocoding.delegate = [SMap singletonInstance];
-    [reverseGeocoding reverseGeocoding:point];
-}
-
 #pragma mark 逆地理编码成功回调
--(void)geocodingSuccess:(NSArray*)geocodingDataList{
-    GeocodingData *data = geocodingDataList[0];
+-(void)reversegeocodingSuccess:(GeocodingData*)geocodingData{
     if(isStart){
-        [[SMap singletonInstance] sendEventWithName: MAPSELECTPOINTNAMESTART body:data.formatedAddress];
+        [self sendEventWithName: MAPSELECTPOINTNAMESTART body:geocodingData.formatedAddress];
     }else{
-        [[SMap singletonInstance] sendEventWithName: MAPSELECTPOINTNAMEEND body:data.formatedAddress];
+        [self sendEventWithName: MAPSELECTPOINTNAMEEND body:geocodingData.formatedAddress];
     }
 }
 
@@ -1247,6 +1266,7 @@ RCT_REMAP_METHOD(getPointName, getPointNameWithX:(double)x Y:(double) y IsStart:
         [points add:point];
         PrjCoordSys *desPrjCoordSys = [[PrjCoordSys alloc]init];
         desPrjCoordSys.type = PCST_EARTH_LONGITUDE_LATITUDE;
+        // 转换投影坐标
         [CoordSysTranslator convert:points PrjCoordSys:mapCoordSys PrjCoordSys:desPrjCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
         point2D = [points getItem:0];
     }else{
@@ -1391,6 +1411,7 @@ RCT_REMAP_METHOD(copyNaviSnmFile,copyNaviSnmFileWithPath:(NSString *)path resolv
 RCT_REMAP_METHOD(getIndoorDatasource,getIndoorDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
+       // IndoorDatasource = [sMap.smMapWC.floorListView getIndoorDatasource];
         Datasources *datasources =sMap.smMapWC.workspace.datasources;
         for(int i = 0; i < datasources.count; i++){
             Datasource *datasource = [datasources get:i];
@@ -1398,7 +1419,7 @@ RCT_REMAP_METHOD(getIndoorDatasource,getIndoorDatasourceWithResolver: (RCTPromis
                 Datasets *datasets = datasource.datasets;
                 DatasetVector *dataset = (DatasetVector *)[datasets getWithName:@"building"];
                 Recordset *recordset = [dataset recordset:NO cursorType:DYNAMIC];
-                IndoorDatasource = [sMap.smMapWC.workspace.datasources getAlias:(NSString *)[recordset getFieldValueWithString:@"LinkDatasource"]];
+                IndoorDatasource = [datasources getAlias:(NSString *)[recordset getFieldValueWithString:@"LinkDatasource"]];
             }
         }
         resolve(@(YES));

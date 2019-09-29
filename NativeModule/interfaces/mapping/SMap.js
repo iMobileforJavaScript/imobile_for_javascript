@@ -2060,7 +2060,9 @@ export default (function () {
     try {
       if (Platform.OS === 'ios' && handlers) {
         if (typeof handlers.callback === 'function') {
-
+          nativeEvt.addListener(EventConst.INDUSTRYNAVIAGTION, function (e) {
+            handlers.callback(e);
+          });
         }
       } else if (Platform.OS === 'android' && handlers) {
         if (typeof handlers.callback === "function") {
@@ -2529,7 +2531,9 @@ export default (function () {
     try {
       if (Platform.OS === 'ios' && handlers) {
         if (typeof handlers.callback === 'function') {
-
+          nativeEvt.addListener(EventConst.MAPSELECTPOINTNAMESTART, function (e) {
+            handlers.callback(e);
+          });
         }
       } else if (Platform.OS === 'android' && handlers) {
         if (typeof handlers.callback === "function") {
@@ -2551,7 +2555,9 @@ export default (function () {
     try {
       if (Platform.OS === 'ios' && handlers) {
         if (typeof handlers.callback === 'function') {
-
+          nativeEvt.addListener(EventConst.MAPSELECTPOINTNAMEEND, function (e) {
+            handlers.callback(e);
+          });
         }
       } else if (Platform.OS === 'android' && handlers) {
         if (typeof handlers.callback === "function") {
