@@ -7454,6 +7454,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     DatasetVector dataset = (DatasetVector) datasets.get("building");
                     Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
                     IndoorDatasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(recordset.getFieldValue("LinkDatasource").toString());
+                    recordset.dispose();
                 }
             }
             promise.resolve(true);

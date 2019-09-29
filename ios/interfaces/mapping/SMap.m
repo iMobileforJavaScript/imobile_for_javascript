@@ -1156,8 +1156,6 @@ RCT_REMAP_METHOD(getStartPoint, getStartPointWithX:(double)x Y:(double) y isIndo
     @try {
         sMap = [SMap singletonInstance];
         if(isindoor){
-            NSString *iiid = sMap.smMapWC.floorListView.currentFloorId;
-            NSLog(@"%@",iiid);
             [[sMap.smMapWC.mapControl getNavigation3] setStartPoint:x Y:y ID:sMap.smMapWC.floorListView.currentFloorId];
         }else{
             [SMap showPointByCalloutAtX:x Y:y PointName:@"startpoint"];
@@ -1377,7 +1375,7 @@ RCT_REMAP_METHOD(addGPSRecordset,addGPSRecordsetWithResolver: (RCTPromiseResolve
         [geoline addPart:GpsPoint2Ds];
         [recordset addNew:geoline];
         [recordset update];
-        NSArray *idNo = @[[NSNumber numberWithInt:recordset.ID]];
+        NSArray *idNo = @[[NSNumber numberWithInteger:recordset.ID]];
         
         [recordset close];
         [geoline dispose];
@@ -1420,6 +1418,7 @@ RCT_REMAP_METHOD(getIndoorDatasource,getIndoorDatasourceWithResolver: (RCTPromis
                 DatasetVector *dataset = (DatasetVector *)[datasets getWithName:@"building"];
                 Recordset *recordset = [dataset recordset:NO cursorType:DYNAMIC];
                 IndoorDatasource = [datasources getAlias:(NSString *)[recordset getFieldValueWithString:@"LinkDatasource"]];
+                [recordset dispose];
             }
         }
         resolve(@(YES));
