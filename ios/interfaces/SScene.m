@@ -1811,8 +1811,8 @@ RCT_REMAP_METHOD(setMeasureLineAnalyst, setMeasureLineAnalystResolver:(RCTPromis
     }
 }
 -(void)distanceResult:(double)distance{
-//    distance = ((int)(distance*1000000+0.5))/1000000.0;
-    distance = ((long)(distance*100))/100.0;
+//    js处理小数位数
+//    distance = ((long)(distance*100))/100.0;
     [self sendEventWithName:ANALYST_MEASURELINE body:@(distance)];
 }
 

@@ -1573,8 +1573,8 @@ public class SScene extends ReactContextBaseJavaModule {
             AnalysisHelper.getInstence().setMeasureDisCallBack(new AnalysisHelper.DistanceCallBack() {
                 @Override
                 public void distanceResult(double distance) {
-                    // distance = ((int)(distance*1000000+0.5))/1000000.0;
-                    distance = ((long)(distance*100))/100.0;
+                    // js处理小数位数
+                   // distance = ((long)(distance*100))/100.0;
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ANALYST_MEASURELINE, distance);
                 }
             }).startMeasureAnalysis();
