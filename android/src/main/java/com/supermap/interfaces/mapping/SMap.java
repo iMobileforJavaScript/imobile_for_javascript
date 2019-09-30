@@ -6521,7 +6521,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
 
-    /** 待定
+    /**
      * 获取室内导航路径详情
      *
      * @param promise

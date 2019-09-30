@@ -31,10 +31,8 @@ static NSMutableArray *fillColors;
 //static NSMutableArray *calloutArr;
 static Point2Ds *animationWayPoint2Ds;
 static Point2Ds *animationWaySavePoint2Ds;
-//室内导航数据源
-static Datasource *IndoorDatasource;
-//路网数据集名称
-static NSString *IncrementRoadName;
+//导航相关数据源
+static Datasource *IndoorDatasource, *SelectDatasuorce;
 //是否是起点
 static BOOL isStart;
 //Gps点
@@ -996,16 +994,6 @@ RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithBool:(BOOL)first resolv
     }
 }
 
-//#pragma mark 获取室内导航数据源
-//RCT_REMAP_METHOD(getIndoorNavigationData, getIndoorNavigationDataWithName:(NSString *)name resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
-//    @try {
-//        sMap = [SMap singletonInstance];
-//        IndoorDatasource = [sMap.smMapWC.workspace.datasources getAlias:name];
-//        resolve(@(YES));
-//    } @catch (NSException *exception) {
-//        reject(@"getIndoorNavigationData",exception.reason,nil);
-//    }
-//}
 
 #pragma mark 设置室内导航
 RCT_REMAP_METHOD(startIndoorNavigation, startIndoorNavigationWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
@@ -1092,21 +1080,53 @@ RCT_REMAP_METHOD(getNavigationData, getNavigationDataWithResolver: (RCTPromiseRe
 }
 
 #pragma mark 获取路网数据集
-RCT_REMAP_METHOD(getNetWorkDataset, getNetWorkDatasetWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getNetWorkDataset, getNetWorkDatasetWithName:(NSString *)name resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
+        sMap = [SMap singletonInstance];
         NSMutableArray *array = [[NSMutableArray alloc] init];
-        if(IndoorDatasource != nil){
-            Datasets *datasets = IndoorDatasource.datasets;
-            for(int i = 0; i < datasets.count; i++){
-                if([datasets get:i].datasetType == Network){
-                    NSDictionary *dic = @{@"dataset":[datasets get:i].name};
-                    [array addObject:dic];
-                }
+        SelectDatasuorce = [sMap.smMapWC.workspace.datasources getAlias:name];
+        Datasets *datasets = SelectDatasuorce.datasets;
+        for(int i = 0; i < datasets.count; i++){
+            if([datasets get:i].datasetType == Network){
+                NSDictionary *dic = @{@"dataset":[datasets get:i].name};
+                [array addObject:dic];
             }
         }
         resolve(array);
     } @catch (NSException *exception) {
         reject(@"getNetWorkDataset",exception.reason,nil);
+    }
+}
+
+#pragma mark 将路网数据集所在线数据集添加到地图上
+RCT_REMAP_METHOD(addNetWorkDataset, addNetWorkDatasetWithName:(NSString *)name resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Dataset *dataset = [SelectDatasuorce.datasets getWithName:name];
+        Layer *layer = [sMap.smMapWC.mapControl.map.layers addDataset:dataset ToHead:YES];
+        layer.editable = YES;
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"addNetWorkDataset",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取路网线数据集
+RCT_REMAP_METHOD(getLineDataset, getLineDatasetWithName:(NSString *)name resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        NSMutableArray *array = [[NSMutableArray alloc] init];
+        SelectDatasuorce = [sMap.smMapWC.workspace.datasources getAlias:name];
+        Datasets *datasets = SelectDatasuorce.datasets;
+        for(int i = 0; i < datasets.count; i++){
+            if([datasets get:i].datasetType == LINE){
+                NSDictionary *dic = @{@"dataset":[datasets get:i].name};
+                [array addObject:dic];
+            }
+        }
+        resolve(array);
+    } @catch (NSException *exception) {
+        reject(@"getLineDataset",exception.reason,nil);
     }
 }
 
@@ -1363,10 +1383,10 @@ RCT_REMAP_METHOD(gpsBegin, gpsBeginWithResolver: (RCTPromiseResolveBlock) resolv
 }
 
 #pragma mark 添加GPS轨迹
-RCT_REMAP_METHOD(addGPSRecordset,addGPSRecordsetWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addGPSRecordset,addGPSRecordsetWithLineDataset:(NSString *)lineDataset resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        DatasetVector *datasetVector = (DatasetVector *)[IndoorDatasource.datasets getWithName:IncrementRoadName];
+        DatasetVector *datasetVector = (DatasetVector *)[SelectDatasuorce.datasets getWithName:lineDataset];
         if(datasetVector != nil){
             [datasetVector setReadOnly:NO];
         }
