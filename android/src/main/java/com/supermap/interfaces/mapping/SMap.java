@@ -174,7 +174,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public static Random random;// 用于保存产生随机的线风格颜色的Random对象
     private Point2D navistart, naviend;
     private InfoCallout m_callout;
-    private Datasource IndoorDatasource;
+    private Datasource IndoorDatasource,SelectDatasource;
     private String IncrementRoadName;
     Point2Ds GpsPoint2Ds = new Point2Ds();
     String rootPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -6930,56 +6930,66 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+
+
+//    /**
+//     * 新建路网数据集
+//     *
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void newIncrementRoad(String name, Promise promise) {
+//        try {
+//            if (IndoorDatasource != null) {
+//                Datasets datasets = IndoorDatasource.getDatasets();
+//                String datasetName = datasets.getAvailableDatasetName(name);
+//                IncrementRoadName = datasetName;
+//                DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+//                datasetVectorInfo.setType(DatasetType.LINE);
+//                datasetVectorInfo.setEncodeType(EncodeType.NONE);
+//                datasetVectorInfo.setName(datasetName);
+//                DatasetVector datasetVector = datasets.create(datasetVectorInfo);
+//                datasetVector.setPrjCoordSys(sMap.getSmMapWC().getMapControl().getMap().getPrjCoordSys());
+//
+//                Dataset ds = datasets.get(datasetName);
+//                com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+//                Layer layer = map.getLayers().add(ds, true);
+//                layer.setEditable(true);
+//                layer.setSnapable(true);
+//                datasetVectorInfo.dispose();
+//                datasetVector.close();
+//            }
+//            promise.resolve(true);
+//        } catch (Exception e) {
+//            promise.reject(e);
+//        }
+//    }
+
+
     /**
-     * 获取室内导航数据源
+     * 获取路网线数据集
      *
      * @param promise
      */
     @ReactMethod
-    public void getIndoorNavigationData(String name, Promise promise) {
+    public void getLineDataset(String name,Promise promise) {
         try {
             sMap = SMap.getInstance();
-            IndoorDatasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(name);
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-
-    /** 待定
-     * 新建路网数据集
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void newIncrementRoad(String name, Promise promise) {
-        try {
-            if (IndoorDatasource != null) {
-                Datasets datasets = IndoorDatasource.getDatasets();
-                String datasetName = datasets.getAvailableDatasetName(name);
-                IncrementRoadName = datasetName;
-                DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
-                datasetVectorInfo.setType(DatasetType.LINE);
-                datasetVectorInfo.setEncodeType(EncodeType.NONE);
-                datasetVectorInfo.setName(datasetName);
-                DatasetVector datasetVector = datasets.create(datasetVectorInfo);
-                datasetVector.setPrjCoordSys(sMap.getSmMapWC().getMapControl().getMap().getPrjCoordSys());
-
-                Dataset ds = datasets.get(datasetName);
-                com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-                Layer layer = map.getLayers().add(ds, true);
-                layer.setEditable(true);
-                layer.setSnapable(true);
-                datasetVectorInfo.dispose();
-                datasetVector.close();
+            WritableArray array = Arguments.createArray();
+            SelectDatasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(name);
+            Datasets datasets = sMap.getSmMapWC().getWorkspace().getDatasources().get(name).getDatasets();
+            for (int i = 0; i < datasets.getCount(); i++) {
+                if (datasets.get(i).getType() == DatasetType.LINE) {
+                    WritableMap map = Arguments.createMap();
+                    map.putString("dataset", datasets.get(i).getName());
+                    array.pushMap(map);
+                }
             }
-            promise.resolve(true);
+            promise.resolve(array);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
-
 
     /**
      * 获取路网数据集
@@ -6987,20 +6997,38 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void getNetWorkDataset(Promise promise) {
+    public void getNetWorkDataset(String name,Promise promise) {
         try {
+            sMap = SMap.getInstance();
             WritableArray array = Arguments.createArray();
-            if (IndoorDatasource != null) {
-                Datasets datasets = IndoorDatasource.getDatasets();
-                for (int i = 0; i < datasets.getCount(); i++) {
-                    if (datasets.get(i).getType() == DatasetType.NETWORK) {
-                        WritableMap map = Arguments.createMap();
-                        map.putString("dataset", datasets.get(i).getName());
-                        array.pushMap(map);
-                    }
+            SelectDatasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(name);
+            Datasets datasets = sMap.getSmMapWC().getWorkspace().getDatasources().get(name).getDatasets();
+            for (int i = 0; i < datasets.getCount(); i++) {
+                if (datasets.get(i).getType() == DatasetType.NETWORK) {
+                    WritableMap map = Arguments.createMap();
+                    map.putString("dataset", datasets.get(i).getName());
+                    array.pushMap(map);
                 }
             }
             promise.resolve(array);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 将路网数据集所在线数据集添加到地图上
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void addNetWorkDataset(String networkdataset,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Dataset dataset = SelectDatasource.getDatasets().get(networkdataset);
+            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().add(dataset, true);
+            layer.setEditable(true);
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -7013,18 +7041,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void buildNetwork(String networkdataset, Promise promise) {
+    public void buildNetwork(String linedataset,String networkdataset, Promise promise) {
         try {
-            DatasetVector lineDataset = (DatasetVector) IndoorDatasource.getDatasets().get(IncrementRoadName);
-            String datasetName = IndoorDatasource.getDatasets().getAvailableDatasetName(IncrementRoadName);
-            DatasetVector datasetVector2 = (DatasetVector) IndoorDatasource.copyDataset(
+            DatasetVector lineDataset = (DatasetVector) SelectDatasource.getDatasets().get(linedataset);
+            String datasetName = SelectDatasource.getDatasets().getAvailableDatasetName(linedataset);
+            DatasetVector datasetVector2 = (DatasetVector) SelectDatasource.copyDataset(
                     lineDataset, datasetName, EncodeType.NONE);
             // 构造拓扑处理选项topologyProcessingOptions，各属性设置成false
             TopologyProcessingOptions topologyProcessingOptions = new TopologyProcessingOptions();
             topologyProcessingOptions.setLinesIntersected(true);
             TopologyProcessing.clean(datasetVector2, topologyProcessingOptions);
 
-            IndoorDatasource.getDatasets().delete(networkdataset);
+            SelectDatasource.getDatasets().delete(networkdataset);
 
             String[] lineFieldNames = new String[datasetVector2.getFieldInfos().getCount()];
             for (int i = 0; i < datasetVector2.getFieldInfos().getCount(); i++) {
@@ -7033,10 +7061,68 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             DatasetVector datasets[] = {datasetVector2};
             DatasetVector resultDataset = NetworkBuilder.buildNetwork(datasets, null, lineFieldNames, null,
-                    IndoorDatasource, networkdataset, NetworkSplitMode.LINE_SPLIT_BY_POINT, 0.0000001);
+                    SelectDatasource, networkdataset, NetworkSplitMode.LINE_SPLIT_BY_POINT, 0.0000001);
 
-            DatasetVector datasetVector = (DatasetVector) IndoorDatasource.getDatasets().get(networkdataset);
+            DatasetVector datasetVector = (DatasetVector) SelectDatasource.getDatasets().get(networkdataset);
             sMap.getSmMapWC().getMapControl().getMap().getLayers().add(datasetVector.getChildDataset(), true);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+
+    /**
+     * GPS开始
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void gpsBegin(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+            Point2D gpsPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
+            Log.e("+++++++++++++++++++", "" + gpsPoint);
+            GpsPoint2Ds.add(gpsPoint);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 添加GPS轨迹
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void addGPSRecordset(String linedataset ,Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            DatasetVector dataset = (DatasetVector) SelectDatasource.getDatasets().get(linedataset);
+            if (dataset != null) {
+                dataset.setReadOnly(false);
+            }
+            Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
+            GeoLine geoline = new GeoLine();
+            geoline.addPart(GpsPoint2Ds);
+            recordset.addNew(geoline);
+            recordset.update();
+            int id[] = new int[1];
+            id[0] = recordset.getID();
+            recordset.close();
+            geoline.dispose();
+            recordset.dispose();
+            Recordset recordset1 = dataset.query(id, CursorType.DYNAMIC);
+            sMap.smMapWC.getMapControl().getEditHistory().batchBegin();
+            sMap.smMapWC.getMapControl().getEditHistory().addHistoryType(EditHistoryType.ADDNEW, recordset1, true);
+            sMap.smMapWC.getMapControl().getEditHistory().batchEnd();
+            recordset1.close();
+            recordset1.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -7366,63 +7452,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
 
     /**
-     * GPS开始
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void gpsBegin(Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
-            Point2D gpsPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
-            Log.e("+++++++++++++++++++", "" + gpsPoint);
-            GpsPoint2Ds.add(gpsPoint);
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-
-    /**
-     * 添加GPS轨迹
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void addGPSRecordset(Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            DatasetVector dataset = (DatasetVector) IndoorDatasource.getDatasets().get(IncrementRoadName);
-            if (dataset != null) {
-                dataset.setReadOnly(false);
-            }
-            Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
-            GeoLine geoline = new GeoLine();
-            geoline.addPart(GpsPoint2Ds);
-            recordset.addNew(geoline);
-            recordset.update();
-            int id[] = new int[1];
-            id[0] = recordset.getID();
-            recordset.close();
-            geoline.dispose();
-            recordset.dispose();
-            Recordset recordset1 = dataset.query(id, CursorType.DYNAMIC);
-            sMap.smMapWC.getMapControl().getEditHistory().batchBegin();
-            sMap.smMapWC.getMapControl().getEditHistory().addHistoryType(EditHistoryType.ADDNEW, recordset1, true);
-            sMap.smMapWC.getMapControl().getEditHistory().batchEnd();
-            recordset1.close();
-            recordset1.dispose();
-            sMap.smMapWC.getMapControl().getMap().refresh();
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-
-    /**
      * 拷贝室外地图网络模型snm文件
      *
      * @param promise
@@ -7454,6 +7483,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     DatasetVector dataset = (DatasetVector) datasets.get("building");
                     Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
                     IndoorDatasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(recordset.getFieldValue("LinkDatasource").toString());
+                    recordset.dispose();
                 }
             }
             promise.resolve(true);

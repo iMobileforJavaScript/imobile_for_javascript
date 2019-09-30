@@ -1,5 +1,7 @@
 package com.supermap.interfaces.ar;
 
+import android.util.Log;
+
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.supermap.component.MapFloorListView;
@@ -19,16 +21,18 @@ public class RCTFloorListView extends SimpleViewManager<MapFloorListView> {
     @Override
     protected MapFloorListView createViewInstance(ThemedReactContext reactContext) {
         m_ThemedReactContext = reactContext;
-        m_View = new MapFloorListView(reactContext.getCurrentActivity());
-        SMap.getInstance().getSmMapWC().setFloorListView(m_View);
+        try {
         reactContext.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                m_View = new MapFloorListView(m_ThemedReactContext.getCurrentActivity());
+                SMap.getInstance().getSmMapWC().setFloorListView(m_View);
                 m_View.linkMapControl(SMap.getInstance().getSmMapWC().getMapControl());
             }
         });
-
-
+        } catch (Exception e) {
+            Log.e("error",""+e);
+        }
         return m_View;
     }
 

@@ -22,10 +22,19 @@
 RCT_EXPORT_MODULE(RCTFloorListView)
 
 -(UIView *)view{
-    MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
-    FloorListView *view= [[FloorListView alloc]initWithFrame:CGRectMake(950, 300, 55, 200)];
-    [view linkMapControl:mapControl];
-    return view;
+    @try {
+        SMap *sMap = [SMap singletonInstance];
+        MapControl *mapControl = sMap.smMapWC.mapControl;
+        FloorListView *view= [[FloorListView alloc]initWithFrame:CGRectMake(950, 300, 55, 200)];
+        [view linkMapControl:mapControl];
+        sMap.smMapWC.floorListView = view;
+        return view;
+    } @catch (NSException *exception) {
+        NSLog(@"%@",exception.reason);
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
+        return view;
+    }
+   
 }
 
 @end

@@ -285,7 +285,7 @@ RCT_REMAP_METHOD(sendFile, connectInfo:(NSString*)connectInfo message:(NSString*
 }
 
 #pragma mark -- 文件发送，第三方服务器方式发送
-RCT_REMAP_METHOD(sendFileWithThirdServer,  message:(NSString*)message file:(NSString*)filePath  talkId:(NSString*)talkId msgId:(int)msgId disconnectionServiceResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(sendFileWithThirdServer, serverUrl:(NSString*)servelUrl file:(NSString*)filePath userId:(NSString*)userId talkId:(NSString*)talkId msgId:(int)msgId disconnectionServiceResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
@@ -305,10 +305,6 @@ RCT_REMAP_METHOD(sendFileWithThirdServer,  message:(NSString*)message file:(NSSt
             
             //BASE64编码的单个文件
             NSString* sFileBlock;
-
-            NSData* jMessage=[message dataUsingEncoding:NSUTF8StringEncoding];
-            
-            NSMutableDictionary *messageDic = [NSJSONSerialization JSONObjectWithData:jMessage options:NSJSONReadingMutableContainers error:nil];
             
             NSString* md5=[self getFileMD5StrFromPath:filePath];
             
@@ -316,7 +312,7 @@ RCT_REMAP_METHOD(sendFileWithThirdServer,  message:(NSString*)message file:(NSSt
             
             NSMutableDictionary *sub_messageDic=[[NSMutableDictionary alloc] init];
             [sub_messageDic setObject:md5 forKey:@"md5"];
-            [sub_messageDic setObject:[[messageDic valueForKey:@"user"] valueForKey:@"id"] forKey:@"userId"];
+            [sub_messageDic setObject:userId forKey:@"userId"];
             
             int prevPercentage = 0;
             long startPos = 0;
@@ -337,7 +333,7 @@ RCT_REMAP_METHOD(sendFileWithThirdServer,  message:(NSString*)message file:(NSSt
                 [sub_messageDic setValue:@(length) forKey:@"dataLength"];
                 [sub_messageDic setValue:@(startPos) forKey:@"startPos"];
                 
-                NSURL *url =[NSURL URLWithString:@"http://111.202.121.144:8124/upload"];
+                NSURL *url =[NSURL URLWithString:servelUrl];
                 NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                                        cachePolicy:NSURLRequestUseProtocolCachePolicy
                                                                    timeoutInterval:15.0];
@@ -481,7 +477,7 @@ RCT_REMAP_METHOD(receiveFile, fileName:(NSString*)fileName queueName:(NSString* 
 }
 
 #pragma mark --接收文件，每次接收时运行，接收第三方服务器的文件
-RCT_REMAP_METHOD(receiveFileWithThirdServer, fileName:(NSString*)fileName queueName:(NSString* )queueName receivePath:(NSString*)receivePath talkId:(NSString*)talkId  msgId:(int)msgId userid:(NSString*)userId fileSize:(int)fileSize receiveFileResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(receiveFileWithThirdServer, serverUrl:(NSString*)serverUrl fileOwnerId:(NSString* )fileOwnerId md5:(NSString*)md5 fileSize:(int)fileSize receivePath:(NSString*)receivePath fileName:(NSString*)fileName talkId:(NSString*)talkId  msgId:(int)msgId receiveFileResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         dispatch_queue_t urls_queue = dispatch_queue_create("receiveFile", NULL);
         dispatch_async(urls_queue, ^{
@@ -502,15 +498,15 @@ RCT_REMAP_METHOD(receiveFileWithThirdServer, fileName:(NSString*)fileName queueN
             int count=(int)ceil((double)fileSize / ((double) singleFileSize));
             
             NSMutableDictionary *sub_messageDic=[[NSMutableDictionary alloc] init];
-            [sub_messageDic setValue:queueName forKey:@"md5"];
+            [sub_messageDic setValue:md5 forKey:@"md5"];
             [sub_messageDic setValue:@(singleFileSize) forKey:@"dataLength"];
-            [sub_messageDic setObject:userId forKey:@"userID"];
+            [sub_messageDic setObject:fileOwnerId forKey:@"userID"];
             
             long  start=0;
             int prevPercentage = 0;
             for(int index=1;index<=count;index++) {
                 [sub_messageDic setObject:@(start) forKey:@"startPos"];
-                NSURL *url =[NSURL URLWithString:@"http://111.202.121.144:8124/download"];
+                NSURL *url =[NSURL URLWithString:serverUrl];
                 
                 NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                                        cachePolicy:NSURLRequestUseProtocolCachePolicy

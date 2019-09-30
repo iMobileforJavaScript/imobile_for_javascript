@@ -1811,9 +1811,6 @@ RCT_REMAP_METHOD(setMeasureLineAnalyst, setMeasureLineAnalystResolver:(RCTPromis
     }
 }
 -(void)distanceResult:(NSDictionary*)distance{
-//    distance = ((int)(distance*1000000+0.5))/1000000.0;
-    double length=[[distance objectForKey:@"length"] doubleValue];
-//    distance = ((length*100))/100.0;
     [self sendEventWithName:ANALYST_MEASURELINE body:distance];
 }
 

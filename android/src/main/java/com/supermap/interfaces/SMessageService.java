@@ -349,7 +349,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
      * 文件发送，用第三方服务器发送文件
      */
     @ReactMethod
-    public void sendFileWithThirdServer(final String message, final String filePath,
+    public void sendFileWithThirdServer(final String serverUrl, final String filePath, final String userId,
                          final String talkId, final int msgId ,final Promise promise) {
 
             try {
@@ -357,7 +357,7 @@ public class SMessageService extends ReactContextBaseJavaModule {
                     @Override
                     public void run() {
                         try {
-                            HttpPost httpPost = new HttpPost("http://111.202.121.144:8124/upload");
+                            HttpPost httpPost = new HttpPost(serverUrl);
                             File file = new File(filePath);
                             String fileName = file.getName();
 
@@ -376,8 +376,6 @@ public class SMessageService extends ReactContextBaseJavaModule {
                             int length, count = 0;
                             String md5 = getFileMD5(file);
 
-                            JSONObject jMessage = new JSONObject(message);
-                            String userId=jMessage.getJSONObject("user").optString("id");
                             JSONObject filePack = new JSONObject();
                             filePack.put("md5", md5);
                             filePack.put("userId", userId);
@@ -560,14 +558,14 @@ public class SMessageService extends ReactContextBaseJavaModule {
      * 接收文件,每次接收时运行
      */
     @ReactMethod
-    public void receiveFileWithThirdServer(final String fileName, final String queueName, final String receivePath, final String talkId, final int msgId, final String userId, final int fileSize, final Promise promise) {
+    public void receiveFileWithThirdServer(final String serverUrl, final String fileOwnerId, final String md5, final int fileSize, final String receivePath, final String fileName, final String talkId, final int msgId, final Promise promise) {
         try {
             Thread Thread_Send_File = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         boolean result = true;
-                        HttpPost httpPost = new HttpPost("http://111.202.121.144:8124/download");
+                        HttpPost httpPost = new HttpPost(serverUrl);
                         File path = new File(receivePath);
                         File file = new File(receivePath + "/" + fileName);
                         if (!path.exists()) {
@@ -583,8 +581,8 @@ public class SMessageService extends ReactContextBaseJavaModule {
                         HttpClient client = new DefaultHttpClient();
                         RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
                         JSONObject downloadPack = new JSONObject();
-                        downloadPack.put("userID", userId);
-                        downloadPack.put("md5", queueName);
+                        downloadPack.put("userID", fileOwnerId);
+                        downloadPack.put("md5", md5);
                         downloadPack.put("dataLength", blockSize);
                         long start = 0;
                         int prevPercentage = 0;
