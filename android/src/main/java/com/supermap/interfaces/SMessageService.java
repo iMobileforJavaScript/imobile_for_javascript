@@ -74,46 +74,55 @@ public class SMessageService extends ReactContextBaseJavaModule {
      * 连接服务
      */
     @ReactMethod
-    public void connectService(String serverIP, int port,String hostName, String userName,String passwd ,String userID, Promise promise) {
+    public void connectService(final String serverIP, final int port, final String hostName, final String userName, final String passwd, final String userID, final Promise promise) {
         try {
-            //假如有接收线程未停止，在这等待
-//            while (!bStopRecieve) {
-//                Thread.sleep(500);
-//            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        //假如有接收线程未停止，在这等待
+//                        while (!bStopRecieve) {
+//                            Thread.sleep(500);
+//                        }
+//
+//                        if(g_AMQPManager != null){
+//                            g_AMQPManager.suspend();
+//                        }
+//                        if(g_AMQPReceiver != null){
+//                            g_AMQPReceiver.dispose();
+//                        }
+//                        g_AMQPManager = null;
+//                        g_AMQPSender = null;
+//                        g_AMQPReceiver = null;
 
-//            if(g_AMQPManager != null){
-//                g_AMQPManager.suspend();
-//            }
-//            if(g_AMQPReceiver != null){
-//                g_AMQPReceiver.dispose();
-//            }
-//            g_AMQPManager = null;
-//            g_AMQPSender = null;
-//            g_AMQPReceiver = null;
+                        boolean bRes;
+                        if (g_AMQPManager==null){
 
-            boolean bRes;
-            if (g_AMQPManager==null){
+                            g_AMQPManager = new AMQPManager();
+                            //建立与服务器的链接
+                            bRes = g_AMQPManager.connection(serverIP,port,hostName,userName,passwd,userID);
+                            //声明普通消息交换机
+                            bRes = g_AMQPManager.declareExchange(sExchange,AMQPExchangeType.DIRECT);
+                            //声明群消息交换机
+                            bRes = g_AMQPManager.declareExchange(sGroupExchange,AMQPExchangeType.DIRECT);
+                            //构造AMQP发送端
+                            g_AMQPSender = g_AMQPManager.newSender();
 
-                g_AMQPManager = new AMQPManager();
-                //建立与服务器的链接
-                bRes = g_AMQPManager.connection(serverIP,port,hostName,userName,passwd,userID);
-                //声明普通消息交换机
-                bRes = g_AMQPManager.declareExchange(sExchange,AMQPExchangeType.DIRECT);
-                //声明群消息交换机
-                bRes = g_AMQPManager.declareExchange(sGroupExchange,AMQPExchangeType.DIRECT);
-                //构造AMQP发送端
-                g_AMQPSender = g_AMQPManager.newSender();
+                        } else {
+                            bRes = true;
+                        }
 
-            } else {
-                bRes = true;
-            }
+                        if(!bRes){
+                            g_AMQPManager = null;
+                            g_AMQPSender = null;
+                        }
 
-            if(!bRes){
-                g_AMQPManager = null;
-                g_AMQPSender = null;
-            }
-
-            promise.resolve(bRes);
+                        promise.resolve(bRes);
+                    } catch (Exception e) {
+                        promise.reject(e);
+                    }
+                }
+            }).start();
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -123,19 +132,26 @@ public class SMessageService extends ReactContextBaseJavaModule {
      * 断开服务链接
      */
     @ReactMethod
-    public void disconnectionService(Promise promise) {
+    public void disconnectionService(final Promise promise) {
         try {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        boolean bRes = true;
+                        if (g_AMQPManager!=null){
 
-            boolean bRes = true;
-            if (g_AMQPManager!=null){
+                            g_AMQPManager.disconnection();
+                            g_AMQPManager = null;
+                            g_AMQPSender = null;
+                        }
 
-                g_AMQPManager.disconnection();
-                g_AMQPManager = null;
-                g_AMQPSender = null;
-
-            }
-
-            promise.resolve(bRes);
+                        promise.resolve(bRes);
+                    } catch (Exception e) {
+                        promise.reject(e);
+                    }
+                }
+            }).start();
         } catch (Exception e) {
             promise.reject(e);
         }

@@ -50,45 +50,52 @@ RCT_EXPORT_MODULE();
 #pragma mark -- 连接服务
 RCT_REMAP_METHOD(connectService, ip:(NSString*)serverIP port:(int)port hostName:(NSString*)hostName userName:(NSString*)userName passwd:(NSString*)passwd userID:(NSString*)userID resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-    //假如有接收线程未停止，在这等待
-//    while (!bStopRecieve) {
-//        [NSThread sleepForTimeInterval:0.5];
-//    }
-    
-//    if(g_AMQPManager){
-//        [g_AMQPManager suspend];
-//    }
-//
-//    if(g_AMQPReceiver){
-//        [g_AMQPReceiver dispose];
-//    }
-//    g_AMQPReceiver = nil;
-//    g_AMQPSender = nil;
-//    g_AMQPManager = nil;
-    
-        BOOL bRes;
-        if(g_AMQPManager==nil){
-            //构造AMQPManager
-            g_AMQPManager = [[AMQPManager alloc]init];
-            //建立与服务器的链接
-            bRes = [g_AMQPManager connection:serverIP port:port hostname:hostName usrname:userName password:passwd clientId:userID];
-            //声明普通消息交换机
-            bRes = [g_AMQPManager declareExchange:sExchange Type:Direct];
-            //声明群消息交换机
-            bRes = [g_AMQPManager declareExchange:sGroupExchange Type:Direct];
-            //构造AMQP发送端
-            g_AMQPSender = [g_AMQPManager newSender];
-        } else {
-            bRes = true;
-        }
-        
-        if(!bRes){
-            g_AMQPManager = nil;
-            g_AMQPSender = nil;
-        }
-        
-        NSNumber* number =[NSNumber numberWithBool:bRes];
-        resolve(number);
+        dispatch_queue_t connectQueue = dispatch_queue_create("connectQueue", NULL);
+        dispatch_async(connectQueue, ^{
+            @try {
+                //假如有接收线程未停止，在这等待
+                //    while (!bStopRecieve) {
+                //        [NSThread sleepForTimeInterval:0.5];
+                //    }
+                
+                //    if(g_AMQPManager){
+                //        [g_AMQPManager suspend];
+                //    }
+                //
+                //    if(g_AMQPReceiver){
+                //        [g_AMQPReceiver dispose];
+                //    }
+                //    g_AMQPReceiver = nil;
+                //    g_AMQPSender = nil;
+                //    g_AMQPManager = nil;
+                
+                BOOL bRes;
+                if(g_AMQPManager==nil){
+                    //构造AMQPManager
+                    g_AMQPManager = [[AMQPManager alloc]init];
+                    //建立与服务器的链接
+                    bRes = [g_AMQPManager connection:serverIP port:port hostname:hostName usrname:userName password:passwd clientId:userID];
+                    //声明普通消息交换机
+                    bRes = [g_AMQPManager declareExchange:sExchange Type:Direct];
+                    //声明群消息交换机
+                    bRes = [g_AMQPManager declareExchange:sGroupExchange Type:Direct];
+                    //构造AMQP发送端
+                    g_AMQPSender = [g_AMQPManager newSender];
+                } else {
+                    bRes = true;
+                }
+                
+                if(!bRes){
+                    g_AMQPManager = nil;
+                    g_AMQPSender = nil;
+                }
+                
+                NSNumber* number =[NSNumber numberWithBool:bRes];
+                resolve(number);
+            } @catch (NSException *exception) {
+                reject(@"SMessageService", exception.reason, nil);
+            }
+        });
     } @catch (NSException *exception) {
         reject(@"SMessageService", exception.reason, nil);
     }
@@ -96,21 +103,27 @@ RCT_REMAP_METHOD(connectService, ip:(NSString*)serverIP port:(int)port hostName:
 
 #pragma mark -- 断开服务链接
 RCT_REMAP_METHOD(disconnectionService, disconnectionServiceResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    
     @try {
-        BOOL bRes = true;
-        if(g_AMQPManager!=nil){
-            [g_AMQPManager disconnection];
-            g_AMQPManager = nil;
-            g_AMQPSender = nil;
-        }
-        //        if(g_fileAMQPManager!=nil){
-        //            [g_fileAMQPManager disconnection];
-        //            g_fileAMQPManager = nil;
-        //            g_fileAMQPSender = nil;
-        //        }
-        NSNumber* number =[NSNumber numberWithBool:bRes];
-        resolve(number);
+        dispatch_queue_t disconnectQueue = dispatch_queue_create("disconnectQueue", NULL);
+        dispatch_async(disconnectQueue, ^{
+            @try {
+                BOOL bRes = true;
+                if(g_AMQPManager!=nil){
+                    [g_AMQPManager disconnection];
+                    g_AMQPManager = nil;
+                    g_AMQPSender = nil;
+                }
+                //        if(g_fileAMQPManager!=nil){
+                //            [g_fileAMQPManager disconnection];
+                //            g_fileAMQPManager = nil;
+                //            g_fileAMQPSender = nil;
+                //        }
+                NSNumber* number =[NSNumber numberWithBool:bRes];
+                resolve(number);
+            }  @catch (NSException *exception) {
+                reject(@"SMessageService", exception.reason, nil);
+            }
+        });
     } @catch (NSException *exception) {
         reject(@"SMessageService", exception.reason, nil);
     }
