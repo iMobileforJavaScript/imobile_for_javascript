@@ -27,6 +27,10 @@ RCT_EXPORT_MODULE(RCTFloorListView)
         MapControl *mapControl = sMap.smMapWC.mapControl;
         FloorListView *view= [[FloorListView alloc]initWithFrame:CGRectMake(950, 300, 55, 200)];
         [view linkMapControl:mapControl];
+        if(view.currentFloorId == nil){
+            UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
+            return view;
+        }
         sMap.smMapWC.floorListView = view;
         return view;
     } @catch (NSException *exception) {
