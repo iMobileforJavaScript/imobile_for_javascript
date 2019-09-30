@@ -38,10 +38,11 @@ function objCallBack () {
   return new NativeEventEmitter(OnlineServiceNative)
 }
 
-let uploadFileListener, uploadingFileListener
+let uploadFileListener, uploadingFileListener, uploadFileFailListener
 function uploadFile (path, dataName, handler) {
   uploadFileListener && uploadFileListener.remove()
   uploadingFileListener && uploadingFileListener.remove()
+  uploadFileFailListener && uploadFileFailListener.remove()
   if (Platform.OS === 'ios' && handler) {
     if (typeof handler.onProgress === 'function') {
       uploadingFileListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (obj) {
@@ -53,6 +54,11 @@ function uploadFile (path, dataName, handler) {
         handler.onResult(value)
       })
     }
+    if (typeof handler.onResult === 'function') {
+      uploadFileFailListener = callBackIOS.addListener(EventConst.ONLINE_SERVICE_UPLOADFAILURE, function (value) {
+        handler.onResult(value)
+      })
+    }
   } else {
     if (typeof handler.onProgress === 'function') {
       uploadingFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
@@ -61,6 +67,11 @@ function uploadFile (path, dataName, handler) {
     }
     if (typeof handler.onResult === 'function' && handler) {
       uploadFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADED, function (result) {
+        handler.onResult(result)
+      })
+    }
+    if (typeof handler.onResult === 'function' && handler) {
+      uploadFileFailListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADFAILURE, function (result) {
         handler.onResult(result)
       })
     }
