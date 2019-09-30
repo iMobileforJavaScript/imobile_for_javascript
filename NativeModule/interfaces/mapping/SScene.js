@@ -537,13 +537,13 @@ export default (function () {
         try {
           if (Platform.OS === 'ios' && handlers) {
             if (typeof handlers.callback === 'function') {
-               nativeEvt.addListener(EventConst.ANALYST_MEASURELINE, function (e) {
+               this.LineAnalystListener=nativeEvt.addListener(EventConst.ANALYST_MEASURELINE, function (e) {
                 handlers.callback(e)
               })
             }
           } else if (Platform.OS === 'android' && handlers) {
             if (typeof handlers.callback === "function") {
-                DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURELINE, function (e) {
+                this.LineAnalystListener=DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURELINE, function (e) {
                 handlers.callback(e);
               });
             }
@@ -559,13 +559,13 @@ export default (function () {
         try {
           if (Platform.OS === 'ios' && handlers) {
             if (typeof handlers.callback === 'function') {
-              nativeEvt.addListener(EventConst.ANALYST_MEASURESQUARE, function (e) {
+              this.SquareAnalystListener=nativeEvt.addListener(EventConst.ANALYST_MEASURESQUARE, function (e) {
                 handlers.callback(e)
               })
             }
           } else if (Platform.OS === 'android' && handlers) {
             if (typeof handlers.callback === "function") {
-               DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURESQUARE, function (e) {
+                this.SquareAnalystListener=DeviceEventEmitter.addListener(EventConst.ANALYST_MEASURESQUARE, function (e) {
                 handlers.callback(e);
               });
             }
@@ -579,6 +579,10 @@ export default (function () {
       
        function closeAnalysis() {
         try {
+            this.LineAnalystListener&&this.LineAnalystListener.remove()
+            this.LineAnalystListener=null
+            this.SquareAnalystListener&&this.SquareAnalystListener.remove()
+            this.SquareAnalystListener=null
             return SScene.closeAnalysis()
         } catch (e) {
           console.error(e);
@@ -841,6 +845,23 @@ export default (function () {
       }
     }
 
+    /**
+   * 刷新距离和面积
+   * @returns {*}
+   */
+  function displayDistanceOrArea(points){
+    try {
+        let point3Ds=[]
+        for(let i=0;i<points.length;i++){
+            let point=JSON.parse(points[i])
+            point3Ds.push(point)
+        }
+      return  SScene.displayDistanceOrArea(point3Ds)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
     getWorkspaceType = (type) => {
         var value
         switch (type) {
@@ -978,6 +999,7 @@ export default (function () {
         clipByBox,
         clipSenceClear,
       open3DNavigationMap,
+      displayDistanceOrArea,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp

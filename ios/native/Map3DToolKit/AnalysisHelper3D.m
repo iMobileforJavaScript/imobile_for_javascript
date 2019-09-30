@@ -109,7 +109,8 @@
     // 更新总距离长度
     double totalLength = [event totalLength];
     if(self.delegate!=nil && [self.delegate respondsToSelector:@selector(distanceResult:)]) {
-        [self.delegate distanceResult:totalLength];
+        NSDictionary* dic = @{@"length":@(totalLength),@"x": @([event position].x),@"y": @([event position].y),@"z": @([event position].z)};
+        [self.delegate distanceResult:dic];
     }
 }
 
@@ -119,7 +120,8 @@
     // 更新测量面积
     double totalArea = [event totalArea];
     if(self.delegate!=nil && [self.delegate respondsToSelector:@selector(areaResult:)]) {
-        [self.delegate areaResult:totalArea];
+        NSDictionary* dic = @{@"totalArea":@(totalArea),@"x": @([event position].x),@"y": @([event position].y),@"z": @([event position].z)};
+        [self.delegate areaResult:dic];
     }
 }
 

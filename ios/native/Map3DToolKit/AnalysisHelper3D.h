@@ -15,11 +15,11 @@
 /**
  * 测量距离回调
  */
--(void)distanceResult:(double)distance;
+-(void)distanceResult:(NSDictionary*)distance;
 /**
  * 测量面积回调
  */
--(void)areaResult:(double)area;
+-(void)areaResult:(NSDictionary*)area;
 
 -(void)perspectiveResultX:(NSString*)strLocationX Y:(NSString*)strLocationY Z:(NSString*)strLocationZ count:(int) count;
 

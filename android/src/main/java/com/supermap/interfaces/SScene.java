@@ -27,6 +27,7 @@ import com.supermap.data.GeoPoint3D;
 import com.supermap.data.ImageFormatType;
 import com.supermap.data.Point2D;
 import com.supermap.data.Point3D;
+import com.supermap.data.Point3Ds;
 import com.supermap.data.Size2D;
 import com.supermap.data.Workspace;
 import com.supermap.data.WorkspaceConnectionInfo;
@@ -1572,9 +1573,7 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             AnalysisHelper.getInstence().setMeasureDisCallBack(new AnalysisHelper.DistanceCallBack() {
                 @Override
-                public void distanceResult(double distance) {
-                    // distance = ((int)(distance*1000000+0.5))/1000000.0;
-                    distance = ((long)(distance*100))/100.0;
+                public void distanceResult(WritableMap distance) {
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ANALYST_MEASURELINE, distance);
                 }
             }).startMeasureAnalysis();
@@ -1593,7 +1592,7 @@ public class SScene extends ReactContextBaseJavaModule {
         try {
             AnalysisHelper.getInstence().setMeasureAreaCallBack(new AnalysisHelper.AreaCallBack() {
                 @Override
-                public void areaResult(double area) {
+                public void areaResult(WritableMap area) {
                     mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ANALYST_MEASURESQUARE, area);
                 }
 
@@ -1611,6 +1610,7 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void closeAnalysis(Promise promise) {
         try {
+            sScene=getInstance();
             AnalysisHelper.getInstence().closeAnalysis();
             promise.resolve(true);
         } catch (Exception e) {
@@ -2255,6 +2255,28 @@ public class SScene extends ReactContextBaseJavaModule {
     }
     /*************************           三维裁剪相关结束           ***************************/
 
+    /**
+     * 根据点刷新距离测量和面积测量结果
+     */
+    @ReactMethod
+    public void displayDistanceOrArea(ReadableArray pointArray, Promise promise) {
+        try {
+
+
+            Point3Ds point3Ds=new Point3Ds();
+            for (int i=0;i<pointArray.size();i++){
+                ReadableMap map=pointArray.getMap(i);
+                Point3D point3D=new Point3D(map.getDouble("x"),map.getDouble("y"),map.getDouble("z"));
+                point3Ds.add(point3D);
+            }
+            sScene = SScene.getInstance();
+            sScene.smSceneWc.getSceneControl().setAction(sScene.smSceneWc.getSceneControl().getAction());
+            sScene.smSceneWc.getSceneControl().displayDistanceOrArea(point3Ds);
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
     /**
      * 关闭工作空间及地图控件
      */
