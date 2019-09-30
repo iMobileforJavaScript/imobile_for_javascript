@@ -4,9 +4,12 @@ import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
 import com.supermap.data.GeoPoint3D;
 import com.supermap.data.GeoStyle3D;
 import com.supermap.data.Point3D;
+import com.supermap.interfaces.SScene;
 import com.supermap.realspace.Action3D;
 import com.supermap.realspace.SceneControl;
 import com.supermap.realspace.Sightline;
@@ -139,8 +142,14 @@ public class AnalysisHelper {
         // 加点
         // 更新总距离长度
         double totalLength = event.getTotalLength();
+        WritableMap writeMap = Arguments.createMap();
+        writeMap.putDouble("length",totalLength);
+        writeMap.putDouble("x",event.getX());
+        writeMap.putDouble("y",event.getY());
+        writeMap.putDouble("z",event.getZ());
         if(distanceCallBack!=null) {
-            distanceCallBack.distanceResult(totalLength);
+
+            distanceCallBack.distanceResult(writeMap);
         }
     }
 
@@ -149,8 +158,13 @@ public class AnalysisHelper {
         // 加点
         // 更新测量面积
         double totalArea = event.getTotalArea();
+        WritableMap writeMap = Arguments.createMap();
+        writeMap.putDouble("totalArea",totalArea);
+        writeMap.putDouble("x",event.getX());
+        writeMap.putDouble("y",event.getY());
+        writeMap.putDouble("z",event.getZ());
         if(areaCallBack!=null) {
-            areaCallBack.areaResult(totalArea);
+            areaCallBack.areaResult(writeMap);
         }
     }
 
@@ -198,14 +212,14 @@ public class AnalysisHelper {
      * 测量距离回调
      */
     public interface DistanceCallBack {
-        void distanceResult(double distance);
+        void distanceResult(WritableMap distance);
     }
 
     /**
      * 测量面积回调
      */
     public interface AreaCallBack {
-        void areaResult(double area);
+        void areaResult(WritableMap area);
     }
 
     /**

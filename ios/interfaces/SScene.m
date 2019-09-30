@@ -1810,10 +1810,8 @@ RCT_REMAP_METHOD(setMeasureLineAnalyst, setMeasureLineAnalystResolver:(RCTPromis
         reject(@"SScene", exception.reason, nil);
     }
 }
--(void)distanceResult:(double)distance{
-//    js处理小数位数
-//    distance = ((long)(distance*100))/100.0;
-    [self sendEventWithName:ANALYST_MEASURELINE body:@(distance)];
+-(void)distanceResult:(NSDictionary*)distance{
+    [self sendEventWithName:ANALYST_MEASURELINE body:distance];
 }
 
 /**
@@ -1835,8 +1833,8 @@ RCT_REMAP_METHOD(setMeasureSquareAnalyst, setMeasureSquareAnalystResolver:(RCTPr
         reject(@"SScene", exception.reason, nil);
     }
 }
--(void)areaResult:(double)area{
-    [self sendEventWithName:ANALYST_MEASURESQUARE body:@(area)];
+-(void)areaResult:(NSDictionary*)area{
+    [self sendEventWithName:ANALYST_MEASURESQUARE body:area];
 }
 
 
@@ -1967,6 +1965,36 @@ RCT_REMAP_METHOD(removeByName, removeByName:(NSString*)name resolve:(RCTPromiseR
     @try {
         [[FlyHelper3D sharedInstance] removeStop:name];
         resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+RCT_REMAP_METHOD(displayDistanceOrArea, displayDistanceOrArea:(NSArray *)points resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        Point3Ds* point3Ds=[[Point3Ds alloc] init];
+        int count=[points count];
+        for (int i=0; i<count; i++) {
+            NSDictionary* dic=[points objectAtIndex:i];
+            double x,y,z;
+            if([dic objectForKey:@"x"]){
+                x=[[dic objectForKey:@"x"] doubleValue];
+                y=[[dic objectForKey:@"y"] doubleValue];
+                z=[[dic objectForKey:@"z"] doubleValue];
+            }
+            Point3D pnt={x,y,z};
+            [point3Ds addPoint3D:pnt];
+        }
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                sScene = [SScene singletonInstance];
+                SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
+                [sceneControl setAction3D:sceneControl.action3D];
+                
+                [sceneControl displayDistanceOrArea:point3Ds];
+            });
+        });
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
     }
