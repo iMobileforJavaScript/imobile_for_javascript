@@ -2598,6 +2598,17 @@ export default (function () {
   }
 
   /**
+   * 判断当前地图是否是室内地图
+   * @returns {*}
+   */
+  function isIndoorMap() {
+    try {
+      return SMap.isIndoorMap()
+    }catch (e) {
+      console.error(e)
+    }
+  }
+  /**
    * 获取室外导航路径详情
    * @returns {*|void|Promise<void>}
    */
@@ -2839,6 +2850,7 @@ export default (function () {
     getPointName,
     setStartPointNameListener,
     setEndPointNameListener,
+    isIndoorMap,
     getOutdoorPath,
     getIndoorPath,
     getOutdoorPathLength,

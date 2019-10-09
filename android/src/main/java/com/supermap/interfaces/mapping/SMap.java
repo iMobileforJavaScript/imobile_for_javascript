@@ -57,6 +57,7 @@ import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Resources;
 import com.supermap.data.Workspace;
+import com.supermap.indoor.FloorListView;
 import com.supermap.interfaces.utils.SMFileUtil;
 import com.supermap.interfaces.utils.POISearchHelper2D;
 import com.supermap.interfaces.utils.ScaleViewHelper;
@@ -7468,6 +7469,27 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 判断当前地图是否是室内地图
+     * @param promise
+     */
+    @ReactMethod
+    public void isIndoorMap(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            boolean isIndoor = false;
+            FloorListView floorListView = sMap.smMapWC.getFloorListView();
+            if(floorListView != null){
+                if(floorListView.getCurrentFloorId() != null){
+                    isIndoor = true;
+                }
+            }
+            promise.resolve(isIndoor);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 获取室内数据源
      *
      * @param promise
@@ -7483,6 +7505,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     DatasetVector dataset = (DatasetVector) datasets.get("building");
                     Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
                     IndoorDatasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(recordset.getFieldValue("LinkDatasource").toString());
+                    recordset.close();
                     recordset.dispose();
                 }
             }
