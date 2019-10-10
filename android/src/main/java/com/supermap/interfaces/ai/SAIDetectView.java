@@ -1049,8 +1049,9 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         Point3D point = mArView.getIntersectionPoint(x, y);
         if (point != null) {
             GeoObject tempArObject = new GeoObject(System.currentTimeMillis());
-            tempArObject.setGeoPosition(mWorld.getLatitude() + point.y,
+            tempArObject.setGeoPosition(
                     mWorld.getLongitude() + point.x,
+                    mWorld.getLatitude() + point.y,
                     mWorld.getAltitude() + point.z);
 
             if (type != null) {

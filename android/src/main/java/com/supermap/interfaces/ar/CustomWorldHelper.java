@@ -57,7 +57,7 @@ public class CustomWorldHelper {
 //		sharedWorld.setGeoPosition(39.984408,116.499238); //for supermap 7th.
 
 		//[14:34:23] 第1点的坐标:经度:116.500305°,纬度:39.984106° 116.500316°,纬度:39.983976
-		sharedWorld.setGeoPosition(39.983976,116.500316);
+		sharedWorld.setGeoPosition(116.500316,39.983976);
 
 
 		//------------------------------以下是POI预加载------------------------------
@@ -85,7 +85,7 @@ public class CustomWorldHelper {
 		GeoObject original = new GeoObject();
 
 //		original.setGeoPosition(39.9918067479341,116.512255196021); //fors supermap 7th.
-		original.setGeoPosition(39.984282,116.499321);
+		original.setGeoPosition(116.499321,39.984282);
 
 
 		for(int i = 0;i<size;i++)
