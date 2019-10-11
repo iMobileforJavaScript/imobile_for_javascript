@@ -812,8 +812,12 @@ RCT_REMAP_METHOD(getIndoorPathLength, getIndoorPathLengthWithResolver: (RCTPromi
     @try {
         sMap = [SMap singletonInstance];
         NSArray *naviPath = [[sMap.smMapWC.mapControl getNavigation3] getNaviPath];
-        NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
-        [dic setObject:[NSNumber numberWithInteger:naviPath.count] forKey:@"length"];
+        double length =  0;
+        for(int i = 0; i < naviPath.count; i++){
+            NaviStep *step = naviPath[i];
+            length += step.length;
+        }
+        NSDictionary *dic = @{@"length":[NSNumber numberWithDouble:length]};
         resolve(dic);
     } @catch (NSException *exception) {
         reject(@"getIndoorPathLength",exception.reason,nil);
@@ -845,9 +849,9 @@ RCT_REMAP_METHOD(getIndoorPath, getIndoorPathWithResolver: (RCTPromiseResolveBlo
             NaviStep *step = navipath[i];
             double getTime = step.time;
             double roadLength = step.length;
-            int length = (int)round(roadLength);
+            roadLength = round(roadLength * 100) / 100;
             NSDictionary *dic = @{@"roadName":[NSNumber numberWithDouble:getTime],
-                                  @"roadLength":[NSNumber numberWithInt:length],
+                                  @"roadLength":[NSNumber numberWithDouble:roadLength],
                                   };
             [array addObject:dic];
         }
@@ -1425,6 +1429,19 @@ RCT_REMAP_METHOD(copyNaviSnmFile,copyNaviSnmFileWithPath:(NSString *)path resolv
     }
 }
 
+#pragma mark 判断当前地图是否是室内地图
+RCT_REMAP_METHOD(isIndoorMap,isIndoorMapWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        BOOL isIndoor = NO;
+        if(sMap.smMapWC.floorListView.currentFloorId != nil){
+            isIndoor = YES;
+        }
+        resolve(@(isIndoor));
+    } @catch (NSException *exception) {
+        reject(@"isIndoorMap",exception.reason,nil);
+    }
+}
 #pragma mark 获取室内数据源
 RCT_REMAP_METHOD(getIndoorDatasource,getIndoorDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
@@ -1438,6 +1455,7 @@ RCT_REMAP_METHOD(getIndoorDatasource,getIndoorDatasourceWithResolver: (RCTPromis
                 DatasetVector *dataset = (DatasetVector *)[datasets getWithName:@"building"];
                 Recordset *recordset = [dataset recordset:NO cursorType:DYNAMIC];
                 IndoorDatasource = [datasources getAlias:(NSString *)[recordset getFieldValueWithString:@"LinkDatasource"]];
+                [recordset close];
                 [recordset dispose];
             }
         }
