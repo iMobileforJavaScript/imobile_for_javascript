@@ -7425,52 +7425,38 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     private void showPointByCallout(final double x, final double y, final String pointName) {
-        m_callout = new InfoCallout(context);
-        m_callout.setStyle(CalloutAlignment.BOTTOM);
-        m_callout.setBackgroundColor(android.graphics.Color.RED);
-        m_callout.setBackground(0, 0);
         context.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-//                int markerSize = 30;
-//                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int)(600*density),(int)(markerSize*density));
-//
-//                InfoCallout callout = new InfoCallout(context);
-//                callout.setStyle(CalloutAlignment.BOTTOM);
-////                callout.setBackgroundColor(android.graphics.Color.GRAY);
-////                callout.setBackground(0, 0);
-//                callout.setCustomize(true);
-//                callout.setLayoutParams(params);
-//
-//                ImageView imageView = new ImageView(context);
-//                imageView.setAdjustViewBounds(true);
-//
-//                imageView.setImageResource(R.drawable.icon_red);
-//
-//                params = new RelativeLayout.LayoutParams((int)(markerSize*density),(int)(markerSize*density));
-//                params.setMargins((int)(150*density)-(int)(markerSize*density/2), 10,0, 0);
-//                imageView.setLayoutParams(params);
+
+                m_callout = new InfoCallout(context);
+                m_callout.setStyle(CalloutAlignment.BOTTOM);
+                m_callout.setBackground(0, 0);
+
+                DisplayMetrics dm = new DisplayMetrics();
+                getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+                double density = dm.density;
+
+                int markerSize = 30;
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int)(markerSize*density),(int)(markerSize*density));
+                m_callout.setCustomize(true);
+                m_callout.setLayoutParams(params);
+
                 ImageView imageView = new ImageView(context);
+
+                imageView.setAdjustViewBounds(true);
+
                 if (pointName.equals("startpoint")) {
                     imageView.setImageResource(R.drawable.icon_scene_tool_start);
                 } else {
                     imageView.setImageResource(R.drawable.icon_scene_tool_end);
                 }
-                DisplayMetrics dm = new DisplayMetrics();
-                getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-                double density = dm.density;
 
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int)(40*density),(int)(40*density));
+                params = new RelativeLayout.LayoutParams((int)(markerSize*density),(int)(markerSize*density));
+                params.setMargins(0, 10,0, 0);
+                imageView.setLayoutParams(params);
 
-                imageView.setAdjustViewBounds(true);
-                imageView.setMaxWidth(80);
-                imageView.setMaxHeight(80);
-
-                LinearLayout linearLayout = new LinearLayout(context);
-                linearLayout.setLayoutParams(params);
-                linearLayout.addView(imageView);
-
-                m_callout.setContentView(linearLayout);
+                m_callout.addView(imageView);
                 m_callout.setLocation(x, y);
                 SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView().addCallout(m_callout, pointName);
                 SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView().showCallOut();
