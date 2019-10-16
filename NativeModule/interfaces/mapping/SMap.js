@@ -2289,6 +2289,18 @@ export default (function () {
   }
 
   /**
+   * 是否在导航过程中（处理是否退出fullMap）
+   * @returns {Promise<Promise.yes>|Promise<boolean>}
+   */
+  function isGuiding() {
+    try {
+      return SMap.isGuiding()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 开启室外导航
    * @returns {*|void|Promise<void>}
    */
@@ -2434,6 +2446,17 @@ export default (function () {
   }
 
   /**
+   * 判断当前工作空间是否存在网络数据集
+   * @returns {*}
+   */
+  function hasNetworkDataset() {
+    try {
+      return SMap.hasNetworkDataset()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  /**
    * 将路网数据集添加到地图上
    * @returns {*|void|Promise<void>}
    */
@@ -2573,25 +2596,15 @@ export default (function () {
     }
   }
 
-  /**
-   * 获取室外导航路径长度
-   * @returns {*|void|Promise<void>}
-   */
-  function getOutdoorPathLength() {
-    try {
-      return SMap.getOutdoorPathLength()
-    } catch (e) {
-      console.error(e)
-    }
-  }
 
   /**
-   * 获取室内导航路径长度
-   * @returns {*|void|Promise<void>}
+   * 获取导航路径长度
+   * @param isIndoor 是否室内
+   * @returns {*}
    */
-  function getIndoorPathLength() {
+  function getNavPathLength(isIndoor) {
     try {
-      return SMap.getIndoorPathLength()
+      return SMap.getNavPathLength(isIndoor)
     } catch (e) {
       console.error(e)
     }
@@ -2608,30 +2621,31 @@ export default (function () {
       console.error(e)
     }
   }
+
   /**
-   * 获取室外导航路径详情
-   * @returns {*|void|Promise<void>}
+   * 获取导航路径详情
+   * @param isIndoor 是否室内
+   * @returns {*}
    */
-  function getOutdoorPath() {
+  function getPathInfos(isIndoor) {
     try {
-      return SMap.getOutdoorPath()
+      return SMap.getPathInfos(isIndoor)
     } catch (e) {
       console.error(e)
     }
   }
 
   /**
-   * 获取室内导航路径详情
-   * @returns {*|void|Promise<void>}
+   * 获取当前工作空间含有网络数据集的数据源
+   * @returns {*}
    */
-  function getIndoorPath() {
+  function getNetworkDatasource() {
     try {
-      return SMap.getIndoorPath()
+      return SMap.getNetworkDatasource()
     } catch (e) {
       console.error(e)
     }
   }
-
   /**
    * 获取室内数据源
    * @returns {*|void|Promise<void>}
@@ -2844,20 +2858,20 @@ export default (function () {
     getNetWorkDataset,
     addNetWorkDataset,
     buildNetwork,
+    hasNetworkDataset,
     gpsBegin,
     addGPSRecordset,
     copyNaviSnmFile,
     getPointName,
+    isGuiding,
     setStartPointNameListener,
     setEndPointNameListener,
     isIndoorMap,
-    getOutdoorPath,
-    getIndoorPath,
-    getOutdoorPathLength,
-    getIndoorPathLength,
+    getNetworkDatasource,
+    getPathInfos,
+    getNavPathLength,
     getIndoorDatasource,
     setIllegallyParkListener,
-
 
     matchPictureStyle,
     updateMapFixColorsMode,
