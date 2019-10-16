@@ -5237,12 +5237,45 @@ RCT_REMAP_METHOD(getTaggingLayerCount, getTaggingLayerCountWithPath:(NSString *)
     }
 }
 
+#pragma mark 获取最小可见比例尺范围
+RCT_REMAP_METHOD(getMinVisibleScale, getMinVisibleScaleWithName:(NSString *)name Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        Layer *layer = [SMLayer findLayerByPath:name];
+        double scale = [layer minVisibleScale];
+        if(scale != 0) {
+            scale = 1 / scale;
+        }
+        resolve([NSNumber numberWithDouble:scale]);
+    }@catch(NSException *exception){
+        reject(@"getMinVisibleScale",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取最大可见比例尺范围
+RCT_REMAP_METHOD(getMaxVisibleScale, getMaxVisibleScaleWithName:(NSString *)name Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        Layer *layer = [SMLayer findLayerByPath:name];
+        double scale = [layer maxVisibleScale];
+        if(scale != 0) {
+            scale = 1 / scale;
+        }
+        resolve([NSNumber numberWithDouble:scale]);
+    }@catch(NSException *exception){
+        reject(@"getMaxVisibleScale",exception.reason,nil);
+    }
+}
+
 #pragma mark 设置最小比例尺范围
 RCT_REMAP_METHOD(setMinVisibleScale, setMinVisibleScaleWithName:(NSString *)name Number:(double)number Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
         Layer *layer = [SMLayer findLayerByPath:name];//[sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
-        double scale = 1 / number;
+        double scale = number;
+        if(number != 0) {
+            scale = 1 / number;
+        }
         [layer setMinVisibleScale:scale];
         resolve(@(YES));
     }@catch(NSException *exception){
@@ -5255,7 +5288,10 @@ RCT_REMAP_METHOD(setMaxVisibleScale, setMaxVisibleScaleWithName:(NSString *)name
     @try{
         sMap = [SMap singletonInstance];
         Layer *layer = [SMLayer findLayerByPath:name];//[sMap.smMapWC.mapControl.map.layers getLayerWithName:name];
-        double scale = 1 / number;
+        double scale = number;
+        if(number != 0) {
+            scale = 1 / number;
+        }
         [layer setMaxVisibleScale:scale];
         resolve(@(YES));
     }@catch(NSException *exception){

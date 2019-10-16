@@ -3652,6 +3652,46 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 获取最小可见比例尺范围
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMinVisibleScale(String name, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Layer layer = SMLayer.findLayerByPath(name);
+            double scale = layer.getMinVisibleScale();
+            if(scale != 0){
+                scale = 1 / scale;
+            }
+            promise.resolve(scale);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取最大可见比例尺范围
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMaxVisibleScale(String name, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Layer layer = SMLayer.findLayerByPath(name);
+            double scale = layer.getMaxVisibleScale();
+            if(scale != 0){
+                scale = 1 / scale;
+            }
+            promise.resolve(scale);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置最小比例尺范围
      *
      * @param promise
@@ -3661,7 +3701,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             Layer layer = SMLayer.findLayerByPath(name);
-            double scale = 1 / number;
+            double scale = number;
+            if(number != 0) {
+                scale = 1 / number;
+            }
             layer.setMinVisibleScale(scale);
             promise.resolve(true);
         } catch (Exception e) {
@@ -3679,7 +3722,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             Layer layer = SMLayer.findLayerByPath(name);//sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
-            double scale = 1 / number;
+            double scale = number;
+            if(number != 0) {
+                scale = 1 / number;
+            }
             layer.setMaxVisibleScale(scale);
             promise.resolve(true);
         } catch (Exception e) {

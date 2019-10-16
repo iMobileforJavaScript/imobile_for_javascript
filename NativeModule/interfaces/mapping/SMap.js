@@ -1813,6 +1813,28 @@ export default (function () {
   }
 
   /**
+   * 获取最小可见比例尺范围
+   */
+  function getMinVisibleScale (value) {
+    try {
+      return SMap.getMinVisibleScale(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取最大可见比例尺范围
+   */
+  function getMaxVisibleScale (value) {
+    try {
+      return SMap.getMaxVisibleScale(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 设置最小比例尺
    * @returns {*|Promise.<void>}
    */
@@ -2828,6 +2850,8 @@ export default (function () {
     getMapHistoryCurrentIndex,
     
     addRecordset,
+    getMinVisibleScale,
+    getMaxVisibleScale,
     setMinVisibleScale,
     setMaxVisibleScale,
     addTextRecordset,
