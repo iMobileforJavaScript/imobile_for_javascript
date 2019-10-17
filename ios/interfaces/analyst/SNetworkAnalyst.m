@@ -34,6 +34,7 @@ RCT_EXPORT_MODULE();
             [trackingLayer addGeometry:geometry WithTag:@""];
             [recordset moveNext];
         }
+        [recordset dispose];
         [[SMap singletonInstance].smMapWC.mapControl.map refresh];
     }
 }
