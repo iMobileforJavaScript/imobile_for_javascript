@@ -735,7 +735,6 @@ RCT_REMAP_METHOD(addLegendListener, addLegendListenerWithResolver:(RCTPromiseRes
     sMap = [SMap singletonInstance];
     NSMutableArray *legendSource = [[NSMutableArray alloc]init];
     for(int i = 0,count = arrItems.count; i < count; i++){
-        UIImage *image = arrItems[i][0];
         NSData *data = UIImageJPEGRepresentation(arrItems[i][0], 1.0f);
         NSString *base64Str = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
         NSDictionary * temp = @{@"image":base64Str,@"title":arrItems[i][1],@"type":arrItems[i][2]};
@@ -795,23 +794,17 @@ RCT_REMAP_METHOD(clearTarckingLayer, clearTarckingLayerWithResolver: (RCTPromise
         reject(@"clearTarckingLayer",exception.reason,nil);
     }
 }
-#pragma mark 获取室外导航路径长度
-RCT_REMAP_METHOD(getOutdoorPathLength, getOutdoorPathLengthWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+
+#pragma mark 获取导航路径长度
+RCT_REMAP_METHOD(getNavPathLength, getNavPathLengthWithBool:(BOOL)isIndoor resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        NSArray *naviPath = [[sMap.smMapWC.mapControl getNavigation2] getNaviPath];
-        NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
-        [dic setObject:[NSNumber numberWithInteger:naviPath.count] forKey:@"length"];
-        resolve(dic);
-    } @catch (NSException *exception) {
-        reject(@"getOutdoorPathLength",exception.reason,nil);
-    }
-}
-#pragma mark 获取室内导航路径长度
-RCT_REMAP_METHOD(getIndoorPathLength, getIndoorPathLengthWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
-    @try {
-        sMap = [SMap singletonInstance];
-        NSArray *naviPath = [[sMap.smMapWC.mapControl getNavigation3] getNaviPath];
+        NSArray *naviPath;
+        if(isIndoor){
+            naviPath = [[sMap.smMapWC.mapControl getNavigation3] getNaviPath];
+        }else{
+            naviPath = [[sMap.smMapWC.mapControl getNavigation2] getNaviPath];
+        }
         double length =  0;
         for(int i = 0; i < naviPath.count; i++){
             NaviStep *step = naviPath[i];
@@ -820,44 +813,35 @@ RCT_REMAP_METHOD(getIndoorPathLength, getIndoorPathLengthWithResolver: (RCTPromi
         NSDictionary *dic = @{@"length":[NSNumber numberWithDouble:length]};
         resolve(dic);
     } @catch (NSException *exception) {
-        reject(@"getIndoorPathLength",exception.reason,nil);
+        reject(@"getNavPathLength",exception.reason,nil);
     }
 }
-//#pragma mark 获取室外导航路径详情
-//RCT_REMAP_METHOD(getOutdoorPath, getOutdoorPathWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
-//    @try{
-//        sMap = [SMap singletonInstance];
-//        NSArray *naviPath = [[sMap.smMapWC.mapControl getNavigation2] getNaviPath];
-//        NSMutableArray *array = [[NSMutableArray alloc]init];
-//        for(int i = 0; i < naviPath.count; i++){
-//            NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
-//            NaviStep *step = naviPath[i];
-//            double getTime =
-//
-//        }
-//    }@catch(NSException *exception){
-//
-//    }
-//}
-#pragma mark 获取室内导航路径详情
-RCT_REMAP_METHOD(getIndoorPath, getIndoorPathWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+#pragma mark 获取导航路径详情
+RCT_REMAP_METHOD(getPathInfos, getPathInfosWithBool:(BOOL)isIndoor resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap  = [SMap singletonInstance];
-        NSArray *navipath = [[sMap.smMapWC.mapControl getNavigation3] getNaviPath];
+        NSArray *navipath;
+        if(isIndoor){
+            navipath = [[sMap.smMapWC.mapControl getNavigation3] getNaviPath];
+        }else{
+            navipath = [[sMap.smMapWC.mapControl getNavigation2] getNaviPath];
+        }
         NSMutableArray *array = [[NSMutableArray alloc] init];
         for(int i = 0; i < navipath.count; i++){
             NaviStep *step = navipath[i];
             double getTime = step.time;
             double roadLength = step.length;
+            int type = step.toSwerve;
             roadLength = round(roadLength * 100) / 100;
             NSDictionary *dic = @{@"roadName":[NSNumber numberWithDouble:getTime],
                                   @"roadLength":[NSNumber numberWithDouble:roadLength],
+                                  @"turnType":[NSNumber numberWithInt:type],
                                   };
             [array addObject:dic];
         }
         resolve(array);
     } @catch (NSException *exception) {
-        reject(@"getIndoorPath",exception.reason,nil);
+        reject(@"getPathInfos",exception.reason,nil);
     }
 }
 
@@ -935,7 +919,7 @@ RCT_REMAP_METHOD(routeAnalyst, routeAnalystWithX:(double)x Y:(double)y resolver:
     NSLog(@"%@",errorInfo);
 }
 #pragma mark 设置行业导航参数
-RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSString *)networkDatasetName NetModel:(NSString *)netModel resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSString *)networkDatasetName NetModel:(NSString *)netModelPath resolver: (RCTPromiseResolveBlock)resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.workspace;
@@ -947,7 +931,7 @@ RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSStrin
                 DatasetVector *networkDataset = (DatasetVector *)dataset;
                 Navigation2 *navigation2 = [sMap.smMapWC.mapControl getNavigation2];
                 [navigation2 setNetworkDataset:networkDataset];
-                [navigation2 loadModel:netModel];
+                [navigation2 loadModel:netModelPath];
                 navigation2.navi2Delegate = self;
                 resolve(@(YES));
             }
@@ -958,25 +942,47 @@ RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSStrin
 }
 #pragma mark 行业导航停止回调
 -(void)navi2GuideStop{
+    [SMap clearOutdoorPoint];
     [self sendEventWithName:INDUSTRYNAVIAGTION
                        body:@(YES)];
 }
 #pragma mark 行业导航 导航完成回调
 -(void)navi2GuideArrive{
+    [SMap clearOutdoorPoint];
     [self sendEventWithName:INDUSTRYNAVIAGTION
                        body:@(YES)];
 }
 
+
++(void) clearOutdoorPoint{
+    MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
+    [mapControl removeCalloutWithTag:@"startpoint"];
+    [mapControl removeCalloutWithTag:@"endpoint"];
+}
+
+#pragma mark 是否在导航过程中（处理是否退出fullMap）
+RCT_REMAP_METHOD(isGuiding, isGuidingWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        BOOL isIndoorGuiding = [[mapControl getNavigation3] isGuiding];
+        BOOL isOutdoorGuiding = [[mapControl getNavigation2] isGuiding];
+        resolve(@(isIndoorGuiding || isOutdoorGuiding));
+    } @catch (NSException *exception) {
+        reject(@"isGuiding",exception.reason,nil);
+    }
+}
 #pragma mark 行业导航路径分析
 RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:(double)x2 Y2:(double)y2 resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
+        MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
         Point2D *startPoint = [SMap getPointWithX:x Y:y];
         Point2D *endPoint = [SMap getPointWithX:x2 Y:y2];
-        Navigation2 *navigation2 = [[SMap singletonInstance].smMapWC.mapControl getNavigation2];
+        Navigation2 *navigation2 = [mapControl getNavigation2];
         [navigation2 setStartPoint:startPoint.x sPointY:startPoint.y];
         [navigation2 setDestinationPoint:endPoint.x dPointY:endPoint.y];
         [navigation2 setPathVisible:YES];
         BOOL isFind = [navigation2 routeAnalyst];
+        [mapControl.map refresh];
         resolve(@(isFind));
     } @catch (NSException *exception) {
         reject(@"beginNavigation",exception.reason, nil);
@@ -1134,19 +1140,88 @@ RCT_REMAP_METHOD(getLineDataset, getLineDatasetWithName:(NSString *)name resolve
     }
 }
 
-#pragma mark 生成路网 缺TopologyProcessOptions类
-//RCT_REMAP_METHOD(buildNetwork, buildNetworkWithDatasetName:(NSString *)networkDataset resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
-//    @try{
-//        Datasets *datasets = IndoorDatasource.datasets;
-//        DatasetVector *lineDataset = (DatasetVector *) [datasets getWithName:IncrementRoadName];
-//        NSString *datasetName = [datasets availableDatasetName:IncrementRoadName];
-//        DatasetVector *datasetVector = (DatasetVector *)[IndoorDatasource copyDataset:lineDataset desDatasetName:datasetName encodeType:NONE];
-//
-//
-//    }@catch(NSException *exception){
-//
-//    }
-//}
+#pragma mark 获取当前工作空间含有网络数据集的数据源
+RCT_REMAP_METHOD(getNetworkDatasource, methodgetNetworkDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        Datasources *datasouces = sMap.smMapWC.workspace.datasources;
+        NSMutableArray *datasourcesArray = [[NSMutableArray alloc] init];
+        for(int i = 0; i < datasouces.count; i++){
+            Datasource *datasource = [datasouces get:i];
+            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+            [dic setObject:datasource.alias forKey:@"title"];
+            [dic setObject:@(NO) forKey:@"visible"];
+            Datasets *datasets = datasource.datasets;
+            NSMutableArray *datasetsArray = [[NSMutableArray alloc] init];
+            for(int j = 0; j < datasets.count; j++){
+                Dataset *dataset = [datasets get:j];
+                if(dataset.datasetType == Network){
+                    NSDictionary *datasetDic = @{
+                                                 @"name":dataset.name,
+                                                 @"checked":@(NO),
+                                                 };
+                    [datasetsArray addObject:datasetDic];
+                }
+            }
+            if(datasetsArray.count > 0){
+                [dic setObject:datasetsArray forKey:@"data"];
+                [datasourcesArray addObject:dic];
+            }
+        }
+        resolve(datasourcesArray);
+    }@catch(NSException *exception){
+        reject(@"getNetworkDatasource",exception.reason, nil);
+    }
+}
+
+#pragma mark 判断当前工作空间是否存在网络数据集（导航前置条件）
+RCT_REMAP_METHOD(hasNetworkDataset, hasNetworkDatasetWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Datasources *datasouces = sMap.smMapWC.workspace.datasources;
+        BOOL hasNetworkDataset = NO;
+        for(int i = 0; i < datasouces.count; i++){
+            Datasets *datasets = [datasouces get:i].datasets;
+            for(int j = 0; j < datasets.count; j++){
+                Dataset *dataset = [datasets get:j];
+                if(dataset.datasetType == Network){
+                    hasNetworkDataset = YES;
+                    break;
+                }
+            }
+        }
+        resolve(@(hasNetworkDataset));
+    } @catch (NSException *exception) {
+        reject(@"hasNetworkDataset", exception.reason, nil);
+    }
+}
+#pragma mark 生成路网
+RCT_REMAP_METHOD(buildNetwork, buildNetworkWithDatasetName:(NSString *)lineDatasetName NetworkDataset:(NSString *)networkDataset resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+       DatasetVector *lineDataset = (DatasetVector *) [SelectDatasuorce.datasets getWithName:lineDatasetName];
+        NSString *datasetName = [SelectDatasuorce.datasets availableDatasetName:lineDatasetName];
+        DatasetVector *datasetVector2 = (DatasetVector *) [SelectDatasuorce copyDataset:lineDataset desDatasetName:datasetName encodeType:NONE];
+        
+        TopologyProcessingOptions *topologyProcessingOptions = [[TopologyProcessingOptions alloc] init];
+        topologyProcessingOptions.linesIntersected = YES;
+        [TopologyProcessing clean:datasetVector2 withOptions:topologyProcessingOptions];
+        
+        [SelectDatasuorce.datasets deleteName:networkDataset];
+        
+        NSMutableArray *lineFieldNames = [[NSMutableArray alloc] init];
+        for(int i = 0, count = datasetVector2.fieldInfos.count; i < count; i++){
+            lineFieldNames[i] = [datasetVector2.fieldInfos get:i].caption;
+        }
+        
+        NSMutableArray *datasets = [[NSMutableArray alloc] init];
+        [datasets addObject:datasetVector2];
+        
+        //NetworkBuilder NetworkSplitMode
+
+    }@catch(NSException *exception){
+
+    }
+}
 #pragma mark 判断是否是室内点
 RCT_REMAP_METHOD(isIndoorPoint, isIndoorPointWithX:(double)x Y:(double) y resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
@@ -1212,6 +1287,7 @@ RCT_REMAP_METHOD(clearPoint, clearPointWithResolver: (RCTPromiseResolveBlock) re
         dispatch_sync(dispatch_get_main_queue(), ^{
             [[sMap.smMapWC.mapControl getNavigation2] cleanPath];
             [[sMap.smMapWC.mapControl getNavigation3] cleanPath];
+            [SMap clearOutdoorPoint];
         });
         resolve(@(YES));
     }@catch(NSException *exception){
@@ -1261,7 +1337,7 @@ RCT_REMAP_METHOD(getPointName, getPointNameWithX:(double)x Y:(double) y IsStart:
 #pragma mark 显示起点/终点
 +(void)showPointByCalloutAtX:(double)x Y:(double)y PointName:(NSString *)pointName{
     MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
-    InfoCallout *infoCallout = [[InfoCallout alloc]initWithMapControl:mapControl BackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0] Alignment:CALLOUT_LEFTBOTTOM];
+    InfoCallout *infoCallout = [[InfoCallout alloc]initWithMapControl:mapControl BackgroundColor:[UIColor colorWithRed:255 green:0 blue:0 alpha:0] Alignment:CALLOUT_BOTTOM];
     dispatch_sync(dispatch_get_main_queue(), ^{
         UIImage *image;
         if([pointName isEqualToString:@"startpoint"]){
@@ -1271,8 +1347,8 @@ RCT_REMAP_METHOD(getPointName, getPointNameWithX:(double)x Y:(double) y IsStart:
         }
         UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
                 [imageView setFrame:CGRectMake(0, 0, 40, 40)];
-                infoCallout.width = 80;
-                infoCallout.height = 80;
+                infoCallout.width = 40;
+                infoCallout.height = 40;
                 [infoCallout addSubview:imageView];
                 [infoCallout showAt:[[Point2D alloc] initWithX:x Y:y] Tag:pointName];
     });
@@ -2331,6 +2407,9 @@ RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve 
         sMap = [SMap singletonInstance];
         if(sMap.scaleViewHelper){
             sMap.scaleViewHelper = nil;
+        }
+        if(sMap.smMapWC.floorListView){
+            sMap.smMapWC.floorListView = nil;
         }
         MapControl* mapControl = sMap.smMapWC.mapControl;
         if (mapControl) {

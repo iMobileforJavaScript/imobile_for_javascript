@@ -53,6 +53,8 @@
 #import "SuperMap/Navigation3.h"
 #import "SuperMap/NavigationOnline.h"
 #import "SuperMap/NaviStep.h"
+#import "SuperMap/TopologyProcessingOptions.h"
+#import "SuperMap/TopologyProcessing.h"
 #import "SuperMap/Geocoding.h"
 #import "JSMapControl.h"
 #import "SMMapWC.h"

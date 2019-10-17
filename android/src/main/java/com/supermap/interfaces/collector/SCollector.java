@@ -14,6 +14,8 @@ import com.supermap.data.CoordSysTranslator;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
+import com.supermap.data.FieldInfo;
+import com.supermap.data.FieldType;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
@@ -151,6 +153,35 @@ public class SCollector extends ReactContextBaseJavaModule {
                     resetPrj = true;
                 } else {
                     ds = layer.getDataset();
+                }
+
+                //add default fieldIfo
+                //name:string,userdefineId:int,userdefineValue:double
+                if( ((DatasetVector)ds).getFieldInfos().indexOf("Name") == -1){
+                    FieldInfo infoName = new FieldInfo();
+                    infoName.setCaption("Name");
+                    infoName.setName("Name");
+                    infoName.setType(FieldType.TEXT);
+                    ((DatasetVector)ds).getFieldInfos().add(infoName);
+                    infoName.dispose();
+                }
+
+                if( ((DatasetVector)ds).getFieldInfos().indexOf("UserdefineId_") == -1){
+                    FieldInfo userdefineId = new FieldInfo();
+                    userdefineId.setCaption("UserdefineId_");
+                    userdefineId.setName("UserdefineId_");
+                    userdefineId.setType(FieldType.INT32);
+                    ((DatasetVector)ds).getFieldInfos().add(userdefineId);
+                    userdefineId.dispose();
+                }
+
+                if( ((DatasetVector)ds).getFieldInfos().indexOf("UserDefineValue_") == -1){
+                    FieldInfo userdefineValue = new FieldInfo();
+                    userdefineValue.setCaption("UserDefineValue_");
+                    userdefineValue.setName("UserDefineValue_");
+                    userdefineValue.setType(FieldType.DOUBLE);
+                    ((DatasetVector)ds).getFieldInfos().add(userdefineValue);
+                    userdefineValue.dispose();
                 }
             }
 
