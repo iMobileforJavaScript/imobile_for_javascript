@@ -1202,9 +1202,9 @@ RCT_REMAP_METHOD(buildNetwork, buildNetworkWithDatasetName:(NSString *)lineDatas
         NSString *datasetName = [SelectDatasuorce.datasets availableDatasetName:lineDatasetName];
         DatasetVector *datasetVector2 = (DatasetVector *) [SelectDatasuorce copyDataset:lineDataset desDatasetName:datasetName encodeType:NONE];
         
-//        TopologyProcessingOptions *topologyProcessingOptions = [[TopologyProcessingOptions alloc] init];
-//        topologyProcessingOptions.linesIntersected = YES;
-//        [TopologyProcessing clean:datasetVector2 withOptions:topologyProcessingOptions];
+        TopologyProcessingOptions *topologyProcessingOptions = [[TopologyProcessingOptions alloc] init];
+        topologyProcessingOptions.linesIntersected = YES;
+        [TopologyProcessing clean:datasetVector2 withOptions:topologyProcessingOptions];
         
         [SelectDatasuorce.datasets deleteName:networkDataset];
         
