@@ -764,8 +764,16 @@ RCT_REMAP_METHOD(loginWithParam, loginUrl:(NSString *) url withParam:(NSString *
         request.HTTPMethod = @"POST";
         
         NSURLSessionUploadTask *uploadTask = [session uploadTaskWithRequest:request fromData:postData completionHandler:^(NSData *data,NSURLResponse *response,NSError *error) {
-            NSString *str=[[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-            resolve([NSNumber numberWithBool:YES]);
+            if(error == nil){
+                NSString *str=[[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+                if([str containsString:@"logout"]){
+                    resolve([NSNumber numberWithBool:YES]);
+                } else {
+                    resolve(@"用户名或用户密码错误");
+                }
+            } else {
+                resolve([NSNumber numberWithBool:NO]);
+            }
        }];
         
         [uploadTask resume];
