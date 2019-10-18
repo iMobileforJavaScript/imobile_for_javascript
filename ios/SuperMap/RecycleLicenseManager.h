@@ -33,6 +33,12 @@
 -(NSArray*)query:(NSString*)userSerialNumber;
 
 /**
+ * 查询许可剩余数量
+ * @param userSerialNumber 用户序列号
+ * @return 许可剩余数量
+ */
+-(NSArray*)queryLicenseCount:(NSString*)userSerialNumber;
+/**
  * 在线激活设备
  * @param userSerialNumber 用户序列号
  * @param modules 需要申请的模块列表

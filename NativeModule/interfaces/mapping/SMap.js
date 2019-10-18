@@ -2706,6 +2706,86 @@ export default (function () {
     }
   }
 
+  /**
+   * 激活许可序列号
+   * @param serialNumber
+   */
+  function activateLicense(serialNumber){
+    try {
+      return SMap.activateLicense(serialNumber)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  /**
+   * 获取正式许可所含模块
+   * @param serialNumber
+   */
+  function licenseContainModule(serialNumber){
+    try {
+      return SMap.licenseContainModule(serialNumber)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  /**
+   * 归还许可
+   * @param serialNumber
+   */
+  function recycleLicense(serialNumber){
+    try {
+      return SMap.recycleLicense(serialNumber)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  /**
+   * 清除本地许可文件,不归还许可
+   * @param serialNumber
+   */
+  function clearLocalLicense(serialNumber){
+    try {
+      return SMap.clearLocalLicense(serialNumber)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  /**
+   * 获取许可数量
+   * @param serialNumber
+   */
+  function getLicenseCount(serialNumber){
+    try {
+      return SMap.getLicenseCount(serialNumber)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  /**
+   * 初始化序列号
+   * @param serialNumber
+   */
+  function initSerialNumber(serialNumber){
+    try {
+      return SMap.initSerialNumber(serialNumber)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  /**
+   * 购买登记
+   * @param userName  用户昵称
+   * @param moduleCode  模块编号
+   */
+  function licenseBuyRegister(moduleCode,userName){
+    try {
+      return SMap.licenseBuyRegister(moduleCode,userName)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 
 
   let SMapExp = {
@@ -2901,6 +2981,14 @@ export default (function () {
     updateMapFixColorsMode,
     getMapFixColorsModeValue,
     resetMapFixColorsModeValue,
+
+    activateLicense,
+    licenseContainModule,
+    recycleLicense,
+    clearLocalLicense,
+    getLicenseCount,
+    initSerialNumber,
+    licenseBuyRegister,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings, Plot)
 
