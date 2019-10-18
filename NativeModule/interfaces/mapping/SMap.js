@@ -1813,6 +1813,28 @@ export default (function () {
   }
 
   /**
+   * 获取最小可见比例尺范围
+   */
+  function getMinVisibleScale (value) {
+    try {
+      return SMap.getMinVisibleScale(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取最大可见比例尺范围
+   */
+  function getMaxVisibleScale (value) {
+    try {
+      return SMap.getMaxVisibleScale(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 设置最小比例尺
    * @returns {*|Promise.<void>}
    */
@@ -2289,6 +2311,18 @@ export default (function () {
   }
 
   /**
+   * 是否在导航过程中（处理是否退出fullMap）
+   * @returns {Promise<Promise.yes>|Promise<boolean>}
+   */
+  function isGuiding() {
+    try {
+      return SMap.isGuiding()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 开启室外导航
    * @returns {*|void|Promise<void>}
    */
@@ -2434,6 +2468,17 @@ export default (function () {
   }
 
   /**
+   * 判断当前工作空间是否存在网络数据集
+   * @returns {*}
+   */
+  function hasNetworkDataset() {
+    try {
+      return SMap.hasNetworkDataset()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  /**
    * 将路网数据集添加到地图上
    * @returns {*|void|Promise<void>}
    */
@@ -2573,54 +2618,56 @@ export default (function () {
     }
   }
 
+
   /**
-   * 获取室外导航路径长度
-   * @returns {*|void|Promise<void>}
+   * 获取导航路径长度
+   * @param isIndoor 是否室内
+   * @returns {*}
    */
-  function getOutdoorPathLength() {
+  function getNavPathLength(isIndoor) {
     try {
-      return SMap.getOutdoorPathLength()
+      return SMap.getNavPathLength(isIndoor)
     } catch (e) {
       console.error(e)
     }
   }
 
   /**
-   * 获取室内导航路径长度
-   * @returns {*|void|Promise<void>}
+   * 判断当前地图是否是室内地图
+   * @returns {*}
    */
-  function getIndoorPathLength() {
+  function isIndoorMap() {
     try {
-      return SMap.getIndoorPathLength()
+      return SMap.isIndoorMap()
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取导航路径详情
+   * @param isIndoor 是否室内
+   * @returns {*}
+   */
+  function getPathInfos(isIndoor) {
+    try {
+      return SMap.getPathInfos(isIndoor)
     } catch (e) {
       console.error(e)
     }
   }
 
   /**
-   * 获取室外导航路径详情
-   * @returns {*|void|Promise<void>}
+   * 获取当前工作空间含有网络数据集的数据源
+   * @returns {*}
    */
-  function getOutdoorPath() {
+  function getNetworkDatasource() {
     try {
-      return SMap.getOutdoorPath()
+      return SMap.getNetworkDatasource()
     } catch (e) {
       console.error(e)
     }
   }
-
-  /**
-   * 获取室内导航路径详情
-   * @returns {*|void|Promise<void>}
-   */
-  function getIndoorPath() {
-    try {
-      return SMap.getIndoorPath()
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
   /**
    * 获取室内数据源
    * @returns {*|void|Promise<void>}
@@ -2883,6 +2930,8 @@ export default (function () {
     getMapHistoryCurrentIndex,
     
     addRecordset,
+    getMinVisibleScale,
+    getMaxVisibleScale,
     setMinVisibleScale,
     setMaxVisibleScale,
     addTextRecordset,
@@ -2913,19 +2962,20 @@ export default (function () {
     getNetWorkDataset,
     addNetWorkDataset,
     buildNetwork,
+    hasNetworkDataset,
     gpsBegin,
     addGPSRecordset,
     copyNaviSnmFile,
     getPointName,
+    isGuiding,
     setStartPointNameListener,
     setEndPointNameListener,
-    getOutdoorPath,
-    getIndoorPath,
-    getOutdoorPathLength,
-    getIndoorPathLength,
+    isIndoorMap,
+    getNetworkDatasource,
+    getPathInfos,
+    getNavPathLength,
     getIndoorDatasource,
     setIllegallyParkListener,
-
 
     matchPictureStyle,
     updateMapFixColorsMode,

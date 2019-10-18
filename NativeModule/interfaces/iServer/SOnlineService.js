@@ -396,6 +396,25 @@ function reverseGeocoding (longitude, latitude, handler) {
   }
   return OnlineServiceNative.reverseGeocoding(longitude, latitude)
 }
+
+function loginWithParam (url, cookie, params) {
+  if(Platform.OS === 'android') {
+    if(!cookie) {
+      cookie = ''
+    }
+    return OnlineServiceNative.loginWithParam(url, cookie, params)
+  } else {
+    return OnlineServiceNative.loginWithParam(url, params)
+  }
+}
+
+function getCookie () {
+  if(Platform.OS === 'android') {
+    return OnlineServiceNative.getCookie()
+  }
+}
+
+
 export default {
   init,
   uploadFile,
@@ -444,4 +463,6 @@ export default {
   getUserInfoBy,
   getSuperMapKnown,
   reverseGeocoding,
+  loginWithParam,
+  getCookie,
 }

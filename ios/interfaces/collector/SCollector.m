@@ -134,6 +134,33 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
             } else {
                 ds = layer.dataset;
             }
+            
+            if( [((DatasetVector*)ds).fieldInfos indexOfWithFieldName:@"Name"] == -1){
+                FieldInfo* infoName = [[FieldInfo alloc]init];
+                [infoName setCaption:@"Name"];
+                [infoName setName:@"Name"];
+                [infoName setFieldType:FT_TEXT];
+                [((DatasetVector*)ds).fieldInfos add:infoName];
+                [infoName dispose];
+            }
+            if( [((DatasetVector*)ds).fieldInfos indexOfWithFieldName:@"UserdefineId_"] == -1){
+                           FieldInfo* infoName = [[FieldInfo alloc]init];
+                           [infoName setCaption:@"UserdefineId_"];
+                           [infoName setName:@"UserdefineId_"];
+                           [infoName setFieldType:FT_INT32];
+                           [((DatasetVector*)ds).fieldInfos add:infoName];
+                           [infoName dispose];
+                
+            }
+            if( [((DatasetVector*)ds).fieldInfos indexOfWithFieldName:@"UserDefineValue_"] == -1){
+                           FieldInfo* infoName = [[FieldInfo alloc]init];
+                           [infoName setCaption:@"UserDefineValue_"];
+                           [infoName setName:@"UserDefineValue_"];
+                           [infoName setFieldType:FT_DOUBLE];
+                           [((DatasetVector*)ds).fieldInfos add:infoName];
+                           [infoName dispose];
+                
+            }
         }
         
         if (styleJson && ![styleJson isEqualToString:@""]) {
