@@ -4643,7 +4643,7 @@ RCT_REMAP_METHOD(newTaggingDataset, newTaggingDatasetWithName:(NSString *)Name p
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace =sMap.smMapWC.mapControl.map.workspace;
-        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",[userpath stringByReplacingOccurrencesOfString:@"." withString:@"_"],@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
         NSString *datasetName = @"";
         Layer *layer;
@@ -4723,7 +4723,7 @@ RCT_REMAP_METHOD(removeTaggingDataset, removeTaggingDatasetWithName:(NSString *)
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace =sMap.smMapWC.mapControl.map.workspace;
-        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",[userpath stringByReplacingOccurrencesOfString:@"." withString:@"_"],@"#"];
         Datasource *opendatasource =[workspace.datasources getAlias:labelName];
         if(opendatasource == nil){
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
@@ -4757,7 +4757,7 @@ RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithPath:(NSString *)user
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",[userpath stringByReplacingOccurrencesOfString:@"." withString:@"_"] ,@"#"];
         Datasource *opendatasource =[workspace.datasources getAlias:labelName];
         if(opendatasource == nil){
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
@@ -4778,7 +4778,7 @@ RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithPath:(NSString *)user
                 Map *map = sMap.smMapWC.mapControl.map;
                 for(int i = 0, count = datasets.count; i < count; i++){
                     Dataset *ds = [datasets get:i];
-                    NSString* addname = [ds.name stringByAppendingFormat:@"@Label_%@#",userpath]; //getName()+"@Label_"+userpath+"#";
+                    NSString* addname = [ds.name stringByAppendingFormat:@"@Label_%@#",[userpath stringByReplacingOccurrencesOfString:@"." withString:@"_"]]; //getName()+"@Label_"+userpath+"#";
                     BOOL add = true;
                     Layers* maplayers = map.layers;
                     for(int j=0 ; j<[maplayers getCount];j++){
@@ -4799,7 +4799,7 @@ RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithPath:(NSString *)user
             Map *map = sMap.smMapWC.mapControl.map;
             for(int i = 0, count = datasets.count; i < count; i++){
                 Dataset *ds = [datasets get:i];
-                NSString* addname = [ds.name stringByAppendingFormat:@"@Label_%@#",userpath]; //getName()+"@Label_"+userpath+"#";
+                NSString* addname = [ds.name stringByAppendingFormat:@"@Label_%@#",[userpath stringByReplacingOccurrencesOfString:@"." withString:@"_"]]; //getName()+"@Label_"+userpath+"#";
                 BOOL add = true;
                 Layers* maplayers = map.layers;
                 for(int j=0 ; j<[maplayers getCount];j++){
@@ -4835,10 +4835,12 @@ RCT_REMAP_METHOD(getDefaultTaggingDataset, getDefaultTaggingDatasetWithUserpath:
     @try{
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",[userpath stringByReplacingOccurrencesOfString:@"." withString:@"_"],@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
+        
+        NSString *datasetName = @"";
         if(opendatasource != nil){
-            NSString *datasetName = @"";
+            
             Datasets *datasets = opendatasource.datasets;
             Layers *layers =sMap.smMapWC.mapControl.map.layers;
             BOOL isEditable = false;
@@ -4869,7 +4871,7 @@ RCT_REMAP_METHOD(isTaggingLayer, isTaggingLayerWithPath:(NSString *)userpath res
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-        NSString *udbName = [NSString stringWithFormat: @"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *udbName = [NSString stringWithFormat: @"%@%@%@",@"Label_",[userpath stringByReplacingOccurrencesOfString:@"." withString:@"_"],@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:udbName];
         if(opendatasource != nil){
             Datasets *datasets = opendatasource.datasets;
@@ -4919,7 +4921,7 @@ RCT_REMAP_METHOD(getCurrentTaggingLayer, getCurrentTaggingLayerWithPath:(NSStrin
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-        NSString *udbName = [NSString stringWithFormat: @"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *udbName = [NSString stringWithFormat: @"%@%@%@",@"Label_",[userpath stringByReplacingOccurrencesOfString:@"." withString:@"_"],@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:udbName];
         
         NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
@@ -4971,7 +4973,7 @@ RCT_REMAP_METHOD(getTaggingLayers, getTaggingLayersWithUserpath:(NSString *)user
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",[userpath stringByReplacingOccurrencesOfString:@"." withString:@"_"],@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
         NSMutableArray *arr = [[NSMutableArray alloc] init];
         if(opendatasource == nil){
@@ -5126,7 +5128,7 @@ RCT_REMAP_METHOD(getTaggingLayerCount, getTaggingLayerCountWithPath:(NSString *)
     @try {
         sMap = [SMap singletonInstance];
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-        NSString *alias = [[NSString alloc] initWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *alias = [[NSString alloc] initWithFormat:@"%@%@%@",@"Label_",[userpath stringByReplacingOccurrencesOfString:@"." withString:@"_"],@"#"];
         Datasource *datasource = [workspace.datasources getAlias:alias];
         if(datasource != nil){
             Datasets *datasets = datasource.datasets;
@@ -5246,7 +5248,7 @@ RCT_REMAP_METHOD(setTaggingGrid, setTaggingGridWithName:(NSString *)name UserPat
         sMap = [SMap singletonInstance];
 //        g_mapControl = sMap.smMapWC.mapControl;
         Workspace *workspace = sMap.smMapWC.mapControl.map.workspace;
-        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",userpath,@"#"];
+        NSString *labelName = [NSString  stringWithFormat:@"%@%@%@",@"Label_",[userpath stringByReplacingOccurrencesOfString:@"." withString:@"_"],@"#"];
         Datasource *opendatasource = [workspace.datasources getAlias:labelName];
         DatasetVector* dataset = (DatasetVector *)[[opendatasource datasets] getWithName:name];
         if(dataset != nil){
