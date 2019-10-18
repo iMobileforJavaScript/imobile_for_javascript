@@ -126,8 +126,11 @@ import com.supermap.smNative.SMSymbol;
 import com.supermap.data.Color;
 import com.supermap.smNative.components.InfoCallout;
 import com.supermap.interfaces.utils.StrokeTextView;
+import com.supermap.services.LogInfoService;
 
 import org.apache.http.cookie.SM;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -142,6 +145,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -347,8 +351,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             statusMap.putBoolean("isLicenseValid", status.isLicenseValid());
             statusMap.putBoolean("isLicenseExist", status.isLicenseExsit());
             statusMap.putBoolean("isTrailLicense", status.isTrailLicense());
-            statusMap.putString("startDate", status.getStartDate().toString());
-            statusMap.putString("expireDate", status.getExpireDate().toString());
+            SimpleDateFormat format=new SimpleDateFormat("yyyyMMdd");
+            statusMap.putString("startDate", format.format(status.getStartDate()));
+            statusMap.putString("expireDate", format.format(status.getExpireDate()));
             statusMap.putString("version", status.getVersion() + "");
             promise.resolve(statusMap);
         } catch (Exception e) {
@@ -7603,4 +7608,251 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
     /************************************** 智能配图 END ****************************************/
+
+    /************************************** 许可配制 BEGIN***************************************/
+
+    /**
+     * 激活许可
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void activateLicense(final String serialNumber, final Promise promise) {
+        try {
+            final RecycleLicenseManager licenseManagers= RecycleLicenseManager.getInstance(context);
+            Environment.setLicenseType(LicenseType.UUID);
+            licenseManagers.setActivateCallback(licenseCallback);
+            queryHandler=new OneArg<ArrayList<Module>>() {
+                @Override
+                public void handle(ArrayList<Module> modules) {
+
+                    activateHandler=new OneArg<Boolean>() {
+                        @Override
+                        public void handle(Boolean result) {
+                            promise.resolve(result);
+                        }
+                    };
+                    licenseManagers.activateDevice(serialNumber,modules);
+                }
+            };
+            licenseManagers.query(serialNumber);
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取正式许可所含模块
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void licenseContainModule(final String serialNumber, final Promise promise) {
+        try {
+            final RecycleLicenseManager licenseManagers= RecycleLicenseManager.getInstance(context);
+            licenseManagers.setActivateCallback(licenseCallback);
+            queryHandler=new OneArg<ArrayList<Module>>() {
+                @Override
+                public void handle(ArrayList<Module> modules) {
+                    WritableArray array = Arguments.createArray();
+                    for (Module module : modules) {
+                        array.pushInt(module.value());
+                    }
+                    promise.resolve(array);
+                }
+            };
+            licenseManagers.query(serialNumber);
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 归还许可
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void recycleLicense(String serialNumber, final Promise promise) {
+        try {
+            RecycleLicenseManager licenseManagers= RecycleLicenseManager.getInstance(context);
+            licenseManagers.setActivateCallback(licenseCallback);
+            recycleHandler=new OneArg<Boolean>() {
+                @Override
+                public void handle(Boolean result) {
+                    promise.resolve(result);
+                }
+            };
+            licenseManagers.recycleLicense(null);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 清除许可，清除本地许可文件，不归还
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void clearLocalLicense(String serialNumber, Promise promise) {
+        try {
+            RecycleLicenseManager licenseManagers=RecycleLicenseManager.getInstance(context);
+            licenseManagers.clearLocalLicense();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 获取剩余许可数量
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void getLicenseCount(String serialNumber, final Promise promise) {
+        try {
+            RecycleLicenseManager licenseManagers=RecycleLicenseManager.getInstance(context);
+            licenseManagers.setActivateCallback(licenseCallback);
+            queryCountHandler=new OneArg<JSONArray>() {
+                @Override
+                public void handle(JSONArray jsonArray) {
+                    int length=jsonArray.length();
+                    //返回所有模块中剩余数量最少的  [{"Module":"Core_Runtime","LicenseActivedCount":6,"LicenseRemainedCount":494}]
+                    int minCount=0;
+                    for (int i=0;i<length;i++){
+                        try {
+                            JSONObject jsonObject= (JSONObject) jsonArray.get(i);
+                            int remainedCount = jsonObject.getInt("LicenseRemainedCount");
+                            if(i==0) {
+                                minCount=remainedCount;
+                            }else if(minCount>remainedCount){
+                                minCount=remainedCount;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    promise.resolve(minCount);
+                }
+            };
+            licenseManagers.queryLicenseCount(serialNumber);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 初始化许可序列号
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void initSerialNumber(final String serialNumber, final Promise promise) {
+        try {
+            RecycleLicenseManager licenseManagers= RecycleLicenseManager.getInstance(context);
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 登记购买
+     * @param moduleCode 模块编号
+     * @param userName 用户昵称
+     * @param promise
+     */
+    @ReactMethod
+    public void licenseBuyRegister(int moduleCode, String userName, final Promise promise) {
+        try {
+            Map<String,String> map=new HashMap<>();
+            map.put("ANDROID_LICENSE_BUY_REGISTER_USER_NAME",userName);
+            map.put("ANDROID_LICENSE_BUY_REGISTER_MODULE_CODE",moduleCode+"");
+            //上传数据
+            LogInfoService.sendAPPLogInfo(map, context, new LogInfoService.SendAppInfoListener() {
+                @Override
+                public void result(boolean result) {
+                    promise.resolve(result);
+                }
+            });
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+
+    }
+
+    public interface OneArg<T> {
+        void handle(T arg);
+    }
+    public  OneArg<ArrayList<Module>> queryHandler;
+    public  OneArg<JSONArray> queryCountHandler;
+    public  OneArg<Boolean> recycleHandler;
+    public  OneArg<Boolean> activateHandler;
+    RecycleLicenseManager.RecycleLicenseCallback licenseCallback=new RecycleLicenseManager.RecycleLicenseCallback() {
+        @Override
+        public void success(LicenseStatus licenseStatus) {
+            Log.i("LicenseStatus","LicenseStatus");
+            if(recycleHandler!=null){
+                recycleHandler.handle(true);
+                recycleHandler=null;
+            }
+            if(activateHandler!=null){
+                activateHandler.handle(true);
+                activateHandler=null;
+            }
+        }
+
+        @Override
+        public void activateFailed(String s) {
+            Log.i("activateFailed","activateFailed");
+            if(activateHandler!=null){
+                activateHandler.handle(false);
+                activateHandler=null;
+            }
+        }
+
+        @Override
+        public void recycleLicenseFailed(String s) {
+            if(recycleHandler!=null){
+                recycleHandler.handle(false);
+                recycleHandler=null;
+            }
+        }
+
+        @Override
+        public void bindPhoneNumberFailed(String s) {
+
+        }
+
+        @Override
+        public void upgradeFailed(String s) {
+
+        }
+
+        @Override
+        public void queryResult(ArrayList<Module> arrayList) {
+            if(queryHandler!=null){
+                queryHandler.handle(arrayList);
+                queryHandler=null;
+            }
+
+        }
+
+        @Override
+        public void queryLicenseCount(JSONArray jsonArray) {
+            if(queryCountHandler!=null){
+                queryCountHandler.handle(jsonArray);
+                queryCountHandler=null;
+            }
+        }
+
+        @Override
+        public void otherErrors(String s) {
+            Log.i("otherErrors",s);
+        }
+    };
+
+
+    /*******************************************许可配制 END************************************/
 }
