@@ -236,18 +236,16 @@ public class SMessageService extends ReactContextBaseJavaModule {
             //需要声明对方的消息队列并绑定routingkey
             String sQueue = "Message_" + targetID;
             String sRoutingKey = "Message_" + targetID;
-            if (g_AMQPManager!=null && !bGroup){
 
+            if(g_AMQPManager == null || g_AMQPSender == null) {
+                bRes = false;
+            } else if(!bGroup) {
                 g_AMQPManager.declareQueue(sQueue);
                 g_AMQPManager.bindQueue(sExchange, sQueue, sRoutingKey);
-
-            }
-            if(!bGroup){
                 g_AMQPSender.sendMessage(sExchange, message, sRoutingKey);
-            }else{
+            } else {
                 g_AMQPSender.sendMessage(sGroupExchange, message, targetID);
             }
-
 
             promise.resolve(bRes);
         } catch (Exception e) {

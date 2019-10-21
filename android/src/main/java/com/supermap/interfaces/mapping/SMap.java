@@ -57,6 +57,7 @@ import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Resources;
 import com.supermap.data.Workspace;
+import com.supermap.indoor.FloorListView;
 import com.supermap.interfaces.utils.SMFileUtil;
 import com.supermap.interfaces.utils.POISearchHelper2D;
 import com.supermap.interfaces.utils.ScaleViewHelper;
@@ -80,6 +81,7 @@ import com.supermap.mapping.LegendView;
 import com.supermap.mapping.MapColorMode;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MapParameterChangedListener;
+import com.supermap.mapping.MapView;
 import com.supermap.mapping.MeasureListener;
 import com.supermap.mapping.ScaleView;
 import com.supermap.mapping.Selection;
@@ -126,22 +128,31 @@ import com.supermap.smNative.SMSymbol;
 import com.supermap.data.Color;
 import com.supermap.smNative.components.InfoCallout;
 import com.supermap.interfaces.utils.StrokeTextView;
+import com.supermap.services.LogInfoService;
 
 import org.apache.http.cookie.SM;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -178,7 +189,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private String IncrementRoadName;
     Point2Ds GpsPoint2Ds = new Point2Ds();
     String rootPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-
+    private String lcenseSerialNumberFilePath;
 
     private ScaleViewHelper getScaleViewHelper() {
         if (scaleViewHelper == null) {
@@ -347,8 +358,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             statusMap.putBoolean("isLicenseValid", status.isLicenseValid());
             statusMap.putBoolean("isLicenseExist", status.isLicenseExsit());
             statusMap.putBoolean("isTrailLicense", status.isTrailLicense());
-            statusMap.putString("startDate", status.getStartDate().toString());
-            statusMap.putString("expireDate", status.getExpireDate().toString());
+            SimpleDateFormat format=new SimpleDateFormat("yyyyMMdd");
+            statusMap.putString("startDate", format.format(status.getStartDate()));
+            statusMap.putString("expireDate", format.format(status.getExpireDate()));
             statusMap.putString("version", status.getVersion() + "");
             promise.resolve(statusMap);
         } catch (Exception e) {
@@ -1103,6 +1115,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //                    scaleViewHelper.mapParameterChangedListener = null;
                 }
                 scaleViewHelper = null;
+            }
+            if(sMap.smMapWC.getFloorListView() != null){
+                sMap.smMapWC.setFloorListView(null);
             }
             MapControl mapControl = sMap.smMapWC.getMapControl();
             if (mapControl != null) {
@@ -3647,6 +3662,46 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 获取最小可见比例尺范围
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMinVisibleScale(String name, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Layer layer = SMLayer.findLayerByPath(name);
+            double scale = layer.getMinVisibleScale();
+            if(scale != 0){
+                scale = 1 / scale;
+            }
+            promise.resolve(scale);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取最大可见比例尺范围
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getMaxVisibleScale(String name, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Layer layer = SMLayer.findLayerByPath(name);
+            double scale = layer.getMaxVisibleScale();
+            if(scale != 0){
+                scale = 1 / scale;
+            }
+            promise.resolve(scale);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 设置最小比例尺范围
      *
      * @param promise
@@ -3656,7 +3711,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             Layer layer = SMLayer.findLayerByPath(name);
-            double scale = 1 / number;
+            double scale = number;
+            if(number != 0) {
+                scale = 1 / number;
+            }
             layer.setMinVisibleScale(scale);
             promise.resolve(true);
         } catch (Exception e) {
@@ -3674,7 +3732,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             Layer layer = SMLayer.findLayerByPath(name);//sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
-            double scale = 1 / number;
+            double scale = number;
+            if(number != 0) {
+                scale = 1 / number;
+            }
             layer.setMaxVisibleScale(scale);
             promise.resolve(true);
         } catch (Exception e) {
@@ -6456,15 +6517,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
-     * 获取室外导航路径长度
-     *
+     * 获取导航路径长度
+     * @param isIndoor 是否是室内
      * @param promise
      */
     @ReactMethod
-    public void getOutdoorPathLength(Promise promise) {
+    public void getNavPathLength(boolean isIndoor, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            NaviPath naviPath = sMap.getSmMapWC().getMapControl().getNavigation2().getNaviPath();
+            NaviPath naviPath;
+            if(isIndoor){
+                naviPath = sMap.getSmMapWC().getMapControl().getNavigation3().getNaviPath();
+            }else{
+                naviPath = sMap.getSmMapWC().getMapControl().getNavigation2().getNaviPath();
+            }
             WritableMap map = Arguments.createMap();
             map.putDouble("length", naviPath.getLength());
             promise.resolve(map);
@@ -6474,33 +6540,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
-     * 获取室内导航路径长度
-     *
+     * 获取导航路径详情
+     * @param isIndoor
      * @param promise
      */
     @ReactMethod
-    public void getIndoorPathLength(Promise promise) {
+    public void getPathInfos(boolean isIndoor, Promise promise){
         try {
             sMap = SMap.getInstance();
-            NaviPath naviPath = sMap.getSmMapWC().getMapControl().getNavigation3().getNaviPath();
-            WritableMap map = Arguments.createMap();
-            map.putDouble("length", naviPath.getLength());
-            promise.resolve(map);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    /** 待定
-     * 获取室外导航路径详情
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void getOndoorPath(Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            NaviPath naviPath = sMap.getSmMapWC().getMapControl().getNavigation2().getNaviPath();
+            NaviPath naviPath;
+            if(isIndoor){
+                naviPath = sMap.getSmMapWC().getMapControl().getNavigation3().getNaviPath();
+            }else {
+                naviPath = sMap.getSmMapWC().getMapControl().getNavigation2().getNaviPath();
+            }
             ArrayList<NaviStep> naviStep = naviPath.getStep();
             WritableArray array = Arguments.createArray();
             for (int i = 0; i < naviStep.size(); i++) {
@@ -6510,8 +6563,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 double roadLength = naviStep1.getLength();
                 BigDecimal b =  new BigDecimal(roadLength);
                 double  length  =  b.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
+                int type = naviStep1.getToSwerve();
                 map.putDouble("roadName", getTime);
                 map.putDouble("roadLength", length);
+                map.putInt("turnType",type);
                 array.pushMap(map);
             }
             promise.resolve(array);
@@ -6519,37 +6574,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
-
-
-    /**
-     * 获取室内导航路径详情
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void getIndoorPath(Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            NaviPath naviPath = sMap.getSmMapWC().getMapControl().getNavigation3().getNaviPath();
-            ArrayList<NaviStep> naviStep = naviPath.getStep();
-            WritableArray array = Arguments.createArray();
-            for (int i = 0; i < naviStep.size(); i++) {
-                WritableMap map = Arguments.createMap();
-                NaviStep naviStep1 = naviStep.get(i);
-                double getTime = naviStep1.getTime();
-                double roadLength = naviStep1.getLength();
-                BigDecimal b =  new BigDecimal(roadLength);
-                double  length  =  b.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
-                map.putDouble("roadName", getTime);
-                map.putDouble("roadLength", length);
-                array.pushMap(map);
-            }
-            promise.resolve(array);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
 
     private void setNavigationOnline(NavigationOnlineData data) {
         if (data == null) {
@@ -6701,6 +6725,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                         @Override
                         public void onStopNavi() {
+                            clearOutdoorPoint();
                             // TODO Auto-generated method stub
                             Log.e("+++++++++++++", "-------------****************");
                             context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -6721,6 +6746,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                         @Override
                         public void onAarrivedDestination() {
+                            clearOutdoorPoint();
                             // TODO Auto-generated method stub
                             Log.e("+++++++++++++", "-------------****************");
                             context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -6747,6 +6773,28 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    private void clearOutdoorPoint(){
+        MapView mapView = sMap.smMapWC.getMapControl().getMap().getMapView();
+        mapView.removeCallOut("startpoint");
+        mapView.removeCallOut("endpoint");
+    }
+
+    /**
+     * 是否在导航过程中（处理是否退出fullMap）
+     * @param promise
+     */
+    @ReactMethod
+    public void isGuiding(Promise promise){
+        try {
+            MapControl mapControl = SMap.getInstance().smMapWC.getMapControl();
+            boolean isIndoorGuiding = mapControl.getNavigation3().isGuiding();
+            boolean isOutdoorGuiding = mapControl.getNavigation2().isGuiding();
+            promise.resolve(isIndoorGuiding || isOutdoorGuiding);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
     /**
      * 行业导航路径分析
      *
@@ -6762,6 +6810,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap.getSmMapWC().getMapControl().getNavigation2().setDestinationPoint(pointend.getX(), pointend.getY());     // 设置终点
             sMap.getSmMapWC().getMapControl().getNavigation2().setPathVisible(true);                                       // 设置路径可见
             boolean isfind = sMap.getSmMapWC().getMapControl().getNavigation2().routeAnalyst();
+            sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(isfind);
         } catch (Exception e) {
             promise.reject(e);
@@ -6781,13 +6830,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     @Override
                     public void run() {
                         sMap.getSmMapWC().getMapControl().getNavigation2().startGuide(1);
-                        if(firstP){
-                            sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(true);        // 设置整屏绘制
-                            sMap.getSmMapWC().getMapControl().getNavigation2().setCarUpFront(true);          // 设置车头向上
-                        } else {
-                            sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(false);
-                            sMap.getSmMapWC().getMapControl().getNavigation2().setCarUpFront(false);
-                        }
+                        sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(firstP);        // 设置整屏绘制
+                        sMap.getSmMapWC().getMapControl().getNavigation2().setCarUpFront(firstP);          // 设置车头向上
                     }
                 });
             promise.resolve(true);
@@ -6992,6 +7036,44 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 获取当前工作空间含有网络数据集的数据源
+     * @param promise
+     */
+    @ReactMethod
+    public void getNetworkDatasource(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+            WritableArray array = Arguments.createArray();
+            for(int i = 0,count = datasources.getCount(); i < count; i++){
+                Datasource datasource = datasources.get(i);
+                WritableMap map = Arguments.createMap();
+                map.putString("title",datasource.getAlias());
+                map.putBoolean("visible",false);
+                Datasets datasets = datasource.getDatasets();
+                WritableArray dataArray = Arguments.createArray();
+                for(int j = 0,length = datasets.getCount(); j < length; j++){
+                    Dataset dataset = datasets.get(j);
+                    if(dataset.getType() == DatasetType.NETWORK){
+                        WritableMap tempMap = Arguments.createMap();
+                        tempMap.putString("name",dataset.getName());
+                        tempMap.putBoolean("checked",false);
+
+                        dataArray.pushMap(tempMap);
+                    }
+                }
+                if(dataArray.size() > 0){
+                    map.putArray("data", dataArray);
+                    array.pushMap(map);
+                }
+            }
+            promise.resolve(array);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 获取路网数据集
      *
      * @param promise
@@ -7034,6 +7116,32 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     * 判断当前工作空间是否存在网络数据集（导航前置条件）
+     * @param promise
+     */
+    @ReactMethod
+    public void hasNetworkDataset(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+
+            boolean hasNetworkDataset = false;
+            for(int i = 0, count = datasources.getCount(); i < count; i++){
+                Datasets datasets = datasources.get(i).getDatasets();
+                for(int j = 0, len = datasets.getCount(); j < len; j++){
+                    Dataset dataset = datasets.get(j);
+                    if(dataset.getType() == DatasetType.NETWORK){
+                        hasNetworkDataset = true;
+                        break;
+                    }
+                }
+            }
+            promise.resolve(hasNetworkDataset);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 
     /**
      * 生成路网
@@ -7218,11 +7326,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             context.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-//                    SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView().removeAllCallOut();
                     sMap.getSmMapWC().getMapControl().getNavigation2().cleanPath();
-//                    sMap.getSmMapWC().getMapControl().getNavigation2().stopGuide();
                     sMap.getSmMapWC().getMapControl().getNavigation3().cleanPath();
-//                    sMap.getSmMapWC().getMapControl().getNavigation3().stopGuide();
+                    clearOutdoorPoint();
                 }
             });
             promise.resolve(true);
@@ -7329,26 +7435,38 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     private void showPointByCallout(final double x, final double y, final String pointName) {
-        m_callout = new InfoCallout(context);
-        m_callout.setStyle(CalloutAlignment.LEFT_BOTTOM);
-        m_callout.setBackground(0, 0);
         context.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+                m_callout = new InfoCallout(context);
+                m_callout.setStyle(CalloutAlignment.BOTTOM);
+                m_callout.setBackground(0, 0);
+
+                DisplayMetrics dm = new DisplayMetrics();
+                getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+                double density = dm.density;
+
+                int markerSize = 30;
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int)(markerSize*density),(int)(markerSize*density));
+                m_callout.setCustomize(true);
+                m_callout.setLayoutParams(params);
+
                 ImageView imageView = new ImageView(context);
+
+                imageView.setAdjustViewBounds(true);
+
                 if (pointName.equals("startpoint")) {
                     imageView.setImageResource(R.drawable.icon_scene_tool_start);
                 } else {
                     imageView.setImageResource(R.drawable.icon_scene_tool_end);
                 }
-                imageView.setAdjustViewBounds(true);
-                imageView.setMaxWidth(80);
-                imageView.setMaxHeight(80);
-                LinearLayout linearLayout = new LinearLayout(context);
-                linearLayout.setLayoutParams(new LinearLayout.LayoutParams(80, 80));
-                linearLayout.addView(imageView);
 
-                m_callout.setContentView(linearLayout);
+                params = new RelativeLayout.LayoutParams((int)(markerSize*density),(int)(markerSize*density));
+                params.setMargins(0, 10,0, 0);
+                imageView.setLayoutParams(params);
+
+                m_callout.addView(imageView);
                 m_callout.setLocation(x, y);
                 SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView().addCallout(m_callout, pointName);
                 SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView().showCallOut();
@@ -7468,6 +7586,27 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 判断当前地图是否是室内地图
+     * @param promise
+     */
+    @ReactMethod
+    public void isIndoorMap(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            boolean isIndoor = false;
+            FloorListView floorListView = sMap.smMapWC.getFloorListView();
+            if(floorListView != null){
+                if(floorListView.getCurrentFloorId() != null){
+                    isIndoor = true;
+                }
+            }
+            promise.resolve(isIndoor);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 获取室内数据源
      *
      * @param promise
@@ -7483,6 +7622,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     DatasetVector dataset = (DatasetVector) datasets.get("building");
                     Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
                     IndoorDatasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(recordset.getFieldValue("LinkDatasource").toString());
+                    recordset.close();
                     recordset.dispose();
                 }
             }
@@ -7603,4 +7743,295 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
     /************************************** 智能配图 END ****************************************/
+
+    /************************************** 许可配制 BEGIN***************************************/
+
+    /**
+     * 激活许可
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void activateLicense(final String serialNumber, final Promise promise) {
+        try {
+            final RecycleLicenseManager licenseManagers= RecycleLicenseManager.getInstance(context);
+            Environment.setLicenseType(LicenseType.UUID);
+            licenseManagers.setActivateCallback(licenseCallback);
+            queryHandler=new OneArg<ArrayList<Module>>() {
+                @Override
+                public void handle(ArrayList<Module> modules) {
+
+                    activateHandler=new OneArg<Boolean>() {
+                        @Override
+                        public void handle(Boolean result) {
+
+                            try {
+                                File serialNumberFile=new File(lcenseSerialNumberFilePath);
+                                if(serialNumberFile.exists()){
+                                    serialNumberFile.delete();
+                                }
+                                serialNumberFile.createNewFile();
+                                OutputStream outputStream=new FileOutputStream(serialNumberFile);
+                                OutputStreamWriter outputStreamWriter=new OutputStreamWriter(outputStream);
+                                outputStreamWriter.write(serialNumber);
+                                outputStreamWriter.close();
+                            } catch (Exception e) {
+                                promise.reject(e);
+                            }
+                            promise.resolve(result);
+                        }
+                    };
+                    licenseManagers.activateDevice(serialNumber,modules);
+                }
+            };
+            licenseManagers.query(serialNumber);
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取正式许可所含模块
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void licenseContainModule(final String serialNumber, final Promise promise) {
+        try {
+            final RecycleLicenseManager licenseManagers= RecycleLicenseManager.getInstance(context);
+            licenseManagers.setActivateCallback(licenseCallback);
+            queryHandler=new OneArg<ArrayList<Module>>() {
+                @Override
+                public void handle(ArrayList<Module> modules) {
+                    WritableArray array = Arguments.createArray();
+                    for (Module module : modules) {
+                        array.pushInt(module.value());
+                    }
+                    promise.resolve(array);
+                }
+            };
+            licenseManagers.query(serialNumber);
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 归还许可
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void recycleLicense(String serialNumber, final Promise promise) {
+        try {
+            RecycleLicenseManager licenseManagers= RecycleLicenseManager.getInstance(context);
+            licenseManagers.setActivateCallback(licenseCallback);
+            recycleHandler=new OneArg<Boolean>() {
+                @Override
+                public void handle(Boolean result) {
+                    promise.resolve(result);
+                }
+            };
+            licenseManagers.recycleLicense(null);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 清除许可，清除本地许可文件，不归还
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void clearLocalLicense(String serialNumber, Promise promise) {
+        try {
+            RecycleLicenseManager licenseManagers=RecycleLicenseManager.getInstance(context);
+            licenseManagers.clearLocalLicense();
+            File serialNumberFile=new File(lcenseSerialNumberFilePath);
+            if(serialNumberFile.exists()){
+                serialNumberFile.delete();
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 获取剩余许可数量
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void getLicenseCount(String serialNumber, final Promise promise) {
+        try {
+            RecycleLicenseManager licenseManagers=RecycleLicenseManager.getInstance(context);
+            licenseManagers.setActivateCallback(licenseCallback);
+            queryCountHandler=new OneArg<JSONArray>() {
+                @Override
+                public void handle(JSONArray jsonArray) {
+                    int length=jsonArray.length();
+                    //返回所有模块中剩余数量最少的  [{"Module":"Core_Runtime","LicenseActivedCount":6,"LicenseRemainedCount":494}]
+                    int minCount=0;
+                    for (int i=0;i<length;i++){
+                        try {
+                            JSONObject jsonObject= (JSONObject) jsonArray.get(i);
+                            int remainedCount = jsonObject.getInt("LicenseRemainedCount");
+                            if(i==0) {
+                                minCount=remainedCount;
+                            }else if(minCount>remainedCount){
+                                minCount=remainedCount;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    promise.resolve(minCount);
+                }
+            };
+            licenseManagers.queryLicenseCount(serialNumber);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 初始化许可序列号
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void initSerialNumber(String serialNumber, final Promise promise) {
+        try {
+            RecycleLicenseManager licenseManagers= RecycleLicenseManager.getInstance(context);
+            lcenseSerialNumberFilePath=context.getExternalCacheDir().getParentFile().getParent() + "/com.config.supermap.runtime/config/recycleLicense/"+"/serialNumber.txt";
+            File serialNumberFile=new File(lcenseSerialNumberFilePath);
+            if(!serialNumberFile.exists()){
+//                serialNumberFile.mkdirs();
+//                serialNumberFile.createNewFile();
+                promise.resolve("");
+            }else {
+                try {
+                InputStream inputStream=new FileInputStream(serialNumberFile);
+                InputStreamReader reader=new InputStreamReader(inputStream);
+                BufferedReader bufferedReader=new BufferedReader(reader);
+                serialNumber=bufferedReader.readLine();
+                inputStream.close();
+                promise.resolve(serialNumber);
+                } catch (Exception e) {
+                    promise.reject(e);
+                }
+            }
+            // context.getExternalCacheDir().getParentFile().getParent() + "/com.config.supermap.runtime/config/recycleLicense/"
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 登记购买
+     * @param moduleCode 模块编号
+     * @param userName 用户昵称
+     * @param promise
+     */
+    @ReactMethod
+    public void licenseBuyRegister(int moduleCode, String userName, final Promise promise) {
+        try {
+            Map<String,String> map=new HashMap<>();
+            map.put("ANDROID_LICENSE_BUY_REGISTER_USER_NAME",userName);
+            map.put("ANDROID_LICENSE_BUY_REGISTER_MODULE_CODE",moduleCode+"");
+            //上传数据
+            LogInfoService.sendAPPLogInfo(map, context, new LogInfoService.SendAppInfoListener() {
+                @Override
+                public void result(boolean result) {
+                    promise.resolve(result);
+                }
+            });
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+
+    }
+
+    public interface OneArg<T> {
+        void handle(T arg);
+    }
+    public  OneArg<ArrayList<Module>> queryHandler;
+    public  OneArg<JSONArray> queryCountHandler;
+    public  OneArg<Boolean> recycleHandler;
+    public  OneArg<Boolean> activateHandler;
+    RecycleLicenseManager.RecycleLicenseCallback licenseCallback=new RecycleLicenseManager.RecycleLicenseCallback() {
+        @Override
+        public void success(LicenseStatus licenseStatus) {
+            Log.i("LicenseStatus","LicenseStatus");
+            if(recycleHandler!=null){
+                recycleHandler.handle(true);
+                recycleHandler=null;
+            }
+            if(activateHandler!=null){
+                activateHandler.handle(true);
+                activateHandler=null;
+            }
+        }
+
+        @Override
+        public void activateFailed(String s) {
+            Log.i("activateFailed","activateFailed");
+            if(activateHandler!=null){
+                activateHandler.handle(false);
+                activateHandler=null;
+            }
+        }
+
+        @Override
+        public void recycleLicenseFailed(String s) {
+            if(recycleHandler!=null){
+                recycleHandler.handle(false);
+                recycleHandler=null;
+            }
+        }
+
+        @Override
+        public void bindPhoneNumberFailed(String s) {
+
+        }
+
+        @Override
+        public void upgradeFailed(String s) {
+
+        }
+
+        @Override
+        public void queryResult(ArrayList<Module> arrayList) {
+            if(queryHandler!=null){
+                queryHandler.handle(arrayList);
+                queryHandler=null;
+            }
+
+        }
+
+        @Override
+        public void queryLicenseCount(JSONArray jsonArray) {
+            if(queryCountHandler!=null){
+                queryCountHandler.handle(jsonArray);
+                queryCountHandler=null;
+            }
+        }
+
+        @Override
+        public void otherErrors(String s) {
+            Log.i("otherErrors",s);
+            if(activateHandler!=null){
+                activateHandler.handle(false);
+                activateHandler=null;
+            }
+            if(recycleHandler!=null){
+                recycleHandler.handle(false);
+                recycleHandler=null;
+            }
+        }
+    };
+
+
+    /*******************************************许可配制 END************************************/
 }
