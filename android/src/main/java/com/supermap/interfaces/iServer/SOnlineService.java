@@ -1105,11 +1105,11 @@ public class SOnlineService extends ReactContextBaseJavaModule{
                             mCookie = getResponse.headers("set-cookie").get(0);
                             promise.resolve(true);
                         } else {
-                            promise.resolve("failed");
+                            promise.resolve(false);
                         }
                     } else {
-                        String responseBody = postResponse.body().string();
-                        promise.resolve(responseBody);
+//                        String responseBody = postResponse.body().string();
+                        promise.resolve("用户名或用户密码错误");
                     }
                 } catch (Exception e) {
                     promise.reject(e);

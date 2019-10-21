@@ -172,17 +172,17 @@ RCT_REMAP_METHOD(sendMessage, message:(NSString*)message  targetID:(NSString*)ta
         //需要声明对方的消息队列并绑定routingkey
         NSString* sQueue = [@"Message_"  stringByAppendingString:targetID];
         NSString* sRoutingKey = [@"Message_" stringByAppendingString:targetID];
-        if(g_AMQPManager!=nil && !bGroup){
-            
+        
+        if(g_AMQPManager == nil || g_AMQPSender == nil) {
+            bRes = false;
+        } else if(!bGroup) {
             [g_AMQPManager declareQueue:sQueue];
-            [g_AMQPManager bindQueue:sQueue exchange:sExchange routingkey:sRoutingKey];// bindQueue(sExchange, sQueue, sRoutingKey);
-            //发送消息
-        }
-        if(!bGroup){
+            [g_AMQPManager bindQueue:sQueue exchange:sExchange routingkey:sRoutingKey];
             [g_AMQPSender sendMessage:sExchange routingKey:sRoutingKey message:message];
-        }else{//群组发送到广播交换机
+        } else {
             [g_AMQPSender sendMessage:sGroupExchange routingKey:targetID message:message];
         }
+        
         NSNumber* number =[NSNumber numberWithBool:bRes];
         resolve(number);
     } @catch (NSException *exception) {
