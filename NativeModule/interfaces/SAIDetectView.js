@@ -46,9 +46,9 @@ dispose = () => {
 }
 
 //设置模型文件等信息,先于初始化调用
-setDetectInfo = (modelName, lableName) => {
+setDetectInfo = (params) => {
   try {
-    return SAIDetectView.setDetectInfo(modelName, lableName)
+    return SAIDetectView.setDetectInfo(params)
   } catch (error) {
     console.error(error)
   }
@@ -308,6 +308,16 @@ checkIfAvailable = () => {
   }
 }
 
+getDetectInfo = () => {
+  try {
+    return SAIDetectView.getDetectInfo()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+
+
 export default {
   initAIDetect,
   startDetect,
@@ -343,4 +353,5 @@ export default {
   checkIfSensorsAvailable,
   checkIfCameraAvailable,
   checkIfAvailable,
+  getDetectInfo,
 }
