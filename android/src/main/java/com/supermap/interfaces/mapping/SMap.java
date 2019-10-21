@@ -8021,6 +8021,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         @Override
         public void otherErrors(String s) {
             Log.i("otherErrors",s);
+            if(activateHandler!=null){
+                activateHandler.handle(false);
+                activateHandler=null;
+            }
+            if(recycleHandler!=null){
+                recycleHandler.handle(false);
+                recycleHandler=null;
+            }
         }
     };
 
