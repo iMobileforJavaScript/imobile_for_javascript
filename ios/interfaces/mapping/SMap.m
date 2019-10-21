@@ -4865,8 +4865,8 @@ RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithPath:(NSString *)user
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
             info.alias = labelName;
             info.engineType = ET_UDB;
-            NSString *path = [NSString stringWithFormat: @"%@%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Datasource/",labelName];
-            info.server = path;
+            NSString *path = [NSString stringWithFormat: @"%@%@%@%@%@.udb",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Datasource/",labelName];
+            info.server = path;//[path stringByAppendingString:@".udb"];
             
             Datasource *datasource = nil;
             if([[NSFileManager defaultManager] fileExistsAtPath:path]){
