@@ -26,6 +26,7 @@
 #import "SuperMap/DynamicPoint.h"
 #import "SuperMap/RecycleLicenseManager.h"
 #import "SuperMap/LogInfoService.h"
+#import "KeychainUtil.h"
 //#import "SuperMap/DynamicView.h"
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
@@ -39,6 +40,8 @@ static Datasource *IndoorDatasource, *SelectDatasuorce;
 static BOOL isStart;
 //Gps点
 Point2Ds *GpsPoint2Ds;
+NSString* KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY=@"KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY";
+NSString* KEYCHAIN_STORAGE_SERIAL_MODULES_KEY=@"KEYCHAIN_STORAGE_SERIAL_MODULES_KEY";
 
 @interface SMap()
 {
@@ -5566,6 +5569,10 @@ RCT_REMAP_METHOD(activateLicense, activateLicense:(NSString*)serialNumber resolv
         [Environment setUserLicInfo:serialNumber Modules:moudles];
         //激活
         BOOL isActive = [licenseManagers activateDevice:serialNumber modules:moudles];
+        if(isActive){
+            [KeychainUtil saveKeychainValue:serialNumber key:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
+            [KeychainUtil saveKeychainValue:[moudles componentsJoinedByString:@","] key:KEYCHAIN_STORAGE_SERIAL_MODULES_KEY];
+        }
         resolve([NSNumber numberWithBool:isActive]);
     } @catch (NSException *exception) {
         reject(@"setLabelColor",exception.reason,nil);
@@ -5578,6 +5585,13 @@ RCT_REMAP_METHOD(licenseContainModule, licenseContainModule:(NSString*)serialNum
         RecycleLicenseManager* licenseManagers = [RecycleLicenseManager getInstance];
         
         NSArray *moudles=[licenseManagers query:serialNumber];
+        
+        NSString* serialNumber=[KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
+        if(serialNumber&&![serialNumber isEqualToString:@""]){
+            NSString* modulesStr=[KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_MODULES_KEY];
+            NSArray* modulesArray=[modulesStr componentsSeparatedByString:@","];
+            [Environment setUserLicInfo:serialNumber Modules:modulesArray];
+        }
         
         resolve(moudles);
     } @catch (NSException *exception) {
@@ -5605,6 +5619,8 @@ RCT_REMAP_METHOD(clearLocalLicense, clearLocalLicense:(NSString*)serialNumber re
         RecycleLicenseManager* licenseManagers = [RecycleLicenseManager getInstance];
         [licenseManagers clearLocalLicense];
         [Environment setLicensePath:[NSHomeDirectory() stringByAppendingFormat:@"/Documents/iTablet/%@/",@"license"]];
+        [KeychainUtil saveKeychainValue:@"" key:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
+        [KeychainUtil saveKeychainValue:@"" key:KEYCHAIN_STORAGE_SERIAL_MODULES_KEY];
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"recycleLicense",exception.reason,nil);
@@ -5634,12 +5650,16 @@ RCT_REMAP_METHOD(getLicenseCount, getLicenseCount:(NSString*)serialNumber resolv
 #pragma mark 初始化许可序列号
 RCT_REMAP_METHOD(initSerialNumber, initSerialNumber:(NSString*)serialNumber resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
-        RecycleLicenseManager* licenseManagers = [RecycleLicenseManager getInstance];
-        [Environment setLicenseType:1];
-        NSArray *moudles=[licenseManagers query:serialNumber];
-        [Environment setUserLicInfo:serialNumber Modules:moudles];
+        NSString* serialNumber=[KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
+        if(serialNumber&&![serialNumber isEqualToString:@""]){
+            [Environment setLicenseType:1];
+            NSString* modulesStr=[KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_MODULES_KEY];
+            NSArray* modulesArray=[modulesStr componentsSeparatedByString:@","];
+            [Environment setUserLicInfo:serialNumber Modules:modulesArray];
+            resolve(serialNumber);
+        }
         
-        resolve(@(YES));
+        resolve(@"");
     } @catch (NSException *exception) {
         reject(@"initSerialNumber",exception.reason,nil);
     }

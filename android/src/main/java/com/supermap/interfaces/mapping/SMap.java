@@ -138,12 +138,17 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -184,7 +189,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private String IncrementRoadName;
     Point2Ds GpsPoint2Ds = new Point2Ds();
     String rootPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-
+    private String lcenseSerialNumberFilePath;
 
     private ScaleViewHelper getScaleViewHelper() {
         if (scaleViewHelper == null) {
@@ -7759,6 +7764,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     activateHandler=new OneArg<Boolean>() {
                         @Override
                         public void handle(Boolean result) {
+
+                            try {
+                                File serialNumberFile=new File(lcenseSerialNumberFilePath);
+                                if(serialNumberFile.exists()){
+                                    serialNumberFile.delete();
+                                }
+                                serialNumberFile.createNewFile();
+                                OutputStream outputStream=new FileOutputStream(serialNumberFile);
+                                OutputStreamWriter outputStreamWriter=new OutputStreamWriter(outputStream);
+                                outputStreamWriter.write(serialNumber);
+                                outputStreamWriter.close();
+                            } catch (Exception e) {
+                                promise.reject(e);
+                            }
                             promise.resolve(result);
                         }
                     };
@@ -7830,6 +7849,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             RecycleLicenseManager licenseManagers=RecycleLicenseManager.getInstance(context);
             licenseManagers.clearLocalLicense();
+            File serialNumberFile=new File(lcenseSerialNumberFilePath);
+            if(serialNumberFile.exists()){
+                serialNumberFile.delete();
+            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -7878,10 +7901,28 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void initSerialNumber(final String serialNumber, final Promise promise) {
+    public void initSerialNumber(String serialNumber, final Promise promise) {
         try {
             RecycleLicenseManager licenseManagers= RecycleLicenseManager.getInstance(context);
-
+            lcenseSerialNumberFilePath=context.getExternalCacheDir().getParentFile().getParent() + "/com.config.supermap.runtime/config/recycleLicense/"+"/serialNumber.txt";
+            File serialNumberFile=new File(lcenseSerialNumberFilePath);
+            if(!serialNumberFile.exists()){
+//                serialNumberFile.mkdirs();
+//                serialNumberFile.createNewFile();
+                promise.resolve("");
+            }else {
+                try {
+                InputStream inputStream=new FileInputStream(serialNumberFile);
+                InputStreamReader reader=new InputStreamReader(inputStream);
+                BufferedReader bufferedReader=new BufferedReader(reader);
+                serialNumber=bufferedReader.readLine();
+                inputStream.close();
+                promise.resolve(serialNumber);
+                } catch (Exception e) {
+                    promise.reject(e);
+                }
+            }
+            // context.getExternalCacheDir().getParentFile().getParent() + "/com.config.supermap.runtime/config/recycleLicense/"
         } catch (Exception e) {
             promise.reject(e);
         }
