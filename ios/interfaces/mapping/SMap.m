@@ -5664,6 +5664,34 @@ RCT_REMAP_METHOD(initSerialNumber, initSerialNumber:(NSString*)serialNumber reso
         reject(@"initSerialNumber",exception.reason,nil);
     }
 }
+#pragma mark 离线获取序列号和模块编号数组
+RCT_REMAP_METHOD(getSerialNumberAndModules, getSerialNumberAndModules:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSString* serialNumber=[KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
+        if(serialNumber&&![serialNumber isEqualToString:@""]){
+            NSMutableDictionary* dic=[[NSMutableDictionary alloc] init];
+            [Environment setLicenseType:1];
+            NSString* modulesStr=[KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_MODULES_KEY];
+            NSArray* modulesArray=[modulesStr componentsSeparatedByString:@","];
+            [dic setObject:serialNumber forKey:@"serialNumber"];
+            [dic setObject:modulesArray forKey:@"modulesArray"];
+            resolve(dic);
+        }
+        resolve(NULL);
+    } @catch (NSException *exception) {
+        reject(@"initSerialNumber",exception.reason,nil);
+    }
+}
+#pragma mark 初始化使用许可的路径
+RCT_REMAP_METHOD(initTrailLicensePath, initTrailLicensePath:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        [Environment setLicensePath:[NSHomeDirectory() stringByAppendingFormat:@"/Documents/iTablet/%@/",@"license"]];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"initSerialNumber",exception.reason,nil);
+    }
+}
+
 
 #pragma mark 登记购买
 RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName:(NSString*)userName resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
