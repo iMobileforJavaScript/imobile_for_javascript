@@ -28,7 +28,21 @@ public enum AIDetectModel2 {
     CELLPHONE,//手机
     BOOK,//书
 
+    NULL,
+    BIN,//垃圾箱
+
+    LINEARCRACK,//线裂痕
+    CONSTRUCTION,//施工连接处
+    LINEARLATERAL,//横向线裂痕
+    CONSTRUCTIONLATERAL,//横向施工连接处
+    ALLIGATORCRACK,//龟裂裂痕
+    RUTTINGBUMP,//车辙
+    CROSSWALK,//人行道
+    WHITELINE,//道路白线
+
     BOTTLE;//瓶子
+
+
 
     public static String getEnglishName(AIDetectModel2 model) {
         switch (model) {
@@ -467,6 +481,28 @@ public enum AIDetectModel2 {
             case BOTTLE:
                 return "瓶子";
 
+            case BIN:
+                return "垃圾箱";
+
+            case LINEARCRACK:
+                return "线裂痕";
+            case CONSTRUCTION:
+                return "施工连接处";
+            case LINEARLATERAL:
+                return "横向线裂痕";
+            case CONSTRUCTIONLATERAL:
+                return "横向施工连接处";
+            case ALLIGATORCRACK:
+                return "龟裂裂痕";
+            case RUTTINGBUMP:
+                return "车辙";
+            case CROSSWALK:
+                return "人行道";
+            case WHITELINE:
+                return "道路白线";
+
+            case NULL:
+                return "unknown";
             default:
                 return "unknown";
         }
@@ -548,8 +584,26 @@ public enum AIDetectModel2 {
                 return BOOK;
             case "bottle":
                 return BOTTLE;
+            case "垃圾箱":
+                return BIN;
+            case "D00":
+                return LINEARCRACK;
+            case "D01":
+                return CONSTRUCTION;
+            case "D10":
+                return LINEARLATERAL;
+            case "D11":
+                return CONSTRUCTIONLATERAL;
+            case "D20":
+                return ALLIGATORCRACK;
+            case "D40":
+                return RUTTINGBUMP;
+            case "D43":
+                return CROSSWALK;
+            case "D44":
+                return WHITELINE;
             default:
-                return null;
+                return NULL;
         }
     }
 }

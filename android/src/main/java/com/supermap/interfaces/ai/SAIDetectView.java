@@ -9,8 +9,10 @@ import android.graphics.Color;
 import android.hardware.Camera;
 import android.os.Build;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -20,6 +22,11 @@ import com.facebook.react.bridge.*;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.supermap.ai.*;
 import com.supermap.ar.*;
+import com.supermap.data.Rectangle2D;
+import com.supermap.data.Workspace;
+import com.supermap.interfaces.mapping.SMap;
+import com.supermap.mapping.MapControl;
+import com.supermap.mapping.MapView;
 import com.supermap.rnsupermap.R;
 
 import java.io.File;
@@ -61,7 +68,11 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     private static ReactApplicationContext mReactContext = null;
     private static CustomRelativeLayout mCustomRelativeLayout = null;
 
+
     private static String mLanguage = "CN";//EN
+
+    private static AIDetectViewInfo.FileType mModelType = null;
+    String MODEL_PATH,LABEL_PATH;
 
     public SAIDetectView(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -80,7 +91,9 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         mAIDetectView = aiDetectView;
         mAidetectViewInfo = new AIDetectViewInfo();
         mAidetectViewInfo.assetManager = mContext.getAssets();
-        prepareAiDetectViewInfo("detect.tflite", "labelmap.txt");
+
+        mModelType = AIDetectViewInfo.FileType.ASSETS_FILE;
+        prepareAiDetectViewInfo("detect.tflite", "labelmap.txt",AIDetectViewInfo.FileType.ASSETS_FILE,true);
 
         mAIDetectView.init();
 
@@ -145,6 +158,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         }
         mArView.setPOIOverlapEnable(mIsPOIOverlap);
     }
+
 
     private static OnClickArObjectListener arObjectListener = new OnClickArObjectListener() {
         @Override
@@ -337,18 +351,70 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
     /**
      * 设置模型文件等信息
-     * @param modelName
-     * @param lableName
      * @param promise
      */
     @ReactMethod
-    public void setDetectInfo(String modelName, String lableName, Promise promise) {
+    public void setDetectInfo(ReadableMap readableMap, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------SAIDetectView--setDetectInfo--------RN--------");
-            prepareAiDetectViewInfo(modelName, lableName);
-            mAIDetectView.setDetectInfo(mAidetectViewInfo);
+              HashMap<String, Object> data = readableMap.toHashMap();
+
+            AIDetectViewInfo.FileType modelType = null;
+            String modelPath = null;
+            String labelPath = null;
+
+            if (data.containsKey("ModelType")){
+                String type = data.get("ModelType").toString();
+                if (type.equals("ASSETS_FILE")) {
+                    modelType = AIDetectViewInfo.FileType.ASSETS_FILE;
+                } else if (type.equals("ABSOLUTE_FILE_PATH")) {
+                    modelType = AIDetectViewInfo.FileType.ABSOLUTE_FILE_PATH;
+                }
+            }
+            if (data.containsKey("ModelPath")){
+                modelPath = data.get("ModelPath").toString();
+            }
+            if (data.containsKey("LabelPath")){
+                labelPath = data.get("LabelPath").toString();
+            }
+            if (modelType == AIDetectViewInfo.FileType.ABSOLUTE_FILE_PATH) {
+                MODEL_PATH = modelPath;
+                LABEL_PATH = labelPath;
+                prepareAiDetectViewInfo(modelPath, labelPath,modelType,false);
+            }else if(modelType == AIDetectViewInfo.FileType.ASSETS_FILE){
+                MODEL_PATH = "";
+                LABEL_PATH = "";
+                prepareAiDetectViewInfo("detect.tflite", "labelmap.txt",modelType,true);
+            }
+
+            mModelType = modelType;
+
+            mAIDetectView.changeModelFile(mAidetectViewInfo);
 
             promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+
+    /**
+     * 获取模型文件等信息
+     * @param promise
+     */
+    @ReactMethod
+    public void getDetectInfo(Promise promise){
+        try {
+            WritableMap writableMap = Arguments.createMap();
+            String modelType = mModelType.toString();
+            writableMap.putString("ModelType", modelType);
+            if (mModelType == AIDetectViewInfo.FileType.ABSOLUTE_FILE_PATH) {
+                writableMap.putString("ModelPath", MODEL_PATH);
+                writableMap.putString("LabelPath", LABEL_PATH);
+            }
+
+            promise.resolve(writableMap);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -660,9 +726,20 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         try {
             Log.d(REACT_CLASS, "----------------SAIDetectView--setProjectionModeEnable--------RN--------");
             if (value) {
-                mArView.startRenderingAR();
+                mReactContext.getCurrentActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mArView.startRenderingAR();
+                    }
+                });
             } else {
-                mArView.stopRenderingAR();
+                mReactContext.getCurrentActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mWorld.clearWorld();
+                        mArView.stopRenderingAR();
+                    }
+                });
             }
             mIsPOIMode = value;
             promise.resolve(true);
@@ -939,12 +1016,15 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     }
 
 
+
+
     //*******************************************************************************************************//
-    private static void prepareAiDetectViewInfo(String modelName, String lableName) {
+    private static void prepareAiDetectViewInfo(String modelName, String lableName,AIDetectViewInfo.FileType modelType,boolean isquantized) {
         mAidetectViewInfo.modeFile = modelName;
         mAidetectViewInfo.lableFile = lableName;
         mAidetectViewInfo.inputSize = 300;
-        mAidetectViewInfo.isQuantized = true;
+        mAidetectViewInfo.isQuantized = isquantized;
+        mAidetectViewInfo.fileType = modelType;
     }
 
     //毫秒
