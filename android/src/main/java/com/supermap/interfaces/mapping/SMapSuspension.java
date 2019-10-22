@@ -82,7 +82,7 @@ public class SMapSuspension extends ReactContextBaseJavaModule {
 
                 //设置手势监听器
                 m_mapControl.setGestureDetector(new GestureDetector(m_mapControl.getContext(), mGestrueListener));
-                m_mapControl.getMap().SetSlantAngle(30);  //不是固定旋转的话 给他一个初始角度值。
+                m_mapControl.getMap().setSlantAngle(30);  //不是固定旋转的话 给他一个初始角度值。
 
 
             }
