@@ -6686,7 +6686,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     if(modules.size()>0){
                         modulesStr=modules.get(0).value()+"";
                         for (int i = 1; i < modules.size(); i++) {
-                            modulesStr+=modules.get(i).value()+",";
+                            modulesStr+=","+modules.get(i).value();
                         }
                     }
                     final String finalModulesStr = modulesStr;
@@ -6694,19 +6694,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         @Override
                         public void handle(Boolean result) {
 
-                            try {
-                                File serialNumberFile=new File(lcenseSerialNumberFilePath);
-                                if(serialNumberFile.exists()){
-                                    serialNumberFile.delete();
+                            if(result){
+                                try {
+                                    File serialNumberFile=new File(lcenseSerialNumberFilePath);
+                                    if(serialNumberFile.exists()){
+                                        serialNumberFile.delete();
+                                    }
+                                    serialNumberFile.createNewFile();
+                                    OutputStream outputStream=new FileOutputStream(serialNumberFile);
+                                    OutputStreamWriter outputStreamWriter=new OutputStreamWriter(outputStream);
+                                    String writeContent=serialNumber+"&&"+ finalModulesStr;
+                                    outputStreamWriter.write(writeContent);
+                                    outputStreamWriter.close();
+                                } catch (Exception e) {
+                                    promise.reject(e);
                                 }
-                                serialNumberFile.createNewFile();
-                                OutputStream outputStream=new FileOutputStream(serialNumberFile);
-                                OutputStreamWriter outputStreamWriter=new OutputStreamWriter(outputStream);
-                                String writeContent=serialNumber+"&&"+ finalModulesStr;
-                                outputStreamWriter.write(writeContent);
-                                outputStreamWriter.close();
-                            } catch (Exception e) {
-                                promise.reject(e);
                             }
                             promise.resolve(result);
                         }
@@ -6857,33 +6859,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
-//    #pragma mark 离线获取序列号和模块编号数组
-//    RCT_REMAP_METHOD(getSerialNumberAndModules, getSerialNumberAndModules:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
-//    @try {
-//            NSString* serialNumber=[KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
-//            if(serialNumber&&![serialNumber isEqualToString:@""]){
-//                NSMutableDictionary* dic=[[NSMutableDictionary alloc] init];
-//            [Environment setLicenseType:1];
-//                NSString* modulesStr=[KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_MODULES_KEY];
-//                NSArray* modulesArray=[modulesStr componentsSeparatedByString:@","];
-//            [dic setObject:serialNumber forKey:@"serialNumber"];
-//            [dic setObject:modulesArray forKey:@"modulesArray"];
-//                resolve(dic);
-//            }
-//            resolve(NULL);
-//        } @catch (NSException *exception) {
-//            reject(@"initSerialNumber",exception.reason,nil);
-//        }
-//    }
-//#pragma mark 初始化使用许可的路径
-//    RCT_REMAP_METHOD(initTrailLicensePath, initTrailLicensePath:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
-//    @try {
-//        [Environment setLicensePath:[NSHomeDirectory() stringByAppendingFormat:@"/Documents/iTablet/%@/",@"license"]];
-//            resolve(@(YES));
-//        } @catch (NSException *exception) {
-//            reject(@"initSerialNumber",exception.reason,nil);
-//        }
-//    }
     /**
      * 离线获取序列号和模块编号数组
      * @param promise
