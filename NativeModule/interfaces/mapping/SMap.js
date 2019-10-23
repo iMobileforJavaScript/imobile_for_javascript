@@ -2299,6 +2299,18 @@ export default (function () {
   }
 
   /**
+   * 设置当前楼层ID
+   * @param floorID
+   * @returns {*}
+   */
+  function setCurrentFloor(floorID) {
+    try {
+      return SMap.setCurrentFloor(floorID)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  /**
    * 开启室内导航
    * @returns {*|void|Promise<void>}
    */
@@ -2479,12 +2491,50 @@ export default (function () {
     }
   }
   /**
+   * 获取当前工作空间中的线数据集和楼层列表
+   * @returns {*}
+   */
+  function getLineDatasetAndFloorList() {
+    try {
+      return SMap.getLineDatasetAndFloorList()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  /**
+   * 判断当前工作空间是否存在线数据集
+   * @returns {*}
+   */
+  function hasLineDataset() {
+    try {
+      return SMap.hasLineDataset()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 将路网数据集添加到地图上
    * @returns {*|void|Promise<void>}
    */
-  function addNetWorkDataset(networkdataset) {
+  function addNetWorkDataset(datasourceName,networkdataset) {
     try {
-      return SMap.addNetWorkDataset(networkdataset)
+      return SMap.addNetWorkDataset(datasourceName,networkdataset)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 将路网数据集和线数据集从地图移除
+   * @param lineDataseName
+   * @param networkDatasetName
+   * @param datasourceName
+   * @returns {undefined}
+   */
+  function removeNetworkDataset(lineDataseName,networkDatasetName,datasourceName) {
+    try {
+      return SMap.removeNetworkDataset(lineDataseName,networkDatasetName,datasourceName)
     } catch (e) {
       console.error(e)
     }
@@ -2492,11 +2542,14 @@ export default (function () {
 
   /**
    * 生成路网
-   * @returns {*|void|Promise<void>}
+   * @param linedataset 线数据集名称
+   * @param networkdataset 网络数据集名称
+   * @param datasourceName 所在数据源名称
+   * @returns {undefined}
    */
-  function buildNetwork(linedataset,networkdataset) {
+  function buildNetwork(linedataset,networkdataset,datasourceName) {
     try {
-      return SMap.buildNetwork(linedataset,networkdataset)
+      return SMap.buildNetwork(linedataset,networkdataset,datasourceName)
     } catch (e) {
       console.error(e)
     }
@@ -2516,14 +2569,15 @@ export default (function () {
     }
   }
 
-
   /**
    * 添加GPS轨迹
-   * @returns {*|void|Promise<void>}
+   * @param datasourceName
+   * @param datasetName
+   * @returns {undefined}
    */
-  function addGPSRecordset(linedataset) {
+  function addGPSRecordset(datasourceName,datasetName) {
     try {
-      return SMap.addGPSRecordset(linedataset)
+      return SMap.addGPSRecordset(datasourceName,datasetName)
     } catch (e) {
       console.error(e)
     }
@@ -2774,6 +2828,26 @@ export default (function () {
     }
   }
   /**
+   * 离线获取序列号和模块编号数组
+   */
+  function getSerialNumberAndModules(){
+    try {
+      return SMap.getSerialNumberAndModules()
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  /**
+   * 初始化使用许可的路径
+   */
+  function initTrailLicensePath(){
+    try {
+      return SMap.initTrailLicensePath()
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  /**
    * 购买登记
    * @param userName  用户昵称
    * @param moduleCode  模块编号
@@ -2950,6 +3024,7 @@ export default (function () {
     beginIndoorNavigation,
     outdoorNavigation,
     indoorNavigation,
+    setCurrentFloor,
     getStartPoint,
     getEndPoint,
     clearPoint,
@@ -2961,8 +3036,11 @@ export default (function () {
     getLineDataset,
     getNetWorkDataset,
     addNetWorkDataset,
+    removeNetworkDataset,
     buildNetwork,
     hasNetworkDataset,
+    hasLineDataset,
+    getLineDatasetAndFloorList,
     gpsBegin,
     addGPSRecordset,
     copyNaviSnmFile,
@@ -2988,6 +3066,8 @@ export default (function () {
     clearLocalLicense,
     getLicenseCount,
     initSerialNumber,
+    getSerialNumberAndModules,
+    initTrailLicensePath,
     licenseBuyRegister,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings, Plot)

@@ -11,10 +11,11 @@ import * as LayerManager from './SLayerManager'
 import * as Plot from './SPlot'
 import * as Datasource from './SDatasource'
 import { EventConst } from '../../constains/index'
-let SMapSuspension = NativeModules.SMapSuspension
+
 const dpi = PixelRatio.get()
 
-const nativeEvt = new NativeEventEmitter(SMapSuspension)
+// let SMapSuspension = NativeModules.SMapSuspension
+// const nativeEvt = new NativeEventEmitter(SMapSuspension)
 
 export default (function () {
 

@@ -206,9 +206,11 @@ public class SPlot extends ReactContextBaseJavaModule {
             WritableMap writeMap = Arguments.createMap();
             for (int i = 0; i < plotSymbolPaths.size(); i++) {
                 int libId = (int) mapControl.addPlotLibrary(plotSymbolPaths.getString(i));
-                String libName = mapControl.getPlotSymbolLibName((long) libId);
-                writeMap.putInt(libName, libId);
-                plotLibMap.putInt(libName, libId);
+                if(libId!=0) {
+                    String libName = mapControl.getPlotSymbolLibName((long) libId);
+                    writeMap.putInt(libName, libId);
+                    plotLibMap.putInt(libName, libId);
+                }
 
 //                if (isFirst && libName.equals("警用标号")) {
 //                    Point2Ds point2Ds = new Point2Ds();
