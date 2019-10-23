@@ -446,12 +446,13 @@ public class SCartography extends ReactContextBaseJavaModule {
                 MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                 mapControl.getEditHistory().addMapHistory();
 
-                com.supermap.data.Color color = ColorParseUtil.getColor(lineColor);
+
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
-                if(lineColor == "NULL"){
+                if(lineColor.equals("NULL")){
                     geoStyle.setLineSymbolID(5);
                 }else{
+                    com.supermap.data.Color color = ColorParseUtil.getColor(lineColor);
                     geoStyle.setLineSymbolID(0);
                     geoStyle.setLineColor(color);
                 }
@@ -542,13 +543,11 @@ public class SCartography extends ReactContextBaseJavaModule {
             if (layerSettingVector != null) {
                 MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                 mapControl.getEditHistory().addMapHistory();
-
-                com.supermap.data.Color color = ColorParseUtil.getColor(fillForeColor);
-
                 GeoStyle geoStyle = layerSettingVector.getStyle();
-                if(fillForeColor == "NULL"){
+                if(fillForeColor.equals("NULL")){
                     geoStyle.setFillSymbolID(1);
                 }else{
+                    com.supermap.data.Color color = ColorParseUtil.getColor(fillForeColor);
                     geoStyle.setFillSymbolID(0);
                     geoStyle.setFillForeColor(color);
                 }
@@ -598,6 +597,7 @@ public class SCartography extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
     public void setFillBorderColor(String fillBorderColor, String layerName, Promise promise) {
         try {
             LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
@@ -605,12 +605,13 @@ public class SCartography extends ReactContextBaseJavaModule {
                 MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                 mapControl.getEditHistory().addMapHistory();
 
-                com.supermap.data.Color color = ColorParseUtil.getColor(fillBorderColor);
+
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
-                if(fillBorderColor == "NULL"){
+                if(fillBorderColor.equals("NULL")){
                     geoStyle.setLineSymbolID(5);
                 }else{
+                    com.supermap.data.Color color = ColorParseUtil.getColor(fillBorderColor);
                     geoStyle.setLineColor(color);
                     geoStyle.setLineSymbolID(0);
                 }
