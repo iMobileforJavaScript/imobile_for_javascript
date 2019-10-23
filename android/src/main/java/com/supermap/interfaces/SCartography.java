@@ -169,6 +169,7 @@ public class SCartography extends ReactContextBaseJavaModule {
                 com.supermap.data.Color makerColor = ColorParseUtil.getColor(color);
 
                 GeoStyle style = layerSettingVector.getStyle();
+                style.setMarkerSymbolID(0);
                 style.setLineColor(makerColor);
                 layerSettingVector.setStyle(style);
 
@@ -448,6 +449,7 @@ public class SCartography extends ReactContextBaseJavaModule {
                 com.supermap.data.Color color = ColorParseUtil.getColor(lineColor);
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
+                geoStyle.setLineSymbolID(0);
                 geoStyle.setLineColor(color);
                 layerSettingVector.setStyle(geoStyle);
 
@@ -539,6 +541,7 @@ public class SCartography extends ReactContextBaseJavaModule {
                 com.supermap.data.Color color = ColorParseUtil.getColor(fillForeColor);
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
+                geoStyle.setFillSymbolID(0);
                 geoStyle.setFillForeColor(color);
                 layerSettingVector.setStyle(geoStyle);
 

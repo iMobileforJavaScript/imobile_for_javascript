@@ -192,6 +192,7 @@
 		0AF348682270018F004D6D09 /* SAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF348662270018F004D6D09 /* SAnalyst.m */; };
 		182832BB22F98190006586BF /* SIPortalService.m in Sources */ = {isa = PBXBuildFile; fileRef = 182832BA22F98190006586BF /* SIPortalService.m */; };
 		2AAEE1D1230E6A6000902D1D /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AAEE196230E68CE00902D1D /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2AB23F432359B2A900884E9B /* KeychainUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AB23F422359B2A900884E9B /* KeychainUtil.m */; };
 		2AD00E8522461CC70087FC43 /* PoiSearchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD00E8322461CC70087FC43 /* PoiSearchHelper.m */; };
 		2AD85BD523265A0600BDE6A6 /* SPlot.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD85BD423265A0600BDE6A6 /* SPlot.m */; };
 		4A99EBEB21EDD9D000493EB1 /* SPUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A99EBEA21EDD9CF00493EB1 /* SPUtils.m */; };
@@ -590,6 +591,8 @@
 		182832BA22F98190006586BF /* SIPortalService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SIPortalService.m; sourceTree = "<group>"; };
 		2AAEE195230E68CD00902D1D /* GDataXMLNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GDataXMLNode.h; sourceTree = "<group>"; };
 		2AAEE196230E68CE00902D1D /* GDataXMLNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GDataXMLNode.m; sourceTree = "<group>"; };
+		2AB23F412359B2A900884E9B /* KeychainUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeychainUtil.h; sourceTree = "<group>"; };
+		2AB23F422359B2A900884E9B /* KeychainUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeychainUtil.m; sourceTree = "<group>"; };
 		2AD00E8322461CC70087FC43 /* PoiSearchHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PoiSearchHelper.m; sourceTree = "<group>"; };
 		2AD00E8422461CC70087FC43 /* PoiSearchHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PoiSearchHelper.h; sourceTree = "<group>"; };
 		2AD85BD323265A0600BDE6A6 /* SPlot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPlot.h; sourceTree = "<group>"; };
@@ -726,6 +729,8 @@
 				0A2F59EF229BB7AD00C42441 /* FileUtils.m */,
 				0A2858D622E06305001048A8 /* LocationTransfer.h */,
 				0A2858D722E06305001048A8 /* LocationTransfer.m */,
+				2AB23F412359B2A900884E9B /* KeychainUtil.h */,
+				2AB23F422359B2A900884E9B /* KeychainUtil.m */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -1541,6 +1546,7 @@
 				0A332E26211D623E00F56F26 /* JSLegendViewManager.m in Sources */,
 				0A332E72211D623E00F56F26 /* RCTConvert+RadiusUnit.m in Sources */,
 				0A332E44211D623E00F56F26 /* JSRadiusUnit.m in Sources */,
+				2AB23F432359B2A900884E9B /* KeychainUtil.m in Sources */,
 				0A0EDC4822C0B2C5003990A6 /* SNetworkAnalyst.m in Sources */,
 				0A332DFA211D623E00F56F26 /* JSChartPoint.m in Sources */,
 				0A332E04211D623E00F56F26 /* JSDataDownloadService.m in Sources */,

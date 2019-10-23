@@ -31,6 +31,7 @@ import com.supermap.data.EngineType;
 import com.supermap.data.Enum;
 import com.supermap.data.FieldInfo;
 import com.supermap.data.FieldInfos;
+import com.supermap.data.FieldType;
 import com.supermap.data.GeoRegion;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
@@ -308,7 +309,9 @@ public class SMMapWC {
                 String dsAvailableName = datasets.getAvailableDatasetName(dsName);
                 DatasetVectorInfo info = new DatasetVectorInfo(dsAvailableName, (DatasetType) Enum.parse(DatasetType.class, datasetType));
                 dataset = datasets.create(info);
+                info.dispose();
             }
+
 
             return dataset;
         } catch (Exception e) {

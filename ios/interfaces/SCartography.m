@@ -133,6 +133,7 @@ RCT_REMAP_METHOD(setMarkerColor, setMarkerColorWithResolver:(NSString*) strcolor
             
             Color *color = [STranslate colorFromHexString:strcolor];
             GeoStyle *style = layerSettingVector.geoStyle;
+            [style setMarkerSymbolID:0];
             [style setLineColor:color];
             
             [mapControl.map refresh];
@@ -330,6 +331,7 @@ RCT_REMAP_METHOD(setLineColor, setLineColorWithResolver:(NSString *) lineColor l
             
             GeoStyle *style = layerSettingVector.geoStyle;
             Color *color = [STranslate colorFromHexString:lineColor];
+            [style setLineSymbolID:0];
             [style setLineColor:color];
             
             [mapControl.map refresh];
@@ -378,6 +380,7 @@ RCT_REMAP_METHOD(setFillForeColor, setFillForeColorWithResolver:(NSString *) fil
             [[mapControl getEditHistory] addMapHistory];
             
             GeoStyle *style = layerSettingVector.geoStyle;
+            [style setFillSymbolID:0];
             Color *color = [STranslate colorFromHexString:fillForeColor];
             [style setFillForeColor:color];
             

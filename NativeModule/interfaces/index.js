@@ -1,4 +1,4 @@
-import { SMap, SScene } from './mapping'
+import { SMap, SScene ,SMapSuspension} from './mapping'
 import { SAnalyst, SFacilityAnalyst, STransportationAnalyst } from './analyst'
 import { SCollector, SMediaCollector } from './collector'
 import SCartography from './SCartography'
@@ -13,6 +13,7 @@ import SIllegallyParkView from './SIllegallyParkView'
 
 export {
   SMap,
+  SMapSuspension,
 
   /*分析模块功能*/
   SAnalyst,

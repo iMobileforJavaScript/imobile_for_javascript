@@ -24,6 +24,9 @@
 #import "SuperMap/DynamicView.h"
 #import "SuperMap/DynamicElement.h"
 #import "SuperMap/DynamicPoint.h"
+#import "SuperMap/RecycleLicenseManager.h"
+#import "SuperMap/LogInfoService.h"
+#import "KeychainUtil.h"
 //#import "SuperMap/DynamicView.h"
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
@@ -37,6 +40,8 @@ static Datasource *IndoorDatasource, *SelectDatasuorce;
 static BOOL isStart;
 //Gps点
 Point2Ds *GpsPoint2Ds;
+NSString* KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY=@"KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY";
+NSString* KEYCHAIN_STORAGE_SERIAL_MODULES_KEY=@"KEYCHAIN_STORAGE_SERIAL_MODULES_KEY";
 
 @interface SMap()
 {
@@ -4986,8 +4991,8 @@ RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithPath:(NSString *)user
             DatasourceConnectionInfo *info = [[DatasourceConnectionInfo alloc]init];
             info.alias = labelName;
             info.engineType = ET_UDB;
-            NSString *path = [NSString stringWithFormat: @"%@%@%@%@%@",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Datasource/",labelName];
-            info.server = path;
+            NSString *path = [NSString stringWithFormat: @"%@%@%@%@%@.udb",NSHomeDirectory(),@"/Documents/iTablet/User/",userpath,@"/Data/Datasource/",labelName];
+            info.server = path;//[path stringByAppendingString:@".udb"];
             
             Datasource *datasource = nil;
             if([[NSFileManager defaultManager] fileExistsAtPath:path]){
@@ -5679,6 +5684,157 @@ RCT_REMAP_METHOD(resetMapFixColorsModeValue, resetMapFixColorsModeValue:(BOOL)is
         reject(@"setLabelColor",exception.reason,nil);
     }
 }
+
+#pragma mark 激活许可
+RCT_REMAP_METHOD(activateLicense, activateLicense:(NSString*)serialNumber resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        RecycleLicenseManager* licenseManagers = [RecycleLicenseManager getInstance];
+
+        [Environment setLicenseType:1];
+        NSArray *moudles=[licenseManagers query:serialNumber];
+        [Environment setUserLicInfo:serialNumber Modules:moudles];
+        //激活
+        BOOL isActive = [licenseManagers activateDevice:serialNumber modules:moudles];
+        if(isActive){
+            [KeychainUtil saveKeychainValue:serialNumber key:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
+            [KeychainUtil saveKeychainValue:[moudles componentsJoinedByString:@","] key:KEYCHAIN_STORAGE_SERIAL_MODULES_KEY];
+        }
+        resolve([NSNumber numberWithBool:isActive]);
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取正式许可所含模块
+RCT_REMAP_METHOD(licenseContainModule, licenseContainModule:(NSString*)serialNumber resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        RecycleLicenseManager* licenseManagers = [RecycleLicenseManager getInstance];
+        
+        NSArray *moudles=[licenseManagers query:serialNumber];
+        
+        NSString* serialNumber=[KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
+        if(serialNumber&&![serialNumber isEqualToString:@""]){
+            NSString* modulesStr=[KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_MODULES_KEY];
+            NSArray* modulesArray=[modulesStr componentsSeparatedByString:@","];
+            [Environment setUserLicInfo:serialNumber Modules:modulesArray];
+        }
+        
+        resolve(moudles);
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
+    }
+}
+
+#pragma mark 归还许可
+RCT_REMAP_METHOD(recycleLicense, recycleLicense:(NSString*)serialNumber resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        RecycleLicenseManager* licenseManagers = [RecycleLicenseManager getInstance];
+        BOOL isRecycle = [licenseManagers recycleLicense:nil];
+        if(isRecycle){
+            [Environment setLicensePath:[NSHomeDirectory() stringByAppendingFormat:@"/Documents/iTablet/%@/",@"license"]];
+        }
+        resolve([NSNumber numberWithBool:isRecycle]);
+    } @catch (NSException *exception) {
+        reject(@"recycleLicense",exception.reason,nil);
+    }
+}
+
+#pragma mark 清除许可，清除本地许可文件，不归还
+RCT_REMAP_METHOD(clearLocalLicense, clearLocalLicense:(NSString*)serialNumber resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        RecycleLicenseManager* licenseManagers = [RecycleLicenseManager getInstance];
+        [licenseManagers clearLocalLicense];
+        [Environment setLicensePath:[NSHomeDirectory() stringByAppendingFormat:@"/Documents/iTablet/%@/",@"license"]];
+        [KeychainUtil saveKeychainValue:@"" key:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
+        [KeychainUtil saveKeychainValue:@"" key:KEYCHAIN_STORAGE_SERIAL_MODULES_KEY];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"recycleLicense",exception.reason,nil);
+    }
+}
+
+#pragma mark 获取剩余许可数量
+RCT_REMAP_METHOD(getLicenseCount, getLicenseCount:(NSString*)serialNumber resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        RecycleLicenseManager* licenseManagers = [RecycleLicenseManager getInstance];
+        NSArray *moudles=[licenseManagers queryLicenseCount:serialNumber];
+        int count=[moudles count];
+        int minRemindNum=0;
+        for(int i=0;i<count;i++){
+            NSDictionary* dic=moudles[i];
+            int remindNum=[[dic objectForKey:@"LicenseRemainedCount"] intValue];
+            if(i==0||minRemindNum>remindNum){
+                minRemindNum=remindNum;
+            }
+        }
+        resolve(@(minRemindNum));
+    } @catch (NSException *exception) {
+        reject(@"recycleLicense",exception.reason,nil);
+    }
+}
+
+#pragma mark 初始化许可序列号
+RCT_REMAP_METHOD(initSerialNumber, initSerialNumber:(NSString*)serialNumber resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSString* serialNumber=[KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
+        if(serialNumber&&![serialNumber isEqualToString:@""]){
+            [Environment setLicenseType:1];
+            NSString* modulesStr=[KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_MODULES_KEY];
+            NSArray* modulesArray=[modulesStr componentsSeparatedByString:@","];
+            [Environment setUserLicInfo:serialNumber Modules:modulesArray];
+            resolve(serialNumber);
+        }
+        
+        resolve(@"");
+    } @catch (NSException *exception) {
+        reject(@"initSerialNumber",exception.reason,nil);
+    }
+}
+#pragma mark 离线获取序列号和模块编号数组
+RCT_REMAP_METHOD(getSerialNumberAndModules, getSerialNumberAndModules:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSString* serialNumber=[KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
+        if(serialNumber&&![serialNumber isEqualToString:@""]){
+            NSMutableDictionary* dic=[[NSMutableDictionary alloc] init];
+            [Environment setLicenseType:1];
+            NSString* modulesStr=[KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_MODULES_KEY];
+            NSArray* modulesArray=[modulesStr componentsSeparatedByString:@","];
+            [dic setObject:serialNumber forKey:@"serialNumber"];
+            [dic setObject:modulesArray forKey:@"modulesArray"];
+            resolve(dic);
+        }
+        resolve(NULL);
+    } @catch (NSException *exception) {
+        reject(@"initSerialNumber",exception.reason,nil);
+    }
+}
+#pragma mark 初始化使用许可的路径
+RCT_REMAP_METHOD(initTrailLicensePath, initTrailLicensePath:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        [Environment setLicensePath:[NSHomeDirectory() stringByAppendingFormat:@"/Documents/iTablet/%@/",@"license"]];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"initSerialNumber",exception.reason,nil);
+    }
+}
+
+
+#pragma mark 登记购买
+RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName:(NSString*)userName resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        NSMutableDictionary* dic=[[NSMutableDictionary alloc] init];
+        [dic setValue:userName forKey:@"LICENSE_BUY_REGISTER_USER_NAME"];
+        [dic setValue:[NSString stringWithFormat:@"%d",moduleCode] forKey:@"LICENSE_BUY_REGISTER_MODULE_CODE"];
+        //上传数据
+        [LogInfoService sendAPPLogInfo:dic completionHandler:^(BOOL result) {
+            resolve([NSNumber numberWithBool:result]);
+        }];
+    } @catch (NSException *exception) {
+        reject(@"licenseBuyRegister",exception.reason,nil);
+    }
+}
+
 
 #pragma mark /************************************************ 监听事件 ************************************************/
 #pragma mark 监听事件

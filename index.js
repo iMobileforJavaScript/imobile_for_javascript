@@ -143,6 +143,7 @@ import SMMeasureView from './NativeModule/components/SMMeasureView.js'
 import SMAIClassifyView from './NativeModule/components/SMAIClassifyView.js'
 import SMCollectSceneFormView from './NativeModule/components/SMCollectSceneFormView.js'
 import SMIllegallyParkView from './NativeModule/components/SMIllegallyParkView.js'
+import SMMapSuspension from './NativeModule/components/SMMapSuspension.js'
 
 import EngineType from './NativeModule/EngineType'
 import ThemeLabelItem from './NativeModule/ThemeLabelItem'
@@ -181,6 +182,7 @@ import {
   SAIClassifyView,
   SCollectSceneFormView,
   SIllegallyParkView,
+  SMapSuspension,
 } from './NativeModule/interfaces'
 let SMCollectorType = NativeModules.SCollectorType
 
@@ -202,6 +204,7 @@ export {
   SMAIClassifyView,
   SMCollectSceneFormView,
   SMIllegallyParkView,
+  SMMapSuspension,
 
   Utility,
 
@@ -388,4 +391,5 @@ export {
   SAIClassifyView,
   SCollectSceneFormView,
   SIllegallyParkView,
+  SMapSuspension,
 }

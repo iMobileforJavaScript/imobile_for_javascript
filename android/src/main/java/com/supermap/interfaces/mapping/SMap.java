@@ -129,22 +129,31 @@ import com.supermap.smNative.SMSymbol;
 import com.supermap.data.Color;
 import com.supermap.smNative.components.InfoCallout;
 import com.supermap.interfaces.utils.StrokeTextView;
+import com.supermap.services.LogInfoService;
 
 import org.apache.http.cookie.SM;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -181,7 +190,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private String IncrementRoadName;
     Point2Ds GpsPoint2Ds = new Point2Ds();
     String rootPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-
+    private String lcenseSerialNumberFilePath;
 
     private ScaleViewHelper getScaleViewHelper() {
         if (scaleViewHelper == null) {
@@ -350,8 +359,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             statusMap.putBoolean("isLicenseValid", status.isLicenseValid());
             statusMap.putBoolean("isLicenseExist", status.isLicenseExsit());
             statusMap.putBoolean("isTrailLicense", status.isTrailLicense());
-            statusMap.putString("startDate", status.getStartDate().toString());
-            statusMap.putString("expireDate", status.getExpireDate().toString());
+            SimpleDateFormat format=new SimpleDateFormat("yyyyMMdd");
+            statusMap.putString("startDate", format.format(status.getStartDate()));
+            statusMap.putString("expireDate", format.format(status.getExpireDate()));
             statusMap.putString("version", status.getVersion() + "");
             promise.resolve(statusMap);
         } catch (Exception e) {
@@ -4064,1085 +4074,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void plotAnimation(Promise promise) {
 
     }
-//
-//    /**
-//     * 初始化标绘符号库
-//     *
-//     * @param plotSymbolPaths 标号路径列表
-//     * @param isFirst         是否是第一次初始化，第一次初始化需要新建一个点标号再删掉
-//     * @param newName         创建默认地图的地图名
-//     * @param isDefaultNew    是否是创建默认地图，创建默认地图不能从mapControl获取地图名，地图名由参数newName传入
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void initPlotSymbolLibrary(ReadableArray plotSymbolPaths, boolean isFirst, String newName, boolean isDefaultNew, Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            final MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//            Dataset dataset = null;
-//            Layer cadLayer = null;
-//            String userpath = null, name = "PlotEdit_" + (isDefaultNew ? newName : mapControl.getMap().getName());
-//            if (plotSymbolPaths.size() > 0) {
-//                String[] strArr = plotSymbolPaths.getString(0).split("/");
-//                for (int index = 0; index < strArr.length; index++) {
-//                    if (strArr[index].equals("User") && (index + 1) < strArr.length) {
-//                        userpath = strArr[index + 1];
-//                        break;
-//                    }
-//                }
-//            }
-//
-////            String plotDatasourceName="Plotting_" + userpath + "#";
-//            String plotDatasourceName = "Plotting_" + name + "#";
-//            plotDatasourceName.replace(".", "");
-//            Workspace workspace = mapControl.getMap().getWorkspace();
-//            Datasource opendatasource = workspace.getDatasources().get(plotDatasourceName);
-//            Datasource datasource = null;
-//            if (opendatasource == null) {
-//                DatasourceConnectionInfo info = new DatasourceConnectionInfo();
-//                info.setAlias(plotDatasourceName);
-//                info.setEngineType(EngineType.UDB);
-//                String server = rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/" + plotDatasourceName + ".udb";
-//                info.setServer(server);
-//
-//                datasource = workspace.getDatasources().open(info);
-//                if (datasource == null) {
-//                    String serverUDD = rootPath + "/iTablet/User/" + userpath + "/Data/Datasource/" + plotDatasourceName + ".udd";
-//                    info.setServer(server);
-//                    File file = new File(server);
-//                    if (file.exists()) {
-//                        file.delete();
-//                    }
-//                    File fileUdd = new File(serverUDD);
-//                    if (fileUdd.exists()) {
-//                        fileUdd.delete();
-//                    }
-//                    datasource = workspace.getDatasources().create(info);
-//                }
-//                if (datasource == null) {
-//                    datasource = workspace.getDatasources().open(info);
-//                }
-//                info.dispose();
-//            } else {
-//                datasource = opendatasource;
-//            }
-//
-//            if (datasource == null) {
-//                promise.resolve(null);
-//                return;
-//            }
-//            Datasets datasets = datasource.getDatasets();
-//
-//            for (int i = 0; i < mapControl.getMap().getLayers().getCount(); i++) {
-//                Layer tempLayer = mapControl.getMap().getLayers().get(i);
-//                if (tempLayer.getName().startsWith("PlotEdit_") && tempLayer.getDataset() != null) {
-//                    if (tempLayer.getDataset().getType() == DatasetType.CAD) {
-//                        dataset = tempLayer.getDataset();
-//                        cadLayer = tempLayer;
-//                    }
-//                } else {
-//                    tempLayer.setEditable(false);
-//                }
-//            }
-//            DatasetVector datasetVector;
-//            String datasetName;
-//            if (dataset == null) {
-//                datasetName = datasets.getAvailableDatasetName(name);
-//                DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
-//                datasetVectorInfo.setType(DatasetType.CAD);
-//                datasetVectorInfo.setEncodeType(EncodeType.NONE);
-//                datasetVectorInfo.setName(datasetName);
-//                datasetVector = datasets.create(datasetVectorInfo);
-//                //创建数据集时创建好字段
-//                addFieldInfo(datasetVector, "name", FieldType.TEXT, false, "", 255);
-//                addFieldInfo(datasetVector, "remark", FieldType.TEXT, false, "", 255);
-//                addFieldInfo(datasetVector, "address", FieldType.TEXT, false, "", 255);
-//
-//                dataset = datasets.get(datasetName);
-//                com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-//                Layer layer = map.getLayers().add(dataset, true);
-//                layer.setEditable(true);
-//                datasetVectorInfo.dispose();
-//                datasetVector.close();
-//            } else {
-//                cadLayer.setEditable(true);
-////                Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
-//////                Layer editLayer = layers.get(name + "@" + datasource.getAlias());
-////                Layer editLayer = layers.get(dataset.getName());
-////                if (editLayer != null) {
-////                    editLayer.setEditable(true);
-////                } else {
-////
-////                    Dataset ds = dataset;
-////                    com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-////                    Layer layer = map.getLayers().add(ds, true);
-////                    layer.setEditable(true);
-////                }
-//            }
-//
-//
-//            WritableMap writeMap = Arguments.createMap();
-//            for (int i = 0; i < plotSymbolPaths.size(); i++) {
-//                int libId = (int) mapControl.addPlotLibrary(plotSymbolPaths.getString(i));
-//                String libName = mapControl.getPlotSymbolLibName((long) libId);
-//                writeMap.putInt(libName, libId);
-////                if (isFirst && libName.equals("警用标号")) {
-////                    Point2Ds point2Ds = new Point2Ds();
-////                    Point2D point2D=new Point2D(mapControl.getMap().getViewBounds().getLeft()-100,mapControl.getMap().getViewBounds().getTop()-100);
-////                    point2Ds.add(point2D);
-////                    mapControl.addPlotObject(libId, 20100, point2Ds);
-////                    mapControl.cancel();
-////                    final Dataset finalDataset = dataset;
-////                    new Thread() {
-////                        @Override
-////                        public void run() {
-////                            super.run();
-////                            try {
-////                                Thread.sleep(100);
-////                                Recordset recordset = ((DatasetVector) finalDataset).getRecordset(false, CursorType.DYNAMIC);
-////                                recordset.moveLast();
-////                                recordset.delete();
-////                                recordset.update();
-////                                recordset.dispose();
-////                                mapControl.getMap().refresh();
-////                                mapControl.setAction(Action.PAN);
-////                            } catch (InterruptedException e) {
-////                                e.printStackTrace();
-////                            }
-////                        }
-////                    }.start();
-////                }
-//            }
-//            mapControl.getMap().refresh();
-//
-//            promise.resolve(writeMap);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-//
-//    /**
-//     * 移除标绘库
-//     *
-//     * @param plotSymbolIds
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void removePlotSymbolLibraryArr(ReadableArray plotSymbolIds, Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//            for (int i = 0; i < plotSymbolIds.size(); i++) {
-//                mapControl.removePlotLibrary(plotSymbolIds.getInt(i));
-//            }
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-//
-//    /**
-//     * 设置标绘符号
-//     *
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void setPlotSymbol(int libID, int symbolCode, Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//            for (int i = 0; i < mapControl.getMap().getLayers().getCount(); i++) {
-//                Layer tempLayer = mapControl.getMap().getLayers().get(i);
-//                if (tempLayer.getName().startsWith("PlotEdit_") && tempLayer.getDataset() != null) {
-//                    if (tempLayer.getDataset().getType() == DatasetType.CAD) {
-//                        tempLayer.setEditable(true);
-//                    }
-//                } else {
-//                    tempLayer.setEditable(false);
-//                }
-//            }
-//
-//            mapControl.setPlotSymbol(libID, symbolCode);
-//            mapControl.setAction(Action.CREATEPLOT);
-//
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-//
-//    /**
-//     * 添加cad图层
-//     *
-//     * @param layerName
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void addCadLayer(String layerName, Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//            Layer cadLayer = mapControl.getMap().getLayers().get(layerName);
-//            if (cadLayer == null) {
-//                DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
-//                datasetVectorInfo.setType(DatasetType.CAD);
-//                datasetVectorInfo.setName(layerName);
-//                DatasetVector datasetVector = (DatasetVector) sMap.smMapWC.getWorkspace().getDatasources().get(0).getDatasets().get(layerName);
-//                if (datasetVector == null) {
-//                    datasetVector = sMap.smMapWC.getWorkspace().getDatasources().get(0).getDatasets().create(datasetVectorInfo);
-//                }
-//                cadLayer = mapControl.getMap().getLayers().add(datasetVector, true);
-//            }
-//            cadLayer.setEditable(true);
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-//
-//    /**
-//     * 导入标绘模板库
-//     *
-//     * @param fromPath
-//     */
-//    @ReactMethod
-//    public static void importPlotLibData(String fromPath, Promise promise) {
-//        try {
-//            promise.resolve(importPlotLibDataMethod(fromPath));
-//        } catch (Exception e) {
-//            promise.resolve(false);
-//        }
-//    }
-//
-//    /**
-//     * 导入标绘模板库
-//     *
-//     * @param fromPath
-//     */
-//    public static boolean importPlotLibDataMethod(String fromPath) {
-//        String toPath = homeDirectory + "/iTablet/User/" + SMap.getInstance().smMapWC.getUserName() + "/Data" + "/Plotting/";
-//        boolean result = copyFiles(fromPath, toPath, "plot", "Symbol", "SymbolIcon", false);
-//        return result;
-//    }
-//
-//    /**
-//     * 根据标绘库id获取标绘库名称
-//     *
-//     * @param libId
-//     */
-//    @ReactMethod
-//    public static void getPlotSymbolLibNameById(int libId, Promise promise) {
-//        try {
-//
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//            String libName = mapControl.getPlotSymbolLibName((long) libId);
-//            promise.resolve(libName);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-//
-//    private static Timer m_timer;
-////    private static AnimationManager am;
-//
-//    /**
-//     * 初始化态势推演
-//     */
-//    @ReactMethod
-//    public static void initAnimation(Promise promise) {
-//        try {
-//
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-////            am = AnimationManager.getInstance();
-//            //开启定时器
-//            if (m_timer == null) {
-//                m_timer = new Timer();
-//            }
-//            m_timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    AnimationManager.getInstance().excute();
-//                }
-//            }, 0, 100);
-//            mapControl.setAnimations();
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.resolve(false);
-//        }
-//
-//    }
-//
-//    /**
-//     * 读取态势推演xml文件
-//     */
-//    @ReactMethod
-//    public static void readAnimationXmlFile(String filePath, Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//            if (m_timer == null) {
-//                m_timer = new Timer();
-//            }
-//            //开启定时器
-//            m_timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    AnimationManager.getInstance().excute();
-//                }
-//            }, 0, 100);
-//            Layers layers = mapControl.getMap().getLayers();
-//            int count = layers.getCount();
-//            for (int i = 0; i < count; i++) {
-//                if (layers.get(i).getDataset().getType() == DatasetType.CAD) {
-//                    layers.get(i).setEditable(true);
-//                }
-//            }
-//
-//            mapControl.setAnimations();
-//            AnimationManager.getInstance().deleteAll();
-//            AnimationManager.getInstance().getAnimationFromXML(filePath);
-//            if(AnimationManager.getInstance().getGroupCount()>0){
-//                String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
-//                AnimationManager.getInstance().getGroupByIndex(0).setGroupName(animationGroupName);
-//            }
-//
-//
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.resolve(false);
-//        }
-//    }
-//
-//    /**
-//     * 播放态势推演动画
-//     */
-//    @ReactMethod
-//    public static void animationPlay(Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//            if(AnimationManager.getInstance().getGroupCount()>0){
-//                Rectangle2D rectangle2D=new Rectangle2D();
-//                AnimationGroup animationGroup=AnimationManager.getInstance().getGroupByIndex(0);
-//                int animationCount=animationGroup.getAnimationCount();
-//                if(animationCount>0){
-//                    for (int i=0;i<animationCount;i++){
-//                        AnimationGO animationGO=animationGroup.getAnimationByIndex(i);
-//                        String layerName=animationGO.getLayerName();
-//                        DatasetVector datasetVector= (DatasetVector) mapControl.getMap().getLayers().get(layerName).getDataset();
-//
-//                        Recordset recordset = datasetVector.query("SmID=" + animationGO.getGeometry(), CursorType.STATIC);
-//                        Geometry geometry = recordset.getGeometry();
-//                        if (geometry != null) {
-//
-//                            if(i==0){
-//                                rectangle2D=geometry.getBounds();
-//                            }else {
-//                                Rectangle2D boouds=geometry.getBounds();
-//                                if(boouds.getLeft()<rectangle2D.getLeft()){
-//                                    rectangle2D.setLeft(boouds.getLeft());
-//                                }
-//                                if(boouds.getRight()>rectangle2D.getRight()){
-//                                    rectangle2D.setRight(boouds.getRight());
-//                                }
-//                                if(boouds.getBottom()<rectangle2D.getBottom()){
-//                                    rectangle2D.setBottom(boouds.getBottom());
-//                                }
-//                                if(boouds.getTop()>rectangle2D.getTop()){
-//                                    rectangle2D.setTop(boouds.getTop());
-//                                }
-//                            }
-//                        }
-//                    }
-//                    double offsetX=(rectangle2D.getRight()-rectangle2D.getLeft())/6;
-//                    double offsetY=(rectangle2D.getTop()-rectangle2D.getBottom())/6;
-//                    rectangle2D.setLeft(rectangle2D.getLeft()-offsetX);
-//                    rectangle2D.setRight(rectangle2D.getRight()+offsetX);
-//                    rectangle2D.setBottom(rectangle2D.getBottom()-offsetY*1.5);
-//                    rectangle2D.setTop(rectangle2D.getTop()+offsetY*0.5);
-//
-//                    mapControl.getMap().setViewBounds(rectangle2D);
-//                }
-//            }
-//
-////            double scale = mapControl.getMap().getScale();
-////            mapControl.zoomTo(mapControl.getMap().getScale()+0.1,100);
-//////            mapControl.getMap().setScale( mapControl.getMap().getScale()+0.1);
-////            mapControl.getMap().refresh();
-////            mapControl.zoomTo(scale,100);
-//////            mapControl.getMap().setScale( scale);
-//            mapControl.getMap().refresh();
-//
-//            Handler handler = new Handler();
-//            handler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    AnimationManager.getInstance().play();
-//                }
-//            }, 0);//3秒后执行Runnable中的run方法
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.resolve(false);
-//        }
-//    }
-//
-//    /**
-//     * 暂停态势推演动画
-//     */
-//    @ReactMethod
-//    public static void animationPause(Promise promise) {
-//        try {
-//            AnimationManager.getInstance().pause();
-//
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.resolve(false);
-//        }
-//    }
-//
-//    /**
-//     * 复位态势推演动画
-//     */
-//    @ReactMethod
-//    public static void animationReset(Promise promise) {
-//        try {
-//            AnimationManager.getInstance().reset();
-//
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.resolve(false);
-//        }
-//    }
-//
-//    /**
-//     * 停止态势推演动画
-//     */
-//    @ReactMethod
-//    public static void animationStop(Promise promise) {
-//        try {
-//            AnimationManager.getInstance().stop();
-//
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.resolve(false);
-//        }
-//    }
-//
-//    /**
-//     * 关闭态势推演
-//     */
-//    @ReactMethod
-//    public static void animationClose(Promise promise) {
-//        try {
-//            m_timer.cancel();
-//            m_timer = null;
-//            AnimationManager.getInstance().stop();
-//            AnimationManager.getInstance().reset();
-//            AnimationManager.getInstance().deleteAll();
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.resolve(false);
-//        }
-//    }
-//
-//    private Point2Ds point2Ds;
-//    private Point2Ds savePoint2Ds;
-//
-//    /**
-//     * 创建推演动画对象
-//     */
-//    @ReactMethod
-//    public void createAnimationGo(ReadableMap createInfo, String newPlotMapName, Promise promise) {
-//        //顺序：路径、闪烁、属性、显隐、旋转、比例、生长
-//        try {
-//            if (!createInfo.hasKey("animationMode")) {
-//                promise.resolve(false);
-//                return;
-//            }
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
-//            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
-//            if (animationGroup == null) {
-//                animationGroup = AnimationManager.getInstance().addAnimationGroup(animationGroupName);
-//            }
-//
-//            int animationMode = createInfo.getInt("animationMode");
-//            AnimationGO animationGO = AnimationManager.getInstance().createAnimation(new AnimationDefine.AnimationType(animationMode, animationMode));
-//            switch (animationMode) {
-//                case 0:
-//                    AnimationWay animationWay = (AnimationWay) animationGO;
-//                    Point3Ds point3Ds = new Point3Ds();
-//                    if (createInfo.hasKey("wayPoints")) {
-//                        ReadableArray array = createInfo.getArray("wayPoints");
-//                        for (int i = 0; i < array.size(); i++) {
-//                            ReadableMap map = array.getMap(i);
-//                            double x = map.getDouble("x");
-//                            double y = map.getDouble("y");
-//                            point3Ds.add(new Point3D(x, y, 0));
-//                        }
-//                    }
-//                    animationWay.addPathPts(point3Ds);
-//                    animationWay.setTrackLineWidth(0.5);
-//                    animationWay.setPathType(AnimationDefine.PathType.POLYLINE);
-//                    animationWay.setTrackLineColor(new com.supermap.data.Color(255, 0, 0, 255));
-//                    animationWay.setPathTrackDir(true);
-//                    animationWay.showPathTrack(true);
-//                    animationGO = animationWay;
-//                    break;
-//                case 1:
-//                    AnimationBlink animationBlink = (AnimationBlink) animationGO;
-//                    animationBlink.setBlinkNumberofTimes(20);
-//                    animationBlink.setBlinkStyle(AnimationDefine.BlinkAnimationBlinkStyle.NumberBlink);
-//                    animationBlink.setReplaceStyle(AnimationDefine.BlinkAnimationReplaceStyle.ColorReplace);
-//                    animationBlink.setBlinkAnimationReplaceColor(new com.supermap.data.Color(0, 0, 255, 255));
-//                    animationGO = animationBlink;
-//                    break;
-//                case 2:
-//                    AnimationAttribute animationAttribute = (AnimationAttribute) animationGO;
-//                    animationAttribute.setStartLineColor(new com.supermap.data.Color(255, 0, 0, 255));
-//                    animationAttribute.setEndLineColor(new com.supermap.data.Color(0, 0, 255, 255));
-//                    animationAttribute.setLineColorAttr(true);
-//                    animationAttribute.setStartLineWidth(0);
-//                    animationAttribute.setEndLineWidth(1);
-//                    animationAttribute.setLineWidthAttr(true);
-//                    animationGO = animationAttribute;
-//                    break;
-//                case 3:
-//                    AnimationShow animationShow = (AnimationShow) animationGO;
-//                    animationShow.setShowEffect(0);
-//                    animationShow.setShowState(true);
-//                    animationGO = animationShow;
-//                    break;
-//                case 4:
-//                    AnimationRotate animationRotate = (AnimationRotate) animationGO;
-//                    animationRotate.setStartAngle(new Point3D(0, 0, 0));
-//                    animationRotate.setEndAngle(new Point3D(720, 720, 0));
-//                    animationGO = animationRotate;
-//                    break;
-//                case 5:
-//                    AnimationScale animationScale = (AnimationScale) animationGO;
-//                    animationScale.setStartScaleFactor(0);
-//                    animationScale.setEndScaleFactor(1);
-//                    animationGO = animationScale;
-//                    break;
-//                case 6:
-//                    AnimationGrow animationGrow = (AnimationGrow) animationGO;
-//                    animationGrow.setStartLocation(0);
-//                    animationGrow.setEndLocation(1);
-//                    animationGO = animationGrow;
-//                    break;
-//            }
-//            //清空创建路径动画时的数据
-//            mapControl.getMap().getTrackingLayer().clear();
-//            point2Ds = null;
-//            savePoint2Ds = null;
-//
-//            if (createInfo.hasKey("startTime") && animationGroup.getAnimationCount() > 0) {
-//                int startTime = createInfo.getInt("startTime");
-//                if (createInfo.hasKey("startMode")) {
-//                    int startMode = createInfo.getInt("startMode");
-//                    AnimationGO lastAnimationGo = animationGroup.getAnimationByIndex(animationGroup.getAnimationCount() - 1);
-//                    switch (startMode) {
-//                        case 1:         //上一动作播放之后
-//                            double lastEndTime = lastAnimationGo.getStartTime() + lastAnimationGo.getDuration();
-//                            startTime += lastEndTime;
-//                            break;
-//                        case 2:         //点击开始
-//                            break;
-//                        case 3:         //上一动作同时播放
-//                            double lastStartTime = lastAnimationGo.getStartTime();
-//                            startTime += lastStartTime;
-//                            break;
-//                    }
-//                }
-//                animationGO.setStartTime(startTime);
-//            } else if (createInfo.hasKey("startTime") && animationGroup.getAnimationCount() == 0) {
-//                int startTime = createInfo.getInt("startTime");
-//                animationGO.setStartTime(startTime);
-//            }
-//            if (createInfo.hasKey("durationTime")) {
-//                int durationTime = createInfo.getInt("durationTime");
-//                animationGO.setDuration(durationTime);
-//            }
-//            if (createInfo.hasKey("startMode")) {
-//                int startMode = createInfo.getInt("startMode");
-//
-//            }
-//
-//            String mapName = mapControl.getMap().getName();
-//            if (mapName == null || mapName.equals("")) {
-//                if (newPlotMapName != null && !newPlotMapName.equals("")) {
-//                    mapName = newPlotMapName;
-//                } else {
-//                    int layerCount = mapControl.getMap().getLayers().getCount();
-//                    if (layerCount > 0) {
-//                        mapName = mapControl.getMap().getLayers().get(layerCount - 1).getName();
-//                    }
-//                }
-//                mapControl.getMap().save(mapName);
-//            }
-//
-//
-//            String animationGoName = "动画_" + AnimationManager.getInstance().getGroupByName(animationGroupName).getAnimationCount();
-//            if (createInfo.hasKey("layerName") && createInfo.hasKey("geoId")) {
-//                String layerName = createInfo.getString("layerName");
-//                int geoId = createInfo.getInt("geoId");
-//                Layer layer = mapControl.getMap().getLayers().get(layerName);
-//                if (layer != null) {
-//                    DatasetVector dataset = (DatasetVector) mapControl.getMap().getLayers().get(layerName).getDataset();
-//                    Recordset recordset = dataset.query("SmID=" + geoId, CursorType.STATIC);
-//                    Geometry geometry = recordset.getGeometry();
-//                    if (geometry != null) {
-//                        animationGO.setName(animationGoName);
-////                            String name=mapControl.getMap().getName();
-////                            if(name==null||name.equals("")){
-////                                mapControl.getMap().save();
-////                            }
-//                        animationGO.setGeometry((GeoGraphicObject) geometry, mapControl.getHandle(), layer.getName());
-//                        animationGroup.addAnimation(animationGO);
-//                    }
-//                }
-//            }
-//
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.resolve(false);
-//        }
-//    }
-//
-//    /**
-//     * 保存推演动画
-//     */
-//    @ReactMethod
-//    public static void animationSave(String savePath, String fileName, Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//            File file = new File(savePath);
-//            if (!file.exists()) {
-//                file.mkdirs();
-//            }
-////            String mapName=mapControl.getMap().getName();
-//            String tempPath = savePath + "/" + fileName + ".xml";
-//            String path = SMFileUtil.formateNoneExistFileName(tempPath, false);
-//            boolean result = AnimationManager.getInstance().saveAnimationToXML(path);
-//            AnimationManager.getInstance().reset();
-//            AnimationManager.getInstance().deleteAll();
-//
-//
-//            promise.resolve(result);
-//        } catch (Exception e) {
-//            promise.resolve(false);
-//        }
-//    }
-//
-//    /**
-//     * 获取标绘对象type
-//     */
-//    @ReactMethod
-//    public static void getGeometryTypeById(String layerName, int geoId, Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//            int type = -1;
-//            Layer layer = mapControl.getMap().getLayers().get(layerName);
-//            if (layer != null) {
-//                DatasetVector dataset = (DatasetVector) mapControl.getMap().getLayers().get(layerName).getDataset();
-//                Recordset recordset = dataset.query("SmID=" + geoId, CursorType.STATIC);
-//                Geometry geometry = recordset.getGeometry();
-//                Geometry geometry1 = (GeoGraphicObject) geometry;
-//                if (geometry != null) {
-//                    GeoGraphicObject geoGraphicObject = (GeoGraphicObject) geometry;
-//                    GraphicObjectType graphicObjectType = geoGraphicObject.getSymbolType();
-//                    type = graphicObjectType.value();
-//                }
-//            }
-//
-//
-//            promise.resolve(type);
-//        } catch (Exception e) {
-//            promise.resolve(-1);
-//        }
-//    }
-//
-//
-//    /**
-//     * 添加路径动画点获取回退路径动画点
-//     *
-//     * @param point
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void addAnimationWayPoint(ReadableMap point, boolean isAdd, Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//            if (!isAdd) {
-//                if (point2Ds == null || point2Ds.getCount() == 0) {
-//                    promise.resolve(false);
-//                    return;
-//                } else {
-//                    point2Ds.remove(point2Ds.getCount() - 1);
-//                }
-//            } else {
-//                Point point1 = new Point((int) point.getDouble("x"), (int) point.getDouble("y"));
-//                Point2D point2D = mapControl.getMap().pixelToMap(point1);
-//                if (point2Ds == null) {
-//                    point2Ds = new Point2Ds();
-//                }
-//                point2Ds.add(point2D);
-//            }
-//            GeoStyle style = new GeoStyle();
-//            style.setMarkerSize(new Size2D(10, 10));
-//            style.setLineColor(new Color(255, 105, 0));
-//            style.setMarkerSymbolID(3614);
-//            {
-//
-//                if (point2Ds.getCount() == 0) {
-//                    mapControl.getMap().getTrackingLayer().clear();
-//                } else if (point2Ds.getCount() == 1) {
-//                    mapControl.getMap().getTrackingLayer().clear();
-//                    GeoPoint geoPoint = new GeoPoint(point2Ds.getItem(0));
-//                    geoPoint.setStyle(style);
-//                    mapControl.getMap().getTrackingLayer().add(geoPoint, "point");
-//                } else if (point2Ds.getCount() > 1) {
-//                    mapControl.getMap().getTrackingLayer().clear();
-//                    GeoLine geoLine = new GeoLine(point2Ds);
-//                    geoLine.setStyle(style);
-//                    mapControl.getMap().getTrackingLayer().add(geoLine, "line");
-//                }
-//                mapControl.getMap().refresh();
-//            }
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-//
-//    /**
-//     * 刷新路径动画点
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void refreshAnimationWayPoint(Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//            if(savePoint2Ds==null||savePoint2Ds.getCount()==0){
-//                point2Ds=null;
-//                mapControl.getMap().getTrackingLayer().clear();
-//                promise.resolve(true);
-//                return;
-//            }
-//            point2Ds=new Point2Ds(savePoint2Ds);
-//
-//            GeoStyle style = new GeoStyle();
-//            style.setMarkerSize(new Size2D(10, 10));
-//            style.setLineColor(new Color(255, 105, 0));
-//            style.setMarkerSymbolID(3614);
-//            {
-//                mapControl.getMap().getTrackingLayer().clear();
-//                if (point2Ds.getCount() == 1) {
-//                    GeoPoint geoPoint = new GeoPoint(point2Ds.getItem(0));
-//                    geoPoint.setStyle(style);
-//                    mapControl.getMap().getTrackingLayer().add(geoPoint, "point");
-//                } else if (point2Ds.getCount() > 1) {
-//                    GeoLine geoLine = new GeoLine(point2Ds);
-//                    geoLine.setStyle(style);
-//                    mapControl.getMap().getTrackingLayer().add(geoLine, "line");
-//                }
-//                mapControl.getMap().refresh();
-//            }
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-//
-//    /**
-//     * 结束添加路径动画
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void cancelAnimationWayPoint(Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//            mapControl.getMap().getTrackingLayer().clear();
-//            point2Ds = null;
-//            savePoint2Ds = null;
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-//
-//    /**
-//     * 结束添加路径动画
-//     *
-//     * @param isSave
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void endAnimationWayPoint(boolean isSave, Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//            if (!isSave) {
-//                AnimationManager.getInstance().deleteAll();
-//                mapControl.getMap().getTrackingLayer().clear();
-//                point2Ds = null;
-//                savePoint2Ds = null;
-//                promise.resolve(true);
-//                return;
-//            }
-//
-//            WritableArray arr = Arguments.createArray();
-//            if (point2Ds.getCount() > 0) {
-//                for (int i = 0; i < point2Ds.getCount(); i++) {
-//                    WritableMap writeMap = Arguments.createMap();
-//                    Point2D point2D = point2Ds.getItem(i);
-//                    writeMap.putDouble("x", point2D.getX());
-//                    writeMap.putDouble("y", point2D.getY());
-//                    arr.pushMap(writeMap);
-//                }
-//            }
-//            savePoint2Ds=new Point2Ds(point2Ds);
-//            promise.resolve(arr);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-//
-//    /**
-//     * 根据geoId获取对象已设置的动画类型数量
-//     *
-//     * @param geoId
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void getGeoAnimationTypes(int geoId, Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//
-//            int[] array=new int[7];
-//            WritableArray arr = Arguments.createArray();
-//            for (int i = 0; i < array.length; i++) {
-//                arr.pushInt(0);
-//            }
-//
-//            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
-//            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
-//            if (animationGroup == null) {
-//                promise.resolve(arr);
-//                return;
-//            }
-//
-//            int size=animationGroup.getAnimationCount();
-//            for (int i = 0; i < size; i++) {
-//                AnimationGO animationGO=animationGroup.getAnimationByIndex(i);
-//                int id=animationGO.getGeometry();
-//                if(id==geoId){
-//                    int type=animationGO.getAnimationType().value();
-//                    array[type]+=1;
-//                }
-//            }
-//
-//            arr = Arguments.createArray();
-//            for (int i = 0; i < array.length; i++) {
-//                arr.pushInt(array[i]);
-//            }
-//            promise.resolve(arr);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-//
-//    /**
-//     * 获取所有动画节点数据
-//     *
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void getAnimationNodeList(Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//            WritableArray arr = Arguments.createArray();
-//
-//            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
-//            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
-//            if (animationGroup == null) {
-//                promise.resolve(arr);
-//                return;
-//            }
-//
-//            int size=animationGroup.getAnimationCount();
-//            for (int i = 0; i < size; i++) {
-//                AnimationGO animationGO=animationGroup.getAnimationByIndex(i);
-//                WritableMap writeMap = Arguments.createMap();
-//                writeMap.putInt("index",i);
-//                writeMap.putString("name",animationGO.getName());
-//                arr.pushMap(writeMap);
-//            }
-//            promise.resolve(arr);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-//
-//    /**
-//     * 删除动画节点
-//     *
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void deleteAnimationNode(String nodeName,Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//
-//            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
-//            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
-//            if (animationGroup == null) {
-//                promise.resolve(false);
-//                return;
-//            }
-//
-//            boolean result=animationGroup.deleteAnimation(nodeName);
-//
-//            promise.resolve(result);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-//
-//    /**
-//     * 删除动画节点
-//     *
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void modifyAnimationNodeName(int index,String newNodeName,Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//
-//            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
-//            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
-//            if (animationGroup == null) {
-//                promise.resolve(false);
-//                return;
-//            }
-//
-//            AnimationGO animationGO=animationGroup.getAnimationByIndex(index);
-//            boolean result=animationGO.setName(newNodeName);
-//
-//            promise.resolve(result);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-//
-//    /**
-//     * 移动节点位置
-//     *
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void moveAnimationNode(int index,boolean isUp,Promise promise) {
-//        try {
-//            sMap = SMap.getInstance();
-//            MapControl mapControl = sMap.smMapWC.getMapControl();
-//
-//
-//            String animationGroupName = "Create_Animation_Instance_#"; //默认创建动画分组的名称，名称特殊一点，保证唯一
-//            AnimationGroup animationGroup = AnimationManager.getInstance().getGroupByName(animationGroupName);
-//            if (animationGroup == null) {
-//                promise.resolve(false);
-//                return;
-//            }
-//
-//
-//            int size=animationGroup.getAnimationCount();
-//            if((isUp&&index==0)||(!isUp&&index==size-1)){
-//                promise.resolve(false);
-//                return;
-//            }
-//            int tempIndex=isUp?index-1:index;
-//            String tempGroupName="temp";
-//            AnimationGroup tempGroup=AnimationManager.getInstance().addAnimationGroup(tempGroupName);
-//            for (int i=0;i<size;i++){
-//                if(tempIndex==i){
-//                    AnimationGO animationGO1=AnimationManager.getInstance().createAnimation(animationGroup.getAnimationByIndex(tempIndex).getAnimationType());
-//                    String xmlStr1=animationGroup.getAnimationByIndex(tempIndex).toXml();
-//                    animationGO1.fromXml(xmlStr1);
-//
-//                    AnimationGO animationGO2=AnimationManager.getInstance().createAnimation(animationGroup.getAnimationByIndex(tempIndex+1).getAnimationType());
-//                    String xmlStr2=animationGroup.getAnimationByIndex(tempIndex+1).toXml();
-//                    animationGO2.fromXml(xmlStr2);
-//
-//                    tempGroup.addAnimation(animationGO2);
-//                    tempGroup.addAnimation(animationGO1);
-//                    i++;
-//                }else {
-//                    AnimationGO animationGO1=AnimationManager.getInstance().createAnimation(animationGroup.getAnimationByIndex(i).getAnimationType());
-//                    String xmlStr1=animationGroup.getAnimationByIndex(i).toXml();
-//                    animationGO1.fromXml(xmlStr1);
-//                    tempGroup.addAnimation(animationGO1);
-//                }
-//            }
-////            String tempAnimationDic= rootPath + "/iTablet/Cache";
-////            String tempAnimationXmlPath=tempAnimationDic+"/tempAnimation.xml";
-////            File tempAnimationDicFile=new File(tempAnimationDic);
-////            if(!tempAnimationDicFile.exists()){
-////                tempAnimationDicFile.mkdirs();
-////            }
-////            File tempAnimationXmlFile=new File(tempAnimationXmlPath);
-////            if(tempAnimationXmlFile.exists()){
-////                tempAnimationXmlFile.delete();
-////            }
-////
-////            AnimationManager.getInstance().saveAnimationToXML(tempAnimationXmlPath);
-////            AnimationManager.getInstance().deleteAll();
-////            File tempAnimationXmlFile2=new File(tempAnimationXmlPath);
-////            if(tempAnimationXmlFile2.exists()){
-////                AnimationManager.getInstance().getAnimationFromXML(tempAnimationXmlPath);
-////                int groupCount=AnimationManager.getInstance().getGroupCount();
-////                if(groupCount==2){
-////                    AnimationManager.getInstance().deleteGroupByName(animationGroupName);
-////                    AnimationManager.getInstance().getGroupByIndex(0).setGroupName(animationGroupName);
-////                }
-////                tempAnimationXmlFile2.delete();
-////            }
-//
-//            AnimationManager.getInstance().getGroupByIndex(0).setGroupName(animationGroupName);
-//            AnimationManager.getInstance().deleteGroupByName(animationGroupName);
-//            AnimationManager.getInstance().getGroupByIndex(0).setGroupName(animationGroupName);
-//
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
 
 
 /************************************** 地图编辑历史操作 BEGIN****************************************/
@@ -7883,4 +6814,354 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
     /************************************** 智能配图 END ****************************************/
+
+    /************************************** 许可配制 BEGIN***************************************/
+
+    /**
+     * 激活许可
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void activateLicense(final String serialNumber, final Promise promise) {
+        try {
+            final RecycleLicenseManager licenseManagers= RecycleLicenseManager.getInstance(context);
+            Environment.setLicenseType(LicenseType.UUID);
+            licenseManagers.setActivateCallback(licenseCallback);
+            queryHandler=new OneArg<ArrayList<Module>>() {
+                @Override
+                public void handle(ArrayList<Module> modules) {
+
+                    String modulesStr=null;
+                    if(modules.size()>0){
+                        modulesStr=modules.get(0).value()+"";
+                        for (int i = 1; i < modules.size(); i++) {
+                            modulesStr+=","+modules.get(i).value();
+                        }
+                    }
+                    final String finalModulesStr = modulesStr;
+                    activateHandler=new OneArg<Boolean>() {
+                        @Override
+                        public void handle(Boolean result) {
+
+                            if(result){
+                                try {
+                                    File serialNumberFile=new File(lcenseSerialNumberFilePath);
+                                    if(serialNumberFile.exists()){
+                                        serialNumberFile.delete();
+                                    }
+                                    serialNumberFile.createNewFile();
+                                    OutputStream outputStream=new FileOutputStream(serialNumberFile);
+                                    OutputStreamWriter outputStreamWriter=new OutputStreamWriter(outputStream);
+                                    String writeContent=serialNumber+"&&"+ finalModulesStr;
+                                    outputStreamWriter.write(writeContent);
+                                    outputStreamWriter.close();
+                                } catch (Exception e) {
+                                    promise.reject(e);
+                                }
+                            }
+                            promise.resolve(result);
+                        }
+                    };
+                    licenseManagers.activateDevice(serialNumber,modules);
+                }
+            };
+            licenseManagers.query(serialNumber);
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取正式许可所含模块
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void licenseContainModule(final String serialNumber, final Promise promise) {
+        try {
+            final RecycleLicenseManager licenseManagers= RecycleLicenseManager.getInstance(context);
+            licenseManagers.setActivateCallback(licenseCallback);
+            queryHandler=new OneArg<ArrayList<Module>>() {
+                @Override
+                public void handle(ArrayList<Module> modules) {
+                    WritableArray array = Arguments.createArray();
+                    for (Module module : modules) {
+                        array.pushInt(module.value());
+                    }
+                    promise.resolve(array);
+                }
+            };
+            licenseManagers.query(serialNumber);
+
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 归还许可
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void recycleLicense(String serialNumber, final Promise promise) {
+        try {
+            RecycleLicenseManager licenseManagers= RecycleLicenseManager.getInstance(context);
+            licenseManagers.setActivateCallback(licenseCallback);
+            recycleHandler=new OneArg<Boolean>() {
+                @Override
+                public void handle(Boolean result) {
+                    promise.resolve(result);
+                }
+            };
+            licenseManagers.recycleLicense(null);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 清除许可，清除本地许可文件，不归还
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void clearLocalLicense(String serialNumber, Promise promise) {
+        try {
+            RecycleLicenseManager licenseManagers=RecycleLicenseManager.getInstance(context);
+            licenseManagers.clearLocalLicense();
+            File serialNumberFile=new File(lcenseSerialNumberFilePath);
+            if(serialNumberFile.exists()){
+                serialNumberFile.delete();
+            }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 获取剩余许可数量
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void getLicenseCount(String serialNumber, final Promise promise) {
+        try {
+            RecycleLicenseManager licenseManagers=RecycleLicenseManager.getInstance(context);
+            licenseManagers.setActivateCallback(licenseCallback);
+            queryCountHandler=new OneArg<JSONArray>() {
+                @Override
+                public void handle(JSONArray jsonArray) {
+                    int length=jsonArray.length();
+                    //返回所有模块中剩余数量最少的  [{"Module":"Core_Runtime","LicenseActivedCount":6,"LicenseRemainedCount":494}]
+                    int minCount=0;
+                    for (int i=0;i<length;i++){
+                        try {
+                            JSONObject jsonObject= (JSONObject) jsonArray.get(i);
+                            int remainedCount = jsonObject.getInt("LicenseRemainedCount");
+                            if(i==0) {
+                                minCount=remainedCount;
+                            }else if(minCount>remainedCount){
+                                minCount=remainedCount;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    promise.resolve(minCount);
+                }
+            };
+            licenseManagers.queryLicenseCount(serialNumber);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 初始化许可序列号
+     * @param serialNumber 序列号
+     * @param promise
+     */
+    @ReactMethod
+    public void initSerialNumber(String serialNumber, final Promise promise) {
+        try {
+            RecycleLicenseManager licenseManagers= RecycleLicenseManager.getInstance(context);
+            lcenseSerialNumberFilePath=context.getExternalCacheDir().getParentFile().getParent() + "/com.config.supermap.runtime/config/recycleLicense/"+"/serialNumber.txt";
+            File serialNumberFile=new File(lcenseSerialNumberFilePath);
+            if(!serialNumberFile.exists()){
+//                serialNumberFile.mkdirs();
+//                serialNumberFile.createNewFile();
+                promise.resolve("");
+            }else {
+                try {
+                InputStream inputStream=new FileInputStream(serialNumberFile);
+                InputStreamReader reader=new InputStreamReader(inputStream);
+                BufferedReader bufferedReader=new BufferedReader(reader);
+                serialNumber=bufferedReader.readLine().split("&&")[0];
+                inputStream.close();
+                promise.resolve(serialNumber);
+                } catch (Exception e) {
+                    promise.reject(e);
+                }
+            }
+            // context.getExternalCacheDir().getParentFile().getParent() + "/com.config.supermap.runtime/config/recycleLicense/"
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 离线获取序列号和模块编号数组
+     * @param promise
+     */
+    @ReactMethod
+    public void getSerialNumberAndModules(Promise promise) {
+        try {
+            lcenseSerialNumberFilePath=context.getExternalCacheDir().getParentFile().getParent() + "/com.config.supermap.runtime/config/recycleLicense/"+"/serialNumber.txt";
+            File serialNumberFile=new File(lcenseSerialNumberFilePath);
+            if(!serialNumberFile.exists()){
+                promise.resolve(null);
+            }else {
+                try {
+                    InputStream inputStream=new FileInputStream(serialNumberFile);
+                    InputStreamReader reader=new InputStreamReader(inputStream);
+                    BufferedReader bufferedReader=new BufferedReader(reader);
+                    String[] serialNumberAndModules=bufferedReader.readLine().split("&&");
+                    WritableMap writableMap = Arguments.createMap();
+                    if(serialNumberAndModules.length==2){
+                        writableMap.putString("serialNumber",serialNumberAndModules[0]);
+                        String[] modules=serialNumberAndModules[1].split(",");
+                        WritableArray array = Arguments.fromArray(modules);
+                        writableMap.putArray("modulesArray",array);
+                    }
+                    inputStream.close();
+                    promise.resolve(writableMap);
+                } catch (Exception e) {
+                    promise.reject(e);
+                }
+            }
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+    /**
+     * 初始化试用许可的路径
+     * @param promise
+     */
+    @ReactMethod
+    public void initTrailLicensePath( Promise promise) {
+        try {
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 登记购买
+     * @param moduleCode 模块编号
+     * @param userName 用户昵称
+     * @param promise
+     */
+    @ReactMethod
+    public void licenseBuyRegister(int moduleCode, String userName, final Promise promise) {
+        try {
+            Map<String,String> map=new HashMap<>();
+            map.put("ANDROID_LICENSE_BUY_REGISTER_USER_NAME",userName);
+            map.put("ANDROID_LICENSE_BUY_REGISTER_MODULE_CODE",moduleCode+"");
+            //上传数据
+            LogInfoService.sendAPPLogInfo(map, context, new LogInfoService.SendAppInfoListener() {
+                @Override
+                public void result(boolean result) {
+                    promise.resolve(result);
+                }
+            });
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+
+    }
+
+    public interface OneArg<T> {
+        void handle(T arg);
+    }
+    public  OneArg<ArrayList<Module>> queryHandler;
+    public  OneArg<JSONArray> queryCountHandler;
+    public  OneArg<Boolean> recycleHandler;
+    public  OneArg<Boolean> activateHandler;
+    RecycleLicenseManager.RecycleLicenseCallback licenseCallback=new RecycleLicenseManager.RecycleLicenseCallback() {
+        @Override
+        public void success(LicenseStatus licenseStatus) {
+            Log.i("LicenseStatus","LicenseStatus");
+            if(recycleHandler!=null){
+                recycleHandler.handle(true);
+                recycleHandler=null;
+            }
+            if(activateHandler!=null){
+                activateHandler.handle(true);
+                activateHandler=null;
+            }
+        }
+
+        @Override
+        public void activateFailed(String s) {
+            Log.i("activateFailed","activateFailed");
+            if(activateHandler!=null){
+                activateHandler.handle(false);
+                activateHandler=null;
+            }
+        }
+
+        @Override
+        public void recycleLicenseFailed(String s) {
+            if(recycleHandler!=null){
+                recycleHandler.handle(false);
+                recycleHandler=null;
+            }
+        }
+
+        @Override
+        public void bindPhoneNumberFailed(String s) {
+
+        }
+
+        @Override
+        public void upgradeFailed(String s) {
+
+        }
+
+        @Override
+        public void queryResult(ArrayList<Module> arrayList) {
+            if(queryHandler!=null){
+                queryHandler.handle(arrayList);
+                queryHandler=null;
+            }
+
+        }
+
+        @Override
+        public void queryLicenseCount(JSONArray jsonArray) {
+            if(queryCountHandler!=null){
+                queryCountHandler.handle(jsonArray);
+                queryCountHandler=null;
+            }
+        }
+
+        @Override
+        public void otherErrors(String s) {
+            Log.i("otherErrors",s);
+            if(activateHandler!=null){
+                activateHandler.handle(false);
+                activateHandler=null;
+            }
+            if(recycleHandler!=null){
+                recycleHandler.handle(false);
+                recycleHandler=null;
+            }
+        }
+    };
+
+
+    /*******************************************许可配制 END************************************/
 }
