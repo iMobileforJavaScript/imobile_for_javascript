@@ -79,7 +79,7 @@ public class SScene extends ReactContextBaseJavaModule {
     private TouchUtil.OsgbAttributeCallBack osgbAttributeCallBack;
     private Tracking3DListener tracking3DListener;
     private static gestureListener gestureListener;
-//    private ArrayList<PoiGsonBean.PoiInfos> pointList;
+    //    private ArrayList<PoiGsonBean.PoiInfos> pointList;
     private ArrayList <ArrayList<PoiGsonBean.PoiInfos>> pointList=new ArrayList<ArrayList<PoiGsonBean.PoiInfos>>();
     private PoiGsonBean.PoiInfos firstPoint;
     private PoiGsonBean.PoiInfos secondPoint;
@@ -561,7 +561,7 @@ public class SScene extends ReactContextBaseJavaModule {
 
             }
             else {
-               scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
+                scene.getLayers().add(Url, layer3DType, layerName, imageFormatType1, dpi, addToHead);
 
             }
             scene.refresh();
@@ -1367,12 +1367,12 @@ public class SScene extends ReactContextBaseJavaModule {
                     sScene.startTouchAttribute();
                     sScene.startShowCirclePoint();
                     break;
-                    //切换到量算监听
+                //切换到量算监听
                 case "startMeasure":
                     sScene.startMeasure();
                     sScene.endShowCirclePoint();
                     break;
-                    //切换到标注操作
+                //切换到标注操作
                 case "startLabelOperate":
                     sScene.startLabelOperate();
                     sScene.endShowCirclePoint();
@@ -1641,7 +1641,7 @@ public class SScene extends ReactContextBaseJavaModule {
             Scene scene=sScene.smSceneWc.getSceneControl().getScene();
 
             if( scene.getLayers().indexOf("NodeAnimation") == -1){
-               promise.resolve(null);
+                promise.resolve(null);
             }else {
                 Layer3D layer3D=scene.getLayers().get("NodeAnimation");
                 Feature3Ds feature3Ds=layer3D.getFeatures();
@@ -1869,7 +1869,7 @@ public class SScene extends ReactContextBaseJavaModule {
             switch (action){
                 case "CREATELINE3D":
                     sceneControl.setAction(Action3D.CREATELINE3D);
-                 break;
+                    break;
                 case "CREATEPOINT3D":
                     sceneControl.setAction(Action3D.CREATEPOINT3D);
                     break;
@@ -2003,8 +2003,8 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void removeByName(String name,Promise promise) {
         try {
-              FlyHelper.getInstence().removeStop(name);
-              promise.resolve(true);
+            FlyHelper.getInstence().removeStop(name);
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }

@@ -62,6 +62,10 @@ class SMAIDetectView extends React.Component {
   //   SAIDetectView.startDetect()
   }
 
+  componentDidMount() {
+    SAIDetectView.stopCountTrackedObjs()
+  }
+
   componentWillUnmount() {
     SAIDetectView.dispose()
   }
