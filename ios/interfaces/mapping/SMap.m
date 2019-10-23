@@ -1109,10 +1109,11 @@ RCT_REMAP_METHOD(getNetWorkDataset, getNetWorkDatasetWithName:(NSString *)name r
 }
 
 #pragma mark 将路网数据集所在线数据集添加到地图上
-RCT_REMAP_METHOD(addNetWorkDataset, addNetWorkDatasetWithName:(NSString *)name resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addNetWorkDataset, addNetWorkDatasetWithDatasourceName:(NSString *)datasourceName DatasetName:(NSString *)datasetName resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        Dataset *dataset = [SelectDatasuorce.datasets getWithName:name];
+        SelectDatasuorce = [sMap.smMapWC.workspace.datasources getAlias:datasourceName];
+        Dataset *dataset = [SelectDatasuorce.datasets getWithName:datasetName];
         Layer *layer = [sMap.smMapWC.mapControl.map.layers addDataset:dataset ToHead:YES];
         layer.editable = YES;
         resolve(@(YES));
@@ -1195,6 +1196,126 @@ RCT_REMAP_METHOD(hasNetworkDataset, hasNetworkDatasetWithResolver: (RCTPromiseRe
         reject(@"hasNetworkDataset", exception.reason, nil);
     }
 }
+
+#pragma mark 判断当前工作空间是否存在线数据集（增量路网前置条件）
+RCT_REMAP_METHOD(hasLineDataset, hasLineDatasetWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try {
+        sMap = [SMap singletonInstance];
+        Datasources *datasouces = sMap.smMapWC.workspace.datasources;
+        BOOL hasLineDataset = NO;
+        for(int i = 0; i < datasouces.count; i++){
+            Datasets *datasets = [datasouces get:i].datasets;
+            for(int j = 0; j < datasets.count; j++){
+                Dataset *dataset = [datasets get:j];
+                if(dataset.datasetType == LINE){
+                    hasLineDataset = YES;
+                    break;
+                }
+            }
+        }
+        resolve(@(hasLineDataset));
+    } @catch (NSException *exception) {
+        reject(@"hasNetworkDataset", exception.reason, nil);
+    }
+}
+
+//返回结构
+//      [{
+//              title:'datasouceA',
+//              visible:false,
+//              floorList:[{
+//                  @"floorName":floorName,
+//                  @"networkDataset":networkDataset,
+//                  @"floorID":floorID,
+//                  }],
+//              data:[
+//                      {name:'dataset1',checked:false},
+//                      {name:'dataset2',checked:false},
+//                      {name:'dataset3',checked:false},
+//                   ],
+//          },
+//          {
+//              title:'datasouceB',
+//              visible:false,
+//              floorList:['B1','F1','F2','F3'],
+//              data:[
+//                      {name:'dataset1',checked:false},
+//                      {name:'dataset2',checked:false},
+//                      {name:'dataset3',checked:false},
+//                      {name:'dataset4',checked:false},
+//                  ],
+//      }]
+#pragma mark 获取当前工作空间中的线数据集和楼层信息
+RCT_REMAP_METHOD(getLineDatasetAndFloorList, getLineDatasetAndFloorListWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        Datasources *datasouces = sMap.smMapWC.workspace.datasources;
+        NSMutableArray *returnArray = [[NSMutableArray alloc] init];
+        for(int i = 0, count = datasouces.count; i < count; i++){
+            Datasource *datasource = [datasouces get:i];
+            Datasets *datasets = datasource.datasets;
+            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+            NSMutableArray *data = [[NSMutableArray alloc] init];
+            NSMutableArray *floorList = [[NSMutableArray alloc] init];
+            [dic setObject:datasource.alias forKey:@"title"];
+            [dic setObject:@(NO) forKey:@"visible"];
+            for(int j = 0, l = datasets.count; j < l; j++){
+                Dataset *dataset = [datasets get:j];
+                if(dataset.datasetType == LINE){
+                    NSDictionary *datasetObj = @{
+                                                 @"name":dataset.name,
+                                                 @"checked":@(NO),
+                                                 };
+                    [data addObject:datasetObj];
+                }else if([dataset.name isEqualToString:@"FloorRelationTable"]){
+                    DatasetVector *datasetVector = (DatasetVector *)dataset;
+                    Recordset *recordset =[datasetVector recordset:NO cursorType:STATIC];
+                    do {
+                        NSObject *floorName = [recordset getFieldValueWithString:@"FloorName"];
+                        NSObject *networkDataset = [recordset getFieldValueWithString:@"NetworkName"];
+                        NSObject *floorID = [recordset getFieldValueWithString:@"FL_ID"];
+                        if(networkDataset != nil && floorName != nil){
+                            NSDictionary *floorInfo = @{
+                                                        @"floorName":floorName,
+                                                        @"networkDataset":networkDataset,
+                                                        @"floorID":floorID,
+                                                        };
+                            [floorList addObject:floorInfo];
+                        }
+                    } while ([recordset moveNext]);
+                    
+                    [recordset close];
+                    [recordset dispose];
+                    }
+                }
+            if(data.count > 0){
+                if(floorList.count == 0){
+                    [floorList addObject:@{
+                                           @"floorName":@"F1",
+                                           }];
+                }
+                [dic setObject:floorList forKey:@"floorList"];
+                [dic setObject:data forKey:@"data"];
+                [returnArray addObject:dic];
+            }
+        }
+        resolve(returnArray);
+    }@catch(NSException *exception){
+        reject(@"getFloorList", exception.reason, nil);
+    }
+}
+
+#pragma mark 切换到指定楼层
+RCT_REMAP_METHOD(setCurrentFloor, setCurrentFloorWithName:(NSString *)floorID resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.floorListView.currentFloorId = floorID;
+        resolve(@(YES));
+    }@catch(NSException *exception){
+        reject(@"setCurrentFloor", exception.reason, nil);
+    }
+}
+
 #pragma mark 生成路网
 RCT_REMAP_METHOD(buildNetwork, buildNetworkWithDatasetName:(NSString *)lineDatasetName NetworkDataset:(NSString *)networkDataset resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
@@ -1337,7 +1458,11 @@ RCT_REMAP_METHOD(getPointName, getPointNameWithX:(double)x Y:(double) y IsStart:
 #pragma mark 显示起点/终点
 +(void)showPointByCalloutAtX:(double)x Y:(double)y PointName:(NSString *)pointName{
     MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
+    
+    [mapControl removeCalloutWithTag:pointName];
+    
     InfoCallout *infoCallout = [[InfoCallout alloc]initWithMapControl:mapControl BackgroundColor:[UIColor colorWithRed:255 green:0 blue:0 alpha:0] Alignment:CALLOUT_BOTTOM];
+    
     dispatch_sync(dispatch_get_main_queue(), ^{
         UIImage *image;
         if([pointName isEqualToString:@"startpoint"]){
@@ -2409,6 +2534,7 @@ RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve 
             sMap.scaleViewHelper = nil;
         }
         if(sMap.smMapWC.floorListView){
+            [sMap.smMapWC.floorListView dispose];
             sMap.smMapWC.floorListView = nil;
         }
         MapControl* mapControl = sMap.smMapWC.mapControl;
