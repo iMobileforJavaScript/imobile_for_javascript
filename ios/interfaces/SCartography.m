@@ -329,11 +329,15 @@ RCT_REMAP_METHOD(setLineColor, setLineColorWithResolver:(NSString *) lineColor l
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [[mapControl getEditHistory] addMapHistory];
             
-            GeoStyle *style = layerSettingVector.geoStyle;
-            Color *color = [STranslate colorFromHexString:lineColor];
-            [style setLineSymbolID:0];
-            [style setLineColor:color];
             
+            GeoStyle *style = layerSettingVector.geoStyle;
+            if([lineColor isEqualToString:@"NULL"]){
+                [style setLineSymbolID:5];
+            }else{
+                Color *color = [STranslate colorFromHexString:lineColor];
+                [style setLineSymbolID:0];
+                [style setLineColor:color];
+            }
             [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
@@ -378,11 +382,17 @@ RCT_REMAP_METHOD(setFillForeColor, setFillForeColorWithResolver:(NSString *) fil
         if (layerSettingVector != nil) {
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [[mapControl getEditHistory] addMapHistory];
-            
             GeoStyle *style = layerSettingVector.geoStyle;
-            [style setFillSymbolID:0];
-            Color *color = [STranslate colorFromHexString:fillForeColor];
-            [style setFillForeColor:color];
+            if([fillForeColor isEqualToString:@"NULL"]){
+                
+//                [style setFillOpaqueRate:0];
+                [style setFillSymbolID:1];
+            }else{
+                [style setFillSymbolID:0];
+                Color *color = [STranslate colorFromHexString:fillForeColor];
+                [style setFillForeColor:color];
+            }
+           
             [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
@@ -427,9 +437,14 @@ RCT_REMAP_METHOD(setFillBorderColor, setFillBorderColorWithResolver:(NSString *)
             [[mapControl getEditHistory] addMapHistory];
             
             GeoStyle *style = layerSettingVector.geoStyle;
-            Color *color = [STranslate colorFromHexString:fillBorderColor];
-            [style setLineColor:color];
             
+            if([fillBorderColor isEqualToString:@"NULL"]){
+                [style setLineSymbolID:5];
+            }else{
+                Color *color = [STranslate colorFromHexString:fillBorderColor];
+                [style setLineColor:color];
+                [style setLineSymbolID:0];
+            }
             [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
