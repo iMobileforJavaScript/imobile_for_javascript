@@ -449,8 +449,13 @@ public class SCartography extends ReactContextBaseJavaModule {
                 com.supermap.data.Color color = ColorParseUtil.getColor(lineColor);
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
-                geoStyle.setLineSymbolID(0);
-                geoStyle.setLineColor(color);
+                if(lineColor == "NULL"){
+                    geoStyle.setLineSymbolID(5);
+                }else{
+                    geoStyle.setLineSymbolID(0);
+                    geoStyle.setLineColor(color);
+                }
+
                 layerSettingVector.setStyle(geoStyle);
 
                 mapControl.getMap().refresh();
@@ -541,8 +546,13 @@ public class SCartography extends ReactContextBaseJavaModule {
                 com.supermap.data.Color color = ColorParseUtil.getColor(fillForeColor);
 
                 GeoStyle geoStyle = layerSettingVector.getStyle();
-                geoStyle.setFillSymbolID(0);
-                geoStyle.setFillForeColor(color);
+                if(fillForeColor == "NULL"){
+                    geoStyle.setFillSymbolID(1);
+                }else{
+                    geoStyle.setFillSymbolID(0);
+                    geoStyle.setFillForeColor(color);
+                }
+
                 layerSettingVector.setStyle(geoStyle);
 
                 mapControl.getMap().refresh();
@@ -588,6 +598,36 @@ public class SCartography extends ReactContextBaseJavaModule {
         }
     }
 
+    public void setFillBorderColor(String fillBorderColor, String layerName, Promise promise) {
+        try {
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
+            if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
+                com.supermap.data.Color color = ColorParseUtil.getColor(fillBorderColor);
+
+                GeoStyle geoStyle = layerSettingVector.getStyle();
+                if(fillBorderColor == "NULL"){
+                    geoStyle.setLineSymbolID(5);
+                }else{
+                    geoStyle.setLineColor(color);
+                    geoStyle.setLineSymbolID(0);
+                }
+
+                layerSettingVector.setStyle(geoStyle);
+
+                mapControl.getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
     /**
      * 设置透明度（0-100）
      *
