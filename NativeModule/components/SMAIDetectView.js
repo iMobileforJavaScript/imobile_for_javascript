@@ -63,7 +63,7 @@ class SMAIDetectView extends React.Component {
   }
 
   componentDidMount() {
-    SAIDetectView.stopCountTrackedObjs()
+    SAIDetectView.setProjectionModeEnable(true)
   }
 
   componentWillUnmount() {

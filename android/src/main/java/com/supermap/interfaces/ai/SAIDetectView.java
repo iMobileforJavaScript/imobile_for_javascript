@@ -137,7 +137,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
         mAIDetectView.startCameraPreview();
         mAIDetectView.resumeDetect();
-        mAIDetectView.startCountTrackedObjs();
+        mAIDetectView.stopCountTrackedObjs();
     }
 
     public static void setArView(ArView arView) {
