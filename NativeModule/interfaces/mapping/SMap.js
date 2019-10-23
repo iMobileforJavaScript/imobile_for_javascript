@@ -2129,15 +2129,15 @@ export default (function () {
    * 打开二维导航工作空间及地图
    * @returns {*|void|Promise<void>}
    */
-  function open2DNavigationMap(infoDic) {
-    try {
-      const type = infoDic.server.split('.').pop()
-      Object.assign(infoDic, {type: getWorkspaceType(type)})
-      return SMap.open2DNavigationMap(infoDic)
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  // function open2DNavigationMap(infoDic) {
+  //   try {
+  //     const type = infoDic.server.split('.').pop()
+  //     Object.assign(infoDic, {type: getWorkspaceType(type)})
+  //     return SMap.open2DNavigationMap(infoDic)
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
 
   /**
    * 设置行业导航
@@ -2461,19 +2461,6 @@ export default (function () {
   function getLineDataset(name) {
     try {
       return SMap.getLineDataset(name)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-
-  /**
-   * 获取路网数据集
-   * @returns {*|void|Promise<void>}
-   */
-  function getNetWorkDataset(name) {
-    try {
-      return SMap.getNetWorkDataset(name)
     } catch (e) {
       console.error(e)
     }
@@ -3016,7 +3003,6 @@ export default (function () {
 
     routeAnalyst,
     clearTarckingLayer,
-    open2DNavigationMap,
     startNavigation,
     startIndoorNavigation,
     getNavigationData,
@@ -3034,7 +3020,6 @@ export default (function () {
     isOpenTrafficMap,
     removeTrafficMap,
     getLineDataset,
-    getNetWorkDataset,
     addNetWorkDataset,
     removeNetworkDataset,
     buildNetwork,
