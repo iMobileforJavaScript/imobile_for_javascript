@@ -29,6 +29,7 @@ static NSArray* lastGridRangeColors = nil;
         if([strType isEqualToString:@"REGION"])
         {
             [geoStyle setFillForeColor:color];
+            [geoStyle setLineColor:color];
         }
     }
     @catch (NSException *exception){

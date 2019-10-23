@@ -588,6 +588,30 @@ public class SCartography extends ReactContextBaseJavaModule {
         }
     }
 
+    public void setFillBorderColor(String fillBorderColor, String layerName, Promise promise) {
+        try {
+            LayerSettingVector layerSettingVector = SMCartography.getLayerSettingVector(layerName);
+            if (layerSettingVector != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
+                com.supermap.data.Color color = ColorParseUtil.getColor(fillBorderColor);
+
+                GeoStyle geoStyle = layerSettingVector.getStyle();
+                geoStyle.setLineColor(color);
+                layerSettingVector.setStyle(geoStyle);
+
+                mapControl.getMap().refresh();
+
+                promise.resolve(true);
+            } else {
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
     /**
      * 设置透明度（0-100）
      *

@@ -383,7 +383,6 @@ RCT_REMAP_METHOD(setFillForeColor, setFillForeColorWithResolver:(NSString *) fil
             [style setFillSymbolID:0];
             Color *color = [STranslate colorFromHexString:fillForeColor];
             [style setFillForeColor:color];
-            
             [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
@@ -420,6 +419,29 @@ RCT_REMAP_METHOD(setFillBackColor, setFillBackColorWithResolver:(NSString *) fil
     }
 }
 
+RCT_REMAP_METHOD(setFillBorderColor, setFillBorderColorWithResolver:(NSString *) fillBorderColor layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        LayerSettingVector *layerSettingVector = [SMCartography getLayerSettingVector:layername];
+        if (layerSettingVector != nil) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
+            GeoStyle *style = layerSettingVector.geoStyle;
+            Color *color = [STranslate colorFromHexString:fillBorderColor];
+            [style setLineColor:color];
+            
+            [mapControl.map refresh];
+            resolve([NSNumber numberWithBool:YES]);
+        } else {
+            resolve([NSNumber numberWithBool:NO]);
+        }
+        
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
 #pragma 设置透明度(0-100)
 RCT_REMAP_METHOD(setFillOpaqueRate, setFillOpaqueRateWithResolver:(int) fillOpaqueRate layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
@@ -430,7 +452,6 @@ RCT_REMAP_METHOD(setFillOpaqueRate, setFillOpaqueRateWithResolver:(int) fillOpaq
             
             GeoStyle *style = layerSettingVector.geoStyle;
             [style setFillOpaqueRate:100-fillOpaqueRate];
-            
             [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
         } else {
