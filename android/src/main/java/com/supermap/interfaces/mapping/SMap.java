@@ -5454,7 +5454,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 naviPath = sMap.getSmMapWC().getMapControl().getNavigation2().getNaviPath();
             }
             WritableMap map = Arguments.createMap();
-            map.putDouble("length", naviPath.getLength());
+            map.putInt("length", (int)naviPath.getLength());
             promise.resolve(map);
         } catch (Exception e) {
             promise.reject(e);
@@ -5482,12 +5482,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 WritableMap map = Arguments.createMap();
                 NaviStep naviStep1 = naviStep.get(i);
                 double getTime = naviStep1.getTime();
-                double roadLength = naviStep1.getLength();
-                BigDecimal b =  new BigDecimal(roadLength);
-                double  length  =  b.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
+                int roadLength = (int)naviStep1.getLength();
                 int type = naviStep1.getToSwerve();
                 map.putDouble("roadName", getTime);
-                map.putDouble("roadLength", length);
+                map.putDouble("roadLength", roadLength);
                 map.putInt("turnType",type);
                 array.pushMap(map);
             }
@@ -5556,6 +5554,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     Point2D endPoint, startPoint;
 
+    /**
+     * 路径分析
+     * @param x
+     * @param y
+     * @param promise
+     */
     @ReactMethod
     public void routeAnalyst(double x, double y, Promise promise) {
         try {
@@ -5589,37 +5593,37 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
 
-    /** 待定
-     * 打开二维导航工作空间及地图
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void open2DNavigationMap(ReadableMap data, Promise promise) {
-        try {
-            sMap = getInstance();
-            WritableArray array = Arguments.createArray();
-            Map params = data.toHashMap();
-            boolean result = sMap.smMapWC.openWorkspace(params);
-            if (result) {
-                if (sMap.getSmMapWC().getMapControl() != null && sMap.getSmMapWC().getMapControl().getMap() != null && !sMap.getSmMapWC().getMapControl().getMap().getName().equals("")) {
-                    sMap.getSmMapWC().getMapControl().getMap().setVisibleScalesEnabled(false);
-                    sMap.getSmMapWC().getMapControl().getMap().setAntialias(true);
-                    sMap.getSmMapWC().getMapControl().getMap().refresh();
-                }
-                Workspace mWorkspace = SMap.getInstance().getSmMapWC().getWorkspace();
-                for (int i = 0; i < mWorkspace.getMaps().getCount(); i++) {
-                    String name = mWorkspace.getMaps().get(i);
-                    WritableMap map = Arguments.createMap();
-                    map.putString("name", name);
-                    array.pushMap(map);
-                }
-            }
-            promise.resolve(array);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
+//    /**
+//     * 打开二维导航工作空间及地图
+//     *
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void open2DNavigationMap(ReadableMap data, Promise promise) {
+//        try {
+//            sMap = getInstance();
+//            WritableArray array = Arguments.createArray();
+//            Map params = data.toHashMap();
+//            boolean result = sMap.smMapWC.openWorkspace(params);
+//            if (result) {
+//                if (sMap.getSmMapWC().getMapControl() != null && sMap.getSmMapWC().getMapControl().getMap() != null && !sMap.getSmMapWC().getMapControl().getMap().getName().equals("")) {
+//                    sMap.getSmMapWC().getMapControl().getMap().setVisibleScalesEnabled(false);
+//                    sMap.getSmMapWC().getMapControl().getMap().setAntialias(true);
+//                    sMap.getSmMapWC().getMapControl().getMap().refresh();
+//                }
+//                Workspace mWorkspace = SMap.getInstance().getSmMapWC().getWorkspace();
+//                for (int i = 0; i < mWorkspace.getMaps().getCount(); i++) {
+//                    String name = mWorkspace.getMaps().get(i);
+//                    WritableMap map = Arguments.createMap();
+//                    map.putString("name", name);
+//                    array.pushMap(map);
+//                }
+//            }
+//            promise.resolve(array);
+//        } catch (Exception e) {
+//            promise.reject(e);
+//        }
+//    }
 
 
     /**
@@ -5695,6 +5699,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     * 清除行业导航起始点
+     */
     private void clearOutdoorPoint(){
         MapView mapView = sMap.smMapWC.getMapControl().getMap().getMapView();
         mapView.removeCallOut("startpoint");
@@ -5734,6 +5741,164 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             boolean isfind = sMap.getSmMapWC().getMapControl().getNavigation2().routeAnalyst();
             sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(isfind);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 进行行业导航
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void outdoorNavigation(final boolean firstP, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            context.getCurrentActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    sMap.getSmMapWC().getMapControl().getNavigation2().startGuide(1);
+                    sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(firstP);        // 设置整屏绘制
+                    sMap.getSmMapWC().getMapControl().getNavigation2().setCarUpFront(firstP);          // 设置车头向上
+                }
+            });
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 设置室内导航
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void startIndoorNavigation(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            Navigation3 mNavigation3 = sMap.getSmMapWC().getMapControl().getNavigation3();
+            GeoStyle style = new GeoStyle();
+            style.setLineSymbolID(964882);
+            mNavigation3.setRouteStyle(style);
+            GeoStyle styleHint = new GeoStyle();
+            styleHint.setLineWidth(2);
+            styleHint.setLineColor(new com.supermap.data.Color(82, 198, 223));
+            styleHint.setLineSymbolID(2);
+            mNavigation3.setHintRouteStyle(styleHint);
+            mNavigation3.addNaviInfoListener(new NaviListener() {
+                @Override
+                public void onStopNavi() {
+                    // TODO Auto-generated method stub
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.INDUSTRYNAVIAGTION, true);
+                }
+
+                @Override
+                public void onStartNavi() {
+                    // TODO Auto-generated method stub
+                }
+
+                @Override
+                public void onPlayNaviMessage(String message) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onNaviInfoUpdate(NaviInfo naviInfo) {
+                    // TODO Auto-generated method stub
+                    Log.e("++++++++++++++++++", "" + naviInfo.CurRoadName);
+                }
+
+                @Override
+                public void onAdjustFailure() {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onAarrivedDestination() {
+                    // TODO Auto-generated method stub
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.INDUSTRYNAVIAGTION, true);
+                }
+            });
+
+            mNavigation3.setDatasource(IndoorDatasource);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 室内导航路径分析
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void beginIndoorNavigation(double x, double y, double x2, double y2, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            boolean result = sMap.getSmMapWC().getMapControl().getNavigation3().routeAnalyst();
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 进行室内导航
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void indoorNavigation(final boolean firstP, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            context.getCurrentActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    sMap.getSmMapWC().getMapControl().getNavigation3().startGuide(1);
+                    sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(firstP);        // 设置整屏绘制
+                    sMap.getSmMapWC().getMapControl().getNavigation3().setCarUpFront(firstP);          // 设置车头向上
+
+                }
+            });
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取路网信息
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getNavigationData(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            WritableArray array = Arguments.createArray();
+            Workspace mWorkspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = mWorkspace.getDatasources();
+            for (int i = 0; i < datasources.getCount(); i++) {
+                Datasource datasource = datasources.get(i);
+                for (int j = 0; j < datasource.getDatasets().getCount(); j++) {
+                    Dataset dataset = datasource.getDatasets().get(j);
+                    if (dataset.getType() == DatasetType.NETWORK) {
+                        WritableMap map = Arguments.createMap();
+                        map.putString("dataset", dataset.getName());
+                        array.pushMap(map);
+                    }
+                }
+            }
+            promise.resolve(array);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -5846,198 +6011,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
-    /**
-     * 进行行业导航
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void outdoorNavigation(final boolean firstP, Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-                context.getCurrentActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        sMap.getSmMapWC().getMapControl().getNavigation2().startGuide(1);
-                        sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(firstP);        // 设置整屏绘制
-                        sMap.getSmMapWC().getMapControl().getNavigation2().setCarUpFront(firstP);          // 设置车头向上
-                    }
-                });
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-
-    /**
-     * 设置室内导航
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void startIndoorNavigation(Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            Navigation3 mNavigation3 = sMap.getSmMapWC().getMapControl().getNavigation3();
-            GeoStyle style = new GeoStyle();
-            style.setLineSymbolID(964882);
-            mNavigation3.setRouteStyle(style);
-            GeoStyle styleHint = new GeoStyle();
-            styleHint.setLineWidth(2);
-            styleHint.setLineColor(new com.supermap.data.Color(82, 198, 223));
-            styleHint.setLineSymbolID(2);
-            mNavigation3.setHintRouteStyle(styleHint);
-            mNavigation3.addNaviInfoListener(new NaviListener() {
-                @Override
-                public void onStopNavi() {
-                    // TODO Auto-generated method stub
-                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(EventConst.INDUSTRYNAVIAGTION, true);
-                }
-
-                @Override
-                public void onStartNavi() {
-                    // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onPlayNaviMessage(String message) {
-                    // TODO Auto-generated method stub
-
-                }
-
-                @Override
-                public void onNaviInfoUpdate(NaviInfo naviInfo) {
-                    // TODO Auto-generated method stub
-                    Log.e("++++++++++++++++++", "" + naviInfo.CurRoadName);
-                }
-
-                @Override
-                public void onAdjustFailure() {
-                    // TODO Auto-generated method stub
-
-                }
-
-                @Override
-                public void onAarrivedDestination() {
-                    // TODO Auto-generated method stub
-                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(EventConst.INDUSTRYNAVIAGTION, true);
-                }
-            });
-
-            mNavigation3.setDatasource(IndoorDatasource);
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-
-    /**
-     * 室内导航路径分析
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void beginIndoorNavigation(double x, double y, double x2, double y2, Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            boolean result = sMap.getSmMapWC().getMapControl().getNavigation3().routeAnalyst();
-            promise.resolve(result);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    /**
-     * 进行室内导航
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void indoorNavigation(final boolean firstP, Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            context.getCurrentActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        sMap.getSmMapWC().getMapControl().getNavigation3().startGuide(1);
-                        sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(firstP);        // 设置整屏绘制
-                        sMap.getSmMapWC().getMapControl().getNavigation3().setCarUpFront(firstP);          // 设置车头向上
-
-                    }
-                });
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    /**
-     * 获取路网信息
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void getNavigationData(Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            WritableArray array = Arguments.createArray();
-            Workspace mWorkspace = SMap.getInstance().getSmMapWC().getWorkspace();
-            Datasources datasources = mWorkspace.getDatasources();
-            for (int i = 0; i < datasources.getCount(); i++) {
-                Datasource datasource = datasources.get(i);
-                for (int j = 0; j < datasource.getDatasets().getCount(); j++) {
-                    if (datasource.getDatasets().get(j).getType() == DatasetType.NETWORK) {
-                        WritableMap map = Arguments.createMap();
-                        map.putString("dataset", datasource.getDatasets().get(j).getName());
-                        array.pushMap(map);
-                    }
-                }
-            }
-            promise.resolve(array);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-
-
-//    /**
-//     * 新建路网数据集
-//     *
-//     * @param promise
-//     */
-//    @ReactMethod
-//    public void newIncrementRoad(String name, Promise promise) {
-//        try {
-//            if (IndoorDatasource != null) {
-//                Datasets datasets = IndoorDatasource.getDatasets();
-//                String datasetName = datasets.getAvailableDatasetName(name);
-//                IncrementRoadName = datasetName;
-//                DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
-//                datasetVectorInfo.setType(DatasetType.LINE);
-//                datasetVectorInfo.setEncodeType(EncodeType.NONE);
-//                datasetVectorInfo.setName(datasetName);
-//                DatasetVector datasetVector = datasets.create(datasetVectorInfo);
-//                datasetVector.setPrjCoordSys(sMap.getSmMapWC().getMapControl().getMap().getPrjCoordSys());
-//
-//                Dataset ds = datasets.get(datasetName);
-//                com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-//                Layer layer = map.getLayers().add(ds, true);
-//                layer.setEditable(true);
-//                layer.setSnapable(true);
-//                datasetVectorInfo.dispose();
-//                datasetVector.close();
-//            }
-//            promise.resolve(true);
-//        } catch (Exception e) {
-//            promise.reject(e);
-//        }
-//    }
-
 
     /**
      * 获取路网线数据集
@@ -6102,30 +6075,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
-     * 获取路网数据集
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void getNetWorkDataset(String name,Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            WritableArray array = Arguments.createArray();
-            Datasets datasets = sMap.getSmMapWC().getWorkspace().getDatasources().get(name).getDatasets();
-            for (int i = 0; i < datasets.getCount(); i++) {
-                if (datasets.get(i).getType() == DatasetType.NETWORK) {
-                    WritableMap map = Arguments.createMap();
-                    map.putString("dataset", datasets.get(i).getName());
-                    array.pushMap(map);
-                }
-            }
-            promise.resolve(array);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
-
-    /**
      * 将路网数据集所在线数据集添加到地图上
      *
      * @param promise
@@ -6163,7 +6112,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 DatasetVector datasetVector = (DatasetVector)datasource.getDatasets().get(networkDatasetName);
                 String name = datasetVector.getChildDataset().getName();
                 Layer networkLayer = layers.getByCaption(name+"@"+datasourceName);
-                layers.remove(networkLayer);
+                if(networkLayer != null){
+                    layers.remove(networkLayer);
+                }
+            }
+            if(GpsPoint2Ds.getCount() > 0){
+                GpsPoint2Ds.clear();
             }
             promise.resolve(true);
         }catch (Exception e){
@@ -6233,6 +6187,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if(layer == null || !layer.isVisible()){
                 layers.add(datasetVector.getChildDataset(), true);
             }
+            lineDataset.close();
+            datasets[0].close();
+            datasetVector.close();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -6294,7 +6251,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 recordset1.dispose();
                 sMap.smMapWC.getMapControl().getMap().refresh();
                 //提交完清空
-                GpsPoint2Ds.clear();
+                if(GpsPoint2Ds.getCount() > 0){
+                    GpsPoint2Ds.clear();
+                }
                 promise.resolve(true);
             }else{
                 promise.resolve(false);
@@ -6327,6 +6286,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         isindoor = true;
                     }
                     recordset.dispose();
+                    datasetVector.close();
                 }
 
                 parameter.dispose();

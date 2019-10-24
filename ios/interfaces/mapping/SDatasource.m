@@ -92,6 +92,7 @@ RCT_REMAP_METHOD(closeDatasourceByAlias, closeDatasourceByAlias:(NSString *)alia
         Datasources* datasources = workspace.datasources;
         BOOL isClosed = YES;
         if (alias == nil || [alias isEqualToString:@""]) {
+            // 导航地图崩溃
                 [datasources closeAll];
         } else {
             if ([datasources getAlias:alias]) {
