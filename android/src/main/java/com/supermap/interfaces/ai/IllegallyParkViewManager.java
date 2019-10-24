@@ -248,24 +248,30 @@ public class IllegallyParkViewManager extends SimpleViewManager<CustomFrameLayou
     }
 
     private synchronized void identityCarInfo() {
-        isIdentiting = true;
-        statTime = System.currentTimeMillis();
-        long time1 = System.currentTimeMillis();
-        final String title = parseList(currentidentityList);
-        long time2 = System.currentTimeMillis();
-        Log.d(REACT_CLASS, "车牌识别车辆排序时间：" + (time2 - time1));
-        if (TextUtils.isEmpty(title)) {
-            isIdentiting = false;
-            return;
+        if(mAIdetectView.getWidth()>0){
+            try {
+                isIdentiting = true;
+                statTime = System.currentTimeMillis();
+                long time1 = System.currentTimeMillis();
+                final String title = parseList(currentidentityList);
+                long time2 = System.currentTimeMillis();
+                Log.d(REACT_CLASS, "车牌识别车辆排序时间：" + (time2 - time1));
+                if (TextUtils.isEmpty(title)) {
+                    isIdentiting = false;
+                    return;
+                }
+                long screenTime1 = System.currentTimeMillis();
+                final Bitmap bitmap = mAIdetectView.getScreenCapture();
+                bmp = bitmap;
+                long screenTime2 = System.currentTimeMillis();
+                Log.d(REACT_CLASS, "车牌识别截屏时间：" + (screenTime2 - screenTime1));
+                initIdentityCarNumber();
+                initCarColor();
+                initCarType(title);
+            }catch (Exception e){
+                isIdentiting = false;
+            }
         }
-        long screenTime1 = System.currentTimeMillis();
-        final Bitmap bitmap = mAIdetectView.getScreenCapture();
-        bmp = bitmap;
-        long screenTime2 = System.currentTimeMillis();
-        Log.d(REACT_CLASS, "车牌识别截屏时间：" + (screenTime2 - screenTime1));
-        initIdentityCarNumber();
-        initCarColor();
-        initCarType(title);
     }
 
     private synchronized void initIdentityCarNumber() {
