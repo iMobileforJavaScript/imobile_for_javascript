@@ -656,6 +656,22 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 是否开启跟踪计数
+     * @param promise
+     */
+    @ReactMethod
+    public void getIsCountTrackedMode(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--stopCountTrackedObjs--------RN--------");
+            boolean is = mAIDetectView.getIsCountTrackedMode();
+
+            promise.resolve(is);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 保存预览图片
      * @param
      */
