@@ -171,6 +171,15 @@ stopCountTrackedObjs = () => {
   }
 }
 
+// 是否开启跟踪计数
+getIsCountTrackedMode = () => {
+  try {
+    return SAIDetectView.getIsCountTrackedMode()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 //保存预览图
 savePreviewBitmap = () => {
   try {
@@ -337,6 +346,7 @@ export default {
   resetTrackedCount,
   startCountTrackedObjs,
   stopCountTrackedObjs,
+  getIsCountTrackedMode,
   savePreviewBitmap,
   setProjectionModeEnable,
   setPOIOverlapEnable,

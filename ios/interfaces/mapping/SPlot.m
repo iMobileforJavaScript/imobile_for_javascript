@@ -466,27 +466,35 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
         
         NSNumber* animationMode=[createInfo objectForKey:@"animationMode"];
         AnimationType type;
+        NSString* animationName=@"";
         switch (animationMode.integerValue) {
             case 0:
                 type=WayAnimation;
+                animationName=@"路径动画";
                 break;
             case 1:
                 type=BlinkAnimation;
+                animationName=@"闪烁动画";
                 break;
             case 2:
                 type=AttribAnimation;
+                animationName=@"属性动画";
                 break;
             case 3:
                 type=ShowAnimation;
+                animationName=@"显隐动画";
                 break;
             case 4:
                 type=RotateAnimation;
+                animationName=@"旋转动画";
                 break;
             case 5:
                 type=ScaleAnimation;
+                animationName=@"比例动画";
                 break;
             case 6:
                 type=GrowAnimation;
+                animationName=@"生长动画";
                 break;
         }
         AnimationGO* animationGo=[AnimationManager.getInstance createAnimation:type];
@@ -610,7 +618,7 @@ RCT_REMAP_METHOD(createAnimationGo,createAnimationGo:(NSDictionary *)createInfo 
             [mapControl.map save:mapName];
         }
         
-        NSString* animationGoName=[NSString stringWithFormat:@"动画_%d",[[AnimationManager.getInstance getGroupByName:animationGroupName] getAnimationCount]];
+        NSString* animationGoName=[NSString stringWithFormat:@"%d_%@",[[AnimationManager.getInstance getGroupByName:animationGroupName] getAnimationCount],animationName];
         if([createInfo objectForKey:@"layerName"]&&[createInfo objectForKey:@"geoId"]){
             NSString* layerName=[createInfo objectForKey:@"layerName"];
             int geoId=[[createInfo objectForKey:@"geoId"] intValue];
@@ -911,7 +919,7 @@ RCT_REMAP_METHOD(deleteAnimationNode,deleteAnimationNode:(NSString*)nodeName res
         //        MapControl* mapControl=sMap.smMapWC.mapControl;
         
         
-        //        NSString* animationGroupName=@"Create_Animation_Instance_#";   //动画动画组名，名称特殊，保证唯一
+        NSString* animationGroupName=@"Create_Animation_Instance_#";   //动画动画组名，名称特殊，保证唯一
         int count=[AnimationManager.getInstance getGroupCount];
         //组件缺陷，group的count等于0调用getGroupByName还是能返回一个对象
         //        AnimationGroup* animationGroup=[AnimationManager.getInstance getGroupByName:animationGroupName];
@@ -922,8 +930,26 @@ RCT_REMAP_METHOD(deleteAnimationNode,deleteAnimationNode:(NSString*)nodeName res
         }else{
             animationGroup=[AnimationManager.getInstance getGroupByIndex:0];
         }
-        BOOL result=[animationGroup deleteAnimationByName:nodeName];
-        resolve([NSNumber numberWithBool:result]);
+        //组件缺陷，如果一个对象设置了多个动画且其中一个动画该动画组第一个动画，删除该动画组第一个动画，会报错
+//        BOOL result=[animationGroup deleteAnimationByName:nodeName];
+        NSString* tempGroupName=@"temp";
+        AnimationGroup* tempGroup=[AnimationManager.getInstance addAnimationGroup:tempGroupName];
+        int size=[animationGroup getAnimationCount];
+        for (int i=0; i<size; i++) {
+            AnimationGO* animationGo=[animationGroup getAnimationByIndex:i];
+            if(![animationGo.name isEqualToString:nodeName]){
+                AnimationGO* animationGo2=[AnimationManager.getInstance createAnimation:animationGo.getAnimationType];
+                NSString* xmlStr=[animationGo toXML];
+                [animationGo2 fromXML:xmlStr];
+                [tempGroup addAnimation:animationGo2];
+                
+            }
+        }
+        [[AnimationManager.getInstance getGroupByIndex:0] setName:animationGroupName];
+        [AnimationManager.getInstance deleteGroupByName:animationGroupName];
+        [[AnimationManager.getInstance getGroupByIndex:0] setName:animationGroupName];
+       
+        resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"deleteAnimationNode", exception.reason, nil);
     }

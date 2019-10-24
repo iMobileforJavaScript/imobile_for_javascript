@@ -65,6 +65,14 @@ public class MeasureViewManager extends SimpleViewManager<CustomMeasureView> {
             params.putString("total", mDecimalFormat.format(value));
             sendEvent(mReactContext, "onTotalLengthChanged", params);
         }
+
+        @Override
+        public void onCurrentToLastPntDstChanged(float value) {
+            Log.d(REACT_CLASS, "onCurrentToLastPntDstChanged: " + value);
+            WritableMap params = Arguments.createMap();
+            params.putString("tolast", mDecimalFormat.format(value));
+            sendEvent(mReactContext, "onCurrentToLastPntDstChanged", params);
+        }
     };
 
     private OnRuntimeStatusChangedListener mOnRuntimeStatusChangedListener = new OnRuntimeStatusChangedListener() {
