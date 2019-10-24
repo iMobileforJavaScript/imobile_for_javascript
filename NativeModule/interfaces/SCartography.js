@@ -260,6 +260,20 @@ setFillBackColor = (fillBackColor, layerName) => {
 }
 
 /**
+ * 设置轮廓景色
+ * 
+ * @param fillBorderColor
+ * @param layerName
+ */
+setFillBorderColor = (fillBorderColor, layerName) => {
+    try {
+        return SCartography.setFillBorderColor(fillBorderColor, layerName)
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+/**
  * 设置透明度（0 - 100）
  * 
  * @param fillOpaqueRate
@@ -536,6 +550,7 @@ export default {
     setFillSymbolID,
     setFillForeColor,
     setFillBackColor,
+    setFillBorderColor,
     setFillOpaqueRate,
     getFillOpaqueRate,
     setFillLinearGradient,

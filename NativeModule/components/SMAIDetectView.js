@@ -62,6 +62,10 @@ class SMAIDetectView extends React.Component {
   //   SAIDetectView.startDetect()
   }
 
+  componentDidMount() {
+    SAIDetectView.setProjectionModeEnable(true)
+  }
+
   componentWillUnmount() {
     SAIDetectView.dispose()
   }
