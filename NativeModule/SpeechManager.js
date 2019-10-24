@@ -29,7 +29,7 @@ export default class SpeechManager {
       console.log(e)
     }
   }
-  
+
   /**
    * 通过此函数取消当前的会话
    * @returns {Promise.<void>}
@@ -129,29 +129,34 @@ export default class SpeechManager {
    */
   async startListening(handlers) {
     try {
+      this.beginListener && this.beginListener.remove()
+      this.endlistener && this.endlistener.remove()
+      this.voluemChangeListener && this.voluemChangeListener.remove()
+      this.errorListener && this.errorListener.remove()
+      this.resultListener &&  this.resultListener.remove()
       await SM.startListening()
       if (typeof handlers.onBeginOfSpeech === "function") {
-        nativeEvt.addListener(BEGIN_OF_SPEECH, function () {
+        this.beginListener = nativeEvt.addListener(BEGIN_OF_SPEECH, function () {
           handlers.onBeginOfSpeech()
         })
       }
       if (typeof handlers.onEndOfSpeech === "function") {
-        nativeEvt.addListener(END_OF_SPEECH, function () {
+        this.endlistener = nativeEvt.addListener(END_OF_SPEECH, function () {
           handlers.onEndOfSpeech()
         })
       }
       if (typeof handlers.onVolumeChanged === "function") {
-        nativeEvt.addListener(VOLUME_CHANGED, function (e) {
+        this.voluemChangeListener = nativeEvt.addListener(VOLUME_CHANGED, function (e) {
           handlers.onVolumeChanged(e)
         })
       }
       if (typeof handlers.onError === "function") {
-        nativeEvt.addListener(ERROR, function (e) {
+        this.errorListener = nativeEvt.addListener(ERROR, function (e) {
           handlers.onError(e)
         })
       }
       if (typeof handlers.onResult === "function") {
-        nativeEvt.addListener(RESULT, function (e) {
+        this.resultListener = nativeEvt.addListener(RESULT, function (e) {
           handlers.onResult(e)
         })
       }

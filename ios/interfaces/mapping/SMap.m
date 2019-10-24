@@ -5928,12 +5928,14 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
                               }];
 }
 
+static BOOL bDouble = false;
 - (void)onDoubleTap:(CGPoint)onDoubleTapPos{
     CGFloat x = onDoubleTapPos.x;
     CGFloat y = onDoubleTapPos.y;
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
     Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:onDoubleTapPos];
+    bDouble = true;
     [self sendEventWithName:MAP_DOUBLE_TAP
                        body:@{@"mapPoint": @{
                                       @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
@@ -5994,16 +5996,23 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
     Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:onSingleTapPos];
-    [self sendEventWithName:MAP_SINGLE_TAP
-                       body:@{@"mapPoint": @{
-                                      @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
-                                      @"y":@(point2D.y == INFINITY ? 0 : point2D.y),
-                                      },
-                              @"screenPoint": @{
-                                              @"x":nsX,
-                                              @"y":nsY
-                                              },
-                              }];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if(bDouble){
+            bDouble = false;
+            return ;
+        }
+        [self sendEventWithName:MAP_SINGLE_TAP
+                           body:@{@"mapPoint": @{
+                                          @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
+                                          @"y":@(point2D.y == INFINITY ? 0 : point2D.y),
+                                          },
+                                  @"screenPoint": @{
+                                          @"x":nsX,
+                                          @"y":nsY
+                                          },
+                                  }];
+    });
+   
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
