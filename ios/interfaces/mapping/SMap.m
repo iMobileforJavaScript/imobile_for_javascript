@@ -1201,6 +1201,17 @@ RCT_REMAP_METHOD(getLineDatasetAndFloorList, getLineDatasetAndFloorListWithResol
     }
 }
 
+#pragma mark 获取当前楼层ID
+RCT_REMAP_METHOD(getCurrentFloorID, methodgetCurrentFloorIDWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        NSString *floorID = sMap.smMapWC.floorListView.currentFloorId;
+        resolve(floorID);
+    }@catch(NSException *exception){
+        reject(@"getCurrentFloorID", exception.reason, nil);
+    }
+}
+
 #pragma mark 切换到指定楼层
 RCT_REMAP_METHOD(setCurrentFloor, setCurrentFloorWithName:(NSString *)floorID resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
@@ -1441,11 +1452,14 @@ RCT_REMAP_METHOD(isIndoorPoint, isIndoorPointWithX:(double)x Y:(double) y resolv
 }
 
 #pragma mark 添加起始点
-RCT_REMAP_METHOD(getStartPoint, getStartPointWithX:(double)x Y:(double) y isIndoor: (BOOL)isindoor resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getStartPoint, getStartPointWithX:(double)x Y:(double) y isIndoor: (BOOL)isindoor FloorID:(NSString*) floorID resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
+        if(floorID == nil){
+            floorID = sMap.smMapWC.floorListView.currentFloorId;
+        }
         if(isindoor){
-            [[sMap.smMapWC.mapControl getNavigation3] setStartPoint:x Y:y ID:sMap.smMapWC.floorListView.currentFloorId];
+            [[sMap.smMapWC.mapControl getNavigation3] setStartPoint:x Y:y ID:floorID];
         }else{
             [SMap showPointByCalloutAtX:x Y:y PointName:@"startpoint"];
         }
@@ -1456,11 +1470,14 @@ RCT_REMAP_METHOD(getStartPoint, getStartPointWithX:(double)x Y:(double) y isIndo
 }
 
 #pragma mark 添加终点
-RCT_REMAP_METHOD(getEndPoint, getEndPointWithX:(double)x Y:(double) y isIndoor: (BOOL)isindoor resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getEndPoint, getEndPointWithX:(double)x Y:(double) y isIndoor: (BOOL)isindoor  FloorID:(NSString*) floorID resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
+        if(floorID == nil){
+            floorID = sMap.smMapWC.floorListView.currentFloorId;
+        }
         if(isindoor){
-            [[sMap.smMapWC.mapControl getNavigation3] setDestinationPoint:x Y:y ID:sMap.smMapWC.floorListView.currentFloorId];
+            [[sMap.smMapWC.mapControl getNavigation3] setDestinationPoint:x Y:y ID:floorID];
         }else{
             [SMap showPointByCalloutAtX:x Y:y PointName:@"endpoint"];
         }

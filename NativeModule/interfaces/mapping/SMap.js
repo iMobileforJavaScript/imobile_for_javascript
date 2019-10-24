@@ -2347,12 +2347,28 @@ export default (function () {
   }
 
   /**
-   * 获取起始点
-   * @returns {*|void|Promise<void>}
+   * 获取当前楼层ID
+   * @returns {*}
    */
-  function getStartPoint(x,y,isindoor) {
+  function getCurrentFloorID() {
     try {
-      return SMap.getStartPoint(x,y,isindoor)
+      return SMap.getCurrentFloorID()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取起始点
+   * @param x
+   * @param y
+   * @param isindoor
+   * @param floorID
+   * @returns {undefined}
+   */
+  function getStartPoint(x,y,isindoor,floorID=null) {
+    try {
+      return SMap.getStartPoint(x,y,isindoor,floorID)
     } catch (e) {
       console.error(e)
     }
@@ -2360,11 +2376,15 @@ export default (function () {
 
   /**
    * 获取终点
-   * @returns {*|void|Promise<void>}
+   * @param x
+   * @param y
+   * @param isindoor
+   * @param floorID
+   * @returns {undefined}
    */
-  function getEndPoint(x,y,isindoor) {
+  function getEndPoint(x,y,isindoor,floorID=null) {
     try {
-      return SMap.getEndPoint(x,y,isindoor)
+      return SMap.getEndPoint(x,y,isindoor,floorID)
     } catch (e) {
       console.error(e)
     }
@@ -3010,6 +3030,7 @@ export default (function () {
     beginIndoorNavigation,
     outdoorNavigation,
     indoorNavigation,
+    getCurrentFloorID,
     setCurrentFloor,
     getStartPoint,
     getEndPoint,
