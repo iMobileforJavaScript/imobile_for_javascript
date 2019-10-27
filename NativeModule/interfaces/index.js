@@ -10,6 +10,7 @@ import SMeasureView from './SMeasureView'
 import SAIClassifyView from './SAIClassifyView'
 import SCollectSceneFormView from './SCollectSceneFormView'
 import SIllegallyParkView from './SIllegallyParkView'
+import SCastModelOperateView from './SCastModelOperateView'
 
 export {
   SMap,
@@ -39,4 +40,6 @@ export {
   SCollectSceneFormView,
   /*违章采集*/
   SIllegallyParkView,
+  /*AR投放*/
+  SCastModelOperateView,
 }
