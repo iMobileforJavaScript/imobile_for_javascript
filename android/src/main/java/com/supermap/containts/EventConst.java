@@ -79,7 +79,7 @@ public class EventConst {
     public static final String INDUSTRYNAVIAGTION = "com.supermap.RN.Navigation.industry_navigation";
     public static final String MAPSELECTPOINTNAMESTART = "com.supermap.RN.Navigation.mapselectpointnamestart";
     public static final String MAPSELECTPOINTNAMEEND = "com.supermap.RN.Navigation.mapselectpointnameend";
-
+    public static final String IS_INDOOR_MAP = "com.supermap.RN.FloorListView.isIndoorChanged";
     public static final String ILLEGALLYPARK = "com.supermap.RN.Navigation.illegallypark";
 
 

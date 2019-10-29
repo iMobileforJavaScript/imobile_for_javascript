@@ -213,6 +213,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 }
 
                 public void boundsChanged(Point2D newMapCenter) {
+                    sMap = SMap.getInstance();
+                    String floorId = null;
+                    if(sMap.smMapWC.getFloorListView() != null){
+                        floorId = sMap.smMapWC.getFloorListView().getCurrentFloorId();
+                    }
+                    WritableMap map = Arguments.createMap();
+                    map.putBoolean("isIndoor",(floorId!=null));
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.IS_INDOOR_MAP,map);
                 }
 
                 public void angleChanged(double newAngle) {

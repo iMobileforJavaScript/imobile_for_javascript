@@ -63,8 +63,9 @@ export default {
   INDUSTRYNAVIAGTION:"com.supermap.RN.Navigation.industry_navigation",
   MAPSELECTPOINTNAMESTART:"com.supermap.RN.Navigation.mapselectpointnamestart",
   MAPSELECTPOINTNAMEEND:"com.supermap.RN.Navigation.mapselectpointnameend",
-
   ILLEGALLYPARK:"com.supermap.RN.Navigation.illegallypark",
+  /*室内地图 bounds改变，且floorlist的id*/
+  IS_INDOOR_MAP : "com.supermap.RN.FloorListView.isIndoorChanged",
   
   /** 智能监听 **/
   MATCH_IMAGE_RESULT: "com.supermap.RN.match_image_result",
