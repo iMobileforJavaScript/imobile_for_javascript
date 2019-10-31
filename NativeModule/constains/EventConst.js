@@ -69,4 +69,12 @@ export default {
   
   /** 智能监听 **/
   MATCH_IMAGE_RESULT: "com.supermap.RN.match_image_result",
+
+  /** 语音 **/
+  RECOGNIZE_BEGIN: "com.supermap.RN.speech.recognize.begin",
+  RECOGNIZE_END: "com.supermap.RN.speech.recognize.end",
+  RECOGNIZE_ERROR: "com.supermap.RN.speech.recognize.error",
+  RECOGNIZE_RESULT: "com.supermap.RN.speech.recognize.result",
+  RECOGNIZE_VOLUME_CHANGED: "com.supermap.RN.speech.recognize.volume_changed",
+  RECOGNIZE_EVENT: "com.supermap.RN.speech.recognize.event",
 }

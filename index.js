@@ -185,6 +185,7 @@ import {
   SIllegallyParkView,
   SMapSuspension,
   SCastModelOperateView,
+  SSpeechRecognizer,
 } from './NativeModule/interfaces'
 let SMCollectorType = NativeModules.SCollectorType
 
@@ -382,6 +383,7 @@ export {
   SMCollectorType,
   SCartography,
   SThemeCartography,
+  SSpeechRecognizer,
   /*在线模块*/
   SOnlineService,
   SIPortalService,

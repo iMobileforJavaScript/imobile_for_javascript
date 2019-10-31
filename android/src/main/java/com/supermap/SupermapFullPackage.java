@@ -26,6 +26,7 @@ import com.supermap.interfaces.iServer.SIPortalService;
 import com.supermap.component.SMRLegendView;
 import com.supermap.interfaces.mapping.SMapSuspension;
 import com.supermap.interfaces.mapping.SPlot;
+import com.supermap.interfaces.speech.SSpeechRecognizer;
 import com.supermap.interfaces.utils.SMFileUtil;
 import com.supermap.rnsupermap.*;
 
@@ -210,6 +211,10 @@ public class SupermapFullPackage implements ReactPackage {
 
         modules.add(new SMFileUtil(reactContext));
         modules.add(new SMessageService(reactContext));
+        /**
+         * 语音
+         */
+        modules.add(new SSpeechRecognizer(reactContext));
         /*
         * 在线模块功能
         */

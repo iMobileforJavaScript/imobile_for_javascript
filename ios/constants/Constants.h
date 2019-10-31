@@ -65,6 +65,14 @@ extern NSString * const NAVIGATION_LENGTH;
 extern NSString * const INDUSTRYNAVIAGTION;
 extern NSString * const MAPSELECTPOINTNAMESTART;
 extern NSString * const MAPSELECTPOINTNAMEEND;
+
+extern NSString * const RECOGNIZE_BEGIN;
+extern NSString * const RECOGNIZE_END;
+extern NSString * const RECOGNIZE_ERROR;
+extern NSString * const RECOGNIZE_RESULT;
+extern NSString * const RECOGNIZE_VOLUME_CHANGED;
+extern NSString * const RECOGNIZE_EVENT;
+
 @interface Constants : NSObject
 
 @end

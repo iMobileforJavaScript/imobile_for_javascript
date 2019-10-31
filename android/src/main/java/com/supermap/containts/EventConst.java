@@ -85,4 +85,12 @@ public class EventConst {
 
     /** 智能配图 **/
     public static final String MATCH_IMAGE_RESULT = "com.supermap.RN.match_image_result";
+
+    /** 语音 **/
+    public static final String RECOGNIZE_BEGIN = "com.supermap.RN.speech.recognize.begin";
+    public static final String RECOGNIZE_END = "com.supermap.RN.speech.recognize.end";
+    public static final String RECOGNIZE_ERROR = "com.supermap.RN.speech.recognize.error";
+    public static final String RECOGNIZE_RESULT = "com.supermap.RN.speech.recognize.result";
+    public static final String RECOGNIZE_VOLUME_CHANGED = "com.supermap.RN.speech.recognize.volume_changed";
+    public static final String RECOGNIZE_EVENT = "com.supermap.RN.speech.recognize.event";
 }
