@@ -75,6 +75,7 @@ RCT_EXPORT_MODULE();
              MAP_GEOMETRY_SELECTED,
              MAP_SCALE_CHANGED,
              MAP_BOUNDS_CHANGED,
+             IS_INDOOR_MAP,
              LEGEND_CONTENT_CHANGE,
              MAP_SCALEVIEW_CHANGED,
 //             POINTSEARCH2D_KEYWORDS,
@@ -937,6 +938,7 @@ RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSStrin
                 [navigation2 setNetworkDataset:networkDataset];
                 [navigation2 loadModel:netModelPath];
                 navigation2.navi2Delegate = self;
+                [networkDataset close];
                 resolve(@(YES));
             }
         }
@@ -1182,6 +1184,7 @@ RCT_REMAP_METHOD(getLineDatasetAndFloorList, getLineDatasetAndFloorListWithResol
                     
                     [recordset close];
                     [recordset dispose];
+                    [datasetVector close];
                 }
             }
             if(data.count > 0){
@@ -1198,6 +1201,17 @@ RCT_REMAP_METHOD(getLineDatasetAndFloorList, getLineDatasetAndFloorListWithResol
         resolve(returnArray);
     }@catch(NSException *exception){
         reject(@"getFloorList", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取当前楼层ID
+RCT_REMAP_METHOD(getCurrentFloorID, methodgetCurrentFloorIDWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        NSString *floorID = sMap.smMapWC.floorListView.currentFloorId;
+        resolve(floorID);
+    }@catch(NSException *exception){
+        reject(@"getCurrentFloorID", exception.reason, nil);
     }
 }
 
@@ -1295,6 +1309,7 @@ RCT_REMAP_METHOD(removeNetworkDataset, removeNetworkDatasetWithlineDatasetName:(
             if(networklayer != nil){
                 [layers remove:networklayer];
             }
+            [datasetVector close];
         }
         if(GpsPoint2Ds != nil && [GpsPoint2Ds getCount] > 0){
             [GpsPoint2Ds clear];
@@ -1328,29 +1343,45 @@ RCT_REMAP_METHOD(hasNetworkDataset, hasNetworkDatasetWithResolver: (RCTPromiseRe
 }
 
 
-
 #pragma mark 生成路网
 RCT_REMAP_METHOD(buildNetwork, buildNetworkWithDatasetName:(NSString *)lineDatasetName NetworkDataset:(NSString *)networkDatasetName DatasourceName:(NSString *)datasourceName resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
-//       DatasetVector *lineDataset = (DatasetVector *) [SelectDatasuorce.datasets getWithName:lineDatasetName];
-//        NSString *datasetName = [SelectDatasuorce.datasets availableDatasetName:lineDatasetName];
-//        DatasetVector *datasetVector2 = (DatasetVector *) [SelectDatasuorce copyDataset:lineDataset desDatasetName:datasetName encodeType:NONE];
-//
-//        TopologyProcessingOptions *topologyProcessingOptions = [[TopologyProcessingOptions alloc] init];
-//        topologyProcessingOptions.linesIntersected = YES;
-//        [TopologyProcessing clean:datasetVector2 withOptions:topologyProcessingOptions];
-//
-//        [SelectDatasuorce.datasets deleteName:networkDatasetName];
-//
-//        NSMutableArray *lineFieldNames = [[NSMutableArray alloc] init];
-//        for(int i = 0, count = datasetVector2.fieldInfos.count; i < count; i++){
-//            lineFieldNames[i] = [datasetVector2.fieldInfos get:i].caption;
-//        }
-//
-//        NSMutableArray *datasets = [[NSMutableArray alloc] init];
-//        [datasets addObject:datasetVector2];
-//
-//        //NetworkBuilder NetworkSplitMode
+        sMap = [SMap singletonInstance];
+        Datasource *datasource = [sMap.smMapWC.workspace.datasources getAlias:datasourceName];
+        DatasetVector *lineDataset = (DatasetVector *) [datasource.datasets getWithName:lineDatasetName];
+
+        TopologyProcessingOptions *topologyProcessingOptions = [[TopologyProcessingOptions alloc] init];
+        topologyProcessingOptions.linesIntersected = YES;
+        [TopologyProcessing clean:lineDataset withOptions:topologyProcessingOptions];
+
+        [datasource.datasets deleteName:networkDatasetName];
+
+        NSMutableArray *lineFieldNames = [[NSMutableArray alloc] init];
+        for(int i = 0, count = lineDataset.fieldInfos.count; i < count; i++){
+            lineFieldNames[i] = [lineDataset.fieldInfos get:i].caption;
+        }
+
+        NSMutableArray *datasets = [[NSMutableArray alloc] init];
+        [datasets addObject:lineDataset];
+        [NetworkBuilder buildNetwork:datasets pointDatasets:nil lineFieldNames:lineFieldNames pointFieldNames:nil outputDatasource:datasource networkDatasetName:networkDatasetName networkSplitMode:NSM_LINE_SPLIT_BY_POINT tolerance:0.0000001];
+
+        Layers *layers = sMap.smMapWC.mapControl.map.layers;
+        DatasetVector *datasetVector = (DatasetVector *)[datasource.datasets getWithName:networkDatasetName];
+        NSString *name = datasetVector.childDataset.name;
+        NSString *layerName = [NSString stringWithFormat:@"%@%@%@",name,@"@",datasourceName];
+        Layer *layer;
+        for(int i  = 0; i < [layers getCount]; i++){
+            Layer *curLayer = [layers getLayerAtIndex:i];
+            if(curLayer.caption == layerName){
+                layer = curLayer;
+            }
+        }
+        if(layer == nil || !layer.visible){
+            [layers addDataset:datasetVector.childDataset ToHead:YES];
+        }
+        [lineDataset close];
+        [datasets[0] close];
+        [datasetVector close];
         resolve(@(YES));
     }@catch(NSException *exception){
         reject(@"buildNetwork", exception.reason, nil);
@@ -1397,9 +1428,9 @@ RCT_REMAP_METHOD(addGPSRecordset,addGPSRecordsetWithDatasource:(NSString *)datas
         [history BatchBegin];
         [history addHistoryType:EHT_AddNew recordset:recordset1 isCurrentOnly:YES];
         [history BatchEnd];
-        [datasetVector close];
         [recordset1 close];
         [recordset1 dispose];
+        [datasetVector close];
         [sMap.smMapWC.mapControl.map refresh];
         //提交完清空点数组
         if(GpsPoint2Ds != nil && [GpsPoint2Ds getCount] > 0){
@@ -1441,11 +1472,14 @@ RCT_REMAP_METHOD(isIndoorPoint, isIndoorPointWithX:(double)x Y:(double) y resolv
 }
 
 #pragma mark 添加起始点
-RCT_REMAP_METHOD(getStartPoint, getStartPointWithX:(double)x Y:(double) y isIndoor: (BOOL)isindoor resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getStartPoint, getStartPointWithX:(double)x Y:(double) y isIndoor: (BOOL)isindoor FloorID:(NSString*) floorID resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
+        if(floorID == nil){
+            floorID = sMap.smMapWC.floorListView.currentFloorId;
+        }
         if(isindoor){
-            [[sMap.smMapWC.mapControl getNavigation3] setStartPoint:x Y:y ID:sMap.smMapWC.floorListView.currentFloorId];
+            [[sMap.smMapWC.mapControl getNavigation3] setStartPoint:x Y:y ID:floorID];
         }else{
             [SMap showPointByCalloutAtX:x Y:y PointName:@"startpoint"];
         }
@@ -1456,11 +1490,14 @@ RCT_REMAP_METHOD(getStartPoint, getStartPointWithX:(double)x Y:(double) y isIndo
 }
 
 #pragma mark 添加终点
-RCT_REMAP_METHOD(getEndPoint, getEndPointWithX:(double)x Y:(double) y isIndoor: (BOOL)isindoor resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getEndPoint, getEndPointWithX:(double)x Y:(double) y isIndoor: (BOOL)isindoor  FloorID:(NSString*) floorID resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
+        if(floorID == nil){
+            floorID = sMap.smMapWC.floorListView.currentFloorId;
+        }
         if(isindoor){
-            [[sMap.smMapWC.mapControl getNavigation3] setDestinationPoint:x Y:y ID:sMap.smMapWC.floorListView.currentFloorId];
+            [[sMap.smMapWC.mapControl getNavigation3] setDestinationPoint:x Y:y ID:floorID];
         }else{
             [SMap showPointByCalloutAtX:x Y:y PointName:@"endpoint"];
         }
@@ -1679,6 +1716,7 @@ RCT_REMAP_METHOD(getIndoorDatasource,getIndoorDatasourceWithResolver: (RCTPromis
                 IndoorDatasource = [datasources getAlias:(NSString *)[recordset getFieldValueWithString:@"LinkDatasource"]];
                 [recordset close];
                 [recordset dispose];
+                [dataset close];
             }
         }
         resolve(@(YES));
@@ -5891,6 +5929,10 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
                        body:@{@"x":nsX,
                               @"y":nsY
                               }];
+    NSString *floorID = [SMap singletonInstance].smMapWC.floorListView.currentFloorId;
+    [self sendEventWithName:IS_INDOOR_MAP body:@{
+                                                @"isIndoor":@(floorID != nil),
+                                                }];
 }
 
 -(void) scaleChanged:(double)newscale{
@@ -5907,7 +5949,7 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
                         body:@{@"width":[NSNumber numberWithDouble:width],
                                 @"title":sMap.scaleViewHelper.mScaleText
                                 }];
-   
+    
 }
 
 - (void)longpress:(CGPoint)pressedPos{

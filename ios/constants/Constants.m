@@ -64,6 +64,7 @@ NSString * const MAP_GEOMETRY_MULTI_SELECTED = @"com.supermap.RN.Mapcontrol.geom
 NSString * const MAP_GEOMETRY_SELECTED = @"com.supermap.RN.Mapcontrol.geometry_selected";
 NSString * const MAP_SCALE_CHANGED = @"Supermap.MapControl.MapParamChanged.ScaleChanged";
 NSString * const MAP_BOUNDS_CHANGED = @"Supermap.MapControl.MapParamChanged.BoundsChanged";
+NSString * const IS_INDOOR_MAP = @"com.supermap.RN.FloorListView.isIndoorChanged";
 NSString * const POINTSEARCH2D_KEYWORDS = @"com.supermap.RN.MapControl.PointSearch2D_keyWords";
 /** 比例尺改变 RN显示比例尺专用 **/
 NSString * const MAP_SCALEVIEW_CHANGED = @"com.supermap.RN.Map.ScaleView.scaleView_change";
@@ -87,6 +88,14 @@ NSString * const NAVIGATION_LENGTH = @"com.supermap.RN.Navigation.online_navigat
 NSString * const INDUSTRYNAVIAGTION = @"com.supermap.RN.Navigation.industry_navigation";
 NSString * const MAPSELECTPOINTNAMESTART = @"com.supermap.RN.Navigation.mapselectpointnamestart";
 NSString * const MAPSELECTPOINTNAMEEND = @"com.supermap.RN.Navigation.mapselectpointnameend";
+
+/** 语音 **/
+NSString * const RECOGNIZE_BEGIN = @"com.supermap.RN.speech.recognize.begin";
+NSString * const RECOGNIZE_END = @"com.supermap.RN.speech.recognize.end";
+NSString * const RECOGNIZE_ERROR = @"com.supermap.RN.speech.recognize.error";
+NSString * const RECOGNIZE_RESULT = @"com.supermap.RN.speech.recognize.result";
+NSString * const RECOGNIZE_VOLUME_CHANGED = @"com.supermap.RN.speech.recognize.volume_changed";
+NSString * const RECOGNIZE_EVENT = @"com.supermap.RN.speech.recognize.event";
 @implementation Constants : NSObject
 
 @end

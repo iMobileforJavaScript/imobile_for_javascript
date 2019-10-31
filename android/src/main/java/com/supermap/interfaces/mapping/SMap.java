@@ -213,6 +213,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 }
 
                 public void boundsChanged(Point2D newMapCenter) {
+                    sMap = SMap.getInstance();
+                    String floorId = null;
+                    if(sMap.smMapWC.getFloorListView() != null){
+                        floorId = sMap.smMapWC.getFloorListView().getCurrentFloorId();
+                    }
+                    WritableMap map = Arguments.createMap();
+                    map.putBoolean("isIndoor",(floorId!=null));
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.IS_INDOOR_MAP,map);
                 }
 
                 public void angleChanged(double newAngle) {
@@ -5996,6 +6005,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 获取当前楼层ID
+     * @param promise
+     */
+    @ReactMethod
+    public void getCurrentFloorID(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            String floorID = sMap.smMapWC.getFloorListView().getCurrentFloorId();
+            promise.resolve(floorID);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 切换到指定楼层
      * @param floorID
      * @param promise
@@ -6305,11 +6329,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void getStartPoint(double x, double y, boolean isindoor, Promise promise) {
+    public void getStartPoint(double x, double y, boolean isindoor, String floorID, Promise promise) {
         try {
             sMap = SMap.getInstance();
+            if(floorID == null){
+                floorID = sMap.getSmMapWC().getFloorListView().getCurrentFloorId();
+            }
             if (isindoor) {
-                sMap.getSmMapWC().getMapControl().getNavigation3().setStartPoint(x, y, sMap.getSmMapWC().getFloorListView().getCurrentFloorId());
+                sMap.getSmMapWC().getMapControl().getNavigation3().setStartPoint(x, y, floorID);
             } else {
                 showPointByCallout(x, y, "startpoint");
             }
@@ -6326,11 +6353,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void getEndPoint(double x, double y, boolean isindoor, Promise promise) {
+    public void getEndPoint(double x, double y, boolean isindoor, String floorID, Promise promise) {
         try {
             sMap = SMap.getInstance();
+            if(floorID == null){
+                floorID = sMap.getSmMapWC().getFloorListView().getCurrentFloorId();
+            }
             if (isindoor) {
-                sMap.getSmMapWC().getMapControl().getNavigation3().setDestinationPoint(x, y, sMap.getSmMapWC().getFloorListView().getCurrentFloorId());
+                sMap.getSmMapWC().getMapControl().getNavigation3().setDestinationPoint(x, y, floorID);
             } else {
                 showPointByCallout(x, y, "endpoint");
             }

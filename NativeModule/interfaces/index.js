@@ -10,6 +10,8 @@ import SMeasureView from './SMeasureView'
 import SAIClassifyView from './SAIClassifyView'
 import SCollectSceneFormView from './SCollectSceneFormView'
 import SIllegallyParkView from './SIllegallyParkView'
+import SCastModelOperateView from './SCastModelOperateView'
+import { SSpeechRecognizer } from './speech'
 
 export {
   SMap,
@@ -25,6 +27,7 @@ export {
   SScene,
   SCartography,
   SThemeCartography,
+  SSpeechRecognizer,
   /*在线模块功能*/
   SOnlineService,
   SIPortalService,
@@ -39,4 +42,6 @@ export {
   SCollectSceneFormView,
   /*违章采集*/
   SIllegallyParkView,
+  /*AR投放*/
+  SCastModelOperateView,
 }
