@@ -18,6 +18,8 @@ public class SCastModelOperateView extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SCastModelOperateView";
     private Context mContext = null;
 
+    private static ImobileSceneViewManager mSceneViewManager = null;
+
     @Override
     public String getName() {
         return REACT_CLASS;
@@ -28,13 +30,18 @@ public class SCastModelOperateView extends ReactContextBaseJavaModule {
         mContext = reactContext.getApplicationContext();
     }
 
-//    public static void setInstance(ArFragment arFragment) {
-//    }
+    public static void setInstance(ImobileSceneViewManager sceneViewManager) {
+        mSceneViewManager = sceneViewManager;;
+    }
 
     @ReactMethod
     public void onPause(Promise promise) {
         try {
             Log.d("CastModelOperateView", "----------------SCastModelOperateView--onPause--------RN--------");
+
+            if (mSceneViewManager != null) {
+                mSceneViewManager.onPause();
+            }
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -47,22 +54,9 @@ public class SCastModelOperateView extends ReactContextBaseJavaModule {
         try {
             Log.d("CastModelOperateView", "----------------SCastModelOperateView--onDestroy--------RN--------");
 
-            Activity currentActivity = getCurrentActivity();
-            if (currentActivity != null) {
-                currentActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        FragmentActivity fragmentActivity = (FragmentActivity) currentActivity;
-                        FragmentManager supportFragmentManager = fragmentActivity.getSupportFragmentManager();
-
-                        AugmentedImageFragment arFragment = (AugmentedImageFragment) supportFragmentManager.findFragmentById(R.id.ar_fragment);
-                        if (arFragment != null) {
-                            FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
-                            fragmentTransaction.remove(arFragment);
-                            fragmentTransaction.commitNow();
-                        }
-                    }
-                });
+            if (mSceneViewManager != null) {
+                mSceneViewManager.onDestroyView();
+                mSceneViewManager.onDestroy();
             }
 
             promise.resolve(true);
@@ -75,6 +69,10 @@ public class SCastModelOperateView extends ReactContextBaseJavaModule {
     protected void onResume(Promise promise) {
         try {
             Log.d("CastModelOperateView", "--------------SCastModelOperateView---onResume--------RN--------");
+
+            if (mSceneViewManager != null) {
+                mSceneViewManager.onResume();
+            }
 
             promise.resolve(true);
         } catch (Exception e) {
