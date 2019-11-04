@@ -25,14 +25,14 @@ import com.google.ar.sceneform.ux.TransformableNode;
 
 import java.util.Set;
 
-public abstract class SceneView extends RelativeLayout implements Scene.OnPeekTouchListener, Scene.OnUpdateListener {
+public abstract class CustomSceneView extends RelativeLayout implements Scene.OnPeekTouchListener, Scene.OnUpdateListener {
 
-    private static final String TAG = SceneView.class.getSimpleName();
+    private static final String TAG = CustomSceneView.class.getSimpleName();
 
     private Activity mContext = null;
     private LayoutInflater inflater;
 
-    public SceneView(Context context) {
+    public CustomSceneView(Context context) {
         super(context);
         mContext = (Activity) context;
         inflater = LayoutInflater.from(mContext);
@@ -40,7 +40,7 @@ public abstract class SceneView extends RelativeLayout implements Scene.OnPeekTo
         initView();
     }
 
-    public SceneView(Context context, AttributeSet attrs) {
+    public CustomSceneView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = (Activity) context;
         inflater = LayoutInflater.from(mContext);
@@ -48,7 +48,7 @@ public abstract class SceneView extends RelativeLayout implements Scene.OnPeekTo
         initView();
     }
 
-    public SceneView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CustomSceneView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = (Activity) context;
         inflater = LayoutInflater.from(mContext);
@@ -67,7 +67,7 @@ public abstract class SceneView extends RelativeLayout implements Scene.OnPeekTo
          * @param hitResult   The ARCore hit result that occurred when tapping the plane
          * @param plane       The ARCore Plane that was tapped
          * @param motionEvent the motion event that triggered the tap
-         * @see #setOnTapArPlaneListener(SceneView.OnTapArPlaneListener)
+         * @see #setOnTapArPlaneListener(CustomSceneView.OnTapArPlaneListener)
          */
         void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent);
     }
@@ -81,7 +81,7 @@ public abstract class SceneView extends RelativeLayout implements Scene.OnPeekTo
     private boolean isStarted;
 
     @Nullable
-    private SceneView.OnTapArPlaneListener onTapArPlaneListener;
+    private CustomSceneView.OnTapArPlaneListener onTapArPlaneListener;
 
     @SuppressWarnings({"initialization"})
     private final ViewTreeObserver.OnWindowFocusChangeListener onFocusListener =
@@ -113,9 +113,9 @@ public abstract class SceneView extends RelativeLayout implements Scene.OnPeekTo
      * Registers a callback to be invoked when an ARCore Plane is tapped. The callback will only be
      * invoked if no {@link com.google.ar.sceneform.Node} was tapped.
      *
-     * @param onTapArPlaneListener the {@link SceneView.OnTapArPlaneListener} to attach
+     * @param onTapArPlaneListener the {@link CustomSceneView.OnTapArPlaneListener} to attach
      */
-    public void setOnTapArPlaneListener(@Nullable SceneView.OnTapArPlaneListener onTapArPlaneListener) {
+    public void setOnTapArPlaneListener(@Nullable CustomSceneView.OnTapArPlaneListener onTapArPlaneListener) {
         this.onTapArPlaneListener = onTapArPlaneListener;
     }
 
@@ -384,7 +384,7 @@ public abstract class SceneView extends RelativeLayout implements Scene.OnPeekTo
         transformationSystem.selectNode(null);
 
         // Local variable for nullness static-analysis.
-        SceneView.OnTapArPlaneListener onTapArPlaneListener = this.onTapArPlaneListener;
+        CustomSceneView.OnTapArPlaneListener onTapArPlaneListener = this.onTapArPlaneListener;
 
         if (frame != null && onTapArPlaneListener != null) {
             if (motionEvent != null && frame.getCamera().getTrackingState() == TrackingState.TRACKING) {

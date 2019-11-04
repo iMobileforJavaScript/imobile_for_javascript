@@ -15,7 +15,7 @@ import com.google.ar.core.Session;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ImobileSceneViewManager extends SceneViewManager {
+public class ImobileCustomSceneViewManager extends CustomSceneViewManager {
 
     private Context mContext = null;
 
@@ -30,21 +30,21 @@ public class ImobileSceneViewManager extends SceneViewManager {
     // application.
     private static final double MIN_OPENGL_VERSION = 3.0;
 
-    public ImobileSceneViewManager(Context context) {
+    public ImobileCustomSceneViewManager(Context context) {
         super(context);
         mContext = context;
 
         init();
     }
 
-    public ImobileSceneViewManager(Context context, AttributeSet attrs) {
+    public ImobileCustomSceneViewManager(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
 
         init();
     }
 
-    public ImobileSceneViewManager(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ImobileCustomSceneViewManager(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
 

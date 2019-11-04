@@ -1,24 +1,19 @@
 package com.supermap.interfaces.ar;
 
-import android.app.Activity;
 import android.content.Context;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.supermap.rnsupermap.R;
 
 public class SCastModelOperateView extends ReactContextBaseJavaModule {
 
     public static final String REACT_CLASS = "SCastModelOperateView";
     private Context mContext = null;
 
-    private static ImobileSceneViewManager mSceneViewManager = null;
+    private static ImobileCustomSceneViewManager mSceneViewManager = null;
 
     @Override
     public String getName() {
@@ -30,7 +25,7 @@ public class SCastModelOperateView extends ReactContextBaseJavaModule {
         mContext = reactContext.getApplicationContext();
     }
 
-    public static void setInstance(ImobileSceneViewManager sceneViewManager) {
+    public static void setInstance(ImobileCustomSceneViewManager sceneViewManager) {
         mSceneViewManager = sceneViewManager;;
     }
 

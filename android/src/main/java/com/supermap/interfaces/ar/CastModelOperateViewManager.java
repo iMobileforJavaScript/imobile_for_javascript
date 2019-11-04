@@ -3,11 +3,8 @@ package com.supermap.interfaces.ar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Build;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.view.View;
-import android.widget.FrameLayout;
-import com.facebook.react.ReactFragmentActivity;
+
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.google.ar.core.Anchor;
@@ -20,7 +17,6 @@ import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.ViewRenderable;
-import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.supermap.rnsupermap.R;
 
@@ -29,7 +25,7 @@ import java.util.Collection;
 /**
  * AR投放
  */
-public class CastModelOperateViewManager extends SimpleViewManager<ImobileSceneViewManager> {
+public class CastModelOperateViewManager extends SimpleViewManager<ImobileCustomSceneViewManager> {
 
     public static final String REACT_CLASS = "RCTCastModelOperateView";
     private ThemedReactContext mReactContext = null;
@@ -37,7 +33,7 @@ public class CastModelOperateViewManager extends SimpleViewManager<ImobileSceneV
     private boolean model1Added = false;
     private ViewRenderable mViewRenderable;
 
-    private ImobileSceneViewManager mSceneViewManager = null;
+    private ImobileCustomSceneViewManager mSceneViewManager = null;
 
     @Override
     public String getName() {
@@ -45,7 +41,7 @@ public class CastModelOperateViewManager extends SimpleViewManager<ImobileSceneV
     }
 
     @Override
-    protected ImobileSceneViewManager createViewInstance(ThemedReactContext reactContext) {
+    protected ImobileCustomSceneViewManager createViewInstance(ThemedReactContext reactContext) {
         Log.d("CastModelOperateView", "createViewInstance");
         mReactContext = reactContext;
 
@@ -53,7 +49,7 @@ public class CastModelOperateViewManager extends SimpleViewManager<ImobileSceneV
 
         Activity currentActivity = reactContext.getCurrentActivity();
 
-        mSceneViewManager = new ImobileSceneViewManager(currentActivity);
+        mSceneViewManager = new ImobileCustomSceneViewManager(currentActivity);
 
         mSceneViewManager.getArSceneView().getScene().addOnUpdateListener(this::onUpdateFrame);
         mSceneViewManager.onResume();
@@ -97,7 +93,7 @@ public class CastModelOperateViewManager extends SimpleViewManager<ImobileSceneV
         }
     }
 
-    private void renderObjectByImage(SceneViewManager sceneViewManager, Anchor anchor) {
+    private void renderObjectByImage(CustomSceneViewManager sceneViewManager, Anchor anchor) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             ViewRenderable.builder()
                     .setView(mReactContext.getCurrentActivity(), R.layout.lytgtcroute)
@@ -130,7 +126,7 @@ public class CastModelOperateViewManager extends SimpleViewManager<ImobileSceneV
         }
     }
 
-    private void addNodeToSceneByImage(SceneViewManager sceneViewManager, Anchor anchor, Renderable renderable) {
+    private void addNodeToSceneByImage(CustomSceneViewManager sceneViewManager, Anchor anchor, Renderable renderable) {
         Quaternion eular = Quaternion.eulerAngles(new Vector3(-90, 0, 0));
         Quaternion eular2 = Quaternion.eulerAngles(new Vector3(0, 0, -90));
         Quaternion e2M = Quaternion.multiply(eular, eular2);

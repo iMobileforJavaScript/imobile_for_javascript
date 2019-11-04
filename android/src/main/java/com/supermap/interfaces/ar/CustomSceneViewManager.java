@@ -10,19 +10,19 @@ import com.google.ar.core.exceptions.*;
 import java.util.Collections;
 import java.util.Set;
 
-public class SceneViewManager extends SceneView {
+public class CustomSceneViewManager extends CustomSceneView {
 
     private static final String TAG = "SceneViewManager";
 
-    public SceneViewManager(Context context) {
+    public CustomSceneViewManager(Context context) {
         super(context);
     }
 
-    public SceneViewManager(Context context, AttributeSet attrs) {
+    public CustomSceneViewManager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SceneViewManager(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CustomSceneViewManager(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
