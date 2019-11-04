@@ -834,4 +834,14 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void addAttributeFieldInfo(String layerPath,boolean isSelect,ReadableMap fieldInfoMap,Promise promise) {
+        try {
+            boolean result=SMLayer.addRecordsetFieldInfo(layerPath,isSelect,fieldInfoMap);
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 }

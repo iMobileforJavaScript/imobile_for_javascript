@@ -137,7 +137,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
         mAIDetectView.startCameraPreview();
         mAIDetectView.resumeDetect();
-        mAIDetectView.stopCountTrackedObjs();
+        mAIDetectView.startCountTrackedObjs();//默认开启计数
     }
 
     public static void setArView(ArView arView) {
@@ -662,7 +662,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getIsCountTrackedMode(Promise promise) {
         try {
-            Log.d(REACT_CLASS, "----------------SAIDetectView--stopCountTrackedObjs--------RN--------");
+            Log.d(REACT_CLASS, "----------------SAIDetectView--getIsCountTrackedMode--------RN--------");
             boolean is = mAIDetectView.getIsCountTrackedMode();
 
             promise.resolve(is);

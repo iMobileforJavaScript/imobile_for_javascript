@@ -52,6 +52,25 @@ export default (function () {
         console.error(e)
       }
   }
+  function addIndoorChangeListener(handler) {
+    try {
+      if(Platform.OS === 'ios'){
+        nativeEvt.addListener(EventConst.IS_INDOOR_MAP,result=>{
+          if(typeof handler === "function"){
+            handler(result);
+          }
+        })
+      }else {
+        DeviceEventEmitter.addListener(EventConst.IS_INDOOR_MAP,result=>{
+          if(typeof handler === "function"){
+            handler(result);
+          }
+        })
+      }
+    }catch (e) {
+      console.error(e)
+    }
+  }
   /**
    * 添加图例的监听事件，会返回相应的图例数据
    * @returns {*}
@@ -479,7 +498,7 @@ export default (function () {
     }
   }
 
-  getWorkspaceType = (type) => {
+  let getWorkspaceType = (type) => {
     let value
     switch (type) {
       case 'SMWU':
@@ -513,7 +532,7 @@ export default (function () {
     return SMap.submit()
   }
 
-  cancel = () => {
+  let cancel = () => {
     return SMap.cancel()
   }
 
@@ -525,7 +544,7 @@ export default (function () {
    * @param {object} events - 传入一个对象作为参数，该对象可以包含两个属性：longPressHandler和scrollHandler。两个属性的值均为function类型，分部作为长按与滚动监听事件的处理函数。
    * @returns {Promise.<void>}
    */
-  setGestureDetector = handlers => {
+  let setGestureDetector = handlers => {
     try {
       gestureHandlers = handlers
       if (longPressDetector && singleTapDetector && doubleTapDetector && touchBeganDetector && touchEndDetector && scrollDetector) return
@@ -621,7 +640,7 @@ export default (function () {
    * @memberOf MapControl
    * @returns {Promise.<void>}
    */
-  deleteGestureDetector = () => {
+  let deleteGestureDetector = () => {
     try {
       SMap.deleteGestureDetector()
       gestureHandlers = null
@@ -665,7 +684,7 @@ export default (function () {
    * geometryMultiSelected 多个集合对象被选中事件的回调函数，参数e为获取结果数组：e:{geometries:[layer:--,id:--]}
    * @returns {Promise.<*>}
    */
-  addGeometrySelectedListener = events => {
+  let addGeometrySelectedListener = events => {
     (async function () {
       try {
         geometryHandlers = events
@@ -716,7 +735,7 @@ export default (function () {
    * @memberOf MapControl
    * @returns {Promise.<void>}
    */
-  removeGeometrySelectedListener = () => {
+  let removeGeometrySelectedListener = () => {
     try {
       SMap.removeGeometrySelectedListener()
       geometryHandlers = null
@@ -738,7 +757,7 @@ export default (function () {
    * @param geoID
    * @param layerName
    */
-  appointEditGeometry = (geoID, layerName) => {
+  let appointEditGeometry = (geoID, layerName) => {
     try {
       return SMap.appointEditGeometry(geoID, layerName)
     } catch (e) {
@@ -746,7 +765,7 @@ export default (function () {
     }
   }
 
-  getSymbolGroups = (type = '', path = '') => {
+  let getSymbolGroups = (type = '', path = '') => {
     try {
       return SMap.getSymbolGroups(type, path)
     } catch (e) {
@@ -759,7 +778,7 @@ export default (function () {
    * @param type
    * @param path
    */
-  findSymbolsByGroups = (type = '', path = '') => {
+  let findSymbolsByGroups = (type = '', path = '') => {
     try {
       return SMap.findSymbolsByGroups(type, path)
     } catch (e) {
@@ -770,7 +789,7 @@ export default (function () {
   /**
    * 获取图层名字
    */
-  getLayersNames = () => {
+  let getLayersNames = () => {
     try {
       return SMap.getLayersNames()
     } catch (e) {
@@ -2194,7 +2213,7 @@ export default (function () {
    * @param picPath
    * @param handler
    */
-  function matchPictureStyle(picPath, handler = () => {}) {
+  let matchPictureStyle = (picPath, handler = () => {}) => {
     try {
       if (this.matchPictureListener) return
       SMap.matchPictureStyle(picPath)
@@ -2347,12 +2366,28 @@ export default (function () {
   }
 
   /**
-   * 获取起始点
-   * @returns {*|void|Promise<void>}
+   * 获取当前楼层ID
+   * @returns {*}
    */
-  function getStartPoint(x,y,isindoor) {
+  function getCurrentFloorID() {
     try {
-      return SMap.getStartPoint(x,y,isindoor)
+      return SMap.getCurrentFloorID()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取起始点
+   * @param x
+   * @param y
+   * @param isindoor
+   * @param floorID
+   * @returns {undefined}
+   */
+  function getStartPoint(x,y,isindoor,floorID=null) {
+    try {
+      return SMap.getStartPoint(x,y,isindoor,floorID)
     } catch (e) {
       console.error(e)
     }
@@ -2360,11 +2395,15 @@ export default (function () {
 
   /**
    * 获取终点
-   * @returns {*|void|Promise<void>}
+   * @param x
+   * @param y
+   * @param isindoor
+   * @param floorID
+   * @returns {undefined}
    */
-  function getEndPoint(x,y,isindoor) {
+  function getEndPoint(x,y,isindoor,floorID=null) {
     try {
-      return SMap.getEndPoint(x,y,isindoor)
+      return SMap.getEndPoint(x,y,isindoor,floorID)
     } catch (e) {
       console.error(e)
     }
@@ -2615,17 +2654,18 @@ export default (function () {
    * 地图选点起点地理名称监听
    * @param handlers
    */
-  function setStartPointNameListener(handlers){
+ let setStartPointNameListener = handlers =>{
     try {
+      //if(this.startPointSelectListener) return
       if (Platform.OS === 'ios' && handlers) {
         if (typeof handlers.callback === 'function') {
-          nativeEvt.addListener(EventConst.MAPSELECTPOINTNAMESTART, function (e) {
+          this.startPointSelectListener = nativeEvt.addListener(EventConst.MAPSELECTPOINTNAMESTART, function (e) {
             handlers.callback(e);
           });
         }
       } else if (Platform.OS === 'android' && handlers) {
         if (typeof handlers.callback === "function") {
-          DeviceEventEmitter.addListener(EventConst.MAPSELECTPOINTNAMESTART, function (e) {
+          this.startPointSelectListener = DeviceEventEmitter.addListener(EventConst.MAPSELECTPOINTNAMESTART, function (e) {
             handlers.callback(e);
           });
         }
@@ -2639,17 +2679,18 @@ export default (function () {
    * 地图选点终点地理名称监听
    * @param handlers
    */
-  function setEndPointNameListener(handlers){
+ let setEndPointNameListener = handlers =>{
     try {
+      //if(this.endPointSelectListener) return
       if (Platform.OS === 'ios' && handlers) {
         if (typeof handlers.callback === 'function') {
-          nativeEvt.addListener(EventConst.MAPSELECTPOINTNAMEEND, function (e) {
+          this.endPointSelectListener = nativeEvt.addListener(EventConst.MAPSELECTPOINTNAMEEND, function (e) {
             handlers.callback(e);
           });
         }
       } else if (Platform.OS === 'android' && handlers) {
         if (typeof handlers.callback === "function") {
-          DeviceEventEmitter.addListener(EventConst.MAPSELECTPOINTNAMEEND, function (e) {
+          this.endPointSelectListener = DeviceEventEmitter.addListener(EventConst.MAPSELECTPOINTNAMEEND, function (e) {
             handlers.callback(e);
           });
         }
@@ -2658,7 +2699,6 @@ export default (function () {
       console.error(error);
     }
   }
-
 
   /**
    * 获取导航路径长度
@@ -2998,6 +3038,7 @@ export default (function () {
     addTextRecordset,
     getGestureDetector,
     addLegendListener,
+    addIndoorChangeListener,
     removeLegendListener,
     addScaleChangeDelegate,
 
@@ -3010,6 +3051,7 @@ export default (function () {
     beginIndoorNavigation,
     outdoorNavigation,
     indoorNavigation,
+    getCurrentFloorID,
     setCurrentFloor,
     getStartPoint,
     getEndPoint,

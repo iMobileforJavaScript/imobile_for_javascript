@@ -1366,8 +1366,49 @@ RCT_REMAP_METHOD(setUniformLabelFontName, setUniformLabelFontNameWithResolver:(N
                 [[mapControl getEditHistory] addMapHistory];
                 
                 ThemeLabel* themeLabel = (ThemeLabel*)layer.theme;
-                TextStyle* style = themeLabel.mUniformStyle;
-                [style setFontName:fontName];
+                TextStyle* uniformStyle = themeLabel.mUniformStyle;
+                if([fontName isEqualToString:@"BOLD"]){
+                    if([uniformStyle isBold]){
+                        [uniformStyle setBold:false];
+                    }
+                    else{
+                        [uniformStyle setBold:true];
+                    }
+                }else if([fontName isEqualToString:@"ITALIC"]){
+                    if([uniformStyle getItalic]){
+                        [uniformStyle setItalic:false];
+                    }else{
+                        [uniformStyle setItalic:true];
+                    }
+                    
+                }else if([fontName isEqualToString:@"UNDERLINE"]){
+                    if([uniformStyle getUnderline]){
+                        [uniformStyle setUnderline:false];
+                    }else{
+                        [uniformStyle setUnderline:true];
+                    }
+                }else if([fontName isEqualToString:@"STRIKEOUT"]){
+                    if([uniformStyle getStrikeout]){
+                        [uniformStyle setStrikeout:false];
+                    }else{
+                        [uniformStyle setStrikeout:true];
+                    }
+                }else if([fontName isEqualToString:@"SHADOW"]){
+                    if([uniformStyle getShadow]){
+                        [uniformStyle setShadow:false];
+                    }else{
+                        [uniformStyle setShadow:true];
+                    }
+                }else if([fontName isEqualToString:@"OUTLINE"] ){
+                    if([uniformStyle getOutline]){
+                        [uniformStyle setOutline:false];
+                    }else{
+                        [uniformStyle setOutline:YES];
+                        [uniformStyle setBackColor:[[Color alloc]initWithR:255 G:255 B:255]];
+                        //                            uniformStyle.set
+                    }
+                }
+//                [style setFontName:fontName];
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             }

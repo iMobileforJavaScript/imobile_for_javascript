@@ -55,6 +55,8 @@
 #import "SuperMap/NaviStep.h"
 #import "SuperMap/TopologyProcessingOptions.h"
 #import "SuperMap/TopologyProcessing.h"
+#import "SuperMap/NetworkBuilder.h"
+#import "SuperMap/NetworkSplitMode.h"
 #import "SuperMap/Geocoding.h"
 #import "JSMapControl.h"
 #import "SMMapWC.h"

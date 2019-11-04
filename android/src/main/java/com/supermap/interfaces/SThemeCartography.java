@@ -1313,7 +1313,48 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     TextStyle uniformStyle = themeLabel.getUniformStyle();
-                    uniformStyle.setFontName(fontName);
+                    if(fontName.equals("BOLD")){
+                        if(uniformStyle.isBold()){
+                            uniformStyle.setBold(false);
+                        }
+                        else{
+                            uniformStyle.setBold(true);
+                        }
+                    }else if(fontName.equals("ITALIC")){
+                        if(uniformStyle.getItalic()){
+                            uniformStyle.setItalic(false);
+                        }else{
+                            uniformStyle.setItalic(true);
+                        }
+
+                    }else if(fontName.equals("UNDERLINE")){
+                        if(uniformStyle.getUnderline()){
+                            uniformStyle.setUnderline(false);
+                        }else{
+                            uniformStyle.setUnderline(true);
+                        }
+                    }else if(fontName.equals("STRIKEOUT")){
+                        if(uniformStyle.getStrikeout()){
+                            uniformStyle.setStrikeout(false);
+                        }else{
+                            uniformStyle.setStrikeout(true);
+                        }
+                    }else if(fontName.equals("SHADOW")){
+                        if(uniformStyle.getShadow()){
+                            uniformStyle.setShadow(false);
+                        }else{
+                            uniformStyle.setShadow(true);
+                        }
+                    }else if(fontName.equals("OUTLINE")){
+                        if(uniformStyle.getOutline()){
+                            uniformStyle.setOutline(false);
+                        }else{
+                            uniformStyle.setOutline(true);
+                            uniformStyle.setBackColor(new Color(255,255,255));
+//                            uniformStyle.set
+                        }
+                    }
+//                    uniformStyle.setFontName(fontName);
 
                     mapControl.getMap().refresh();
 
