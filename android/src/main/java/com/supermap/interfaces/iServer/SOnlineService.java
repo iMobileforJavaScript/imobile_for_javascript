@@ -44,8 +44,10 @@ import java.util.WeakHashMap;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static com.supermap.onlineservices.utils.EnumServiceType.RESTMAP;
@@ -61,6 +63,7 @@ public class SOnlineService extends ReactContextBaseJavaModule{
     private static  final String TAG = "SOnlineService"; //
     private static  final String downloadId = "fileName"; //
     private static  final String uploadId = "uploadId"; //
+    private String mCookie = null;
     private static Integer downprogress=0 ;
     private ReactApplicationContext mContext = null;
     String rootPath = android.os.Environment.getExternalStorageDirectory().getPath().toString();
@@ -1060,6 +1063,67 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 
         }catch (Exception e){
             promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void loginWithParam(final String url, final String cookie, final String params, final Promise promise) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject jParams = new JSONObject(params);
+
+                    final OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
+                            .followRedirects(false)
+                            .build();
+
+                    RequestBody body = new FormBody.Builder()
+                            .add("loginType", jParams.getString("loginType"))
+                            .add("username", jParams.getString("username"))
+                            .add("password", jParams.getString("password"))
+                            .add("lt", jParams.getString("lt"))
+                            .add("execution", jParams.getString("execution"))
+                            .add("_eventId", jParams.getString("_eventId"))
+                            .build();
+                    okhttp3.Request postRequest = new okhttp3.Request.Builder()
+                            .url(url)
+                            .addHeader("Cookie", cookie)
+                            .post(body)
+                            .build();
+                    Response postResponse = okHttpClient.newCall(postRequest).execute();
+                    if(postResponse.code() == 302){
+                        okhttp3.Request getRequest = new okhttp3.Request.Builder()
+                                .url(postResponse.header("Location"))
+                                .addHeader("Cookie", cookie)
+                                .get()
+                                .build();
+
+                        Response getResponse = okHttpClient.newCall(getRequest).execute();
+                        if(getResponse.code() == 302){
+                            Log.d("online", getResponse.headers("set-cookie").get(0));
+                            mCookie = getResponse.headers("set-cookie").get(0);
+                            promise.resolve(true);
+                        } else {
+                            promise.resolve(false);
+                        }
+                    } else {
+//                        String responseBody = postResponse.body().string();
+                        promise.resolve("用户名或用户密码错误");
+                    }
+                } catch (Exception e) {
+                    promise.reject(e);
+                }
+            }
+        }).start();
+    }
+
+    @ReactMethod
+    public void getCookie(Promise promise) {
+        if(mCookie != null) {
+            promise.resolve(mCookie);
+        } else {
+            promise.resolve(false);
         }
     }
 }

@@ -3,13 +3,15 @@ import {
   requireNativeComponent,
   ViewPropTypes,
   StyleSheet,
-  View, InteractionManager, Platform
+  View, InteractionManager, Platform,
+  PanResponder,
 } from "react-native";
 import PropTypes from 'prop-types'
 import {
   SAIDetectView,
 } from 'imobile_for_reactnative'
 import constants from "../../../../src/containers/workspace/constants"
+import { TouchType } from '../../../../src/constants'
 
 class SMAIDetectView extends React.Component {
 
@@ -19,7 +21,32 @@ class SMAIDetectView extends React.Component {
 
   constructor() {
     super()
+
+    this._panResponder = PanResponder.create({
+      onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
+      onPanResponderGrant: this._handleMoveShouldSetPanResponder,
+    })
   }
+
+  _handleStartShouldSetPanResponder = (evt, gestureState) => {
+    return true;
+  }
+
+  _handleMoveShouldSetPanResponder = (evt, gestureState) => {
+    switch (GLOBAL.TouchType) {
+      case TouchType.NORMAL:
+        break
+      case TouchType.AIMAPTOUCH:
+        // GLOBAL.AIMapSuspensionDialog.setVisible(false)
+        // GLOBAL.AIFUNCTIONTOOLBAR.setVisible(true)
+        // GLOBAL.SMMapSuspension.setVisible(true,{x:evt.nativeEvent.locationX,y:evt.nativeEvent.locationY})
+        // GLOBAL.TouchType = TouchType.NORMAL
+        break
+    }
+    return true;
+  }
+
+
 
   state = {
     viewId: 0,
@@ -33,6 +60,10 @@ class SMAIDetectView extends React.Component {
   componentDidUpdate(prevProps) {
     SAIDetectView.initAIDetect(this.props.language)
   //   SAIDetectView.startDetect()
+  }
+
+  componentDidMount() {
+    SAIDetectView.setProjectionModeEnable(true)
   }
 
   componentWillUnmount() {
@@ -49,6 +80,7 @@ class SMAIDetectView extends React.Component {
     return (
       <View
         style={styles.container}
+        {...this._panResponder.panHandlers}
       >
         <RCTAIDetectView
           ref={ref => this.RCTAIDetectView = ref}

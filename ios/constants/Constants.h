@@ -49,6 +49,7 @@ extern NSString * const MAP_GEOMETRY_MULTI_SELECTED;
 extern NSString * const MAP_GEOMETRY_SELECTED;
 extern NSString * const MAP_SCALE_CHANGED;
 extern NSString * const MAP_BOUNDS_CHANGED;
+extern NSString * const IS_INDOOR_MAP;
 extern NSString * const POINTSEARCH2D_KEYWORDS;
 extern NSString * const MAP_SCALEVIEW_CHANGED;
 extern NSString * const LEGEND_CONTENT_CHANGE;
@@ -64,6 +65,14 @@ extern NSString * const NAVIGATION_LENGTH;
 extern NSString * const INDUSTRYNAVIAGTION;
 extern NSString * const MAPSELECTPOINTNAMESTART;
 extern NSString * const MAPSELECTPOINTNAMEEND;
+
+extern NSString * const RECOGNIZE_BEGIN;
+extern NSString * const RECOGNIZE_END;
+extern NSString * const RECOGNIZE_ERROR;
+extern NSString * const RECOGNIZE_RESULT;
+extern NSString * const RECOGNIZE_VOLUME_CHANGED;
+extern NSString * const RECOGNIZE_EVENT;
+
 @interface Constants : NSObject
 
 @end

@@ -143,6 +143,8 @@ import SMMeasureView from './NativeModule/components/SMMeasureView.js'
 import SMAIClassifyView from './NativeModule/components/SMAIClassifyView.js'
 import SMCollectSceneFormView from './NativeModule/components/SMCollectSceneFormView.js'
 import SMIllegallyParkView from './NativeModule/components/SMIllegallyParkView.js'
+import SMMapSuspension from './NativeModule/components/SMMapSuspension.js'
+import SMCastModelOperateView from './NativeModule/components/SMCastModelOperateView.js'
 
 import EngineType from './NativeModule/EngineType'
 import ThemeLabelItem from './NativeModule/ThemeLabelItem'
@@ -181,6 +183,9 @@ import {
   SAIClassifyView,
   SCollectSceneFormView,
   SIllegallyParkView,
+  SMapSuspension,
+  SCastModelOperateView,
+  SSpeechRecognizer,
 } from './NativeModule/interfaces'
 let SMCollectorType = NativeModules.SCollectorType
 
@@ -202,6 +207,8 @@ export {
   SMAIClassifyView,
   SMCollectSceneFormView,
   SMIllegallyParkView,
+  SMMapSuspension,
+  SMCastModelOperateView,
 
   Utility,
 
@@ -376,6 +383,7 @@ export {
   SMCollectorType,
   SCartography,
   SThemeCartography,
+  SSpeechRecognizer,
   /*在线模块*/
   SOnlineService,
   SIPortalService,
@@ -388,4 +396,6 @@ export {
   SAIClassifyView,
   SCollectSceneFormView,
   SIllegallyParkView,
+  SMapSuspension,
+  SCastModelOperateView,
 }

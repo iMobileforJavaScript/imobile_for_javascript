@@ -52,6 +52,25 @@ export default (function () {
         console.error(e)
       }
   }
+  function addIndoorChangeListener(handler) {
+    try {
+      if(Platform.OS === 'ios'){
+        nativeEvt.addListener(EventConst.IS_INDOOR_MAP,result=>{
+          if(typeof handler === "function"){
+            handler(result);
+          }
+        })
+      }else {
+        DeviceEventEmitter.addListener(EventConst.IS_INDOOR_MAP,result=>{
+          if(typeof handler === "function"){
+            handler(result);
+          }
+        })
+      }
+    }catch (e) {
+      console.error(e)
+    }
+  }
   /**
    * 添加图例的监听事件，会返回相应的图例数据
    * @returns {*}
@@ -479,7 +498,7 @@ export default (function () {
     }
   }
 
-  getWorkspaceType = (type) => {
+  let getWorkspaceType = (type) => {
     let value
     switch (type) {
       case 'SMWU':
@@ -513,7 +532,7 @@ export default (function () {
     return SMap.submit()
   }
 
-  cancel = () => {
+  let cancel = () => {
     return SMap.cancel()
   }
 
@@ -525,7 +544,7 @@ export default (function () {
    * @param {object} events - 传入一个对象作为参数，该对象可以包含两个属性：longPressHandler和scrollHandler。两个属性的值均为function类型，分部作为长按与滚动监听事件的处理函数。
    * @returns {Promise.<void>}
    */
-  setGestureDetector = handlers => {
+  let setGestureDetector = handlers => {
     try {
       gestureHandlers = handlers
       if (longPressDetector && singleTapDetector && doubleTapDetector && touchBeganDetector && touchEndDetector && scrollDetector) return
@@ -621,7 +640,7 @@ export default (function () {
    * @memberOf MapControl
    * @returns {Promise.<void>}
    */
-  deleteGestureDetector = () => {
+  let deleteGestureDetector = () => {
     try {
       SMap.deleteGestureDetector()
       gestureHandlers = null
@@ -665,7 +684,7 @@ export default (function () {
    * geometryMultiSelected 多个集合对象被选中事件的回调函数，参数e为获取结果数组：e:{geometries:[layer:--,id:--]}
    * @returns {Promise.<*>}
    */
-  addGeometrySelectedListener = events => {
+  let addGeometrySelectedListener = events => {
     (async function () {
       try {
         geometryHandlers = events
@@ -716,7 +735,7 @@ export default (function () {
    * @memberOf MapControl
    * @returns {Promise.<void>}
    */
-  removeGeometrySelectedListener = () => {
+  let removeGeometrySelectedListener = () => {
     try {
       SMap.removeGeometrySelectedListener()
       geometryHandlers = null
@@ -738,7 +757,7 @@ export default (function () {
    * @param geoID
    * @param layerName
    */
-  appointEditGeometry = (geoID, layerName) => {
+  let appointEditGeometry = (geoID, layerName) => {
     try {
       return SMap.appointEditGeometry(geoID, layerName)
     } catch (e) {
@@ -746,7 +765,7 @@ export default (function () {
     }
   }
 
-  getSymbolGroups = (type = '', path = '') => {
+  let getSymbolGroups = (type = '', path = '') => {
     try {
       return SMap.getSymbolGroups(type, path)
     } catch (e) {
@@ -759,7 +778,7 @@ export default (function () {
    * @param type
    * @param path
    */
-  findSymbolsByGroups = (type = '', path = '') => {
+  let findSymbolsByGroups = (type = '', path = '') => {
     try {
       return SMap.findSymbolsByGroups(type, path)
     } catch (e) {
@@ -770,7 +789,7 @@ export default (function () {
   /**
    * 获取图层名字
    */
-  getLayersNames = () => {
+  let getLayersNames = () => {
     try {
       return SMap.getLayersNames()
     } catch (e) {
@@ -1813,6 +1832,28 @@ export default (function () {
   }
 
   /**
+   * 获取最小可见比例尺范围
+   */
+  function getMinVisibleScale (value) {
+    try {
+      return SMap.getMinVisibleScale(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取最大可见比例尺范围
+   */
+  function getMaxVisibleScale (value) {
+    try {
+      return SMap.getMaxVisibleScale(value)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 设置最小比例尺
    * @returns {*|Promise.<void>}
    */
@@ -2107,15 +2148,15 @@ export default (function () {
    * 打开二维导航工作空间及地图
    * @returns {*|void|Promise<void>}
    */
-  function open2DNavigationMap(infoDic) {
-    try {
-      const type = infoDic.server.split('.').pop()
-      Object.assign(infoDic, {type: getWorkspaceType(type)})
-      return SMap.open2DNavigationMap(infoDic)
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  // function open2DNavigationMap(infoDic) {
+  //   try {
+  //     const type = infoDic.server.split('.').pop()
+  //     Object.assign(infoDic, {type: getWorkspaceType(type)})
+  //     return SMap.open2DNavigationMap(infoDic)
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
 
   /**
    * 设置行业导航
@@ -2172,7 +2213,7 @@ export default (function () {
    * @param picPath
    * @param handler
    */
-  function matchPictureStyle(picPath, handler = () => {}) {
+  let matchPictureStyle = (picPath, handler = () => {}) => {
     try {
       if (this.matchPictureListener) return
       SMap.matchPictureStyle(picPath)
@@ -2277,12 +2318,36 @@ export default (function () {
   }
 
   /**
+   * 设置当前楼层ID
+   * @param floorID
+   * @returns {*}
+   */
+  function setCurrentFloor(floorID) {
+    try {
+      return SMap.setCurrentFloor(floorID)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  /**
    * 开启室内导航
    * @returns {*|void|Promise<void>}
    */
   function indoorNavigation(firstP) {
     try {
       return SMap.indoorNavigation(firstP)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 是否在导航过程中（处理是否退出fullMap）
+   * @returns {Promise<Promise.yes>|Promise<boolean>}
+   */
+  function isGuiding() {
+    try {
+      return SMap.isGuiding()
     } catch (e) {
       console.error(e)
     }
@@ -2301,12 +2366,28 @@ export default (function () {
   }
 
   /**
-   * 获取起始点
-   * @returns {*|void|Promise<void>}
+   * 获取当前楼层ID
+   * @returns {*}
    */
-  function getStartPoint(x,y,isindoor) {
+  function getCurrentFloorID() {
     try {
-      return SMap.getStartPoint(x,y,isindoor)
+      return SMap.getCurrentFloorID()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取起始点
+   * @param x
+   * @param y
+   * @param isindoor
+   * @param floorID
+   * @returns {undefined}
+   */
+  function getStartPoint(x,y,isindoor,floorID=null) {
+    try {
+      return SMap.getStartPoint(x,y,isindoor,floorID)
     } catch (e) {
       console.error(e)
     }
@@ -2314,11 +2395,15 @@ export default (function () {
 
   /**
    * 获取终点
-   * @returns {*|void|Promise<void>}
+   * @param x
+   * @param y
+   * @param isindoor
+   * @param floorID
+   * @returns {undefined}
    */
-  function getEndPoint(x,y,isindoor) {
+  function getEndPoint(x,y,isindoor,floorID=null) {
     try {
-      return SMap.getEndPoint(x,y,isindoor)
+      return SMap.getEndPoint(x,y,isindoor,floorID)
     } catch (e) {
       console.error(e)
     }
@@ -2420,14 +2505,35 @@ export default (function () {
     }
   }
 
-
   /**
-   * 获取路网数据集
-   * @returns {*|void|Promise<void>}
+   * 判断当前工作空间是否存在网络数据集
+   * @returns {*}
    */
-  function getNetWorkDataset(name) {
+  function hasNetworkDataset() {
     try {
-      return SMap.getNetWorkDataset(name)
+      return SMap.hasNetworkDataset()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  /**
+   * 获取当前工作空间中的线数据集和楼层列表
+   * @returns {*}
+   */
+  function getLineDatasetAndFloorList() {
+    try {
+      return SMap.getLineDatasetAndFloorList()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  /**
+   * 判断当前工作空间是否存在线数据集
+   * @returns {*}
+   */
+  function hasLineDataset() {
+    try {
+      return SMap.hasLineDataset()
     } catch (e) {
       console.error(e)
     }
@@ -2437,9 +2543,24 @@ export default (function () {
    * 将路网数据集添加到地图上
    * @returns {*|void|Promise<void>}
    */
-  function addNetWorkDataset(networkdataset) {
+  function addNetWorkDataset(datasourceName,networkdataset) {
     try {
-      return SMap.addNetWorkDataset(networkdataset)
+      return SMap.addNetWorkDataset(datasourceName,networkdataset)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 将路网数据集和线数据集从地图移除
+   * @param lineDataseName
+   * @param networkDatasetName
+   * @param datasourceName
+   * @returns {undefined}
+   */
+  function removeNetworkDataset(lineDataseName,networkDatasetName,datasourceName) {
+    try {
+      return SMap.removeNetworkDataset(lineDataseName,networkDatasetName,datasourceName)
     } catch (e) {
       console.error(e)
     }
@@ -2447,11 +2568,14 @@ export default (function () {
 
   /**
    * 生成路网
-   * @returns {*|void|Promise<void>}
+   * @param linedataset 线数据集名称
+   * @param networkdataset 网络数据集名称
+   * @param datasourceName 所在数据源名称
+   * @returns {undefined}
    */
-  function buildNetwork(linedataset,networkdataset) {
+  function buildNetwork(linedataset,networkdataset,datasourceName) {
     try {
-      return SMap.buildNetwork(linedataset,networkdataset)
+      return SMap.buildNetwork(linedataset,networkdataset,datasourceName)
     } catch (e) {
       console.error(e)
     }
@@ -2471,14 +2595,15 @@ export default (function () {
     }
   }
 
-
   /**
    * 添加GPS轨迹
-   * @returns {*|void|Promise<void>}
+   * @param datasourceName
+   * @param datasetName
+   * @returns {undefined}
    */
-  function addGPSRecordset(linedataset) {
+  function addGPSRecordset(datasourceName,datasetName) {
     try {
-      return SMap.addGPSRecordset(linedataset)
+      return SMap.addGPSRecordset(datasourceName,datasetName)
     } catch (e) {
       console.error(e)
     }
@@ -2529,17 +2654,18 @@ export default (function () {
    * 地图选点起点地理名称监听
    * @param handlers
    */
-  function setStartPointNameListener(handlers){
+ let setStartPointNameListener = handlers =>{
     try {
+      //if(this.startPointSelectListener) return
       if (Platform.OS === 'ios' && handlers) {
         if (typeof handlers.callback === 'function') {
-          nativeEvt.addListener(EventConst.MAPSELECTPOINTNAMESTART, function (e) {
+          this.startPointSelectListener = nativeEvt.addListener(EventConst.MAPSELECTPOINTNAMESTART, function (e) {
             handlers.callback(e);
           });
         }
       } else if (Platform.OS === 'android' && handlers) {
         if (typeof handlers.callback === "function") {
-          DeviceEventEmitter.addListener(EventConst.MAPSELECTPOINTNAMESTART, function (e) {
+          this.startPointSelectListener = DeviceEventEmitter.addListener(EventConst.MAPSELECTPOINTNAMESTART, function (e) {
             handlers.callback(e);
           });
         }
@@ -2553,17 +2679,18 @@ export default (function () {
    * 地图选点终点地理名称监听
    * @param handlers
    */
-  function setEndPointNameListener(handlers){
+ let setEndPointNameListener = handlers =>{
     try {
+      //if(this.endPointSelectListener) return
       if (Platform.OS === 'ios' && handlers) {
         if (typeof handlers.callback === 'function') {
-          nativeEvt.addListener(EventConst.MAPSELECTPOINTNAMEEND, function (e) {
+          this.endPointSelectListener = nativeEvt.addListener(EventConst.MAPSELECTPOINTNAMEEND, function (e) {
             handlers.callback(e);
           });
         }
       } else if (Platform.OS === 'android' && handlers) {
         if (typeof handlers.callback === "function") {
-          DeviceEventEmitter.addListener(EventConst.MAPSELECTPOINTNAMEEND, function (e) {
+          this.endPointSelectListener = DeviceEventEmitter.addListener(EventConst.MAPSELECTPOINTNAMEEND, function (e) {
             handlers.callback(e);
           });
         }
@@ -2574,53 +2701,54 @@ export default (function () {
   }
 
   /**
-   * 获取室外导航路径长度
-   * @returns {*|void|Promise<void>}
+   * 获取导航路径长度
+   * @param isIndoor 是否室内
+   * @returns {*}
    */
-  function getOutdoorPathLength() {
+  function getNavPathLength(isIndoor) {
     try {
-      return SMap.getOutdoorPathLength()
+      return SMap.getNavPathLength(isIndoor)
     } catch (e) {
       console.error(e)
     }
   }
 
   /**
-   * 获取室内导航路径长度
-   * @returns {*|void|Promise<void>}
+   * 判断当前地图是否是室内地图
+   * @returns {*}
    */
-  function getIndoorPathLength() {
+  function isIndoorMap() {
     try {
-      return SMap.getIndoorPathLength()
+      return SMap.isIndoorMap()
+    }catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取导航路径详情
+   * @param isIndoor 是否室内
+   * @returns {*}
+   */
+  function getPathInfos(isIndoor) {
+    try {
+      return SMap.getPathInfos(isIndoor)
     } catch (e) {
       console.error(e)
     }
   }
 
   /**
-   * 获取室外导航路径详情
-   * @returns {*|void|Promise<void>}
+   * 获取当前工作空间含有网络数据集的数据源
+   * @returns {*}
    */
-  function getOutdoorPath() {
+  function getNetworkDatasource() {
     try {
-      return SMap.getOutdoorPath()
+      return SMap.getNetworkDatasource()
     } catch (e) {
       console.error(e)
     }
   }
-
-  /**
-   * 获取室内导航路径详情
-   * @returns {*|void|Promise<void>}
-   */
-  function getIndoorPath() {
-    try {
-      return SMap.getIndoorPath()
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
   /**
    * 获取室内数据源
    * @returns {*|void|Promise<void>}
@@ -2654,6 +2782,106 @@ export default (function () {
           });
         }
       }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  /**
+   * 激活许可序列号
+   * @param serialNumber
+   */
+  function activateLicense(serialNumber){
+    try {
+      return SMap.activateLicense(serialNumber)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  /**
+   * 获取正式许可所含模块
+   * @param serialNumber
+   */
+  function licenseContainModule(serialNumber){
+    try {
+      return SMap.licenseContainModule(serialNumber)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  /**
+   * 归还许可
+   * @param serialNumber
+   */
+  function recycleLicense(serialNumber){
+    try {
+      return SMap.recycleLicense(serialNumber)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  /**
+   * 清除本地许可文件,不归还许可
+   * @param serialNumber
+   */
+  function clearLocalLicense(serialNumber){
+    try {
+      return SMap.clearLocalLicense(serialNumber)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  /**
+   * 获取许可数量
+   * @param serialNumber
+   */
+  function getLicenseCount(serialNumber){
+    try {
+      return SMap.getLicenseCount(serialNumber)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  /**
+   * 初始化序列号
+   * @param serialNumber
+   */
+  function initSerialNumber(serialNumber){
+    try {
+      return SMap.initSerialNumber(serialNumber)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  /**
+   * 离线获取序列号和模块编号数组
+   */
+  function getSerialNumberAndModules(){
+    try {
+      return SMap.getSerialNumberAndModules()
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  /**
+   * 初始化使用许可的路径
+   */
+  function initTrailLicensePath(){
+    try {
+      return SMap.initTrailLicensePath()
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  /**
+   * 购买登记
+   * @param userName  用户昵称
+   * @param moduleCode  模块编号
+   */
+  function licenseBuyRegister(moduleCode,userName){
+    try {
+      return SMap.licenseBuyRegister(moduleCode,userName)
     } catch (error) {
       console.error(error);
     }
@@ -2803,17 +3031,19 @@ export default (function () {
     getMapHistoryCurrentIndex,
     
     addRecordset,
+    getMinVisibleScale,
+    getMaxVisibleScale,
     setMinVisibleScale,
     setMaxVisibleScale,
     addTextRecordset,
     getGestureDetector,
     addLegendListener,
+    addIndoorChangeListener,
     removeLegendListener,
     addScaleChangeDelegate,
 
     routeAnalyst,
     clearTarckingLayer,
-    open2DNavigationMap,
     startNavigation,
     startIndoorNavigation,
     getNavigationData,
@@ -2821,6 +3051,8 @@ export default (function () {
     beginIndoorNavigation,
     outdoorNavigation,
     indoorNavigation,
+    getCurrentFloorID,
+    setCurrentFloor,
     getStartPoint,
     getEndPoint,
     clearPoint,
@@ -2830,27 +3062,40 @@ export default (function () {
     isOpenTrafficMap,
     removeTrafficMap,
     getLineDataset,
-    getNetWorkDataset,
     addNetWorkDataset,
+    removeNetworkDataset,
     buildNetwork,
+    hasNetworkDataset,
+    hasLineDataset,
+    getLineDatasetAndFloorList,
     gpsBegin,
     addGPSRecordset,
     copyNaviSnmFile,
     getPointName,
+    isGuiding,
     setStartPointNameListener,
     setEndPointNameListener,
-    getOutdoorPath,
-    getIndoorPath,
-    getOutdoorPathLength,
-    getIndoorPathLength,
+    isIndoorMap,
+    getNetworkDatasource,
+    getPathInfos,
+    getNavPathLength,
     getIndoorDatasource,
     setIllegallyParkListener,
-
 
     matchPictureStyle,
     updateMapFixColorsMode,
     getMapFixColorsModeValue,
     resetMapFixColorsModeValue,
+
+    activateLicense,
+    licenseContainModule,
+    recycleLicense,
+    clearLocalLicense,
+    getLicenseCount,
+    initSerialNumber,
+    getSerialNumberAndModules,
+    initTrailLicensePath,
+    licenseBuyRegister,
   }
   Object.assign(SMapExp, MapTool, LayerManager, Datasource, MapSettings, Plot)
 

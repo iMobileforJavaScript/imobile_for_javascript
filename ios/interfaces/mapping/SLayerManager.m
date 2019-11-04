@@ -615,6 +615,16 @@ RCT_REMAP_METHOD(clearTrackingLayer, clearTrackingLayerWithResolver:(RCTPromiseR
     }
 }
 
+#pragma mark - 新增属性字段
+RCT_REMAP_METHOD(addAttributeFieldInfo, addAttributeFieldInfo:(NSString *)layerPath isSelect:(BOOL)isSelect fieldInfoDic:(NSDictionary*)fieldInfoDic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BOOL result=[SMLayer addRecordsetFieldInfo:layerPath isSelectOrLayer:isSelect fieldInfo:fieldInfoDic];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"addAttributeFieldInfo", exception.reason, nil);
+    }
+}
+
 //RCT_REMAP_METHOD(setEditable, setEditableByLayerPath:(NSString*)layerPath editable:(BOOL)editable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
 //    @try {
 //        Layer* layer = [SMLayer findLayerByPath:layerPath];

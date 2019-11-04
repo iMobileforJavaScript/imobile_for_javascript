@@ -715,7 +715,7 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
             if (mModelType == ModelType.ABSOLUTE_FILE_PATH) {
                 MODEL_PATH = modelPath;
                 LABEL_PATH = labelPath;
-                INPUT_SIZE = 64;
+                INPUT_SIZE = 299;
                 QUANT = false;
             } else if (mModelType == ModelType.ASSETS_FILE){
                 MODEL_PATH = "";

@@ -46,9 +46,9 @@ dispose = () => {
 }
 
 //设置模型文件等信息,先于初始化调用
-setDetectInfo = (modelName, lableName) => {
+setDetectInfo = (params) => {
   try {
-    return SAIDetectView.setDetectInfo(modelName, lableName)
+    return SAIDetectView.setDetectInfo(params)
   } catch (error) {
     console.error(error)
   }
@@ -166,6 +166,15 @@ startCountTrackedObjs = () => {
 stopCountTrackedObjs = () => {
   try {
     return SAIDetectView.stopCountTrackedObjs()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+// 是否开启跟踪计数
+getIsCountTrackedMode = () => {
+  try {
+    return SAIDetectView.getIsCountTrackedMode()
   } catch (error) {
     console.error(error)
   }
@@ -308,6 +317,16 @@ checkIfAvailable = () => {
   }
 }
 
+getDetectInfo = () => {
+  try {
+    return SAIDetectView.getDetectInfo()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+
+
 export default {
   initAIDetect,
   startDetect,
@@ -327,6 +346,7 @@ export default {
   resetTrackedCount,
   startCountTrackedObjs,
   stopCountTrackedObjs,
+  getIsCountTrackedMode,
   savePreviewBitmap,
   setProjectionModeEnable,
   setPOIOverlapEnable,
@@ -343,4 +363,5 @@ export default {
   checkIfSensorsAvailable,
   checkIfCameraAvailable,
   checkIfAvailable,
+  getDetectInfo,
 }

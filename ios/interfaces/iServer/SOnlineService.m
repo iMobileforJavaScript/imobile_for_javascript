@@ -753,6 +753,35 @@ RCT_REMAP_METHOD(getSuperMapKnown, getSuperMapKnownWithResolver:(RCTPromiseResol
     }
 }
 
+RCT_REMAP_METHOD(loginWithParam, loginUrl:(NSString *) url withParam:(NSString *) params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    @try{
+        NSData *postData = [params dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+        
+        NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+        NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
+        
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
+        request.HTTPMethod = @"POST";
+        
+        NSURLSessionUploadTask *uploadTask = [session uploadTaskWithRequest:request fromData:postData completionHandler:^(NSData *data,NSURLResponse *response,NSError *error) {
+            if(error == nil){
+                NSString *str=[[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+                if([str containsString:@"logout"]){
+                    resolve([NSNumber numberWithBool:YES]);
+                } else {
+                    resolve(@"用户名或用户密码错误");
+                }
+            } else {
+                resolve([NSNumber numberWithBool:NO]);
+            }
+       }];
+        
+        [uploadTask resume];
+    } @catch (NSException * exception) {
+        reject(@"HTTPPost",exception.reason,nil);
+    }
+}
+
 # pragma mark ---------------------------- 下载协议
 - (void)bytesWritten:(int64_t) bytesWritten totalBytesWritten:(int64_t) totalBytesWritten
 totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {

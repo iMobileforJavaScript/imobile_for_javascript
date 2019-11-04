@@ -597,6 +597,7 @@ RCT_REMAP_METHOD(thiessenAnalyst, thiessenAnalystWithSourceData:(NSDictionary *)
                 if (recordset && recordset.geometry && recordset.geometry.getType == GT_GEOREGION) {
                     region = (GeoRegion *)recordset.geometry;
                 }
+                [recordset dispose];
             } else if ([optionParameter objectForKey:@"drawRegion"] && [mapControl getCurrentGeometry] && [mapControl getCurrentGeometry].getType == GT_GEOREGION) {
                 region = (GeoRegion *)[mapControl getCurrentGeometry];
             }

@@ -206,9 +206,11 @@ public class SPlot extends ReactContextBaseJavaModule {
             WritableMap writeMap = Arguments.createMap();
             for (int i = 0; i < plotSymbolPaths.size(); i++) {
                 int libId = (int) mapControl.addPlotLibrary(plotSymbolPaths.getString(i));
-                String libName = mapControl.getPlotSymbolLibName((long) libId);
-                writeMap.putInt(libName, libId);
-                plotLibMap.putInt(libName, libId);
+                if(libId!=0) {
+                    String libName = mapControl.getPlotSymbolLibName((long) libId);
+                    writeMap.putInt(libName, libId);
+                    plotLibMap.putInt(libName, libId);
+                }
 
 //                if (isFirst && libName.equals("警用标号")) {
 //                    Point2Ds point2Ds = new Point2Ds();
@@ -623,10 +625,12 @@ public class SPlot extends ReactContextBaseJavaModule {
                 animationGroup = AnimationManager.getInstance().addAnimationGroup(animationGroupName);
             }
 
+            String animationName="";
             int animationMode = createInfo.getInt("animationMode");
             AnimationGO animationGO = AnimationManager.getInstance().createAnimation(new AnimationDefine.AnimationType(animationMode, animationMode));
             switch (animationMode) {
                 case 0:
+                    animationName="路径动画";
                     AnimationWay animationWay = (AnimationWay) animationGO;
                     Point3Ds point3Ds = new Point3Ds();
                     if (createInfo.hasKey("wayPoints")) {
@@ -647,6 +651,7 @@ public class SPlot extends ReactContextBaseJavaModule {
                     animationGO = animationWay;
                     break;
                 case 1:
+                    animationName="闪烁动画";
                     AnimationBlink animationBlink = (AnimationBlink) animationGO;
                     animationBlink.setBlinkNumberofTimes(20);
                     animationBlink.setBlinkStyle(AnimationDefine.BlinkAnimationBlinkStyle.NumberBlink);
@@ -655,6 +660,7 @@ public class SPlot extends ReactContextBaseJavaModule {
                     animationGO = animationBlink;
                     break;
                 case 2:
+                    animationName="属性动画";
                     AnimationAttribute animationAttribute = (AnimationAttribute) animationGO;
                     animationAttribute.setStartLineColor(new com.supermap.data.Color(255, 0, 0, 255));
                     animationAttribute.setEndLineColor(new com.supermap.data.Color(0, 0, 255, 255));
@@ -665,24 +671,28 @@ public class SPlot extends ReactContextBaseJavaModule {
                     animationGO = animationAttribute;
                     break;
                 case 3:
+                    animationName="显影动画";
                     AnimationShow animationShow = (AnimationShow) animationGO;
                     animationShow.setShowEffect(0);
                     animationShow.setShowState(true);
                     animationGO = animationShow;
                     break;
                 case 4:
+                    animationName="旋转动画";
                     AnimationRotate animationRotate = (AnimationRotate) animationGO;
                     animationRotate.setStartAngle(new Point3D(0, 0, 0));
                     animationRotate.setEndAngle(new Point3D(720, 720, 0));
                     animationGO = animationRotate;
                     break;
                 case 5:
+                    animationName="比例动画";
                     AnimationScale animationScale = (AnimationScale) animationGO;
                     animationScale.setStartScaleFactor(0);
                     animationScale.setEndScaleFactor(1);
                     animationGO = animationScale;
                     break;
                 case 6:
+                    animationName="生长动画";
                     AnimationGrow animationGrow = (AnimationGrow) animationGO;
                     animationGrow.setStartLocation(0);
                     animationGrow.setEndLocation(1);
@@ -740,7 +750,7 @@ public class SPlot extends ReactContextBaseJavaModule {
             }
 
 
-            String animationGoName = "动画_" + AnimationManager.getInstance().getGroupByName(animationGroupName).getAnimationCount();
+            String animationGoName = AnimationManager.getInstance().getGroupByName(animationGroupName).getAnimationCount() + "_"+animationName;
             if (createInfo.hasKey("layerName") && createInfo.hasKey("geoId")) {
                 String layerName = createInfo.getString("layerName");
                 int geoId = createInfo.getInt("geoId");
@@ -1077,17 +1087,33 @@ public class SPlot extends ReactContextBaseJavaModule {
                 promise.resolve(false);
                 return;
             }
+            //直接删除动画组第一个动画有可能出错
+//            boolean result=animationGroup.deleteAnimation(nodeName);
 
-            boolean result=animationGroup.deleteAnimation(nodeName);
+            int size=animationGroup.getAnimationCount();
+            String tempGroupName="temp";
+            AnimationGroup tempGroup=AnimationManager.getInstance().addAnimationGroup(tempGroupName);
+            for (int i=0;i<size;i++){
+                if(!animationGroup.getAnimationByIndex(i).getName().equals(nodeName)){
+                    AnimationGO animationGO1=AnimationManager.getInstance().createAnimation(animationGroup.getAnimationByIndex(i).getAnimationType());
+                    String xmlStr1=animationGroup.getAnimationByIndex(i).toXml();
+                    animationGO1.fromXml(xmlStr1);
+                    tempGroup.addAnimation(animationGO1);
+                }
+            }
 
-            promise.resolve(result);
+            AnimationManager.getInstance().getGroupByIndex(0).setGroupName(animationGroupName);
+            AnimationManager.getInstance().deleteGroupByName(animationGroupName);
+            AnimationManager.getInstance().getGroupByIndex(0).setGroupName(animationGroupName);
+
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
 
     /**
-     * 删除动画节点
+     * 修改动画节点名称
      *
      * @param promise
      */

@@ -5,6 +5,7 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
+import com.supermap.component.MapSuspension;
 import com.supermap.component.SMSymbolTable;
 import com.supermap.containts.FixColorMode;
 import com.supermap.interfaces.ai.*;
@@ -23,7 +24,9 @@ import com.supermap.interfaces.*;
 import com.supermap.interfaces.iServer.SOnlineService;
 import com.supermap.interfaces.iServer.SIPortalService;
 import com.supermap.component.SMRLegendView;
+import com.supermap.interfaces.mapping.SMapSuspension;
 import com.supermap.interfaces.mapping.SPlot;
+import com.supermap.interfaces.speech.SSpeechRecognizer;
 import com.supermap.interfaces.utils.SMFileUtil;
 import com.supermap.rnsupermap.*;
 
@@ -48,6 +51,8 @@ public class SupermapFullPackage implements ReactPackage {
                 ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView(),new RCTARView(),new RCTFloorListView()
                 ,new AIDetectViewManager(), new MeasureViewManager(), new AIClassifyViewManager()
                 ,new CollectSceneFormViewManager(), new IllegallyParkViewManager()
+                , new CastModelOperateViewManager()
+                ,new MapSuspension()
         );
     }
 
@@ -206,6 +211,10 @@ public class SupermapFullPackage implements ReactPackage {
 
         modules.add(new SMFileUtil(reactContext));
         modules.add(new SMessageService(reactContext));
+        /**
+         * 语音
+         */
+        modules.add(new SSpeechRecognizer(reactContext));
         /*
         * 在线模块功能
         */
@@ -225,6 +234,12 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new SCollectSceneFormView(reactContext));
         //违章采集
         modules.add(new SIllegallyParkView(reactContext));
+        //AR投放
+        modules.add(new SCastModelOperateView(reactContext));
+
+        //视频地图ar地图窗
+        modules.add(new SMapSuspension(reactContext));
+
         return modules;
     }
 }

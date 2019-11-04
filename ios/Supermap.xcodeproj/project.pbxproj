@@ -191,7 +191,9 @@
 		0AEFC1F523168697006FEDD8 /* SMMapRender.mm in Sources */ = {isa = PBXBuildFile; fileRef = 61786D46230A71E300D92877 /* SMMapRender.mm */; };
 		0AF348682270018F004D6D09 /* SAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF348662270018F004D6D09 /* SAnalyst.m */; };
 		182832BB22F98190006586BF /* SIPortalService.m in Sources */ = {isa = PBXBuildFile; fileRef = 182832BA22F98190006586BF /* SIPortalService.m */; };
+		18A3DC6823693DD60013B66D /* SSpeechRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A3DC6723693DD60013B66D /* SSpeechRecognizer.m */; };
 		2AAEE1D1230E6A6000902D1D /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AAEE196230E68CE00902D1D /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2AB23F432359B2A900884E9B /* KeychainUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AB23F422359B2A900884E9B /* KeychainUtil.m */; };
 		2AD00E8522461CC70087FC43 /* PoiSearchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD00E8322461CC70087FC43 /* PoiSearchHelper.m */; };
 		2AD85BD523265A0600BDE6A6 /* SPlot.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD85BD423265A0600BDE6A6 /* SPlot.m */; };
 		4A99EBEB21EDD9D000493EB1 /* SPUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A99EBEA21EDD9CF00493EB1 /* SPUtils.m */; };
@@ -588,8 +590,12 @@
 		134814201AA4EA6300B7C361 /* libSupermap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSupermap.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		182832B922F980AB006586BF /* SIPortalService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SIPortalService.h; sourceTree = "<group>"; };
 		182832BA22F98190006586BF /* SIPortalService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SIPortalService.m; sourceTree = "<group>"; };
+		18A3DC6623693DA30013B66D /* SSpeechRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSpeechRecognizer.h; sourceTree = "<group>"; };
+		18A3DC6723693DD60013B66D /* SSpeechRecognizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSpeechRecognizer.m; sourceTree = "<group>"; };
 		2AAEE195230E68CD00902D1D /* GDataXMLNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GDataXMLNode.h; sourceTree = "<group>"; };
 		2AAEE196230E68CE00902D1D /* GDataXMLNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GDataXMLNode.m; sourceTree = "<group>"; };
+		2AB23F412359B2A900884E9B /* KeychainUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeychainUtil.h; sourceTree = "<group>"; };
+		2AB23F422359B2A900884E9B /* KeychainUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeychainUtil.m; sourceTree = "<group>"; };
 		2AD00E8322461CC70087FC43 /* PoiSearchHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PoiSearchHelper.m; sourceTree = "<group>"; };
 		2AD00E8422461CC70087FC43 /* PoiSearchHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PoiSearchHelper.h; sourceTree = "<group>"; };
 		2AD85BD323265A0600BDE6A6 /* SPlot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPlot.h; sourceTree = "<group>"; };
@@ -726,6 +732,8 @@
 				0A2F59EF229BB7AD00C42441 /* FileUtils.m */,
 				0A2858D622E06305001048A8 /* LocationTransfer.h */,
 				0A2858D722E06305001048A8 /* LocationTransfer.m */,
+				2AB23F412359B2A900884E9B /* KeychainUtil.h */,
+				2AB23F422359B2A900884E9B /* KeychainUtil.m */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -809,6 +817,15 @@
 				134814201AA4EA6300B7C361 /* libSupermap.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1806196623691F6E006487D2 /* speech */ = {
+			isa = PBXGroup;
+			children = (
+				18A3DC6623693DA30013B66D /* SSpeechRecognizer.h */,
+				18A3DC6723693DD60013B66D /* SSpeechRecognizer.m */,
+			);
+			path = speech;
 			sourceTree = "<group>";
 		};
 		2AAEE194230E68CD00902D1D /* GDataXMLNode */ = {
@@ -903,6 +920,7 @@
 		D854D867218310720075B5F8 /* interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				1806196623691F6E006487D2 /* speech */,
 				0AF3486522700175004D6D09 /* analyst */,
 				D83170CA21A399FC00DB5DC0 /* utils */,
 				D835E5AD219EC6F7008910F0 /* mapping */,
@@ -1498,6 +1516,7 @@
 				0A51674F21AD42B0003C77BE /* TouchUtil3D.m in Sources */,
 				0A332E3C211D623E00F56F26 /* JSPointDensityChart.m in Sources */,
 				0A27E0552281249700227B8C /* SMediaCollector.m in Sources */,
+				18A3DC6823693DD60013B66D /* SSpeechRecognizer.m in Sources */,
 				4AE32D4621B91EB500555A5A /* SMThemeCartography.m in Sources */,
 				0A332DEE211D623E00F56F26 /* JSAMQPSender.m in Sources */,
 				0A332DF8211D623E00F56F26 /* JSChartData.m in Sources */,
@@ -1541,6 +1560,7 @@
 				0A332E26211D623E00F56F26 /* JSLegendViewManager.m in Sources */,
 				0A332E72211D623E00F56F26 /* RCTConvert+RadiusUnit.m in Sources */,
 				0A332E44211D623E00F56F26 /* JSRadiusUnit.m in Sources */,
+				2AB23F432359B2A900884E9B /* KeychainUtil.m in Sources */,
 				0A0EDC4822C0B2C5003990A6 /* SNetworkAnalyst.m in Sources */,
 				0A332DFA211D623E00F56F26 /* JSChartPoint.m in Sources */,
 				0A332E04211D623E00F56F26 /* JSDataDownloadService.m in Sources */,

@@ -444,6 +444,25 @@ function clearTrackingLayer() {
 }
 
 /**
+ * 新增属性字段
+ * @param path
+ * @param page
+ * @param size
+ * @returns {*}
+ */
+function addAttributeFieldInfo(path,isSelect,fieldInfo) {
+  try {
+    if (!path) {
+      console.warn('path is null')
+      return
+    }
+    return LayerManager.addAttributeFieldInfo(path, isSelect, fieldInfo)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  * 设置图层是否可编辑
  * @param layerPath
  * @param editable
@@ -496,6 +515,7 @@ export {
   setLayerStyle,
   setTrackingLayer,
   clearTrackingLayer,
+  addAttributeFieldInfo,
   // setEditable,
   // setVisible,
 }

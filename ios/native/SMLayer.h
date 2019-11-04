@@ -46,4 +46,5 @@
 + (Layer *)addLayerByIndex:(int)datasourceIndex datasetIndex:(int)datasetIndex;
 + (BOOL)setLayerFieldInfo:(Layer *)layer fieldInfos:(NSArray *)fieldInfos params:(NSDictionary *)params;
 + (InfoCallout *)addCallOutWithLongitude:(double)longitude latitude:(double)latitude image:(NSString *)imagePath;
++ (BOOL)addRecordsetFieldInfo:(NSString *)path isSelectOrLayer:(BOOL)isSelect fieldInfo:(NSDictionary*)fieldInfo;
 @end
