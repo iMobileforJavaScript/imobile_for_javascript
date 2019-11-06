@@ -227,7 +227,7 @@ NSString *featureText = @"";
     }
     
     [myPoint3DArrayList removeLastObject];// remove(myPoint3DArrayList.size() - 1);
-    
+    [geoTextStrList removeLastObject];
     [self show];
 }
 
