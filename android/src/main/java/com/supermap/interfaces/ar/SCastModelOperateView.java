@@ -35,7 +35,9 @@ public class SCastModelOperateView extends ReactContextBaseJavaModule {
             Log.d("CastModelOperateView", "----------------SCastModelOperateView--onPause--------RN--------");
 
             if (mSceneViewManager != null) {
-                mSceneViewManager.onPause();
+                getCurrentActivity().runOnUiThread(() -> {
+                    mSceneViewManager.onPause();
+                });
             }
 
             promise.resolve(true);
@@ -50,8 +52,10 @@ public class SCastModelOperateView extends ReactContextBaseJavaModule {
             Log.d("CastModelOperateView", "----------------SCastModelOperateView--onDestroy--------RN--------");
 
             if (mSceneViewManager != null) {
-                mSceneViewManager.onDestroyView();
-                mSceneViewManager.onDestroy();
+                getCurrentActivity().runOnUiThread(() -> {
+                    mSceneViewManager.onDestroyView();
+                    mSceneViewManager.onDestroy();
+                });
             }
 
             promise.resolve(true);
@@ -66,7 +70,9 @@ public class SCastModelOperateView extends ReactContextBaseJavaModule {
             Log.d("CastModelOperateView", "--------------SCastModelOperateView---onResume--------RN--------");
 
             if (mSceneViewManager != null) {
-                mSceneViewManager.onResume();
+                getCurrentActivity().runOnUiThread(() -> {
+                    mSceneViewManager.onResume();
+                });
             }
 
             promise.resolve(true);
