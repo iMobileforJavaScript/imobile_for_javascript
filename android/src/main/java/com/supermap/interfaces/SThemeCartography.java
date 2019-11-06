@@ -1319,49 +1319,96 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     mapControl.getEditHistory().addMapHistory();
 
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
-                    TextStyle uniformStyle = themeLabel.getUniformStyle();
-                    if(fontName.equals("BOLD")){
-                        if(uniformStyle.isBold()){
-                            uniformStyle.setBold(false);
-                        }
-                        else{
-                            uniformStyle.setBold(true);
-                        }
-                    }else if(fontName.equals("ITALIC")){
-                        if(uniformStyle.getItalic()){
-                            uniformStyle.setItalic(false);
-                        }else{
-                            uniformStyle.setItalic(true);
-                        }
+                    int count = themeLabel.getUniqueItems().getCount();
+                    if(count == 0){
+                        TextStyle uniformStyle = themeLabel.getUniformStyle();
+                        if(fontName.equals("BOLD")){
+                            if(uniformStyle.isBold()){
+                                uniformStyle.setBold(false);
+                            }
+                            else{
+                                uniformStyle.setBold(true);
+                            }
+                        }else if(fontName.equals("ITALIC")){
+                            if(uniformStyle.getItalic()){
+                                uniformStyle.setItalic(false);
+                            }else{
+                                uniformStyle.setItalic(true);
+                            }
 
-                    }else if(fontName.equals("UNDERLINE")){
-                        if(uniformStyle.getUnderline()){
-                            uniformStyle.setUnderline(false);
-                        }else{
-                            uniformStyle.setUnderline(true);
-                        }
-                    }else if(fontName.equals("STRIKEOUT")){
-                        if(uniformStyle.getStrikeout()){
-                            uniformStyle.setStrikeout(false);
-                        }else{
-                            uniformStyle.setStrikeout(true);
-                        }
-                    }else if(fontName.equals("SHADOW")){
-                        if(uniformStyle.getShadow()){
-                            uniformStyle.setShadow(false);
-                        }else{
-                            uniformStyle.setShadow(true);
-                        }
-                    }else if(fontName.equals("OUTLINE")){
-                        if(uniformStyle.getOutline()){
-                            uniformStyle.setOutline(false);
-                        }else{
-                            uniformStyle.setOutline(true);
-                            uniformStyle.setBackColor(new Color(255,255,255));
+                        }else if(fontName.equals("UNDERLINE")){
+                            if(uniformStyle.getUnderline()){
+                                uniformStyle.setUnderline(false);
+                            }else{
+                                uniformStyle.setUnderline(true);
+                            }
+                        }else if(fontName.equals("STRIKEOUT")){
+                            if(uniformStyle.getStrikeout()){
+                                uniformStyle.setStrikeout(false);
+                            }else{
+                                uniformStyle.setStrikeout(true);
+                            }
+                        }else if(fontName.equals("SHADOW")){
+                            if(uniformStyle.getShadow()){
+                                uniformStyle.setShadow(false);
+                            }else{
+                                uniformStyle.setShadow(true);
+                            }
+                        }else if(fontName.equals("OUTLINE")){
+                            if(uniformStyle.getOutline()){
+                                uniformStyle.setOutline(false);
+                            }else{
+                                uniformStyle.setOutline(true);
+                                uniformStyle.setBackColor(new Color(255,255,255));
 //                            uniformStyle.set
+                            }
+                        }
+                    }else{
+                        for (int i = 0; i < count; i++) {
+                            TextStyle uniformStyle = themeLabel.getUniqueItems().getItem(i).getStyle();
+                            if(fontName.equals("BOLD")){
+                                if(uniformStyle.isBold()){
+                                    uniformStyle.setBold(false);
+                                }
+                                else{
+                                    uniformStyle.setBold(true);
+                                }
+                            }else if(fontName.equals("ITALIC")){
+                                if(uniformStyle.getItalic()){
+                                    uniformStyle.setItalic(false);
+                                }else{
+                                    uniformStyle.setItalic(true);
+                                }
+
+                            }else if(fontName.equals("UNDERLINE")){
+                                if(uniformStyle.getUnderline()){
+                                    uniformStyle.setUnderline(false);
+                                }else{
+                                    uniformStyle.setUnderline(true);
+                                }
+                            }else if(fontName.equals("STRIKEOUT")){
+                                if(uniformStyle.getStrikeout()){
+                                    uniformStyle.setStrikeout(false);
+                                }else{
+                                    uniformStyle.setStrikeout(true);
+                                }
+                            }else if(fontName.equals("SHADOW")){
+                                if(uniformStyle.getShadow()){
+                                    uniformStyle.setShadow(false);
+                                }else{
+                                    uniformStyle.setShadow(true);
+                                }
+                            }else if(fontName.equals("OUTLINE")){
+                                if(uniformStyle.getOutline()){
+                                    uniformStyle.setOutline(false);
+                                }else{
+                                    uniformStyle.setOutline(true);
+                                    uniformStyle.setBackColor(new Color(255,255,255));
+//                            uniformStyle.set
+                                }
+                            }
                         }
                     }
-//                    uniformStyle.setFontName(fontName);
 
                     mapControl.getMap().refresh();
 
@@ -1464,9 +1511,17 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     mapControl.getEditHistory().addMapHistory();
 
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
-                    TextStyle uniformStyle = themeLabel.getUniformStyle();
-                    uniformStyle.setFontHeight(fontSize);
-//                    uniformStyle.setFontWidth(fontSize);
+                    int count = themeLabel.getUniqueItems().getCount();
+                    if(count == 0) {
+                        TextStyle uniformStyle = themeLabel.getUniformStyle();
+                        uniformStyle.setFontHeight(fontSize);
+                    }else{
+                        for (int i = 0; i < count; i++) {
+                            TextStyle uniformStyle = themeLabel.getUniqueItems().getItem(i).getStyle();
+                            uniformStyle.setFontHeight(fontSize);
+                        }
+                    }
+
 
                     mapControl.getMap().refresh();
 
@@ -1514,10 +1569,22 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (layer != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.LABEL) {
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
-                    TextStyle uniformStyle = themeLabel.getUniformStyle();
-                    double fontHeight = uniformStyle.getFontHeight();
+                    int count = themeLabel.getUniqueItems().getCount();
+                    if(count == 0) {
+                        TextStyle uniformStyle = themeLabel.getUniformStyle();
+                        double fontHeight = uniformStyle.getFontHeight();
 
-                    promise.resolve(fontHeight);
+                        promise.resolve(fontHeight);
+                    }else{
+                        for (int i = 0; i < count; i++) {
+                            TextStyle uniformStyle = themeLabel.getUniqueItems().getItem(i).getStyle();
+                            double fontHeight = uniformStyle.getFontHeight();
+
+                            promise.resolve(fontHeight);
+                            return;
+                        }
+                    }
+
                 }
             } else {
                 promise.resolve(false);
@@ -1569,14 +1636,30 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     mapControl.getEditHistory().addMapHistory();
 
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
-                    TextStyle uniformStyle = themeLabel.getUniformStyle();
-                    double lastRotation = uniformStyle.getRotation();
-                    if (lastRotation == 360.0) {
-                        lastRotation = 0.0;
-                    } else if (lastRotation == 0.0) {
-                        lastRotation = 360.0;
+                    int count = themeLabel.getUniqueItems().getCount();
+                    if(count == 0) {
+                        TextStyle uniformStyle = themeLabel.getUniformStyle();
+                        double lastRotation = uniformStyle.getRotation();
+                        if (lastRotation == 360.0) {
+                            lastRotation = 0.0;
+                        } else if (lastRotation == 0.0) {
+                            lastRotation = 360.0;
+                        }
+                        uniformStyle.setRotation(lastRotation + rotation);
+                    }else{
+                        for (int i = 0; i < count; i++) {
+                            TextStyle uniformStyle = themeLabel.getUniqueItems().getItem(i).getStyle();
+                            double lastRotation = uniformStyle.getRotation();
+                            if (lastRotation == 360.0) {
+                                lastRotation = 0.0;
+                            } else if (lastRotation == 0.0) {
+                                lastRotation = 360.0;
+                            }
+                            uniformStyle.setRotation(lastRotation + rotation);
+                        }
                     }
-                    uniformStyle.setRotation(lastRotation + rotation);
+
+
 
                     mapControl.getMap().refresh();
 
@@ -1624,10 +1707,24 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (layer != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.LABEL) {
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
-                    TextStyle uniformStyle = themeLabel.getUniformStyle();
-                    double rotation = uniformStyle.getRotation();
+                    int count = themeLabel.getUniqueItems().getCount();
+                    if(count == 0) {
+                        TextStyle uniformStyle = themeLabel.getUniformStyle();
+                        double rotation = uniformStyle.getRotation();
 
-                    promise.resolve(rotation);
+                        promise.resolve(rotation);
+                    }else{
+                        for (int i = 0; i < count; i++) {
+                            TextStyle uniformStyle = themeLabel.getUniqueItems().getItem(i).getStyle();
+
+                            double rotation = uniformStyle.getRotation();
+
+                            promise.resolve(rotation);
+                            return;
+                        }
+                    }
+
+
                 }
             } else {
                 promise.resolve(false);
