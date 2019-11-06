@@ -184,6 +184,7 @@ public class JsonUtil {
         }
         map.putArray("data", recordArray);
         map.putInt("startIndex", (page * size));
+        map.putArray("head", fields);
 
         return map;
     }

@@ -192,6 +192,7 @@
     }
     [dic setObject:recordArray forKey:@"data"];
     [dic setObject:@(page * size) forKey:@"startIndex"];
+    [dic setObject:fieldsArr forKey:@"head"];
     
     return dic;
 }
