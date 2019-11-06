@@ -173,7 +173,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     if (!data.containsKey("ColorGradientType")) {
                         Color[] colors = SMThemeCartography.getLastThemeColors(themeUniqueLayer);
                         if (colors != null ) {
-                            lastUniqueColors = colors;
+//                            lastUniqueColors = colors;
                             int rangeCount = tu.getCount();
                             Colors selectedColors = Colors.makeGradient(rangeCount, colors);
                             for (int i = 0; i < rangeCount; i++) {
@@ -181,11 +181,18 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                             }
                         } else {
                             //用上次的颜色值
-                            if (lastUniqueColors != null) {
-                                int rangeCount = tu.getCount();
-                                Colors selectedColors = Colors.makeGradient(rangeCount, lastUniqueColors);
+//                            if (lastUniqueColors != null) {
+//                                int rangeCount = tu.getCount();
+//                                Colors selectedColors = Colors.makeGradient(rangeCount, lastUniqueColors);
+//                                for (int i = 0; i < rangeCount; i++) {
+//                                    SMThemeCartography.setGeoStyleColor(dataset.getType(), tu.getItem(i).getStyle(), selectedColors.get(i));
+//                                }
+//                            }else
+                                {
+                                int rangeCount = Math.min(tu.getCount(), themeUnique.getCount());
                                 for (int i = 0; i < rangeCount; i++) {
-                                    SMThemeCartography.setGeoStyleColor(dataset.getType(), tu.getItem(i).getStyle(), selectedColors.get(i));
+                                    Color color = SMThemeCartography.getGeoStyleColor(dataset.getType(),themeUnique.getItem(i).getStyle());
+                                    SMThemeCartography.setGeoStyleColor(dataset.getType(), tu.getItem(i).getStyle(),color);
                                 }
                             }
                         }
@@ -1962,19 +1969,28 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     if (!data.containsKey("ColorGradientType")) {
                         Color[] colors = SMThemeCartography.getLastThemeColors(themeRangeLayer);
                         if (colors != null) {
-                            lastRangeColors = colors;
+//                            lastRangeColors = colors;
                             int rangeCount = tr.getCount();
                             Colors selectedColors = Colors.makeGradient(rangeCount, colors);
                             for (int i = 0; i < rangeCount; i++) {
                                 SMThemeCartography.setGeoStyleColor(dataset.getType(), tr.getItem(i).getStyle(), selectedColors.get(i));
                             }
                         } else {
-                            if (lastRangeColors != null) {
-                                int rangeCount = tr.getCount();
-                                Colors selectedColors = Colors.makeGradient(rangeCount, lastRangeColors);
+//                            if (lastRangeColors != null) {
+//                                int rangeCount = tr.getCount();
+//                                Colors selectedColors = Colors.makeGradient(rangeCount, lastRangeColors);
+//                                for (int i = 0; i < rangeCount; i++) {
+//                                    SMThemeCartography.setGeoStyleColor(dataset.getType(), tr.getItem(i).getStyle(), selectedColors.get(i));
+//                                }
+//                            }else
+                                {
+                                // TODO: 2019/11/4
+                                int rangeCount = Math.min(tr.getCount(), themeRange.getCount());
                                 for (int i = 0; i < rangeCount; i++) {
-                                    SMThemeCartography.setGeoStyleColor(dataset.getType(), tr.getItem(i).getStyle(), selectedColors.get(i));
+                                    Color color = SMThemeCartography.getGeoStyleColor(dataset.getType(),themeRange.getItem(i).getStyle());
+                                    SMThemeCartography.setGeoStyleColor(dataset.getType(), tr.getItem(i).getStyle(),color);
                                 }
+
                             }
                         }
                     }

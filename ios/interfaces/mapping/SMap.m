@@ -1363,7 +1363,7 @@ RCT_REMAP_METHOD(buildNetwork, buildNetworkWithDatasetName:(NSString *)lineDatas
 
         NSMutableArray *datasets = [[NSMutableArray alloc] init];
         [datasets addObject:lineDataset];
-        [NetworkBuilder buildNetwork:datasets pointDatasets:nil lineFieldNames:lineFieldNames pointFieldNames:nil outputDatasource:datasource networkDatasetName:networkDatasetName networkSplitMode:NSM_LINE_SPLIT_BY_POINT tolerance:0.0000001];
+//        [NetworkBuilder buildNetwork:datasets pointDatasets:nil lineFieldNames:lineFieldNames pointFieldNames:nil outputDatasource:datasource networkDatasetName:networkDatasetName networkSplitMode:NSM_LINE_SPLIT_BY_POINT tolerance:0.0000001];
 
         Layers *layers = sMap.smMapWC.mapControl.map.layers;
         DatasetVector *datasetVector = (DatasetVector *)[datasource.datasets getWithName:networkDatasetName];
