@@ -234,7 +234,9 @@ public class LabelHelper {
         }
 
         myPoint3DArrayList.remove(myPoint3DArrayList.size() - 1);
-
+        if (geoTextStrList != null && geoTextStrList.size() > 0) {
+            geoTextStrList.remove(geoTextStrList.size() - 1);
+        }
         show();
     }
 
