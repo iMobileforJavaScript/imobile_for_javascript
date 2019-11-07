@@ -37,6 +37,27 @@ static NSArray* lastGridRangeColors = nil;
     }
 }
 
++(Color*)getGeoStyleColor:(DatasetType)type geoStyle:(GeoStyle*)geoStyle {
+    @try{
+        NSString* strType = [self datasetTypeToString:type];
+        if([strType isEqualToString:@"POINT"])
+        {
+           return [geoStyle getLineColor];
+        }
+        if([strType isEqualToString:@"LINE"])
+        {
+            return [geoStyle getLineColor];
+        }
+        if([strType isEqualToString:@"REGION"])
+        {
+            return [geoStyle getFillForeColor];
+        }
+    }
+    @catch (NSException *exception){
+        @throw exception;
+    }
+}
+
 +(NSMutableArray*)getLastThemeColors:(Layer* )layer{
     @try{
         if (layer == nil) {
