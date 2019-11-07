@@ -11,8 +11,8 @@
 #import "STranslate.h"
 #import "SMap.h"
 
-static NSMutableArray* _lastColorUniqueArray = nil;
-static NSMutableArray* _lastColorRangeArray = nil;
+//static NSMutableArray* _lastColorUniqueArray = nil;
+//static NSMutableArray* _lastColorRangeArray = nil;
 static NSMutableArray* _lastColorGraphArray = nil;
 
 @implementation SThemeCartography
@@ -80,11 +80,11 @@ RCT_REMAP_METHOD(createThemeUniqueMap, createThemeUniqueMapWithResolver:(NSDicti
                     for (int i = 0; i < rangeCount; i++) {
                         [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:[selectedColors get:i]];
                     }
-                    _lastColorUniqueArray = colorArray;
+//                    _lastColorUniqueArray = colorArray;
                 }
             }
             else{
-                _lastColorUniqueArray = nil;
+//                _lastColorUniqueArray = nil;
             }
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [mapControl.map.layers addDataset:dataset Theme:themeUnique ToHead:true];
@@ -232,6 +232,7 @@ RCT_REMAP_METHOD(modifyThemeUniqueMap, modifyThemeUniqueMapWithResolver:(NSDicti
         if (dataset != nil && themeUniqueLayer.theme != nil && ![uniqueExpression isEqualToString:@""] && ![uniqueExpression isEqualToString:[themeUnique getUniqueExpression] ]) {
             ThemeUnique* tu = nil;
             tu = [ThemeUnique makeDefault:(DatasetVector*)dataset uniqueExpression:uniqueExpression colorType:colorGradientType];
+            NSMutableArray* _lastColorUniqueArray;
             if (tu != nil) {
                 if(![array containsObject:@"ColorGradientType"]){
 
@@ -2029,33 +2030,22 @@ RCT_REMAP_METHOD(modifyThemeRangeMap, modifyThemeRangeMapWithResolver:(NSDiction
             if(tr != nil)
             {
                 if(![array containsObject:@"ColorGradientType"]){
-//                    NSMutableArray* mulArray = nil;
-//                    mulArray =  [SMThemeCartography getLastThemeColors:themeRangeLayer];
-//                    if (mulArray != nil) {
-//                        int rangeCount = [tr getCount];
-//                        Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:mulArray];
-//                        for (int i = 0; i < rangeCount; i++) {
-//                            [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tr getItem:i].mStyle color:[selectedColors get:i]];
-//                        }
-//                        _lastColorRangeArray = mulArray;
-//                    }
-//                    else
-                    {
-                        if(_lastColorRangeArray==nil || _lastColorRangeArray.count < [themeRange getCount]){
-                            _lastColorRangeArray = [NSMutableArray array];
-                            for (int i = 0; i < [themeRange getCount]; i++) {
-                                Color* color = [SMThemeCartography getGeoStyleColor:dataset.datasetType geoStyle:[themeRange getItem:i].mStyle];//
-                                [_lastColorRangeArray addObject:color];
-                            }
+                    NSMutableArray* mulArray = nil;
+                    mulArray =  [SMThemeCartography getLastThemeColors:themeRangeLayer];
+                    if(!mulArray){
+                        mulArray = [NSMutableArray array];
+                        for (int i = 0; i < [themeRange getCount]; i++) {
+                            Color* color = [SMThemeCartography getGeoStyleColor:dataset.datasetType geoStyle:[themeRange getItem:i].mStyle];//
+                            [mulArray addObject:color];
                         }
-                       
-                        
-                        int rangeCount = MIN([tr getCount], _lastColorRangeArray.count);
+                    }
+                    if (mulArray != nil) {
+                        int rangeCount = [tr getCount];
+                        Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:mulArray];
                         for (int i = 0; i < rangeCount; i++) {
-                            Color* color = _lastColorRangeArray[i];//[SMThemeCartography getGeoStyleColor:dataset.datasetType geoStyle:[themeRange getItem:i].mStyle];//
-                            [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tr getItem:i].mStyle color:color];
+                            [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tr getItem:i].mStyle color:[selectedColors get:i]];
                         }
-
+//                        _lastColorRangeArray = mulArray;
                     }
                 }
                 
@@ -2118,7 +2108,7 @@ RCT_REMAP_METHOD(setUniqueColorScheme, setUniqueColorSchemeWithResolver:(NSDicti
                 for (int i = 0; i < rangeCount; i++) {
                     [SMThemeCartography setGeoStyleColor:layer.dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:[selectedColors get:i]];
                 }
-                _lastColorUniqueArray = colorArray;
+//                _lastColorUniqueArray = colorArray;
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             }
@@ -2179,7 +2169,7 @@ RCT_REMAP_METHOD(setRangeColorScheme, setRangeColorSchemeWithResolver:(NSDiction
                 for (int i = 0; i < rangeCount; i++) {
                     [SMThemeCartography setGeoStyleColor:layer.dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:[selectedColors get:i]];
                 }
-                _lastColorRangeArray = colorArray;
+//                _lastColorRangeArray = colorArray;
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             }

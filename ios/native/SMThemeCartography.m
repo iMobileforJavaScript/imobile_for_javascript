@@ -58,7 +58,7 @@ static NSArray* lastGridRangeColors = nil;
     }
 }
 
-+(NSMutableArray*)getLastThemeColors:(Layer* )layer{
++(NSArray*)getLastThemeColors:(Layer* )layer{
     @try{
         if (layer == nil) {
             return nil;
@@ -92,9 +92,8 @@ static NSArray* lastGridRangeColors = nil;
             }
             int rgb_start = color_start.rgb;
             int rgb_end = color_end.rgb;
-            NSEnumerator* enumValue = [[self getUniqueColors:@""] objectEnumerator];
-            for (NSObject* object in enumValue) {
-                NSMutableArray* arrayColor = (NSMutableArray*)object;
+            [SMThemeCartography getUniqueColors:nil];
+            for(NSArray* arrayColor in colorUniqueDic.allValues) {
                 NSUInteger count = arrayColor.count;
                 Color* color01 =[arrayColor objectAtIndex:0];
                 int rgb01 = color01.rgb;
@@ -127,9 +126,8 @@ static NSArray* lastGridRangeColors = nil;
             }
             int rgb_start = color_start.rgb;
             int rgb_end = color_end.rgb;
-            NSEnumerator* enumValue = [[self getRangeColors:@""] objectEnumerator];
-            for (NSObject* object in enumValue) {
-                NSMutableArray* arrayColor = (NSMutableArray*)object;
+            [SMThemeCartography getRangeColors:nil];
+            for(NSArray* arrayColor in colorRangeDic.allValues){
                 NSUInteger count = arrayColor.count;
                 Color* color01 =[arrayColor objectAtIndex:0];
                 int rgb01 = color01.rgb;
@@ -139,6 +137,7 @@ static NSArray* lastGridRangeColors = nil;
                     return arrayColor;
                 }
             }
+          
         }else if (theme.themeType == TT_Graph){
             ThemeGraph* themeGraph=(ThemeGraph*)theme;
             int count=[themeGraph getCount];
