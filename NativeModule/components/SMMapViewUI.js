@@ -29,6 +29,15 @@ class SMMapView extends Component {
     startPoint: {},
     callouts: [],
     path: require('./../resource/startpoint.png'),
+    map:{
+      flex: 1,
+      alignSelf: 'stretch',
+      backgroundColor: '#ffbcbc',
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: 'hidden',
+      flexDirection: 'column',
+    },
   }
 
   static propTypes = {
@@ -73,7 +82,7 @@ class SMMapView extends Component {
     props.returnId = true;
 
     return (
-      <View style={styles.views}>
+      <View style={this.state.map}>
         <RCTMapView {...props} style={styles.map} onChange={this._onChange} />
       </View>
     );

@@ -31,6 +31,10 @@ public class CollectSceneFormViewManager extends SimpleViewManager<CustomRelativ
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
+        RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(500,
+                600);
+        params1.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        params1.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 
         mCustomRelativeLayout = new CustomRelativeLayout(reactContext);
         mCustomRelativeLayout.setLayoutParams(params);
@@ -38,7 +42,7 @@ public class CollectSceneFormViewManager extends SimpleViewManager<CustomRelativ
         SCollectSceneFormView.setViewManager(mCustomRelativeLayout);
 
         mMeasureView = new MeasureView(reactContext.getCurrentActivity());
-        mMeasureView.setLayoutParams(params);
+        mMeasureView.setLayoutParams(params1);
         SCollectSceneFormView.setMeasureView(mMeasureView);
 
         mSurfaceView = new RajawaliSurfaceView(reactContext.getCurrentActivity());
