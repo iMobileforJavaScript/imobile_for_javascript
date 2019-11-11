@@ -625,6 +625,16 @@ RCT_REMAP_METHOD(addAttributeFieldInfo, addAttributeFieldInfo:(NSString *)layerP
     }
 }
 
+#pragma mark - 删除属性字段
+RCT_REMAP_METHOD(removeRecordsetFieldInfo, removeRecordsetFieldInfo:(NSString *)layerPath isSelect:(BOOL)isSelect attributeName:(NSString*)attributeName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BOOL result=[SMLayer removeRecordsetFieldInfo:layerPath isSelectOrLayer:isSelect attributeName:attributeName];
+        resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"removeRecordsetFieldInfo", exception.reason, nil);
+    }
+}
+
 //RCT_REMAP_METHOD(setEditable, setEditableByLayerPath:(NSString*)layerPath editable:(BOOL)editable resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
 //    @try {
 //        Layer* layer = [SMLayer findLayerByPath:layerPath];

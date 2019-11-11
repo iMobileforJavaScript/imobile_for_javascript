@@ -624,52 +624,73 @@ public class SMLayer {
     }
 
     public static boolean addRecordsetFieldInfo(String path,boolean isSelect,ReadableMap fieldInfoMap) {
-        Layer layer=findLayerByPath(path);
-        DatasetVector datasetVector;
-        if(isSelect){
-            Selection selection=layer.getSelection();
-            datasetVector=selection.getDataset();
-        }else {
-            datasetVector= (DatasetVector) layer.getDataset();
-        }
-        FieldInfo fieldInfo=new FieldInfo();
-        //别名
-        if(fieldInfoMap.hasKey("caption")){
-            fieldInfo.setCaption(fieldInfoMap.getString("caption"));
-        }
-        //名称
-        if(fieldInfoMap.hasKey("name")){
-            fieldInfo.setName(fieldInfoMap.getString("name"));
-        }
-        //是否必填
-        if(fieldInfoMap.hasKey("required")){
-            fieldInfo.setRequired(fieldInfoMap.getBoolean("required"));
-        }
-        //最大长度
-        if(fieldInfoMap.hasKey("maxLength")){
-            fieldInfo.setMaxLength(fieldInfoMap.getInt("maxLength"));
-        }
-        //字段的类型Enum
-        if(fieldInfoMap.hasKey("type")){
-            int type=fieldInfoMap.getInt("type");
-            FieldType fieldType=(FieldType) Enum.parse(FieldType.class, type);
-            fieldInfo.setType(fieldType);
-            //默认值
-            if(fieldInfoMap.hasKey("defaultValue")){
-                switch (type){
-                    case 1:
-                        fieldInfo.setDefaultValue(fieldInfoMap.getBoolean("defaultValue")?"1":"0");
-                        break;
-                    default:
-                        fieldInfo.setDefaultValue(fieldInfoMap.getString("defaultValue"));
-                        break;
+        try{
+            Layer layer=findLayerByPath(path);
+            DatasetVector datasetVector;
+            if(isSelect){
+                Selection selection=layer.getSelection();
+                datasetVector=selection.getDataset();
+            }else {
+                datasetVector= (DatasetVector) layer.getDataset();
+            }
+            FieldInfo fieldInfo=new FieldInfo();
+            //别名
+            if(fieldInfoMap.hasKey("caption")){
+                fieldInfo.setCaption(fieldInfoMap.getString("caption"));
+            }
+            //名称
+            if(fieldInfoMap.hasKey("name")){
+                fieldInfo.setName(fieldInfoMap.getString("name"));
+            }
+            //是否必填
+            if(fieldInfoMap.hasKey("required")){
+                fieldInfo.setRequired(fieldInfoMap.getBoolean("required"));
+            }
+            //最大长度
+            if(fieldInfoMap.hasKey("maxLength")){
+                fieldInfo.setMaxLength(fieldInfoMap.getInt("maxLength"));
+            }
+            //字段的类型Enum
+            if(fieldInfoMap.hasKey("type")){
+                int type=fieldInfoMap.getInt("type");
+                FieldType fieldType=(FieldType) Enum.parse(FieldType.class, type);
+                fieldInfo.setType(fieldType);
+                //默认值
+                if(fieldInfoMap.hasKey("defaultValue")){
+                    switch (type){
+                        case 1:
+                            fieldInfo.setDefaultValue(fieldInfoMap.getBoolean("defaultValue")?"1":"0");
+                            break;
+                        default:
+                            fieldInfo.setDefaultValue(fieldInfoMap.getString("defaultValue"));
+                            break;
+                    }
                 }
             }
+            int result=datasetVector.getFieldInfos().add(fieldInfo);
+            if(result>=0){
+                return true;
+            }else {
+                return false;
+            }
+        }catch (Exception e){
+            return false;
         }
-        int result=datasetVector.getFieldInfos().add(fieldInfo);
-        if(result>=0){
-            return true;
-        }else {
+    }
+
+    public static boolean removeRecordsetFieldInfo(String path,boolean isSelect,String attributeName) {
+        try{
+            Layer layer=findLayerByPath(path);
+            DatasetVector datasetVector;
+            if(isSelect){
+                Selection selection=layer.getSelection();
+                datasetVector=selection.getDataset();
+            }else {
+                datasetVector= (DatasetVector) layer.getDataset();
+            }
+            boolean  result=datasetVector.getFieldInfos().remove(attributeName);
+            return result;
+        }catch (Exception e){
             return false;
         }
     }
