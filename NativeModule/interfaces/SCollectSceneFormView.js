@@ -41,9 +41,9 @@ setArSceneViewVisible = (isVisible) => {
   }
 }
 
-initSceneFormView = (datasourceAlias, datasetName, language, UDBpath) => {
+initSceneFormView = (datasourceAlias, datasetName,datasetPointName, language, UDBpath) => {
   try {
-    return SCollectSceneFormView.initSceneFormView(datasourceAlias, datasetName, language, UDBpath)
+    return SCollectSceneFormView.initSceneFormView(datasourceAlias, datasetName,datasetPointName, language, UDBpath)
   } catch (error) {
     console.error(error)
   }
@@ -57,9 +57,17 @@ saveData = (name) => {
   }
 }
 
-loadData = (index) => {
+saveGPSData = (name) => {
   try {
-    return SCollectSceneFormView.loadData(index)
+    return SCollectSceneFormView.saveGPSData(name)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+loadData = (index,isLine) => {
+  try {
+    return SCollectSceneFormView.loadData(index,isLine)
   } catch (error) {
     console.error(error)
   }
@@ -73,9 +81,9 @@ clearData = () => {
   }
 }
 
-getHistoryData = () => {
+getHistoryData = (isLine) => {
   try {
-    return SCollectSceneFormView.getHistoryData()
+    return SCollectSceneFormView.getHistoryData(isLine)
   } catch (error) {
     console.error(error)
   }
@@ -89,6 +97,14 @@ switchViewMode = () => {
   }
 }
 
+deleteData = (name,isLine) => {
+  try {
+    return SCollectSceneFormView.deleteData(name,isLine)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   startRecording,
   stopRecording,
@@ -96,8 +112,10 @@ export default {
   onDestroy,
   initSceneFormView,
   saveData,
+  saveGPSData,
   loadData,
   clearData,
   getHistoryData,
   switchViewMode,
+  deleteData,
 }

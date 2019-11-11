@@ -93,6 +93,24 @@ public class CastModelOperateViewManager extends SimpleViewManager<ImobileCustom
         }
     }
 
+    private void renderObjectByImage(CustomSceneViewManager sceneViewManager, Anchor anchor, int model){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            ViewRenderable.builder()
+                    .setView(mReactContext.getCurrentActivity(), model)
+                    .build()
+                    .thenAccept(viewRenderable -> addNodeToSceneByImage(sceneViewManager, anchor, viewRenderable))
+                    .exceptionally((throwable -> {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mReactContext.getCurrentActivity());
+                        builder.setMessage(throwable.getMessage())
+                                .setTitle("Error!");
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                        return null;
+                    }));
+        }
+    }
+
+
     private void renderObjectByImage(CustomSceneViewManager sceneViewManager, Anchor anchor) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             ViewRenderable.builder()
