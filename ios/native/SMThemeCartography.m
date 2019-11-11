@@ -37,7 +37,28 @@ static NSArray* lastGridRangeColors = nil;
     }
 }
 
-+(NSMutableArray*)getLastThemeColors:(Layer* )layer{
++(Color*)getGeoStyleColor:(DatasetType)type geoStyle:(GeoStyle*)geoStyle {
+    @try{
+        NSString* strType = [self datasetTypeToString:type];
+        if([strType isEqualToString:@"POINT"])
+        {
+           return [geoStyle getLineColor];
+        }
+        if([strType isEqualToString:@"LINE"])
+        {
+            return [geoStyle getLineColor];
+        }
+        if([strType isEqualToString:@"REGION"])
+        {
+            return [geoStyle getFillForeColor];
+        }
+    }
+    @catch (NSException *exception){
+        @throw exception;
+    }
+}
+
++(NSArray*)getLastThemeColors:(Layer* )layer{
     @try{
         if (layer == nil) {
             return nil;
@@ -71,9 +92,8 @@ static NSArray* lastGridRangeColors = nil;
             }
             int rgb_start = color_start.rgb;
             int rgb_end = color_end.rgb;
-            NSEnumerator* enumValue = [[self getUniqueColors:@""] objectEnumerator];
-            for (NSObject* object in enumValue) {
-                NSMutableArray* arrayColor = (NSMutableArray*)object;
+            [SMThemeCartography getUniqueColors:nil];
+            for(NSArray* arrayColor in colorUniqueDic.allValues) {
                 NSUInteger count = arrayColor.count;
                 Color* color01 =[arrayColor objectAtIndex:0];
                 int rgb01 = color01.rgb;
@@ -106,9 +126,8 @@ static NSArray* lastGridRangeColors = nil;
             }
             int rgb_start = color_start.rgb;
             int rgb_end = color_end.rgb;
-            NSEnumerator* enumValue = [[self getRangeColors:@""] objectEnumerator];
-            for (NSObject* object in enumValue) {
-                NSMutableArray* arrayColor = (NSMutableArray*)object;
+            [SMThemeCartography getRangeColors:nil];
+            for(NSArray* arrayColor in colorRangeDic.allValues){
                 NSUInteger count = arrayColor.count;
                 Color* color01 =[arrayColor objectAtIndex:0];
                 int rgb01 = color01.rgb;
@@ -118,6 +137,7 @@ static NSArray* lastGridRangeColors = nil;
                     return arrayColor;
                 }
             }
+          
         }else if (theme.themeType == TT_Graph){
             ThemeGraph* themeGraph=(ThemeGraph*)theme;
             int count=[themeGraph getCount];

@@ -16,6 +16,9 @@ import com.supermap.interfaces.ar.rajawali.MotionRajawaliRenderer;
 import com.supermap.interfaces.ar.rajawali.ViewMode;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.MapControl;
+import com.supermap.plugin.LocationManagePlugin;
+import com.supermap.smNative.collector.SMCollector;
+
 import org.rajawali3d.scene.ASceneFrameCallback;
 import org.rajawali3d.surface.IRajawaliSurface;
 import org.rajawali3d.surface.RajawaliSurfaceView;
@@ -48,7 +51,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     List<SceneFormInfo> infoList = new ArrayList<>();
     private ArrayList<Point3D> mQueryData = new ArrayList<>();//查询到的数据
 
-    private String mDatasourceAlias, mDatasetName = null;
+    private String mDatasourceAlias, mDatasetName ,mPointDatasetName= null;
     private static String mLanguage = "CN";//EN
     private static String UDBpath = "";
 
@@ -199,12 +202,50 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 删除指定数据
+     * @param promise
+     */
+    @ReactMethod
+    public void deleteData(String name,boolean isLine, Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------saveData--------RN--------");
+
+            deleteDataset(name,isLine);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 保存当前定位点
+     * @param promise
+     */
+    @ReactMethod
+    public void saveGPSData(String name, Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------saveData--------RN--------");
+
+            LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
+            Point3D point3D = new Point3D(gpsDat.dLongitude, gpsDat.dLatitude, gpsDat.dAltitude);
+            //保存到数据集
+            saveDataset(name,point3D);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     /**
      * 加载数据到三维场景里
      * @param promise
      */
     @ReactMethod
-    public void loadData(int index, Promise promise) {
+    public void loadData(int index,boolean isLine, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------loadData--------RN--------");
             if (mQueryData == null) {
@@ -212,25 +253,41 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             } else {
                 mQueryData.clear();
             }
-
-            if (infoList != null && infoList.size() > 0) {
-                SceneFormInfo info = infoList.get(index);
-                GeoLine3D geoLine3D = info.getGeoLine3D();
-                for (int i = 0; i < geoLine3D.getPartCount(); i++) {
-                    Point3Ds part = geoLine3D.getPart(i);
-                    Point3D[] point3DS = part.toArray();
-                    for (Point3D point : point3DS ) {
-                        mQueryData.add(point);
+            if(isLine){
+                if (infoList != null && infoList.size() > 0) {
+                    SceneFormInfo info = infoList.get(index);
+                    GeoLine3D geoLine3D = info.getGeoLine3D();
+                    for (int i = 0; i < geoLine3D.getPartCount(); i++) {
+                        Point3Ds part = geoLine3D.getPart(i);
+                        Point3D[] point3DS = part.toArray();
+                        for (Point3D point : point3DS ) {
+                            mQueryData.add(point);
+                        }
                     }
-                }
 
-                if (mRenderer != null) {
-                    mRenderer.loadPoseData(mQueryData);
+                    if (mRenderer != null) {
+                        mRenderer.loadPoseData(mQueryData);
+                    }
+                    promise.resolve(true);
+                } else {
+                    promise.resolve(false);
                 }
-                promise.resolve(true);
-            } else {
-                promise.resolve(false);
+            }else {
+                if (infoList != null && infoList.size() > 0) {
+                    SceneFormInfo info = infoList.get(index);
+                    GeoPoint3D geoPoint3D = info.getGeoPoint3D();
+                    Point3D point = geoPoint3D.getInnerPoint3D();
+                    mQueryData.add(point);
+
+                    if (mRenderer != null) {
+                        mRenderer.loadPoseData(mQueryData);
+                    }
+                    promise.resolve(true);
+                } else {
+                    promise.resolve(false);
+                }
             }
+
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -292,16 +349,18 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void initSceneFormView(String datasourceAlias, String datasetName, String language, String UDBpath, Promise promise) {
+    public void initSceneFormView(String datasourceAlias, String datasetName,String datasetPointName, String language, String UDBpath, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------initSceneFormView--------RN--------");
             mDatasourceAlias = datasourceAlias;
             mDatasetName = datasetName;
+            mPointDatasetName = datasetPointName;
             mLanguage = language;
             this.UDBpath = UDBpath;
 
             createDatasource(mDatasourceAlias, this.UDBpath);
             createDataset(mDatasourceAlias, mDatasetName);
+            createPointDataset(mDatasourceAlias, mPointDatasetName);
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -310,7 +369,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getHistoryData(Promise promise) {
+    public void getHistoryData(boolean isLine,Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------getHistoryData--------RN--------");
             if (infoList == null) {
@@ -318,7 +377,11 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             } else {
                 infoList.clear();;
             }
-            infoList = getDatasetAllGeometry(this.mDatasourceAlias, this.mDatasetName);
+            if(isLine){
+                infoList = getDatasetAllGeometry(this.mDatasourceAlias, this.mDatasetName);
+            }else {
+                infoList = getPointDatasetAllGeometry(this.mDatasourceAlias, this.mPointDatasetName);
+            }
             if (infoList != null && infoList.size() > 0) {
                 WritableArray arr = Arguments.createArray();
                 for (int i = 0; i < infoList.size(); i++) {
@@ -412,6 +475,34 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
         datasetVector.close();
     }
 
+    private void createPointDataset(String UDBName, String pointdatasetName) {
+        MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
+        Workspace workspace = mapControl.getMap().getWorkspace();
+        Datasource datasource = workspace.getDatasources().get(UDBName);
+
+        Datasets datasets = datasource.getDatasets();
+        if (datasets.contains(pointdatasetName)) {
+            checkFieldInfos((DatasetVector)datasets.get(pointdatasetName));
+            return;
+        }
+
+        DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
+        datasetVectorInfo.setType(DatasetType.POINT3D);
+        datasetVectorInfo.setEncodeType(EncodeType.NONE);
+        datasetVectorInfo.setName(pointdatasetName);
+        DatasetVector datasetVector = datasets.create(datasetVectorInfo);
+
+        //创建数据集时创建好字段
+        addFieldInfo(datasetVector, "Description", FieldType.TEXT, false, "", 255);
+        addFieldInfo(datasetVector, "ModifiedDate", FieldType.TEXT, false, "", 255);
+        addFieldInfo(datasetVector, "Name", FieldType.TEXT, false, "", 255);
+
+        datasetVector.setPrjCoordSys(new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE));
+
+        datasetVectorInfo.dispose();
+        datasetVector.close();
+    }
+
     // 添加指定字段到数据集
     private void addFieldInfo(DatasetVector dv, String name, FieldType type, boolean required, String value, int maxLength) {
         FieldInfos infos = dv.getFieldInfos();
@@ -453,7 +544,6 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             Workspace workspace = mapControl.getMap().getWorkspace();
             Datasource datasource = workspace.getDatasources().get(mDatasourceAlias);
             datasetVector = (DatasetVector) datasource.getDatasets().get(mDatasetName);
-
             Recordset recordset = datasetVector.getRecordset(false, CursorType.DYNAMIC);//动态指针
             if (recordset != null) {
                 //移动指针到最后
@@ -504,6 +594,103 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
         }
 
     }
+
+
+    /**
+     * 保存点数据
+     */
+    private void saveDataset(String name,Point3D point3D) {
+        try {
+            DatasetVector datasetVector = null;
+            MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
+            Workspace workspace = mapControl.getMap().getWorkspace();
+            Datasource datasource = workspace.getDatasources().get(mDatasourceAlias);
+            datasetVector = (DatasetVector) datasource.getDatasets().get(mPointDatasetName);
+
+            Recordset recordset = datasetVector.getRecordset(false, CursorType.DYNAMIC);//动态指针
+            if (recordset != null) {
+                //移动指针到最后
+                recordset.moveLast();
+                recordset.edit();//可编辑
+
+                GeoPoint3D geoPoint3D = new GeoPoint3D(point3D);
+                //移动指针到下一位
+                recordset.moveNext();
+                //新增面对象
+                recordset.addNew(geoPoint3D);
+
+                FieldInfos fieldInfos = recordset.getFieldInfos();
+                if (fieldInfos.indexOf("ModifiedDate") != -1) {
+                    String str = null;
+                    Object ob = recordset.getFieldValue("ModifiedDate");
+                    if (ob != null) {
+                        str = ob.toString();
+                    }
+                    if (!getCurrentTime().equals(str)) {
+                        recordset.setFieldValue("ModifiedDate", getCurrentTime());
+                    }
+                }
+                if (fieldInfos.indexOf("NAME") != -1) {
+                    String str = null;
+                    Object ob = recordset.getFieldValue("NAME");
+                    if (ob != null) {
+                        str = ob.toString();
+                    }
+                    if (!name.equals(str)) {
+                        recordset.setFieldValue("NAME", name);
+                    }
+                }
+
+                //保存更新,并释放资源
+                recordset.update();
+                recordset.close();
+                recordset.dispose();
+            }
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+        }
+
+    }
+
+    /**
+     * 删除数据
+     */
+    private void deleteDataset(String name,boolean isLine) {
+        try {
+            DatasetVector datasetVector = null;
+            MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
+            Workspace workspace = mapControl.getMap().getWorkspace();
+            Datasource datasource = workspace.getDatasources().get(mDatasourceAlias);
+            if(isLine){
+                datasetVector = (DatasetVector) datasource.getDatasets().get(mDatasetName);
+            }else {
+                datasetVector = (DatasetVector) datasource.getDatasets().get(mPointDatasetName);
+            }
+            Recordset recordset = datasetVector.getRecordset(false, CursorType.DYNAMIC);
+            recordset.moveFirst();
+            Object ob;
+            FieldInfos fieldInfos = recordset.getFieldInfos();
+
+
+            while (!recordset.isEOF()) {
+                if (fieldInfos.indexOf("NAME") != -1) {
+                    ob = recordset.getFieldValue("NAME");
+                    if(ob.toString().equals(name)){
+                        recordset.edit();
+                        recordset.delete();
+                    }
+                }
+                recordset.moveNext();
+            }
+            recordset.update();
+            recordset.close();
+            recordset.dispose();
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+        }
+
+    }
+
 
     private String getCurrentTime() {
         //得到long类型当前时间
@@ -595,7 +782,83 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
 
         recordset.close();
         recordset.dispose();
+        return list;
+    }
 
+    /**
+     * 获取指定数据集中所有信息
+     */
+    public List<SceneFormInfo> getPointDatasetAllGeometry(String UDBName, String DatasetName) {
+        DatasetVector datasetVector = null;
+        if (UDBName != null && DatasetName != null) {
+            MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
+            Workspace workspace = mapControl.getMap().getWorkspace();
+            Datasource datasource = workspace.getDatasources().get(UDBName);
+            datasetVector = (DatasetVector) datasource.getDatasets().get(DatasetName);
+        }
+
+        if (datasetVector == null) {
+            Log.e(REACT_CLASS, "getDatasetAllGeometry argument is valid!");
+            return null;
+        }
+
+
+        // 如果数据集未打开
+        if (!datasetVector.isOpen()) {
+            return null;
+        }
+
+        Recordset recordset = datasetVector.getRecordset(false, CursorType.STATIC);
+        recordset.moveFirst();
+        Object ob;
+        FieldInfos fieldInfos = recordset.getFieldInfos();
+
+        ArrayList<SceneFormInfo> list = new ArrayList<SceneFormInfo>();
+
+        while (!recordset.isEOF()) {
+            int geometryId = recordset.getGeometry().getID();
+
+            GeoPoint3D geoPoint3D = (GeoPoint3D) recordset.getGeometry();
+
+            String NAME = "";
+            if (fieldInfos.indexOf("NAME") != -1) {
+                ob = recordset.getFieldValue("NAME");
+                if (ob != null) {
+                    NAME = ob.toString();
+                }
+            }
+
+            String TIME = "";
+            if (fieldInfos.indexOf("ModifiedDate") != -1) {
+                ob = recordset.getFieldValue("ModifiedDate");
+                if (ob != null) {
+                    TIME = ob.toString();
+                }
+            }
+
+            String Description = "";
+            if (fieldInfos.indexOf("Description") != -1) {
+                ob = recordset.getFieldValue("Description");
+                if (ob != null) {
+                    Description = ob.toString();
+                }
+            }
+
+            SceneFormInfo info = new SceneFormInfo.Builder()
+                    .ID(geometryId)
+                    .geoPoint3D(geoPoint3D)
+                    .name(NAME)
+                    .time(TIME)
+                    .notes(Description)
+                    .build();
+
+            list.add(info);
+
+            recordset.moveNext();
+        }
+
+        recordset.close();
+        recordset.dispose();
         return list;
     }
 

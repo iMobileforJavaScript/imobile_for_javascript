@@ -461,6 +461,24 @@ function addAttributeFieldInfo(path,isSelect,fieldInfo) {
     console.error(e)
   }
 }
+/**
+ * 删除属性字段
+ * @param path
+ * @param isSelect
+ * @param attributeName
+ * @returns {*}
+ */
+function removeRecordsetFieldInfo(path,isSelect,attributeName) {
+  try {
+    if (!path) {
+      console.warn('path is null')
+      return
+    }
+    return LayerManager.removeRecordsetFieldInfo(path, isSelect, attributeName)
+  } catch (e) {
+    console.error(e)
+  }
+}
 
 /**
  * 设置图层是否可编辑
@@ -516,6 +534,7 @@ export {
   setTrackingLayer,
   clearTrackingLayer,
   addAttributeFieldInfo,
+  removeRecordsetFieldInfo,
   // setEditable,
   // setVisible,
 }

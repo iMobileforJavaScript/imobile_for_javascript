@@ -35,7 +35,7 @@ static NSMutableArray *fillColors;
 static Point2Ds *animationWayPoint2Ds;
 static Point2Ds *animationWaySavePoint2Ds;
 //导航相关数据源
-static Datasource *IndoorDatasource;
+//static Datasource *IndoorDatasource;
 //是否是起点
 static BOOL isStart;
 //Gps点
@@ -1016,18 +1016,33 @@ RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithBool:(BOOL)first resolv
 RCT_REMAP_METHOD(startIndoorNavigation, startIndoorNavigationWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        Navigation3 *navigation3 = [sMap.smMapWC.mapControl getNavigation3];
-        GeoStyle *style = [[GeoStyle alloc] init];
-        [style setLineSymbolID:964882];
-        [navigation3 setRouteStyle:style];
-        GeoStyle *styleHint = [[GeoStyle alloc] init];
-        [styleHint setLineWidth:2];
-        [styleHint setLineColor:[[Color alloc]initWithR:82 G:198 B:233]];
-        [styleHint setLineSymbolID:2];
-        [navigation3 setHintRouteStyle:styleHint];
-        navigation3.navDelegate = self;
-        [navigation3 setDatasource:IndoorDatasource];
-        resolve(@(YES));
+        Datasource *naviDatasource;
+        Datasources *datasources = sMap.smMapWC.workspace.datasources;
+        for(int i = 0; i < datasources.count; i++){
+            Datasource *datasource = [datasources get:i];
+            Datasets *datasets = datasource.datasets;
+            if([datasets contain:@"FloorRelationTable"]){
+                naviDatasource = datasource;
+                break;
+            }
+        }
+        if(naviDatasource != nil){
+            Navigation3 *navigation3 = [sMap.smMapWC.mapControl getNavigation3];
+            GeoStyle *style = [[GeoStyle alloc] init];
+            [style setLineSymbolID:964882];
+            [navigation3 setRouteStyle:style];
+            GeoStyle *styleHint = [[GeoStyle alloc] init];
+            [styleHint setLineWidth:2];
+            [styleHint setLineColor:[[Color alloc]initWithR:82 G:198 B:233]];
+            [styleHint setLineSymbolID:2];
+            [navigation3 setHintRouteStyle:styleHint];
+            [navigation3 setDatasource:naviDatasource];
+            navigation3.navDelegate = self;
+            resolve(@(YES));
+        }else{
+            reject(@"startIndoorNavigation",@"naviDatasource can't be null",nil);
+        }
+       
     } @catch (NSException *exception) {
         reject(@"startIndoorNavigation",exception.reason,nil);
     }
@@ -1114,7 +1129,7 @@ RCT_REMAP_METHOD(hasLineDataset, hasLineDatasetWithResolver: (RCTPromiseResolveB
         }
         resolve(@(hasLineDataset));
     } @catch (NSException *exception) {
-        reject(@"hasNetworkDataset", exception.reason, nil);
+        reject(@"hasLineDataset", exception.reason, nil);
     }
 }
 
@@ -1321,6 +1336,7 @@ RCT_REMAP_METHOD(removeNetworkDataset, removeNetworkDatasetWithlineDatasetName:(
     }
 }
 
+
 #pragma mark 判断当前工作空间是否存在网络数据集（导航前置条件）
 RCT_REMAP_METHOD(hasNetworkDataset, hasNetworkDatasetWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
@@ -1443,27 +1459,32 @@ RCT_REMAP_METHOD(addGPSRecordset,addGPSRecordsetWithDatasource:(NSString *)datas
     }
 }
 
+#1
 #pragma mark 判断是否是室内点
 RCT_REMAP_METHOD(isIndoorPoint, isIndoorPointWithX:(double)x Y:(double) y resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
         BOOL isIndoor = NO;
-        if(IndoorDatasource != nil){
-            Recordset *recordset = nil;
-            QueryParameter *params = [[QueryParameter alloc]init];
-            params.cursorType = STATIC;
-            params.spatialQueryObject = [[Point2D alloc] initWithX:x Y:y];
-            Datasets *datasets = IndoorDatasource.datasets;
-            for(int i = 0; i < datasets.count; i++){
-                DatasetVector *datasetVector = (DatasetVector *)[datasets get:i];
-                recordset = [datasetVector query:params];
-                if(recordset != nil){
-                    isIndoor = YES;
-                }
-                [recordset dispose];
-                [datasetVector close];
+        Datasource *naviDatasource;
+        Datasources *datasources = sMap.smMapWC.workspace.datasources;
+        for(int i = 0; i < datasources.count; i++){
+            Datasource *datasource = [datasources get:i];
+            Datasets *datasets = datasource.datasets;
+            if([datasets contain:@"FloorRelationTable"]){
+                naviDatasource = datasource;
+                break;
             }
-            [params dispose];
+        }
+        if(naviDatasource != nil){
+            Datasets *datasets = naviDatasource.datasets;
+            Point2D *mapCenter = sMap.smMapWC.mapControl.map.center;
+            for(int i = 0; i < datasets.count; i++){
+                Dataset *dataset = [datasets get:i];
+                if([dataset.bounds containsPoint2D:mapCenter] && [dataset.bounds containsX:x Y:y]){
+                    isIndoor = YES;
+                    break;
+                }
+            }
         }
         NSDictionary *dic = @{@"isindoor":@(isIndoor)};
         resolve(dic);
@@ -1504,7 +1525,7 @@ RCT_REMAP_METHOD(getEndPoint, getEndPointWithX:(double)x Y:(double) y isIndoor: 
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
-        reject(@"getStartPoint", exception.reason, nil);
+        reject(@"getEndPoint", exception.reason, nil);
     }
 }
 
@@ -1560,7 +1581,30 @@ RCT_REMAP_METHOD(getPointName, getPointNameWithX:(double)x Y:(double) y IsStart:
         [self sendEventWithName: MAPSELECTPOINTNAMEEND body:geocodingData.formatedAddress];
     }
 }
-
+#pragma mark 获取当前地理坐标
+RCT_REMAP_METHOD(getCurrentMapPosition, getCurrentMapPositionWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        GPSData *gpsData= [NativeUtil getGPSData];
+        PrjCoordSys *mapCoordSys = sMap.smMapWC.mapControl.map.prjCoordSys;
+        Point2Ds *points = [[Point2Ds alloc]init];
+        Point2D *point = [[Point2D alloc] initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
+        [points add:point];
+        
+        PrjCoordSys *desPrjCoordSys = [[PrjCoordSys alloc]init];
+        desPrjCoordSys.type = PCST_EARTH_LONGITUDE_LATITUDE;
+        
+        [CoordSysTranslator convert:points PrjCoordSys:desPrjCoordSys PrjCoordSys:mapCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        
+        Point2D *point2D = [points getItem:0];
+        resolve(@{
+                  @"x":[NSNumber numberWithDouble:point2D.x],
+                  @"y":[NSNumber numberWithDouble:point2D.y],
+                  });
+    }@catch(NSException *exception){
+        reject(@"getCurrentMapPosition",exception.reason,nil);
+    }
+}
 
 #pragma mark 显示起点/终点
 +(void)showPointByCalloutAtX:(double)x Y:(double)y PointName:(NSString *)pointName{
@@ -1703,28 +1747,52 @@ RCT_REMAP_METHOD(isIndoorMap,isIndoorMapWithResolver: (RCTPromiseResolveBlock) r
         reject(@"isIndoorMap",exception.reason,nil);
     }
 }
-#pragma mark 获取室内数据源
-RCT_REMAP_METHOD(getIndoorDatasource,getIndoorDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+
+#pragma mark 判断点是否在数据集bounds内
+RCT_REMAP_METHOD(isInBounds, isInBoundsWithPoint:(NSDictionary *)point DatasetName:(NSString *)datasetName Resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        Datasources *datasources =sMap.smMapWC.workspace.datasources;
+        BOOL inBounds = NO;
+        double x = [[point valueForKey:@"x"] doubleValue];
+        double y = [[point valueForKey:@"y"] doubleValue];
+        Datasources *datasources = sMap.smMapWC.workspace.datasources;
         for(int i = 0; i < datasources.count; i++){
             Datasource *datasource = [datasources get:i];
-            if([datasource.alias isEqualToString:@"bounds"]){
-                Datasets *datasets = datasource.datasets;
-                DatasetVector *dataset = (DatasetVector *)[datasets getWithName:@"building"];
-                Recordset *recordset = [dataset recordset:NO cursorType:DYNAMIC];
-                IndoorDatasource = [datasources getAlias:(NSString *)[recordset getFieldValueWithString:@"LinkDatasource"]];
-                [recordset close];
-                [recordset dispose];
-                [dataset close];
+            Datasets *datasets = datasource.datasets;
+            Dataset *dataset = [datasets getWithName:datasetName];
+            if(dataset != nil && [dataset.bounds containsX:x Y:y]){
+                inBounds = YES;
             }
         }
-        resolve(@(YES));
+        resolve(@(inBounds));
     } @catch (NSException *exception) {
-        reject(@"getIndoorDatasource",exception.reason,nil);
+        reject(@"isInBounds", exception.reason, nil);
     }
 }
+
+//no use
+//#pragma mark 获取室内数据源
+//RCT_REMAP_METHOD(getIndoorDatasource,getIndoorDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+//    @try {
+//        sMap = [SMap singletonInstance];
+//        Datasources *datasources =sMap.smMapWC.workspace.datasources;
+//        for(int i = 0; i < datasources.count; i++){
+//            Datasource *datasource = [datasources get:i];
+//            if([datasource.alias isEqualToString:@"bounds"]){
+//                Datasets *datasets = datasource.datasets;
+//                DatasetVector *dataset = (DatasetVector *)[datasets getWithName:@"building"];
+//                Recordset *recordset = [dataset recordset:NO cursorType:DYNAMIC];
+//                IndoorDatasource = [datasources getAlias:(NSString *)[recordset getFieldValueWithString:@"LinkDatasource"]];
+//                [recordset close];
+//                [recordset dispose];
+//                [dataset close];
+//            }
+//        }
+//        resolve(@(YES));
+//    } @catch (NSException *exception) {
+//        reject(@"getIndoorDatasource",exception.reason,nil);
+//    }
+//}
 
 #pragma mark -------------------------导航模块结束---------------------------
 

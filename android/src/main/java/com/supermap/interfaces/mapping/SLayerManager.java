@@ -844,4 +844,14 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+    @ReactMethod
+    public void removeRecordsetFieldInfo(String layerPath,boolean isSelect,String attributeName,Promise promise) {
+        try {
+            boolean result=SMLayer.removeRecordsetFieldInfo(layerPath,isSelect,attributeName);
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 }

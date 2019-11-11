@@ -1846,6 +1846,28 @@ public class SMThemeCartography {
         }
     }
 
+    public static Color getGeoStyleColor(DatasetType type, GeoStyle geoStyle) {
+        try {
+            switch (type.toString()) {
+                case "POINT":
+                    return geoStyle.getLineColor();
+//                    break;
+                case "LINE":
+                    return geoStyle.getLineColor();
+//                    break;
+                case "REGION":
+                    //面：需要默认设置好看的线型颜色，根据颜色的深浅值来判断，保持所有的线型值统一
+                    return geoStyle.getFillForeColor(); //此效果等同于所有线型都设置为NULL
+//                    geoStyle.setFillForeColor();
+//                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     /**
      * 根据RGB值判断 深色与浅色
      * @param r
