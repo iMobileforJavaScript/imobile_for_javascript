@@ -1,6 +1,8 @@
 package com.supermap.interfaces.ar;
 
 import com.supermap.data.GeoLine3D;
+import com.supermap.data.GeoPoint3D;
+import com.supermap.data.Point3D;
 
 public class SceneFormInfo {
     private int ID = 0;
@@ -18,6 +20,8 @@ public class SceneFormInfo {
     private double locationY = 0;
 
     private GeoLine3D geoLine3D = null;
+
+    private GeoPoint3D geoPoint3D = null;
 
     public void setName(String name) {
         this.name = name;
@@ -53,6 +57,10 @@ public class SceneFormInfo {
 
     public GeoLine3D getGeoLine3D() {
         return geoLine3D;
+    }
+
+    public GeoPoint3D getGeoPoint3D() {
+        return geoPoint3D;
     }
 
     public String getType() {
@@ -97,6 +105,7 @@ public class SceneFormInfo {
         this.picpath = builder.picpath;
         this.notes = builder.notes;
         this.geoLine3D = builder.geoLine3D;
+        this.geoPoint3D = builder.geoPoint3D;
 
         this.locationX = builder.locationX;
         this.locationY = builder.locationY;
@@ -105,6 +114,7 @@ public class SceneFormInfo {
     public static class Builder{
         private int ID = 0;
         private GeoLine3D geoLine3D;
+        private GeoPoint3D geoPoint3D;
 
         private String name = "";
         private String type = "";
@@ -165,6 +175,12 @@ public class SceneFormInfo {
             this.geoLine3D = geoLine3D;
             return this;
         }
+
+        public SceneFormInfo.Builder geoPoint3D(GeoPoint3D geoPoint3D) {
+            this.geoPoint3D = geoPoint3D;
+            return this;
+        }
+
 
         public SceneFormInfo build() {
             return new SceneFormInfo(this);

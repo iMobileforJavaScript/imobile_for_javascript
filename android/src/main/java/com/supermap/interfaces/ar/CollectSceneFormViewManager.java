@@ -35,6 +35,7 @@ public class CollectSceneFormViewManager extends SimpleViewManager<CustomRelativ
                 600);
         params1.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         params1.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params1.bottomMargin=100;
 
         mCustomRelativeLayout = new CustomRelativeLayout(reactContext);
         mCustomRelativeLayout.setLayoutParams(params);
