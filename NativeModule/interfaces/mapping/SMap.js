@@ -235,7 +235,16 @@ export default (function () {
     }
   }
 
-  
+  /**
+     * 获取工作空间文件内的信息
+     */
+  function getLocalWorkspaceInfo(workspacePath) {
+    try {
+      return SMap.getLocalWorkspaceInfo(workspacePath)
+    } catch (error) {
+      console.error(e)
+    } 
+  }
 
   /**
    *
@@ -2938,6 +2947,7 @@ export default (function () {
     closeMap,
     getUDBName,
     getUDBNameOfLabel,
+    getLocalWorkspaceInfo,
     submit,
     cancel,
     setGestureDetector,

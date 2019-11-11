@@ -27,6 +27,7 @@
 #import "SuperMap/RecycleLicenseManager.h"
 #import "SuperMap/LogInfoService.h"
 #import "KeychainUtil.h"
+#import "SuperMap/Scenes.h"
 static SMap *sMap = nil;
 //static NSInteger *fillNum;
 static NSMutableArray *fillColors;
@@ -2683,6 +2684,62 @@ RCT_REMAP_METHOD(getUDBName, getUDBNameWithPath:(NSString *)path resolve:(RCTPro
         resolve(arr);
     } @catch (NSException *exception) {
         reject(@"getUDBName",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(getLocalWorkspaceInfo, localurl: (NSString *) serverUrl
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    @try {
+        Workspace * ws = [[Workspace alloc]init];
+        WorkspaceConnectionInfo * wscInfo = [[WorkspaceConnectionInfo alloc]init];
+        wscInfo.server = serverUrl;
+        NSString * tempStr = [serverUrl lowercaseString];
+        if([tempStr hasSuffix:@".smwu"]) {
+            wscInfo.type = SM_SMWU;
+        } else if([tempStr hasSuffix:@".sxwu"]) {
+            wscInfo.type = SM_SXWU;
+        }  else if([tempStr hasSuffix:@".smw"]) {
+            wscInfo.type = SM_SMW;
+        }  else if([tempStr hasSuffix:@".sxw"]) {
+            wscInfo.type = SM_SXW;
+        }
+        
+        NSMutableDictionary* workspaceInfos = [[NSMutableDictionary alloc] init];
+        NSMutableArray *Maps = [[NSMutableArray alloc] init];
+        NSMutableArray *Scenes = [[NSMutableArray alloc] init];
+        NSMutableArray *datasources = [[NSMutableArray alloc] init];
+        
+        if([ws open:wscInfo]) {
+            for(int i = 0; i < ws.maps.count; i++) {
+                [Maps addObject:[ws.maps get:i]];
+            }
+            
+            for(int i = 0; i < ws.scenes.count ; i++) {
+                [Scenes addObject:[ws.scenes get:i]];
+            }
+            
+            DatasourceConnectionInfo * dInfo = nil;
+            for(int i = 0; i < ws.datasources.count; i++) {
+                dInfo = [[ws.datasources get:i] datasourceConnectionInfo];
+                if(dInfo.engineType == ET_UDB) {
+                    NSMutableDictionary* datasourceInfo = [[NSMutableDictionary alloc] init];
+                    [datasourceInfo setObject:dInfo.alias forKey:@"alias"];
+                    [datasourceInfo setObject:dInfo.server forKey:@"server"];
+                    [datasources addObject:datasourceInfo];
+                }
+            }
+        }
+        
+        [workspaceInfos setObject:Maps forKey:@"maps"];
+        [workspaceInfos setObject:Scenes forKey:@"scenes"];
+        [workspaceInfos setObject:datasources forKey:@"datasources"];
+        
+        [ws close];
+        [ws dispose];
+        resolve(workspaceInfos);
+    } @catch (NSException *exception) {
+        reject(@"getLocalWorkspaceInfo", exception.reason, nil);
     }
 }
 

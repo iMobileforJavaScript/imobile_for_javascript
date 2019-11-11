@@ -930,6 +930,64 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 获取工作空间文件内的信息
+     */
+    @ReactMethod
+    public void getLocalWorkspaceInfo(String serverUrl, Promise promise) {
+        try {
+            Workspace ws = new Workspace();
+            WorkspaceConnectionInfo workspaceConnectionInfo = new WorkspaceConnectionInfo();
+            workspaceConnectionInfo.setServer(serverUrl);
+            String tempStr = serverUrl.toLowerCase();
+            if(tempStr.endsWith(".smwu")){
+                workspaceConnectionInfo.setType(WorkspaceType.SMWU);
+            } else if(tempStr.endsWith(".sxwu")) {
+                workspaceConnectionInfo.setType(WorkspaceType.SXWU);
+            } else if(tempStr.endsWith(".smw")) {
+                workspaceConnectionInfo.setType(WorkspaceType.SMW);
+            } else if(tempStr.endsWith(".sxw")) {
+                workspaceConnectionInfo.setType(WorkspaceType.SXW);
+            }
+
+            WritableMap workspaceInfos = Arguments.createMap();
+            WritableArray Maps = Arguments.createArray();
+            WritableArray Scenes = Arguments.createArray();
+            WritableArray datasources = Arguments.createArray();
+
+            if(ws.open(workspaceConnectionInfo)){
+                for(int i = 0; i <  ws.getMaps().getCount(); i++) {
+                    Maps.pushString(ws.getMaps().get(i));
+                }
+
+                for(int i = 0; i < ws.getScenes().getCount(); i++) {
+                    Scenes.pushString(ws.getScenes().get(i));
+                }
+
+                DatasourceConnectionInfo datasourceConnectionInfo = null;
+                for(int i = 0; i < ws.getDatasources().getCount(); i++) {
+                    datasourceConnectionInfo = ws.getDatasources().get(i).getConnectionInfo();
+                    if(datasourceConnectionInfo.getEngineType() == EngineType.UDB) {
+                        WritableMap datasourceInfo = Arguments.createMap();
+                        datasourceInfo.putString("alias", datasourceConnectionInfo.getAlias());
+                        datasourceInfo.putString("server", datasourceConnectionInfo.getServer());
+                        datasources.pushMap(datasourceInfo);
+                    }
+                }
+            }
+
+            workspaceInfos.putArray("maps", Maps);
+            workspaceInfos.putArray("scenes", Scenes);
+            workspaceInfos.putArray("datasources", datasources);
+
+            ws.close();
+            ws.dispose();
+            promise.resolve(workspaceInfos);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 根据名字显示图层
      *
      * @param name
