@@ -547,49 +547,71 @@
 }
 
 + (BOOL)addRecordsetFieldInfo:(NSString *)path isSelectOrLayer:(BOOL)isSelect fieldInfo:(NSDictionary*)fieldInfo{
-    Layer* layer = [self findLayerByPath:path];
-    DatasetVector* datasetVector;
-    if(isSelect){
-        Selection* selection = [layer getSelection];
-        datasetVector = [selection getDataset];
-    }else{
-        datasetVector = (DatasetVector *)layer.dataset;
-    }
-    
-    FieldInfo* filedInfo=[[FieldInfo alloc] init];
-    //别名
-    if([fieldInfo objectForKey:@"caption"]){
-        filedInfo.caption=[fieldInfo objectForKey:@"caption"];
-    }
-    //名称
-    if([fieldInfo objectForKey:@"name"]){
-        filedInfo.name=[fieldInfo objectForKey:@"name"];
-    }
-    //是否必填
-    if([fieldInfo objectForKey:@"required"]){
-        filedInfo.required=[[fieldInfo objectForKey:@"required"] boolValue];
-    }
-    //最大长度
-    if([fieldInfo objectForKey:@"maxLength"]){
-        filedInfo.maxLength=[[fieldInfo objectForKey:@"maxLength"] intValue];
-    }
-    //字段的类型
-    if([fieldInfo objectForKey:@"type"]){
-        filedInfo.fieldType=[[fieldInfo objectForKey:@"type"] intValue];
-        //默认值
-        if([fieldInfo objectForKey:@"defaultValue"]){
-            if(filedInfo.fieldType==FT_BOOLEAN){
-                filedInfo.defaultValue=[[fieldInfo objectForKey:@"defaultValue"] boolValue]?@"1":@"0";
-            }else{
-                filedInfo.defaultValue=[fieldInfo objectForKey:@"defaultValue"];
+    @try{
+        Layer* layer = [self findLayerByPath:path];
+        DatasetVector* datasetVector;
+        if(isSelect){
+            Selection* selection = [layer getSelection];
+            datasetVector = [selection getDataset];
+        }else{
+            datasetVector = (DatasetVector *)layer.dataset;
+        }
+        
+        FieldInfo* filedInfo=[[FieldInfo alloc] init];
+        //别名
+        if([fieldInfo objectForKey:@"caption"]){
+            filedInfo.caption=[fieldInfo objectForKey:@"caption"];
+        }
+        //名称
+        if([fieldInfo objectForKey:@"name"]){
+            filedInfo.name=[fieldInfo objectForKey:@"name"];
+        }
+        //是否必填
+        if([fieldInfo objectForKey:@"required"]){
+            filedInfo.required=[[fieldInfo objectForKey:@"required"] boolValue];
+        }
+        //最大长度
+        if([fieldInfo objectForKey:@"maxLength"]){
+            filedInfo.maxLength=[[fieldInfo objectForKey:@"maxLength"] intValue];
+        }
+        //字段的类型
+        if([fieldInfo objectForKey:@"type"]){
+            filedInfo.fieldType=[[fieldInfo objectForKey:@"type"] intValue];
+            //默认值
+            if([fieldInfo objectForKey:@"defaultValue"]){
+                if(filedInfo.fieldType==FT_BOOLEAN){
+                    filedInfo.defaultValue=[[fieldInfo objectForKey:@"defaultValue"] boolValue]?@"1":@"0";
+                }else{
+                    filedInfo.defaultValue=[fieldInfo objectForKey:@"defaultValue"];
+                }
             }
         }
+        int result=[datasetVector.fieldInfos add:filedInfo];
+        [filedInfo dispose];
+        if(result>=0){
+            return YES;
+        }else{
+            return NO;
+        }
+    }@catch (NSException *exception) {
+        return NO;
     }
-    int result=[datasetVector.fieldInfos add:filedInfo];
-    [filedInfo dispose];
-    if(result>=0){
-        return YES;
-    }else{
+}
++ (BOOL)removeRecordsetFieldInfo:(NSString *)path isSelectOrLayer:(BOOL)isSelect attributeName:(NSString*)attributeName{
+    @try{
+        Layer* layer = [self findLayerByPath:path];
+        DatasetVector* datasetVector;
+        if(isSelect){
+            Selection* selection = [layer getSelection];
+            datasetVector = [selection getDataset];
+        }else{
+            datasetVector = (DatasetVector *)layer.dataset;
+        }
+        
+        BOOL result=[datasetVector.fieldInfos removeFieldName:(attributeName)];
+        
+        return result;
+    }@catch (NSException *exception) {
         return NO;
     }
 }

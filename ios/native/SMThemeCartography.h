@@ -16,6 +16,7 @@
 
 @interface SMThemeCartography : NSObject
 +(void)setGeoStyleColor:(DatasetType)type geoStyle:(GeoStyle*)geoStyle color:(Color*)color;
++(Color*)getGeoStyleColor:(DatasetType)type geoStyle:(GeoStyle*)geoStyle;
 +(NSMutableArray*)getLastThemeColors:(Layer* )layer;
 +(NSString*)getThemeColorSchemeName:(Layer* )layer;
 +(Dataset* )getDataset:(NSString* ) datasetName datasourceIndex:(int) datasourceIndex;

@@ -52,6 +52,11 @@ export default (function () {
         console.error(e)
       }
   }
+
+  /**
+   * 地图室内/室外切换事件
+   * @param handler
+   */
   function addIndoorChangeListener(handler) {
     try {
       if(Platform.OS === 'ios'){
@@ -235,7 +240,16 @@ export default (function () {
     }
   }
 
-  
+  /**
+     * 获取工作空间文件内的信息
+     */
+  function getLocalWorkspaceInfo(workspacePath) {
+    try {
+      return SMap.getLocalWorkspaceInfo(workspacePath)
+    } catch (error) {
+      console.error(e)
+    } 
+  }
 
   /**
    *
@@ -2726,6 +2740,31 @@ export default (function () {
   }
 
   /**
+   * 判断当前点是否在数据集的bounds范围内
+   * @param point
+   * @param networkDataset
+   * @returns {*}
+   */
+  function isInBounds(point,networkDataset){
+    try {
+      return SMap.isInBounds(point,networkDataset)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取当前地理位置信息 返回地理坐标
+   * @returns {*}
+   */
+  function getCurrentMapPosition(){
+    try {
+      return SMap.getCurrentMapPosition()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  /**
    * 获取导航路径详情
    * @param isIndoor 是否室内
    * @returns {*}
@@ -2753,17 +2792,17 @@ export default (function () {
    * 获取室内数据源
    * @returns {*|void|Promise<void>}
    */
-  function getIndoorDatasource() {
-    try {
-      if(SMap.getIndoorDatasource){
-        return SMap.getIndoorDatasource()
-      }else {
-        return true
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  // function getIndoorDatasource() {
+  //   try {
+  //     if(SMap.getIndoorDatasource){
+  //       return SMap.getIndoorDatasource()
+  //     }else {
+  //       return true
+  //     }
+  //   } catch (e) {
+  //     console.error(e)
+  //   }
+  // }
 
   /**
    * 违章采集监听
@@ -2938,6 +2977,7 @@ export default (function () {
     closeMap,
     getUDBName,
     getUDBNameOfLabel,
+    getLocalWorkspaceInfo,
     submit,
     cancel,
     setGestureDetector,
@@ -3076,10 +3116,12 @@ export default (function () {
     setStartPointNameListener,
     setEndPointNameListener,
     isIndoorMap,
+    getCurrentMapPosition,
+    isInBounds,
     getNetworkDatasource,
     getPathInfos,
     getNavPathLength,
-    getIndoorDatasource,
+    // getIndoorDatasource,
     setIllegallyParkListener,
 
     matchPictureStyle,

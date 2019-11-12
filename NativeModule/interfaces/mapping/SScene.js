@@ -911,6 +911,15 @@ export default (function () {
           console.error(e)
       }
   }
+
+  function getSceneXMLfromWorkspace(serverUrl) {
+    try {
+        return SScene.getSceneXMLfromWorkspace(serverUrl)
+    } catch (error) {
+        console.error(e)
+    }
+  }
+
     let SSceneExp = {
         getSceneCenter,
         openWorkspace,
@@ -1000,6 +1009,7 @@ export default (function () {
         clipSenceClear,
       open3DNavigationMap,
       displayDistanceOrArea,
+      getSceneXMLfromWorkspace,
     }
     Object.assign(SSceneExp, SSceneTool)
     return SSceneExp

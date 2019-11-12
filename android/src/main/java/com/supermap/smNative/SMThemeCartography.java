@@ -1857,7 +1857,7 @@ public class SMThemeCartography {
 //                    break;
                 case "REGION":
                     //面：需要默认设置好看的线型颜色，根据颜色的深浅值来判断，保持所有的线型值统一
-                    return geoStyle.getLineColor(); //此效果等同于所有线型都设置为NULL
+                    return geoStyle.getFillForeColor(); //此效果等同于所有线型都设置为NULL
 //                    geoStyle.setFillForeColor();
 //                    break;
             }

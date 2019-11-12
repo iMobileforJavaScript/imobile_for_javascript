@@ -11,9 +11,9 @@
 #import "STranslate.h"
 #import "SMap.h"
 
-static NSArray* _lastColorUniqueArray = nil;
-static NSArray* _lastColorRangeArray = nil;
-static NSArray* _lastColorGraphArray = nil;
+//static NSMutableArray* _lastColorUniqueArray = nil;
+//static NSMutableArray* _lastColorRangeArray = nil;
+static NSMutableArray* _lastColorGraphArray = nil;
 
 @implementation SThemeCartography
 RCT_EXPORT_MODULE();
@@ -80,11 +80,11 @@ RCT_REMAP_METHOD(createThemeUniqueMap, createThemeUniqueMapWithResolver:(NSDicti
                     for (int i = 0; i < rangeCount; i++) {
                         [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:[selectedColors get:i]];
                     }
-                    _lastColorUniqueArray = colorArray;
+//                    _lastColorUniqueArray = colorArray;
                 }
             }
             else{
-                _lastColorUniqueArray = nil;
+//                _lastColorUniqueArray = nil;
             }
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [mapControl.map.layers addDataset:dataset Theme:themeUnique ToHead:true];
@@ -227,39 +227,30 @@ RCT_REMAP_METHOD(modifyThemeUniqueMap, modifyThemeUniqueMapWithResolver:(NSDicti
             colorGradientType = CGT_GREENWHITE;
         }
         
+       
         bool result = false;
-        if (dataset != nil && themeUniqueLayer.theme != nil && ![uniqueExpression isEqualToString:@""]) {
+        if (dataset != nil && themeUniqueLayer.theme != nil && ![uniqueExpression isEqualToString:@""] && ![uniqueExpression isEqualToString:[themeUnique getUniqueExpression] ]) {
             ThemeUnique* tu = nil;
             tu = [ThemeUnique makeDefault:(DatasetVector*)dataset uniqueExpression:uniqueExpression colorType:colorGradientType];
+            NSMutableArray* _lastColorUniqueArray;
             if (tu != nil) {
                 if(![array containsObject:@"ColorGradientType"]){
-                    NSMutableArray* mulArray = nil;
-                    mulArray =  [SMThemeCartography getLastThemeColors:themeUniqueLayer];
-                    if (mulArray != nil) {
-//                        int rangeCount = [tu getCount];
-//                        Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:mulArray];
-//                        for (int i = 0; i < rangeCount; i++) {
-//                            [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tu getItem:i].mStyle color:[selectedColors get:i]];
-//                        }
-                        _lastColorUniqueArray = mulArray;
+
+                    if(_lastColorUniqueArray==nil){
+                        _lastColorUniqueArray = [NSMutableArray array];
+                        for (int i = 0; i < [themeUnique getCount]; i++) {
+                            Color* color = [SMThemeCartography getGeoStyleColor:dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle];//
+                            [_lastColorUniqueArray addObject:color];
+                        }
                     }
-//                    else{
-//                        if (_lastColorUniqueArray != nil) {
-//                                int rangeCount = [tu getCount];
-//                                Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:_lastColorUniqueArray];
-//                                for (int i = 0; i < rangeCount; i++) {
-//                                    [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tu getItem:i].mStyle color:[selectedColors get:i]];
-//                            }
-//                        }
-//                    }
                 }
-                [themeUniqueLayer.theme fromXML:[tu toXML]];
+                [themeUnique fromXML:[tu toXML]];
                 
-                ThemeUnique* themeUnique = (ThemeUnique*)themeUniqueLayer.theme;
-                int rangeCount = [themeUnique getCount];
-                Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:_lastColorUniqueArray];
-                for (int i = 0; i < rangeCount; i++) {
-                    [SMThemeCartography setGeoStyleColor:themeUniqueLayer.dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:[selectedColors get:i]];
+                
+                for (int i = 0; i < [themeUnique getCount]; i++) {
+                    int k = arc4random() % _lastColorUniqueArray.count ;
+                    Color* color = _lastColorUniqueArray[k];//[SMThemeCartography getGeoStyleColor:dataset.datasetType geoStyle:[themeRange getItem:i].mStyle];//
+                    [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:color];
                 }
                 
                 MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
@@ -1366,48 +1357,99 @@ RCT_REMAP_METHOD(setUniformLabelFontName, setUniformLabelFontNameWithResolver:(N
                 [[mapControl getEditHistory] addMapHistory];
                 
                 ThemeLabel* themeLabel = (ThemeLabel*)layer.theme;
-                TextStyle* uniformStyle = themeLabel.mUniformStyle;
-                if([fontName isEqualToString:@"BOLD"]){
-                    if([uniformStyle isBold]){
-                        [uniformStyle setBold:false];
+                int count = [themeLabel getUniqueCount];// getUniqueItems().getCount();
+                if(count == 0){
+                    TextStyle* uniformStyle = themeLabel.mUniformStyle;
+                    if([fontName isEqualToString:@"BOLD"]){
+                        if([uniformStyle isBold]){
+                            [uniformStyle setBold:false];
+                        }
+                        else{
+                            [uniformStyle setBold:true];
+                        }
+                    }else if([fontName isEqualToString:@"ITALIC"]){
+                        if([uniformStyle getItalic]){
+                            [uniformStyle setItalic:false];
+                        }else{
+                            [uniformStyle setItalic:true];
+                        }
+                        
+                    }else if([fontName isEqualToString:@"UNDERLINE"]){
+                        if([uniformStyle getUnderline]){
+                            [uniformStyle setUnderline:false];
+                        }else{
+                            [uniformStyle setUnderline:true];
+                        }
+                    }else if([fontName isEqualToString:@"STRIKEOUT"]){
+                        if([uniformStyle getStrikeout]){
+                            [uniformStyle setStrikeout:false];
+                        }else{
+                            [uniformStyle setStrikeout:true];
+                        }
+                    }else if([fontName isEqualToString:@"SHADOW"]){
+                        if([uniformStyle getShadow]){
+                            [uniformStyle setShadow:false];
+                        }else{
+                            [uniformStyle setShadow:true];
+                        }
+                    }else if([fontName isEqualToString:@"OUTLINE"] ){
+                        if([uniformStyle getOutline]){
+                            [uniformStyle setOutline:false];
+                        }else{
+                            [uniformStyle setOutline:YES];
+                            [uniformStyle setBackColor:[[Color alloc]initWithR:255 G:255 B:255]];
+                            //                            uniformStyle.set
+                        }
                     }
-                    else{
-                        [uniformStyle setBold:true];
-                    }
-                }else if([fontName isEqualToString:@"ITALIC"]){
-                    if([uniformStyle getItalic]){
-                        [uniformStyle setItalic:false];
-                    }else{
-                        [uniformStyle setItalic:true];
-                    }
-                    
-                }else if([fontName isEqualToString:@"UNDERLINE"]){
-                    if([uniformStyle getUnderline]){
-                        [uniformStyle setUnderline:false];
-                    }else{
-                        [uniformStyle setUnderline:true];
-                    }
-                }else if([fontName isEqualToString:@"STRIKEOUT"]){
-                    if([uniformStyle getStrikeout]){
-                        [uniformStyle setStrikeout:false];
-                    }else{
-                        [uniformStyle setStrikeout:true];
-                    }
-                }else if([fontName isEqualToString:@"SHADOW"]){
-                    if([uniformStyle getShadow]){
-                        [uniformStyle setShadow:false];
-                    }else{
-                        [uniformStyle setShadow:true];
-                    }
-                }else if([fontName isEqualToString:@"OUTLINE"] ){
-                    if([uniformStyle getOutline]){
-                        [uniformStyle setOutline:false];
-                    }else{
-                        [uniformStyle setOutline:YES];
-                        [uniformStyle setBackColor:[[Color alloc]initWithR:255 G:255 B:255]];
-                        //                            uniformStyle.set
+                }else{
+                    for (int i = 0; i < count; i++) {
+                        TextStyle* uniformStyle = [themeLabel getUniqueItem:i].textStyle;//.getUniqueItems().getItem(i).getStyle();
+                      
+                        if([fontName isEqualToString:@"BOLD"]){
+                            if([uniformStyle isBold]){
+                                [uniformStyle setBold:false];
+                            }
+                            else{
+                                [uniformStyle setBold:true];
+                            }
+                        }else if([fontName isEqualToString:@"ITALIC"]){
+                            if([uniformStyle getItalic]){
+                                [uniformStyle setItalic:false];
+                            }else{
+                                [uniformStyle setItalic:true];
+                            }
+                            
+                        }else if([fontName isEqualToString:@"UNDERLINE"]){
+                            if([uniformStyle getUnderline]){
+                                [uniformStyle setUnderline:false];
+                            }else{
+                                [uniformStyle setUnderline:true];
+                            }
+                        }else if([fontName isEqualToString:@"STRIKEOUT"]){
+                            if([uniformStyle getStrikeout]){
+                                [uniformStyle setStrikeout:false];
+                            }else{
+                                [uniformStyle setStrikeout:true];
+                            }
+                        }else if([fontName isEqualToString:@"SHADOW"]){
+                            if([uniformStyle getShadow]){
+                                [uniformStyle setShadow:false];
+                            }else{
+                                [uniformStyle setShadow:true];
+                            }
+                        }else if([fontName isEqualToString:@"OUTLINE"] ){
+                            if([uniformStyle getOutline]){
+                                [uniformStyle setOutline:false];
+                            }else{
+                                [uniformStyle setOutline:YES];
+                                [uniformStyle setBackColor:[[Color alloc]initWithR:255 G:255 B:255]];
+                                //                            uniformStyle.set
+                            }
+                        }
+                        
                     }
                 }
+                
 //                [style setFontName:fontName];
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
@@ -1508,9 +1550,19 @@ RCT_REMAP_METHOD(setUniformLabelFontSize, setUniformLabelFontSizeWithResolver:(N
                 [[mapControl getEditHistory] addMapHistory];
                 
                 ThemeLabel* themeLabel = (ThemeLabel*)layer.theme;
-                TextStyle* style = themeLabel.mUniformStyle;
-                [style setFontWidth:fontSize];
-                [style setFontHeight:fontSize];
+                int count = [themeLabel getUniqueCount];// getUniqueItems().getCount();
+                if(count == 0){
+                    TextStyle* style = themeLabel.mUniformStyle;
+                    [style setFontWidth:fontSize];
+                    [style setFontHeight:fontSize];
+                }else{
+                    for (int i = 0; i < count; i++) {
+                        TextStyle* uniformStyle = [themeLabel getUniqueItem:i].textStyle;//.getUniqueItems().getItem(i).getStyle
+                        [uniformStyle setFontWidth:fontSize];
+                        [uniformStyle setFontHeight:fontSize];
+                    }
+                }
+               
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             }
@@ -1551,9 +1603,19 @@ RCT_REMAP_METHOD(getUniformLabelFontSize, getUniformLabelFontSizeWithResolver:(N
         if (layer != nil && layer.theme != nil) {
             if (layer.theme.themeType == TT_label) {
                 ThemeLabel* themeLabel =(ThemeLabel*)layer.theme;
-                TextStyle* style = themeLabel.mUniformStyle;
-                double fontSize = [style getFontHeight];
-                resolve([NSNumber numberWithDouble:fontSize]);
+                int count = [themeLabel getUniqueCount];// getUniqueItems().getCount();
+                if(count == 0){
+                    TextStyle* style = themeLabel.mUniformStyle;
+                    double fontSize = [style getFontHeight];
+                    resolve([NSNumber numberWithDouble:fontSize]);
+                }else{
+                    for (int i = 0; i < count; i++) {
+                        TextStyle* uniformStyle = [themeLabel getUniqueItem:i].textStyle;//.getUniqueItems().getItem(i).getStyle
+                       double fontSize = [uniformStyle getFontHeight];
+                        resolve([NSNumber numberWithDouble:fontSize]);
+                        return;
+                    }
+                }
             }
         }
         else{
@@ -1605,14 +1667,30 @@ RCT_REMAP_METHOD(setUniformLabelRotaion, setUniformLabelRotaionWithResolver:(NSD
                 [[mapControl getEditHistory] addMapHistory];
                 
                 ThemeLabel* themeLabel = (ThemeLabel*)layer.theme;
-                TextStyle* style = themeLabel.mUniformStyle;
-                double lastRotation = [style getRotation];
-                if (lastRotation == 360.0) {
-                    lastRotation = 0.0;
-                } else if(lastRotation == 0.0){
-                    lastRotation = 360.0;
+                int count = [themeLabel getUniqueCount];// getUniqueItems().getCount();
+                if(count == 0){
+                    TextStyle* style = themeLabel.mUniformStyle;
+                    double lastRotation = [style getRotation];
+                    if (lastRotation == 360.0) {
+                        lastRotation = 0.0;
+                    } else if(lastRotation == 0.0){
+                        lastRotation = 360.0;
+                    }
+                    [style setRotation:(lastRotation + rotation)];
+                }else{
+                    for (int i = 0; i < count; i++) {
+                        TextStyle* style = [themeLabel getUniqueItem:i].textStyle;//.getUniqueItems().getItem(i).getStyle
+                        double lastRotation = [style getRotation];
+                        if (lastRotation == 360.0) {
+                            lastRotation = 0.0;
+                        } else if(lastRotation == 0.0){
+                            lastRotation = 360.0;
+                        }
+                        [style setRotation:(lastRotation + rotation)];
+                    }
                 }
-                [style setRotation:(lastRotation + rotation)];
+                
+
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             }
@@ -1653,9 +1731,21 @@ RCT_REMAP_METHOD(getUniformLabelRotaion, getUniformLabelRotaionWithResolver:(NSD
         if (layer != nil && layer.theme != nil) {
             if (layer.theme.themeType == TT_label) {
                 ThemeLabel* themeLabel =(ThemeLabel*)layer.theme;
-                TextStyle* style = themeLabel.mUniformStyle;
-                double rotation = [style getRotation];
-                resolve([NSNumber numberWithDouble:rotation]);
+                int count = [themeLabel getUniqueCount];// getUniqueItems().getCount();
+                if(count == 0){
+                    TextStyle* style = themeLabel.mUniformStyle;
+                    double rotation = [style getRotation];
+                    resolve([NSNumber numberWithDouble:rotation]);
+                }else{
+                    for (int i = 0; i < count; i++) {
+                        TextStyle* style = [themeLabel getUniqueItem:i].textStyle;//.getUniqueItems().getItem(i).getStyle
+                        double rotation = [style getRotation];
+                        resolve([NSNumber numberWithDouble:rotation]);
+                        return;
+                    }
+                }
+                
+
             }
         }
         else{
@@ -1845,12 +1935,10 @@ RCT_REMAP_METHOD(createThemeRangeMap, createThemeRangeMapMapWithResolver:(NSDict
                         for (int i = 0; i < rangeCount; i++) {
                             [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[themeRange getItem:i].mStyle color:[selectedColors get:i]];
                         }
-                        _lastColorRangeArray = colorArray;
+//                        _lastColorRangeArray = colorArray;
                     }
                 }
-                else{
-                    _lastColorRangeArray = nil;
-                }
+
                 [[SMap singletonInstance].smMapWC.mapControl.map.layers addDataset:dataset Theme:themeRange ToHead:true];
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 result = true;
@@ -1944,22 +2032,20 @@ RCT_REMAP_METHOD(modifyThemeRangeMap, modifyThemeRangeMapWithResolver:(NSDiction
                 if(![array containsObject:@"ColorGradientType"]){
                     NSMutableArray* mulArray = nil;
                     mulArray =  [SMThemeCartography getLastThemeColors:themeRangeLayer];
+                    if(!mulArray){
+                        mulArray = [NSMutableArray array];
+                        for (int i = 0; i < [themeRange getCount]; i++) {
+                            Color* color = [SMThemeCartography getGeoStyleColor:dataset.datasetType geoStyle:[themeRange getItem:i].mStyle];//
+                            [mulArray addObject:color];
+                        }
+                    }
                     if (mulArray != nil) {
                         int rangeCount = [tr getCount];
                         Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:mulArray];
                         for (int i = 0; i < rangeCount; i++) {
                             [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tr getItem:i].mStyle color:[selectedColors get:i]];
                         }
-                        _lastColorRangeArray = mulArray;
-                    }
-                    else{
-                        if (_lastColorRangeArray != nil) {
-                            int rangeCount = [tr getCount];
-                            Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:_lastColorRangeArray];
-                            for (int i = 0; i < rangeCount; i++) {
-                                [SMThemeCartography setGeoStyleColor:dataset.datasetType geoStyle:[tr getItem:i].mStyle color:[selectedColors get:i]];
-                            }
-                        }
+//                        _lastColorRangeArray = mulArray;
                     }
                 }
                 
@@ -2022,7 +2108,7 @@ RCT_REMAP_METHOD(setUniqueColorScheme, setUniqueColorSchemeWithResolver:(NSDicti
                 for (int i = 0; i < rangeCount; i++) {
                     [SMThemeCartography setGeoStyleColor:layer.dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:[selectedColors get:i]];
                 }
-                _lastColorUniqueArray = colorArray;
+//                _lastColorUniqueArray = colorArray;
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             }
@@ -2083,7 +2169,7 @@ RCT_REMAP_METHOD(setRangeColorScheme, setRangeColorSchemeWithResolver:(NSDiction
                 for (int i = 0; i < rangeCount; i++) {
                     [SMThemeCartography setGeoStyleColor:layer.dataset.datasetType geoStyle:[themeUnique getItem:i].mStyle color:[selectedColors get:i]];
                 }
-                _lastColorRangeArray = colorArray;
+//                _lastColorRangeArray = colorArray;
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
             }

@@ -65,7 +65,8 @@ public class Trajectory extends Object3D {
         mVertexBuffer.put((float) vertex.z);
 
         //save pose data.
-        mPoseData.add(new Point3D(vertex.x,vertex.y,vertex.z));
+//        mPoseData.add(new Point3D(vertex.x,vertex.y,vertex.z));
+        mPoseData.add(new Point3D(vertex.x,-vertex.z,vertex.y));
 
         mTrajectoryCount++;
 

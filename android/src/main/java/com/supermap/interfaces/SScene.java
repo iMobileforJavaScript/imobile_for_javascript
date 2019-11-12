@@ -2377,4 +2377,42 @@ public class SScene extends ReactContextBaseJavaModule {
 
     /************************************** 导航模块 END ****************************************/
 
+    /**
+     * 获取工作空间文件里的所有场景xml
+     */
+    @ReactMethod
+    public void getSceneXMLfromWorkspace(String serverUrl, Promise promise) {
+        try {
+            Workspace ws = new Workspace();
+            WorkspaceConnectionInfo workspaceConnectionInfo = new WorkspaceConnectionInfo();
+            workspaceConnectionInfo.setServer(serverUrl);
+            String tempStr = serverUrl.toLowerCase();
+            if(tempStr.endsWith(".smwu")){
+                workspaceConnectionInfo.setType(WorkspaceType.SMWU);
+            } else if(tempStr.endsWith(".sxwu")) {
+                workspaceConnectionInfo.setType(WorkspaceType.SXWU);
+            } else if(tempStr.endsWith(".smw")) {
+                workspaceConnectionInfo.setType(WorkspaceType.SMW);
+            } else if(tempStr.endsWith(".sxw")) {
+                workspaceConnectionInfo.setType(WorkspaceType.SXW);
+            }
+
+            WritableArray scenes = Arguments.createArray();
+
+            if(ws.open(workspaceConnectionInfo)){
+                for(int i = 0; i < ws.getScenes().getCount(); i++) {
+                    WritableMap scene = Arguments.createMap();
+                    scene.putString("name", ws.getScenes().get(i));
+                    scene.putString("xml", ws.getScenes().getSceneXML(i));
+                    scenes.pushMap(scene);
+                }
+            }
+
+            ws.close();
+            ws.dispose();
+            promise.resolve(scenes);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 }
