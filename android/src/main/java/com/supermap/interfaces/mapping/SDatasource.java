@@ -8,6 +8,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.FileUtil;
@@ -23,11 +25,13 @@ import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.Datasources;
 import com.supermap.data.EncodeType;
 import com.supermap.data.EngineType;
+import com.supermap.data.FieldInfo;
+import com.supermap.data.FieldInfos;
+import com.supermap.data.FieldType;
 import com.supermap.data.Recordset;
 import com.supermap.data.Rectangle2D;
 import com.supermap.data.Workspace;
 import com.supermap.mapping.Layer;
-import com.supermap.mapping.Map;
 import com.supermap.smNative.SMAnalyst;
 import com.supermap.smNative.SMDatasource;
 import com.supermap.smNative.SMLayer;
@@ -331,31 +335,60 @@ public class SDatasource extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void importDatasetFromGeoJson(String datasourceAlias, String datasetName, String path, int type, Promise promise) {
+    public void importDatasetFromGeoJson(String datasourceAlias, String datasetName, String path, int type, ReadableMap properties, Promise promise) {
         try {
-
-            DatasetType datasetType;
-            if(type == 5){
-                datasetType = DatasetType.REGION;
-            } else if (type == 3) {
-                datasetType = DatasetType.LINE;
-            } else {
-                datasetType = DatasetType.POINT;
-            }
             File file = new File(path);
             Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
             Datasources datasources = workspace.getDatasources();
             Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
             boolean hasDataset = datasets.contains(datasetName);
+
             DatasetVector datasetVector = null;
             if(hasDataset){
                 datasetVector= (DatasetVector) datasets.get(datasetName);
             } else {
+                DatasetType datasetType;
+                if(type == 5){
+                    datasetType = DatasetType.REGION;
+                } else if (type == 3) {
+                    datasetType = DatasetType.LINE;
+                } else {
+                    datasetType = DatasetType.POINT;
+                }
+
                 DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
                 datasetVectorInfo.setType(datasetType);
                 datasetVectorInfo.setName(datasetName);
                 datasetVector = datasets.create(datasetVectorInfo);
                 datasetVectorInfo.dispose();
+
+                FieldInfo fieldInfo = new FieldInfo();
+                FieldInfos fieldInfos = datasetVector.getFieldInfos();
+
+                ReadableMapKeySetIterator iterator = properties.keySetIterator();
+                while(iterator.hasNextKey()) {
+                    String key = iterator.nextKey();
+                    if(fieldInfos.indexOf(key) == -1){
+                        fieldInfo.setName(key);
+                        fieldInfo.setCaption(key);
+                        ReadableType mapType = properties.getType(key);
+                        switch(mapType) {
+                            case String:
+                                fieldInfo.setType(FieldType.WTEXT);
+                                break;
+                            case Boolean:
+                                fieldInfo.setType(FieldType.BOOLEAN);
+                                break;
+                            case Number:
+                                fieldInfo.setType(FieldType.DOUBLE);
+                                break;
+                            case Null:
+                                fieldInfo.setType(FieldType.DOUBLE);
+                                break;
+                        }
+                        fieldInfos.add(fieldInfo);
+                    }
+                }
             }
 
             int re = datasetVector.fromGeoJSON(file);

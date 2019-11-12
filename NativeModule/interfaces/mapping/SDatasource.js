@@ -199,9 +199,9 @@ function getFieldInfos(data, filter, autoOpen = true) {
   }
 }
 
-function importDatasetFromGeoJson(datasourceAlias, datasetName, path, DatasetType){
+function importDatasetFromGeoJson(datasourceAlias, datasetName, path, DatasetType, properties){
   try {
-    return SDatasource.importDatasetFromGeoJson(datasourceAlias, datasetName, path, DatasetType)
+    return SDatasource.importDatasetFromGeoJson(datasourceAlias, datasetName, path, DatasetType, properties)
   } catch (error) {
     console.error(e)
   }
