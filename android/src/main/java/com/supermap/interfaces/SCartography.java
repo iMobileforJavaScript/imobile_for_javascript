@@ -58,6 +58,7 @@ public class SCartography extends ReactContextBaseJavaModule {
                 layerSettingVector.setStyle(style);
                 MapControl mapControl = SMap.getSMWorkspace().getMapControl();
                 mapControl.getMap().refresh();
+                promise.resolve(true);
             } else {
                 promise.resolve(false);
             }
