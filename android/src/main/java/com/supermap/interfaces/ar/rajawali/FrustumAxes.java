@@ -61,11 +61,11 @@ public class FrustumAxes extends Line3D {
 
     private static int[] makeColors() {
         int[] colors = new int[18];
-        Arrays.fill(colors, Color.BLACK);
+        Arrays.fill(colors, Color.GREEN);
         colors[0] = Color.RED;
         colors[1] = Color.RED;
-        colors[2] = Color.GREEN;
-        colors[3] = Color.GREEN;
+        colors[2] = Color.YELLOW;
+        colors[3] = Color.YELLOW;
         colors[4] = Color.BLUE;
         colors[5] = Color.BLUE;
         return colors;

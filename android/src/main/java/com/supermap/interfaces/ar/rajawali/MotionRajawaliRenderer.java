@@ -62,13 +62,13 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
         mFrustumAxes = new FrustumAxes(3);
         getCurrentScene().addChild(mFrustumAxes);
 
-        mTrajectory = new Trajectory(Color.RED, 1.0f);
+        mTrajectory = new Trajectory(Color.GREEN, 1.0f);
         getCurrentScene().addChild(mTrajectory);
 
 
 //        getCurrentScene().setBackgroundColor(Color.WHITE);//default here. comment by ypp.
 
-        getCurrentScene().setBackgroundColor(Color.TRANSPARENT);
+        getCurrentScene().setBackgroundColor(Color.BLACK);
 
 
         getCurrentCamera().setNearPlane(CAMERA_NEAR);
