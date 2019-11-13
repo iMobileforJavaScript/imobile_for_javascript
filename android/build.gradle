@@ -24,12 +24,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-//    externalNativeBuild {
-//        ndkBuild {
-//            path '/Users/imobile-xzy/Documents/sourceCode/UGC/Builds/32_arm_android_U/Android.mk'
-//            //    path '/Users/imobile-xzy/Documents/sourceCode/UGC/Builds/64_arm_andrcreateDatasetByDictionaryoid_U/Android.mk'
-//        }
-//    }
+    externalNativeBuild {
+        ndkBuild {
+            path '/Users/imobile-xzy/Documents/sourceCode/UGC/Builds/32_arm_android_U/Android.mk'
+            //    path '/Users/imobile-xzy/Documents/sourceCode/UGC/Builds/64_arm_andrcreateDatasetByDictionaryoid_U/Android.mk'
+        }
+    }
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
