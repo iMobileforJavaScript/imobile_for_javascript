@@ -368,7 +368,7 @@ RCT_REMAP_METHOD(getDatasetToGeoJson, getDatasetBydatasourceAlias:(NSString*)dat
 }
 
 //指定文件导入数据集到当前工作空间
-RCT_REMAP_METHOD(importDatasetFromGeoJson, importTo:(NSString*)datasourceAlias dataset:(NSString *)datasetName from:(NSString *)path type:(int) type resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+RCT_REMAP_METHOD(importDatasetFromGeoJson, importTo:(NSString*)datasourceAlias dataset:(NSString *)datasetName from:(NSString *)path type:(int) type properties:(NSDictionary *) properties resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try {
         const char * filePath = [path cStringUsingEncoding:NSUTF8StringEncoding];
         FILE* file = fopen(filePath, "r");
@@ -384,6 +384,31 @@ RCT_REMAP_METHOD(importDatasetFromGeoJson, importTo:(NSString*)datasourceAlias d
             datasetvectorInfo.name = datasetName;
             datasetVector = [datasets create:datasetvectorInfo];
             [datasetvectorInfo dispose];
+            
+            FieldInfo* fieldInfo = [[FieldInfo alloc]init];
+            FieldInfos* fieldInfos = [datasetVector fieldInfos];
+            
+            for(NSString *key in properties) {
+                if([fieldInfos indexOfWithFieldName:key] == -1) {
+                    [fieldInfo setName:key];
+                    [fieldInfo setCaption:key];
+                    id obj = [properties objectForKey:key];
+                    if([obj isKindOfClass:[NSString class]]){
+                        [fieldInfo setFieldType:FT_WTEXT];
+                    } else if([obj isKindOfClass:[NSNumber class]]) {
+                        if (strcmp([obj objCType], @encode(BOOL)) == 0) {
+                            [fieldInfo setFieldType:FT_BOOLEAN];
+                        } else if(strcmp([obj objCType], @encode(int)) == 0) {
+                            [fieldInfo setFieldType:FT_INT64];
+                        } else {
+                            [fieldInfo setFieldType:FT_DOUBLE];
+                        }
+                    } else if([obj isKindOfClass:[NSNull class]]) {
+                        [fieldInfo setFieldType:FT_DOUBLE];
+                    }
+                    [fieldInfos add:fieldInfo];
+                }
+            }
         }
         
         int re = [datasetVector fromGeoJSONFile:file];
