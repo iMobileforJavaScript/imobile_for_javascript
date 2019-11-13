@@ -41,7 +41,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     private static CustomRelativeLayout mCustomRelativeLayout = null;
 
     private static MotionRajawaliRenderer mRenderer;
-    private static boolean isShowTrace = true;//初始值
+    private static boolean isShowTrace = false;//初始值
     private static float[] mCurrentPoseTranslation = new float[3];
     private static float[] mCurrentPoseRotation = new float[4];
 
@@ -83,7 +83,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
         //2. 设置透明
         mSurfaceView.setFrameRate(60);
         mSurfaceView.setRenderMode(IRajawaliSurface.RENDERMODE_WHEN_DIRTY);
-        mSurfaceView.setTransparent(true);
+//        mSurfaceView.setTransparent(false);
 
         //3.新建渲染器
         mRenderer = new MotionRajawaliRenderer(mContext);
@@ -636,8 +636,8 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
                     if (ob != null) {
                         str = ob.toString();
                     }
-                    if (!name.equals(str)) {
-                        recordset.setFieldValue("NAME", name);
+                    if (!getCurrentTime().equals(str)) {
+                        recordset.setFieldValue("NAME", getCurrentTime());
                     }
                 }
 

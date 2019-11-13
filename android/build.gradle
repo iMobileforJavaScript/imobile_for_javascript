@@ -72,8 +72,8 @@ dependencies {
     //arcore
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.google.ar:core:1.11.0'
-    implementation "com.google.ar.sceneform:core:1.11.0"
-    implementation "com.google.ar.sceneform.ux:sceneform-ux:1.11.0"
+    implementation "com.google.ar.sceneform:core:1.4.0"
+    implementation "com.google.ar.sceneform.ux:sceneform-ux:1.4.0"
     implementation 'de.javagl:obj:0.2.1'
     implementation files('libs/starcore_android_r2.51.jar')
     implementation 'org.rajawali3d:rajawali:1.0.325@aar'
