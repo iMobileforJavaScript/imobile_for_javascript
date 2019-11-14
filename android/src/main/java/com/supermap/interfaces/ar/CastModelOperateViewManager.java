@@ -145,9 +145,9 @@ public class CastModelOperateViewManager extends SimpleViewManager<ImobileCustom
     }
 
     private void addNodeToSceneByImage(CustomSceneViewManager sceneViewManager, Anchor anchor, Renderable renderable) {
-        Quaternion eular = Quaternion.eulerAngles(new Vector3(-90, 0, 0));
-        Quaternion eular2 = Quaternion.eulerAngles(new Vector3(0, 0, -90));
-        Quaternion e2M = Quaternion.multiply(eular, eular2);
+//        Quaternion eular = Quaternion.eulerAngles(new Vector3(-90, 0, 0));
+//        Quaternion eular2 = Quaternion.eulerAngles(new Vector3(0, 0, -90));
+//        Quaternion e2M = Quaternion.multiply(eular, eular2);
         AnchorNode sun = new AnchorNode(anchor);
 
         sun.setLocalScale(new Vector3(0.5f, 0.5f, 0.5f));
