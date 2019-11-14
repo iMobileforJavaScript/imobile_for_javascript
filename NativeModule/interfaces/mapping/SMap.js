@@ -115,6 +115,15 @@ export default (function () {
     }
   }
 
+ /*是否打开移动端POI大数据优化显示选项*/
+  function setPOIOptimized (bPOIOptimized) {
+    try {
+      return SMap.setPOIOptimized(bPOIOptimized)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   /**
    * 刷新地图
    * @returns {*}
@@ -3032,6 +3041,7 @@ export default (function () {
     setTaggingGrid,
     setMapControlStyle,
     setLabelColor,
+    setPOIOptimized,
     //updateLegend,
 
     showMarker,

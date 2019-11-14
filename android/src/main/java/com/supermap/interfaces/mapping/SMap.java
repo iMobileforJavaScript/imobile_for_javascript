@@ -5482,6 +5482,20 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
         });
     }
+
+    /*
+     *是否打开移动端POI大数据优化显示选项
+     */
+    @ReactMethod
+    public void setPOIOptimized(Boolean bPOIOptimized, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getMapControl().getMap().setIsPOIOptimized(bPOIOptimized);
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
     /************************************** 导航模块 START ****************************************/
     /**
      * 清除导航路线

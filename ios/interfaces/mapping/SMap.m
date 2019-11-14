@@ -216,6 +216,16 @@ RCT_REMAP_METHOD(showMarker,  longitude:(double)longitude latitude:(double)latit
     }
 //    [sMap.smMapWC.mapControl removeCalloutWithTag:tag];
 }
+
+RCT_REMAP_METHOD(setPOIOptimized, bPOIOptimized:(BOOL)bPOIOptimized setPOIOptimizedResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    @try {
+        sMap.smMapWC.mapControl.map.isPOIOptimized = bPOIOptimized;
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+        reject(@"SMap", exception.reason, nil);
+    }
+}
 #pragma mark 移除marker
 RCT_REMAP_METHOD(deleteMarker, tag:(int)tag deleteMarkerResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
