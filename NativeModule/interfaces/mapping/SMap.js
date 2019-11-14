@@ -2557,9 +2557,9 @@ export default (function () {
    * 将路网数据集添加到地图上
    * @returns {*|void|Promise<void>}
    */
-  function addNetWorkDataset(datasourceName,networkdataset) {
+  function addNetWorkDataset() {
     try {
-      return SMap.addNetWorkDataset(datasourceName,networkdataset)
+      return SMap.addNetWorkDataset()
     } catch (e) {
       console.error(e)
     }
@@ -2567,14 +2567,11 @@ export default (function () {
 
   /**
    * 将路网数据集和线数据集从地图移除
-   * @param lineDataseName
-   * @param networkDatasetName
-   * @param datasourceName
    * @returns {undefined}
    */
-  function removeNetworkDataset(lineDataseName,networkDatasetName,datasourceName) {
+  function removeNetworkDataset() {
     try {
-      return SMap.removeNetworkDataset(lineDataseName,networkDatasetName,datasourceName)
+      return SMap.removeNetworkDataset()
     } catch (e) {
       console.error(e)
     }
@@ -2582,14 +2579,11 @@ export default (function () {
 
   /**
    * 生成路网
-   * @param linedataset 线数据集名称
-   * @param networkdataset 网络数据集名称
-   * @param datasourceName 所在数据源名称
    * @returns {undefined}
    */
-  function buildNetwork(linedataset,networkdataset,datasourceName) {
+  function buildNetwork() {
     try {
-      return SMap.buildNetwork(linedataset,networkdataset,datasourceName)
+      return SMap.buildNetwork()
     } catch (e) {
       console.error(e)
     }
