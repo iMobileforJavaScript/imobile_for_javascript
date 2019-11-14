@@ -184,10 +184,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public static int fillNum;
     public static Color[] fillColors;
     public static Random random;// 用于保存产生随机的线风格颜色的Random对象
-    private Point2D navistart, naviend;
     private InfoCallout m_callout;
-    private Datasource IndoorDatasource;
-    private String IncrementRoadName;
+    private Datasource incrementDatasource;
+    private String incrementLineDatasetName;
+    private String incrementNetworkDatasetName;
+    private boolean incrementLayerAdded = false;
     Point2Ds GpsPoint2Ds = new Point2Ds();
     String rootPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
     private String lcenseSerialNumberFilePath;
@@ -6154,19 +6155,67 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
-     * 将路网数据集所在线数据集添加到地图上
+     * 将当前楼层路网数据集所在线数据集添加到地图上
      *
      * @param promise
      */
     @ReactMethod
-    public void addNetWorkDataset(String datasourceName, String networkdataset, Promise promise) {
+    public void addNetWorkDataset(Promise promise) {
         try {
-            sMap = SMap.getInstance();
-            Datasource datasource = sMap.smMapWC.getWorkspace().getDatasources().get(datasourceName);
-            Dataset dataset = datasource.getDatasets().get(networkdataset);
-            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().add(dataset, true);
-            layer.setEditable(true);
-            promise.resolve(true);
+            context.getCurrentActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    sMap = SMap.getInstance();
+                    Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+                    Dataset floorRelationTable = null;
+
+                    String floorID = sMap.smMapWC.getFloorListView().getCurrentFloorId();
+                    if(floorID != null){
+                        //室内
+                        for(int i = 0; i < datasources.getCount(); i++){
+                            Datasource datasource = datasources.get(i);
+                            Datasets datasets = datasource.getDatasets();
+                            if(datasets.contains("FloorRelationTable")){
+                                incrementDatasource = datasource;
+                                floorRelationTable = datasets.get("FloorRelationTable");
+                                break;
+                            }
+                        }
+                        DatasetVector datasetVector = (DatasetVector)floorRelationTable;
+                        Recordset recordset = datasetVector.getRecordset(false,CursorType.STATIC);
+                        do{
+                            Object FL_ID = recordset.getFieldValue("FL_ID");
+                            if(FL_ID.toString().equals(floorID)){
+                                incrementLineDatasetName = recordset.getFieldValue("LineDatasetName").toString();
+                                incrementNetworkDatasetName = recordset.getFieldValue("NetworkName").toString();
+                                break;
+                            }
+                        } while (recordset.moveNext());
+                    }else{
+                        //todo 室外数据集待处理
+                        //室外
+                        Point2D mapCenter = sMap.smMapWC.getMapControl().getMap().getCenter();
+                        for(int i = 0; i < datasources.getCount(); i++){
+                            Datasource datasource = datasources.get(i);
+                            Datasets datasets = datasource.getDatasets();
+                            for(int j = 0; j < datasets.getCount(); j++){
+                                if(datasets.get(j).getBounds().contains(mapCenter)){
+                                    incrementLineDatasetName = datasets.get(j).getName();
+                                }
+                            }
+                        }
+                    }
+
+                    if(incrementLineDatasetName != null){
+                        Dataset dataset = incrementDatasource.getDatasets().get(incrementLineDatasetName);
+                        Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().add(dataset, true);
+                        layer.setEditable(true);
+                        promise.resolve(true);
+                    }else {
+                        promise.resolve(false);
+                    }
+                }
+            });
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -6175,31 +6224,34 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     /**
      * 将路网数据集和线数据集从地图移除
      *
-     * @param lineDatasetName
-     * @param networkDatasetName
-     * @param datasourceName
      * @param promise
      */
     @ReactMethod
-    public void removeNetworkDataset(String lineDatasetName, String networkDatasetName, String datasourceName, Promise promise) {
+    public void removeNetworkDataset(Promise promise) {
         try {
-            sMap = SMap.getInstance();
-            Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
-            Layer layer = layers.getByCaption(lineDatasetName + "@" + datasourceName);
-            layers.remove(layer);
-            if (networkDatasetName != null) {
-                Datasource datasource = sMap.smMapWC.getWorkspace().getDatasources().get(datasourceName);
-                DatasetVector datasetVector = (DatasetVector) datasource.getDatasets().get(networkDatasetName);
-                String name = datasetVector.getChildDataset().getName();
-                Layer networkLayer = layers.getByCaption(name + "@" + datasourceName);
-                if (networkLayer != null) {
-                    layers.remove(networkLayer);
+            context.getCurrentActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String datasourceName = incrementDatasource.getAlias();
+                    sMap = SMap.getInstance();
+                    Layers layers = sMap.smMapWC.getMapControl().getMap().getLayers();
+                    Layer layer = layers.getByCaption(incrementLineDatasetName + "@" + datasourceName);
+                    layers.remove(layer);
+                    if (incrementNetworkDatasetName != null) {
+                        DatasetVector datasetVector = (DatasetVector) incrementDatasource.getDatasets().get(incrementNetworkDatasetName);
+                        String name = datasetVector.getChildDataset().getName();
+                        Layer networkLayer = layers.getByCaption(name + "@" + datasourceName);
+                        if (networkLayer != null) {
+                            layers.remove(networkLayer);
+                        }
+                    }
+                    if (GpsPoint2Ds.getCount() > 0) {
+                        GpsPoint2Ds.clear();
+                    }
+                    incrementLayerAdded = false;
+                    promise.resolve(true);
                 }
-            }
-            if (GpsPoint2Ds.getCount() > 0) {
-                GpsPoint2Ds.clear();
-            }
-            promise.resolve(true);
+            });
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -6239,48 +6291,48 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void buildNetwork(String linedatasetName, String networkdatasetName, String datasourceName, Promise promise) {
+    public void buildNetwork(Promise promise) {
         try {
-            sMap = SMap.getInstance();
-            Datasource datasource = sMap.smMapWC.getWorkspace().getDatasources().get(datasourceName);
+            context.getCurrentActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    sMap = SMap.getInstance();
 
-            DatasetVector lineDataset = (DatasetVector) datasource.getDatasets().get(linedatasetName);
+                    if(incrementLayerAdded){
+                        sMap.smMapWC.getMapControl().getMap().getLayers().remove(0);
+                    }
+                    DatasetVector lineDataset = (DatasetVector)incrementDatasource.getDatasets().get(incrementLineDatasetName);
 
 
-            String datasetName = linedatasetName+"_tmpDataset";
+                    String datasetName = incrementLineDatasetName+"_tmpDataset";
 
-            datasource.getDatasets().delete(datasetName);
+                    incrementDatasource.getDatasets().delete(datasetName);
 
-            DatasetVector datasetVector2 = (DatasetVector) datasource.copyDataset(
-                    lineDataset, datasetName, EncodeType.NONE);
-            // 构造拓扑处理选项topologyProcessingOptions，各属性设置成false
-            TopologyProcessingOptions topologyProcessingOptions = new TopologyProcessingOptions();
-            topologyProcessingOptions.setLinesIntersected(true);
-            TopologyProcessing.clean(datasetVector2, topologyProcessingOptions);
+                    DatasetVector datasetVector = (DatasetVector) incrementDatasource.copyDataset(
+                            lineDataset, datasetName, EncodeType.NONE);
+                    // 构造拓扑处理选项topologyProcessingOptions，各属性设置成false
+                    TopologyProcessingOptions topologyProcessingOptions = new TopologyProcessingOptions();
+                    topologyProcessingOptions.setLinesIntersected(true);
+                    TopologyProcessing.clean(datasetVector, topologyProcessingOptions);
 
-            datasource.getDatasets().delete(networkdatasetName);
+                    incrementDatasource.getDatasets().delete(incrementNetworkDatasetName);
 
-            String[] lineFieldNames = new String[datasetVector2.getFieldInfos().getCount()];
-            for (int i = 0; i < datasetVector2.getFieldInfos().getCount(); i++) {
-                lineFieldNames[i] = datasetVector2.getFieldInfos().get(i).getCaption();
-            }
+                    String[] lineFieldNames = new String[datasetVector.getFieldInfos().getCount()];
+                    for (int i = 0; i < datasetVector.getFieldInfos().getCount(); i++) {
+                        lineFieldNames[i] = datasetVector.getFieldInfos().get(i).getCaption();
+                    }
 
-            DatasetVector datasets[] = {datasetVector2};
-            NetworkBuilder.buildNetwork(datasets, null, lineFieldNames, null,
-                    datasource, networkdatasetName, NetworkSplitMode.LINE_SPLIT_BY_POINT, 0.0000001);
+                    DatasetVector datasets[] = {datasetVector};
+                    NetworkBuilder.buildNetwork(datasets, null, lineFieldNames, null,
+                            incrementDatasource, incrementNetworkDatasetName, NetworkSplitMode.LINE_SPLIT_BY_POINT, 0.0000001);
 
-            Layers layers = sMap.getSmMapWC().getMapControl().getMap().getLayers();
-            DatasetVector datasetVector = (DatasetVector) datasource.getDatasets().get(networkdatasetName);
-            String name = datasetVector.getChildDataset().getName();
-            Layer layer = layers.getByCaption(name + "@" + datasourceName);
-            layers.add(datasetVector.getChildDataset(), true);
-            if (layer == null || !layer.isVisible()) {
-                layers.add(datasetVector.getChildDataset(), true);
-            }
-//            lineDataset.close();
-//            datasets[0].close();
-//            datasetVector.close();
-            promise.resolve(true);
+                    Layers layers = sMap.getSmMapWC().getMapControl().getMap().getLayers();
+                    DatasetVector datasetVector2 = (DatasetVector) incrementDatasource.getDatasets().get(incrementNetworkDatasetName);
+                    layers.add(datasetVector2.getChildDataset(), true);
+                    incrementLayerAdded = true;
+                    promise.resolve(true);
+                }
+            });
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -6764,31 +6816,31 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
-    /**
-     * 获取室内数据源
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void getIndoorDatasource(Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            Datasources datasources = sMap.getSmMapWC().getWorkspace().getDatasources();
-            for (int i = 0; i < datasources.getCount(); i++) {
-                if (datasources.get(i).getAlias().equals("bounds")) {
-                    Datasets datasets = datasources.get(i).getDatasets();
-                    DatasetVector dataset = (DatasetVector) datasets.get("building");
-                    Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
-                    IndoorDatasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(recordset.getFieldValue("LinkDatasource").toString());
-                    recordset.close();
-                    recordset.dispose();
-                }
-            }
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
+//    /**
+//     * 获取室内数据源
+//     *
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void getIndoorDatasource(Promise promise) {
+//        try {
+//            sMap = SMap.getInstance();
+//            Datasources datasources = sMap.getSmMapWC().getWorkspace().getDatasources();
+//            for (int i = 0; i < datasources.getCount(); i++) {
+//                if (datasources.get(i).getAlias().equals("bounds")) {
+//                    Datasets datasets = datasources.get(i).getDatasets();
+//                    DatasetVector dataset = (DatasetVector) datasets.get("building");
+//                    Recordset recordset = dataset.getRecordset(false, CursorType.DYNAMIC);
+//                    IndoorDatasource = sMap.getSmMapWC().getWorkspace().getDatasources().get(recordset.getFieldValue("LinkDatasource").toString());
+//                    recordset.close();
+//                    recordset.dispose();
+//                }
+//            }
+//            promise.resolve(true);
+//        } catch (Exception e) {
+//            promise.reject(e);
+//        }
+//    }
 
 
     /************************************** 导航模块 END ****************************************/
