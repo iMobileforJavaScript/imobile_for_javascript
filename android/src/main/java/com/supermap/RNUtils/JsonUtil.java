@@ -189,7 +189,7 @@ public class JsonUtil {
         return map;
     }
 
-    private static WritableArray parseRecordset(Recordset recordset, WritableArray fields) {
+    public static WritableArray parseRecordset(Recordset recordset, WritableArray fields) {
         return parseRecordset(recordset, fields, null);
     }
 
@@ -200,7 +200,7 @@ public class JsonUtil {
      * @param fields    该记录中的所有属性
      * @return
      */
-    private static WritableArray parseRecordset(Recordset recordset, WritableArray fields, String filterKey) {
+    public static WritableArray parseRecordset(Recordset recordset, WritableArray fields, String filterKey) {
 //        WritableMap map = Arguments.createMap();
         WritableArray array = Arguments.createArray();
         ArrayList<WritableMap> list = new ArrayList();

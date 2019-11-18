@@ -41,6 +41,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.supermap.RNUtils.DataUtil;
 import com.supermap.RNUtils.FileUtil;
+import com.supermap.RNUtils.JsonUtil;
 import com.supermap.analyst.TopologyProcessing;
 import com.supermap.analyst.TopologyProcessingOptions;
 import com.supermap.analyst.networkanalyst.NetworkBuilder;
@@ -2116,6 +2117,16 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                     map.putMap("layerInfo", layerInfo);
                     map.putInt("id", id);
+
+                    Selection selection = layer.getSelection();
+
+                    Recordset recordset = selection.toRecordset();
+                    recordset.moveFirst();
+                    setUniformLabelFontName
+                    int nCount = recordset.getRecordCount();
+                    WritableArray fields = JsonUtil.getFieldInfos(recordset, null);
+                    WritableArray fieldInfo = JsonUtil.parseRecordset(recordset, fields, null);
+                    map.putArray("fieldInfo", fieldInfo);
 
                     SMap.getInstance().setSelection(layer.getSelection());
 

@@ -107,6 +107,44 @@ RCT_REMAP_METHOD(saveMediaByDataset, saveMediaByDataset:(NSString *)datasetName 
     }
 }
 
+#pragma mark 保存/修改 多媒体采集
+RCT_REMAP_METHOD(updateMedia, updateMedia:(NSString *)layerName geoIDs:(NSArray *)geoIDs resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        MapControl* mapControl = SMap.singletonInstance.smMapWC.mapControl;
+        Layer* layer = [SMLayer findLayerWithName:layerName];
+        //    InfoCallout *)mapControl.callouts[i];
+            
+        Recordset* recordset = [((DatasetVector *)layer.dataset) queryWithID:geoIDs Type:STATIC];
+        NSMutableArray* list = [[NSMutableArray alloc] init];
+        while (![recordset isEOF]) {
+            Geometry* geometry = recordset.geometry;
+            Point2D* piont = geometry.getInnerPoint;
+            NSArray* callouts = mapControl.callouts;
+            for (int i = 0; i < callouts.count; i++) {
+                InfoCallout* callout = (InfoCallout *)callouts[i];
+                if ([callout.ID isEqualToString:[NSString stringWithFormat:@"%@-%d", layerName, recordset.ID]]) {
+                    [callout setLocationX:piont.x LocationY:piont.y];
+                    [list addObject:callout];
+                    break;
+                }
+            }
+            [recordset moveNext];
+        }
+        [mapControl removeCalloutWithArr:list];
+       
+        for (int i = 0; i < list.count; i++) {
+            InfoCallout* callout = (InfoCallout *)list[i];
+            [callout showAt:callout.getLocation Tag:callout.layerName];
+            [SMap.singletonInstance.smMapWC.mapControl.map refresh];
+        }
+        
+        [recordset dispose];
+        resolve(@(1));
+    } @catch (NSException *exception) {
+        reject(@"SMediaCollector", exception.reason, nil);
+    }
+}
+
 - (BOOL)saveMedia:(Layer *)layer geoID:(int)geoID toPath:(NSString *)toPath fieldInfos:(NSArray *)fieldInfos addToMap:(BOOL)addToMap {
     @try {
         if (layer == nil) return NO;
