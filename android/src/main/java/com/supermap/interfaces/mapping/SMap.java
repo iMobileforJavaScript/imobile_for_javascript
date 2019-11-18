@@ -2122,8 +2122,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                     Recordset recordset = selection.toRecordset();
                     recordset.moveFirst();
-                    setUniformLabelFontName
-                    int nCount = recordset.getRecordCount();
+
                     WritableArray fields = JsonUtil.getFieldInfos(recordset, null);
                     WritableArray fieldInfo = JsonUtil.parseRecordset(recordset, fields, null);
                     map.putArray("fieldInfo", fieldInfo);
