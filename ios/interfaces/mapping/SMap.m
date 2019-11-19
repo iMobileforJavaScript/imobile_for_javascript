@@ -1135,35 +1135,27 @@ RCT_REMAP_METHOD(getCurrentFloorID, methodgetCurrentFloorIDWithResolver: (RCTPro
     }
 }
 
-#pragma mark 获取当前工作空间含有网络数据集的数据源
-RCT_REMAP_METHOD(getNetworkDatasource, methodgetNetworkDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+#pragma mark 获取当前工作空间含有网络数据集
+RCT_REMAP_METHOD(getNetworkDataset, methodgetNetworkDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
         Datasources *datasouces = sMap.smMapWC.workspace.datasources;
-        NSMutableArray *datasourcesArray = [[NSMutableArray alloc] init];
+        NSMutableArray *array = [[NSMutableArray alloc] init];
         for(int i = 0; i < datasouces.count; i++){
             Datasource *datasource = [datasouces get:i];
-            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
-            [dic setObject:datasource.alias forKey:@"title"];
-            [dic setObject:@(NO) forKey:@"visible"];
             Datasets *datasets = datasource.datasets;
-            NSMutableArray *datasetsArray = [[NSMutableArray alloc] init];
             for(int j = 0; j < datasets.count; j++){
                 Dataset *dataset = [datasets get:j];
                 if(dataset.datasetType == Network){
-                    NSDictionary *datasetDic = @{
-                                                 @"name":dataset.name,
-                                                 @"checked":@(NO),
-                                                 };
-                    [datasetsArray addObject:datasetDic];
+                    NSDictionary *dic = @{
+                                            @"name":dataset.name,
+                                            @"datasourceName":datasource.alias,
+                                        };
+                    [array addObject:dic];
                 }
             }
-            if(datasetsArray.count > 0){
-                [dic setObject:datasetsArray forKey:@"data"];
-                [datasourcesArray addObject:dic];
-            }
         }
-        resolve(datasourcesArray);
+        resolve(array);
     }@catch(NSException *exception){
         reject(@"getNetworkDatasource",exception.reason, nil);
     }
