@@ -6095,7 +6095,16 @@ static BOOL bDouble = false;
     //    NSMutableDictionary* dic = [NativeUtil recordsetToDictionary:r count:0 size:1];
     //    [SMap singletonInstance].selection = [layer getSelection];
     
+    Selection* selection = layer.getSelection;
+    Recordset* recordset = selection.toRecordset;
+    [recordset moveFirst];
+    NSMutableArray* fields = [NativeUtil getFieldInfos:recordset filter:nil];
+    NSMutableArray *fieldInfo = [NativeUtil parseRecordset:recordset fieldsArr:fields];
+    
+    [recordset dispose];
+    
     [self sendEventWithName:MAP_GEOMETRY_SELECTED body:@{@"layerInfo":layerInfo,
+                                                         @"fieldInfo":fieldInfo,
                                                          @"id":nsId,
                                                          }];
 }
