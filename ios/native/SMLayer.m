@@ -497,30 +497,10 @@
     SMap* sMap = [SMap singletonInstance];
     
     Point2D* pt = [[Point2D alloc] initWithX:longitude Y:latitude];
-//    if ([sMap.smMapWC.mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
-//        Point2Ds *points = [[Point2Ds alloc]init];
-//        [points add:pt];
-//        PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-//        [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-//        CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-//
-//        //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-//        [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
-//        pt = [points getItem:0];
-//    }
-    
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//    InfoCallout* callout = [[InfoCallout alloc]initWithMapControl:sMap.smMapWC.mapControl];
     InfoCallout* callout = [[InfoCallout alloc] initWithMapControl:sMap.smMapWC.mapControl BackgroundColor:nil Alignment:CALLOUT_BOTTOM];
     callout.width = 50;
     callout.height = 50;
     callout.userInteractionEnabled = YES;
-//        callout.layer = layer;
-//        SEL selector1 = @selector(callOutAction:);
-//        UITapGestureRecognizer * tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:selector];
-//
-//        [callout addGestureRecognizer:tapGesture];
-//        [tapGesture setNumberOfTapsRequired:1];
 
     NSString* extension = [[imagePath pathExtension] lowercaseString];
     UIImage* img;
@@ -533,7 +513,6 @@
     }
     
     UIImageView* image = [[UIImageView alloc]initWithImage:img];
-//        UIImageView* image = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"SuperMap.bundle/Contents/Resources/Resource/node.png"]];
     image.frame = CGRectMake(0, 0, 50, 50);
     [callout addSubview:image];
     [callout showAt:pt Tag:callout.layerName];

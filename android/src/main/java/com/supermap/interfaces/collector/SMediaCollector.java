@@ -25,6 +25,7 @@ import com.supermap.data.CursorType;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.DatasetVectorInfo;
 import com.supermap.data.Datasource;
+import com.supermap.data.Geometry;
 import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
 import com.supermap.data.PrjCoordSys;
@@ -347,6 +348,37 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
             boolean saveResult = saveMedia(layer, geoID, toPath, fieldInfos, addToMap);
 
             promise.resolve(saveResult);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void updateMedia(String layerName, ReadableArray geoIDs, Promise promise) {
+        try {
+            MapWrapView mapWrapView = (MapWrapView)SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView();
+            Layer layer = SMLayer.findLayerWithName(layerName);
+
+            int[] ids = new int[geoIDs.size()];
+            for (int i = 0; i < geoIDs.size(); i++) {
+                ids[i] = geoIDs.getInt(i);
+            }
+            Recordset recordset = ((DatasetVector)layer.getDataset()).query(ids, CursorType.STATIC);
+
+            ArrayList<InfoCallout> list = new ArrayList<>();
+            while (!recordset.isEOF()) {
+                Geometry geometry = recordset.getGeometry();
+                Point2D point2D = geometry.getInnerPoint();
+                InfoCallout callout = (InfoCallout) mapWrapView.getCallOut(layerName + "-" + recordset.getID());
+                callout.setLocation(point2D.getX(), point2D.getY());
+                list.add(0, callout);
+                recordset.moveNext();
+            }
+
+            SMMediaCollector.updateCallouts(list);
+            recordset.dispose();
+
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }

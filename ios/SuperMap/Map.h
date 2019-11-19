@@ -385,6 +385,9 @@ typedef enum{
  */
 -(BOOL)saveAs:(NSString*)mapName;
 
+/*是否打开移动端POI大数据优化显示选项*/
+@property(nonatomic,assign)BOOL isPOIOptimized;
+
 @end
 
 
