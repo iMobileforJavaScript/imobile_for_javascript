@@ -6013,31 +6013,22 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void getNetworkDatasource(Promise promise) {
+    public void getNetworkDataset(Promise promise) {
         try {
             sMap = SMap.getInstance();
             Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
             WritableArray array = Arguments.createArray();
             for (int i = 0, count = datasources.getCount(); i < count; i++) {
                 Datasource datasource = datasources.get(i);
-                WritableMap map = Arguments.createMap();
-                map.putString("title", datasource.getAlias());
-                map.putBoolean("visible", false);
                 Datasets datasets = datasource.getDatasets();
-                WritableArray dataArray = Arguments.createArray();
                 for (int j = 0, length = datasets.getCount(); j < length; j++) {
                     Dataset dataset = datasets.get(j);
                     if (dataset.getType() == DatasetType.NETWORK) {
                         WritableMap tempMap = Arguments.createMap();
                         tempMap.putString("name", dataset.getName());
-                        tempMap.putBoolean("checked", false);
-
-                        dataArray.pushMap(tempMap);
+                        tempMap.putString("datasourceName", datasource.getAlias());
+                        array.pushMap(tempMap);
                     }
-                }
-                if (dataArray.size() > 0) {
-                    map.putArray("data", dataArray);
-                    array.pushMap(map);
                 }
             }
             promise.resolve(array);

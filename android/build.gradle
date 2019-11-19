@@ -71,7 +71,7 @@ dependencies {
     implementation files('libs/TencentMapLBSApi_v3.0.jar')
     //arcore
     implementation 'com.android.support:design:28.0.0'
-    implementation 'com.google.ar:core:1.11.0'
+    implementation 'com.google.ar:core:1.13.0'
     implementation "com.google.ar.sceneform:core:1.4.0"
     implementation "com.google.ar.sceneform.ux:sceneform-ux:1.4.0"
     implementation 'de.javagl:obj:0.2.1'

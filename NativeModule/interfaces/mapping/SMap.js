@@ -2736,9 +2736,9 @@ export default (function () {
    * 获取当前工作空间含有网络数据集的数据源
    * @returns {*}
    */
-  function getNetworkDatasource() {
+  function getNetworkDataset() {
     try {
-      return SMap.getNetworkDatasource()
+      return SMap.getNetworkDataset()
     } catch (e) {
       console.error(e)
     }
@@ -3070,7 +3070,7 @@ export default (function () {
     isIndoorMap,
     getCurrentMapPosition,
     isInBounds,
-    getNetworkDatasource,
+    getNetworkDataset,
     getPathInfos,
     getNavPathLength,
     // getIndoorDatasource,
