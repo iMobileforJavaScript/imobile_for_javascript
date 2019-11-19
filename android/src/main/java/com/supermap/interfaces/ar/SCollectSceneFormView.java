@@ -30,7 +30,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class SCollectSceneFormView extends ReactContextBaseJavaModule {
+
+public class SCollectSceneFormView extends ReactContextBaseJavaModule{
 
     public static final String REACT_CLASS = "SCollectSceneFormView";
     private static RajawaliSurfaceView mSurfaceView;
@@ -74,6 +75,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
         mCustomRelativeLayout = relativeLayout;
     }
 
+
     @SuppressLint("ClickableViewAccessibility")
     public static void setSurfaceView(RajawaliSurfaceView surfaceView) {
         //----------------------------显示层----------------------------------
@@ -106,21 +108,20 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
                 .emit(eventName, params);
     }
 
+
     private static void setupRenderer() {
         // motion renderer
         mSurfaceView.setEGLContextClientVersion(2);
         mRenderer.getCurrentScene().registerFrameCallback(new ASceneFrameCallback() {
             @Override
             public void onPreFrame(long sceneTime, double deltaTime) {
+                mRenderer.updateCameraPoseFromVecotr(mCurrentPoseTranslation, mCurrentPoseRotation);
                 if (isShowTrace) {
                     mMeasureView.saveCurrentPoseTranslation(mCurrentPoseTranslation);
                     mMeasureView.saveCurrentPoseRotation(mCurrentPoseRotation);
 
-                    mRenderer.updateCameraPoseFromVecotr(mCurrentPoseTranslation, mCurrentPoseRotation);
-
                     //记录总长度
                     float totalLength = mRenderer.getTotalLength();
-//                    Log.d(REACT_CLASS, "TotalLength: " + totalLength + "m");
 
                     WritableMap allResults = Arguments.createMap();
                     allResults.putString("totalLength", mDecimalFormat.format(totalLength));
@@ -154,8 +155,8 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     public void startRecording(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------startRecording--------RN--------");
+            mRenderer.addNewRoute();
             isShowTrace = true;
-
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -193,6 +194,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             }
             if (mRenderer != null) {
                 mRenderer.savePoseData(mPostData);
+                mRenderer.saveCurrentRoute();
             }
             //保存到数据集
             saveDataset(name);
@@ -301,7 +303,8 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
         try {
             Log.d(REACT_CLASS, "----------------clearData--------RN--------");
             if (mRenderer != null) {
-                mRenderer.clearPoseData();
+//                mRenderer.clearPoseData();
+                mRenderer.clearCurrentRoute();
             }
             if (mPostData != null) {
                 mPostData.clear();
@@ -400,6 +403,31 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             } else {
                 promise.resolve(false);
             }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void setDataSource(String name,String path,Promise promise) {
+        try {
+            mDatasourceAlias = name;
+            boolean exit = false;
+            int count = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().getCount();
+            for(int i=0;i<count;i++){
+                if(SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get(i).getAlias().equals(name)){
+                    exit = true;
+                }
+            }
+            if(!exit){
+                DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
+                // 设置文件数据源连接需要的参数
+                datasourceconnection.setEngineType(EngineType.UDB);
+                datasourceconnection.setServer(android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+path);
+                datasourceconnection.setAlias(name);
+                Datasource datasource  =  SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().open(datasourceconnection);
+            }
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -713,7 +741,10 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
             Workspace workspace = mapControl.getMap().getWorkspace();
             Datasource datasource = workspace.getDatasources().get(UDBName);
-            datasetVector = (DatasetVector) datasource.getDatasets().get(DatasetName);
+            if(datasource!=null){
+                datasetVector = (DatasetVector) datasource.getDatasets().get(DatasetName);
+                datasetVector.open();
+            }
         }
 
         if (datasetVector == null) {
