@@ -232,8 +232,10 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
 
 
     public void loadPoseData(ArrayList<Point3D>  src){
-        mTrajectory.loadPoseData(src);
-
+//        mTrajectory.loadPoseData(src);
+        if(mRouteTrajectorys.containsKey(mRouteIndex)){
+            mRouteTrajectorys.get(mRouteIndex).loadPoseData(src);
+        }
         totalLength = (float)_getTotalLengthFromPointList(src);
     }
 
