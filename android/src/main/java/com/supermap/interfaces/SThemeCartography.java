@@ -1280,7 +1280,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void geometrySelected(ReadableMap readableMap, Promise promise) {
+    public void setUniformLabelFontName(ReadableMap readableMap, Promise promise) {
         try {
             HashMap<String, Object> data = readableMap.toHashMap();
 
