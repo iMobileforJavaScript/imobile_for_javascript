@@ -82,6 +82,7 @@ RCT_EXPORT_MODULE();
              MAP_SCALE_CHANGED,
              MAP_BOUNDS_CHANGED,
              IS_INDOOR_MAP,
+             IS_FLOOR_HIDDEN,
              LEGEND_CONTENT_CHANGE,
              MAP_SCALEVIEW_CHANGED,
 //             POINTSEARCH2D_KEYWORDS,
@@ -1124,6 +1125,17 @@ RCT_REMAP_METHOD(hasLineDataset, hasLineDatasetWithResolver: (RCTPromiseResolveB
     }
 }
 
+#pragma mark 设置当前楼层ID
+RCT_REMAP_METHOD(setCurrentFloorID, methodgetCurrentFloorIdWithId:(NSString *)floorID Resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        sMap.smMapWC.floorListView.currentFloorId = floorID;
+        resolve(@(YES));
+    }@catch(NSException *exception){
+        reject(@"setCurrentFloorID", exception.reason, nil);
+    }
+}
+
 #pragma mark 获取当前楼层ID
 RCT_REMAP_METHOD(getCurrentFloorID, methodgetCurrentFloorIDWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
@@ -1191,6 +1203,8 @@ RCT_REMAP_METHOD(addNetWorkDataset, addNetWorkDatasetWithResolver: (RCTPromiseRe
                         incrementNetworkDatasetName = (NSString *)[recordset getFieldValueWithString:@"NetworkName"];
                     }
                 } while([recordset moveNext]);
+                [recordset close];
+                [recordset dispose];
             }
             if(incrementLineDatasetName != nil && incrementDatasource != nil){
                 Dataset *dataset = [incrementDatasource.datasets getWithName:incrementLineDatasetName];
@@ -1666,7 +1680,56 @@ RCT_REMAP_METHOD(isInBounds, isInBoundsWithPoint:(NSDictionary *)point DatasetNa
         reject(@"isInBounds", exception.reason, nil);
     }
 }
-
+#pragma mark 获取楼层相关数据，并初始化楼层控件 额外返回一个数据源名称，用于判断是否需要重新获取楼层信息
+RCT_REMAP_METHOD(getFloorData, getFloorDataWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        Datasources *datasources = sMap.smMapWC.workspace.datasources;
+        Datasource *curDatasource = nil;
+        Dataset *floorRelationTable = nil;
+        for(int i = 0; i < datasources.count; i++){
+            Datasource *datasource = [datasources get:i];
+            Datasets *datasets = datasource.datasets;
+            if([datasets contain:@"FloorRelationTable"]){
+                curDatasource = datasource;
+                floorRelationTable = [datasets getWithName:@"FloorRelationTable"];
+                break;
+            }
+        }
+        if(floorRelationTable != nil){
+            
+            //初始化floorListView
+            FloorListView *floorListView = [[FloorListView alloc] initWithFrame:CGRectMake(0,0,0,0)];
+            [floorListView linkMapControl:sMap.smMapWC.mapControl];
+            sMap.smMapWC.floorListView = floorListView;
+            
+            
+            NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+            NSMutableArray *array = [[NSMutableArray alloc] init];
+            DatasetVector *datasetVector = (DatasetVector *)floorRelationTable;
+            Recordset *recordset = [datasetVector recordset:NO cursorType:STATIC];
+            do{
+                NSString *FL_ID = (NSString *)[recordset getFieldValueWithString:@"FL_ID"];
+                NSString *floorName = (NSString *)[recordset getFieldValueWithString:@"FLoorName"];
+                if(FL_ID != nil && floorName != nil){
+                    [array addObject:@{@"name":floorName,@"id":FL_ID}];
+                }
+            } while([recordset moveNext]);
+            [recordset close];
+            [recordset dispose];
+            
+            [dic setValue:array forKey:@"data"];
+            [dic setValue:curDatasource.alias forKey:@"datasource"];
+            [dic setValue:floorListView.currentFloorId forKey:@"currentFloorID"];
+            
+            resolve(dic);
+        }else{
+            resolve(@{@"datasource": @""});
+        }
+    }@catch(NSException *exception){
+        reject(@"getFloorData", exception.reason, nil);
+    }
+}
 
 #pragma mark -------------------------导航模块结束---------------------------
 
@@ -2569,7 +2632,7 @@ RCT_REMAP_METHOD(getUDBNameOfLabel, getUDBNameOfLabelWithPath:(NSString *)path r
             Dataset *dataset = [datasets get:i];
             NSString *name = dataset.name;
             NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
-            [dic setObject:name forKey:@"title"];
+            [dic setObject:name forKey:@"name"];
             [arr addObject:dic];
         }
         if(workspace != nil){
@@ -5928,10 +5991,11 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
                        body:@{@"x":nsX,
                               @"y":nsY
                               }];
-    NSString *floorID = [SMap singletonInstance].smMapWC.floorListView.currentFloorId;
-    [self sendEventWithName:IS_INDOOR_MAP body:@{
-                                                @"isIndoor":@(floorID != nil),
-                                                }];
+    FloorListView *floorListView = [SMap singletonInstance].smMapWC.floorListView;
+    NSString *floorID = floorListView.currentFloorId;
+    BOOL isHidden = floorListView.isHidden;
+    [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"isHidden":@(isHidden)}];
+    [self sendEventWithName:IS_INDOOR_MAP body:@{@"isIndoor":@(floorID != nil)}];
 }
 
 -(void) scaleChanged:(double)newscale{

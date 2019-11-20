@@ -316,11 +316,13 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 
                 @Override
                 public void onComplete() {
+                    promise.resolve(true);
                     mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADED,true);
                 }
 
                 @Override
                 public void onFailure() {
+                    promise.resolve(false);
                     mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADFAILURE,false);
                 }
             });
@@ -349,11 +351,13 @@ public class SOnlineService extends ReactContextBaseJavaModule{
 
                 @Override
                 public void onComplete() {
+                    promise.resolve(true);
                     mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADED,true);
                 }
 
                 @Override
                 public void onFailure() {
+                    promise.resolve(false);
                     mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EventConst.ONLINE_SERVICE_UPLOADFAILURE,false);
                 }
             });
