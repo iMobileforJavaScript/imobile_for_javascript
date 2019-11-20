@@ -1,6 +1,7 @@
 package com.supermap.interfaces.ar;
 
 import android.graphics.Color;
+import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -46,6 +47,7 @@ public class CollectSceneFormViewManager extends SimpleViewManager<CustomRelativ
 
         mMeasureView = new MeasureView(reactContext.getCurrentActivity());
         mMeasureView.setLayoutParams(params1);
+//        mMeasureView.enablePointCloud(true);
         SCollectSceneFormView.setMeasureView(mMeasureView);
 
 

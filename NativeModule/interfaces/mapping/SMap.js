@@ -2207,19 +2207,6 @@ export default (function () {
   }
 
   /**
-   * 获取路网信息
-   * @returns {*|void|Promise<void>}
-   */
-  function getNavigationData() {
-    try {
-      return SMap.getNavigationData()
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-
-  /**
    * 室外导航路径分析
    * @returns {*|void|Promise<void>}
    */
@@ -2340,18 +2327,6 @@ export default (function () {
     }
   }
 
-  /**
-   * 设置当前楼层ID
-   * @param floorID
-   * @returns {*}
-   */
-  function setCurrentFloor(floorID) {
-    try {
-      return SMap.setCurrentFloor(floorID)
-    } catch (e) {
-      console.error(e)
-    }
-  }
   /**
    * 开启室内导航
    * @returns {*|void|Promise<void>}
@@ -2517,35 +2492,12 @@ export default (function () {
   }
 
   /**
-   * 获取路网线数据集
-   * @returns {*|void|Promise<void>}
-   */
-  function getLineDataset(name) {
-    try {
-      return SMap.getLineDataset(name)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  /**
    * 判断当前工作空间是否存在网络数据集
    * @returns {*}
    */
   function hasNetworkDataset() {
     try {
       return SMap.hasNetworkDataset()
-    } catch (e) {
-      console.error(e)
-    }
-  }
-  /**
-   * 获取当前工作空间中的线数据集和楼层列表
-   * @returns {*}
-   */
-  function getLineDatasetAndFloorList() {
-    try {
-      return SMap.getLineDatasetAndFloorList()
     } catch (e) {
       console.error(e)
     }
@@ -2784,9 +2736,9 @@ export default (function () {
    * 获取当前工作空间含有网络数据集的数据源
    * @returns {*}
    */
-  function getNetworkDatasource() {
+  function getNetworkDataset() {
     try {
-      return SMap.getNetworkDatasource()
+      return SMap.getNetworkDataset()
     } catch (e) {
       console.error(e)
     }
@@ -3090,13 +3042,11 @@ export default (function () {
     clearTarckingLayer,
     startNavigation,
     startIndoorNavigation,
-    getNavigationData,
     beginNavigation,
     beginIndoorNavigation,
     outdoorNavigation,
     indoorNavigation,
     getCurrentFloorID,
-    setCurrentFloor,
     getStartPoint,
     getEndPoint,
     clearPoint,
@@ -3105,13 +3055,11 @@ export default (function () {
     openTrafficMap,
     isOpenTrafficMap,
     removeTrafficMap,
-    getLineDataset,
     addNetWorkDataset,
     removeNetworkDataset,
     buildNetwork,
     hasNetworkDataset,
     hasLineDataset,
-    getLineDatasetAndFloorList,
     gpsBegin,
     addGPSRecordset,
     copyNaviSnmFile,
@@ -3122,7 +3070,7 @@ export default (function () {
     isIndoorMap,
     getCurrentMapPosition,
     isInBounds,
-    getNetworkDatasource,
+    getNetworkDataset,
     getPathInfos,
     getNavPathLength,
     // getIndoorDatasource,

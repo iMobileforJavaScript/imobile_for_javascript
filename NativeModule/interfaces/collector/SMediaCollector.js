@@ -283,6 +283,15 @@ function saveMediaByDataset (datasetName = '', geoID = -1, toPath = '', fieldInf
 }
 
 /**
+ * 更新指定多媒体callout
+ * @returns {*}
+ */
+function updateMedia (layerName = '', geoIDs = []) {
+  if (layerName === '' || geoIDs.length === 0) return
+  return Collector.updateMedia(layerName, geoIDs)
+}
+
+/**
  * 移除多媒体callout
  * @returns {*}
  */
@@ -359,6 +368,7 @@ export default {
   removeMedias,
   showMedia,
   hideMedia,
+  updateMedia,
 
   getVideoInfo,
   getMediaInfo,

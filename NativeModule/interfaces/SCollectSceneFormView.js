@@ -105,6 +105,14 @@ deleteData = (name,isLine) => {
   }
 }
 
+setDataSource = (name,path) => {
+  try {
+    return SCollectSceneFormView.setDataSource(name,path)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   startRecording,
   stopRecording,
@@ -118,4 +126,5 @@ export default {
   getHistoryData,
   switchViewMode,
   deleteData,
+  setDataSource,
 }
