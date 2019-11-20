@@ -6,10 +6,12 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.ar.highprecision.MeasureView;
+import com.supermap.component.MapWrapView;
 import com.supermap.data.*;
 import com.supermap.interfaces.ai.CustomRelativeLayout;
 import com.supermap.interfaces.ar.rajawali.MotionRajawaliRenderer;
@@ -31,7 +33,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class SCollectSceneFormView extends ReactContextBaseJavaModule{
+public class SCollectSceneFormView extends ReactContextBaseJavaModule {
 
     public static final String REACT_CLASS = "SCollectSceneFormView";
     private static RajawaliSurfaceView mSurfaceView;
@@ -52,7 +54,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
     List<SceneFormInfo> infoList = new ArrayList<>();
     private ArrayList<Point3D> mQueryData = new ArrayList<>();//查询到的数据
 
-    private String mDatasourceAlias, mDatasetName ,mPointDatasetName= null;
+    private String mDatasourceAlias, mDatasetName, mPointDatasetName = null;
     private static String mLanguage = "CN";//EN
     private static String UDBpath = "";
 
@@ -115,11 +117,10 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
         mRenderer.getCurrentScene().registerFrameCallback(new ASceneFrameCallback() {
             @Override
             public void onPreFrame(long sceneTime, double deltaTime) {
-                mRenderer.updateCameraPoseFromVecotr(mCurrentPoseTranslation, mCurrentPoseRotation);
+                mRenderer.updateCameraPoseFromVecotr(mCurrentPoseTranslation, mCurrentPoseRotation, mReactContext);
+                mMeasureView.saveCurrentPoseTranslation(mCurrentPoseTranslation);
+                mMeasureView.saveCurrentPoseRotation(mCurrentPoseRotation);
                 if (isShowTrace) {
-                    mMeasureView.saveCurrentPoseTranslation(mCurrentPoseTranslation);
-                    mMeasureView.saveCurrentPoseRotation(mCurrentPoseRotation);
-
                     //记录总长度
                     float totalLength = mRenderer.getTotalLength();
 
@@ -149,6 +150,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
 
     /**
      * 开始记录
+     *
      * @param promise
      */
     @ReactMethod
@@ -165,6 +167,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
 
     /**
      * 停止记录
+     *
      * @param promise
      */
     @ReactMethod
@@ -181,6 +184,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
 
     /**
      * 获取三维场景里的数据并保存
+     *
      * @param promise
      */
     @ReactMethod
@@ -207,14 +211,15 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
 
     /**
      * 删除指定数据
+     *
      * @param promise
      */
     @ReactMethod
-    public void deleteData(String name,boolean isLine, Promise promise) {
+    public void deleteData(String name, boolean isLine, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------saveData--------RN--------");
 
-            deleteDataset(name,isLine);
+            deleteDataset(name, isLine);
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -224,6 +229,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
 
     /**
      * 保存当前定位点
+     *
      * @param promise
      */
     @ReactMethod
@@ -234,7 +240,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
             LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
             Point3D point3D = new Point3D(gpsDat.dLongitude, gpsDat.dLatitude, gpsDat.dAltitude);
             //保存到数据集
-            saveDataset(name,point3D);
+            saveDataset(name, point3D);
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -244,10 +250,11 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
 
     /**
      * 加载数据到三维场景里
+     *
      * @param promise
      */
     @ReactMethod
-    public void loadData(int index,boolean isLine, Promise promise) {
+    public void loadData(int index, boolean isLine, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------loadData--------RN--------");
             if (mQueryData == null) {
@@ -255,14 +262,14 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
             } else {
                 mQueryData.clear();
             }
-            if(isLine){
+            if (isLine) {
                 if (infoList != null && infoList.size() > 0) {
                     SceneFormInfo info = infoList.get(index);
                     GeoLine3D geoLine3D = info.getGeoLine3D();
                     for (int i = 0; i < geoLine3D.getPartCount(); i++) {
                         Point3Ds part = geoLine3D.getPart(i);
                         Point3D[] point3DS = part.toArray();
-                        for (Point3D point : point3DS ) {
+                        for (Point3D point : point3DS) {
                             mQueryData.add(point);
                         }
                     }
@@ -274,7 +281,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
                 } else {
                     promise.resolve(false);
                 }
-            }else {
+            } else {
                 if (infoList != null && infoList.size() > 0) {
                     SceneFormInfo info = infoList.get(index);
                     GeoPoint3D geoPoint3D = info.getGeoPoint3D();
@@ -294,8 +301,10 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
             promise.reject(e);
         }
     }
+
     /**
      * 清空数据
+     *
      * @param promise
      */
     @ReactMethod
@@ -352,7 +361,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
     }
 
     @ReactMethod
-    public void initSceneFormView(String datasourceAlias, String datasetName,String datasetPointName, String language, String UDBpath, Promise promise) {
+    public void initSceneFormView(String datasourceAlias, String datasetName, String datasetPointName, String language, String UDBpath, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------initSceneFormView--------RN--------");
             mDatasourceAlias = datasourceAlias;
@@ -372,17 +381,18 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
     }
 
     @ReactMethod
-    public void getHistoryData(boolean isLine,Promise promise) {
+    public void getHistoryData(boolean isLine, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------getHistoryData--------RN--------");
             if (infoList == null) {
                 infoList = new ArrayList<>();
             } else {
-                infoList.clear();;
+                infoList.clear();
+                ;
             }
-            if(isLine){
+            if (isLine) {
                 infoList = getDatasetAllGeometry(this.mDatasourceAlias, this.mDatasetName);
-            }else {
+            } else {
                 infoList = getPointDatasetAllGeometry(this.mDatasourceAlias, this.mPointDatasetName);
             }
             if (infoList != null && infoList.size() > 0) {
@@ -391,7 +401,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
                     WritableMap writeMap = Arguments.createMap();
                     writeMap.putString("name", infoList.get(i).getName());
                     writeMap.putString("time", infoList.get(i).getTime());
-                    writeMap.putString("description",infoList.get(i).getNotes());
+                    writeMap.putString("description", infoList.get(i).getNotes());
                     writeMap.putInt("index", i);
                     arr.pushMap(writeMap);
                 }
@@ -409,23 +419,23 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
     }
 
     @ReactMethod
-    public void setDataSource(String name,String path,Promise promise) {
+    public void setDataSource(String name, String path, Promise promise) {
         try {
             mDatasourceAlias = name;
             boolean exit = false;
             int count = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().getCount();
-            for(int i=0;i<count;i++){
-                if(SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get(i).getAlias().equals(name)){
+            for (int i = 0; i < count; i++) {
+                if (SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get(i).getAlias().equals(name)) {
                     exit = true;
                 }
             }
-            if(!exit){
+            if (!exit) {
                 DatasourceConnectionInfo datasourceconnection = new DatasourceConnectionInfo();
                 // 设置文件数据源连接需要的参数
                 datasourceconnection.setEngineType(EngineType.UDB);
-                datasourceconnection.setServer(android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+path);
+                datasourceconnection.setServer(android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + path);
                 datasourceconnection.setAlias(name);
-                Datasource datasource  =  SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().open(datasourceconnection);
+                Datasource datasource = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().open(datasourceconnection);
             }
             promise.resolve(true);
         } catch (Exception e) {
@@ -435,6 +445,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
 
     /**
      * 切换观看模式
+     *
      * @param promise
      */
     @ReactMethod
@@ -482,7 +493,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
 
         Datasets datasets = datasource.getDatasets();
         if (datasets.contains(datasetName)) {
-            checkFieldInfos((DatasetVector)datasets.get(datasetName));
+            checkFieldInfos((DatasetVector) datasets.get(datasetName));
             return;
         }
 
@@ -510,7 +521,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
 
         Datasets datasets = datasource.getDatasets();
         if (datasets.contains(pointdatasetName)) {
-            checkFieldInfos((DatasetVector)datasets.get(pointdatasetName));
+            checkFieldInfos((DatasetVector) datasets.get(pointdatasetName));
             return;
         }
 
@@ -627,7 +638,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
     /**
      * 保存点数据
      */
-    private void saveDataset(String name,Point3D point3D) {
+    private void saveDataset(String name, Point3D point3D) {
         try {
             DatasetVector datasetVector = null;
             MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
@@ -683,15 +694,15 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
     /**
      * 删除数据
      */
-    private void deleteDataset(String name,boolean isLine) {
+    private void deleteDataset(String name, boolean isLine) {
         try {
             DatasetVector datasetVector = null;
             MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
             Workspace workspace = mapControl.getMap().getWorkspace();
             Datasource datasource = workspace.getDatasources().get(mDatasourceAlias);
-            if(isLine){
+            if (isLine) {
                 datasetVector = (DatasetVector) datasource.getDatasets().get(mDatasetName);
-            }else {
+            } else {
                 datasetVector = (DatasetVector) datasource.getDatasets().get(mPointDatasetName);
             }
             Recordset recordset = datasetVector.getRecordset(false, CursorType.DYNAMIC);
@@ -703,7 +714,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
             while (!recordset.isEOF()) {
                 if (fieldInfos.indexOf("NAME") != -1) {
                     ob = recordset.getFieldValue("NAME");
-                    if(ob.toString().equals(name)){
+                    if (ob.toString().equals(name)) {
                         recordset.edit();
                         recordset.delete();
                     }
@@ -741,7 +752,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule{
             MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
             Workspace workspace = mapControl.getMap().getWorkspace();
             Datasource datasource = workspace.getDatasources().get(UDBName);
-            if(datasource!=null){
+            if (datasource != null) {
                 datasetVector = (DatasetVector) datasource.getDatasets().get(DatasetName);
                 datasetVector.open();
             }

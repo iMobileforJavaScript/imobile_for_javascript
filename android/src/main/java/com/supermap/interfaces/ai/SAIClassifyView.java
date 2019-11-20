@@ -25,9 +25,9 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
 
     private static final String REACT_CLASS = "SAIClassifyView";
 
-    private static final String DEFAULT_MODEL_NAME = "mobilenet_quant_224.tflite";
-    private static final String DEFAULT_LABEL_NAME = "mobilenet_quant_224.txt";
-    private static final String DEFAULT_LABEL_CN_TRANSLATE = "mobilenet_quant_224_cn.txt";
+    private static final String DEFAULT_MODEL_NAME = android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/iTablet/Common/AI/ClassifyModel/mobilenet_quant_224/"+"mobilenet_quant_224.tflite";
+    private static final String DEFAULT_LABEL_NAME = android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/iTablet/Common/AI/ClassifyModel/mobilenet_quant_224/"+"mobilenet_quant_224.txt";
+    private static final String DEFAULT_LABEL_CN_TRANSLATE = android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/iTablet/Common/AI/ClassifyModel/mobilenet_quant_224/"+"mobilenet_quant_224_cn.txt";
 
     private static ModelType mModelType = ModelType.ASSETS_FILE;
     private static String MODEL_PATH = "";
@@ -72,7 +72,6 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
         try {
             if (mModelType == ModelType.ASSETS_FILE) {
                 mClassifier = TensorFlowImageClassifier.create(
-                        mContext.getAssets(),
                         DEFAULT_MODEL_NAME,
                         DEFAULT_LABEL_NAME,
                         INPUT_SIZE,
@@ -557,7 +556,8 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
         try {
             InputStream inputStream = null;
             if (mModelType == ModelType.ASSETS_FILE) {
-                inputStream = mContext.getAssets().open(DEFAULT_LABEL_CN_TRANSLATE);
+//                inputStream = mContext.getAssets().open(DEFAULT_LABEL_CN_TRANSLATE);
+                inputStream = new FileInputStream(new File(DEFAULT_LABEL_CN_TRANSLATE));
             } else if (mModelType == ModelType.ABSOLUTE_FILE_PATH) {
                 inputStream = new FileInputStream(new File(LABEL_PATH));
             }
@@ -584,7 +584,8 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
         try {
             InputStream inputStream = null;
             if (mModelType == ModelType.ASSETS_FILE) {
-                inputStream = mContext.getAssets().open(DEFAULT_LABEL_NAME);
+//                inputStream = mContext.getAssets().open(DEFAULT_LABEL_NAME);
+                inputStream = new FileInputStream(new File(DEFAULT_LABEL_NAME));
             } else if (mModelType == ModelType.ABSOLUTE_FILE_PATH) {
                 inputStream = new FileInputStream(new File(LABEL_PATH));
             }
@@ -718,8 +719,8 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
                 INPUT_SIZE = 299;
                 QUANT = false;
             } else if (mModelType == ModelType.ASSETS_FILE){
-                MODEL_PATH = "";
-                LABEL_PATH = "";
+                MODEL_PATH = DEFAULT_MODEL_NAME;
+                LABEL_PATH = DEFAULT_LABEL_NAME;
                 INPUT_SIZE = 224;
                 QUANT = true;
             }
