@@ -19,6 +19,7 @@
 static NSString* kTAG =  @"SOnlineService";
 static NSString* downloadId = @"fileName";
 static NSString* uploadId = @"uploadId";
+static RCTPromiseResolveBlock _resolve;
 #pragma mark -- 定义宏，让该类暴露给RN层
 RCT_EXPORT_MODULE();
 - (NSArray<NSString *> *)supportedEvents{
@@ -332,8 +333,7 @@ RCT_REMAP_METHOD(upload, uploadByPath:(NSString *)path fileName:(NSString *)file
        
         [m_onlineService uploadFilePath:path onlineFileName:fileName];
         uploadId = fileName;
-        NSNumber* number =[NSNumber numberWithBool:YES];
-        resolve(number);
+        _resolve = resolve;
     } @catch (NSException *exception) {
         reject(kTAG, @"upload failed", nil);
     }
@@ -355,8 +355,7 @@ RCT_REMAP_METHOD(uploadByType, uploadByPath:(NSString *)path fileName:(NSString 
         [m_onlineService uploadFilePath:path onlineFileName:fileName tags:tags dataType:dataType];
 //        [m_onlineService uploadFilePath:path onlineFileName:fileName];
         uploadId = fileName;
-        NSNumber* number =[NSNumber numberWithBool:YES];
-        resolve(number);
+        _resolve = resolve;
     } @catch (NSException *exception) {
         reject(kTAG, @"upload failed", nil);
     }
@@ -843,9 +842,11 @@ totalBytesExpectedToWrite:(int64_t) totalBytesExpectedToWrite {
 - (void)uploadResult:(NSString*)error {
     @try {
         if (error == nil) {
+            _resolve([NSNumber numberWithBool:YES]);
             [self sendEventWithName:ONLINE_SERVICE_UPLOADED
                                body:[NSNumber numberWithBool:YES]];
         } else {
+            _resolve([NSNumber numberWithBool:NO]);
             [self sendEventWithName:ONLINE_SERVICE_UPLOADFAILURE
                                body:error];
         }
