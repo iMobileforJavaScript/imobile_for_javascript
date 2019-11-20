@@ -288,6 +288,26 @@ RCT_REMAP_METHOD(deleteDataset, deleteDatasetIn:(NSString*)datasourceAlias datas
     }
 }
 
+RCT_REMAP_METHOD(importTIF, tifPath:(NSString*) tifPath
+                 datasourceParams:(NSDictionary *)params
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    @try {
+        Workspace* workspace = [SMap singletonInstance].smMapWC.workspace;
+        Datasource* datasource = nil;
+        DatasourceConnectionInfo* info = [SMDatasource convertDicToInfo:params];
+        
+        datasource = [workspace.datasources open:info];
+        BOOL result = NO;
+        if(datasource != nil) {
+            result = [DataConversion importTIFFile:tifPath toDatasource:datasource];
+        }
+        resolve([NSNumber numberWithBool:result]);
+    } @catch(NSException *exception){
+        reject(@"importTif", exception.reason, nil);
+    }
+}
+
 RCT_REMAP_METHOD(isAvailableDatasetName, checkAvailaleIn:(NSString*)datasourceAlias WithName:(NSString *)datasetName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try {
         Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
