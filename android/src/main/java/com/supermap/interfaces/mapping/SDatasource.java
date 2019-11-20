@@ -15,6 +15,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.RNUtils.JsonUtil;
 import com.supermap.data.CursorType;
+import com.supermap.data.DataConversion;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.DatasetVectorInfo;
@@ -265,6 +266,24 @@ public class SDatasource extends ReactContextBaseJavaModule {
 
             int index=datasets.indexOf(datasetName);
             promise.resolve(datasets.delete(index));
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
+    public void importTIF(String tifPath, ReadableMap params, Promise promise) {
+        try {
+            Workspace workspace = SMap.getSMWorkspace().getWorkspace();
+            Datasource datasource = null;
+            DatasourceConnectionInfo info = SMDatasource.convertDicToInfo(params.toHashMap());
+
+            datasource = workspace.getDatasources().open(info);
+            boolean result = false;
+            if(datasource != null) {
+                result = DataConversion.importTIF(tifPath, datasource);
+            }
+            promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
         }

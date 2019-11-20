@@ -2632,7 +2632,7 @@ RCT_REMAP_METHOD(getUDBNameOfLabel, getUDBNameOfLabelWithPath:(NSString *)path r
             Dataset *dataset = [datasets get:i];
             NSString *name = dataset.name;
             NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
-            [dic setObject:name forKey:@"title"];
+            [dic setObject:name forKey:@"name"];
             [arr addObject:dic];
         }
         if(workspace != nil){

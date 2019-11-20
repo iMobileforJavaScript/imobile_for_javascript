@@ -4201,7 +4201,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 LayerHeatmap heatMap = (LayerHeatmap) layer;
                 double fuzzyDegree = heatMap.getFuzzyDegree();
 
-                promise.resolve(fuzzyDegree);
+                promise.resolve(fuzzyDegree * 10);
             } else {
                 promise.resolve(false);
             }
@@ -4298,7 +4298,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 LayerHeatmap heatMap = (LayerHeatmap) layer;
                 double intensity = heatMap.getIntensity();
 
-                promise.resolve(intensity);
+                promise.resolve(intensity * 100.0);
             } else {
                 promise.resolve(false);
             }

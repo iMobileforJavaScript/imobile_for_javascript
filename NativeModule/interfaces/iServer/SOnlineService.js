@@ -59,7 +59,7 @@ function uploadFile (path, dataName, handler) {
         handler.onResult(value)
       })
     }
-  } else {
+  } else if(handler){
     if (typeof handler.onProgress === 'function') {
       uploadingFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
         handler.onProgress(progress)
@@ -77,7 +77,7 @@ function uploadFile (path, dataName, handler) {
     }
   }
   
-  OnlineServiceNative.upload(path, dataName)
+  return OnlineServiceNative.upload(path, dataName)
 }
 
 function uploadFilebyType (path, dataName,dataType, handler) {
@@ -94,7 +94,7 @@ function uploadFilebyType (path, dataName,dataType, handler) {
         handler.onResult(value)
       })
     }
-  } else {
+  } else if(handler) {
     if (typeof handler.onProgress === 'function') {
       uploadingFileListener = DeviceEventEmitter.addListener(EventConst.ONLINE_SERVICE_UPLOADING, function (progress) {
         handler.onProgress(progress)
@@ -107,7 +107,7 @@ function uploadFilebyType (path, dataName,dataType, handler) {
     }
   }
   
-  OnlineServiceNative.uploadByType(path, dataName, dataType)
+  return OnlineServiceNative.uploadByType(path, dataName, dataType)
 }
 
 let downloadingListener

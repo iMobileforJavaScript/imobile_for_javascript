@@ -4341,7 +4341,7 @@ RCT_REMAP_METHOD(getHeatMapFuzzyDegree, getHeatMapFuzzyDegree:(NSDictionary*) da
             LayerHeatmap* heatMap = (LayerHeatmap*) layer;
             double fuzzyDegree = heatMap.fuzzyDegree;
             
-            resolve(@(fuzzyDegree));
+            resolve(@(fuzzyDegree * 10));
         } else {
             resolve([NSNumber numberWithBool:false]);
         }
@@ -4470,7 +4470,7 @@ RCT_REMAP_METHOD(getHeatMapMaxColorWeight, getHeatMapMaxColorWeight:(NSDictionar
             LayerHeatmap* heatMap = (LayerHeatmap*) layer;
             double intensity = heatMap.intensity;
             
-            resolve(@(intensity));
+            resolve(@(intensity * 100));
         } else {
             resolve([NSNumber numberWithBool:false]);
         }

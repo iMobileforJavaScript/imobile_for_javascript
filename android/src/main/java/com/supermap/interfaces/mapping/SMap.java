@@ -927,7 +927,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 Dataset dataset = datasets.get(i);
                 String name = dataset.getName();
                 WritableMap writeMap = Arguments.createMap();
-                writeMap.putString("title", name);
+                writeMap.putString("name", name);
                 arr.pushMap(writeMap);
             }
             if (workspace != null) {

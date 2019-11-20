@@ -126,6 +126,14 @@ function removeDatasetByName(path,name){
   }
 }
 
+function importTIF(tifPath, datasourceParams) {
+  try {
+    return SDatasource.importTIF(tifPath, datasourceParams)
+  } catch (error) {
+    console.error(e)
+  }
+}
+
 function copyDataset(datasoucePath,toDatasourcePath,datasets){
   try {
     return SDatasource.copyDataset(datasoucePath,toDatasourcePath,datasets)
@@ -230,6 +238,7 @@ export {
   deleteDatasource,
   createDataset,
   deleteDataset,
+  importTIF,
   isAvailableDatasetName,
   removeDatasetByName,
   copyDataset,
