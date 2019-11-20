@@ -65,6 +65,9 @@ NSString * const MAP_GEOMETRY_SELECTED = @"com.supermap.RN.Mapcontrol.geometry_s
 NSString * const MAP_SCALE_CHANGED = @"Supermap.MapControl.MapParamChanged.ScaleChanged";
 NSString * const MAP_BOUNDS_CHANGED = @"Supermap.MapControl.MapParamChanged.BoundsChanged";
 NSString * const IS_INDOOR_MAP = @"com.supermap.RN.FloorListView.isIndoorChanged";
+/**  楼层控件是否应该隐藏  **/
+NSString * const IS_FLOOR_HIDDEN = @"com.supermap.RN.FloorListView.isFloorHidden";
+
 NSString * const POINTSEARCH2D_KEYWORDS = @"com.supermap.RN.MapControl.PointSearch2D_keyWords";
 /** 比例尺改变 RN显示比例尺专用 **/
 NSString * const MAP_SCALEVIEW_CHANGED = @"com.supermap.RN.Map.ScaleView.scaleView_change";

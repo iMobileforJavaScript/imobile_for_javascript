@@ -18,6 +18,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -216,14 +217,24 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                 public void boundsChanged(Point2D newMapCenter) {
                     sMap = SMap.getInstance();
+                    FloorListView floorListView = sMap.smMapWC.getFloorListView();
                     String floorId = null;
-                    if (sMap.smMapWC.getFloorListView() != null) {
-                        floorId = sMap.smMapWC.getFloorListView().getCurrentFloorId();
+
+                    boolean isHidden = true;
+                    if (floorListView != null) {
+                        floorId = floorListView.getCurrentFloorId();
+                        isHidden = floorListView.getVisibility() != View.VISIBLE;
                     }
+
                     WritableMap map = Arguments.createMap();
                     map.putBoolean("isIndoor", (floorId != null));
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                             .emit(EventConst.IS_INDOOR_MAP, map);
+
+                    WritableMap map2 = Arguments.createMap();
+                    map2.putBoolean("isHidden",isHidden);
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.IS_FLOOR_HIDDEN, map2);
                 }
 
                 public void angleChanged(double newAngle) {
@@ -5974,6 +5985,22 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 设置当前楼层ID
+     * @param floorID
+     * @param promise
+     */
+    @ReactMethod
+    public void setCurrentFloorID(String floorID, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getFloorListView().setCurrentFloorId(floorID);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 获取当前楼层ID
      *
      * @param promise
@@ -6068,12 +6095,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         Recordset recordset = datasetVector.getRecordset(false,CursorType.STATIC);
                         do{
                             Object FL_ID = recordset.getFieldValue("FL_ID");
-                            if(FL_ID.toString().equals(floorID)){
+                            if(FL_ID != null && FL_ID.toString().equals(floorID)){
                                 incrementLineDatasetName = recordset.getFieldValue("LineDatasetName").toString();
                                 incrementNetworkDatasetName = recordset.getFieldValue("NetworkName").toString();
                                 break;
                             }
                         } while (recordset.moveNext());
+                        recordset.close();
+                        recordset.dispose();
                     }
                     if(incrementLineDatasetName != null && incrementDatasource != null){
                         Dataset dataset = incrementDatasource.getDatasets().get(incrementLineDatasetName);
@@ -6709,6 +6738,68 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 }
             }
             promise.resolve(inBounds);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取楼层相关数据，并初始化楼层控件 额外返回一个数据源名称，用于判断是否需要重新获取楼层信息
+     * @param promise
+     */
+    @ReactMethod
+    public void getFloorData(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+            Datasource curDatasource = null;
+            Dataset floorRelationTable = null;
+            for(int i = 0; i < datasources.getCount(); i++){
+                Datasource datasource = datasources.get(i);
+                Datasets datasets = datasource.getDatasets();
+                if(datasets.contains("FloorRelationTable")){
+                    curDatasource = datasource;
+                    floorRelationTable = datasets.get("FloorRelationTable");
+                    break;
+                }
+            }
+
+            WritableMap map = Arguments.createMap();
+            WritableArray array = Arguments.createArray();
+
+            if(floorRelationTable != null){
+                FloorListView floorListView = new FloorListView(context.getCurrentActivity());
+                floorListView.setLayoutParams(new LinearLayout.LayoutParams(0,0));
+                floorListView.linkMapControl(sMap.smMapWC.getMapControl());
+                sMap.smMapWC.setFloorListView(floorListView);
+
+                DatasetVector datasetVector = (DatasetVector)floorRelationTable;
+                Recordset recordset = datasetVector.getRecordset(false,CursorType.STATIC);
+
+                do{
+                    Object FL_ID = recordset.getFieldValue("FL_ID");
+                    Object FL_NAME = recordset.getFieldValue("FloorName");
+                    if(FL_ID != null && FL_NAME != null){
+                        String floorID = FL_ID.toString();
+                        String floorName = FL_NAME.toString();
+                        WritableMap writableMap = Arguments.createMap();
+                        writableMap.putString("name",floorName);
+                        writableMap.putString("id",floorID);
+                        array.pushMap(writableMap);
+                    }
+                }while(recordset.moveNext());
+
+                recordset.close();
+                recordset.dispose();
+
+                map.putString("datasource",curDatasource.getAlias());
+                map.putString("currentFloorID",floorListView.getCurrentFloorId());
+                map.putArray("data",array);
+            }else {
+                map.putString("datasource","");
+            }
+
+            promise.resolve(map);
         }catch (Exception e){
             promise.reject(e);
         }
