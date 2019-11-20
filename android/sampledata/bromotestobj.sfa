@@ -1,0 +1,55 @@
+{
+   bound_relative_root: {
+      x: 0.5,
+      y: 0,
+      z: 0.5,
+   },
+   materials: [
+      {
+         name: "NewMat01",
+         parameters: [
+            {
+               baseColor: "bromo",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 1,
+            },
+            {
+               roughness: 0.30151099999999997,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+   ],
+   model: {
+      attributes: [
+         "Position",
+         "TexCoord",
+         "Orientation",
+      ],
+      collision: {},
+      file: "sampledata/bromotestobj.obj",
+      name: "bromotestobj",
+      recenter: "root",
+      scale: 0.00082170000000000003,
+   },
+   samplers: [
+      {
+         file: "sampledata\\bromo.jpg",
+         name: "bromo",
+         pipeline_name: "bromo.jpg",
+      },
+   ],
+   version: "0.52:1",
+}

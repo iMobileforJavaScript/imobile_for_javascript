@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.view.MotionEvent;
 
 import com.google.ar.core.Pose;
+import com.supermap.data.Point2Ds;
 import com.supermap.data.Point3D;
 
 import org.rajawali3d.math.Matrix4;
@@ -13,7 +14,8 @@ import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.renderer.RajawaliRenderer;
 
 import java.util.ArrayList;
-
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MotionRajawaliRenderer extends RajawaliRenderer {
@@ -26,6 +28,7 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
     private FrustumAxes mFrustumAxes;
     private Grid mGrid;
     private Trajectory mTrajectory;
+    private TrajectoryPointCloud mTrajectoryPointCloud;
 
 
     public MotionRajawaliRenderer(Context context){
@@ -53,22 +56,25 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
     protected void initScene(){
         //        mGrid = new Grid(100, 1, 1, 0xFFCCCCCC);   //default here. comment by ypp.
 
-        mGrid = new Grid(100, 1, 1, 0xFFCCCCFF);
-
-
-        mGrid.setPosition(0, -1.3f, 0);
-        getCurrentScene().addChild(mGrid);
+//        mGrid = new Grid(100, 1, 1, 0xFFCCCCFF);
+//
+//
+//        mGrid.setPosition(0, -1.3f, 0);
+//        getCurrentScene().addChild(mGrid);
 
         mFrustumAxes = new FrustumAxes(3);
         getCurrentScene().addChild(mFrustumAxes);
 
-        mTrajectory = new Trajectory(Color.RED, 1.0f);
+        mTrajectory = new Trajectory(Color.GREEN, 1.0f);
         getCurrentScene().addChild(mTrajectory);
+
+        mTrajectoryPointCloud = new TrajectoryPointCloud(Color.WHITE, 1.0f);
+        getCurrentScene().addChild(mTrajectoryPointCloud);
 
 
 //        getCurrentScene().setBackgroundColor(Color.WHITE);//default here. comment by ypp.
 
-        getCurrentScene().setBackgroundColor(Color.TRANSPARENT);
+        getCurrentScene().setBackgroundColor(Color.BLACK);
 
 
         getCurrentCamera().setNearPlane(CAMERA_NEAR);
@@ -182,7 +188,12 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
 
 
     public void update(Vector3 curPosition, Quaternion quaternion){
-        mTrajectory.addSegmentTo(curPosition);
+//        mTrajectory.addSegmentTo(curPosition);
+
+        if(mInitNewRoute && mRouteTrajectorys.containsKey(mRouteIndex)){
+            mRouteTrajectorys.get(mRouteIndex).addSegmentTo(curPosition);
+        }
+
 
         mFrustumAxes.setPosition(curPosition.x, curPosition.y, curPosition.z);
 
@@ -206,7 +217,10 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
 
     //user interface for save & load pase data.
     public void  savePoseData( ArrayList<Point3D> out){
-         mTrajectory.savePoseData(out);
+//         mTrajectory.savePoseData(out);
+        if(mRouteTrajectorys.containsKey(mRouteIndex)){
+            mRouteTrajectorys.get(mRouteIndex).savePoseData(out);
+        }
     }
 
     public void clearPoseData(){
@@ -244,6 +258,35 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
         return totalLength;
     }
 
+
+    /*
+     * 新建路线       void addNewRoute();
+     * 保存路线       Point2Ds saveCurrentRoute();
+     * 清空当前路线   void clearCurrentRoute();
+     * 切换引导模型   void changeGuideModel();
+     */
+
+
+    private Map<Integer,Trajectory> mRouteTrajectorys = new HashMap<>();
+    private int mRouteIndex = 0;
+
+    private boolean mInitNewRoute = false;
+    public void addNewRoute(){
+        mRouteTrajectorys.put(mRouteIndex,new Trajectory(Color.GREEN,1.0f));
+        getCurrentScene().addChild(mRouteTrajectorys.get(mRouteIndex));
+        mInitNewRoute = true;
+    }
+
+    public void saveCurrentRoute(){
+        mRouteIndex++;
+        mInitNewRoute = false;
+    }
+
+    public void clearCurrentRoute(){
+        if(mRouteTrajectorys.containsKey(mRouteIndex)){
+            mRouteTrajectorys.get(mRouteIndex).resetTrajectory();
+        }
+    }
 
 
 }

@@ -397,6 +397,31 @@ public class SMMediaCollector {
         });
     }
 
+    public static void updateCallouts(final ArrayList<InfoCallout> callouts) {
+        final SMap sMap = SMap.getInstance();
+        sMap.getActivity().runOnUiThread(new Runnable(){
+            @Override
+            public void run(){
+                if (callouts.size() == 0) {
+                    return;
+                }
+                Map map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
+                MapWrapView mapWrapView = (MapWrapView)map.getMapView();
+                for (int i = 0; i < callouts.size(); i++) {
+                    InfoCallout callout = callouts.get(i);
+                    if (mapWrapView.getCallOut(callout.getID()) != null) {
+                        mapWrapView.removeCallOut(callout.getID());
+                    }
+                    mapWrapView.addCallout(callout, callout.getID());
+                }
+                map.setCenter(new Point2D(callouts.get(0).getLocationX(), callouts.get(0).getLocationY()));
+                map.refresh();
+
+                mapWrapView.showCallOut();
+            }
+        });
+    }
+
     public static InfoCallout addCalloutByMedia(Context context, SMMedia media, Recordset recordset, String layerName, View.OnTouchListener listener) {
         Point2D pt = new Point2D(media.getLocation().getX(), media.getLocation().getY());
 

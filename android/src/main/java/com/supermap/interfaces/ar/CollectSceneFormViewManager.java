@@ -1,8 +1,10 @@
 package com.supermap.interfaces.ar;
 
 import android.graphics.Color;
+import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -42,17 +44,21 @@ public class CollectSceneFormViewManager extends SimpleViewManager<CustomRelativ
         mCustomRelativeLayout.setBackgroundColor(Color.parseColor("#505050"));
         SCollectSceneFormView.setViewManager(mCustomRelativeLayout);
 
+
         mMeasureView = new MeasureView(reactContext.getCurrentActivity());
         mMeasureView.setLayoutParams(params1);
+//        mMeasureView.enablePointCloud(true);
         SCollectSceneFormView.setMeasureView(mMeasureView);
+
 
         mSurfaceView = new RajawaliSurfaceView(reactContext.getCurrentActivity());
         mSurfaceView.setLayoutParams(params);
         SCollectSceneFormView.setSurfaceView(mSurfaceView);
 
-        mCustomRelativeLayout.addView(mMeasureView);
         mCustomRelativeLayout.addView(mSurfaceView);
-        mSurfaceView.setZOrderMediaOverlay(true);   // 必须layout.addView之后使用，必须动态调用。
+        mCustomRelativeLayout.addView(mMeasureView);
+//        mCustomRelativeLayout.addView(mSurfaceView);
+//        mSurfaceView.setZOrderMediaOverlay(true);   // 必须layout.addView之后使用，必须动态调用。
 
         return mCustomRelativeLayout;
     }

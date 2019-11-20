@@ -83,6 +83,7 @@ public class Trajectory extends Object3D {
 
     public void preRender(){
         super.preRender();
+        GLES20.glLineWidth(40.0f);
         setDrawingMode(GLES20.GL_LINE_STRIP);
     }
 
