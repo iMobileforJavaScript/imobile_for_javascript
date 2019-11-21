@@ -998,11 +998,9 @@ RCT_REMAP_METHOD(isGuiding, isGuidingWithResolver: (RCTPromiseResolveBlock) reso
 RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:(double)x2 Y2:(double)y2 resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
-        Point2D *startPoint = [SMap getPointWithX:x Y:y];
-        Point2D *endPoint = [SMap getPointWithX:x2 Y:y2];
         Navigation2 *navigation2 = [mapControl getNavigation2];
-        [navigation2 setStartPoint:startPoint.x sPointY:startPoint.y];
-        [navigation2 setDestinationPoint:endPoint.x dPointY:endPoint.y];
+        [navigation2 setStartPoint:x sPointY:y];
+        [navigation2 setDestinationPoint:x2 dPointY:y2];
         [navigation2 setPathVisible:YES];
         BOOL isFind = [navigation2 routeAnalyst];
         [mapControl.map refresh];
@@ -1389,6 +1387,7 @@ RCT_REMAP_METHOD(isIndoorPoint, isIndoorPointWithX:(double)x Y:(double) y resolv
         if(naviDatasource != nil){
             Datasets *datasets = naviDatasource.datasets;
             Point2D *mapCenter = sMap.smMapWC.mapControl.map.center;
+            mapCenter = [SMap getPointWithX:mapCenter.x Y:mapCenter.y];
             for(int i = 0; i < datasets.count; i++){
                 Dataset *dataset = [datasets get:i];
                 if([dataset.bounds containsPoint2D:mapCenter] && [dataset.bounds containsX:x Y:y]){
@@ -1414,7 +1413,8 @@ RCT_REMAP_METHOD(getStartPoint, getStartPointWithX:(double)x Y:(double) y isIndo
         if(isindoor){
             [[sMap.smMapWC.mapControl getNavigation3] setStartPoint:x Y:y ID:floorID];
         }else{
-            [SMap showPointByCalloutAtX:x Y:y PointName:@"startpoint"];
+            Point2D *point2d =[SMap getMapPointWithX:x Y:y];
+            [SMap showPointByCalloutAtX:point2d.x Y:point2d.y PointName:@"startpoint"];
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -1432,7 +1432,8 @@ RCT_REMAP_METHOD(getEndPoint, getEndPointWithX:(double)x Y:(double) y isIndoor: 
         if(isindoor){
             [[sMap.smMapWC.mapControl getNavigation3] setDestinationPoint:x Y:y ID:floorID];
         }else{
-            [SMap showPointByCalloutAtX:x Y:y PointName:@"endpoint"];
+            Point2D *point2d =[SMap getMapPointWithX:x Y:y];
+            [SMap showPointByCalloutAtX:point2d.x Y:point2d.y PointName:@"endpoint"];
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -1473,7 +1474,7 @@ RCT_REMAP_METHOD(stopGuide, stopGuideWithResolver: (RCTPromiseResolveBlock) reso
 RCT_REMAP_METHOD(getPointName, getPointNameWithX:(double)x Y:(double) y IsStart: (BOOL)isstart resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         isStart = isstart;
-        Point2D *point2D = [SMap getPointWithX:x Y:y];
+        Point2D *point2D = [[Point2D alloc] initWithX:x Y:y];
         Geocoding *reverseGeocoding = [[Geocoding alloc] init];
         [reverseGeocoding setKey:@"fvV2osxwuZWlY0wJb8FEb2i5"];
         reverseGeocoding.delegate = self;
@@ -1556,6 +1557,24 @@ RCT_REMAP_METHOD(getCurrentMapPosition, getCurrentMapPositionWithResolver:(RCTPr
         point2D = [points getItem:0];
     }else{
         point2D = [[Point2D alloc] initWithX:x Y:y];
+    }
+    return point2D;
+}
+
+#pragma mark 经纬坐标点转地理坐标点
++(Point2D *)getMapPointWithX:(double)x Y:(double)y{
+    Point2D *point2D = nil;
+    if(x >= -180 && x <= 180 && y >= -90 && y <= 90){
+        PrjCoordSys *mapCoordSys = [SMap singletonInstance].smMapWC.mapControl.map.prjCoordSys;
+        Point2Ds *points = [[Point2Ds alloc]init];
+        Point2D *point = [[Point2D alloc] initWithX:x Y:y];
+        [points add:point];
+        PrjCoordSys *desPrjCoordSys = [[PrjCoordSys alloc]init];
+        desPrjCoordSys.type = PCST_EARTH_LONGITUDE_LATITUDE;
+        [CoordSysTranslator convert:points PrjCoordSys:desPrjCoordSys PrjCoordSys:mapCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        point2D = [points getItem:0];
+    }else{
+        point2D = [[Point2D alloc]initWithX:x Y:y];
     }
     return point2D;
 }
@@ -1718,9 +1737,10 @@ RCT_REMAP_METHOD(getFloorData, getFloorDataWithResolver: (RCTPromiseResolveBlock
             [recordset close];
             [recordset dispose];
             
+            NSString *currentFloorID = floorListView.currentFloorId == nil ? @"" : floorListView.currentFloorId;
             [dic setValue:array forKey:@"data"];
             [dic setValue:curDatasource.alias forKey:@"datasource"];
-            [dic setValue:floorListView.currentFloorId forKey:@"currentFloorID"];
+            [dic setValue:currentFloorID forKey:@"currentFloorID"];
             
             resolve(dic);
         }else{
@@ -5993,8 +6013,8 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
                               }];
     FloorListView *floorListView = [SMap singletonInstance].smMapWC.floorListView;
     NSString *floorID = floorListView.currentFloorId;
-    BOOL isHidden = floorListView.isHidden;
-    [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"isHidden":@(isHidden)}];
+    NSString *currentFloorID = floorID == nil ? @"" : floorID;
+    [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":currentFloorID}];
     [self sendEventWithName:IS_INDOOR_MAP body:@{@"isIndoor":@(floorID != nil)}];
 }
 
@@ -6021,6 +6041,8 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
     Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:pressedPos];
+    
+    Point2D *LLpoint2D = [SMap getPointWithX:point2D.x Y:point2D.y];
     [self sendEventWithName:MAP_LONG_PRESS
                        body:@{@"mapPoint": @{
                                       @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
@@ -6029,6 +6051,10 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
                               @"screenPoint": @{
                                       @"x":nsX,
                                       @"y":nsY
+                                      },
+                              @"LLPoint":@{
+                                      @"x":@(LLpoint2D.x),
+                                      @"y":@(LLpoint2D.y),
                                       },
                               }];
 }

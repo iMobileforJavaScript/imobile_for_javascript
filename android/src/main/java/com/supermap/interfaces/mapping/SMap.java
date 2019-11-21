@@ -203,6 +203,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         if (scaleViewHelper.mapParameterChangedListener == null) {
             scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
                 public void scaleChanged(double newScale) {
+                    FloorListView floorListView = SMap.getInstance().smMapWC.getFloorListView();
+                    double pointScale = 1.0/2500;
+                    if(floorListView != null){
+                        if(newScale < pointScale && floorListView.getVisibility() == View.VISIBLE){
+                            floorListView.setVisibility(View.INVISIBLE);
+                        }else if(newScale > pointScale && floorListView.getVisibility() == View.INVISIBLE){
+                            floorListView.setVisibility(View.VISIBLE);
+                        }
+                    }
                     if (scaleViewHelper == null)
                         return;
                     scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
@@ -219,20 +228,23 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     sMap = SMap.getInstance();
                     FloorListView floorListView = sMap.smMapWC.getFloorListView();
                     String floorId = null;
-
-                    boolean isHidden = true;
+                    boolean isIndoorMap = false;
+                    String currentFloorID = "";
                     if (floorListView != null) {
                         floorId = floorListView.getCurrentFloorId();
-                        isHidden = floorListView.getVisibility() != View.VISIBLE;
+                        boolean visible = floorListView.getVisibility() == View.VISIBLE;
+                        isIndoorMap = (floorId != null) && visible;
                     }
-
+                    if(floorId != null && floorListView.getVisibility() == View.VISIBLE){
+                        currentFloorID = floorId;
+                    }
                     WritableMap map = Arguments.createMap();
-                    map.putBoolean("isIndoor", (floorId != null));
+                    map.putBoolean("isIndoor", isIndoorMap);
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                             .emit(EventConst.IS_INDOOR_MAP, map);
 
                     WritableMap map2 = Arguments.createMap();
-                    map2.putBoolean("isHidden",isHidden);
+                    map2.putString("currentFloorID",currentFloorID);
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                             .emit(EventConst.IS_FLOOR_HIDDEN, map2);
                 }
@@ -2036,9 +2048,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     mapPoint.putDouble("x", point2D.getX());
                     mapPoint.putDouble("y", point2D.getY());
 
+                    Point2D LLPoint2D = getPoint(point2D.getX(),point2D.getY());
+                    WritableMap LLPoint = Arguments.createMap();
+                    LLPoint.putDouble("x",LLPoint2D.getX());
+                    LLPoint.putDouble("y",LLPoint2D.getY());
+
                     WritableMap map = Arguments.createMap();
                     map.putMap("screenPoint", screenPoint);
                     map.putMap("mapPoint", mapPoint);
+                    map.putMap("LLPoint",LLPoint);
 
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                             .emit(EventConst.MAP_LONG_PRESS, map);
@@ -5799,11 +5817,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void beginNavigation(double x, double y, double x2, double y2, Promise promise) {
         try {
-            Point2D pointstart = getPoint(x, y);
-            Point2D pointend = getPoint(x2, y2);
             sMap = SMap.getInstance();
-            sMap.getSmMapWC().getMapControl().getNavigation2().setStartPoint(pointstart.getX(), pointstart.getY());        // 设置起点
-            sMap.getSmMapWC().getMapControl().getNavigation2().setDestinationPoint(pointend.getX(), pointend.getY());     // 设置终点
+            sMap.getSmMapWC().getMapControl().getNavigation2().setStartPoint(x, y);        // 设置起点
+            sMap.getSmMapWC().getMapControl().getNavigation2().setDestinationPoint(x2, y2);     // 设置终点
             sMap.getSmMapWC().getMapControl().getNavigation2().setPathVisible(true);                                       // 设置路径可见
             boolean isfind = sMap.getSmMapWC().getMapControl().getNavigation2().routeAnalyst();
             sMap.smMapWC.getMapControl().getMap().refresh();
@@ -6326,6 +6342,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (naviDatasource != null) {
                Datasets datasets = naviDatasource.getDatasets();
                Point2D mapCenter = sMap.smMapWC.getMapControl().getMap().getCenter();
+               mapCenter = getPoint(mapCenter.getX(),mapCenter.getY());
                for(int i = 0; i < datasets.getCount(); i++){
                    Dataset dataset = datasets.get(i);
                    if(dataset.getBounds().contains(mapCenter) && dataset.getBounds().contains(x,y)){
@@ -6357,7 +6374,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (isindoor) {
                 sMap.getSmMapWC().getMapControl().getNavigation3().setStartPoint(x, y, floorID);
             } else {
-                showPointByCallout(x, y, "startpoint");
+                Point2D point2d = getMapPoint(x,y);
+                showPointByCallout(point2d.getX(), point2d.getY(), "startpoint");
             }
             promise.resolve(true);
         } catch (Exception e) {
@@ -6381,7 +6399,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (isindoor) {
                 sMap.getSmMapWC().getMapControl().getNavigation3().setDestinationPoint(x, y, floorID);
             } else {
-                showPointByCallout(x, y, "endpoint");
+                Point2D point2d = getMapPoint(x,y);
+                showPointByCallout(point2d.getX(), point2d.getY(), "endpoint");
             }
             promise.resolve(true);
         } catch (Exception e) {
@@ -6445,7 +6464,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void getPointName(double x, double y, boolean start, Promise promise) {
         try {
-            Point2D point2D = getPoint(x, y);
+            Point2D point2D = new Point2D(x,y);
             ReverseGeocoding(point2D, start);
             promise.resolve(true);
         } catch (Exception e) {
@@ -6529,6 +6548,33 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             // 转换投影坐标
             CoordSysTranslator.convert(point2Ds, srcPrjCoordSys,
                     desPrjCoordSys, new CoordSysTransParameter(),
+                    CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+            point2D = point2Ds.getItem(0);
+        } else {
+            point2D = new Point2D(x, y);
+        }
+        return point2D;
+    }
+
+    /**
+     * 经纬坐标点转地理坐标点
+     * @param x
+     * @param y
+     * @return
+     */
+    private Point2D getMapPoint(double x, double y){
+        Point2D point2D;
+        if (x >= -180 && x <= 180 && y >= -90 && y <= 90) {
+            PrjCoordSys srcPrjCoordSys = SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys();
+            Point2Ds point2Ds = new Point2Ds();
+            point2Ds.add(new Point2D(x, y));
+            PrjCoordSys desPrjCoordSys = new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+            // 转换投影坐标
+            CoordSysTranslator.convert(
+                    point2Ds,
+                    desPrjCoordSys,
+                    srcPrjCoordSys,
+                    new CoordSysTransParameter(),
                     CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
             point2D = point2Ds.getItem(0);
         } else {
@@ -6769,7 +6815,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             if(floorRelationTable != null){
                 FloorListView floorListView = new FloorListView(context.getCurrentActivity());
-                floorListView.setLayoutParams(new LinearLayout.LayoutParams(0,0));
+                floorListView.setLayoutParams(new LinearLayout.LayoutParams(1,1));
                 floorListView.linkMapControl(sMap.smMapWC.getMapControl());
                 sMap.smMapWC.setFloorListView(floorListView);
 
@@ -6791,9 +6837,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                 recordset.close();
                 recordset.dispose();
-
+                String currentFloorID = floorListView.getCurrentFloorId() == null ? "" : floorListView.getCurrentFloorId();
                 map.putString("datasource",curDatasource.getAlias());
-                map.putString("currentFloorID",floorListView.getCurrentFloorId());
+                map.putString("currentFloorID",currentFloorID);
                 map.putArray("data",array);
             }else {
                 map.putString("datasource","");
