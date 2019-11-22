@@ -2615,13 +2615,11 @@ export default (function () {
 
   /**
    * 添加GPS轨迹
-   * @param datasourceName
-   * @param datasetName
    * @returns {undefined}
    */
-  function addGPSRecordset(datasourceName,datasetName) {
+  function addGPSRecordset() {
     try {
-      return SMap.addGPSRecordset(datasourceName,datasetName)
+      return SMap.addGPSRecordset()
     } catch (e) {
       console.error(e)
     }

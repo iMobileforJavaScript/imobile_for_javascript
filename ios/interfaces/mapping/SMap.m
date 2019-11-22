@@ -1332,11 +1332,10 @@ RCT_REMAP_METHOD(gpsBegin, gpsBeginWithResolver: (RCTPromiseResolveBlock) resolv
 }
 
 #pragma mark 添加GPS轨迹
-RCT_REMAP_METHOD(addGPSRecordset,addGPSRecordsetWithDatasource:(NSString *)datasourceName LineDataset:(NSString *)lineDataset resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addGPSRecordset,addGPSRecordsetWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        Datasource *datasource = [sMap.smMapWC.workspace.datasources getAlias:datasourceName];
-        DatasetVector *datasetVector = (DatasetVector *)[datasource.datasets getWithName:lineDataset];
+        DatasetVector *datasetVector = (DatasetVector *)[incrementDatasource.datasets getWithName:incrementLineDatasetName];
         if(datasetVector != nil){
             [datasetVector setReadOnly:NO];
         }

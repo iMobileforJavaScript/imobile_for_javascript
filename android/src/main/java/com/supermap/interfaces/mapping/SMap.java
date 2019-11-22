@@ -6279,12 +6279,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void addGPSRecordset(String datasourceName, String linedatasetName, Promise promise) {
+    public void addGPSRecordset(Promise promise) {
         try {
             if (GpsPoint2Ds.getCount() > 0) {
                 sMap = SMap.getInstance();
-                Datasource datasource = sMap.smMapWC.getWorkspace().getDatasources().get(datasourceName);
-                DatasetVector dataset = (DatasetVector) datasource.getDatasets().get(linedatasetName);
+                DatasetVector dataset = (DatasetVector) incrementDatasource.getDatasets().get(incrementLineDatasetName);
                 if (dataset != null) {
                     dataset.setReadOnly(false);
                 }
