@@ -63,8 +63,6 @@ export default {
   MAPSELECTPOINTNAMESTART:"com.supermap.RN.Navigation.mapselectpointnamestart",
   MAPSELECTPOINTNAMEEND:"com.supermap.RN.Navigation.mapselectpointnameend",
   ILLEGALLYPARK:"com.supermap.RN.Navigation.illegallypark",
-  /** 室内地图 bounds改变，且floorlist的id存在 **/
-  IS_INDOOR_MAP : "com.supermap.RN.FloorListView.isIndoorChanged",
   /** 室内地图 楼层控件是否隐藏 **/
   IS_FLOOR_HIDDEN:'com.supermap.RN.FloorListView.isFloorHidden',
   

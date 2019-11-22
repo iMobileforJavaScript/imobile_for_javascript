@@ -81,7 +81,6 @@ RCT_EXPORT_MODULE();
              MAP_GEOMETRY_SELECTED,
              MAP_SCALE_CHANGED,
              MAP_BOUNDS_CHANGED,
-             IS_INDOOR_MAP,
              IS_FLOOR_HIDDEN,
              LEGEND_CONTENT_CHANGE,
              MAP_SCALEVIEW_CHANGED,
@@ -6014,7 +6013,6 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
     NSString *floorID = floorListView.currentFloorId;
     NSString *currentFloorID = floorID == nil ? @"" : floorID;
     [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":currentFloorID}];
-    [self sendEventWithName:IS_INDOOR_MAP body:@{@"isIndoor":@(floorID != nil)}];
 }
 
 -(void) scaleChanged:(double)newscale{

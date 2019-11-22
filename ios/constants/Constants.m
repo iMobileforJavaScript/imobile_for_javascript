@@ -64,7 +64,6 @@ NSString * const MAP_GEOMETRY_MULTI_SELECTED = @"com.supermap.RN.Mapcontrol.geom
 NSString * const MAP_GEOMETRY_SELECTED = @"com.supermap.RN.Mapcontrol.geometry_selected";
 NSString * const MAP_SCALE_CHANGED = @"Supermap.MapControl.MapParamChanged.ScaleChanged";
 NSString * const MAP_BOUNDS_CHANGED = @"Supermap.MapControl.MapParamChanged.BoundsChanged";
-NSString * const IS_INDOOR_MAP = @"com.supermap.RN.FloorListView.isIndoorChanged";
 /**  楼层控件是否应该隐藏  **/
 NSString * const IS_FLOOR_HIDDEN = @"com.supermap.RN.FloorListView.isFloorHidden";
 

@@ -54,30 +54,6 @@ export default (function () {
   }
 
   /**
-   * 地图室内/室外切换事件
-   * @param handler
-   */
-  function addIndoorChangeListener(handler) {
-    try {
-      if(Platform.OS === 'ios'){
-        nativeEvt.addListener(EventConst.IS_INDOOR_MAP,result=>{
-          if(typeof handler === "function"){
-            handler(result);
-          }
-        })
-      }else {
-        DeviceEventEmitter.addListener(EventConst.IS_INDOOR_MAP,result=>{
-          if(typeof handler === "function"){
-            handler(result);
-          }
-        })
-      }
-    }catch (e) {
-      console.error(e)
-    }
-  }
-
-  /**
    * 楼层显隐监听
    * @param handler
    */
@@ -3081,7 +3057,6 @@ export default (function () {
     addTextRecordset,
     getGestureDetector,
     addLegendListener,
-    addIndoorChangeListener,
     addFloorHiddenListener,
     removeLegendListener,
     addScaleChangeDelegate,
