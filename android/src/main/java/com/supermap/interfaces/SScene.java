@@ -61,8 +61,14 @@ import com.supermap.rnsupermap.SceneViewManager;
 import com.supermap.smNative.SMSceneWC;
 import com.supermap.smNative.collector.SMCollector;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -572,27 +578,6 @@ public class SScene extends ReactContextBaseJavaModule {
 
     }
 
-    /**
-     * 添加地形图层
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void addTerrainLayer(String url,String name,Promise promise) {
-        try {
-            sScene = getInstance();
-            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-            sScene.smSceneWc.getSceneControl().isRender(false);
-            scene.getTerrainLayers().clear();
-            scene.getTerrainLayers().add(url,name);
-            sScene.smSceneWc.getSceneControl().isRender(true);
-            scene.refresh();
-            int i=scene.getTerrainLayers().getCount();
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
-    }
 
     @ReactMethod
     public void ensureVisibleLayer(String layerName,Promise promise) {
@@ -652,24 +637,55 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void addImageCacheLayer(String ImageCachePath, String layerName, Promise promise) {
         try {
-            sScene = getInstance();
-            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-            int n = 1;
-            String AvailableName = layerName;
-            while(true){
-                if(scene.getLayers().get(AvailableName) != null){
-                    AvailableName = layerName + "#" + n++;//[layerName stringByAppendingFormat:@"#%i",n++];
-                }else{
-                    break;
+            if(ImageCachePath.contains("iserver/services")){
+                String name =  addImageOnlineLayer(ImageCachePath);
+                promise.resolve(name);
+            }else {
+                sScene = getInstance();
+                Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+                int n = 1;
+                String AvailableName = layerName;
+                while (true) {
+                    if (scene.getLayers().get(AvailableName) != null) {
+                        AvailableName = layerName + "#" + n++;//[layerName stringByAppendingFormat:@"#%i",n++];
+                    } else {
+                        break;
+                    }
                 }
+                sScene.smSceneWc.getSceneControl().isRender(false);
+//            Layer3D layer3D =  scene.getLayers().add("http://192.168.0.104:8090/iserver/services/3D-srtm_58_06-dem/rest/realspace/datas/srtm_58_06_1@dem",Layer3DType.IMAGEFILE,AvailableName,true);
+                Layer3D layer3D = scene.getLayers().addLayerWith(ImageCachePath, Layer3DType.IMAGEFILE, true, AvailableName);
+                sScene.smSceneWc.getSceneControl().isRender(true);
+                promise.resolve(layer3D.getName());
             }
-            sScene.smSceneWc.getSceneControl().isRender(false);
-            Layer3D layer3D = scene.getLayers().addLayerWith(ImageCachePath,Layer3DType.IMAGEFILE,true,AvailableName);
-            sScene.smSceneWc.getSceneControl().isRender(true);
-            promise.resolve(layer3D.getName());
         } catch (Exception e) {
             promise.reject(e);
         }
+    }
+
+
+    private String addImageOnlineLayer(String url) {
+
+        sScene = getInstance();
+        Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+        String[] res = url.split("/");
+        String layerName =  res[res.length-1];
+        int n = 1;
+        String AvailableName = layerName;
+        while(true){
+            if(scene.getLayers().get(AvailableName) != null){
+                AvailableName = layerName + "#" + n++;//[layerName stringByAppendingFormat:@"#%i",n++];
+            }else{
+                break;
+            }
+        }
+        sScene.smSceneWc.getSceneControl().isRender(false);
+        //"http://192.168.0.104:8090/iserver/services/3D-srtm_58_06-dem/rest/realspace/datas/srtm_58_06_1@dem"
+        Layer3D layer3D =  scene.getLayers().add(url,Layer3DType.IMAGEFILE,AvailableName,true);
+    //            Layer3D layer3D = scene.getLayers().addLayerWith(ImageCachePath,Layer3DType.IMAGEFILE,true,AvailableName);
+        sScene.smSceneWc.getSceneControl().isRender(true);
+        return  layer3D.getName();
+
     }
 
     /**
@@ -701,24 +717,60 @@ public class SScene extends ReactContextBaseJavaModule {
     @ReactMethod
     public void addTerrainCacheLayer(String terrainCache, String layerName, Promise promise) {
         try {
-            sScene = getInstance();
-            Scene scene = sScene.smSceneWc.getSceneControl().getScene();
-            int n = 1;
-            String AvailableName = layerName;
-            while(true){
-                if(scene.getTerrainLayers().get(AvailableName) != null){
-                    AvailableName = layerName + "#" + n++;//[layerName stringByAppendingFormat:@"#%i",n++];
-                }else{
-                    break;
+
+            if(terrainCache.contains("iserver/services")){
+               String name =  addTerrainOnlineLayer(terrainCache);
+               promise.resolve(name);
+            }else {
+                sScene = getInstance();
+                Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+                int n = 1;
+                String AvailableName = layerName;
+                while (true) {
+                    if (scene.getTerrainLayers().get(AvailableName) != null) {
+                        AvailableName = layerName + "#" + n++;//[layerName stringByAppendingFormat:@"#%i",n++];
+                    } else {
+                        break;
+                    }
                 }
+                sScene.smSceneWc.getSceneControl().isRender(false);
+                TerrainLayer layer = scene.getTerrainLayers().add(terrainCache, true, AvailableName, "");//addLayerWith(terrainCache,Layer3DType.IMAGEFILE,true,AvailableName);
+//            TerrainLayer layer = scene.getTerrainLayers().addIserver("http://192.168.0.104:8090/iserver/services/3D-srtm_58_06-dem/rest/realspace/datas/srtm_58_06_1@dem_Terrain","onlineLayer");
+                sScene.smSceneWc.getSceneControl().isRender(true);
+                promise.resolve(layer.getName());
             }
-            sScene.smSceneWc.getSceneControl().isRender(false);
-            TerrainLayer layer = scene.getTerrainLayers().add(terrainCache,true,AvailableName,"");//addLayerWith(terrainCache,Layer3DType.IMAGEFILE,true,AvailableName);
-            sScene.smSceneWc.getSceneControl().isRender(true);
-            promise.resolve(layer.getName());
         } catch (Exception e) {
             promise.reject(e);
         }
+    }
+
+
+    private String addTerrainOnlineLayer(String url) {
+
+        sScene = getInstance();
+        Scene scene = sScene.smSceneWc.getSceneControl().getScene();
+        String[] res = url.split("/");
+        String layerName =  res[res.length-1];
+        int n = 1;
+        String AvailableName = layerName;
+        while(true){
+            if(scene.getTerrainLayers().get(AvailableName) != null){
+                AvailableName = layerName + "#" + n++;//[layerName stringByAppendingFormat:@"#%i",n++];
+            }else{
+                break;
+            }
+        }
+        String name = "";
+        sScene.smSceneWc.getSceneControl().isRender(false);
+        //"http://192.168.0.104:8090/iserver/services/3D-srtm_58_06-dem/rest/realspace/datas/srtm_58_06_1@dem_Terrain"
+//            TerrainLayer layer = scene.getTerrainLayers().add(terrainCache,true,AvailableName,"");//addLayerWith(terrainCache,Layer3DType.IMAGEFILE,true,AvailableName);
+        TerrainLayer layer = scene.getTerrainLayers().addIserver(url,AvailableName);
+        sScene.smSceneWc.getSceneControl().isRender(true);
+
+        if(layer!=null){
+            name = layer.getName();
+        }
+        return name;
     }
 
     /**
@@ -971,6 +1023,18 @@ public class SScene extends ReactContextBaseJavaModule {
                             map.putString("name", fileName);
                             map.putString("path", path);
                             resArr.pushMap(map);
+                        }else if(suffix.toUpperCase().equals((fileter+"Online").toUpperCase())){
+                            WritableMap map = Arguments.createMap();
+                            map.putString("name", fileName);
+
+                            File file = new File(path);
+                            FileInputStream fileInputStream = new FileInputStream(file);
+                            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
+                            BufferedReader reader = new BufferedReader(inputStreamReader);
+                            String url = reader.readLine();
+                            reader.close();
+                            map.putString("path", url);
+                            resArr.pushMap(map);
                         }
                     }
                 }catch (Exception e){
@@ -981,8 +1045,49 @@ public class SScene extends ReactContextBaseJavaModule {
         }
     }
 
+
     /**
-     * 移除影像缓存
+            * 地形缓存
+     *
+             * @param promise
+     */
+    @ReactMethod
+    public void setImageCacheName(String url ,Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            String path = sceneControl.getScene().getWorkspace().getConnectionInfo().getServer();
+            String strDir = path.substring(0, path.lastIndexOf("/")) + "/image";
+
+            String[] res = url.split("/");
+            String layerName =  res[res.length-1];
+
+            File file = new File(strDir+'/'+layerName+".sci3dOnline");
+            int n = 1;
+            while(file.exists()){
+                file = new File(strDir+'/'+layerName+  "_"+ n + ".sctOnline");
+                n++;
+            }
+
+            Boolean bREs = false;
+            bREs = file.createNewFile();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file,false), "UTF-8"));
+            writer.write(url);
+            writer.close();
+
+            promise.resolve(bREs);
+
+//            WritableArray arr = Arguments.createArray();
+//            showAllFileWithPath(strDir,".sci3d",arr);
+
+//            promise.resolve(arr);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取影像缓存
      *
      * @param promise
      */
@@ -1001,6 +1106,44 @@ public class SScene extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 地形缓存
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void setTerrainCacheName(String url,Promise promise) {
+        try {
+            sScene = getInstance();
+            SceneControl sceneControl = sScene.smSceneWc.getSceneControl();
+            String path = sceneControl.getScene().getWorkspace().getConnectionInfo().getServer();
+
+            String strDir = path.substring(0, path.lastIndexOf("/")) + "/terrain";
+
+            String[] res = url.split("/");
+            String layerName =  res[res.length-1];
+
+            File file = new File(strDir+'/'+layerName+".sctOnline");
+            int n = 1;
+            while(file.exists()){
+                file = new File(strDir+'/'+layerName+  "_"+ n + ".sctOnline");
+                n++;
+            }
+
+            Boolean bREs = false;
+            bREs = file.createNewFile();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file,false), "UTF-8"));
+            writer.write(url);
+            writer.close();
+
+            promise.resolve(bREs);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
 
     /**
      * 获取地形缓存
